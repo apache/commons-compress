@@ -87,7 +87,7 @@ public class ExceptionsAttribute extends Attribute {
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result + ExceptionsAttribute.hashCode(exceptions);
+        result = prime * result + hashCode(exceptions);
         return result;
     }
 

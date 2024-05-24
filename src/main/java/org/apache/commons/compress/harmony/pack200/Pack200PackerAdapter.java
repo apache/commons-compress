@@ -76,7 +76,7 @@ public class Pack200PackerAdapter extends Pack200Adapter implements Packer {
         }
         completed(0);
         try {
-            new org.apache.commons.compress.harmony.pack200.Archive(file, out, options).pack();
+            new Archive(file, out, options).pack();
         } catch (final Pack200Exception e) {
             throw new IOException("Failed to pack Jar:" + e);
         }
@@ -92,7 +92,7 @@ public class Pack200PackerAdapter extends Pack200Adapter implements Packer {
         final PackingOptions options = new PackingOptions();
 
         try {
-            new org.apache.commons.compress.harmony.pack200.Archive(in, out, options).pack();
+            new Archive(in, out, options).pack();
         } catch (final Pack200Exception e) {
             throw new IOException("Failed to pack Jar:" + e);
         }

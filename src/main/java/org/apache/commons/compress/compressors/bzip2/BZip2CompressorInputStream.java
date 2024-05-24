@@ -76,7 +76,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         // ===============
 
         Data(final int blockSize100k) {
-            this.ll8 = new byte[blockSize100k * BZip2Constants.BASEBLOCKSIZE];
+            this.ll8 = new byte[blockSize100k * BASEBLOCKSIZE];
         }
 
         /**

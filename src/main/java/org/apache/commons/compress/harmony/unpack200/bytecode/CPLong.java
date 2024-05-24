@@ -25,7 +25,7 @@ import java.io.IOException;
 public class CPLong extends CPConstantNumber {
 
     public CPLong(final Long value, final int globalIndex) {
-        super(ConstantPoolEntry.CP_Long, value, globalIndex);
+        super(CP_Long, value, globalIndex);
     }
 
     @Override

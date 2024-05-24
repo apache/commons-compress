@@ -179,7 +179,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
         public static Set<PERMISSION> find(final int code) {
             final Set<PERMISSION> set = new HashSet<>();
 
-            for (final PERMISSION p : PERMISSION.values()) {
+            for (final PERMISSION p : values()) {
                 if ((code & p.code) == p.code) {
                     set.add(p);
                 }
@@ -245,7 +245,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
         public static TYPE find(final int code) {
             TYPE type = UNKNOWN;
 
-            for (final TYPE t : TYPE.values()) {
+            for (final TYPE t : values()) {
                 if (code == t.code) {
                     type = t;
                 }

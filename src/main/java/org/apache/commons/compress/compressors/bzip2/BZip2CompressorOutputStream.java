@@ -180,7 +180,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
         int origPtr;
 
         Data(final int blockSize100k) {
-            final int n = blockSize100k * BZip2Constants.BASEBLOCKSIZE;
+            final int n = blockSize100k * BASEBLOCKSIZE;
             this.block = new byte[n + 1 + NUM_OVERSHOOT_BYTES];
             this.fmap = new int[n];
             this.sfmap = new char[2 * n];
@@ -438,7 +438,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
         this.out = out;
 
         /* 20 is just a paranoia constant */
-        this.allowableBlockSize = this.blockSize100k * BZip2Constants.BASEBLOCKSIZE - 20;
+        this.allowableBlockSize = this.blockSize100k * BASEBLOCKSIZE - 20;
         init();
     }
 

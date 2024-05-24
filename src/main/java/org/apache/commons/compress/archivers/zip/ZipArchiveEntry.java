@@ -58,7 +58,7 @@ import org.apache.commons.compress.utils.TimeUtils;
  *
  * @NotThreadSafe
  */
-public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEntry, EntryStreamOffsets {
+public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStreamOffsets {
 
     /**
      * Indicates how the comment of this entry has been determined.
@@ -251,7 +251,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
     }
 
     /**
-     * The {@link java.util.zip.ZipEntry} base class only supports the compression methods STORED and DEFLATED. We override the field so that any compression
+     * The {@link ZipEntry} base class only supports the compression methods STORED and DEFLATED. We override the field so that any compression
      * methods can be used.
      * <p>
      * The default value -1 means that the method has not been specified.
@@ -261,7 +261,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
     private int method = ZipMethod.UNKNOWN_CODE;
 
     /**
-     * The {@link java.util.zip.ZipEntry#setSize} method in the base class throws an IllegalArgumentException if the size is bigger than 2GB for Java versions
+     * The {@link ZipEntry#setSize} method in the base class throws an IllegalArgumentException if the size is bigger than 2GB for Java versions
      * &lt; 7 and even in Java 7+ if the implementation in java.util.zip doesn't support Zip64 itself (it is an optional feature).
      * <p>
      * We need to keep our own size information for Zip64 support.
@@ -352,7 +352,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
      * @param entry the entry to get fields from
      * @throws ZipException on error
      */
-    private ZipArchiveEntry(final Function<ZipShort, ZipExtraField> extraFieldFactory, final java.util.zip.ZipEntry entry) throws ZipException {
+    private ZipArchiveEntry(final Function<ZipShort, ZipExtraField> extraFieldFactory, final ZipEntry entry) throws ZipException {
         super(entry);
         this.extraFieldFactory = extraFieldFactory;
         setName(entry.getName());
@@ -413,7 +413,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
      * @param entry the entry to get fields from
      * @throws ZipException on error
      */
-    public ZipArchiveEntry(final java.util.zip.ZipEntry entry) throws ZipException {
+    public ZipArchiveEntry(final ZipEntry entry) throws ZipException {
         this(null, entry);
     }
 
@@ -460,7 +460,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
      * @throws ZipException on error
      */
     public ZipArchiveEntry(final ZipArchiveEntry entry) throws ZipException {
-        this((java.util.zip.ZipEntry) entry);
+        this((ZipEntry) entry);
         setInternalAttributes(entry.getInternalAttributes());
         setExternalAttributes(entry.getExternalAttributes());
         setExtraFields(entry.getAllExtraFieldsNoCopy());
@@ -779,10 +779,10 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
     }
 
     /**
-     * Wraps {@link java.util.zip.ZipEntry#getTime} with a {@link Date} as the entry's last modified date.
+     * Wraps {@link ZipEntry#getTime} with a {@link Date} as the entry's last modified date.
      *
      * <p>
-     * Changes to the implementation of {@link java.util.zip.ZipEntry#getTime} leak through and the returned value may depend on your local time zone as well as
+     * Changes to the implementation of {@link ZipEntry#getTime()} leak through and the returned value may depend on your local time zone as well as
      * your version of Java.
      * </p>
      */
@@ -1519,7 +1519,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
     }
 
     /**
-     * Workaround for the fact that, as of Java 17, {@link java.util.zip.ZipEntry} does not properly modify the entry's {@code xdostime} field, only setting
+     * Workaround for the fact that, as of Java 17, {@link ZipEntry} does not properly modify the entry's {@code xdostime} field, only setting
      * {@code mtime}. While this is not strictly necessary, it's better to maintain the same behavior between this and the NTFS field.
      */
     private void updateTimeFromExtendedTimestampField() {
@@ -1548,7 +1548,7 @@ public class ZipArchiveEntry extends java.util.zip.ZipEntry implements ArchiveEn
     }
 
     /**
-     * Workaround for the fact that, as of Java 17, {@link java.util.zip.ZipEntry} parses NTFS timestamps with a maximum precision of microseconds, which is
+     * Workaround for the fact that, as of Java 17, {@link ZipEntry} parses NTFS timestamps with a maximum precision of microseconds, which is
      * lower than the 100ns precision provided by this extra field.
      */
     private void updateTimeFromNtfsField() {

@@ -266,7 +266,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
 
     private static Instant parseInstantFromDecimalSeconds(final String value) throws IOException {
         // Validate field values to prevent denial of service attacks with BigDecimal values (see JDK-6560193)
-        if (!TarArchiveEntry.PAX_EXTENDED_HEADER_FILE_TIMES_PATTERN.matcher(value).matches()) {
+        if (!PAX_EXTENDED_HEADER_FILE_TIMES_PATTERN.matcher(value).matches()) {
             throw new IOException("Corrupted PAX header. Time field value is invalid '" + value + "'");
         }
 
@@ -382,7 +382,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /** Extra, user supplied pax headers */
     private final Map<String, String> extraPaxHeaders = new HashMap<>();
 
-    private long dataOffset = EntryStreamOffsets.OFFSET_UNKNOWN;
+    private long dataOffset = OFFSET_UNKNOWN;
 
     /**
      * Constructs an empty entry and prepares the header values.

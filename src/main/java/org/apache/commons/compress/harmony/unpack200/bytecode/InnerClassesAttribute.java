@@ -147,7 +147,7 @@ public class InnerClassesAttribute extends Attribute {
 
     @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
-        return nestedClassFileEntries.toArray(ClassFileEntry.NONE);
+        return nestedClassFileEntries.toArray(NONE);
     }
 
     @Override

@@ -50,7 +50,7 @@ public class ByteCode extends ClassFileEntry {
     private int[] byteCodeTargets;
 
     protected ByteCode(final int opcode) {
-        this(opcode, ClassFileEntry.NONE);
+        this(opcode, NONE);
     }
 
     protected ByteCode(final int opcode, final ClassFileEntry[] nested) {

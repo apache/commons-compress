@@ -32,7 +32,7 @@ public class CPString extends CPConstant {
     private int cachedHashCode;
 
     public CPString(final CPUTF8 value, final int globalIndex) {
-        super(ConstantPoolEntry.CP_String, value, globalIndex);
+        super(CP_String, value, globalIndex);
         this.name = value;
     }
 

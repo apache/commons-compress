@@ -38,9 +38,9 @@ final class DumpArchiveUtil {
     public static int calculateChecksum(final byte[] buffer) {
         int calc = 0;
         for (int i = 0; i < 256; i++) {
-            calc += DumpArchiveUtil.convert32(buffer, 4 * i);
+            calc += convert32(buffer, 4 * i);
         }
-        return DumpArchiveConstants.CHECKSUM - (calc - DumpArchiveUtil.convert32(buffer, 28));
+        return DumpArchiveConstants.CHECKSUM - (calc - convert32(buffer, 28));
     }
 
     /**

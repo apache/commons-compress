@@ -26,7 +26,7 @@ public class CPMethodRef extends CPRef {
     private int cachedHashCode;
 
     public CPMethodRef(final CPClass className, final CPNameAndType descriptor, final int globalIndex) {
-        super(ConstantPoolEntry.CP_Methodref, className, descriptor, globalIndex);
+        super(CP_Methodref, className, descriptor, globalIndex);
     }
 
     private void generateHashCode() {

@@ -91,11 +91,11 @@ public abstract class CPRef extends ConstantPoolEntry {
     public String toString() {
         if (cachedToString == null) {
             String type;
-            if (getTag() == ConstantPoolEntry.CP_Fieldref) {
+            if (getTag() == CP_Fieldref) {
                 type = "FieldRef"; //$NON-NLS-1$
-            } else if (getTag() == ConstantPoolEntry.CP_Methodref) {
+            } else if (getTag() == CP_Methodref) {
                 type = "MethoddRef"; //$NON-NLS-1$
-            } else if (getTag() == ConstantPoolEntry.CP_InterfaceMethodref) {
+            } else if (getTag() == CP_InterfaceMethodref) {
                 type = "InterfaceMethodRef"; //$NON-NLS-1$
             } else {
                 type = "unknown"; //$NON-NLS-1$

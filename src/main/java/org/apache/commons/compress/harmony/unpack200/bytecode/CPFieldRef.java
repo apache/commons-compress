@@ -35,7 +35,7 @@ public class CPFieldRef extends ConstantPoolEntry {
     private int cachedHashCode;
 
     public CPFieldRef(final CPClass className, final CPNameAndType descriptor, final int globalIndex) {
-        super(ConstantPoolEntry.CP_Fieldref, globalIndex);
+        super(CP_Fieldref, globalIndex);
         this.className = className;
         this.nameAndType = descriptor;
     }
