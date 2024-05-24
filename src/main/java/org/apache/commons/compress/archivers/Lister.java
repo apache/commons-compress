@@ -149,10 +149,7 @@ public final class Lister {
         try (InputStream inputStream = new BufferedInputStream(Files.newInputStream(file));
                 ArchiveInputStream<?> archiveInputStream = createArchiveInputStream(args, inputStream)) {
             println("Created " + archiveInputStream.toString());
-            ArchiveEntry entry;
-            while ((entry = archiveInputStream.getNextEntry()) != null) {
-                println(entry);
-            }
+            archiveInputStream.forEach(this::println);
         }
     }
 

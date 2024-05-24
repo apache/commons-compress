@@ -77,19 +77,15 @@ public final class JarTest extends AbstractTest {
         final File input = getFile("bla.jar");
         try (InputStream is = Files.newInputStream(input.toPath());
                 ArchiveInputStream<?> in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("jar", is)) {
-
-            ArchiveEntry entry = in.getNextEntry();
-            while (entry != null) {
+            in.forEach(entry -> {
                 final File archiveEntry = newTempFile(entry.getName());
                 archiveEntry.getParentFile().mkdirs();
                 if (entry.isDirectory()) {
                     archiveEntry.mkdir();
-                    entry = in.getNextEntry();
-                    continue;
+                } else {
+                    Files.copy(in, archiveEntry.toPath());
                 }
-                Files.copy(in, archiveEntry.toPath());
-                entry = in.getNextEntry();
-            }
+            });
         }
     }
 

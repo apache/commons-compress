@@ -576,9 +576,7 @@ public final class ZipTest extends AbstractTest {
         // stream access
         try (InputStream fis = Files.newInputStream(input.toPath());
                 ArchiveInputStream<?> in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("zip", fis)) {
-            for (ArchiveEntry entry; (entry = in.getNextEntry()) != null;) {
-                readStream(in, entry, actualStatistics);
-            }
+            in.forEach(entry -> readStream(in, entry, actualStatistics));
         }
         // file access
         try (ZipFile zf = newZipFile(input)) {
@@ -767,13 +765,12 @@ public final class ZipTest extends AbstractTest {
         final List<File> results = new ArrayList<>();
         try (InputStream fileInputStream = Files.newInputStream(output.toPath())) {
             try (ArchiveInputStream<ZipArchiveEntry> archiveInputStream = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("zip", fileInputStream)) {
-                ZipArchiveEntry entry;
-                while ((entry = archiveInputStream.getNextEntry()) != null) {
+                archiveInputStream.forEach(entry -> {
                     final File outfile = new File(tempResultDir.getCanonicalPath() + "/result/" + entry.getName());
                     outfile.getParentFile().mkdirs();
                     Files.copy(archiveInputStream, outfile.toPath());
                     results.add(outfile);
-                }
+                });
             }
         }
         assertEquals(results.size(), 2);

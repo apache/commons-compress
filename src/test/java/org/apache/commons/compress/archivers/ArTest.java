@@ -97,7 +97,6 @@ public final class ArTest extends AbstractTest {
                 if (entry == null) {
                     break;
                 }
-
                 if ("test1.xml".equals(entry.getName())) {
                     aos.putArchiveEntry(entry);
                     IOUtils.copy(ais, aos);

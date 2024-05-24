@@ -47,6 +47,7 @@ import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.function.IOConsumer;
 import org.junit.jupiter.api.Test;
 
 public class TarArchiveInputStreamTest extends AbstractTest {
@@ -65,11 +66,7 @@ public class TarArchiveInputStreamTest extends AbstractTest {
     }
 
     private void getNextEntryUntilIOException(final TarArchiveInputStream archive) {
-        assertThrows(IOException.class, () -> {
-            while (archive.getNextTarEntry() != null) {
-                // noop
-            }
-        });
+        assertThrows(IOException.class, () -> archive.forEach(IOConsumer.noop()));
     }
 
     @SuppressWarnings("resource") // Caller closes
@@ -78,14 +75,19 @@ public class TarArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testCompress197() {
+    public void testCompress197() throws IOException {
         try (TarArchiveInputStream tar = getTestStream("/COMPRESS-197.tar")) {
             TarArchiveEntry entry = tar.getNextTarEntry();
             while (entry != null) {
                 entry = tar.getNextTarEntry();
             }
-        } catch (final IOException e) {
-            fail("COMPRESS-197: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testCompress197ForEach() throws IOException {
+        try (TarArchiveInputStream tar = getTestStream("/COMPRESS-197.tar")) {
+            tar.forEach(IOConsumer.noop());
         }
     }
 

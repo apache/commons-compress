@@ -22,8 +22,12 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.util.Iterator;
+import java.util.Objects;
 
 import org.apache.commons.io.Charsets;
+import org.apache.commons.io.function.IOConsumer;
+import org.apache.commons.io.function.IOIterator;
 import org.apache.commons.io.input.NullInputStream;
 
 /**
@@ -45,6 +49,40 @@ import org.apache.commons.io.input.NullInputStream;
  * @param <E> The type of {@link ArchiveEntry} produced.
  */
 public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterInputStream {
+
+    class ArchiveEntryIOIterator implements IOIterator<E> {
+
+        private E next;
+
+        @Override
+        public boolean hasNext() throws IOException {
+            if (next == null) {
+                next = getNextEntry();
+            }
+            return next != null;
+        }
+
+        @Override
+        public synchronized E next() throws IOException {
+            if (next != null) {
+                final E e = next;
+                next = null;
+                return e;
+            }
+            return getNextEntry();
+        }
+
+        /**
+         * Always returns null, this is a "native" IOIterator.
+         *
+         * @return null.
+         */
+        @Override
+        public Iterator<E> unwrap() {
+            return null;
+        }
+
+    }
 
     private static final int BYTE_MASK = 0xFF;
 
@@ -123,6 +161,23 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
     }
 
     /**
+     * Performs the given action for each element of the stream until all elements have been processed or the action throws an exception. Actions are performed
+     * in the order of iteration. Exceptions thrown by the action are relayed to the caller.
+     * <p>
+     * The behavior of this method is unspecified if the action performs side-effects that modify the underlying source of elements, unless an overriding class
+     * has specified a concurrent modification policy.
+     * </p>
+     *
+     * @param action The action to be performed for each element
+     * @throws IOException          if an I/O error occurs.
+     * @throws NullPointerException if the specified action is null
+     * @since 2.17.0
+     */
+    public void forEach(final IOConsumer<? super E> action) throws IOException {
+        iterator().forEachRemaining(Objects.requireNonNull(action));
+    }
+
+    /**
      * Gets the current number of bytes read from this stream.
      *
      * @return the number of read bytes
@@ -155,10 +210,14 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
     /**
      * Gets the next Archive Entry in this Stream.
      *
-     * @return the next entry, or {@code null} if there are no more entries
-     * @throws IOException if the next entry could not be read
+     * @return the next entry, or {@code null} if there are no more entries.
+     * @throws IOException if the next entry could not be read.
      */
     public abstract E getNextEntry() throws IOException;
+
+    public IOIterator<E> iterator() {
+        return new ArchiveEntryIOIterator();
+    }
 
     /**
      * Does nothing.

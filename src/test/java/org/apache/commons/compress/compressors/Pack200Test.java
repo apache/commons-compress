@@ -32,7 +32,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.compress.AbstractTest;
-import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.jar.JarArchiveOutputStream;
@@ -77,19 +76,15 @@ public final class Pack200Test extends AbstractTest {
         try (InputStream is = useFile ? new Pack200CompressorInputStream(input, mode)
                 : new Pack200CompressorInputStream(Files.newInputStream(input.toPath()), mode);
                 ArchiveInputStream<?> in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("jar", is)) {
-
-            ArchiveEntry entry = in.getNextEntry();
-            while (entry != null) {
+            in.forEach(entry -> {
                 final File archiveEntry = newTempFile(entry.getName());
                 archiveEntry.getParentFile().mkdirs();
                 if (entry.isDirectory()) {
                     archiveEntry.mkdir();
-                    entry = in.getNextEntry();
-                    continue;
+                } else {
+                    Files.copy(in, archiveEntry.toPath());
                 }
-                Files.copy(in, archiveEntry.toPath());
-                entry = in.getNextEntry();
-            }
+            });
         }
     }
 

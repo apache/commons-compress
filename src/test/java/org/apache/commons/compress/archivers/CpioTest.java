@@ -88,12 +88,11 @@ public final class CpioTest extends AbstractTest {
         final Map<String, File> result = new HashMap<>();
         try (InputStream inputStream = Files.newInputStream(output.toPath());
                 ArchiveInputStream<?> archiveInputStream = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("cpio", inputStream)) {
-            ArchiveEntry entry;
-            while ((entry = archiveInputStream.getNextEntry()) != null) {
+            archiveInputStream.forEach(entry -> {
                 final File cpioget = newTempFile(entry.getName());
                 Files.copy(archiveInputStream, cpioget.toPath());
                 result.put(entry.getName(), cpioget);
-            }
+            });
         }
 
         File testFile = result.get("test1.xml");

@@ -117,18 +117,15 @@ public final class Pack200UtilsTest extends AbstractTest {
         Pack200Utils.normalize(input, output, new HashMap<>());
         try (InputStream is = Files.newInputStream(output.toPath());
                 ArchiveInputStream<?> in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("jar", is)) {
-            ArchiveEntry entry = in.getNextEntry();
-            while (entry != null) {
+            in.forEach(entry -> {
                 final File archiveEntry = newTempFile(entry.getName());
                 archiveEntry.getParentFile().mkdirs();
                 if (entry.isDirectory()) {
                     archiveEntry.mkdir();
-                    entry = in.getNextEntry();
-                    continue;
+                } else {
+                    Files.copy(in, archiveEntry.toPath());
                 }
-                Files.copy(in, archiveEntry.toPath());
-                entry = in.getNextEntry();
-            }
+            });
         }
     }
 
@@ -142,18 +139,15 @@ public final class Pack200UtilsTest extends AbstractTest {
         Pack200Utils.normalize(output);
         try (InputStream is = Files.newInputStream(output.toPath());
                 ArchiveInputStream<?> in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("jar", is)) {
-            ArchiveEntry entry = in.getNextEntry();
-            while (entry != null) {
+            in.forEach(entry -> {
                 final File archiveEntry = newTempFile(entry.getName());
                 archiveEntry.getParentFile().mkdirs();
                 if (entry.isDirectory()) {
                     archiveEntry.mkdir();
-                    entry = in.getNextEntry();
-                    continue;
+                } else {
+                    Files.copy(in, archiveEntry.toPath());
                 }
-                Files.copy(in, archiveEntry.toPath());
-                entry = in.getNextEntry();
-            }
+            });
         }
     }
 
