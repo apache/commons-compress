@@ -172,9 +172,23 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * @NotThreadSafe
  */
 public class DumpArchiveEntry implements ArchiveEntry {
+
     public enum PERMISSION {
-        SETUID(04000), SETGUI(02000), STICKY(01000), USER_READ(00400), USER_WRITE(00200), USER_EXEC(00100), GROUP_READ(00040), GROUP_WRITE(00020),
-        GROUP_EXEC(00010), WORLD_READ(00004), WORLD_WRITE(00002), WORLD_EXEC(00001);
+        // Note: The arguments are octal values
+        // @formatter:off
+        SETUID(04000),
+        SETGUI(02000),
+        STICKY(01000),
+        USER_READ(00400),
+        USER_WRITE(00200),
+        USER_EXEC(00100),
+        GROUP_READ(00040),
+        GROUP_WRITE(00020),
+        GROUP_EXEC(00010),
+        WORLD_READ(00004),
+        WORLD_WRITE(00002),
+        WORLD_EXEC(00001);
+        // @formatter:on
 
         public static Set<PERMISSION> find(final int code) {
             final Set<PERMISSION> set = new HashSet<>();
