@@ -56,6 +56,11 @@ final class CRC {
         reset();
     }
 
+    private int compute(final int baseCrc, final int inCh) {
+        int index = baseCrc >> 24 ^ inCh;
+        return baseCrc << 8 ^ CRC32_TABLE[index < 0 ? index + 256 : index];
+    }
+
     int getValue() {
         return ~crc;
     }
@@ -66,11 +71,6 @@ final class CRC {
 
     void update(final int inCh) {
         crc = compute(crc, inCh);
-    }
-
-    private int compute(final int baseCrc, final int inCh) {
-        int index = baseCrc >> 24 ^ inCh;
-        return baseCrc << 8 ^ CRC32_TABLE[index < 0 ? index + 256 : index];
     }
 
     void update(final int inCh, int repeat) {
