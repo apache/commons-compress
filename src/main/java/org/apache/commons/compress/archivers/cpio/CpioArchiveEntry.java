@@ -428,10 +428,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
             return false;
         }
         final CpioArchiveEntry other = (CpioArchiveEntry) obj;
-        if (name == null) {
-            return other.name == null;
-        }
-        return name.equals(other.name);
+        return Objects.equals(name, other.name);
     }
 
     /**

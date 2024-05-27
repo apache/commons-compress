@@ -18,6 +18,7 @@ package org.apache.commons.compress.harmony.unpack200;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * An IcTuple is the set of information that describes an inner class.
@@ -106,20 +107,10 @@ public class IcTuple {
         if (object == null || object.getClass() != this.getClass()) {
             return false;
         }
-        final IcTuple compareTuple = (IcTuple) object;
-
-        if (!nullSafeEquals(this.C, compareTuple.C)) {
-            return false;
-        }
-
-        if (!nullSafeEquals(this.C2, compareTuple.C2)) {
-            return false;
-        }
-
-        if (!nullSafeEquals(this.N, compareTuple.N)) {
-            return false;
-        }
-        return true;
+        final IcTuple other = (IcTuple) object;
+        return Objects.equals(C, other.C)
+                && Objects.equals(C2, other.C2)
+                && Objects.equals(N, other.N);
     }
 
     private void generateHashCode() {

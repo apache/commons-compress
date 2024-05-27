@@ -63,13 +63,8 @@ public abstract class CPRef extends ConstantPoolEntry {
             return false;
         }
         final CPRef other = (CPRef) obj;
-        if (!className.equals(other.className)) {
-            return false;
-        }
-        if (!nameAndType.equals(other.nameAndType)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(className, other.className)
+                && Objects.equals(nameAndType, other.nameAndType);
     }
 
     @Override

@@ -69,13 +69,8 @@ public class CPNameAndType extends ConstantPoolEntry {
             return false;
         }
         final CPNameAndType other = (CPNameAndType) obj;
-        if (!descriptor.equals(other.descriptor)) {
-            return false;
-        }
-        if (!name.equals(other.name)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(descriptor, other.descriptor)
+                && Objects.equals(name, other.name);
     }
 
     private void generateHashCode() {

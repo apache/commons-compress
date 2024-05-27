@@ -52,10 +52,7 @@ public class SourceFileAttribute extends Attribute {
             return false;
         }
         final SourceFileAttribute other = (SourceFileAttribute) obj;
-        if (!Objects.equals(name, other.name)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(name, other.name);
     }
 
     @Override
