@@ -224,7 +224,6 @@ public class BcBands extends BandSet {
                         codeBytes.write(code);
                     }
                     methodByteCodePacked[c][m] = codeBytes.toByteArray();
-                    bcParsed += methodByteCodePacked[c][m].length;
                     final int[] codes = new int[methodByteCodePacked[c][m].length];
                     for (int i = 0; i < codes.length; i++) {
                         codes[i] = methodByteCodePacked[c][m][i] & 0xff;
