@@ -288,7 +288,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
                 if (entry != null && entry.isCheckSumOK() && !entry.isDirectory() && entry.getSize() > 0 || count > 0) {
                     return TAR;
                 }
-            } catch (final Exception e) { // NOPMD NOSONAR
+            } catch (final Exception ignored) {
                 // can generate IllegalArgumentException as well as IOException auto-detection, simply not a TAR ignored
             }
         }
