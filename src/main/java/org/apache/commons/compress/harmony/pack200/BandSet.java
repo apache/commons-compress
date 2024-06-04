@@ -293,7 +293,7 @@ public abstract class BandSet {
             codecFamiliesToTry.add(CanonicalCodecFamilies.deltaUnsignedCodecs5);
         }
         for (final BHSDCodec[] family : codecFamiliesToTry) {
-            tryCodecs(name, band, defaultCodec, bandData, results, encoded, family);
+            tryCodecs(band, defaultCodec, bandData, results, encoded, family);
             if (timeToStop(results)) {
                 break;
             }
@@ -716,8 +716,8 @@ public abstract class BandSet {
         // || (float) results.saved/(float) results.encodedBand.length > (float) effort * 2/100;
     }
 
-    private void tryCodecs(final String name, final int[] band, final BHSDCodec defaultCodec, final BandData bandData, final BandAnalysisResults results,
-            final byte[] encoded, final BHSDCodec[] potentialCodecs) throws Pack200Exception {
+    private void tryCodecs(final int[] band, final BHSDCodec defaultCodec, final BandData bandData, final BandAnalysisResults results, final byte[] encoded,
+            final BHSDCodec[] potentialCodecs) throws Pack200Exception {
         for (final BHSDCodec potential : potentialCodecs) {
             if (potential.equals(defaultCodec)) {
                 return; // don't try codecs with greater cardinality in the same 'family' as the default codec as there
