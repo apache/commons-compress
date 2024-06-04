@@ -46,11 +46,13 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
     <release version="1.27.0" date="YYYY-MM-DD" description="This is a feature and maintenance release. Java 8 or later is required.">
       <!-- FIX -->
-      <action type="add" dev="ggregory" due-to="Gary Gregory">Fix PMD UnnecessaryFullyQualifiedName.</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Fix PMD UnnecessaryFullyQualifiedName and others.</action>
       <!-- ADD -->
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add ArchiveInputStream.forEach(IOConsumer).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add ArchiveInputStream.iterator().</action>
       <!-- UPDATE -->
+      <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump org.apache.commons:commons-parent from 69 to 70.</action>
+      <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump PMD from 6.x to 7.2.0.</action>
     </release>
     <release version="1.26.2" date="2024-05-18" description="Minor feature and maintenance release.">
       <!-- FIX -->

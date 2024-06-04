@@ -20,7 +20,7 @@
   <parent>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-parent</artifactId>
-    <version>69</version>
+    <version>70</version>
   </parent>
 
   <artifactId>commons-compress</artifactId>
@@ -50,6 +50,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <commons.bc.version>1.26.2</commons.bc.version>
     <commons.rc.version>RC1</commons.rc.version>
     <mockito.version>4.11.0</mockito.version>
+    <commons.pmd-impl.version>7.2.0</commons.pmd-impl.version>
 
     <commons.release.isDistModule>true</commons.release.isDistModule>
     <commons.distSvnStagingUrl>scm:svn:https://dist.apache.org/repos/dist/dev/commons/${commons.componentid}</commons.distSvnStagingUrl>
@@ -255,10 +256,10 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
             <docencoding>${commons.docEncoding}</docencoding>
             <linksource>true</linksource>
             <links>
-              <link>${commons.javadoc8.java.link}</link>
               <link>${commons.javadoc.javaee.link}</link>
               <link>https://commons.apache.org/proper/commons-codec/apidocs</link>
               <link>https://commons.apache.org/proper/commons-io/apidocs</link>
+              <link>https://commons.apache.org/proper/commons-lang/apidocs</link>
             </links>
             <tags>
               <tag>
@@ -371,6 +372,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
         <configuration>
           <minimumTokens>200</minimumTokens>
           <targetJdk>${maven.compiler.source}</targetJdk>
+          <excludeFromFailureFile>src/conf/pmd-exclude.properties</excludeFromFailureFile>
           <rulesets>
             <ruleset>${basedir}/src/conf/pmd-ruleset.xml</ruleset>
           </rulesets>
@@ -429,6 +431,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
         <configuration>
           <minimumTokens>200</minimumTokens>
           <targetJdk>${maven.compiler.source}</targetJdk>
+          <excludeFromFailureFile>src/conf/pmd-exclude.properties</excludeFromFailureFile>
           <rulesets>
             <ruleset>${basedir}/src/conf/pmd-ruleset.xml</ruleset>
           </rulesets>
