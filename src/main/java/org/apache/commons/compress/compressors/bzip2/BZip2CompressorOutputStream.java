@@ -23,6 +23,7 @@ import java.io.OutputStream;
 import java.util.Arrays;
 
 import org.apache.commons.compress.compressors.CompressorOutputStream;
+import org.apache.commons.io.IOUtils;
 
 /**
  * An output stream that compresses into the BZip2 format into another stream.
@@ -487,7 +488,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
             try {
                 finish();
             } finally {
-                this.out.close();
+                IOUtils.close(out);
             }
         }
     }
