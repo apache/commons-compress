@@ -2217,7 +2217,7 @@ public class SevenZFile implements Closeable {
                     if (result.packSizes.length > 0 && result.files.length > 0) {
                         return result;
                     }
-                } catch (final Exception ignore) {
+                } catch (final Exception ignored) {
                     // Wrong guess...
                 }
             }
