@@ -182,8 +182,8 @@ public class Messages {
         if (bundle != null) {
             try {
                 format = bundle.getString(msg);
-            } catch (final MissingResourceException e) {
-                // ignore
+            } catch (final MissingResourceException ignored) {
+                // ignored
             }
         }
 
