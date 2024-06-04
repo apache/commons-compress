@@ -239,7 +239,7 @@ public abstract class BandSet {
 
             // Note: these values have been tuned - please test carefully if changing them
             if (numDistinctValues < 100 || distinctValuesAsProportion < 0.02 || effort > 6 && distinctValuesAsProportion < 0.04) { // TODO: tweak
-                encodeWithPopulationCodec(name, band, defaultCodec, bandData, results);
+                encodeWithPopulationCodec(band, defaultCodec, bandData, results);
                 if (timeToStop(results)) {
                     return results;
                 }
@@ -504,8 +504,8 @@ public abstract class BandSet {
         return codec.encode(band);
     }
 
-    private void encodeWithPopulationCodec(final String name, final int[] band, final BHSDCodec defaultCodec, final BandData bandData,
-            final BandAnalysisResults results) throws Pack200Exception {
+    private void encodeWithPopulationCodec(final int[] band, final BHSDCodec defaultCodec, final BandData bandData, final BandAnalysisResults results)
+            throws Pack200Exception {
         results.numCodecsTried += 3; // quite a bit more effort to try this codec
         final Map<Integer, Integer> distinctValues = bandData.distinctValues;
 
