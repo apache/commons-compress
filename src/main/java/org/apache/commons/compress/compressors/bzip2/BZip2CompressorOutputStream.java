@@ -484,8 +484,10 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
     @Override
     public void close() throws IOException {
         if (!closed) {
-            try (OutputStream outShadow = this.out) {
+            try {
                 finish();
+            } finally {
+                this.out.close();
             }
         }
     }
