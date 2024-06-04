@@ -538,7 +538,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
             <artifactId>maven-surefire-plugin</artifactId>
             <configuration>
               <argLine>
-                --add-opens java.base/java.io=ALL-UNNAMED                     
+                ${argLine} --add-opens java.base/java.io=ALL-UNNAMED                     
               </argLine>
             </configuration>
           </plugin>
