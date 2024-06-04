@@ -128,7 +128,7 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
      */
     public static SeekableByteChannel forFiles(final File... files) throws IOException {
         final List<Path> paths = new ArrayList<>();
-        for (final File f : Objects.requireNonNull(files, "files must not be null")) {
+        for (final File f : Objects.requireNonNull(files, "files")) {
             paths.add(f.toPath());
         }
 
@@ -164,7 +164,7 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
      * @throws IOException          if reading channels fails
      */
     public static SeekableByteChannel forOrderedSeekableByteChannels(final SeekableByteChannel... channels) throws IOException {
-        if (Objects.requireNonNull(channels, "channels must not be null").length == 1) {
+        if (Objects.requireNonNull(channels, "channels").length == 1) {
             return channels[0];
         }
         return new ZipSplitReadOnlySeekableByteChannel(Arrays.asList(channels));
@@ -206,7 +206,7 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
      */
     public static SeekableByteChannel forPaths(final List<Path> paths, final OpenOption[] openOptions) throws IOException {
         final List<SeekableByteChannel> channels = new ArrayList<>();
-        for (final Path path : Objects.requireNonNull(paths, "paths must not be null")) {
+        for (final Path path : Objects.requireNonNull(paths, "paths")) {
             channels.add(Files.newByteChannel(path, openOptions));
         }
         if (channels.size() == 1) {

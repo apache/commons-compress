@@ -33,7 +33,7 @@ import java.util.List;
 public class SegmentConstantPoolArrayCache {
 
     /**
-     * CachedArray keeps track of the last known size of an array as well as a HashMap that knows the mapping from element values to the indices of the array
+     * Keeps track of the last known size of an array as well as a HashMap that knows the mapping from element values to the indices of the array
      * which contain that value.
      */
     protected class CachedArray {
@@ -89,7 +89,7 @@ public class SegmentConstantPoolArrayCache {
     protected String lastKey;
 
     /**
-     * Given a String array, answer true if the array is correctly cached. Answer false if the array is not cached, or if the array cache is outdated.
+     * Tests whether a String array is correctly cached. Return false if the array is not cached, or if the array cache is outdated.
      *
      * @param array of String
      * @return boolean true if up-to-date cache, otherwise false.
@@ -100,7 +100,7 @@ public class SegmentConstantPoolArrayCache {
     }
 
     /**
-     * Cache the array passed in as the argument
+     * Caches the array passed in as the argument
      *
      * @param array String[] to cache
      */
@@ -114,7 +114,7 @@ public class SegmentConstantPoolArrayCache {
     }
 
     /**
-     * Answer the indices for the given key in the given array. If no such key exists in the cached array, answer -1.
+     * Gets the indices for the given key in the given array. If no such key exists in the cached array, answer -1.
      *
      * @param array String[] array to search for the value
      * @param key   String value for which to search

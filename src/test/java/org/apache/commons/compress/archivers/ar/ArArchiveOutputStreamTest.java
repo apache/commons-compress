@@ -37,7 +37,7 @@ public class ArArchiveOutputStreamTest extends AbstractTest {
     public void testLongFileNamesCauseExceptionByDefault() throws IOException {
         try (ArArchiveOutputStream os = new ArArchiveOutputStream(new ByteArrayOutputStream())) {
             final ArArchiveEntry ae = new ArArchiveEntry("this_is_a_long_name.txt", 0);
-            final IOException ex = assertThrows(IOException.class, () -> os.putArchiveEntry(ae), "Expected an exception");
+            final IOException ex = assertThrows(IOException.class, () -> os.putArchiveEntry(ae));
             assertTrue(ex.getMessage().startsWith("File name too long"));
         }
     }

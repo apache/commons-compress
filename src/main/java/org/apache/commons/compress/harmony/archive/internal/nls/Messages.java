@@ -182,8 +182,8 @@ public class Messages {
         if (bundle != null) {
             try {
                 format = bundle.getString(msg);
-            } catch (final MissingResourceException e) {
-                // ignore
+            } catch (final MissingResourceException ignored) {
+                // ignored
             }
         }
 
@@ -203,8 +203,8 @@ public class Messages {
             final ClassLoader loader = null; // VM.bootCallerClassLoader();
             return (ResourceBundle) AccessController.doPrivileged(
                     (PrivilegedAction<Object>) () -> ResourceBundle.getBundle(resource, locale, loader != null ? loader : ClassLoader.getSystemClassLoader()));
-        } catch (final MissingResourceException e) {
-            // ignore
+        } catch (final MissingResourceException ignored) {
+            // ignored
         }
         return null;
     }

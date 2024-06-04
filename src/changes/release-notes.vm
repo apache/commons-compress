@@ -19,9 +19,6 @@ Apache Commons Compress
 Version ${version}
 Release Notes
 
-INTRODUCTION
-------------
-
 $introduction.replaceAll("(?<!\015)\012", "
 ")
 

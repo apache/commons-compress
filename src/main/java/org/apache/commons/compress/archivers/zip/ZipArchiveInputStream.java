@@ -296,7 +296,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     /**
      * The factory for extra fields or null.
      */
-    private Function<ZipShort, ZipExtraField> extraFieldSupport;
+    // private Function<ZipShort, ZipExtraField> extraFieldSupport;
 
     /**
      * Constructs an instance using UTF-8 encoding
@@ -659,7 +659,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
                 // archive.
                 if (!readFirstLocalFileHeader()) {
                     hitCentralDirectory = true;
-                    skipRemainderOfArchive(true);
+                    skipRemainderOfArchive();
                     return null;
                 }
             } else {
@@ -673,7 +673,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
         if (!sig.equals(ZipLong.LFH_SIG)) {
             if (sig.equals(ZipLong.CFH_SIG) || sig.equals(ZipLong.AED_SIG) || isApkSigningBlock(lfhBuf)) {
                 hitCentralDirectory = true;
-                skipRemainderOfArchive(false);
+                skipRemainderOfArchive();
                 return null;
             }
             throw new ZipException(String.format("Unexpected record signature: 0x%x", sig.getValue()));
@@ -990,7 +990,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     }
 
     /**
-     * Implementation of read for DEFLATED entries.
+     * Implements read for DEFLATED entries.
      */
     private int readDeflated(final byte[] buffer, final int offset, final int length) throws IOException {
         final int read = readFromInflater(buffer, offset, length);
@@ -1019,18 +1019,15 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
             READ_LOOP: for (int i = 0; ; ) {
                 for (int j = 0; i <= PREAMBLE_GARBAGE_MAX_SIZE - 4 && j <= header.length - 4; ++j, ++i) {
                     final ZipLong sig = new ZipLong(header, j);
-                    if (
-                            sig.equals(ZipLong.LFH_SIG) ||
-                            sig.equals(ZipLong.SINGLE_SEGMENT_SPLIT_MARKER) ||
-                            sig.equals(ZipLong.DD_SIG)) {
+                    if (sig.equals(ZipLong.LFH_SIG) ||
+                        sig.equals(ZipLong.SINGLE_SEGMENT_SPLIT_MARKER) ||
+                        sig.equals(ZipLong.DD_SIG)) {
                         // regular archive containing at least one entry:
                         System.arraycopy(header, j, header, 0, header.length - j);
                         readFully(header, header.length - j);
                         break READ_LOOP;
                     }
-                    if (
-                            sig.equals(new ZipLong(ZipArchiveOutputStream.EOCD_SIG))
-                    ) {
+                    if (sig.equals(new ZipLong(ZipArchiveOutputStream.EOCD_SIG))) {
                         // empty archive:
                         pushback(header, j, header.length - j);
                         return false;
@@ -1140,7 +1137,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     }
 
     /**
-     * Implementation of read for STORED entries.
+     * Implements read for STORED entries.
      */
     private int readStored(final byte[] buffer, final int offset, final int length) throws IOException {
 
@@ -1252,12 +1249,14 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     }
 
     /**
-     * Enable custom extra fields factory.
+     * Currently unused.
+     *
+     * Sets the custom extra fields factory.
      * @param extraFieldSupport the lookup function based on extra field header id.
      * @return the archive.
      */
     public ZipArchiveInputStream setExtraFieldSupport(final Function<ZipShort, ZipExtraField> extraFieldSupport) {
-        this.extraFieldSupport = extraFieldSupport;
+        // this.extraFieldSupport = extraFieldSupport;
         return this;
     }
 
@@ -1295,7 +1294,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     /**
      * Reads the stream until it find the "End of central directory record" and consumes it as well.
      */
-    private void skipRemainderOfArchive(final boolean read) throws IOException {
+    private void skipRemainderOfArchive() throws IOException {
         // skip over central directory. One LFH has been read too much
         // already. The calculation discounts file names and extra
         // data, so it will be too short.

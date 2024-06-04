@@ -53,6 +53,7 @@ import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.ParsingUtils;
 import org.apache.commons.compress.utils.TimeUtils;
 import org.apache.commons.io.file.attribute.FileTimes;
+import org.apache.commons.lang3.SystemProperties;
 
 /**
  * This class represents an entry in a Tar archive. It consists of the entry's header, as well as the entry's File. Entries can be instantiated in one of three
@@ -219,10 +220,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     private static final Pattern PAX_EXTENDED_HEADER_FILE_TIMES_PATTERN = Pattern.compile("-?\\d{1,19}(?:\\.\\d{1,19})?");
 
     private static FileTime fileTimeFromOptionalSeconds(final long seconds) {
-        if (seconds <= 0) {
-            return null;
-        }
-        return FileTimes.fromUnixTime(seconds);
+        return seconds <= 0 ? null : TimeUtils.unixTimeToFileTime(seconds);
     }
 
     /**
@@ -230,7 +228,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      */
     private static String normalizeFileName(String fileName, final boolean preserveAbsolutePath) {
         if (!preserveAbsolutePath) {
-            final String property = System.getProperty("os.name");
+            final String property = SystemProperties.getOsName();
             if (property != null) {
                 final String osName = property.toLowerCase(Locale.ROOT);
 
@@ -268,7 +266,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
 
     private static Instant parseInstantFromDecimalSeconds(final String value) throws IOException {
         // Validate field values to prevent denial of service attacks with BigDecimal values (see JDK-6560193)
-        if (!TarArchiveEntry.PAX_EXTENDED_HEADER_FILE_TIMES_PATTERN.matcher(value).matches()) {
+        if (!PAX_EXTENDED_HEADER_FILE_TIMES_PATTERN.matcher(value).matches()) {
             throw new IOException("Corrupted PAX header. Time field value is invalid '" + value + "'");
         }
 
@@ -384,7 +382,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /** Extra, user supplied pax headers */
     private final Map<String, String> extraPaxHeaders = new HashMap<>();
 
-    private long dataOffset = EntryStreamOffsets.OFFSET_UNKNOWN;
+    private long dataOffset = OFFSET_UNKNOWN;
 
     /**
      * Constructs an empty entry and prepares the header values.
@@ -1683,7 +1681,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
                 this.groupId = ((Number) Files.getAttribute(file, "unix:gid", options)).longValue();
                 try {
                     setStatusChangeTime((FileTime) Files.getAttribute(file, "unix:ctime", options));
-                } catch (final IllegalArgumentException ex) { // NOSONAR
+                } catch (final IllegalArgumentException ignored) {
                     // ctime is not supported
                 }
             }
@@ -1810,7 +1808,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * @since 1.22
      */
     public void setLastModifiedTime(final FileTime time) {
-        mTime = Objects.requireNonNull(time, "Time must not be null");
+        mTime = Objects.requireNonNull(time, "time");
     }
 
     /**

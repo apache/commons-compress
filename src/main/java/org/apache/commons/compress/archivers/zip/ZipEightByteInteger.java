@@ -175,7 +175,7 @@ public final class ZipEightByteInteger implements Serializable {
      * @param offset the offset to start
      */
     public ZipEightByteInteger(final byte[] bytes, final int offset) {
-        value = ZipEightByteInteger.getValue(bytes, offset);
+        value = getValue(bytes, offset);
     }
 
     /**
@@ -207,7 +207,7 @@ public final class ZipEightByteInteger implements Serializable {
      * @return value as eight bytes in big-endian order
      */
     public byte[] getBytes() {
-        return ZipEightByteInteger.getBytes(value);
+        return getBytes(value);
     }
 
     /**

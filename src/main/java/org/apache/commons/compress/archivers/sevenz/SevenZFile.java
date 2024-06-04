@@ -198,7 +198,7 @@ public class SevenZFile implements Closeable {
          * Sets the default name.
          *
          * @param defaultName the default name.
-         * @return this.
+         * @return {@code this} instance.
          */
         public Builder setDefaultName(final String defaultName) {
             this.defaultName = defaultName;
@@ -212,7 +212,7 @@ public class SevenZFile implements Closeable {
          * </p>
          *
          * @param maxMemoryLimitKb the max memory limit in kilobytes.
-         * @return this.
+         * @return {@code this} instance.
          */
         public Builder setMaxMemoryLimitKb(final int maxMemoryLimitKb) {
             this.maxMemoryLimitKb = maxMemoryLimitKb;
@@ -223,7 +223,7 @@ public class SevenZFile implements Closeable {
          * Sets the password.
          *
          * @param password the password.
-         * @return this.
+         * @return {@code this} instance.
          */
         public Builder setPassword(final byte[] password) {
             this.password = password != null ? password.clone() : null;
@@ -234,7 +234,7 @@ public class SevenZFile implements Closeable {
          * Sets the password.
          *
          * @param password the password.
-         * @return this.
+         * @return {@code this} instance.
          */
         public Builder setPassword(final char[] password) {
             this.password = password != null ? AES256SHA256Decoder.utf16Decode(password.clone()) : null;
@@ -245,7 +245,7 @@ public class SevenZFile implements Closeable {
          * Sets the password.
          *
          * @param password the password.
-         * @return this.
+         * @return {@code this} instance.
          */
         public Builder setPassword(final String password) {
             this.password = password != null ? AES256SHA256Decoder.utf16Decode(password.toCharArray()) : null;
@@ -256,7 +256,7 @@ public class SevenZFile implements Closeable {
          * Sets the input channel.
          *
          * @param seekableByteChannel the input channel.
-         * @return this.
+         * @return {@code this} instance.
          */
         public Builder setSeekableByteChannel(final SeekableByteChannel seekableByteChannel) {
             this.seekableByteChannel = seekableByteChannel;
@@ -272,7 +272,7 @@ public class SevenZFile implements Closeable {
          * </p>
          *
          * @param tryToRecoverBrokenArchives whether {@link SevenZFile} will try to recover broken archives where the CRC of the file's metadata is 0.
-         * @return this.
+         * @return {@code this} instance.
          */
         public Builder setTryToRecoverBrokenArchives(final boolean tryToRecoverBrokenArchives) {
             this.tryToRecoverBrokenArchives = tryToRecoverBrokenArchives;
@@ -283,7 +283,7 @@ public class SevenZFile implements Closeable {
          * Sets whether entries without a name should get their names set to the archive's default file name.
          *
          * @param useDefaultNameForUnnamedEntries whether entries without a name should get their names set to the archive's default file name.
-         * @return this.
+         * @return {@code this} instance.
          */
         public Builder setUseDefaultNameForUnnamedEntries(final boolean useDefaultNameForUnnamedEntries) {
             this.useDefaultNameForUnnamedEntries = useDefaultNameForUnnamedEntries;
@@ -916,17 +916,15 @@ public class SevenZFile implements Closeable {
         if (deferredBlockStreams.isEmpty()) {
             throw new IllegalStateException("No current 7z entry (call getNextEntry() first).");
         }
-
         while (deferredBlockStreams.size() > 1) {
             // In solid compression mode we need to decompress all leading folder'
             // streams to get access to an entry. We defer this until really needed
             // so that entire blocks can be skipped without wasting time for decompression.
             try (InputStream stream = deferredBlockStreams.remove(0)) {
-                org.apache.commons.io.IOUtils.skip(stream, Long.MAX_VALUE);
+                org.apache.commons.io.IOUtils.skip(stream, Long.MAX_VALUE, org.apache.commons.io.IOUtils::byteArray);
             }
             compressedBytesReadFromCurrentEntry = 0;
         }
-
         return deferredBlockStreams.get(0);
     }
 
@@ -2243,7 +2241,7 @@ public class SevenZFile implements Closeable {
                     if (result.packSizes.length > 0 && result.files.length > 0) {
                         return result;
                     }
-                } catch (final Exception ignore) {
+                } catch (final Exception ignored) {
                     // Wrong guess...
                 }
             }

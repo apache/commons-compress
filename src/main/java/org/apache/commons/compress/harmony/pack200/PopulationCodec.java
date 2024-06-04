@@ -88,7 +88,7 @@ public class PopulationCodec extends Codec {
         // if tokenCodec needs to be derived from the T, L and K values
         if (tokenCodec == null) {
             if (k < 256) {
-                tokenCodec = Codec.BYTE1;
+                tokenCodec = BYTE1;
             } else {
                 // if k >= 256, b >= 2
                 int b = 1;

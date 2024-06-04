@@ -46,6 +46,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 public class ArchiveTest extends AbstractTempDirTest {
 
+    @SuppressWarnings("resource") // Caller closes
     static Stream<Arguments> loadMultipleJars() throws URISyntaxException, IOException {
         return Files.list(Paths.get(Archive.class.getResource("/pack200/jars").toURI())).filter(child -> {
             final String fileName = child.getFileName().toString();
@@ -172,22 +173,23 @@ public class ArchiveTest extends AbstractTempDirTest {
             assertNotNull(entry);
             try (InputStream ours = jarFile.getInputStream(entry)) {
 
-                final JarFile jarFile2 = new JarFile(new File(Segment.class.getResource("/pack200/hw.jar").toURI()));
-                final JarEntry entry2 = jarFile2.getJarEntry("org/apache/harmony/archive/tests/internal/pack200/HelloWorld.class");
-                assertNotNull(entry2);
+                try (JarFile jarFile2 = new JarFile(new File(Segment.class.getResource("/pack200/hw.jar").toURI()))) {
+                    final JarEntry entry2 = jarFile2.getJarEntry("org/apache/harmony/archive/tests/internal/pack200/HelloWorld.class");
+                    assertNotNull(entry2);
 
-                final InputStream expected = jarFile2.getInputStream(entry2);
+                    final InputStream expected = jarFile2.getInputStream(entry2);
 
-                try (BufferedReader reader1 = new BufferedReader(new InputStreamReader(ours));
-                        BufferedReader reader2 = new BufferedReader(new InputStreamReader(expected))) {
-                    String line1 = reader1.readLine();
-                    String line2 = reader2.readLine();
-                    int i = 1;
-                    while (line1 != null || line2 != null) {
-                        assertEquals(line2, line1, "Unpacked class files differ, i = " + i);
-                        line1 = reader1.readLine();
-                        line2 = reader2.readLine();
-                        i++;
+                    try (BufferedReader reader1 = new BufferedReader(new InputStreamReader(ours));
+                            BufferedReader reader2 = new BufferedReader(new InputStreamReader(expected))) {
+                        String line1 = reader1.readLine();
+                        String line2 = reader2.readLine();
+                        int i = 1;
+                        while (line1 != null || line2 != null) {
+                            assertEquals(line2, line1, "Unpacked class files differ, i = " + i);
+                            line1 = reader1.readLine();
+                            line2 = reader2.readLine();
+                            i++;
+                        }
                     }
                 }
             }
@@ -198,11 +200,11 @@ public class ArchiveTest extends AbstractTempDirTest {
     public void testJNDI() throws IOException, Pack200Exception, URISyntaxException {
         final File file = createTempFile("jndi", ".pack");
         try (JarFile in = new JarFile(new File(Archive.class.getResource("/pack200/jndi.jar").toURI()))) {
-            final FileOutputStream out = new FileOutputStream(file);
-            final PackingOptions options = new PackingOptions();
-            options.setGzip(false);
-            new Archive(in, out, options).pack();
-            out.close();
+            try (FileOutputStream out = new FileOutputStream(file)) {
+                final PackingOptions options = new PackingOptions();
+                options.setGzip(false);
+                new Archive(in, out, options).pack();
+            }
         }
 
         // now unpack

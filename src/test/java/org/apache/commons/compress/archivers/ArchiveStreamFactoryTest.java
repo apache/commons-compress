@@ -197,6 +197,7 @@ public class ArchiveStreamFactoryTest extends AbstractTest {
         }
     }
 
+    @SuppressWarnings("resource") // Caller closes
     public static Stream<Path> getIcoPathStream() throws IOException {
         return Files.walk(Paths.get("src/test/resources/org/apache/commons/compress/ico")).filter(Files::isRegularFile);
     }
@@ -280,26 +281,6 @@ public class ArchiveStreamFactoryTest extends AbstractTest {
         final ArchiveException e3 = assertThrows(ArchiveException.class, () -> ArchiveStreamFactory.detect(new BufferedInputStream(new BrokenInputStream())),
                 "Expected ArchiveException");
         assertEquals("IOException while reading signature.", e3.getMessage());
-    }
-
-    /**
-     * Test case for <a href="https://issues.apache.org/jira/browse/COMPRESS-674" >COMPRESS-674</a>.
-     */
-    @Test
-    void testUtf16TextIsNotTAR() {
-        final ArchiveException archiveException = assertThrows(ArchiveException.class,
-                () -> detect("utf16-text.txt"));
-        assertEquals("No Archiver found for the stream signature", archiveException.getMessage());
-    }
-
-    @Test
-    void testTarContainingEmptyDirIsTAR() throws IOException, ArchiveException {
-        assertEquals(ArchiveStreamFactory.TAR, detect("emptyDir.tar"));
-    }
-
-    @Test
-    void testTarContainingDirWith1TxtFileIsTAR() throws IOException, ArchiveException {
-        assertEquals(ArchiveStreamFactory.TAR, detect("dirWith1TxtFile.tar"));
     }
 
     /**
@@ -437,5 +418,25 @@ public class ArchiveStreamFactoryTest extends AbstractTest {
                 }
             }
         }
+    }
+
+    @Test
+    void testTarContainingDirWith1TxtFileIsTAR() throws IOException, ArchiveException {
+        assertEquals(ArchiveStreamFactory.TAR, detect("dirWith1TxtFile.tar"));
+    }
+
+    @Test
+    void testTarContainingEmptyDirIsTAR() throws IOException, ArchiveException {
+        assertEquals(ArchiveStreamFactory.TAR, detect("emptyDir.tar"));
+    }
+
+    /**
+     * Test case for <a href="https://issues.apache.org/jira/browse/COMPRESS-674" >COMPRESS-674</a>.
+     */
+    @Test
+    void testUtf16TextIsNotTAR() {
+        final ArchiveException archiveException = assertThrows(ArchiveException.class,
+                () -> detect("utf16-text.txt"));
+        assertEquals("No Archiver found for the stream signature", archiveException.getMessage());
     }
 }

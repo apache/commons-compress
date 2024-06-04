@@ -70,7 +70,7 @@ public class LocalVariableTableAttribute extends BCIRenumberedAttribute {
             nestedEntries.add(names[i]);
             nestedEntries.add(descriptors[i]);
         }
-        return nestedEntries.toArray(ClassFileEntry.NONE);
+        return nestedEntries.toArray(NONE);
     }
 
     @Override

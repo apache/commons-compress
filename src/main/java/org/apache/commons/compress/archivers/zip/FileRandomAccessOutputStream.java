@@ -52,7 +52,9 @@ class FileRandomAccessOutputStream extends RandomAccessOutputStream {
 
     @Override
     public void close() throws IOException {
-        channel.close();
+        if (channel.isOpen()) {
+            channel.close();
+        }
     }
 
     @Override

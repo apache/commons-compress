@@ -209,7 +209,6 @@ public class BcBands extends BandSet {
         final AttributeLayout nativeModifier = attributeDefinitionMap.getAttributeLayout(AttributeLayout.ACC_NATIVE, AttributeLayout.CONTEXT_METHOD);
 
         methodByteCodePacked = new byte[classCount][][];
-        int bcParsed = 0;
 
         final List<Boolean> switchIsTableSwitch = new ArrayList<>();
         wideByteCodes = new ArrayList<>();
@@ -225,7 +224,6 @@ public class BcBands extends BandSet {
                         codeBytes.write(code);
                     }
                     methodByteCodePacked[c][m] = codeBytes.toByteArray();
-                    bcParsed += methodByteCodePacked[c][m].length;
                     final int[] codes = new int[methodByteCodePacked[c][m].length];
                     for (int i = 0; i < codes.length; i++) {
                         codes[i] = methodByteCodePacked[c][m][i] & 0xff;

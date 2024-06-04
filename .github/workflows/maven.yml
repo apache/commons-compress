@@ -28,7 +28,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, windows-latest, macos-13]
         java: [ 8, 11, 17, 21 ]
         experimental: [false]
 #        include:
@@ -36,7 +36,7 @@ jobs:
 #            experimental: true
         
     steps:
-    - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633 # v4.1.2
+    - uses: actions/checkout@a5ac7e51b41094c92402da3b24376905380afc29 # v4.1.6
       with:
         persist-credentials: false
     - uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
@@ -52,4 +52,4 @@ jobs:
         java-version: ${{ matrix.java }}
     - name: Build with Maven
       # TEMP -Ddoclint=none
-      run: mvn --show-version --batch-mode --no-transfer-progress -Ddoclint=none -Darguments=-Xdoclint:none
+      run: mvn --errors --show-version --batch-mode --no-transfer-progress -Ddoclint=none -Darguments=-Xdoclint:none

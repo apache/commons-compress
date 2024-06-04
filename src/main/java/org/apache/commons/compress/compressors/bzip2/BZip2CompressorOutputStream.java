@@ -23,6 +23,7 @@ import java.io.OutputStream;
 import java.util.Arrays;
 
 import org.apache.commons.compress.compressors.CompressorOutputStream;
+import org.apache.commons.io.IOUtils;
 
 /**
  * An output stream that compresses into the BZip2 format into another stream.
@@ -180,7 +181,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
         int origPtr;
 
         Data(final int blockSize100k) {
-            final int n = blockSize100k * BZip2Constants.BASEBLOCKSIZE;
+            final int n = blockSize100k * BASEBLOCKSIZE;
             this.block = new byte[n + 1 + NUM_OVERSHOOT_BYTES];
             this.fmap = new int[n];
             this.sfmap = new char[2 * n];
@@ -438,7 +439,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
         this.out = out;
 
         /* 20 is just a paranoia constant */
-        this.allowableBlockSize = this.blockSize100k * BZip2Constants.BASEBLOCKSIZE - 20;
+        this.allowableBlockSize = this.blockSize100k * BASEBLOCKSIZE - 20;
         init();
     }
 
@@ -484,8 +485,10 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
     @Override
     public void close() throws IOException {
         if (!closed) {
-            try (OutputStream outShadow = this.out) {
+            try {
                 finish();
+            } finally {
+                IOUtils.close(out);
             }
         }
     }
@@ -519,7 +522,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
         /* Now the block's CRC, so it is in a known place. */
         bsPutInt(blockCRC);
 
-        /* Now a single bit indicating no randomisation. */
+        /* Now a single bit indicating no randomization. */
         bsW(1, 0);
 
         /* Finally, block's contents proper. */

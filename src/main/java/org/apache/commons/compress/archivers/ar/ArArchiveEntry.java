@@ -61,7 +61,7 @@ public class ArArchiveEntry implements ArchiveEntry {
     /** The header for each entry */
     public static final String HEADER = "!<arch>\n";
 
-    /** The trailer for each entry */
+    /** The trailer for each entry {@code 0x60 0x0A} */
     public static final String TRAILER = "`\012";
 
     private static final int DEFAULT_MODE = 33188; // = (octal) 0100644
@@ -147,10 +147,7 @@ public class ArArchiveEntry implements ArchiveEntry {
             return false;
         }
         final ArArchiveEntry other = (ArArchiveEntry) obj;
-        if (name == null) {
-            return other.name == null;
-        }
-        return name.equals(other.name);
+        return Objects.equals(name, other.name);
     }
 
     /**

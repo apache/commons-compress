@@ -154,8 +154,7 @@ public abstract class AbstractTest extends AbstractTempDirTest {
         final Path targetDir = createTempDirectory("dir-result");
         final Path result = targetDir.resolve("result");
         try {
-            ArchiveEntry entry;
-            while ((entry = inputStream.getNextEntry()) != null) {
+            inputStream.iterator().forEachRemaining(entry -> {
                 final Path outputFile = entry.resolveIn(result);
                 long bytesCopied = 0;
                 if (entry.isDirectory()) {
@@ -175,7 +174,7 @@ public abstract class AbstractTest extends AbstractTempDirTest {
                 if (expected != null && !expected.remove(getExpectedString(entry))) {
                     fail("Unexpected entry: " + getExpectedString(entry));
                 }
-            }
+            });
             inputStream.close();
             if (expected != null && !expected.isEmpty()) {
                 fail(expected.size() + " missing entries: " + Arrays.toString(expected.toArray()));

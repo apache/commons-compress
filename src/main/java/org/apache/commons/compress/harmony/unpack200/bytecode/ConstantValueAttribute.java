@@ -52,10 +52,7 @@ public class ConstantValueAttribute extends Attribute {
             return false;
         }
         final ConstantValueAttribute other = (ConstantValueAttribute) obj;
-        if (!Objects.equals(entry, other.entry)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(entry, other.entry);
     }
 
     @Override

@@ -97,7 +97,7 @@ public final class ZipShort implements Cloneable, Serializable {
      * @param offset the offset to start
      */
     public ZipShort(final byte[] bytes, final int offset) {
-        value = ZipShort.getValue(bytes, offset);
+        value = getValue(bytes, offset);
     }
 
     /**

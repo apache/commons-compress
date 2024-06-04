@@ -56,7 +56,7 @@ public class PackingUtils {
             }
         }
 
-        public void setVerbose(final boolean isVerbose) {
+        private void setVerbose(final boolean isVerbose) {
             verbose = isVerbose;
         }
     }

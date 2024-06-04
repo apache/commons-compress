@@ -16,11 +16,14 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.compress.AbstractTempDirTest;
 import org.junit.jupiter.api.Test;
@@ -41,6 +44,16 @@ public class ZipArchiveOutputStreamTest extends AbstractTempDirTest {
     public void testOutputStreamBasics() throws IOException {
         try (ZipArchiveOutputStream stream = new ZipArchiveOutputStream(new ByteArrayOutputStream())) {
             assertFalse(stream.isSeekable());
+        }
+    }
+
+    @Test
+    public void testSetEncoding() throws IOException {
+        try (ZipArchiveOutputStream stream = new ZipArchiveOutputStream(createTempFile())) {
+            stream.setEncoding(StandardCharsets.UTF_8.name());
+            assertEquals(StandardCharsets.UTF_8.name(), stream.getEncoding());
+            stream.setEncoding(null);
+            assertEquals(Charset.defaultCharset().name(), stream.getEncoding());
         }
     }
 }

@@ -71,7 +71,7 @@ public class DumpArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
-    @Timeout(value = 15,unit = TimeUnit.SECONDS, threadMode = ThreadMode.SEPARATE_THREAD)
+    @Timeout(value = 15, unit = TimeUnit.SECONDS, threadMode = ThreadMode.SEPARATE_THREAD)
     public void testLoopingInodes() throws Exception {
         try (InputStream is = newInputStream("org/apache/commons/compress/dump/looping_inodes-fail.dump");
                 DumpArchiveInputStream archive = new DumpArchiveInputStream(is)) {

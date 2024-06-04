@@ -28,6 +28,7 @@ import org.apache.commons.compress.utils.ByteUtils;
  * @Immutable
  */
 public final class ZipLong implements Cloneable, Serializable {
+
     private static final long serialVersionUID = 1L;
 
     /** Central File Header Signature */
@@ -135,7 +136,7 @@ public final class ZipLong implements Cloneable, Serializable {
      * @param offset the offset to start
      */
     public ZipLong(final byte[] bytes, final int offset) {
-        value = ZipLong.getValue(bytes, offset);
+        value = getValue(bytes, offset);
     }
 
     /**
@@ -187,7 +188,7 @@ public final class ZipLong implements Cloneable, Serializable {
      * @return value as four bytes in big-endian order
      */
     public byte[] getBytes() {
-        return ZipLong.getBytes(value);
+        return getBytes(value);
     }
 
     /**

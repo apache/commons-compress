@@ -35,7 +35,7 @@ public class CPFieldRef extends ConstantPoolEntry {
     private int cachedHashCode;
 
     public CPFieldRef(final CPClass className, final CPNameAndType descriptor, final int globalIndex) {
-        super(ConstantPoolEntry.CP_Fieldref, globalIndex);
+        super(CP_Fieldref, globalIndex);
         this.className = className;
         this.nameAndType = descriptor;
     }
@@ -52,13 +52,8 @@ public class CPFieldRef extends ConstantPoolEntry {
             return false;
         }
         final CPFieldRef other = (CPFieldRef) obj;
-        if (!Objects.equals(className, other.className)) {
-            return false;
-        }
-        if (!Objects.equals(nameAndType, other.nameAndType)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(className, other.className)
+                && Objects.equals(nameAndType, other.nameAndType);
     }
 
     private void generateHashCode() {

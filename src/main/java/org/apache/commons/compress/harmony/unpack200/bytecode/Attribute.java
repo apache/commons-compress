@@ -52,10 +52,7 @@ public abstract class Attribute extends ClassFileEntry {
             return false;
         }
         final Attribute other = (Attribute) obj;
-        if (!Objects.equals(attributeName, other.attributeName)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(attributeName, other.attributeName);
     }
 
     protected CPUTF8 getAttributeName() {

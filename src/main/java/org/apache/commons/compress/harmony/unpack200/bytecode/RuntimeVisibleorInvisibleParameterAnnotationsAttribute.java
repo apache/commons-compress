@@ -96,7 +96,7 @@ public class RuntimeVisibleorInvisibleParameterAnnotationsAttribute extends Anno
         for (final ParameterAnnotation parameterAnnotation : parameterAnnotations) {
             nested.addAll(parameterAnnotation.getClassFileEntries());
         }
-        return nested.toArray(ClassFileEntry.NONE);
+        return nested.toArray(NONE);
     }
 
     @Override

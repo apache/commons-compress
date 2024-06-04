@@ -215,7 +215,7 @@ public abstract class ZipUtil {
             if (origCRC32 == f.getNameCRC32()) {
                 try {
                     return ZipEncodingHelper.ZIP_ENCODING_UTF_8.decode(f.getUnicodeName());
-                } catch (final IOException ex) {
+                } catch (final IOException ignored) {
                     // UTF-8 unsupported? should be impossible the
                     // Unicode*ExtraField must contain some bad bytes
                 }
@@ -268,7 +268,7 @@ public abstract class ZipUtil {
         if (l < 0 && l >= Integer.MIN_VALUE) {
             // If someone passes in a -2, they probably mean 4294967294
             // (For example, UNIX UID/GID's are 32 bit unsigned.)
-            l = ZipUtil.adjustToLong((int) l);
+            l = adjustToLong((int) l);
         }
         return BigInteger.valueOf(l);
     }

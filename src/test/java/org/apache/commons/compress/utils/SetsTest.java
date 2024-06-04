@@ -16,32 +16,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.commons.compress.compressors.lz4;
 
-/**
- * Implements the xxhash32 hash algorithm.
- *
- * @see <a href="https://cyan4973.github.io/xxHash/">xxHash</a>
- * @NotThreadSafe
- * @since 1.14
- * @deprecated Use {@link org.apache.commons.codec.digest.XXHash32}.
- */
-@Deprecated
-public class XXHash32 extends org.apache.commons.codec.digest.XXHash32 {
+package org.apache.commons.compress.utils;
 
-    /**
-     * Creates an XXHash32 instance with a seed of 0.
-     */
-    public XXHash32() {
-        super(0);
-    }
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-    /**
-     * Creates an XXHash32 instance.
-     *
-     * @param seed the seed to use
-     */
-    public XXHash32(final int seed) {
-        super(seed);
+import java.util.HashSet;
+
+import org.junit.jupiter.api.Test;
+
+public class SetsTest {
+
+    @Test
+    public void testNewHashSet() {
+        final HashSet<String> expected = new HashSet<>();
+        assertEquals(expected, Sets.newHashSet());
+        assertEquals(expected, Sets.newHashSet((String[]) null));
+        expected.add("1");
+        assertEquals(expected, Sets.newHashSet("1"));
+        expected.add("2");
+        assertEquals(expected, Sets.newHashSet("2", "1"));
     }
 }

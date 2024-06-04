@@ -85,18 +85,15 @@ public final class DumpTest extends AbstractTest {
     private void unarchiveAll(final File input) throws Exception {
         try (InputStream is = Files.newInputStream(input.toPath());
                 ArchiveInputStream<?> in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("dump", is)) {
-            ArchiveEntry entry = in.getNextEntry();
-            while (entry != null) {
+            in.forEach(entry -> {
                 final File archiveEntry = newTempFile(entry.getName());
                 archiveEntry.getParentFile().mkdirs();
                 if (entry.isDirectory()) {
                     archiveEntry.mkdir();
-                    entry = in.getNextEntry();
-                    continue;
+                } else {
+                    Files.copy(in, archiveEntry.toPath());
                 }
-                Files.copy(in, archiveEntry.toPath());
-                entry = in.getNextEntry();
-            }
+            });
         }
     }
 }

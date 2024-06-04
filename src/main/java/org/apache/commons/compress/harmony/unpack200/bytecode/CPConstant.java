@@ -50,10 +50,7 @@ public abstract class CPConstant extends ConstantPoolEntry {
             return false;
         }
         final CPConstant other = (CPConstant) obj;
-        if (!Objects.equals(value, other.value)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(value, other.value);
     }
 
     protected Object getValue() {

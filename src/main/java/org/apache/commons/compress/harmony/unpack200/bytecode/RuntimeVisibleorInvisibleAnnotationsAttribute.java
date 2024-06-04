@@ -51,7 +51,7 @@ public class RuntimeVisibleorInvisibleAnnotationsAttribute extends AnnotationsAt
         for (final Annotation annotation : annotations) {
             nested.addAll(annotation.getClassFileEntries());
         }
-        return nested.toArray(ClassFileEntry.NONE);
+        return nested.toArray(NONE);
     }
 
     @Override

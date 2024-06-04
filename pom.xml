@@ -20,11 +20,11 @@
   <parent>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-parent</artifactId>
-    <version>69</version>
+    <version>70</version>
   </parent>
 
   <artifactId>commons-compress</artifactId>
-  <version>1.26.2-SNAPSHOT</version>
+  <version>1.27.0-SNAPSHOT</version>
   <name>Apache Commons Compress</name>
   <url>https://commons.apache.org/proper/commons-compress/</url>
   <inceptionYear>2002</inceptionYear> <!-- from NOTICE file -->
@@ -45,11 +45,12 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <commons.jira.id>COMPRESS</commons.jira.id>
     <commons.jira.pid>12310904</commons.jira.pid>
     <!-- configuration bits for cutting a release candidate -->
-    <commons.release.version>1.26.1</commons.release.version>
-    <commons.release.next>1.26.2</commons.release.next>
-    <commons.bc.version>1.26.0</commons.bc.version>
+    <commons.release.version>1.27.0</commons.release.version>
+    <commons.release.next>1.27.1</commons.release.next>
+    <commons.bc.version>1.26.2</commons.bc.version>
     <commons.rc.version>RC1</commons.rc.version>
     <mockito.version>4.11.0</mockito.version>
+    <commons.pmd-impl.version>7.2.0</commons.pmd-impl.version>
 
     <commons.release.isDistModule>true</commons.release.isDistModule>
     <commons.distSvnStagingUrl>scm:svn:https://dist.apache.org/repos/dist/dev/commons/${commons.componentid}</commons.distSvnStagingUrl>
@@ -79,11 +80,19 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <japicmp.skip>false</japicmp.skip>
 
     <pax.exam.version>4.13.5</pax.exam.version>
-    <slf4j.version>2.0.12</slf4j.version>
+    <slf4j.version>2.0.13</slf4j.version>
     <asm.version>9.7</asm.version>
-    <project.build.outputTimestamp>2024-03-08T23:07:45Z</project.build.outputTimestamp>
+    <project.build.outputTimestamp>2024-05-23T22:50:44Z</project.build.outputTimestamp>
     <!-- spdx 0.6.0 can require Java 11 depending on undocumented behavior which kicks in for us here. -->
     <commons.spdx.version>0.5.5</commons.spdx.version>
+    <!-- JaCoCo: Don't make code coverage worse than: -->
+    <commons.jacoco.haltOnFailure>true</commons.jacoco.haltOnFailure>
+    <commons.jacoco.classRatio>0.96</commons.jacoco.classRatio>
+    <commons.jacoco.instructionRatio>0.84</commons.jacoco.instructionRatio>
+    <commons.jacoco.methodRatio>0.87</commons.jacoco.methodRatio>
+    <commons.jacoco.branchRatio>0.75</commons.jacoco.branchRatio>
+    <commons.jacoco.lineRatio>0.86</commons.jacoco.lineRatio>
+    <commons.jacoco.complexityRatio>0.72</commons.jacoco.complexityRatio>
   </properties>
 
   <issueManagement>
@@ -111,7 +120,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <dependency>
       <groupId>com.github.luben</groupId>
       <artifactId>zstd-jni</artifactId>
-      <version>1.5.6-2</version>
+      <version>1.5.6-3</version>
       <optional>true</optional>
     </dependency>
     <dependency>
@@ -132,7 +141,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
            - org.apache.commons.compress.compressors.snappy -->
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>
-      <version>1.16.1</version>
+      <version>1.17.0</version>
     </dependency>
 
     <!-- Pack200 -->
@@ -247,10 +256,10 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
             <docencoding>${commons.docEncoding}</docencoding>
             <linksource>true</linksource>
             <links>
-              <link>${commons.javadoc8.java.link}</link>
               <link>${commons.javadoc.javaee.link}</link>
               <link>https://commons.apache.org/proper/commons-codec/apidocs</link>
               <link>https://commons.apache.org/proper/commons-io/apidocs</link>
+              <link>https://commons.apache.org/proper/commons-lang/apidocs</link>
             </links>
             <tags>
               <tag>
@@ -363,6 +372,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
         <configuration>
           <minimumTokens>200</minimumTokens>
           <targetJdk>${maven.compiler.source}</targetJdk>
+          <excludeFromFailureFile>src/conf/pmd-exclude.properties</excludeFromFailureFile>
           <rulesets>
             <ruleset>${basedir}/src/conf/pmd-ruleset.xml</ruleset>
           </rulesets>
@@ -421,6 +431,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
         <configuration>
           <minimumTokens>200</minimumTokens>
           <targetJdk>${maven.compiler.source}</targetJdk>
+          <excludeFromFailureFile>src/conf/pmd-exclude.properties</excludeFromFailureFile>
           <rulesets>
             <ruleset>${basedir}/src/conf/pmd-ruleset.xml</ruleset>
           </rulesets>
@@ -527,7 +538,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
             <artifactId>maven-surefire-plugin</artifactId>
             <configuration>
               <argLine>
-                --add-opens java.base/java.io=ALL-UNNAMED                     
+                ${argLine} --add-opens java.base/java.io=ALL-UNNAMED                     
               </argLine>
             </configuration>
           </plugin>

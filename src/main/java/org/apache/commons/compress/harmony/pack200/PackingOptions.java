@@ -26,7 +26,7 @@ import java.util.Map.Entry;
 import org.objectweb.asm.Attribute;
 
 /**
- * Utility class to manage the various options available for pack200.
+ * Manages the various options available for pack200.
  */
 public class PackingOptions {
 
@@ -110,14 +110,13 @@ public class PackingOptions {
      *
      * @param passFileName the file name
      */
-    public void addPassFile(String passFileName) {
+    public void addPassFile(final String passFileName) {
         String fileSeparator = FileSystems.getDefault().getSeparator();
         if (fileSeparator.equals("\\")) {
             // Need to escape backslashes for replaceAll(), which uses regex
             fileSeparator += "\\";
         }
-        passFileName = passFileName.replaceAll(fileSeparator, "/");
-        passFiles.add(passFileName);
+        passFiles.add(passFileName.replaceAll(fileSeparator, "/"));
     }
 
     public String getDeflateHint() {

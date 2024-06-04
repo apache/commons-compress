@@ -62,9 +62,10 @@ public class ZipSplitReadOnlySeekableByteChannelTest {
     @Test
     public void testChannelsPositionIsZeroAfterConstructor() throws IOException {
         final List<SeekableByteChannel> channels = getSplitZipChannels();
-        new ZipSplitReadOnlySeekableByteChannel(channels);
-        for (final SeekableByteChannel channel : channels) {
-            assertEquals(0, channel.position());
+        try (ZipSplitReadOnlySeekableByteChannel c = new ZipSplitReadOnlySeekableByteChannel(channels)) {
+            for (final SeekableByteChannel channel : channels) {
+                assertEquals(0, channel.position());
+            }
         }
     }
 

@@ -79,7 +79,7 @@ public class SevenZOutputFile implements Closeable {
 
         @Override
         public void write(final byte[] b) throws IOException {
-            OutputStreamWrapper.this.write(b, 0, b.length);
+            write(b, 0, b.length);
         }
 
         @Override

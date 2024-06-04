@@ -44,11 +44,11 @@ public class CPNameAndType extends ConstantPoolEntry {
      *
      * @param name        TODO
      * @param descriptor  TODO
-     * @param globalIndex - index in CpBands
+     * @param globalIndex index in CpBands
      * @throws NullPointerException if name or descriptor is null
      */
     public CPNameAndType(final CPUTF8 name, final CPUTF8 descriptor, final int globalIndex) {
-        super(ConstantPoolEntry.CP_NameAndType, globalIndex);
+        super(CP_NameAndType, globalIndex);
         this.name = Objects.requireNonNull(name, "name");
         this.descriptor = Objects.requireNonNull(descriptor, "descriptor");
     }
@@ -69,13 +69,8 @@ public class CPNameAndType extends ConstantPoolEntry {
             return false;
         }
         final CPNameAndType other = (CPNameAndType) obj;
-        if (!descriptor.equals(other.descriptor)) {
-            return false;
-        }
-        if (!name.equals(other.name)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(descriptor, other.descriptor)
+                && Objects.equals(name, other.name);
     }
 
     private void generateHashCode() {

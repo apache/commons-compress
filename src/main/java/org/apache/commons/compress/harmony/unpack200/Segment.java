@@ -356,7 +356,7 @@ public class Segment {
     /**
      * Override the archive's deflate hint with the given boolean
      *
-     * @param deflateHint - the deflate hint to use
+     * @param deflateHint the deflate hint to use
      */
     public void overrideDeflateHint(final boolean deflateHint) {
         this.overrideDeflateHint = true;
