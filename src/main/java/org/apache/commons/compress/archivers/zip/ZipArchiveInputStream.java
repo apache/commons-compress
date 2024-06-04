@@ -1019,18 +1019,15 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
             READ_LOOP: for (int i = 0; ; ) {
                 for (int j = 0; i <= PREAMBLE_GARBAGE_MAX_SIZE - 4 && j <= header.length - 4; ++j, ++i) {
                     final ZipLong sig = new ZipLong(header, j);
-                    if (
-                            sig.equals(ZipLong.LFH_SIG) ||
-                            sig.equals(ZipLong.SINGLE_SEGMENT_SPLIT_MARKER) ||
-                            sig.equals(ZipLong.DD_SIG)) {
+                    if (sig.equals(ZipLong.LFH_SIG) ||
+                        sig.equals(ZipLong.SINGLE_SEGMENT_SPLIT_MARKER) ||
+                        sig.equals(ZipLong.DD_SIG)) {
                         // regular archive containing at least one entry:
                         System.arraycopy(header, j, header, 0, header.length - j);
                         readFully(header, header.length - j);
                         break READ_LOOP;
                     }
-                    if (
-                            sig.equals(new ZipLong(ZipArchiveOutputStream.EOCD_SIG))
-                    ) {
+                    if (sig.equals(new ZipLong(ZipArchiveOutputStream.EOCD_SIG))) {
                         // empty archive:
                         pushback(header, j, header.length - j);
                         return false;
