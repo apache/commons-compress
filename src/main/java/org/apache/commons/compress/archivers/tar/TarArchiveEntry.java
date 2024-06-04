@@ -1681,7 +1681,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
                 this.groupId = ((Number) Files.getAttribute(file, "unix:gid", options)).longValue();
                 try {
                     setStatusChangeTime((FileTime) Files.getAttribute(file, "unix:ctime", options));
-                } catch (final IllegalArgumentException ex) { // NOSONAR
+                } catch (final IllegalArgumentException ignored) {
                     // ctime is not supported
                 }
             }
