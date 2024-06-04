@@ -296,7 +296,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     /**
      * The factory for extra fields or null.
      */
-    private Function<ZipShort, ZipExtraField> extraFieldSupport;
+    // private Function<ZipShort, ZipExtraField> extraFieldSupport;
 
     /**
      * Constructs an instance using UTF-8 encoding
@@ -1249,12 +1249,14 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     }
 
     /**
-     * Enable custom extra fields factory.
+     * Currently unused.
+     *
+     * Sets the custom extra fields factory.
      * @param extraFieldSupport the lookup function based on extra field header id.
      * @return the archive.
      */
     public ZipArchiveInputStream setExtraFieldSupport(final Function<ZipShort, ZipExtraField> extraFieldSupport) {
-        this.extraFieldSupport = extraFieldSupport;
+        // this.extraFieldSupport = extraFieldSupport;
         return this;
     }
 
