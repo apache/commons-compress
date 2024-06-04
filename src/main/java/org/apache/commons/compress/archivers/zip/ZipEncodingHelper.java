@@ -98,7 +98,8 @@ public abstract class ZipEncodingHelper {
         Charset charset = Charset.defaultCharset();
         try {
             charset = Charsets.toCharset(name);
-        } catch (final UnsupportedCharsetException ignore) { // NOSONAR we use the default encoding instead
+        } catch (final UnsupportedCharsetException ignored) {
+            // Use the default encoding instead.
         }
         return charset;
     }
