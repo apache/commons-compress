@@ -659,7 +659,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
                 // archive.
                 if (!readFirstLocalFileHeader()) {
                     hitCentralDirectory = true;
-                    skipRemainderOfArchive(true);
+                    skipRemainderOfArchive();
                     return null;
                 }
             } else {
@@ -673,7 +673,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
         if (!sig.equals(ZipLong.LFH_SIG)) {
             if (sig.equals(ZipLong.CFH_SIG) || sig.equals(ZipLong.AED_SIG) || isApkSigningBlock(lfhBuf)) {
                 hitCentralDirectory = true;
-                skipRemainderOfArchive(false);
+                skipRemainderOfArchive();
                 return null;
             }
             throw new ZipException(String.format("Unexpected record signature: 0x%x", sig.getValue()));
@@ -1295,7 +1295,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     /**
      * Reads the stream until it find the "End of central directory record" and consumes it as well.
      */
-    private void skipRemainderOfArchive(final boolean read) throws IOException {
+    private void skipRemainderOfArchive() throws IOException {
         // skip over central directory. One LFH has been read too much
         // already. The calculation discounts file names and extra
         // data, so it will be too short.
