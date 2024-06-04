@@ -522,7 +522,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
         /* Now the block's CRC, so it is in a known place. */
         bsPutInt(blockCRC);
 
-        /* Now a single bit indicating no randomisation. */
+        /* Now a single bit indicating no randomization. */
         bsW(1, 0);
 
         /* Finally, block's contents proper. */
