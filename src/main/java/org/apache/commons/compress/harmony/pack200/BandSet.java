@@ -381,7 +381,7 @@ public abstract class BandSet {
                     return encodedBand;
                 }
                 if (betterCodec instanceof RunCodec) {
-
+                    // TODO?
                 }
             }
         }
