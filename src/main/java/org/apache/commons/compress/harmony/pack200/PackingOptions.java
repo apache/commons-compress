@@ -260,7 +260,7 @@ public class PackingOptions {
     /**
      * Sets the segment limit (equivalent to -S command line option)
      *
-     * @param segmentLimit - the limit in bytes
+     * @param segmentLimit   the limit in bytes
      */
     public void setSegmentLimit(final long segmentLimit) {
         this.segmentLimit = segmentLimit;
@@ -279,7 +279,7 @@ public class PackingOptions {
     /**
      * Sets the compressor behavior when an unknown attribute is encountered.
      *
-     * @param unknownAttributeAction - the action to perform
+     * @param unknownAttributeAction   the action to perform
      */
     public void setUnknownAttributeAction(final String unknownAttributeAction) {
         this.unknownAttributeAction = unknownAttributeAction;
