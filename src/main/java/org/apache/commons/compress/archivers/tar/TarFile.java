@@ -36,9 +36,9 @@ import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.BoundedArchiveInputStream;
-import org.apache.commons.compress.utils.BoundedInputStream;
 import org.apache.commons.compress.utils.BoundedSeekableByteChannelInputStream;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
+import org.apache.commons.io.input.BoundedInputStream;
 
 /**
  * Provides random access to UNIX archives.

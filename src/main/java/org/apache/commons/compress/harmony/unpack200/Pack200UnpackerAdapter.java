@@ -89,9 +89,12 @@ public class Pack200UnpackerAdapter extends Pack200Adapter implements Unpacker {
      * @return a new BoundedInputStream
      * @throws IOException if an I/O error occurs
      */
-    @SuppressWarnings("resource")
     static BoundedInputStream newBoundedInputStream(final Path path) throws IOException {
-        return new BoundedInputStream(new BufferedInputStream(Files.newInputStream(path)), Files.size(path));
+        return BoundedInputStream.builder()
+                .setInputStream(new BufferedInputStream(Files.newInputStream(path)))
+                .setMaxCount(Files.size(path))
+                .setPropagateClose(false)
+                .get();
     }
 
     /**
@@ -115,7 +118,7 @@ public class Pack200UnpackerAdapter extends Pack200Adapter implements Unpacker {
      * The new BoundedInputStream wraps a new {@link BufferedInputStream}.
      * </p>
      *
-     * @param path The URL.
+     * @param url The URL.
      * @return a new BoundedInputStream
      * @throws IOException        if an I/O error occurs
      * @throws URISyntaxException

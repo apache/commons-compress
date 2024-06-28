@@ -26,6 +26,7 @@ import java.util.Objects;
 import java.util.zip.ZipException;
 
 import org.apache.commons.compress.utils.TimeUtils;
+import org.apache.commons.io.file.attribute.FileTimes;
 
 /**
  * <p>
@@ -121,13 +122,13 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
     }
 
     private static FileTime unixTimeToFileTime(final ZipLong unixTime) {
-        return unixTime != null ? TimeUtils.unixTimeToFileTime(unixTime.getIntValue()) : null;
+        return unixTime != null ? FileTimes.fromUnixTime(unixTime.getIntValue()) : null;
     }
     // The 3 boolean fields (below) come from this flag's byte. The remaining 5 bits
     // are ignored according to the current version of the spec (December 2012).
 
     private static ZipLong unixTimeToZipLong(final long unixTime) {
-        if (!TimeUtils.isUnixTime(unixTime)) {
+        if (!FileTimes.isUnixTime(unixTime)) {
             throw new IllegalArgumentException("X5455 timestamps must fit in a signed 32 bit integer: " + unixTime);
         }
         return new ZipLong(unixTime);

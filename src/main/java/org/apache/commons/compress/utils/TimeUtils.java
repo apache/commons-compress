@@ -60,10 +60,11 @@ public final class TimeUtils {
      *
      * @param time the FileTime to evaluate, can be null.
      * @return true if the time exceeds the minimum or maximum UNIX time, false otherwise.
+     * @deprecated use {@link FileTimes#isUnixTime(FileTime)}
      */
+    @Deprecated
     public static boolean isUnixTime(final FileTime time) {
-        // TODO Apache Commons IO 2.16.0
-        return isUnixTime(toUnixTime(time));
+        return FileTimes.isUnixTime(time);
     }
 
     /**
@@ -71,10 +72,11 @@ public final class TimeUtils {
      *
      * @param seconds the number of seconds (since Epoch) to evaluate.
      * @return true if the time can be represented in the standard UNIX time, false otherwise.
+     * @deprecated Use {@link FileTimes#isUnixTime(long)}
      */
+    @Deprecated
     public static boolean isUnixTime(final long seconds) {
-        // TODO Apache Commons IO 2.16.0
-        return Integer.MIN_VALUE <= seconds && seconds <= Integer.MAX_VALUE;
+        return FileTimes.isUnixTime(seconds);
     }
 
     /**
@@ -158,11 +160,11 @@ public final class TimeUtils {
      *
      * @param javaTime the Java time.
      * @return the NTFS time.
+     * @deprecated Use {@link FileTimes#toNtfsTime(long)}
      */
+    @Deprecated
     public static long toNtfsTime(final long javaTime) {
-        // TODO Apache Commons IO 2.16.0
-        final long javaHundredNanos = javaTime * HUNDRED_NANOS_PER_MILLISECOND;
-        return Math.subtractExact(javaHundredNanos, WINDOWS_EPOCH_OFFSET);
+        return FileTimes.toNtfsTime(javaTime);
     }
 
     /**
@@ -172,8 +174,7 @@ public final class TimeUtils {
      * @return the UNIX timestamp.
      */
     public static long toUnixTime(final FileTime fileTime) {
-        // TODO Apache Commons IO 2.16.0
-        return fileTime != null ? fileTime.to(TimeUnit.SECONDS) : 0;
+        return FileTimes.toUnixTime(fileTime);
     }
 
     /**
@@ -192,10 +193,11 @@ public final class TimeUtils {
      *
      * @param time UNIX timestamp (in seconds, UTC/GMT).
      * @return the corresponding FileTime.
+     * @deprecated Use {@link FileTimes#fromUnixTime(long)}
      */
+    @Deprecated
     public static FileTime unixTimeToFileTime(final long time) {
-        // TODO Apache Commons IO 2.16.0 FileTimes.fromUnixTime(long)
-        return FileTime.from(time, TimeUnit.SECONDS);
+        return FileTimes.fromUnixTime(time);
     }
 
     /** Private constructor to prevent instantiation of this utility class. */

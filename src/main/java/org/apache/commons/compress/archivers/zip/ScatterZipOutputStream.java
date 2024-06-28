@@ -30,7 +30,7 @@ import java.util.zip.Deflater;
 
 import org.apache.commons.compress.parallel.FileBasedScatterGatherBackingStore;
 import org.apache.commons.compress.parallel.ScatterGatherBackingStore;
-import org.apache.commons.compress.utils.BoundedInputStream;
+import org.apache.commons.io.input.BoundedInputStream;
 
 /**
  * A ZIP output stream that is optimized for multi-threaded scatter/gather construction of ZIP files.
@@ -97,7 +97,11 @@ public class ScatterZipOutputStream implements Closeable {
 
         public void writeNextZipEntry(final ZipArchiveOutputStream target) throws IOException {
             final CompressedEntry compressedEntry = itemsIterator.next();
-            try (BoundedInputStream rawStream = new BoundedInputStream(itemsIteratorData, compressedEntry.compressedSize)) {
+            try (BoundedInputStream rawStream = BoundedInputStream.builder()
+                    .setInputStream(itemsIteratorData)
+                    .setMaxCount(compressedEntry.compressedSize)
+                    .setPropagateClose(false)
+                    .get()) {
                 target.addRawArchiveEntry(compressedEntry.transferToArchiveEntry(), rawStream);
             }
         }
@@ -214,7 +218,8 @@ public class ScatterZipOutputStream implements Closeable {
         backingStore.closeForWriting();
         try (InputStream data = backingStore.getInputStream()) {
             for (final CompressedEntry compressedEntry : items) {
-                try (BoundedInputStream rawStream = new BoundedInputStream(data, compressedEntry.compressedSize)) {
+                try (BoundedInputStream rawStream = BoundedInputStream.builder().setInputStream(data)
+                        .setMaxCount(compressedEntry.compressedSize).setPropagateClose(false).get()) {
                     target.addRawArchiveEntry(compressedEntry.transferToArchiveEntry(), rawStream);
                 }
             }

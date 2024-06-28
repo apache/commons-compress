@@ -24,10 +24,10 @@ import java.util.Arrays;
 import java.util.zip.CheckedInputStream;
 
 import org.apache.commons.compress.compressors.CompressorInputStream;
-import org.apache.commons.compress.utils.BoundedInputStream;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
+import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.io.input.CountingInputStream;
 
 /**
@@ -207,7 +207,8 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream implem
             }
             return;
         }
-        InputStream capped = new BoundedInputStream(inputStream, realLen);
+        InputStream capped = BoundedInputStream.builder().setInputStream(inputStream)
+                .setMaxCount(realLen).setPropagateClose(false).get();
         if (expectBlockChecksum) {
             capped = new CheckedInputStream(capped, blockHash);
         }
