@@ -60,8 +60,8 @@ public class FileRandomAccessOutputStreamTest extends AbstractTempDirTest {
 
     @Test
     public void testWrite() throws IOException {
-        FileChannel channel = mock(FileChannel.class);
-        FileRandomAccessOutputStream stream = new FileRandomAccessOutputStream(channel);
+        final FileChannel channel = mock(FileChannel.class);
+        final FileRandomAccessOutputStream stream = new FileRandomAccessOutputStream(channel);
         when(channel.write((ByteBuffer) any())).thenAnswer(answer -> {
             ((ByteBuffer) answer.getArgument(0)).position(5);
             return 5;
