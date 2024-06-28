@@ -373,7 +373,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      */
     public CpioArchiveEntry(final short format, final String name, final long size) {
         this(format, name);
-        this.setSize(size);
+        setSize(size);
     }
 
     /**
@@ -393,7 +393,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      */
     public CpioArchiveEntry(final String name, final long size) {
         this(name);
-        this.setSize(size);
+        setSize(size);
     }
 
     /**
