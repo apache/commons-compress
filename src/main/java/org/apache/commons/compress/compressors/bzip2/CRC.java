@@ -57,7 +57,7 @@ final class CRC {
     }
 
     private int compute(final int baseCrc, final int inCh) {
-        int index = baseCrc >> 24 ^ inCh;
+        final int index = baseCrc >> 24 ^ inCh;
         return baseCrc << 8 ^ CRC32_TABLE[index < 0 ? index + 256 : index];
     }
 
