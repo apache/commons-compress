@@ -1144,12 +1144,12 @@ public class SevenZFile implements Closeable {
 
     private void readArchiveProperties(final ByteBuffer input) throws IOException {
         // FIXME: the reference implementation just throws them away?
-        int nid = getUnsignedByte(input);
+        long nid = readUint64(input);
         while (nid != NID.kEnd) {
             final long propertySize = readUint64(input);
             final byte[] property = new byte[(int) propertySize];
             get(input, property);
-            nid = getUnsignedByte(input);
+            nid = readUint64(input);
         }
     }
 
@@ -1739,13 +1739,13 @@ public class SevenZFile implements Closeable {
     }
 
     private void sanityCheckArchiveProperties(final ByteBuffer header) throws IOException {
-        int nid = getUnsignedByte(header);
+        long nid = readUint64(header);
         while (nid != NID.kEnd) {
             final int propertySize = assertFitsIntoNonNegativeInt("propertySize", readUint64(header));
             if (skipBytesFully(header, propertySize) < propertySize) {
                 throw new IOException("invalid property size");
             }
-            nid = getUnsignedByte(header);
+            nid = readUint64(header);
         }
     }
 

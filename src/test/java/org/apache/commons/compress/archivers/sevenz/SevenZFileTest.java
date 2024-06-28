@@ -787,6 +787,28 @@ public class SevenZFileTest extends AbstractTest {
         }
     }
 
+    /**
+     * Test case for <a href="https://issues.apache.org/jira/browse/COMPRESS-681" >COMPRESS-681</a>.
+     */
+    @Test
+    public void testReadingArchiveProperties() throws IOException {
+        final String entryName = "COMPRESS-681.txt";
+        final String entryContent = "https://issues.apache.org/jira/browse/COMPRESS-681";
+        try (SevenZFile archive = getSevenZFile("COMPRESS-681.7z")) {
+            final SevenZArchiveEntry entry = archive.getNextEntry();
+            assertEquals(entryName, entry.getName());
+            final byte[] contents = new byte[(int) entry.getSize()];
+            int off = 0;
+            while (off < contents.length) {
+                final int bytesRead = archive.read(contents, off, contents.length - off);
+                assert bytesRead >= 0;
+                off += bytesRead;
+            }
+            assertEquals(entryContent, new String(contents, UTF_8));
+            assertNull(archive.getNextEntry());
+        }
+    }
+
     @Test
     public void testReadingBackDeltaDistance() throws Exception {
         final File output = newTempFile("delta-distance.7z");
