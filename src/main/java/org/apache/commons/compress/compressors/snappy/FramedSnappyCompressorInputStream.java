@@ -25,10 +25,10 @@ import java.util.Arrays;
 
 import org.apache.commons.codec.digest.PureJavaCrc32C;
 import org.apache.commons.compress.compressors.CompressorInputStream;
-import org.apache.commons.compress.utils.BoundedInputStream;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
+import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.io.input.CountingInputStream;
 
 /**
@@ -265,7 +265,14 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream imp
             } else {
                 expectedChecksum = -1;
             }
-            currentCompressedChunk = new SnappyCompressorInputStream(new BoundedInputStream(inputStream, size), blockSize);
+            // @formatter:off
+            currentCompressedChunk = new SnappyCompressorInputStream(BoundedInputStream.builder()
+                    .setInputStream(inputStream)
+                    .setMaxCount(size)
+                    .setPropagateClose(false)
+                    .get(),
+                    blockSize);
+            // @formatter:on
             // constructor reads uncompressed size
             count(currentCompressedChunk.getBytesRead());
         } else {
