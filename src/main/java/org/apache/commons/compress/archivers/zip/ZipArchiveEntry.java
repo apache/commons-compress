@@ -342,32 +342,6 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     }
 
     /**
-     * Creates a new ZIP entry with fields taken from the specified ZIP entry.
-     *
-     * <p>
-     * Assumes the entry represents a directory if and only if the name ends with a forward slash "/".
-     * </p>
-     *
-     * @param extraFieldFactory the extra field lookup factory.
-     * @param entry the entry to get fields from
-     * @throws ZipException on error
-     */
-    private ZipArchiveEntry(final Function<ZipShort, ZipExtraField> extraFieldFactory, final ZipEntry entry) throws ZipException {
-        super(entry);
-        this.extraFieldFactory = extraFieldFactory;
-        setName(entry.getName());
-        final byte[] extra = entry.getExtra();
-        if (extra != null) {
-            setExtraFields(parseExtraFields(extra, true, ExtraFieldParsingMode.BEST_EFFORT));
-        } else {
-            // initializes extra data to an empty byte array
-            setExtra();
-        }
-        setMethod(entry.getMethod());
-        this.size = entry.getSize();
-    }
-
-    /**
      * Creates a new ZIP entry taking some information from the given path and using the provided name.
      *
      * <p>
@@ -410,11 +384,23 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
      * Assumes the entry represents a directory if and only if the name ends with a forward slash "/".
      * </p>
      *
+     * @param extraFieldFactory the extra field lookup factory.
      * @param entry the entry to get fields from
      * @throws ZipException on error
      */
-    public ZipArchiveEntry(final ZipEntry entry) throws ZipException {
-        this(null, entry);
+    private ZipArchiveEntry(final Function<ZipShort, ZipExtraField> extraFieldFactory, final ZipEntry entry) throws ZipException {
+        super(entry);
+        this.extraFieldFactory = extraFieldFactory;
+        setName(entry.getName());
+        final byte[] extra = entry.getExtra();
+        if (extra != null) {
+            setExtraFields(parseExtraFields(extra, true, ExtraFieldParsingMode.BEST_EFFORT));
+        } else {
+            // initializes extra data to an empty byte array
+            setExtra();
+        }
+        setMethod(entry.getMethod());
+        this.size = entry.getSize();
     }
 
     /**
@@ -467,6 +453,20 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
         setPlatform(entry.getPlatform());
         final GeneralPurposeBit other = entry.getGeneralPurposeBit();
         setGeneralPurposeBit(other == null ? null : (GeneralPurposeBit) other.clone());
+    }
+
+    /**
+     * Creates a new ZIP entry with fields taken from the specified ZIP entry.
+     *
+     * <p>
+     * Assumes the entry represents a directory if and only if the name ends with a forward slash "/".
+     * </p>
+     *
+     * @param entry the entry to get fields from
+     * @throws ZipException on error
+     */
+    public ZipArchiveEntry(final ZipEntry entry) throws ZipException {
+        this(null, entry);
     }
 
     /**
