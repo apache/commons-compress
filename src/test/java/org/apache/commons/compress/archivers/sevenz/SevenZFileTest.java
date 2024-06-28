@@ -52,8 +52,6 @@ import javax.crypto.Cipher;
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.MemoryLimitException;
 import org.apache.commons.compress.PasswordRequiredException;
-import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
-import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.compress.utils.MultiReadOnlySeekableByteChannel;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.apache.commons.io.IOUtils;
