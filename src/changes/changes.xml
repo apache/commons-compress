@@ -48,6 +48,7 @@ The <action> type attribute can be add,update,fix,remove.
       <!-- FIX -->
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Fix PMD UnnecessaryFullyQualifiedName and others.</action>
       <action type="fix" issue="COMPRESS-681" dev="ggregory" due-to="joker53-1, Gary Gregory">Support reading a 7z file that writing archive properties #541.</action>
+      <action type="fix" dev="ggregory" due-to="Mike Drob, Gary Gregory">Upgrade commons-io from 2.15.1 to 2.16.1 #513</action>
       <!-- ADD -->
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add ArchiveInputStream.forEach(IOConsumer).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add ArchiveInputStream.iterator().</action>
