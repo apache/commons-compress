@@ -180,6 +180,7 @@ public class Archive {
             for (int m = 0; m < MAGIC.length; m++) {
                 if (word[m] != MAGIC[m]) {
                     compressedWithE0 = true;
+                    break;
                 }
             }
             inputStream.reset();
