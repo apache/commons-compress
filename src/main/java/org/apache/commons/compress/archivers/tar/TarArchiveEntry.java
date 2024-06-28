@@ -1479,7 +1479,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
             throw new IOException("broken archive, entry with negative size");
         }
         offset += SIZELEN;
-        mTime = TimeUtils.unixTimeToFileTime(parseOctalOrBinary(header, offset, MODTIMELEN, lenient));
+        mTime = FileTimes.fromUnixTime(parseOctalOrBinary(header, offset, MODTIMELEN, lenient));
         offset += MODTIMELEN;
         checkSumOK = TarUtils.verifyCheckSum(header);
         offset += CHKSUMLEN;
