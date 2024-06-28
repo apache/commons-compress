@@ -198,7 +198,7 @@ public class ArArchiveEntry implements ArchiveEntry {
 
     @Override
     public long getSize() {
-        return this.getLength();
+        return getLength();
     }
 
     /**
