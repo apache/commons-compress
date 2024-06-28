@@ -85,7 +85,7 @@ public abstract class Codec {
         if (in instanceof BoundedInputStream) {
             final BoundedInputStream bin = (BoundedInputStream) in;
             final long count = bin.getCount();
-            final long maxLength = bin.getMaxLength();
+            final long maxLength = bin.getMaxCount();
             if (maxLength > -1) {
                 final long remaining = maxLength - count;
                 final String format = "Can't read beyond end of stream (n = %,d, count = %,d, maxLength = %,d, remaining = %,d)";
