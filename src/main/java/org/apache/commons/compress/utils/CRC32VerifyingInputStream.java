@@ -24,10 +24,10 @@ import java.util.zip.CRC32;
  *
  * @NotThreadSafe
  * @since 1.6
+ * @deprecated Use {@link org.apache.commons.io.input.ChecksumInputStream}.
  */
+@Deprecated
 public class CRC32VerifyingInputStream extends ChecksumVerifyingInputStream {
-    // TODO Use Commons IO 2.16.0 ChecksumInputStream
-
     /**
      * Constructs a new instance.
      *
