@@ -44,7 +44,6 @@ Apache Commons Compress
 ===================
 
 [![Java CI](https://github.com/apache/commons-compress/actions/workflows/maven.yml/badge.svg)](https://github.com/apache/commons-compress/actions/workflows/maven.yml)
-[![Coverage Status](https://codecov.io/gh/apache/commons-compress/branch/master/graph/badge.svg)](https://app.codecov.io/gh/apache/commons-compress)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-compress/badge.svg?gav=true)](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-compress/?gav=true)
 [![Javadocs](https://javadoc.io/badge/org.apache.commons/commons-compress/1.26.2.svg)](https://javadoc.io/doc/org.apache.commons/commons-compress/1.26.2)
 [![CodeQL](https://github.com/apache/commons-compress/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/apache/commons-compress/actions/workflows/codeql-analysis.yml)
