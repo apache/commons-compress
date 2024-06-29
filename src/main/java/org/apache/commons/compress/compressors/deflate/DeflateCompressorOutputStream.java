@@ -28,10 +28,15 @@ import org.apache.commons.compress.compressors.CompressorOutputStream;
 /**
  * Deflate compressor.
  *
+ * <em>Calling flush()</em>
+ * <p>
+ * Calling {@link #flush()} flushes the encoder and calls {@code outputStream.flush()}. All buffered pending data will then be decompressible from the output
+ * stream. Calling this function very often may increase the compressed file size a lot.
+ * </p>
+ *
  * @since 1.9
  */
-public class DeflateCompressorOutputStream extends CompressorOutputStream {
-    private final DeflaterOutputStream out;
+public class DeflateCompressorOutputStream extends CompressorOutputStream<DeflaterOutputStream> {
     private final Deflater deflater;
 
     /**
@@ -50,6 +55,7 @@ public class DeflateCompressorOutputStream extends CompressorOutputStream {
      * @param parameters   the deflate parameters to apply
      */
     public DeflateCompressorOutputStream(final OutputStream outputStream, final DeflateParameters parameters) {
+        super();
         this.deflater = new Deflater(parameters.getCompressionLevel(), !parameters.withZlibHeader());
         this.out = new DeflaterOutputStream(outputStream, deflater);
     }
@@ -71,8 +77,9 @@ public class DeflateCompressorOutputStream extends CompressorOutputStream {
      *
      * @throws IOException on error
      */
+    @SuppressWarnings("resource") // instance variable access
     public void finish() throws IOException {
-        out.finish();
+        out().finish();
     }
 
     /**
@@ -89,8 +96,4 @@ public class DeflateCompressorOutputStream extends CompressorOutputStream {
         out.write(buf, off, len);
     }
 
-    @Override
-    public void write(final int b) throws IOException {
-        out.write(b);
-    }
 }

@@ -127,7 +127,7 @@ import org.apache.commons.io.IOUtils;
  *
  * @NotThreadSafe
  */
-public class BZip2CompressorOutputStream extends CompressorOutputStream implements BZip2Constants {
+public class BZip2CompressorOutputStream extends CompressorOutputStream<OutputStream> implements BZip2Constants {
 
     static final class Data {
 
@@ -398,8 +398,6 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
 
     private BlockSort blockSorter;
 
-    private OutputStream out;
-
     private volatile boolean closed;
 
     /**
@@ -428,6 +426,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
      * @see #MAX_BLOCKSIZE
      */
     public BZip2CompressorOutputStream(final OutputStream out, final int blockSize) throws IOException {
+        super(out);
         if (blockSize < 1) {
             throw new IllegalArgumentException("blockSize(" + blockSize + ") < 1");
         }
@@ -436,7 +435,6 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream implemen
         }
 
         this.blockSize100k = blockSize;
-        this.out = out;
 
         /* 20 is just a paranoia constant */
         this.allowableBlockSize = this.blockSize100k * BASEBLOCKSIZE - 20;

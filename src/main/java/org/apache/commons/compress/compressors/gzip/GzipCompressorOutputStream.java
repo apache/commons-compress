@@ -38,16 +38,13 @@ import org.apache.commons.compress.compressors.CompressorOutputStream;
  *
  * @see <a href="https://tools.ietf.org/html/rfc1952">GZIP File Format Specification</a>
  */
-public class GzipCompressorOutputStream extends CompressorOutputStream {
+public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStream> {
 
     /** Header flag indicating a file name follows the header */
     private static final int FNAME = 1 << 3;
 
     /** Header flag indicating a comment follows the header */
     private static final int FCOMMENT = 1 << 4;
-
-    /** The underlying stream */
-    private final OutputStream out;
 
     /** Deflater used to compress the data */
     private final Deflater deflater;
@@ -81,7 +78,7 @@ public class GzipCompressorOutputStream extends CompressorOutputStream {
      * @since 1.7
      */
     public GzipCompressorOutputStream(final OutputStream out, final GzipParameters parameters) throws IOException {
-        this.out = out;
+        super(out);
         this.deflater = new Deflater(parameters.getCompressionLevel(), true);
         this.deflater.setStrategy(parameters.getDeflateStrategy());
         this.deflateBuffer = new byte[parameters.getBufferSize()];
@@ -124,16 +121,6 @@ public class GzipCompressorOutputStream extends CompressorOutputStream {
 
             writeTrailer();
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @since 1.7
-     */
-    @Override
-    public void flush() throws IOException {
-        out.flush();
     }
 
     /**

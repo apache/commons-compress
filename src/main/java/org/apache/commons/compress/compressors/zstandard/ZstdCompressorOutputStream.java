@@ -30,9 +30,7 @@ import com.github.luben.zstd.ZstdOutputStream;
  *
  * @since 1.16
  */
-public class ZstdCompressorOutputStream extends CompressorOutputStream {
-
-    private final ZstdOutputStream encOS;
+public class ZstdCompressorOutputStream extends CompressorOutputStream<ZstdOutputStream> {
 
     /**
      * Wraps the given stream into a zstd-jni ZstdOutputStream using the default values for {@code level}, {@code
@@ -41,8 +39,9 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream {
      * @param outStream the stream to write to
      * @throws IOException if zstd-jni does
      */
+    @SuppressWarnings("resource") // Caller closes
     public ZstdCompressorOutputStream(final OutputStream outStream) throws IOException {
-        this.encOS = new ZstdOutputStream(outStream);
+        super(new ZstdOutputStream(outStream));
     }
 
     /**
@@ -53,8 +52,9 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream {
      * @throws IOException if zstd-jni does
      * @since 1.18
      */
+    @SuppressWarnings("resource") // Caller closes
     public ZstdCompressorOutputStream(final OutputStream outStream, final int level) throws IOException {
-        this.encOS = new ZstdOutputStream(outStream, level);
+        super(new ZstdOutputStream(outStream, level));
     }
 
     /**
@@ -66,9 +66,10 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream {
      * @throws IOException if zstd-jni does
      * @since 1.18
      */
+    @SuppressWarnings("resource") // Caller closes
     public ZstdCompressorOutputStream(final OutputStream outStream, final int level, final boolean closeFrameOnFlush) throws IOException {
-        this.encOS = new ZstdOutputStream(outStream, level);
-        this.encOS.setCloseFrameOnFlush(closeFrameOnFlush);
+        super(new ZstdOutputStream(outStream, level));
+        out().setCloseFrameOnFlush(closeFrameOnFlush);
     }
 
     /**
@@ -81,35 +82,23 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream {
      * @throws IOException if zstd-jni does
      * @since 1.18
      */
+    @SuppressWarnings("resource") // Caller closes
     public ZstdCompressorOutputStream(final OutputStream outStream, final int level, final boolean closeFrameOnFlush, final boolean useChecksum)
             throws IOException {
-        this.encOS = new ZstdOutputStream(outStream, level);
-        this.encOS.setCloseFrameOnFlush(closeFrameOnFlush);
-        this.encOS.setChecksum(useChecksum);
-    }
-
-    @Override
-    public void close() throws IOException {
-        encOS.close();
-    }
-
-    @Override
-    public void flush() throws IOException {
-        encOS.flush();
+        super(new ZstdOutputStream(outStream, level));
+        out()
+            .setCloseFrameOnFlush(closeFrameOnFlush)
+            .setChecksum(useChecksum);
     }
 
     @Override
     public String toString() {
-        return encOS.toString();
+        return out.toString();
     }
 
     @Override
     public void write(final byte[] buf, final int off, final int len) throws IOException {
-        encOS.write(buf, off, len);
+        out.write(buf, off, len);
     }
 
-    @Override
-    public void write(final int b) throws IOException {
-        encOS.write(b);
-    }
 }

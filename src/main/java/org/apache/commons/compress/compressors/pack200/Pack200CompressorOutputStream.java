@@ -33,9 +33,8 @@ import org.apache.commons.compress.java.util.jar.Pack200;
  * @NotThreadSafe
  * @since 1.3
  */
-public class Pack200CompressorOutputStream extends CompressorOutputStream {
+public class Pack200CompressorOutputStream extends CompressorOutputStream<OutputStream> {
     private boolean finished;
-    private final OutputStream originalOutput;
     private final AbstractStreamBridge abstractStreamBridge;
     private final Map<String, String> properties;
 
@@ -80,7 +79,7 @@ public class Pack200CompressorOutputStream extends CompressorOutputStream {
      * @throws IOException if writing fails
      */
     public Pack200CompressorOutputStream(final OutputStream out, final Pack200Strategy mode, final Map<String, String> props) throws IOException {
-        originalOutput = out;
+        super(out);
         abstractStreamBridge = mode.newStreamBridge();
         properties = props;
     }
@@ -93,7 +92,7 @@ public class Pack200CompressorOutputStream extends CompressorOutputStream {
             try {
                 abstractStreamBridge.stop();
             } finally {
-                originalOutput.close();
+                out.close();
             }
         }
     }
@@ -106,7 +105,7 @@ public class Pack200CompressorOutputStream extends CompressorOutputStream {
                 p.properties().putAll(properties);
             }
             try (JarInputStream ji = new JarInputStream(abstractStreamBridge.getInputStream())) {
-                p.pack(ji, originalOutput);
+                p.pack(ji, out);
             }
         }
     }

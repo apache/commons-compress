@@ -37,7 +37,7 @@ import org.apache.commons.compress.utils.ByteUtils;
  * @since 1.14
  * @NotThreadSafe
  */
-public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
+public class BlockLZ4CompressorOutputStream extends CompressorOutputStream<OutputStream> {
 
     static final class Pair {
 
@@ -185,8 +185,6 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
 
     private final LZ77Compressor compressor;
 
-    private final OutputStream os;
-
     // used in one-arg write method
     private final byte[] oneByte = new byte[1];
     private boolean finished;
@@ -200,20 +198,20 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
     /**
      * Creates a new LZ4 output stream.
      *
-     * @param os An OutputStream to read compressed data from
+     * @param out An OutputStream to read compressed data from
      */
-    public BlockLZ4CompressorOutputStream(final OutputStream os) {
-        this(os, createParameterBuilder().build());
+    public BlockLZ4CompressorOutputStream(final OutputStream out) {
+        this(out, createParameterBuilder().build());
     }
 
     /**
      * Creates a new LZ4 output stream.
      *
-     * @param os     An OutputStream to read compressed data from
+     * @param out     An OutputStream to read compressed data from
      * @param params The parameters to use for LZ77 compression.
      */
-    public BlockLZ4CompressorOutputStream(final OutputStream os, final Parameters params) {
-        this.os = os;
+    public BlockLZ4CompressorOutputStream(final OutputStream out, final Parameters params) {
+        super(out);
         compressor = new LZ77Compressor(params, block -> {
             switch (block.getType()) {
             case LITERAL:
@@ -289,7 +287,7 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
         try {
             finish();
         } finally {
-            os.close();
+            out.close();
         }
     }
 
@@ -472,7 +470,7 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
         rewriteLastPairs();
         for (final Pair p : pairs) {
             if (!p.hasBeenWritten()) {
-                p.writeTo(os);
+                p.writeTo(out);
             }
         }
         pairs.clear();
@@ -495,7 +493,7 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream {
             if (!p.canBeWritten(unwrittenLength)) {
                 break;
             }
-            p.writeTo(os);
+            p.writeTo(out);
         }
     }
 }

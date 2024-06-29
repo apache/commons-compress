@@ -30,8 +30,7 @@ import org.tukaani.xz.LZMAOutputStream;
  *
  * @since 1.13
  */
-public class LZMACompressorOutputStream extends CompressorOutputStream {
-    private final LZMAOutputStream out;
+public class LZMACompressorOutputStream extends CompressorOutputStream<LZMAOutputStream> {
 
     /**
      * Creates a LZMA compressor.
@@ -39,14 +38,9 @@ public class LZMACompressorOutputStream extends CompressorOutputStream {
      * @param outputStream the stream to wrap
      * @throws IOException on error
      */
+    @SuppressWarnings("resource") // Caller closes
     public LZMACompressorOutputStream(final OutputStream outputStream) throws IOException {
-        out = new LZMAOutputStream(outputStream, new LZMA2Options(), -1);
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public void close() throws IOException {
-        out.close();
+        super(new LZMAOutputStream(outputStream, new LZMA2Options(), -1));
     }
 
     /**
@@ -54,8 +48,9 @@ public class LZMACompressorOutputStream extends CompressorOutputStream {
      *
      * @throws IOException on error
      */
+    @SuppressWarnings("resource") // instance variable access
     public void finish() throws IOException {
-        out.finish();
+        out().finish();
     }
 
     /**
@@ -72,9 +67,4 @@ public class LZMACompressorOutputStream extends CompressorOutputStream {
         out.write(buf, off, len);
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public void write(final int b) throws IOException {
-        out.write(b);
-    }
 }

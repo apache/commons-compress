@@ -28,10 +28,15 @@ import org.tukaani.xz.XZOutputStream;
 /**
  * XZ compressor.
  *
+ * <em>Calling flush()</em>
+ * <p>
+ * Calling {@link #flush()} flushes the encoder and calls {@code outputStream.flush()}. All buffered pending data will then be decompressible from the output
+ * stream. Calling this function very often may increase the compressed file size a lot.
+ * </p>
+ *
  * @since 1.4
  */
-public class XZCompressorOutputStream extends CompressorOutputStream {
-    private final XZOutputStream out;
+public class XZCompressorOutputStream extends CompressorOutputStream<XZOutputStream> {
 
     /**
      * Creates a new XZ compressor using the default LZMA2 options. This is equivalent to {@code XZCompressorOutputStream(outputStream, 6)}.
@@ -39,8 +44,9 @@ public class XZCompressorOutputStream extends CompressorOutputStream {
      * @param outputStream the stream to wrap
      * @throws IOException on error
      */
+    @SuppressWarnings("resource") // Caller closes
     public XZCompressorOutputStream(final OutputStream outputStream) throws IOException {
-        out = new XZOutputStream(outputStream, new LZMA2Options());
+        super(new XZOutputStream(outputStream, new LZMA2Options()));
     }
 
     /**
@@ -55,13 +61,9 @@ public class XZCompressorOutputStream extends CompressorOutputStream {
      * @param preset       the preset
      * @throws IOException on error
      */
+    @SuppressWarnings("resource") // Caller closes
     public XZCompressorOutputStream(final OutputStream outputStream, final int preset) throws IOException {
-        out = new XZOutputStream(outputStream, new LZMA2Options(preset));
-    }
-
-    @Override
-    public void close() throws IOException {
-        out.close();
+        super(new XZOutputStream(outputStream, new LZMA2Options(preset)));
     }
 
     /**
@@ -69,17 +71,9 @@ public class XZCompressorOutputStream extends CompressorOutputStream {
      *
      * @throws IOException on error
      */
+    @SuppressWarnings("resource") // instance variable access
     public void finish() throws IOException {
-        out.finish();
-    }
-
-    /**
-     * Flushes the encoder and calls {@code outputStream.flush()}. All buffered pending data will then be decompressible from the output stream. Calling this
-     * function very often may increase the compressed file size a lot.
-     */
-    @Override
-    public void flush() throws IOException {
-        out.flush();
+        out().finish();
     }
 
     @Override
@@ -87,8 +81,4 @@ public class XZCompressorOutputStream extends CompressorOutputStream {
         out.write(buf, off, len);
     }
 
-    @Override
-    public void write(final int b) throws IOException {
-        out.write(b);
-    }
 }

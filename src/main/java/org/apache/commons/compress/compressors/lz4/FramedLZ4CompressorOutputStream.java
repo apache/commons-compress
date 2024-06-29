@@ -36,7 +36,7 @@ import org.apache.commons.compress.utils.ByteUtils;
  * @since 1.14
  * @NotThreadSafe
  */
-public class FramedLZ4CompressorOutputStream extends CompressorOutputStream {
+public class FramedLZ4CompressorOutputStream extends CompressorOutputStream<OutputStream> {
 
     /**
      * The block sizes supported by the format.
@@ -148,7 +148,6 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream {
     // used in one-arg write method
     private final byte[] oneByte = new byte[1];
     private final byte[] blockData;
-    private final OutputStream out;
     private final Parameters params;
 
     private boolean finished;
@@ -182,9 +181,9 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream {
      * @throws IOException if writing the signature fails
      */
     public FramedLZ4CompressorOutputStream(final OutputStream out, final Parameters params) throws IOException {
+        super(out);
         this.params = params;
         blockData = new byte[params.blockSize.getSize()];
-        this.out = out;
         blockHash = params.withBlockChecksum ? new org.apache.commons.codec.digest.XXHash32() : null;
         out.write(FramedLZ4CompressorInputStream.LZ4_SIGNATURE);
         writeFrameDescriptor();

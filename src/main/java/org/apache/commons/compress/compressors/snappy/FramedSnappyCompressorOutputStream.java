@@ -38,7 +38,7 @@ import org.apache.commons.compress.utils.ByteUtils;
  * @since 1.14
  * @NotThreadSafe
  */
-public class FramedSnappyCompressorOutputStream extends CompressorOutputStream {
+public class FramedSnappyCompressorOutputStream extends CompressorOutputStream<OutputStream> {
     // see spec:
     // > However, we place an additional restriction that the uncompressed data
     // > in a chunk must be no longer than 65,536 bytes. This allows consumers to
@@ -54,7 +54,6 @@ public class FramedSnappyCompressorOutputStream extends CompressorOutputStream {
         return x;
     }
 
-    private final OutputStream out;
     private final Parameters params;
     private final PureJavaCrc32C checksum = new PureJavaCrc32C();
     // used in one-arg write method
@@ -83,7 +82,7 @@ public class FramedSnappyCompressorOutputStream extends CompressorOutputStream {
      * @throws IOException if writing the signature fails
      */
     public FramedSnappyCompressorOutputStream(final OutputStream out, final Parameters params) throws IOException {
-        this.out = out;
+        super(out);
         this.params = params;
         consumer = new ByteUtils.OutputStreamByteConsumer(out);
         out.write(FramedSnappyCompressorInputStream.SZ_SIGNATURE);
