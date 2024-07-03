@@ -185,7 +185,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
         } finally {
             if (!this.closed) {
                 out.close();
-                this.closed = true;
+                closed = true;
             }
         }
     }
