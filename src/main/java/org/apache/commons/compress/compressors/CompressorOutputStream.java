@@ -28,6 +28,12 @@ import java.io.OutputStream;
  */
 public abstract class CompressorOutputStream<T extends OutputStream> extends FilterOutputStream {
 
+    /**
+     * Constructs a new instance without a backing OutputStream.
+     * <p>
+     * You must initialize {@code this.out} after construction.
+     * </p>
+     */
     public CompressorOutputStream() {
         super(null);
     }
