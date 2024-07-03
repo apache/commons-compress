@@ -54,6 +54,8 @@ The <action> type attribute can be add,update,fix,remove.
       <!-- ADD -->
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add ArchiveInputStream.forEach(IOConsumer).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add ArchiveInputStream.iterator().</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Add ArchiveOutputStream.isFinished().</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Add ArchiveOutputStream.checkFinished().</action>
       <!-- UPDATE -->
       <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump org.apache.commons:commons-parent from 69 to 71 #537.</action>
       <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump PMD from 6.x to 7.2.0.</action>

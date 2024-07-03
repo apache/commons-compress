@@ -255,7 +255,12 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      */
     static final byte[] ZIP64_EOCD_LOC_SIG = ZipLong.getBytes(0X07064B50L); // NOSONAR
 
-    /** Indicates if this archive is finished. protected for use in Jar implementation */
+    /**
+     * Indicates if this archive is finished. protected for use in Jar implementation.
+     *
+     * @deprecated See {@link #isFinished()} and {@link #finish()}.
+     */
+    @Deprecated
     protected boolean finished;
 
     /**

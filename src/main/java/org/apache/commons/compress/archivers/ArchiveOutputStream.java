@@ -60,6 +60,11 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Filter
     private long bytesWritten;
 
     /**
+     * Whether this instance was successfully finished.
+     */
+    private boolean finished;
+
+    /**
      * Constructs a new instance without a backing OutputStream.
      * <p>
      * You must initialize {@code this.out} after construction.
@@ -93,6 +98,18 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Filter
      */
     public boolean canWriteEntryData(final ArchiveEntry archiveEntry) {
         return true;
+    }
+
+    /**
+     * Throws an {@link IOException} if this instance is already finished.
+     *
+     * @throws IOException if this instance is already finished.
+     * @since 1.27.0
+     */
+    protected void checkFinished() throws IOException {
+        if (isFinished()) {
+            throw new IOException("Stream has already been finished.");
+        }
     }
 
     /**
@@ -162,9 +179,11 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Filter
     /**
      * Finishes the addition of entries to this stream, without closing it. Additional data can be written, if the format supports it.
      *
-     * @throws IOException if the user forgets to close the entry.
+     * @throws IOException Maybe thrown by subclasses if the user forgets to close the entry.
      */
-    public abstract void finish() throws IOException;
+    public void finish() throws IOException {
+        finished = true;
+    }
 
     /**
      * Gets the current number of bytes written to this stream.
@@ -185,6 +204,16 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Filter
     @Deprecated
     public int getCount() {
         return (int) bytesWritten;
+    }
+
+    /**
+     * Tests whether this instance was successfully finished.
+     *
+     * @return whether this instance was successfully finished.
+     * @since 1.27.0
+     */
+    protected boolean isFinished() {
+        return finished;
     }
 
     /**

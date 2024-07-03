@@ -117,11 +117,6 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
 
     private boolean haveUnclosedEntry;
 
-    /**
-     * indicates if this archive is finished
-     */
-    private boolean finished;
-
     private final CountingOutputStream countingOut;
 
     private final ZipEncoding zipEncoding;
@@ -299,7 +294,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
     @Override
     public void close() throws IOException {
         try {
-            if (!finished) {
+            if (!isFinished()) {
                 finish();
             }
         } finally {
@@ -319,9 +314,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
      */
     @Override
     public void closeArchiveEntry() throws IOException {
-        if (finished) {
-            throw new IOException("Stream has already been finished");
-        }
+        checkFinished();
         if (!haveUnclosedEntry) {
             throw new IOException("No current entry to close");
         }
@@ -340,17 +333,13 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
 
     @Override
     public TarArchiveEntry createArchiveEntry(final File inputFile, final String entryName) throws IOException {
-        if (finished) {
-            throw new IOException("Stream has already been finished");
-        }
+        checkFinished();
         return new TarArchiveEntry(inputFile, entryName);
     }
 
     @Override
     public TarArchiveEntry createArchiveEntry(final Path inputPath, final String entryName, final LinkOption... options) throws IOException {
-        if (finished) {
-            throw new IOException("Stream has already been finished");
-        }
+        checkFinished();
         return new TarArchiveEntry(inputPath, entryName, options);
     }
 
@@ -411,10 +400,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
      */
     @Override
     public void finish() throws IOException {
-        if (finished) {
-            throw new IOException("This archive has already been finished");
-        }
-
+        checkFinished();
         if (haveUnclosedEntry) {
             throw new IOException("This archive contains unclosed entries.");
         }
@@ -422,7 +408,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
         writeEOFRecord();
         padAsNeeded();
         out.flush();
-        finished = true;
+        super.finish();
     }
 
     @Override
@@ -528,9 +514,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
      */
     @Override
     public void putArchiveEntry(final TarArchiveEntry archiveEntry) throws IOException {
-        if (finished) {
-            throw new IOException("Stream has already been finished");
-        }
+        checkFinished();
         if (archiveEntry.isGlobalPaxHeader()) {
             final byte[] data = encodeExtendedPaxHeadersContents(archiveEntry.getExtraPaxHeaders());
             archiveEntry.setSize(data.length);

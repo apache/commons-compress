@@ -52,20 +52,8 @@ public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
     private boolean prevEntryOpen;
     private int longFileMode = LONGFILE_ERROR;
 
-    /** Indicates if this archive is finished */
-    private boolean finished;
-
     public ArArchiveOutputStream(final OutputStream out) {
         super(out);
-    }
-
-    /**
-     * @throws IOException
-     */
-    private void checkFinished() throws IOException {
-        if (finished) {
-            throw new IOException("Stream has already been finished");
-        }
     }
 
     private String checkLength(final String value, final int max, final String name) throws IOException {
@@ -81,12 +69,12 @@ public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
     @Override
     public void close() throws IOException {
         try {
-            if (!finished) {
+            if (!isFinished()) {
                 finish();
             }
         } finally {
-            out.close();
             prevEntry = null;
+            out.close();
         }
     }
 
@@ -125,7 +113,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
             throw new IOException("This archive contains unclosed entries.");
         }
         checkFinished();
-        finished = true;
+        super.finish();
     }
 
     private int pad(final int offset, final int newOffset, final char fill) throws IOException {

@@ -73,9 +73,6 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
 
     private boolean closed;
 
-    /** Indicates if this archive is finished */
-    private boolean finished;
-
     /**
      * See {@link CpioArchiveEntry#CpioArchiveEntry(short)} for possible values.
      */
@@ -172,6 +169,17 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
     }
 
     /**
+     * Check to make sure that this stream has not been closed
+     *
+     * @throws IOException if the stream is already closed
+     */
+    private void checkOpen() throws IOException {
+        if (this.closed) {
+            throw new IOException("Stream closed");
+        }
+    }
+
+    /**
      * Closes the CPIO output stream as well as the stream being filtered.
      *
      * @throws IOException if an I/O error has occurred or if a CPIO file error has occurred
@@ -179,7 +187,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
     @Override
     public void close() throws IOException {
         try {
-            if (!finished) {
+            if (!isFinished()) {
                 finish();
             }
         } finally {
@@ -197,12 +205,8 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
      */
     @Override
     public void closeArchiveEntry() throws IOException {
-        if (finished) {
-            throw new IOException("Stream has already been finished");
-        }
-
-        ensureOpen();
-
+        checkFinished();
+        checkOpen();
         if (entry == null) {
             throw new IOException("Trying to close non-existent entry");
         }
@@ -226,9 +230,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
      */
     @Override
     public CpioArchiveEntry createArchiveEntry(final File inputFile, final String entryName) throws IOException {
-        if (finished) {
-            throw new IOException("Stream has already been finished");
-        }
+        checkFinished();
         return new CpioArchiveEntry(inputFile, entryName);
     }
 
@@ -239,9 +241,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
      */
     @Override
     public CpioArchiveEntry createArchiveEntry(final Path inputPath, final String entryName, final LinkOption... options) throws IOException {
-        if (finished) {
-            throw new IOException("Stream has already been finished");
-        }
+        checkFinished();
         return new CpioArchiveEntry(inputPath, entryName, options);
     }
 
@@ -259,17 +259,6 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
     }
 
     /**
-     * Check to make sure that this stream has not been closed
-     *
-     * @throws IOException if the stream is already closed
-     */
-    private void ensureOpen() throws IOException {
-        if (this.closed) {
-            throw new IOException("Stream closed");
-        }
-    }
-
-    /**
      * Finishes writing the contents of the CPIO output stream without closing the underlying stream. Use this method when applying multiple filters in
      * succession to the same output stream.
      *
@@ -277,10 +266,8 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
      */
     @Override
     public void finish() throws IOException {
-        ensureOpen();
-        if (finished) {
-            throw new IOException("This archive has already been finished");
-        }
+        checkOpen();
+        checkFinished();
 
         if (this.entry != null) {
             throw new IOException("This archive contains unclosed entries.");
@@ -295,8 +282,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
         if (lengthOfLastBlock != 0) {
             pad(blockSize - lengthOfLastBlock);
         }
-
-        finished = true;
+        super.finish();
     }
 
     private void pad(final int count) throws IOException {
@@ -317,11 +303,8 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
      */
     @Override
     public void putArchiveEntry(final CpioArchiveEntry entry) throws IOException {
-        if (finished) {
-            throw new IOException("Stream has already been finished");
-        }
-
-        ensureOpen();
+        checkFinished();
+        checkOpen();
         if (this.entry != null) {
             closeArchiveEntry(); // close previous entry
         }
@@ -353,7 +336,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
      */
     @Override
     public void write(final byte[] b, final int off, final int len) throws IOException {
-        ensureOpen();
+        checkOpen();
         if (off < 0 || len < 0 || off > b.length - len) {
             throw new IndexOutOfBoundsException();
         }
