@@ -30,11 +30,7 @@ final class BoundedSeekableByteChannelInputStream extends InputStream {
     BoundedSeekableByteChannelInputStream(final SeekableByteChannel channel, final long size) {
         this.channel = channel;
         this.bytesRemaining = size;
-        if (size < MAX_BUF_LEN && size > 0) {
-            buffer = ByteBuffer.allocate((int) size);
-        } else {
-            buffer = ByteBuffer.allocate(MAX_BUF_LEN);
-        }
+        this.buffer = ByteBuffer.allocate(size < MAX_BUF_LEN && size > 0 ? (int) size : MAX_BUF_LEN);
     }
 
     @Override
