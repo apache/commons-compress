@@ -122,8 +122,6 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
      */
     private boolean finished;
 
-    private final FixedLengthBlockOutputStream out;
-
     private final CountingOutputStream countingOut;
 
     private final ZipEncoding zipEncoding;
@@ -199,6 +197,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
      * @since 1.4
      */
     public TarArchiveOutputStream(final OutputStream os, final int blockSize, final String encoding) {
+        super(os);
         final int realBlockSize;
         if (BLOCK_SIZE_UNSPECIFIED == blockSize) {
             realBlockSize = RECORD_SIZE;
@@ -209,7 +208,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
         if (realBlockSize <= 0 || realBlockSize % RECORD_SIZE != 0) {
             throw new IllegalArgumentException("Block size must be a multiple of 512 bytes. Attempt to use set size of " + blockSize);
         }
-        out = new FixedLengthBlockOutputStream(countingOut = new CountingOutputStream(os), RECORD_SIZE);
+        this.out = new FixedLengthBlockOutputStream(countingOut = new CountingOutputStream(os), RECORD_SIZE);
         this.charsetName = Charsets.toCharset(encoding).name();
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
 
@@ -326,7 +325,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
         if (!haveUnclosedEntry) {
             throw new IOException("No current entry to close");
         }
-        out.flushBlock();
+        ((FixedLengthBlockOutputStream) out).flushBlock();
         if (currBytes < currSize) {
             throw new IOException(
                     "Entry '" + currName + "' closed at '" + currBytes + "' before the '" + currSize + "' bytes specified in the header were written");

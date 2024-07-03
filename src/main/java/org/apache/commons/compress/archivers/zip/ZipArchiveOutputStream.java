@@ -337,7 +337,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      */
     protected final Deflater def;
 
-    private final OutputStream outputStream;
+    private final OutputStream out;
 
     /**
      * whether to use the general purpose bit flag when writing UTF-8 file names or not.
@@ -415,7 +415,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * @param out the outputstream to zip
      */
     public ZipArchiveOutputStream(final OutputStream out) {
-        this.outputStream = out;
+        this.out = out;
         this.def = new Deflater(level, true);
         this.streamCompressor = StreamCompressor.create(out, def);
         this.isSplitZip = false;
@@ -440,8 +440,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      */
     public ZipArchiveOutputStream(final Path path, final long zipSplitSize) throws IOException {
         this.def = new Deflater(level, true);
-        this.outputStream = new ZipSplitOutputStream(path, zipSplitSize);
-        this.streamCompressor = StreamCompressor.create(this.outputStream, def);
+        this.out = new ZipSplitOutputStream(path, zipSplitSize);
+        this.streamCompressor = StreamCompressor.create(this.out, def);
         this.isSplitZip = true;
     }
 
@@ -455,8 +455,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      */
     public ZipArchiveOutputStream(final Path file, final OpenOption... options) throws IOException {
         this.def = new Deflater(level, true);
-        this.outputStream = options.length == 0 ? new FileRandomAccessOutputStream(file) : new FileRandomAccessOutputStream(file, options);
-        this.streamCompressor = StreamCompressor.create(outputStream, def);
+        this.out = options.length == 0 ? new FileRandomAccessOutputStream(file) : new FileRandomAccessOutputStream(file, options);
+        this.streamCompressor = StreamCompressor.create(out, def);
         this.isSplitZip = false;
     }
 
@@ -471,9 +471,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * @since 1.13
      */
     public ZipArchiveOutputStream(final SeekableByteChannel channel) {
-        this.outputStream = new SeekableChannelRandomAccessOutputStream(channel);
+        this.out = new SeekableChannelRandomAccessOutputStream(channel);
         this.def = new Deflater(level, true);
-        this.streamCompressor = StreamCompressor.create(outputStream, def);
+        this.streamCompressor = StreamCompressor.create(out, def);
         this.isSplitZip = false;
     }
 
@@ -609,7 +609,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     }
 
     private void closeEntry(final boolean actuallyNeedsZip64, final boolean phased) throws IOException {
-        if (!phased && outputStream instanceof RandomAccessOutputStream) {
+        if (!phased && out instanceof RandomAccessOutputStream) {
             rewriteSizesAndCrc(actuallyNeedsZip64);
         }
 
@@ -707,7 +707,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
         if (isSplitZip) {
             // calculate the disk number for every central file header,
             // this will be used in writing End Of Central Directory and Zip64 End Of Central Directory
-            final int currentSplitSegment = ((ZipSplitOutputStream) this.outputStream).getCurrentSplitSegmentIndex();
+            final int currentSplitSegment = ((ZipSplitOutputStream) this.out).getCurrentSplitSegmentIndex();
             if (numberOfCDInDiskData.get(currentSplitSegment) == null) {
                 numberOfCDInDiskData.put(currentSplitSegment, 1);
             } else {
@@ -849,7 +849,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
         ZipUtil.toDosTime(ze.getTime(), buf, LFH_TIME_OFFSET);
 
         // CRC
-        if (phased || !(zipMethod == DEFLATED || outputStream instanceof RandomAccessOutputStream)) {
+        if (phased || !(zipMethod == DEFLATED || out instanceof RandomAccessOutputStream)) {
             ZipLong.putLong(ze.getCrc(), buf, LFH_CRC_OFFSET);
         } else {
             System.arraycopy(LZERO, 0, buf, LFH_CRC_OFFSET, ZipConstants.WORD);
@@ -866,7 +866,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
         } else if (phased) {
             ZipLong.putLong(ze.getCompressedSize(), buf, LFH_COMPRESSED_SIZE_OFFSET);
             ZipLong.putLong(ze.getSize(), buf, LFH_ORIGINAL_SIZE_OFFSET);
-        } else if (zipMethod == DEFLATED || outputStream instanceof RandomAccessOutputStream) {
+        } else if (zipMethod == DEFLATED || out instanceof RandomAccessOutputStream) {
             System.arraycopy(LZERO, 0, buf, LFH_COMPRESSED_SIZE_OFFSET, ZipConstants.WORD);
             System.arraycopy(LZERO, 0, buf, LFH_ORIGINAL_SIZE_OFFSET, ZipConstants.WORD);
         } else { // Stored
@@ -904,8 +904,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * </p>
      */
     void destroy() throws IOException {
-        if (outputStream != null) {
-            outputStream.close();
+        if (out != null) {
+            out.close();
         }
     }
 
@@ -930,7 +930,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
         if (isSplitZip) {
             // when creating a split zip, the offset should be
             // the offset to the corresponding segment disk
-            final ZipSplitOutputStream zipSplitOutputStream = (ZipSplitOutputStream) this.outputStream;
+            final ZipSplitOutputStream zipSplitOutputStream = (ZipSplitOutputStream) this.out;
             cdOffset = zipSplitOutputStream.getCurrentSplitSegmentBytesWritten();
             cdDiskNumberStart = zipSplitOutputStream.getCurrentSplitSegmentIndex();
         }
@@ -958,7 +958,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
         streamCompressor.close();
         if (isSplitZip) {
             // trigger the ZipSplitOutputStream to write the final split segment
-            outputStream.close();
+            out.close();
         }
         finished = true;
     }
@@ -970,8 +970,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      */
     @Override
     public void flush() throws IOException {
-        if (outputStream != null) {
-            outputStream.flush();
+        if (out != null) {
+            out.flush();
         }
     }
 
@@ -1001,7 +1001,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * @since 1.3
      */
     private Zip64Mode getEffectiveZip64Mode(final ZipArchiveEntry ze) {
-        if (zip64Mode != Zip64Mode.AsNeeded || outputStream instanceof RandomAccessOutputStream ||
+        if (zip64Mode != Zip64Mode.AsNeeded || out instanceof RandomAccessOutputStream ||
                 ze.getMethod() != DEFLATED || ze.getSize() != ArchiveEntry.SIZE_UNKNOWN) {
             return zip64Mode;
         }
@@ -1074,7 +1074,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
             entry.entry.setCompressedSize(bytesWritten);
             entry.entry.setCrc(crc);
 
-        } else if (!(outputStream instanceof RandomAccessOutputStream)) {
+        } else if (!(out instanceof RandomAccessOutputStream)) {
             if (entry.entry.getCrc() != crc) {
                 throw new ZipException("Bad CRC checksum for entry " + entry.entry.getName() + ": " + Long.toHexString(entry.entry.getCrc()) + " instead of "
                         + Long.toHexString(crc));
@@ -1140,7 +1140,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * @return true if seekable
      */
     public boolean isSeekable() {
-        return outputStream instanceof RandomAccessOutputStream;
+        return out instanceof RandomAccessOutputStream;
     }
 
     private boolean isTooLargeForZip32(final ZipArchiveEntry zipArchiveEntry) {
@@ -1239,7 +1239,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * sizes.
      */
     private void rewriteSizesAndCrc(final boolean actuallyNeedsZip64) throws IOException {
-        final RandomAccessOutputStream randomStream = (RandomAccessOutputStream) outputStream;
+        final RandomAccessOutputStream randomStream = (RandomAccessOutputStream) out;
         long dataStart = entry.localDataStart;
         if (randomStream instanceof ZipSplitOutputStream) {
             dataStart = ((ZipSplitOutputStream) randomStream).calculateDiskPosition(entry.entry.getDiskNumberStart(), dataStart);
@@ -1446,7 +1446,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     private boolean shouldAddZip64Extra(final ZipArchiveEntry entry, final Zip64Mode mode) {
         return mode == Zip64Mode.Always || mode == Zip64Mode.AlwaysWithCompatibility || entry.getSize() >= ZipConstants.ZIP64_MAGIC
                 || entry.getCompressedSize() >= ZipConstants.ZIP64_MAGIC
-                || entry.getSize() == ArchiveEntry.SIZE_UNKNOWN && outputStream instanceof RandomAccessOutputStream && mode != Zip64Mode.Never;
+                || entry.getSize() == ArchiveEntry.SIZE_UNKNOWN && out instanceof RandomAccessOutputStream && mode != Zip64Mode.Never;
     }
 
     /**
@@ -1458,7 +1458,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     private boolean shouldUseZip64EOCD() {
         int numberOfThisDisk = 0;
         if (isSplitZip) {
-            numberOfThisDisk = ((ZipSplitOutputStream) this.outputStream).getCurrentSplitSegmentIndex();
+            numberOfThisDisk = ((ZipSplitOutputStream) this.out).getCurrentSplitSegmentIndex();
         }
         final int numOfEntriesOnThisDisk = numberOfCDInDiskData.getOrDefault(numberOfThisDisk, 0);
         return numberOfThisDisk >= ZipConstants.ZIP64_MAGIC_SHORT /* number of this disk */
@@ -1472,7 +1472,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     }
 
     private boolean usesDataDescriptor(final int zipMethod, final boolean phased) {
-        return !phased && zipMethod == DEFLATED && !(outputStream instanceof RandomAccessOutputStream);
+        return !phased && zipMethod == DEFLATED && !(out instanceof RandomAccessOutputStream);
     }
 
     /**
@@ -1488,7 +1488,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
 
         int numberOfThisDisk = 0;
         if (isSplitZip) {
-            numberOfThisDisk = ((ZipSplitOutputStream) this.outputStream).getCurrentSplitSegmentIndex();
+            numberOfThisDisk = ((ZipSplitOutputStream) this.out).getCurrentSplitSegmentIndex();
         }
         if (numberOfThisDisk >= ZipConstants.ZIP64_MAGIC_SHORT) {
             throw new Zip64RequiredException(Zip64RequiredException.DISK_NUMBER_TOO_BIG_MESSAGE);
@@ -1523,7 +1523,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      */
     private void validateSizeInformation(final Zip64Mode effectiveMode) throws ZipException {
         // Size/CRC not required if SeekableByteChannel is used
-        if (entry.entry.getMethod() == STORED && !(outputStream instanceof RandomAccessOutputStream)) {
+        if (entry.entry.getMethod() == STORED && !(out instanceof RandomAccessOutputStream)) {
             if (entry.entry.getSize() == ArchiveEntry.SIZE_UNKNOWN) {
                 throw new ZipException("Uncompressed size is required for" + " STORED method when not writing to a" + " file");
             }
@@ -1580,7 +1580,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      */
     protected void writeCentralDirectoryEnd() throws IOException {
         if (!hasUsedZip64 && isSplitZip) {
-            ((ZipSplitOutputStream) this.outputStream).prepareToWriteUnsplittableContent(eocdLength);
+            ((ZipSplitOutputStream) this.out).prepareToWriteUnsplittableContent(eocdLength);
         }
 
         validateIfZip64IsNeededInEOCD();
@@ -1590,7 +1590,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
         // number of this disk
         int numberOfThisDisk = 0;
         if (isSplitZip) {
-            numberOfThisDisk = ((ZipSplitOutputStream) this.outputStream).getCurrentSplitSegmentIndex();
+            numberOfThisDisk = ((ZipSplitOutputStream) this.out).getCurrentSplitSegmentIndex();
         }
         writeCounted(ZipShort.getBytes(numberOfThisDisk));
 
@@ -1700,7 +1700,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
         if (isSplitZip) {
             // when creating a split zip, the offset should be
             // the offset to the corresponding segment disk
-            final ZipSplitOutputStream splitOutputStream = (ZipSplitOutputStream) this.outputStream;
+            final ZipSplitOutputStream splitOutputStream = (ZipSplitOutputStream) this.out;
             ze.setDiskNumberStart(splitOutputStream.getCurrentSplitSegmentIndex());
             localHeaderStart = splitOutputStream.getCurrentSplitSegmentBytesWritten();
         }
@@ -1786,7 +1786,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
         if (isSplitZip) {
             // when creating a split zip, the offset of should be
             // the offset to the corresponding segment disk
-            final ZipSplitOutputStream zipSplitOutputStream = (ZipSplitOutputStream) this.outputStream;
+            final ZipSplitOutputStream zipSplitOutputStream = (ZipSplitOutputStream) this.out;
             offset = zipSplitOutputStream.getCurrentSplitSegmentBytesWritten();
             diskNumberStart = zipSplitOutputStream.getCurrentSplitSegmentIndex();
         }
@@ -1811,7 +1811,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
         // number of this disk
         int numberOfThisDisk = 0;
         if (isSplitZip) {
-            numberOfThisDisk = ((ZipSplitOutputStream) this.outputStream).getCurrentSplitSegmentIndex();
+            numberOfThisDisk = ((ZipSplitOutputStream) this.out).getCurrentSplitSegmentIndex();
         }
         writeOut(ZipLong.getBytes(numberOfThisDisk));
 
@@ -1842,7 +1842,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
                     + ZipConstants.WORD /* total number of disks */;
 
             final long unsplittableContentSize = zip64EOCDLOCLength + eocdLength;
-            ((ZipSplitOutputStream) this.outputStream).prepareToWriteUnsplittableContent(unsplittableContentSize);
+            ((ZipSplitOutputStream) this.out).prepareToWriteUnsplittableContent(unsplittableContentSize);
         }
 
         // and now the "ZIP64 end of central directory locator"
@@ -1856,7 +1856,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
         if (isSplitZip) {
             // the Zip64 End Of Central Directory Locator and the End Of Central Directory must be
             // in the same split disk, it means they must be located in the last disk
-            final int totalNumberOfDisks = ((ZipSplitOutputStream) this.outputStream).getCurrentSplitSegmentIndex() + 1;
+            final int totalNumberOfDisks = ((ZipSplitOutputStream) this.out).getCurrentSplitSegmentIndex() + 1;
             writeOut(ZipLong.getBytes(totalNumberOfDisks));
         } else {
             writeOut(ONE);

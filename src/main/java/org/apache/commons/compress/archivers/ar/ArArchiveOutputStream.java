@@ -46,7 +46,6 @@ public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
     /** BSD ar extensions are used to store long file names in the archive. */
     public static final int LONGFILE_BSD = 1;
 
-    private final OutputStream out;
     private long entryOffset;
     private int headerPlus;
     private ArArchiveEntry prevEntry;
@@ -57,7 +56,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
     private boolean finished;
 
     public ArArchiveOutputStream(final OutputStream out) {
-        this.out = out;
+        super(out);
     }
 
     /**

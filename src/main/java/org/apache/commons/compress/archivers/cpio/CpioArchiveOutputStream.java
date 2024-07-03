@@ -87,8 +87,6 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
 
     private long written;
 
-    private final OutputStream out;
-
     private final int blockSize;
 
     private long nextArtificalDeviceAndInode = 1;
@@ -145,7 +143,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
      * @since 1.6
      */
     public CpioArchiveOutputStream(final OutputStream out, final short format, final int blockSize, final String encoding) {
-        this.out = out;
+        super(out);
         switch (format) {
         case FORMAT_NEW:
         case FORMAT_NEW_CRC:

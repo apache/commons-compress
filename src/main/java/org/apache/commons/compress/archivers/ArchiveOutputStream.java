@@ -19,6 +19,7 @@
 package org.apache.commons.compress.archivers;
 
 import java.io.File;
+import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.LinkOption;
@@ -48,7 +49,7 @@ import java.nio.file.Path;
  *
  * @param <E> The type of {@link ArchiveEntry} consumed.
  */
-public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends OutputStream {
+public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends FilterOutputStream {
 
     static final int BYTE_MASK = 0xFF;
 
@@ -57,6 +58,27 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Output
 
     /** Holds the number of bytes written to this stream. */
     private long bytesWritten;
+
+    /**
+     * Constructs a new instance without a backing OutputStream.
+     * <p>
+     * You must initialize {@code this.out} after construction.
+     * </p>
+     */
+    public ArchiveOutputStream() {
+        super(null);
+    }
+
+    /**
+     * Constructs a new instance with the given backing OutputStream.
+     *
+     * @param out the underlying output stream to be assigned to the field {@code this.out} for later use, or {@code null} if this instance is to be created
+     *            without an underlying stream.
+     * @since 1.27.0.
+     */
+    public ArchiveOutputStream(final OutputStream out) {
+        super(out);
+    }
 
     /**
      * Whether this stream is able to write the given entry.
