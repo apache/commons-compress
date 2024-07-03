@@ -412,11 +412,6 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
     }
 
     @Override
-    public void flush() throws IOException {
-        out.flush();
-    }
-
-    @Override
     public long getBytesWritten() {
         return countingOut.getByteCount();
     }
