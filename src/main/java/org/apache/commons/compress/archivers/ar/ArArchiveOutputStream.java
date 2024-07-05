@@ -74,7 +74,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
             }
         } finally {
             prevEntry = null;
-            out.close();
+            super.close();
         }
     }
 

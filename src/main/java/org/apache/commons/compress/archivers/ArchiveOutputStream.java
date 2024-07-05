@@ -60,6 +60,11 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Filter
     private long bytesWritten;
 
     /**
+     * Whether this instance was successfully closed.
+     */
+    private boolean closed;
+
+    /**
      * Whether this instance was successfully finished.
      */
     private boolean finished;
@@ -110,6 +115,12 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Filter
         if (isFinished()) {
             throw new IOException("Stream has already been finished.");
         }
+    }
+
+    @Override
+    public void close() throws IOException {
+        super.close();
+        closed = true;
     }
 
     /**
@@ -207,6 +218,16 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Filter
     }
 
     /**
+     * Tests whether this instance was successfully closed.
+     *
+     * @return whether this instance was successfully closed.
+     * @since 1.27.0
+     */
+    protected boolean isClosed() {
+        return closed;
+    }
+
+    /**
      * Tests whether this instance was successfully finished.
      *
      * @return whether this instance was successfully finished.
@@ -241,5 +262,17 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Filter
     public void write(final int b) throws IOException {
         oneByte[0] = (byte) (b & BYTE_MASK);
         write(oneByte, 0, 1);
+    }
+
+    /**
+     * Check to make sure that this stream has not been closed
+     *
+     * @throws IOException if the stream is already closed
+     * @since 1.27.0
+     */
+    protected void checkOpen() throws IOException {
+        if (isClosed()) {
+            throw new IOException("Stream closed");
+        }
     }
 }

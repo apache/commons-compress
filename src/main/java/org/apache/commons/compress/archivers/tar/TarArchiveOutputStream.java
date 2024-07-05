@@ -109,12 +109,9 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
 
     private final int recordsPerBlock;
 
-    private boolean closed;
-
     /**
      * Indicates if putArchiveEntry has been called without closeArchiveEntry
      */
-
     private boolean haveUnclosedEntry;
 
     private final CountingOutputStream countingOut;
@@ -298,9 +295,8 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
                 finish();
             }
         } finally {
-            if (!closed) {
-                out.close();
-                closed = true;
+            if (!isClosed()) {
+                super.close();
             }
         }
     }

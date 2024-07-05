@@ -71,8 +71,6 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
 
     private CpioArchiveEntry entry;
 
-    private boolean closed;
-
     /**
      * See {@link CpioArchiveEntry#CpioArchiveEntry(short)} for possible values.
      */
@@ -169,17 +167,6 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
     }
 
     /**
-     * Check to make sure that this stream has not been closed
-     *
-     * @throws IOException if the stream is already closed
-     */
-    private void checkOpen() throws IOException {
-        if (this.closed) {
-            throw new IOException("Stream closed");
-        }
-    }
-
-    /**
      * Closes the CPIO output stream as well as the stream being filtered.
      *
      * @throws IOException if an I/O error has occurred or if a CPIO file error has occurred
@@ -191,9 +178,8 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
                 finish();
             }
         } finally {
-            if (!this.closed) {
-                out.close();
-                closed = true;
+            if (!isClosed()) {
+                super.close();
             }
         }
     }
