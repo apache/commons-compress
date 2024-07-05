@@ -28,7 +28,6 @@ import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
 import org.apache.commons.io.input.BoundedInputStream;
-import org.apache.commons.io.input.CountingInputStream;
 
 /**
  * CompressorInputStream for the LZ4 frame format.
@@ -97,7 +96,7 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream implem
     private final byte[] oneByte = new byte[1];
     private final ByteUtils.ByteSupplier supplier = this::readOneByte;
 
-    private final CountingInputStream inputStream;
+    private final BoundedInputStream inputStream;
     private final boolean decompressConcatenated;
     private boolean expectBlockChecksum;
     private boolean expectBlockDependency;
@@ -136,7 +135,7 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream implem
      * @throws IOException if reading fails
      */
     public FramedLZ4CompressorInputStream(final InputStream in, final boolean decompressConcatenated) throws IOException {
-        this.inputStream = new CountingInputStream(in);
+        this.inputStream = BoundedInputStream.builder().setInputStream(in).get();
         this.decompressConcatenated = decompressConcatenated;
         init(true);
     }
@@ -172,7 +171,7 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream implem
      */
     @Override
     public long getCompressedCount() {
-        return inputStream.getByteCount();
+        return inputStream.getCount();
     }
 
     private void init(final boolean firstFrame) throws IOException {

@@ -39,7 +39,7 @@ public class BitInputStream implements Closeable {
         }
     }
 
-    private final org.apache.commons.io.input.CountingInputStream in;
+    private final org.apache.commons.io.input.BoundedInputStream in;
     private final ByteOrder byteOrder;
     private long bitsCached;
     private int bitsCachedSize;
@@ -51,7 +51,7 @@ public class BitInputStream implements Closeable {
      * @param byteOrder the bit arrangement across byte boundaries, either BIG_ENDIAN (aaaaabbb bb000000) or LITTLE_ENDIAN (bbbaaaaa 000000bb)
      */
     public BitInputStream(final InputStream in, final ByteOrder byteOrder) {
-        this.in = new org.apache.commons.io.input.CountingInputStream(in);
+        this.in = org.apache.commons.io.input.BoundedInputStream.builder().setInputStream(in).asSupplier().get();
         this.byteOrder = byteOrder;
     }
 
@@ -136,7 +136,7 @@ public class BitInputStream implements Closeable {
      * @since 1.17
      */
     public long getBytesRead() {
-        return in.getByteCount();
+        return in.getCount();
     }
 
     private long processBitsGreater57(final int count) throws IOException {

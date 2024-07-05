@@ -24,8 +24,8 @@ import java.io.InputStream;
 
 import org.apache.commons.compress.utils.ExactMath;
 import org.apache.commons.compress.utils.InputStreamStatistics;
+import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.io.input.CloseShieldInputStream;
-import org.apache.commons.io.input.CountingInputStream;
 
 /**
  * The implode compression method was added to PKZIP 1.01 released in 1989. It was then dropped from PKZIP 2.0 released in 1993 in favor of the deflate method.
@@ -175,14 +175,14 @@ final class ExplodingInputStream extends InputStream implements InputStreamStati
     private void init() throws IOException {
         if (bits == null) {
             // we do not want to close in
-            try (CountingInputStream i = new CountingInputStream(CloseShieldInputStream.wrap(in))) {
+            try (BoundedInputStream cis = BoundedInputStream.builder().setInputStream(CloseShieldInputStream.wrap(in)).get()) {
                 if (numberOfTrees == 3) {
-                    literalTree = BinaryTree.decode(i, 256);
+                    literalTree = BinaryTree.decode(cis, 256);
                 }
 
-                lengthTree = BinaryTree.decode(i, 64);
-                distanceTree = BinaryTree.decode(i, 64);
-                treeSizes += i.getByteCount();
+                lengthTree = BinaryTree.decode(cis, 64);
+                distanceTree = BinaryTree.decode(cis, 64);
+                treeSizes += cis.getCount();
             }
 
             bits = new BitStream(in);

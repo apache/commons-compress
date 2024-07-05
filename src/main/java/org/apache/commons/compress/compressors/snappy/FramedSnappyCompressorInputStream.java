@@ -29,7 +29,6 @@ import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
 import org.apache.commons.io.input.BoundedInputStream;
-import org.apache.commons.io.input.CountingInputStream;
 
 /**
  * CompressorInputStream for the framing Snappy format.
@@ -97,7 +96,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream imp
 
     private long unreadBytes;
 
-    private final CountingInputStream countingStream;
+    private final BoundedInputStream countingStream;
 
     /** The underlying stream to read compressed data from */
     private final PushbackInputStream inputStream;
@@ -155,7 +154,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream imp
         if (blockSize <= 0) {
             throw new IllegalArgumentException("blockSize must be bigger than 0");
         }
-        countingStream = new CountingInputStream(in);
+        countingStream = BoundedInputStream.builder().setInputStream(in).get();
         this.inputStream = new PushbackInputStream(countingStream, 1);
         this.blockSize = blockSize;
         this.dialect = dialect;
@@ -194,7 +193,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream imp
      */
     @Override
     public long getCompressedCount() {
-        return countingStream.getByteCount() - unreadBytes;
+        return countingStream.getCount() - unreadBytes;
     }
 
     /** {@inheritDoc} */

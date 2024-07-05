@@ -24,7 +24,7 @@ import java.io.InputStream;
 import org.apache.commons.compress.MemoryLimitException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.utils.InputStreamStatistics;
-import org.apache.commons.io.input.CountingInputStream;
+import org.apache.commons.io.input.BoundedInputStream;
 import org.tukaani.xz.LZMAInputStream;
 
 /**
@@ -47,7 +47,7 @@ public class LZMACompressorInputStream extends CompressorInputStream implements 
         return signature != null && length >= 3 && signature[0] == 0x5d && signature[1] == 0 && signature[2] == 0;
     }
 
-    private final CountingInputStream countingStream;
+    private final BoundedInputStream countingStream;
 
     private final InputStream in;
 
@@ -60,7 +60,7 @@ public class LZMACompressorInputStream extends CompressorInputStream implements 
      *                     this implementation, or the underlying {@code inputStream} throws an exception
      */
     public LZMACompressorInputStream(final InputStream inputStream) throws IOException {
-        in = new LZMAInputStream(countingStream = new CountingInputStream(inputStream), -1);
+        in = new LZMAInputStream(countingStream = BoundedInputStream.builder().setInputStream(inputStream).get(), -1);
     }
 
     /**
@@ -77,7 +77,7 @@ public class LZMACompressorInputStream extends CompressorInputStream implements 
      */
     public LZMACompressorInputStream(final InputStream inputStream, final int memoryLimitInKb) throws IOException {
         try {
-            in = new LZMAInputStream(countingStream = new CountingInputStream(inputStream), memoryLimitInKb);
+            in = new LZMAInputStream(countingStream = BoundedInputStream.builder().setInputStream(inputStream).get(), memoryLimitInKb);
         } catch (final org.tukaani.xz.MemoryLimitException e) {
             // convert to commons-compress exception
             throw new MemoryLimitException(e.getMemoryNeeded(), e.getMemoryLimit(), e);
@@ -101,7 +101,7 @@ public class LZMACompressorInputStream extends CompressorInputStream implements 
      */
     @Override
     public long getCompressedCount() {
-        return countingStream.getByteCount();
+        return countingStream.getCount();
     }
 
     /** {@inheritDoc} */

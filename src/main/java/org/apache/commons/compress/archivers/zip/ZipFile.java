@@ -61,7 +61,7 @@ import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.build.AbstractOrigin.ByteArrayOrigin;
 import org.apache.commons.io.build.AbstractStreamBuilder;
-import org.apache.commons.io.input.CountingInputStream;
+import org.apache.commons.io.input.BoundedInputStream;
 
 /**
  * Replacement for {@link java.util.zip.ZipFile}.
@@ -242,14 +242,14 @@ public class ZipFile implements Closeable {
         }
     }
 
-    private static final class StoredStatisticsStream extends CountingInputStream implements InputStreamStatistics {
+    private static final class StoredStatisticsStream extends BoundedInputStream implements InputStreamStatistics {
         StoredStatisticsStream(final InputStream in) {
             super(in);
         }
 
         @Override
         public long getCompressedCount() {
-            return super.getByteCount();
+            return super.getCount();
         }
 
         @Override
