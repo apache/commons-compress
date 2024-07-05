@@ -91,7 +91,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
         }
 
         private boolean atMaxLength() {
-            return getMaxLength() >= 0 && getCount() >= getMaxLength();
+            return getMaxCount() >= 0 && getCount() >= getMaxCount();
         }
 
         @Override
@@ -114,7 +114,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
             if (atMaxLength()) {
                 return -1;
             }
-            final long maxRead = getMaxLength() >= 0 ? Math.min(len, getMaxLength() - getCount()) : len;
+            final long maxRead = getMaxCount() >= 0 ? Math.min(len, getMaxCount() - getCount()) : len;
             return readCount(super.read(b, off, (int) maxRead));
         }
 
