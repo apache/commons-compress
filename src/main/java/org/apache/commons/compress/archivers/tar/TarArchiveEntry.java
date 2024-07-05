@@ -220,7 +220,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     private static final Pattern PAX_EXTENDED_HEADER_FILE_TIMES_PATTERN = Pattern.compile("-?\\d{1,19}(?:\\.\\d{1,19})?");
 
     private static FileTime fileTimeFromOptionalSeconds(final long seconds) {
-        return seconds <= 0 ? null : TimeUtils.unixTimeToFileTime(seconds);
+        return seconds <= 0 ? null : FileTimes.fromUnixTime(seconds);
     }
 
     /**
