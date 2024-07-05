@@ -22,6 +22,7 @@ import java.io.InputStream;
 
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.utils.InputStreamStatistics;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.CountingInputStream;
 import org.brotli.dec.BrotliInputStream;
 
@@ -93,7 +94,7 @@ public class BrotliCompressorInputStream extends CompressorInputStream implement
 
     @Override
     public long skip(final long n) throws IOException {
-        return org.apache.commons.io.IOUtils.skip(brotliInputStream, n);
+        return IOUtils.skip(brotliInputStream, n);
     }
 
     @Override
