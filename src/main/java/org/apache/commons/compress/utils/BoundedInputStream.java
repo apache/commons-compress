@@ -46,7 +46,7 @@ public class BoundedInputStream extends org.apache.commons.io.input.BoundedInput
      * @since 1.21
      */
     public long getBytesRemaining() {
-        return getMaxLength() - getCount();
+        return getMaxCount() - getCount();
     }
 
 //    @Override
