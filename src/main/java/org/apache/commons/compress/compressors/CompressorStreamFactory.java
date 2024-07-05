@@ -626,7 +626,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
      * @throws IllegalArgumentException if the archiver name or stream is null
      */
     @Override
-    public CompressorOutputStream createCompressorOutputStream(final String name, final OutputStream out) throws CompressorException {
+    public CompressorOutputStream<?> createCompressorOutputStream(final String name, final OutputStream out) throws CompressorException {
         if (name == null || out == null) {
             throw new IllegalArgumentException("Compressor name and stream must not be null.");
         }

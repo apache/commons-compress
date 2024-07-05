@@ -60,7 +60,7 @@ public final class FramedSnappyTest extends AbstractTest {
     private void testRoundtrip(final File input) throws Exception {
         final File outputSz = newTempFile(input.getName() + ".sz");
         try (OutputStream os = Files.newOutputStream(outputSz.toPath());
-                CompressorOutputStream sos = new CompressorStreamFactory().createCompressorOutputStream("snappy-framed", os)) {
+                CompressorOutputStream<?> sos = new CompressorStreamFactory().createCompressorOutputStream("snappy-framed", os)) {
             Files.copy(input.toPath(), sos);
         }
         try (InputStream is = Files.newInputStream(input.toPath());
@@ -84,7 +84,7 @@ public final class FramedSnappyTest extends AbstractTest {
         final File outputSz = newTempFile(input.getName() + ".sz");
         try (InputStream is = Files.newInputStream(input.toPath());
                 OutputStream os = Files.newOutputStream(outputSz.toPath());
-                CompressorOutputStream sos = new CompressorStreamFactory().createCompressorOutputStream("snappy-framed", os)) {
+                CompressorOutputStream<?> sos = new CompressorStreamFactory().createCompressorOutputStream("snappy-framed", os)) {
             final byte[] b = IOUtils.toByteArray(is);
             sos.write(b[0]);
             sos.write(b, 1, b.length - 1); // must be split into multiple compressed chunks

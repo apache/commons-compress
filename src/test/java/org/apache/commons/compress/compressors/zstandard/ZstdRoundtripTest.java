@@ -64,7 +64,7 @@ public class ZstdRoundtripTest extends AbstractTest {
         final Path input = getPath("bla.tar");
         final File output = newTempFile(input.getFileName() + ".zstd");
         try (OutputStream os = Files.newOutputStream(output.toPath());
-                CompressorOutputStream zos = new CompressorStreamFactory().createCompressorOutputStream("zstd", os)) {
+                CompressorOutputStream<?> zos = new CompressorStreamFactory().createCompressorOutputStream("zstd", os)) {
             Files.copy(input, zos);
         }
         try (InputStream inputStream = Files.newInputStream(output.toPath());

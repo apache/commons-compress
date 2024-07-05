@@ -41,7 +41,7 @@ public final class DeflateTest extends AbstractTest {
         final File input = getFile("test1.xml");
         final File output = newTempFile("test1.xml.deflatez");
         try (OutputStream out = Files.newOutputStream(output.toPath())) {
-            try (CompressorOutputStream cos = new CompressorStreamFactory().createCompressorOutputStream("deflate", out)) {
+            try (CompressorOutputStream<?> cos = new CompressorStreamFactory().createCompressorOutputStream("deflate", out)) {
                 Files.copy(input.toPath(), cos);
             }
         }

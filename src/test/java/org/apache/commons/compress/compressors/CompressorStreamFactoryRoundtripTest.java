@@ -54,7 +54,7 @@ public class CompressorStreamFactoryRoundtripTest {
         final CompressorStreamProvider factory = new CompressorStreamFactory();
         final ByteArrayOutputStream compressedOs = new ByteArrayOutputStream();
         final String fixture = "The quick brown fox jumps over the lazy dog";
-        try (CompressorOutputStream compressorOutputStream = factory.createCompressorOutputStream(compressorName, compressedOs)) {
+        try (CompressorOutputStream<?> compressorOutputStream = factory.createCompressorOutputStream(compressorName, compressedOs)) {
             compressorOutputStream.write(fixture.getBytes(StandardCharsets.UTF_8.name()));
             compressorOutputStream.flush();
         }

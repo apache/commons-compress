@@ -48,7 +48,7 @@ public final class BZip2Test extends AbstractTest {
         {
             output = newTempFile("test.txt.bz2");
             try (OutputStream out = Files.newOutputStream(output.toPath());
-                    CompressorOutputStream cos = new CompressorStreamFactory().createCompressorOutputStream("bzip2", out)) {
+                    CompressorOutputStream<?> cos = new CompressorStreamFactory().createCompressorOutputStream("bzip2", out)) {
                 Files.copy(input.toPath(), cos);
             }
         }
