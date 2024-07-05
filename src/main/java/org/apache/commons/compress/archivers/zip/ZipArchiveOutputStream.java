@@ -376,7 +376,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     private final boolean isSplitZip;
 
     /**
-     * Holds the number of Central Directories on each disk, this is used when writing Zip64 End Of Central Directory and End Of Central Directory
+     * Holds the number of Central Directories on each disk. This is used when writing Zip64 End Of Central Directory and End Of Central Directory.
      */
     private final Map<Integer, Integer> numberOfCDInDiskData = new HashMap<>();
 
