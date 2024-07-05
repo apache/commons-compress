@@ -49,6 +49,12 @@ public abstract class CompressorOutputStream<T extends OutputStream> extends Fil
         super(out);
     }
 
+    /**
+     * Gets the underlying output stream.
+     *
+     * @return the underlying output stream.
+     * @since 1.27.0
+     */
     @SuppressWarnings("unchecked")
     protected T out() {
         return (T) out;
