@@ -25,6 +25,13 @@ public abstract class CompressorInputStream extends InputStream {
     private long bytesRead;
 
     /**
+     * Constructs a new instance.
+     */
+    public CompressorInputStream() {
+        // empty
+    }
+
+    /**
      * Increments the counter of already read bytes. Doesn't increment if the EOF has been hit (read == -1)
      *
      * @param read the number of bytes read
