@@ -342,8 +342,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      */
     protected final Deflater def;
 
-    private final OutputStream out;
-
     /**
      * whether to use the general purpose bit flag when writing UTF-8 file names or not.
      */
