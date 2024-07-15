@@ -141,7 +141,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
            - org.apache.commons.compress.compressors.snappy -->
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>
-      <version>1.17.0</version>
+      <version>1.17.1</version>
     </dependency>
 
     <!-- Pack200 -->
