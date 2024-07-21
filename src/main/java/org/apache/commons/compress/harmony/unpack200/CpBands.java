@@ -350,7 +350,7 @@ public class CpBands extends BandSet {
 
     /**
      * Parses the constant pool descriptor definitions, using {@link #cpDescriptorCount} to populate {@link #cpDescriptor}. For ease of use, the cpDescriptor is
-     * stored as a string of the form <i>name:type</i>, largely to make it easier for representing field and method descriptors (e.g.
+     * stored as a string of the form <em>name:type</em>, largely to make it easier for representing field and method descriptors (e.g.
      * {@code out:java.lang.PrintStream}) in a way that is compatible with passing String arrays.
      *
      * @param in the input stream to read from

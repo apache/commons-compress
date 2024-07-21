@@ -402,7 +402,7 @@ public abstract class BandSet {
     }
 
     /**
-     * Parses <i>count</i> references from {@code in}, using {@code codec} to decode the values as indexes into {@code reference} (which is populated prior to
+     * Parses <em>count</em> references from {@code in}, using {@code codec} to decode the values as indexes into {@code reference} (which is populated prior to
      * this call). An exception is thrown if a decoded index falls outside the range [0..reference.length-1].
      *
      * @param name      the band name
@@ -421,7 +421,7 @@ public abstract class BandSet {
     }
 
     /**
-     * Parses <i>count</i> references from {@code in}, using {@code codec} to decode the values as indexes into {@code reference} (which is populated prior to
+     * Parses <em>count</em> references from {@code in}, using {@code codec} to decode the values as indexes into {@code reference} (which is populated prior to
      * this call). An exception is thrown if a decoded index falls outside the range [0..reference.length-1]. Unlike the other parseReferences, this
      * post-processes the result into an array of results.
      *
