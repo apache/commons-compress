@@ -21,7 +21,7 @@ package org.apache.commons.compress.archivers.tar;
 import java.util.Objects;
 
 /**
- * This class represents struct sparse in a Tar archive.
+ * A {@code struct sparse} in a <a href="https://www.gnu.org/software/tar/manual/html_node/Standard.html">Tar archive</a>.
  * <p>
  * Whereas, "struct sparse" is:
  * </p>

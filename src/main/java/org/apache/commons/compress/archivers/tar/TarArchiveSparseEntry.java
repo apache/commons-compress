@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class represents a sparse entry in a Tar archive.
+ * A sparse entry in a <a href="https://www.gnu.org/software/tar/manual/html_node/Standard.html">Tar archive</a>.
  *
  * <p>
  * The C structure for a sparse entry is:

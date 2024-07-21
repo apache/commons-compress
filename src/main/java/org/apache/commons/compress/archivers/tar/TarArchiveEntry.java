@@ -56,7 +56,8 @@ import org.apache.commons.io.file.attribute.FileTimes;
 import org.apache.commons.lang3.SystemProperties;
 
 /**
- * This class represents an entry in a Tar archive. It consists of the entry's header, as well as the entry's File. Entries can be instantiated in one of three
+ * An entry in a <a href="https://www.gnu.org/software/tar/manual/html_node/Standard.html">Tar archive</a>.
+ * It consists of the entry's header, as well as the entry's File. Entries can be instantiated in one of three
  * ways, depending on how they are to be used.
  * <p>
  * TarEntries that are created from the header bytes read from an archive are instantiated with the {@link TarArchiveEntry#TarArchiveEntry(byte[])} constructor.
