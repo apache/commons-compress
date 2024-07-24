@@ -276,7 +276,7 @@ public class TarArchiveEntryTest implements TarConstants {
         for (final String name : headerNames) {
             for (final String value : testValues) {
                 final Exception exp = assertThrows(IllegalArgumentException.class, () -> entry.addPaxHeader(name, value));
-                assert exp.getCause().getMessage().startsWith("Corrupted PAX header. Time field value is invalid");
+                assertTrue(exp.getCause().getMessage().startsWith("Corrupted PAX header. Time field value is invalid"));
             }
         }
     }

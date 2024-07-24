@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -338,13 +339,13 @@ public class SevenZOutputFileTest extends AbstractTest {
 
         try (SevenZFile archive = SevenZFile.builder().setFile(output).get()) {
             SevenZArchiveEntry entry = archive.getNextEntry();
-            assert entry != null;
+            assertNotNull(entry, "Entry should not be null");
             assertEquals("foo/", entry.getName());
             assertTrue(entry.isDirectory());
             assertFalse(entry.isAntiItem());
 
             entry = archive.getNextEntry();
-            assert entry != null;
+            assertNotNull(entry, "Entry should not be null");
             assertEquals("foo/bar", entry.getName());
             assertFalse(entry.isDirectory());
             assertFalse(entry.isAntiItem());
@@ -355,7 +356,7 @@ public class SevenZOutputFileTest extends AbstractTest {
             assertEquals(creationDate, entry.getCreationDate());
 
             entry = archive.getNextEntry();
-            assert entry != null;
+            assertNotNull(entry, "Entry should not be null");
             assertEquals("foo/bar/boo0", entry.getName());
             assertFalse(entry.isDirectory());
             assertFalse(entry.isAntiItem());
@@ -366,7 +367,7 @@ public class SevenZOutputFileTest extends AbstractTest {
             assertEquals(creationDate, entry.getCreationDate());
 
             entry = archive.getNextEntry();
-            assert entry != null;
+            assertNotNull(entry, "Entry should not be null");
             assertEquals("foo/bar/boo1", entry.getName());
             assertFalse(entry.isDirectory());
             assertFalse(entry.isAntiItem());
@@ -377,7 +378,7 @@ public class SevenZOutputFileTest extends AbstractTest {
             assertEquals(creationDate, entry.getCreationDate());
 
             entry = archive.getNextEntry();
-            assert entry != null;
+            assertNotNull(entry, "Entry should not be null");
             assertEquals("foo/bar/boo10000", entry.getName());
             assertFalse(entry.isDirectory());
             assertFalse(entry.isAntiItem());
@@ -388,7 +389,7 @@ public class SevenZOutputFileTest extends AbstractTest {
             assertEquals(creationDate, entry.getCreationDate());
 
             entry = archive.getNextEntry();
-            assert entry != null;
+            assertNotNull(entry, "Entry should not be null");
             assertEquals("foo/bar/test.txt", entry.getName());
             assertFalse(entry.isDirectory());
             assertFalse(entry.isAntiItem());
@@ -399,7 +400,7 @@ public class SevenZOutputFileTest extends AbstractTest {
             assertEquals(creationDate, entry.getCreationDate());
 
             entry = archive.getNextEntry();
-            assert entry != null;
+            assertNotNull(entry, "Entry should not be null");
             assertEquals("xyzzy", entry.getName());
             assertEquals(1, entry.getSize());
             assertFalse(entry.getHasAccessDate());
@@ -407,19 +408,19 @@ public class SevenZOutputFileTest extends AbstractTest {
             assertEquals(0, archive.read());
 
             entry = archive.getNextEntry();
-            assert entry != null;
+            assertNotNull(entry, "Entry should not be null");
             assertEquals("baz/", entry.getName());
             assertTrue(entry.isDirectory());
             assertTrue(entry.isAntiItem());
 
             entry = archive.getNextEntry();
-            assert entry != null;
+            assertNotNull(entry, "Entry should not be null");
             assertEquals("baz2/", entry.getName());
             assertTrue(entry.isDirectory());
             assertTrue(entry.isAntiItem());
 
             entry = archive.getNextEntry();
-            assert entry != null;
+            assertNotNull(entry, "Entry should not be null");
             assertEquals("dada", entry.getName());
             assertEquals(2, entry.getSize());
             final byte[] content = new byte[2];
@@ -428,7 +429,7 @@ public class SevenZOutputFileTest extends AbstractTest {
             assertEquals(42, content[1]);
             assertEquals(17, entry.getWindowsAttributes());
 
-            assert archive.getNextEntry() == null;
+            assertNull(archive.getNextEntry(), "getNextEntry should return null");
         }
 
     }
@@ -446,12 +447,12 @@ public class SevenZOutputFileTest extends AbstractTest {
 
         try (SevenZFile archive = SevenZFile.builder().setFile(output).get()) {
             final SevenZArchiveEntry entry = archive.getNextEntry();
-            assert entry != null;
+            assertNotNull(entry, "entry should not be null");
             assertEquals("foo/", entry.getName());
             assertTrue(entry.isDirectory());
             assertFalse(entry.isAntiItem());
 
-            assert archive.getNextEntry() == null;
+            assertNull(archive.getNextEntry(), "getnextEntry should return null");
         }
 
     }
