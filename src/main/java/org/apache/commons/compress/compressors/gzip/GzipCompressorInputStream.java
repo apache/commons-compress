@@ -204,7 +204,9 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
     }
 
     private boolean init(final boolean isFirstMember) throws IOException {
-        assert isFirstMember || decompressConcatenated;
+        if (!isFirstMember && !decompressConcatenated) { // at least one must be true
+            throw new IllegalStateException("Unexpected: isFirstMember and decompressConcatenated are both false!");
+        }
 
         // Check the magic bytes without a possibility of EOFException.
         final int magic0 = in.read();
