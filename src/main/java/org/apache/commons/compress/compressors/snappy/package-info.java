@@ -20,13 +20,13 @@
 /**
  * Provides stream classes for the <a href="https://github.com/google/snappy">Snappy</a> algorithm.
  * <p>
- * The raw Snappy format which only contains the compressed data is supported by the <code>SnappyCompressor*putStream</code> classes while the so called
- * "framing format" is implemented by <code>FramedSnappyCompressor*putStream</code>. Note there have been different versions of the framing format
+ * The raw Snappy format which only contains the compressed data is supported by the {@code SnappyCompressor*putStream} classes while the so called
+ * "framing format" is implemented by {@code FramedSnappyCompressor*putStream}. Note there have been different versions of the framing format
  * specification, the implementation in Commons Compress is based on the specification "Last revised: 2013-10-25".
  * </p>
  * <p>
  * Only the "framing format" can be auto-detected this means you have to speficy the format explicitly if you want to read a "raw" Snappy stream via
- * <code>CompressorStreamFactory</code>.
+ * {@code CompressorStreamFactory}.
  * </p>
  */
 package org.apache.commons.compress.compressors.snappy;

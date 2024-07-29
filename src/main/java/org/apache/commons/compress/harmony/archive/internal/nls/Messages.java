@@ -36,9 +36,9 @@ import java.util.ResourceBundle;
 /**
  * This class retrieves strings from a resource bundle and returns them, formatting them with MessageFormat when required.
  * <p>
- * It is used by the system classes to provide national language support, by looking up messages in the <code>
+ * It is used by the system classes to provide national language support, by looking up messages in the {@code
  *    org.apache.commons.compress.harmony.archive.internal.nls.messages
- * </code> resource bundle. Note that if this file is not available, or an invalid key is looked up, or resource bundle support is not available, the key itself
+ * } resource bundle. Note that if this file is not available, or an invalid key is looked up, or resource bundle support is not available, the key itself
  * will be returned as the associated message. This means that the <em>KEY</em> should a reasonable human-readable (english) string.
  */
 public class Messages {

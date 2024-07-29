@@ -22,10 +22,12 @@ package org.apache.commons.compress.compressors.lz77support;
  * Parameters of the {@link LZ77Compressor compressor}.
  */
 public final class Parameters {
+
     /**
      * Builder for {@link Parameters} instances.
      */
     public static class Builder {
+
         private final int windowSize;
         private int minBackReferenceLength, maxBackReferenceLength, maxOffset, maxLiteralLength;
         private Integer niceBackReferenceLength, maxCandidates, lazyThreshold;
@@ -61,7 +63,6 @@ public final class Parameters {
         /**
          * Changes the default setting for "nice back-reference length" and "maximum number of candidates" for improved compression ratio at the cost of
          * compression speed.
-         *
          * <p>
          * Use this method after configuring "maximum back-reference length".
          * </p>
@@ -78,7 +79,6 @@ public final class Parameters {
         /**
          * Changes the default setting for "nice back-reference length" and "maximum number of candidates" for improved compression speed at the cost of
          * compression ratio.
-         *
          * <p>
          * Use this method after configuring "maximum back-reference length".
          * </p>
@@ -95,12 +95,10 @@ public final class Parameters {
 
         /**
          * Sets whether lazy matching should be performed.
-         *
          * <p>
          * Lazy matching means that after a back-reference for a certain position has been found the compressor will try to find a longer match for the next
          * position.
          * </p>
-         *
          * <p>
          * Lazy matching is enabled by default and disabled when tuning for speed.
          * </p>
@@ -115,7 +113,6 @@ public final class Parameters {
 
         /**
          * Sets the threshold for lazy matching.
-         *
          * <p>
          * Even if lazy matching is enabled it will not be performed if the length of the back-reference found for the current position is longer than this
          * value.
@@ -131,7 +128,6 @@ public final class Parameters {
 
         /**
          * Sets the maximal length of a back-reference.
-         *
          * <p>
          * It is recommended to not use this method directly but rather tune a pre-configured builder created by a format specific factory like
          * {@link org.apache.commons.compress.compressors.snappy.SnappyCompressorOutputStream#createParameterBuilder}.
@@ -149,7 +145,6 @@ public final class Parameters {
 
         /**
          * Sets the maximal length of a literal block.
-         *
          * <p>
          * It is recommended to not use this method directly but rather tune a pre-configured builder created by a format specific factory like
          * {@link org.apache.commons.compress.compressors.snappy.SnappyCompressorOutputStream#createParameterBuilder}.
@@ -166,7 +161,6 @@ public final class Parameters {
 
         /**
          * Sets the maximum number of back-reference candidates that should be consulted.
-         *
          * <p>
          * This settings can be used to tune the tradeoff between compression speed and compression ratio.
          * </p>
@@ -181,15 +175,13 @@ public final class Parameters {
 
         /**
          * Sets the maximal offset of a back-reference.
-         *
          * <p>
          * It is recommended to not use this method directly but rather tune a pre-configured builder created by a format specific factory like
          * {@link org.apache.commons.compress.compressors.snappy.SnappyCompressorOutputStream#createParameterBuilder}.
          * </p>
          *
          * @param maxOffset maximal offset of a back-reference. A non-positive value as well as values bigger than {@code windowSize - 1} are interpreted as
-         *                  <code>windowSize
-         * - 1</code>    .
+         *                  {@code windowSize * - 1}.
          * @return the builder
          */
         public Builder withMaxOffset(final int maxOffset) {
@@ -199,10 +191,9 @@ public final class Parameters {
 
         /**
          * Sets the minimal length of a back-reference.
-         *
          * <p>
          * Ensures {@code maxBackReferenceLength} is not smaller than {@code minBackReferenceLength}.
-         *
+         * </p>
          * <p>
          * It is recommended to not use this method directly but rather tune a pre-configured builder created by a format specific factory like
          * {@link org.apache.commons.compress.compressors.snappy.SnappyCompressorOutputStream#createParameterBuilder}.
@@ -226,11 +217,9 @@ public final class Parameters {
 
         /**
          * Sets the "nice length" of a back-reference.
-         *
          * <p>
          * When a back-references if this size has been found, stop searching for longer back-references.
          * </p>
-         *
          * <p>
          * This settings can be used to tune the tradeoff between compression speed and compression ratio.
          * </p>
@@ -252,7 +241,6 @@ public final class Parameters {
     /**
      * Initializes the builder for the compressor's parameters with a {@code minBackReferenceLength} of 3 and {@code max*Length} equal to
      * {@code windowSize - 1}.
-     *
      * <p>
      * It is recommended to not use this method directly but rather tune a pre-configured builder created by a format specific factory like
      * {@link org.apache.commons.compress.compressors.snappy.SnappyCompressorOutputStream#createParameterBuilder}.

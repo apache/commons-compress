@@ -20,7 +20,7 @@
 /**
  * Provides stream classes for reading and writing archives using the AR format.
  * <p>
- * The ar format is used - among many other things - for Debian <code>.deb</code> packages.
+ * The ar format is used - among many other things - for Debian {@code .deb} packages.
  * </p>
  */
 package org.apache.commons.compress.archivers.ar;
