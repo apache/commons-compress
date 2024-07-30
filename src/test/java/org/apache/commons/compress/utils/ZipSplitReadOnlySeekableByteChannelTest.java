@@ -110,7 +110,7 @@ public class ZipSplitReadOnlySeekableByteChannelTest {
 
     @Test
     public void testForFilesThrowsOnNullArg() {
-        assertThrows(NullPointerException.class, () -> ZipSplitReadOnlySeekableByteChannel.forFiles(null));
+        assertThrows(NullPointerException.class, () -> ZipSplitReadOnlySeekableByteChannel.forFiles((File[]) null));
     }
 
     @Test
@@ -152,7 +152,7 @@ public class ZipSplitReadOnlySeekableByteChannelTest {
 
     @Test
     public void testForOrderedSeekableByteChannelsThrowsOnNullArg() {
-        assertThrows(NullPointerException.class, () -> ZipSplitReadOnlySeekableByteChannel.forOrderedSeekableByteChannels(null));
+        assertThrows(NullPointerException.class, () -> ZipSplitReadOnlySeekableByteChannel.forOrderedSeekableByteChannels((SeekableByteChannel[]) null));
     }
 
     @Test
@@ -181,7 +181,7 @@ public class ZipSplitReadOnlySeekableByteChannelTest {
 
     @Test
     public void testForPathsThrowsOnNullArg() {
-        assertThrows(NullPointerException.class, () -> ZipSplitReadOnlySeekableByteChannel.forPaths(null));
+        assertThrows(NullPointerException.class, () -> ZipSplitReadOnlySeekableByteChannel.forPaths((Path[]) null));
     }
 
     @Test

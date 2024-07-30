@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
@@ -263,7 +264,7 @@ public class MultiReadOnlySeekableByteChannelTest {
 
     @Test
     public void testForFilesThrowsOnNullArg() {
-        assertThrows(NullPointerException.class, () -> MultiReadOnlySeekableByteChannel.forFiles(null));
+        assertThrows(NullPointerException.class, () -> MultiReadOnlySeekableByteChannel.forFiles((File[]) null));
     }
 
     @Test
@@ -276,7 +277,7 @@ public class MultiReadOnlySeekableByteChannelTest {
 
     @Test
     public void testForSeekableByteChannelsThrowsOnNullArg() {
-        assertThrows(NullPointerException.class, () -> MultiReadOnlySeekableByteChannel.forSeekableByteChannels(null));
+        assertThrows(NullPointerException.class, () -> MultiReadOnlySeekableByteChannel.forSeekableByteChannels((SeekableByteChannel[]) null));
     }
 
     /*
