@@ -43,13 +43,7 @@ import org.apache.commons.io.input.BoundedInputStream;
  * </p>
  *
  * <p>
- * {@link java.util.zip.GZIPInputStream} prior to JDK 7 doesn't decompress concatenated .gz files: it stops after
- * the first GZIP member and silently ignores the rest. It also reads an indeterminate number of extra bytes past
- * the end of the encoded GZIP member, resulting in an unknown final read position of the underlying input stream.
- * </p>
- *
- * <p>
- * Instead of using {@code GZIPInputStream}, this class has its own GZIP member decoder.
+ * Instead of using {@code java.util.zip.GZIPInputStream}, this class has its own GZIP member decoder.
  * The actual decompression is done with {@link java.util.zip.Inflater}.
  * </p>
  *
