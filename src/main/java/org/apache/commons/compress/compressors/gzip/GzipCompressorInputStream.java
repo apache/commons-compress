@@ -43,26 +43,23 @@ import org.apache.commons.io.input.BoundedInputStream;
  * </p>
  *
  * <p>
- * {@link java.util.zip.GZIPInputStream} doesn't decompress concatenated .gz files: it stops after the first member and silently ignores the rest. It doesn't
- * leave the read position to point to the beginning of the next member, which makes it difficult workaround the lack of concatenation support.
+ * Instead of using {@code java.util.zip.GZIPInputStream}, this class has its own GZIP member decoder.
+ * The actual decompression is done with {@link java.util.zip.Inflater}.
  * </p>
  *
  * <p>
- * Instead of using {@code GZIPInputStream}, this class has its own .gz container format decoder. The actual decompression is done with
- * {@link java.util.zip.Inflater}.
+ * If you use the constructor {@code GzipCompressorInputStream(in)} or {@code GzipCompressorInputStream(in, false)},
+ * then {@link #read} will return -1 as soon as the first encoded GZIP member has been completely read. In this case,
+ * if the underlying input stream supports {@link InputStream#mark mark()} and {@link InputStream#reset reset()},
+ * then it will be left positioned just after the end of the encoded GZIP member; otherwise, some indeterminate number
+ * of extra bytes following the encoded GZIP member will have been consumed and discarded.
  * </p>
  *
  * <p>
- * If you use the constructor {@code GzipCompressorInputStream(in)} or {@code GzipCompressorInputStream(in, false)} with some {@code
- * InputStream} {@code in} then {@link #read} will return -1 as soon as the first internal member has been read completely. The stream {@code in} will be
- * positioned at the start of the second gzip member if there is one.
- * </p>
- *
- * <p>
- * If you use the constructor {@code GzipCompressorInputStream(in,
- * true)} with some {@code InputStream} {@code in} then {@link #read} will return -1 once the stream {@code in} has been exhausted. The data read from a stream
- * constructed this way will consist of the concatenated data of all gzip members contained inside {@code
- * in}.
+ * If you use the constructor {@code GzipCompressorInputStream(in, true)} then {@link #read} will return -1 only after
+ * the entire input stream has been exhausted; any bytes that follow an encoded GZIP member must constitute a new encoded
+ * GZIP member, otherwise an {@link IOExcdetion} is thrown. The data read from a stream constructed this way will consist
+ * of the concatenated data of all of the encoded GZIP members in order.
  * </p>
  *
  * @see "https://tools.ietf.org/html/rfc1952"
