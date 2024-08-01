@@ -449,9 +449,19 @@ public class X000A_NTFS implements ZipExtraField {
      */
     @Override
     public String toString() {
-        final StringBuilder buf = new StringBuilder();
-        buf.append("0x000A Zip Extra Field:").append(" Modify:[").append(getModifyFileTime()).append("] ").append(" Access:[").append(getAccessFileTime())
-                .append("] ").append(" Create:[").append(getCreateFileTime()).append("] ");
-        return buf.toString();
+        // @formatter:off
+        return new StringBuilder()
+            .append("0x000A Zip Extra Field:")
+            .append(" Modify:[")
+            .append(getModifyFileTime())
+            .append("] ")
+            .append(" Access:[")
+            .append(getAccessFileTime())
+            .append("] ")
+            .append(" Create:[")
+            .append(getCreateFileTime())
+            .append("] ")
+            .toString();
+        // @formatter:on
     }
 }
