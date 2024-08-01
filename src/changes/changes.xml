@@ -64,7 +64,8 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump commons-codec:commons-codec from 1.17.0 to 1.17.1 #544.</action>
       <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump org.apache.commons:commons-lang3 from 3.14.0 to 3.15.0 #545.</action>
       <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump com.github.luben:zstd-jni from 1.5.6-3 to 1.5.6-4 #548.</action>
-      <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump org.tukaani:xz from 1.9 to 1.10 #550.</action>  
+      <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump org.tukaani:xz from 1.9 to 1.10 #550.</action>
+      <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump org.hamcrest:hamcrest from 2.2 to 3.0 #552.</action>
     </release>
     <release version="1.26.2" date="2024-05-18" description="Minor feature and maintenance release.">
       <!-- FIX -->
