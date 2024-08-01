@@ -103,8 +103,7 @@ public class ExceptionsAttribute extends Attribute {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("Exceptions: ");
+        final StringBuilder sb = new StringBuilder("Exceptions: ");
         for (final CPClass exception : exceptions) {
             sb.append(exception);
             sb.append(' ');
