@@ -43,6 +43,8 @@ import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
+import shaded.org.apache.commons.lang3.StringUtils;
+
 public class TarFileTest extends AbstractTest {
 
     private void datePriorToEpoch(final String archive) throws Exception {
@@ -143,11 +145,7 @@ public class TarFileTest extends AbstractTest {
         root.mkdirs();
         for (int i = 1; i < count; i++) {
             // create empty dirs with incremental length
-            final StringBuilder subDirBuilder = new StringBuilder();
-            for (int j = 0; j < i; j++) {
-                subDirBuilder.append("a");
-            }
-            final String subDir = subDirBuilder.toString();
+            final String subDir = StringUtils.repeat('a', i);
             final File dir = new File(rootPath + "/" + dirDirectory, "/" + subDir);
             dir.mkdir();
 
