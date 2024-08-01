@@ -346,13 +346,15 @@ public class IcTuple {
 
     @Override
     public String toString() {
-        final StringBuilder result = new StringBuilder();
-        result.append("IcTuple ");
-        result.append('(');
-        result.append(simpleClassName());
-        result.append(" in ");
-        result.append(outerClassString());
-        result.append(')');
-        return result.toString();
+        // @formatter:off
+        return new StringBuilder()
+            .append("IcTuple ")
+            .append('(')
+            .append(simpleClassName())
+            .append(" in ")
+            .append(outerClassString())
+            .append(')')
+            .toString();
+        // @formatter:on
     }
 }
