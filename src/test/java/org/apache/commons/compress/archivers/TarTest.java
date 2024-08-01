@@ -48,14 +48,12 @@ import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
+import shaded.org.apache.commons.lang3.StringUtils;
+
 public final class TarTest extends AbstractTest {
 
     private String createLongName(final int nameLength) {
-        final StringBuilder buffer = new StringBuilder();
-        for (int i = 0; i < nameLength; i++) {
-            buffer.append('a');
-        }
-        return buffer.toString();
+        return StringUtils.repeat('a', nameLength);
     }
 
     private byte[] createTarWithOneLongNameEntry(final String longName) throws IOException {
