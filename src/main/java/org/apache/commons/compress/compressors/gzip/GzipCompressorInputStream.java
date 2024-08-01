@@ -58,7 +58,7 @@ import org.apache.commons.io.input.BoundedInputStream;
  * <p>
  * If you use the constructor {@code GzipCompressorInputStream(in, true)} then {@link #read} will return -1 only after
  * the entire input stream has been exhausted; any bytes that follow an encoded GZIP member must constitute a new encoded
- * GZIP member, otherwise an {@link IOExcdetion} is thrown. The data read from a stream constructed this way will consist
+ * GZIP member, otherwise an {@link IOException} is thrown. The data read from a stream constructed this way will consist
  * of the concatenated data of all of the encoded GZIP members in order.
  * </p>
  *
