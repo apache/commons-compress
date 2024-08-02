@@ -134,7 +134,7 @@ public class FileNameUtil {
      * @since 1.25.0
      */
     public String getCompressedFileName(final String fileName) {
-        final String lower = fileName.toLowerCase(Locale.ENGLISH);
+        final String lower = fileName.toLowerCase(Locale.ROOT);
         final int n = lower.length();
         for (int i = shortestUncompressedSuffix; i <= longestUncompressedSuffix && i < n; i++) {
             final String suffix = compressSuffix.get(lower.substring(n - i));
@@ -172,7 +172,7 @@ public class FileNameUtil {
      * @since 1.25.0
      */
     public String getUncompressedFileName(final String fileName) {
-        final String lower = fileName.toLowerCase(Locale.ENGLISH);
+        final String lower = fileName.toLowerCase(Locale.ROOT);
         final int n = lower.length();
         for (int i = shortestCompressedSuffix; i <= longestCompressedSuffix && i < n; i++) {
             final String suffix = uncompressSuffix.get(lower.substring(n - i));
@@ -203,7 +203,7 @@ public class FileNameUtil {
      * @since 1.25.0
      */
     public boolean isCompressedFileName(final String fileName) {
-        final String lower = fileName.toLowerCase(Locale.ENGLISH);
+        final String lower = fileName.toLowerCase(Locale.ROOT);
         final int n = lower.length();
         for (int i = shortestCompressedSuffix; i <= longestCompressedSuffix && i < n; i++) {
             if (uncompressSuffix.containsKey(lower.substring(n - i))) {
