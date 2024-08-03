@@ -69,16 +69,6 @@ public class LineNumberTableAttribute extends BCIRenumberedAttribute {
     /*
      * (non-Javadoc)
      *
-     * @see org.apache.commons.compress.harmony.unpack200.bytecode.Attribute#resolve(org.apache.commons.compress.harmony. unpack200.bytecode.ClassConstantPool)
-     */
-    @Override
-    protected void resolve(final ClassConstantPool pool) {
-        super.resolve(pool);
-    }
-
-    /*
-     * (non-Javadoc)
-     *
      * @see org.apache.commons.compress.harmony.unpack200.bytecode.ClassFileEntry#toString()
      */
     @Override
