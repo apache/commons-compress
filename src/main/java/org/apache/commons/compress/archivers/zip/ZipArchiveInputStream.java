@@ -1288,7 +1288,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
             }
             return skipped;
         }
-        throw new IllegalArgumentException();
+        throw new IllegalArgumentException("Negative skip value");
     }
 
     /**
