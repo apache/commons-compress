@@ -477,7 +477,9 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
             drainCurrentEntryData();
         } else {
             // this is guaranteed to exhaust the stream
-            skip(Long.MAX_VALUE); // NOSONAR
+            if (skip(Long.MAX_VALUE) < 0) {
+                throw new IllegalStateException("Can't read the remainder of the stream");
+            }
 
             final long inB = current.entry.getMethod() == ZipArchiveOutputStream.DEFLATED ? getBytesInflated() : current.bytesRead;
 
