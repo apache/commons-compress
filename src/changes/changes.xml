@@ -56,6 +56,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Fix SpotBugs DLS_DEAD_LOCAL_STORE in SevenZFile.readPackInfo(ByteBuffer, Archive).</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Fix SpotBugs BAD_PRACTICE in TarUtils.parsePaxHeaders(InputStream, List, Map, long).</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Fix SpotBugs NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE in ZipFile.openZipChannel(Path, long, OpenOption[]).</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">Fix SpotBugs UC_USELESS_OBJECT in unpack200.CpBands.parseCpSignature(InputStream).</action>
       <!-- ADD -->
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add ArchiveInputStream.forEach(IOConsumer).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add ArchiveInputStream.iterator().</action>

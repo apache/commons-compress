@@ -489,13 +489,11 @@ public class CpBands extends BandSet {
             final String form = cpSignatureForm[i];
             final int len = form.length();
             final StringBuilder signature = new StringBuilder(64);
-            final ArrayList<String> list = new ArrayList<>();
             for (int j = 0; j < len; j++) {
                 final char c = form.charAt(j);
                 signature.append(c);
                 if (c == 'L') {
                     final String className = cpSignatureClasses[index];
-                    list.add(className);
                     signature.append(className);
                     index++;
                 }
