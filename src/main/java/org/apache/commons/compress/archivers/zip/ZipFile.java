@@ -139,7 +139,6 @@ public class ZipFile implements Closeable {
             setCharsetDefault(DEFAULT_CHARSET);
         }
 
-        @SuppressWarnings("resource") // caller closes
         @Override
         public ZipFile get() throws IOException {
             final SeekableByteChannel actualChannel;
