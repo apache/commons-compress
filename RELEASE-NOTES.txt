@@ -1,5 +1,76 @@
 
 Apache Commons Compress 
+Version 1.27.0
+Release Notes
+
+Apache Commons Compress defines an API for working with
+compression and archive formats. These include bzip2, gzip, pack200,
+LZMA, XZ, Snappy, traditional Unix Compress, DEFLATE, DEFLATE64, LZ4,
+Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
+
+This is a feature and maintenance release. Java 8 or later is required.
+
+Changes in this version
+-----------------------
+
+Changes in this version include the following.
+
+New Features
+------------
+
+*            Add ArchiveInputStream.forEach(IOConsumer). Thanks to Gary Gregory. 
+*            Add ArchiveInputStream.iterator(). Thanks to Gary Gregory. 
+*            Add ArchiveOutputStream.isFinished(). Thanks to Gary Gregory. 
+*            Add ArchiveOutputStream.checkFinished(). Thanks to Gary Gregory. 
+
+Fixed Bugs
+----------
+
+*            Fix PMD UnnecessaryFullyQualifiedName and others. Thanks to Gary Gregory. 
+* COMPRESS-681: Support reading a 7z file that writing archive properties #541. Thanks to joker53-1, Gary Gregory. 
+*            Upgrade commons-io from 2.15.1 to 2.16.1 #513 Thanks to Mike Drob, Gary Gregory. 
+*            CompressorOutputStream now extends FilterOutputStream. Thanks to Gary Gregory. 
+*            ArchiveOutputStream now extends FilterOutputStream. Thanks to Gary Gregory. 
+* COMPRESS-685: Update Javadoc description for GzipCompressorInputStream #551. Thanks to Archie L. Cobbs, Gary Gregory. 
+*            Replace FileNameUtil.getCompressedFileName(String) use of Locale.ENGLISH with Locale.ROOT. Thanks to Gary Gregory. 
+*            Fix SpotBugs DLS_DEAD_LOCAL_STORE in SevenZFile.readPackInfo(ByteBuffer, Archive). Thanks to Gary Gregory. 
+*            Fix SpotBugs NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE in ZipFile.openZipChannel(Path, long, OpenOption[]). Thanks to Gary Gregory. 
+*            Fix SpotBugs UC_USELESS_OBJECT in unpack200.CpBands.parseCpSignature(InputStream). Thanks to Gary Gregory. 
+*            Fix PMD UselessOverridingMethod in unpack200.bytecode.InnerClassesAttribute. Thanks to Gary Gregory. 
+*            Fix PMD UselessOverridingMethod in unpack200.bytecode.LineNumberTableAttribute. Thanks to Gary Gregory. 
+*            Fix PMD CheckSkipResult in ZipArchiveInputStream.closeEntry(). Thanks to Gary Gregory. 
+
+Changes
+-------
+
+* COMPRESS-684: Replace assert with Exception 
+*            Bump org.apache.commons:commons-parent from 69 to 72 #537. Thanks to Dependabot, Gary Gregory. 
+*            Bump PMD from 6.x to 7.2.0. Thanks to Dependabot, Gary Gregory. 
+*            Bump commons-codec:commons-codec from 1.17.0 to 1.17.1 #544. Thanks to Dependabot, Gary Gregory. 
+*            Bump org.apache.commons:commons-lang3 from 3.14.0 to 3.15.0 #545. Thanks to Dependabot, Gary Gregory. 
+*            Bump com.github.luben:zstd-jni from 1.5.6-3 to 1.5.6-4 #548. Thanks to Dependabot, Gary Gregory. 
+*            Bump org.tukaani:xz from 1.9 to 1.10 #550. Thanks to Dependabot, Gary Gregory. 
+*            Bump org.hamcrest:hamcrest from 2.2 to 3.0 #552. Thanks to Dependabot, Gary Gregory. 
+
+
+Resources
+---------
+
+Historical list of changes: https://commons.apache.org/proper/commons-compress/changes-report.html
+
+For complete information on Apache Commons Compress, including instructions on how to submit bug reports,
+patches, or suggestions for improvement, see the Apache Commons Compress website:
+
+https://commons.apache.org/proper/commons-compress/
+
+Download page: https://commons.apache.org/proper/commons-compress/download_io.cgi
+
+Have fun!
+-Apache Commons Team
+
+-----------------------------------------------------------------------------
+
+Apache Commons Compress 
 Version 1.26.2
 Release Notes
 
