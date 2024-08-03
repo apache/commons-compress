@@ -44,6 +44,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.zip.Inflater;
@@ -527,7 +528,7 @@ public class ZipFile implements Closeable {
             channel.close();
 
             final Path parent = path.getParent();
-            final String basename = FilenameUtils.removeExtension(path.getFileName().toString());
+            final String basename = FilenameUtils.removeExtension(Objects.toString(path.getFileName(), null));
 
             return ZipSplitReadOnlySeekableByteChannel.forPaths(IntStream.range(0, (int) numberOfDisks).mapToObj(i -> {
                 if (i == numberOfDisks - 1) {
