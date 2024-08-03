@@ -54,7 +54,6 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" issue="COMPRESS-685" dev="ggregory" due-to="Archie L. Cobbs, Gary Gregory">Update Javadoc description for GzipCompressorInputStream #551.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Replace FileNameUtil.getCompressedFileName(String) use of Locale.ENGLISH with Locale.ROOT.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Fix SpotBugs DLS_DEAD_LOCAL_STORE in SevenZFile.readPackInfo(ByteBuffer, Archive).</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">Fix SpotBugs BAD_PRACTICE in TarUtils.parsePaxHeaders(InputStream, List, Map, long).</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Fix SpotBugs NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE in ZipFile.openZipChannel(Path, long, OpenOption[]).</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Fix SpotBugs UC_USELESS_OBJECT in unpack200.CpBands.parseCpSignature(InputStream).</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Fix PMD UselessOverridingMethod in unpack200.bytecode.InnerClassesAttribute.</action>
