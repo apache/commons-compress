@@ -93,11 +93,11 @@ public abstract class StreamCompressor implements Closeable {
         }
     }
 
-    /*
+    /**
      * Apparently Deflater.setInput gets slowed down a lot on Sun JVMs when it gets handed a huge buffer. See
      * https://issues.apache.org/bugzilla/show_bug.cgi?id=45396
      *
-     * Using a buffer size of 8 kB proved to be a good compromise
+     * Using a buffer size of {@value} bytes proved to be a good compromise
      */
     private static final int DEFLATER_BLOCK_SIZE = 8192;
     private static final int BUFFER_SIZE = 4096;
@@ -199,7 +199,7 @@ public abstract class StreamCompressor implements Closeable {
     }
 
     /**
-     * Deflate the given source using the supplied compression method
+     * Deflates the given source using the supplied compression method
      *
      * @param source The source to compress
      * @param method The #ZipArchiveEntry compression method
@@ -241,7 +241,7 @@ public abstract class StreamCompressor implements Closeable {
     }
 
     /**
-     * The number of bytes written to the output for the last entry
+     * Gets the number of bytes written to the output for the last entry
      *
      * @return The number of bytes, never negative
      */
@@ -250,7 +250,7 @@ public abstract class StreamCompressor implements Closeable {
     }
 
     /**
-     * The crc32 of the last deflated file
+     * Gets the crc32 of the last deflated file
      *
      * @return the crc32
      */
@@ -260,7 +260,7 @@ public abstract class StreamCompressor implements Closeable {
     }
 
     /**
-     * The total number of bytes written to the output for all files
+     * Gets the total number of bytes written to the output for all files
      *
      * @return The number of bytes, never negative
      */
