@@ -52,11 +52,11 @@ public class SevenZFileOptions {
          * Not all codecs will honor this setting. Currently only LZMA and LZMA2 are supported.
          * </p>
          *
-         * @param maxMemoryLimitInKb limit of the maximum amount of memory to use
+         * @param maxMemoryLimitKb limit of the maximum amount of memory to use
          * @return the reconfigured builder
          */
-        public Builder withMaxMemoryLimitInKb(final int maxMemoryLimitInKb) {
-            this.maxMemoryLimitKb = maxMemoryLimitInKb;
+        public Builder withMaxMemoryLimitInKb(final int maxMemoryLimitKb) {
+            this.maxMemoryLimitKb = maxMemoryLimitKb;
             return this;
         }
 

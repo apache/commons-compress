@@ -168,7 +168,7 @@ public abstract class StreamCompressor implements Closeable {
         return new SeekableByteChannelCompressor(deflater, os);
     }
 
-    private final Deflater def;
+    private final Deflater deflater;
 
     private final CRC32 crc = new CRC32();
 
@@ -183,16 +183,16 @@ public abstract class StreamCompressor implements Closeable {
     private final byte[] readerBuf = new byte[BUFFER_SIZE];
 
     StreamCompressor(final Deflater deflater) {
-        this.def = deflater;
+        this.deflater = deflater;
     }
 
     @Override
     public void close() throws IOException {
-        def.end();
+        deflater.end();
     }
 
     void deflate() throws IOException {
-        final int len = def.deflate(outputBuffer, 0, outputBuffer.length);
+        final int len = deflater.deflate(outputBuffer, 0, outputBuffer.length);
         if (len > 0) {
             writeCounted(outputBuffer, 0, len);
         }
@@ -219,14 +219,14 @@ public abstract class StreamCompressor implements Closeable {
     }
 
     private void deflateUntilInputIsNeeded() throws IOException {
-        while (!def.needsInput()) {
+        while (!deflater.needsInput()) {
             deflate();
         }
     }
 
     void flushDeflater() throws IOException {
-        def.finish();
-        while (!def.finished()) {
+        deflater.finish();
+        while (!deflater.finished()) {
             deflate();
         }
     }
@@ -270,7 +270,7 @@ public abstract class StreamCompressor implements Closeable {
 
     void reset() {
         crc.reset();
-        def.reset();
+        deflater.reset();
         sourcePayloadLength = 0;
         writtenToOutputStreamForLastEntry = 0;
     }
@@ -308,19 +308,19 @@ public abstract class StreamCompressor implements Closeable {
     }
 
     private void writeDeflated(final byte[] b, final int offset, final int length) throws IOException {
-        if (length > 0 && !def.finished()) {
+        if (length > 0 && !deflater.finished()) {
             if (length <= DEFLATER_BLOCK_SIZE) {
-                def.setInput(b, offset, length);
+                deflater.setInput(b, offset, length);
                 deflateUntilInputIsNeeded();
             } else {
                 final int fullblocks = length / DEFLATER_BLOCK_SIZE;
                 for (int i = 0; i < fullblocks; i++) {
-                    def.setInput(b, offset + i * DEFLATER_BLOCK_SIZE, DEFLATER_BLOCK_SIZE);
+                    deflater.setInput(b, offset + i * DEFLATER_BLOCK_SIZE, DEFLATER_BLOCK_SIZE);
                     deflateUntilInputIsNeeded();
                 }
                 final int done = fullblocks * DEFLATER_BLOCK_SIZE;
                 if (done < length) {
-                    def.setInput(b, offset + done, length - done);
+                    deflater.setInput(b, offset + done, length - done);
                     deflateUntilInputIsNeeded();
                 }
             }
