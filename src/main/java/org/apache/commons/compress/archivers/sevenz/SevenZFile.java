@@ -986,15 +986,15 @@ public class SevenZFile implements Closeable {
      */
     public InputStream getInputStream(final SevenZArchiveEntry entry) throws IOException {
         int entryIndex = -1;
-        for (int i = 0; i < this.archive.files.length; i++) {
-            if (entry == this.archive.files[i]) {
+        for (int i = 0; i < archive.files.length; i++) {
+            if (entry == archive.files[i]) {
                 entryIndex = i;
                 break;
             }
         }
 
         if (entryIndex < 0) {
-            throw new IllegalArgumentException("Can not find " + entry.getName() + " in " + this.fileName);
+            throw new IllegalArgumentException("Can not find " + entry.getName() + " in " + fileName);
         }
 
         buildDecodingStream(entryIndex, true);
