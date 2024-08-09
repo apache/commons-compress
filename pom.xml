@@ -49,7 +49,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <commons.release.next>1.27.1</commons.release.next>
     <commons.bc.version>1.26.2</commons.bc.version>
     <commons.rc.version>RC1</commons.rc.version>
-    <mockito.version>4.11.0</mockito.version>
+    <mockito.version>5.12.0</mockito.version>
     <commons.pmd-impl.version>7.2.0</commons.pmd-impl.version>
 
     <commons.release.isDistModule>true</commons.release.isDistModule>
