@@ -30,7 +30,6 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.io.TempDir;
@@ -55,7 +54,7 @@ public class Compress686Test {
     }
 
     private Path decompressBzip2File(final Path file) throws IOException {
-        final Path decompressedFile = Paths.get(file.getParent().toString(), file.getFileName().toString() + ".decompressed");
+        final Path decompressedFile = file.resolveSibling(file.getFileName().toString() + ".decompressed");
         try (BZip2CompressorInputStream bzIn = new BZip2CompressorInputStream(Files.newInputStream(file));
                 OutputStream outputStream = new FileOutputStream(decompressedFile.toFile())) {
             IOUtils.copy(bzIn, outputStream);
