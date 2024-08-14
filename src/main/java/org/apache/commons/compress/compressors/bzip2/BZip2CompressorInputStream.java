@@ -232,21 +232,13 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     private int storedBlockCRC, storedCombinedCRC;
     private int computedCombinedCRC;
     private int su_count;
-
     private int su_ch2;
-
     private int su_chPrev;
-
     private int su_i2;
-
     private int su_j2;
-
     private int su_rNToGo;
-
     private int su_rTPos;
-
     private int su_tPos;
-
     private char su_z;
 
     /**
@@ -278,7 +270,6 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     public BZip2CompressorInputStream(final InputStream in, final boolean decompressConcatenated) throws IOException {
         this.bin = new BitInputStream(in == System.in ? CloseShieldInputStream.wrap(in) : in, ByteOrder.BIG_ENDIAN);
         this.decompressConcatenated = decompressConcatenated;
-
         init(true);
         initBlock();
     }
@@ -300,11 +291,9 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         this.storedCombinedCRC = bsGetInt(bin);
         this.currentState = EOF;
         this.data = null;
-
         if (this.storedCombinedCRC != this.computedCombinedCRC) {
             throw new IOException("BZip2 CRC error");
         }
-
         // Look for the next .bz2 stream if decompressing
         // concatenated files.
         return !decompressConcatenated || !init(false);
@@ -341,17 +330,14 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
 
     private void endBlock() throws IOException {
         final int computedBlockCRC = this.crc.getValue();
-
         // A bad CRC is considered a fatal error.
         if (this.storedBlockCRC != computedBlockCRC) {
             // make next blocks readable without error
             // (repair feature, not yet documented, not tested)
             this.computedCombinedCRC = this.storedCombinedCRC << 1 | this.storedCombinedCRC >>> 31;
             this.computedCombinedCRC ^= this.storedBlockCRC;
-
             throw new IOException("BZip2 CRC error");
         }
-
         this.computedCombinedCRC = this.computedCombinedCRC << 1 | this.computedCombinedCRC >>> 31;
         this.computedCombinedCRC ^= computedBlockCRC;
     }
@@ -360,7 +346,6 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         final BitInputStream bin = this.bin;
         this.origPtr = bsR(bin, 24);
         recvDecodingTables();
-
         final Data dataShadow = this.data;
         final byte[] ll8 = dataShadow.ll8;
         final int[] unzftab = dataShadow.unzftab;
