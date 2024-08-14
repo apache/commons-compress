@@ -56,7 +56,7 @@ public class Compress686Test {
     private Path decompressBzip2File(final Path file) throws IOException {
         final Path decompressedFile = file.resolveSibling(file.getFileName().toString() + ".decompressed");
         try (BZip2CompressorInputStream bzIn = new BZip2CompressorInputStream(Files.newInputStream(file));
-                OutputStream outputStream = new FileOutputStream(decompressedFile.toFile())) {
+                OutputStream outputStream = Files.newOutputStream(decompressedFile)) {
             IOUtils.copy(bzIn, outputStream);
         }
         return decompressedFile;
