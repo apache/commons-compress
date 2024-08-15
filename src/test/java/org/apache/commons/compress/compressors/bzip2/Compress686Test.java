@@ -70,13 +70,13 @@ public class Compress686Test {
     // TODO
     // @ValueSource(booleans = { true, false })
     @ValueSource(booleans = { false })
-    public void testRoundtrip(final boolean bufferOutput) throws Exception {
+    public void testRoundtrip(final boolean bufferCompressOutput) throws Exception {
         final Path file = tempDir.resolve("test.txt");
         final String contents = "random contents";
         try (Writer w = Files.newBufferedWriter(file, StandardCharsets.UTF_8)) {
             IOUtils.write(contents, w);
         }
-        final Path compressedFile = compressFile(file, bufferOutput);
+        final Path compressedFile = compressFile(file, bufferCompressOutput);
         decompressBzip2File(compressedFile);
         assertEquals(contents, IOUtils.toString(file.toUri(), StandardCharsets.UTF_8));
     }
