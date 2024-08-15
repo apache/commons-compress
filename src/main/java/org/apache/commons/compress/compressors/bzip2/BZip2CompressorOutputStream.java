@@ -480,6 +480,12 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream<OutputSt
         this.bsLive = bsLiveShadow + n;
     }
 
+    private void checkClosed() throws IOException {
+        if (closed) {
+            throw new IOException("Stream closed");
+        }
+    }
+
     @Override
     public void close() throws IOException {
         if (!closed) {
@@ -1168,10 +1174,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream<OutputSt
         if (offs + len > buf.length) {
             throw new IndexOutOfBoundsException("offs(" + offs + ") + len(" + len + ") > buf.length(" + buf.length + ").");
         }
-        if (closed) {
-            throw new IOException("Stream closed");
-        }
-
+        checkClosed();
         for (final int hi = offs + len; offs < hi;) {
             write0(buf[offs++]);
         }
@@ -1179,9 +1182,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream<OutputSt
 
     @Override
     public void write(final int b) throws IOException {
-        if (closed) {
-            throw new IOException("Closed");
-        }
+        checkClosed();
         write0(b);
     }
 
