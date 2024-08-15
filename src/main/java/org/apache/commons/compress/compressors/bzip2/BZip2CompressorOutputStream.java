@@ -433,9 +433,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream<OutputSt
         if (blockSize > 9) {
             throw new IllegalArgumentException("blockSize(" + blockSize + ") > 9");
         }
-
         this.blockSize100k = blockSize;
-
         /* 20 is just a paranoia constant */
         this.allowableBlockSize = this.blockSize100k * BASEBLOCKSIZE - 20;
         init();
@@ -560,7 +558,6 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream<OutputSt
                 endBlock();
                 endCompression();
             } finally {
-                this.out = null;
                 this.blockSorter = null;
                 this.data = null;
             }
@@ -569,9 +566,8 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream<OutputSt
 
     @Override
     public void flush() throws IOException {
-        final OutputStream outShadow = this.out;
-        if (outShadow != null) {
-            outShadow.flush();
+        if (out != null) {
+            super.flush();
         }
     }
 

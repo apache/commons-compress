@@ -67,12 +67,10 @@ public class Compress686Test {
     }
 
     @ParameterizedTest
-    // TODO
-    // @ValueSource(booleans = { true, false })
-    @ValueSource(booleans = { false })
+    @ValueSource(booleans = { true, false })
     public void testRoundtrip(final boolean bufferCompressOutput) throws Exception {
         final Path file = tempDir.resolve("test.txt");
-        final String contents = "random contents";
+        final String contents = "a";
         try (Writer w = Files.newBufferedWriter(file, StandardCharsets.UTF_8)) {
             IOUtils.write(contents, w);
         }
