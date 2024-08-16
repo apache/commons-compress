@@ -44,7 +44,7 @@ The <action> type attribute can be add,update,fix,remove.
     <title>Apache Commons Compress Release Notes</title>
   </properties>
   <body>
-    <release version="1.27.1" date="YYYY-MM-DD" description="This is a feature and maintenance release. Java 8 or later is required.">
+    <release version="1.27.1" date="2024-08-16" description="This is a feature and maintenance release. Java 8 or later is required.">
      <action type="fix" issue="COMPRESS-686" dev="ggregory" due-to="Richard Blank, Gary Gregory">Compression into BZip2 format has unexpected end of file when using a BufferedOutputStream.</action>
      <!-- UPDATE -->
      <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump org.apache.commons:commons-lang3 from 3.15.0 to 3.16.0 #556.</action>

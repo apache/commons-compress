@@ -1,5 +1,50 @@
 
 Apache Commons Compress 
+Version 1.27.1
+Release Notes
+
+Apache Commons Compress defines an API for working with
+compression and archive formats. These include bzip2, gzip, pack200,
+LZMA, XZ, Snappy, traditional Unix Compress, DEFLATE, DEFLATE64, LZ4,
+Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
+
+This is a feature and maintenance release. Java 8 or later is required.
+
+Changes in this version
+-----------------------
+
+Changes in this version include the following.
+
+
+Fixed Bugs
+----------
+
+*  COMPRESS-686:  Compression into BZip2 format has unexpected end of file when using a BufferedOutputStream. Thanks to Richard Blank, Gary Gregory. 
+
+Changes
+-------
+
+*            Bump org.apache.commons:commons-lang3 from 3.15.0 to 3.16.0 #556. Thanks to Dependabot, Gary Gregory. 
+
+
+Resources
+---------
+
+Historical list of changes: https://commons.apache.org/proper/commons-compress/changes-report.html
+
+For complete information on Apache Commons Compress, including instructions on how to submit bug reports,
+patches, or suggestions for improvement, see the Apache Commons Compress website:
+
+https://commons.apache.org/proper/commons-compress/
+
+Download page: https://commons.apache.org/proper/commons-compress/download_io.cgi
+
+Have fun!
+-Apache Commons Team
+
+-----------------------------------------------------------------------------
+
+Apache Commons Compress 
 Version 1.27.0
 Release Notes
 
