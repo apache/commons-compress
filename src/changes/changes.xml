@@ -48,6 +48,7 @@ The <action> type attribute can be add,update,fix,remove.
      <action type="fix" issue="COMPRESS-686" dev="ggregory" due-to="Richard Blank, Gary Gregory">Compression into BZip2 format has unexpected end of file when using a BufferedOutputStream.</action>
      <!-- UPDATE -->
      <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump org.apache.commons:commons-lang3 from 3.15.0 to 3.16.0 #556.</action>
+     <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump org.slf4j:slf4j-api from 2.0.15 to 2.0.16 #562.</action> 
     </release>
     <release version="1.27.0" date="2024-08-03" description="This is a feature and maintenance release. Java 8 or later is required.">
       <!-- FIX -->
