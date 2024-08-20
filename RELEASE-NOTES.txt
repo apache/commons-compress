@@ -37,7 +37,7 @@ patches, or suggestions for improvement, see the Apache Commons Compress website
 
 https://commons.apache.org/proper/commons-compress/
 
-Download page: https://commons.apache.org/proper/commons-compress/download_io.cgi
+Download page: https://commons.apache.org/proper/commons-compress/download_compress.cgi
 
 Have fun!
 -Apache Commons Team
@@ -108,7 +108,7 @@ patches, or suggestions for improvement, see the Apache Commons Compress website
 
 https://commons.apache.org/proper/commons-compress/
 
-Download page: https://commons.apache.org/proper/commons-compress/download_io.cgi
+Download page: https://commons.apache.org/proper/commons-compress/download_compress.cgi
 
 Have fun!
 -Apache Commons Team
@@ -172,7 +172,7 @@ patches, or suggestions for improvement, see the Apache Commons Compress website
 
 https://commons.apache.org/proper/commons-compress/
 
-Download page: https://commons.apache.org/proper/commons-compress/download_io.cgi
+Download page: https://commons.apache.org/proper/commons-compress/download_compress.cgi
 
 Have fun!
 -Apache Commons Team
@@ -223,7 +223,7 @@ patches, or suggestions for improvement, see the Apache Commons Compress website
 
 https://commons.apache.org/proper/commons-compress/
 
-Download page: https://commons.apache.org/proper/commons-compress/download_io.cgi
+Download page: https://commons.apache.org/proper/commons-compress/download_compress.cgi
 
 Have fun!
 -Apache Commons Team
@@ -313,7 +313,7 @@ patches, or suggestions for improvement, see the Apache Commons Compress website
 
 https://commons.apache.org/proper/commons-compress/
 
-Download page: https://commons.apache.org/proper/commons-compress/download_io.cgi
+Download page: https://commons.apache.org/proper/commons-compress/download_compress.cgi
 
 Have fun!
 -Apache Commons Team
@@ -398,7 +398,7 @@ patches, or suggestions for improvement, see the Apache Commons Compress website
 
 https://commons.apache.org/proper/commons-compress/
 
-Download page: https://commons.apache.org/proper/commons-compress/download_io.cgi
+Download page: https://commons.apache.org/proper/commons-compress/download_compress.cgi
 
 Have fun!
 -Apache Commons Team
