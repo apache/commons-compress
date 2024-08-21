@@ -119,7 +119,7 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
     public SeekableByteChannel position(final long newPosition) throws IOException {
         ensureOpen();
         if (newPosition < 0L || newPosition > Integer.MAX_VALUE) {
-            throw new IOException("Position has to be in range 0.. " + Integer.MAX_VALUE);
+            throw new IOException("Position must be in range [0.." + Integer.MAX_VALUE + "]");
         }
         position = (int) newPosition;
         return this;
@@ -179,7 +179,7 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
     @Override
     public SeekableByteChannel truncate(final long newSize) {
         if (newSize < 0L || newSize > Integer.MAX_VALUE) {
-            throw new IllegalArgumentException("Size has to be in range 0.. " + Integer.MAX_VALUE);
+            throw new IllegalArgumentException("Size must be range [0.." + Integer.MAX_VALUE + "]");
         }
         if (size > newSize) {
             size = (int) newSize;
