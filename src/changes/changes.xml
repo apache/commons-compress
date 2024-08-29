@@ -49,7 +49,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" issue="COMPRESS-686" dev="ggregory" due-to="Richard Blank, Gary Gregory">Better exception messages in SeekableInMemoryByteChannel.</action>
       <!-- ADD -->
       <!-- UPDATE -->
-      <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump org.apache.commons:commons-parent from 72 to 73 #563.</action>
+      <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump org.apache.commons:commons-parent from 72 to 74 #563, #567.</action>
       <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump com.github.luben:zstd-jni from 1.5.6-4 to 1.5.6-5 #565.</action> 
     </release>
     <release version="1.27.1" date="2024-08-16" description="This is a feature and maintenance release. Java 8 or later is required.">
