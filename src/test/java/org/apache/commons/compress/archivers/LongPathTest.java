@@ -18,6 +18,7 @@
 package org.apache.commons.compress.archivers;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -107,11 +108,11 @@ public class LongPathTest extends AbstractTest {
         try (ArchiveInputStream<?> ais = factory.createArchiveInputStream(new BufferedInputStream(Files.newInputStream(file.toPath())))) {
             // check if expected type recognized
             if (name.endsWith(".tar")) {
-                assertTrue(ais instanceof TarArchiveInputStream);
+                assertInstanceOf(TarArchiveInputStream.class, ais);
             } else if (name.endsWith(".jar") || name.endsWith(".zip")) {
-                assertTrue(ais instanceof ZipArchiveInputStream);
+                assertInstanceOf(ZipArchiveInputStream.class, ais);
             } else if (name.endsWith(".cpio")) {
-                assertTrue(ais instanceof CpioArchiveInputStream);
+                assertInstanceOf(CpioArchiveInputStream.class, ais);
                 // Hack: cpio does not add trailing "/" to directory names
                 for (int i = 0; i < expected.size(); i++) {
                     final String ent = expected.get(i);
@@ -120,7 +121,7 @@ public class LongPathTest extends AbstractTest {
                     }
                 }
             } else if (name.endsWith(".ar")) {
-                assertTrue(ais instanceof ArArchiveInputStream);
+                assertInstanceOf(ArArchiveInputStream.class, ais);
                 // CPIO does not store directories or directory names
                 expected.clear();
                 for (final String ent : FILELIST) {

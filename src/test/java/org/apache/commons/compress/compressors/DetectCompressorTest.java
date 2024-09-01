@@ -21,6 +21,7 @@ package org.apache.commons.compress.compressors;
 import static org.apache.commons.compress.AbstractTest.getFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -168,32 +169,32 @@ public final class DetectCompressorTest {
     public void testCreateLimitedByName() throws Exception {
         try (CompressorInputStream bzip2 = createCompressorInputStream("bla.txt.bz2", Collections.singleton(CompressorStreamFactory.BZIP2))) {
             assertNotNull(bzip2);
-            assertTrue(bzip2 instanceof BZip2CompressorInputStream);
+            assertInstanceOf(BZip2CompressorInputStream.class, bzip2);
         }
 
         try (CompressorInputStream gzip = createCompressorInputStream("bla.tgz", Collections.singleton(CompressorStreamFactory.GZIP))) {
             assertNotNull(gzip);
-            assertTrue(gzip instanceof GzipCompressorInputStream);
+            assertInstanceOf(GzipCompressorInputStream.class, gzip);
         }
 
         try (CompressorInputStream pack200 = createCompressorInputStream("bla.pack", Collections.singleton(CompressorStreamFactory.PACK200))) {
             assertNotNull(pack200);
-            assertTrue(pack200 instanceof Pack200CompressorInputStream);
+            assertInstanceOf(Pack200CompressorInputStream.class, pack200);
         }
 
         try (CompressorInputStream xz = createCompressorInputStream("bla.tar.xz", Collections.singleton(CompressorStreamFactory.XZ))) {
             assertNotNull(xz);
-            assertTrue(xz instanceof XZCompressorInputStream);
+            assertInstanceOf(XZCompressorInputStream.class, xz);
         }
 
         try (CompressorInputStream zlib = createCompressorInputStream("bla.tar.deflatez", Collections.singleton(CompressorStreamFactory.DEFLATE))) {
             assertNotNull(zlib);
-            assertTrue(zlib instanceof DeflateCompressorInputStream);
+            assertInstanceOf(DeflateCompressorInputStream.class, zlib);
         }
 
         try (CompressorInputStream zstd = createCompressorInputStream("bla.tar.zst", Collections.singleton(CompressorStreamFactory.ZSTANDARD))) {
             assertNotNull(zstd);
-            assertTrue(zstd instanceof ZstdCompressorInputStream);
+            assertInstanceOf(ZstdCompressorInputStream.class, zstd);
         }
     }
 
@@ -211,32 +212,32 @@ public final class DetectCompressorTest {
     public void testCreateWithAutoDetection() throws Exception {
         try (CompressorInputStream bzip2 = createCompressorInputStream("bla.txt.bz2")) {
             assertNotNull(bzip2);
-            assertTrue(bzip2 instanceof BZip2CompressorInputStream);
+            assertInstanceOf(BZip2CompressorInputStream.class, bzip2);
         }
 
         try (CompressorInputStream gzip = createCompressorInputStream("bla.tgz")) {
             assertNotNull(gzip);
-            assertTrue(gzip instanceof GzipCompressorInputStream);
+            assertInstanceOf(GzipCompressorInputStream.class, gzip);
         }
 
         try (CompressorInputStream pack200 = createCompressorInputStream("bla.pack")) {
             assertNotNull(pack200);
-            assertTrue(pack200 instanceof Pack200CompressorInputStream);
+            assertInstanceOf(Pack200CompressorInputStream.class, pack200);
         }
 
         try (CompressorInputStream xz = createCompressorInputStream("bla.tar.xz")) {
             assertNotNull(xz);
-            assertTrue(xz instanceof XZCompressorInputStream);
+            assertInstanceOf(XZCompressorInputStream.class, xz);
         }
 
         try (CompressorInputStream zlib = createCompressorInputStream("bla.tar.deflatez")) {
             assertNotNull(zlib);
-            assertTrue(zlib instanceof DeflateCompressorInputStream);
+            assertInstanceOf(DeflateCompressorInputStream.class, zlib);
         }
 
         try (CompressorInputStream zstd = createCompressorInputStream("bla.tar.zst")) {
             assertNotNull(zstd);
-            assertTrue(zstd instanceof ZstdCompressorInputStream);
+            assertInstanceOf(ZstdCompressorInputStream.class, zstd);
         }
 
         assertThrows(CompressorException.class, () -> factory.createCompressorInputStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY)));

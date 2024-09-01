@@ -19,6 +19,7 @@
 package org.apache.commons.compress.archivers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -414,7 +415,7 @@ public class ArchiveStreamFactoryTest extends AbstractTest {
         try (InputStream fis = newInputStream("COMPRESS-208.zip")) {
             try (InputStream bis = new BufferedInputStream(fis)) {
                 try (ArchiveInputStream<?> ais = ArchiveStreamFactory.DEFAULT.createArchiveInputStream(bis)) {
-                    assertTrue(ais instanceof ZipArchiveInputStream);
+                    assertInstanceOf(ZipArchiveInputStream.class, ais);
                 }
             }
         }

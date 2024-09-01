@@ -21,9 +21,9 @@ package org.apache.commons.compress;
 import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -79,7 +79,7 @@ public final class DetectArchiverTest extends AbstractTest {
     public void testCOMPRESS_117() throws Exception {
         try (ArchiveInputStream<?> tar = createArchiveInputStream("COMPRESS-117.tar")) {
             assertNotNull(tar);
-            assertTrue(tar instanceof TarArchiveInputStream);
+            assertInstanceOf(TarArchiveInputStream.class, tar);
         }
     }
 
@@ -87,7 +87,7 @@ public final class DetectArchiverTest extends AbstractTest {
     public void testCOMPRESS_335() throws Exception {
         try (ArchiveInputStream<?> tar = createArchiveInputStream("COMPRESS-335.tar")) {
             assertNotNull(tar);
-            assertTrue(tar instanceof TarArchiveInputStream);
+            assertInstanceOf(TarArchiveInputStream.class, tar);
         }
     }
 
@@ -96,38 +96,38 @@ public final class DetectArchiverTest extends AbstractTest {
 
         try (ArchiveInputStream<?> ar = createArchiveInputStream("bla.ar")) {
             assertNotNull(ar);
-            assertTrue(ar instanceof ArArchiveInputStream);
+            assertInstanceOf(ArArchiveInputStream.class, ar);
         }
 
         try (ArchiveInputStream<?> tar = createArchiveInputStream("bla.tar")) {
             assertNotNull(tar);
-            assertTrue(tar instanceof TarArchiveInputStream);
+            assertInstanceOf(TarArchiveInputStream.class, tar);
         }
 
         try (ArchiveInputStream<?> zip = createArchiveInputStream("bla.zip")) {
             assertNotNull(zip);
-            assertTrue(zip instanceof ZipArchiveInputStream);
+            assertInstanceOf(ZipArchiveInputStream.class, zip);
         }
 
         try (ArchiveInputStream<?> jar = createArchiveInputStream("bla.jar")) {
             assertNotNull(jar);
-            assertTrue(jar instanceof ZipArchiveInputStream);
+            assertInstanceOf(ZipArchiveInputStream.class, jar);
         }
 
         try (ArchiveInputStream<?> cpio = createArchiveInputStream("bla.cpio")) {
             assertNotNull(cpio);
-            assertTrue(cpio instanceof CpioArchiveInputStream);
+            assertInstanceOf(CpioArchiveInputStream.class, cpio);
         }
 
         try (ArchiveInputStream<?> arj = createArchiveInputStream("bla.arj")) {
             assertNotNull(arj);
-            assertTrue(arj instanceof ArjArchiveInputStream);
+            assertInstanceOf(ArjArchiveInputStream.class, arj);
         }
 
 // Not yet implemented
 //        final ArchiveInputStream<?> tgz = getStreamFor("bla.tgz");
 //        assertNotNull(tgz);
-//        assertTrue(tgz instanceof TarArchiveInputStream);
+//        assertInstanceOf(TarArchiveInputStream.class, tgz);
 
     }
 
@@ -147,7 +147,7 @@ public final class DetectArchiverTest extends AbstractTest {
     public void testDetectOldTarFormatArchive() throws Exception {
         try (ArchiveInputStream<?> tar = createArchiveInputStream("COMPRESS-612/test-times-star-folder.tar")) {
             assertNotNull(tar);
-            assertTrue(tar instanceof TarArchiveInputStream);
+            assertInstanceOf(TarArchiveInputStream.class, tar);
         }
     }
 
