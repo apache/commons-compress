@@ -133,15 +133,7 @@ public class CpBands extends BandSet {
                 classNameToIndex.put(cpClassName, Integer.valueOf(theIndex + 1));
             }
             if (mOrF.getDesc().getName().equals("<init>")) {
-                final Integer constructorIndex = classNameToConstructorIndex.get(cpClassName);
-                if (constructorIndex == null) {
-                    classNameToConstructorIndex.put(cpClassName, Integer.valueOf(1));
-                    mOrF.setIndexInClassForConstructor(0);
-                } else {
-                    final int theIndex = constructorIndex.intValue();
-                    mOrF.setIndexInClassForConstructor(theIndex);
-                    classNameToConstructorIndex.put(cpClassName, Integer.valueOf(theIndex + 1));
-                }
+                mOrF.setIndexInClassForConstructor(classNameToConstructorIndex.compute(cpClassName, (k, v) -> v != null ? v + 1 : 1) - 1);
             }
         });
     }
