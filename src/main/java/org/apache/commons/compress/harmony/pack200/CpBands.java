@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.BiFunction;
 
 import org.objectweb.asm.Type;
 
@@ -106,34 +107,16 @@ public class CpBands extends BandSet {
                 j++;
             }
         }
+        final BiFunction<? super CPClass, ? super Integer, ? extends Integer> remappingFunction = (k, v) -> v != null ? v + 1 : 1;
         final Map<CPClass, Integer> classNameToIndex = new HashMap<>();
-        cp_Field.forEach(mOrF -> {
-            final CPClass cpClassName = mOrF.getClassName();
-            final Integer index = classNameToIndex.get(cpClassName);
-            if (index == null) {
-                classNameToIndex.put(cpClassName, Integer.valueOf(1));
-                mOrF.setIndexInClass(0);
-            } else {
-                final int theIndex = index.intValue();
-                mOrF.setIndexInClass(theIndex);
-                classNameToIndex.put(cpClassName, Integer.valueOf(theIndex + 1));
-            }
-        });
+        cp_Field.forEach(mOrF -> mOrF.setIndexInClass(classNameToIndex.compute(mOrF.getClassName(), remappingFunction) - 1));
         classNameToIndex.clear();
         final Map<CPClass, Integer> classNameToConstructorIndex = new HashMap<>();
         cp_Method.forEach(mOrF -> {
             final CPClass cpClassName = mOrF.getClassName();
-            final Integer index = classNameToIndex.get(cpClassName);
-            if (index == null) {
-                classNameToIndex.put(cpClassName, Integer.valueOf(1));
-                mOrF.setIndexInClass(0);
-            } else {
-                final int theIndex = index.intValue();
-                mOrF.setIndexInClass(theIndex);
-                classNameToIndex.put(cpClassName, Integer.valueOf(theIndex + 1));
-            }
+            mOrF.setIndexInClass(classNameToIndex.compute(cpClassName, remappingFunction) - 1);
             if (mOrF.getDesc().getName().equals("<init>")) {
-                mOrF.setIndexInClassForConstructor(classNameToConstructorIndex.compute(cpClassName, (k, v) -> v != null ? v + 1 : 1) - 1);
+                mOrF.setIndexInClassForConstructor(classNameToConstructorIndex.compute(cpClassName, remappingFunction) - 1);
             }
         });
     }
