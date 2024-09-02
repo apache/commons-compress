@@ -711,12 +711,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
             // calculate the disk number for every central file header,
             // this will be used in writing End Of Central Directory and Zip64 End Of Central Directory
             final int currentSplitSegment = ((ZipSplitOutputStream) this.out).getCurrentSplitSegmentIndex();
-            if (numberOfCDInDiskData.get(currentSplitSegment) == null) {
-                numberOfCDInDiskData.put(currentSplitSegment, 1);
-            } else {
-                final int originalNumberOfCD = numberOfCDInDiskData.get(currentSplitSegment);
-                numberOfCDInDiskData.put(currentSplitSegment, originalNumberOfCD + 1);
-            }
+            numberOfCDInDiskData.compute(currentSplitSegment, (k, v) -> v != null ? v + 1 : 1);
         }
 
         final byte[] extra = ze.getCentralDirectoryExtra();
