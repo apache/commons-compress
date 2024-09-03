@@ -126,13 +126,7 @@ public class CpBands extends BandSet {
     }
 
     public CPDouble cpDoubleValue(final int index) {
-        final Double dbl = Double.valueOf(cpDouble[index]);
-        CPDouble cpDouble = doublesToCPDoubles.get(dbl);
-        if (cpDouble == null) {
-            cpDouble = new CPDouble(dbl, index + doubleOffset);
-            doublesToCPDoubles.put(dbl, cpDouble);
-        }
-        return cpDouble;
+        return doublesToCPDoubles.computeIfAbsent(Double.valueOf(cpDouble[index]), k -> new CPDouble(k, index + doubleOffset));
     }
 
     public CPFieldRef cpFieldValue(final int index) {
@@ -140,13 +134,7 @@ public class CpBands extends BandSet {
     }
 
     public CPFloat cpFloatValue(final int index) {
-        final Float f = Float.valueOf(cpFloat[index]);
-        CPFloat cpFloat = floatsToCPFloats.get(f);
-        if (cpFloat == null) {
-            cpFloat = new CPFloat(f, index + floatOffset);
-            floatsToCPFloats.put(f, cpFloat);
-        }
-        return cpFloat;
+        return floatsToCPFloats.computeIfAbsent(Float.valueOf(cpFloat[index]), k -> new CPFloat(Float.valueOf(cpFloat[index]), index + floatOffset));
     }
 
     public CPInterfaceMethodRef cpIMethodValue(final int index) {
@@ -154,23 +142,11 @@ public class CpBands extends BandSet {
     }
 
     public CPInteger cpIntegerValue(final int index) {
-        final Integer i = Integer.valueOf(cpInt[index]);
-        CPInteger cpInteger = integersToCPIntegers.get(i);
-        if (cpInteger == null) {
-            cpInteger = new CPInteger(i, index + intOffset);
-            integersToCPIntegers.put(i, cpInteger);
-        }
-        return cpInteger;
+        return integersToCPIntegers.computeIfAbsent(Integer.valueOf(cpInt[index]), k -> new CPInteger(k, index + intOffset));
     }
 
     public CPLong cpLongValue(final int index) {
-        final Long l = Long.valueOf(cpLong[index]);
-        CPLong cpLong = longsToCPLongs.get(l);
-        if (cpLong == null) {
-            cpLong = new CPLong(l, index + longOffset);
-            longsToCPLongs.put(l, cpLong);
-        }
-        return cpLong;
+        return longsToCPLongs.computeIfAbsent(Long.valueOf(cpLong[index]), k -> new CPLong(k, index + longOffset));
     }
 
     public CPMethodRef cpMethodValue(final int index) {
@@ -179,17 +155,13 @@ public class CpBands extends BandSet {
 
     public CPNameAndType cpNameAndTypeValue(final int index) {
         final String descriptor = cpDescriptor[index];
-        CPNameAndType cpNameAndType = descriptorsToCPNameAndTypes.get(descriptor);
-        if (cpNameAndType == null) {
+        return descriptorsToCPNameAndTypes.computeIfAbsent(descriptor, k -> {
             final int nameIndex = cpDescriptorNameInts[index];
             final int descriptorIndex = cpDescriptorTypeInts[index];
-
             final CPUTF8 name = cpUTF8Value(nameIndex);
             final CPUTF8 descriptorU = cpSignatureValue(descriptorIndex);
-            cpNameAndType = new CPNameAndType(name, descriptorU, index + descrOffset);
-            descriptorsToCPNameAndTypes.put(descriptor, cpNameAndType);
-        }
-        return cpNameAndType;
+            return new CPNameAndType(name, descriptorU, index + descrOffset);
+        });
     }
 
     public CPNameAndType cpNameAndTypeValue(final String descriptor) {
@@ -218,25 +190,14 @@ public class CpBands extends BandSet {
         } else {
             globalIndex = index + signatureOffset;
         }
-        final String string = cpSignature[index];
-        CPUTF8 cpUTF8 = stringsToCPUTF8.get(string);
-        if (cpUTF8 == null) {
-            cpUTF8 = new CPUTF8(string, globalIndex);
-            stringsToCPUTF8.put(string, cpUTF8);
-        }
-        return cpUTF8;
+        return stringsToCPUTF8.computeIfAbsent(cpSignature[index], k -> new CPUTF8(k, globalIndex));
     }
 
     public CPString cpStringValue(final int index) {
         final String string = cpString[index];
         final int utf8Index = cpStringInts[index];
         final int globalIndex = stringOffset + index;
-        CPString cpString = stringsToCPStrings.get(string);
-        if (cpString == null) {
-            cpString = new CPString(cpUTF8Value(utf8Index), globalIndex);
-            stringsToCPStrings.put(string, cpString);
-        }
-        return cpString;
+        return stringsToCPStrings.computeIfAbsent(string, k -> new CPString(cpUTF8Value(utf8Index), globalIndex));
     }
 
     public CPUTF8 cpUTF8Value(final int index) {
