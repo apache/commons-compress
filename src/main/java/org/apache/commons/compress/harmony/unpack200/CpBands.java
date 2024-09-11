@@ -536,12 +536,11 @@ public class CpBands extends BandSet {
                 // The big suffix stuff hasn't been tested, and I'll be
                 // surprised if it works first time w/o errors ...
                 cpUTF8[i] = lastString.substring(0, i > 1 ? prefix[i - 2] : 0) + new String(bigSuffixData[bigSuffixCount++]);
-                mapUTF8.put(cpUTF8[i], Integer.valueOf(i));
             } else {
                 cpUTF8[i] = lastString.substring(0, i > 1 ? prefix[i - 2] : 0) + new String(data, charCount, suffix[i - 1]);
                 charCount += suffix[i - 1];
-                mapUTF8.put(cpUTF8[i], Integer.valueOf(i));
             }
+            mapUTF8.put(cpUTF8[i], Integer.valueOf(i));
         }
     }
 
