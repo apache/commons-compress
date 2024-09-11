@@ -622,7 +622,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
         entry = null;
     }
 
-    private void copyFromZipInputStream(final InputStream src, boolean phased) throws IOException {
+    private void copyFromZipInputStream(final InputStream src, final boolean phased) throws IOException {
         if (entry == null) {
             throw new IllegalStateException("No current entry");
         }
@@ -1249,11 +1249,12 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
         randomStream.writeFully(ZipLong.getBytes(entry.entry.getCrc()), position); position += ZipConstants.WORD;
         if (!hasZip64Extra(entry.entry) || !actuallyNeedsZip64) {
             randomStream.writeFully(ZipLong.getBytes(entry.entry.getCompressedSize()), position); position += ZipConstants.WORD;
-            randomStream.writeFully(ZipLong.getBytes(entry.entry.getSize()), position); position += ZipConstants.WORD;
+            randomStream.writeFully(ZipLong.getBytes(entry.entry.getSize()), position);
         } else {
             randomStream.writeFully(ZipLong.ZIP64_MAGIC.getBytes(), position); position += ZipConstants.WORD;
-            randomStream.writeFully(ZipLong.ZIP64_MAGIC.getBytes(), position); position += ZipConstants.WORD;
+            randomStream.writeFully(ZipLong.ZIP64_MAGIC.getBytes(), position);
         }
+        position += ZipConstants.WORD;
 
         if (hasZip64Extra(entry.entry)) {
             final ByteBuffer name = getName(entry.entry);
