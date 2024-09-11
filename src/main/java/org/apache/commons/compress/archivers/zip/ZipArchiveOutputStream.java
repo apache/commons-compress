@@ -505,7 +505,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
         final boolean is2PhaseSource = ae.getCrc() != ZipArchiveEntry.CRC_UNKNOWN && ae.getSize() != ArchiveEntry.SIZE_UNKNOWN
                 && ae.getCompressedSize() != ArchiveEntry.SIZE_UNKNOWN;
         putArchiveEntry(ae, is2PhaseSource);
-        copyFromZipInputStream(rawStream);
+        copyFromZipInputStream(rawStream, is2PhaseSource);
         closeCopiedEntry(is2PhaseSource);
     }
 
@@ -622,11 +622,13 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
         entry = null;
     }
 
-    private void copyFromZipInputStream(final InputStream src) throws IOException {
+    private void copyFromZipInputStream(final InputStream src, boolean phased) throws IOException {
         if (entry == null) {
             throw new IllegalStateException("No current entry");
         }
-        ZipUtil.checkRequestedFeatures(entry.entry);
+        if (!phased) {
+            ZipUtil.checkRequestedFeatures(entry.entry);
+        }
         entry.hasWritten = true;
         int length;
         while ((length = src.read(copyBuffer)) >= 0) {
