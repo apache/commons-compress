@@ -207,13 +207,11 @@ public class ChangeSetPerformer<I extends ArchiveInputStream<E>, O extends Archi
                         results.deleted(name);
                         break;
                     }
-                } else if (type == ChangeType.DELETE_DIR && name != null) {
-                    // don't combine ifs to make future extensions more easy
-                    if (name.startsWith(change.getTargetFileName() + "/")) { // NOPMD NOSONAR
-                        copy = false;
-                        results.deleted(name);
-                        break;
-                    }
+                } else // don't combine ifs to make future extensions more easy
+                if (type == ChangeType.DELETE_DIR && name != null && name.startsWith(change.getTargetFileName() + "/")) { // NOPMD NOSONAR
+                    copy = false;
+                    results.deleted(name);
+                    break;
                 }
             }
 
