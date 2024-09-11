@@ -177,38 +177,53 @@ public class NewAttributeBands extends BandSet {
         public void addAttributeToBand(final NewAttribute attribute, final InputStream inputStream) {
             Object val = null;
             int value = 0;
-            if (tag.equals("B") || tag.equals("FB")) {
+            switch (tag) {
+            case "B":
+            case "FB":
                 value = readInteger(1, inputStream) & 0xFF; // unsigned byte
-            } else if (tag.equals("SB")) {
+                break;
+            case "SB":
                 value = readInteger(1, inputStream);
-            } else if (tag.equals("H") || tag.equals("FH")) {
+                break;
+            case "H":
+            case "FH":
                 value = readInteger(2, inputStream) & 0xFFFF; // unsigned short
-            } else if (tag.equals("SH")) {
+                break;
+            case "SH":
                 value = readInteger(2, inputStream);
-            } else if (tag.equals("I") || tag.equals("FI") || tag.equals("SI")) {
+                break;
+            case "I":
+            case "FI":
+            case "SI":
                 value = readInteger(4, inputStream);
-            } else if (tag.equals("V") || tag.equals("FV") || tag.equals("SV")) {
-                // Not currently supported
-            } else if (tag.startsWith("PO") || tag.startsWith("OS")) {
-                final char uint_type = tag.substring(2).toCharArray()[0];
-                final int length = getLength(uint_type);
-                value = readInteger(length, inputStream);
-                value += previousIntegral.previousPValue;
-                val = attribute.getLabel(value);
-                previousPValue = value;
-            } else if (tag.startsWith("P")) {
-                final char uint_type = tag.substring(1).toCharArray()[0];
-                final int length = getLength(uint_type);
-                value = readInteger(length, inputStream);
-                val = attribute.getLabel(value);
-                previousPValue = value;
-            } else if (tag.startsWith("O")) {
-                final char uint_type = tag.substring(1).toCharArray()[0];
-                final int length = getLength(uint_type);
-                value = readInteger(length, inputStream);
-                value += previousIntegral.previousPValue;
-                val = attribute.getLabel(value);
-                previousPValue = value;
+                break;
+            case "V":
+            case "FV":
+            case "SV":
+                break;
+            default:
+                if (tag.startsWith("PO") || tag.startsWith("OS")) {
+                    final char uint_type = tag.substring(2).toCharArray()[0];
+                    final int length = getLength(uint_type);
+                    value = readInteger(length, inputStream);
+                    value += previousIntegral.previousPValue;
+                    val = attribute.getLabel(value);
+                    previousPValue = value;
+                } else if (tag.startsWith("P")) {
+                    final char uint_type = tag.substring(1).toCharArray()[0];
+                    final int length = getLength(uint_type);
+                    value = readInteger(length, inputStream);
+                    val = attribute.getLabel(value);
+                    previousPValue = value;
+                } else if (tag.startsWith("O")) {
+                    final char uint_type = tag.substring(1).toCharArray()[0];
+                    final int length = getLength(uint_type);
+                    value = readInteger(length, inputStream);
+                    value += previousIntegral.previousPValue;
+                    val = attribute.getLabel(value);
+                    previousPValue = value;
+                }
+                break;
             }
             if (val == null) {
                 val = Integer.valueOf(value);
