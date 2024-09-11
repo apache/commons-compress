@@ -117,6 +117,18 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Filter
         }
     }
 
+    /**
+     * Check to make sure that this stream has not been closed
+     *
+     * @throws IOException if the stream is already closed
+     * @since 1.27.0
+     */
+    protected void checkOpen() throws IOException {
+        if (isClosed()) {
+            throw new IOException("Stream closed");
+        }
+    }
+
     @Override
     public void close() throws IOException {
         super.close();
@@ -262,17 +274,5 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Filter
     public void write(final int b) throws IOException {
         oneByte[0] = (byte) (b & BYTE_MASK);
         write(oneByte, 0, 1);
-    }
-
-    /**
-     * Check to make sure that this stream has not been closed
-     *
-     * @throws IOException if the stream is already closed
-     * @since 1.27.0
-     */
-    protected void checkOpen() throws IOException {
-        if (isClosed()) {
-            throw new IOException("Stream closed");
-        }
     }
 }
