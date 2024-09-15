@@ -159,15 +159,17 @@ public class Pack200UnpackerAdapter extends Pack200Adapter implements Unpacker {
      * @param filterInputStream The FilterInputStream to unwrap.
      * @return The wrapped InputStream
      */
-    @SuppressWarnings("resource")
     static InputStream unwrap(final InputStream inputStream) {
         return inputStream instanceof FilterInputStream ? unwrap((FilterInputStream) inputStream) : inputStream;
     }
 
     @Override
     public void unpack(final File file, final JarOutputStream out) throws IOException {
-        if (file == null || out == null) {
-            throw new IllegalArgumentException("Must specify both input and output streams");
+        if (file == null) {
+            throw new IllegalArgumentException("Must specify input file.");
+        }
+        if (out == null) {
+            throw new IllegalArgumentException("Must specify output stream.");
         }
         final long size = file.length();
         final int bufferSize = size > 0 && size < DEFAULT_BUFFER_SIZE ? (int) size : DEFAULT_BUFFER_SIZE;
@@ -178,8 +180,11 @@ public class Pack200UnpackerAdapter extends Pack200Adapter implements Unpacker {
 
     @Override
     public void unpack(final InputStream in, final JarOutputStream out) throws IOException {
-        if (in == null || out == null) {
-            throw new IllegalArgumentException("Must specify both input and output streams");
+        if (in == null) {
+            throw new IllegalArgumentException("Must specify input stream.");
+        }
+        if (out == null) {
+            throw new IllegalArgumentException("Must specify output stream.");
         }
         completed(0);
         try {
