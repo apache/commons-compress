@@ -27,15 +27,16 @@ import org.junit.jupiter.api.Test;
 
 public class Compress687Test {
 
-    private static final int DEFAULT_BUFFER_SIZE = 16_384;
+    private static final String FIXTURE = "org/apache/commons/compress/COMPRESS-687/test-issue.7z";
+    private static final int BUFFER_SIZE = 16_384;
 
     @Test
     public void testTransferTo() throws Exception {
-        try (InputStream inputStream = Compress687Test.class.getClassLoader().getResourceAsStream("org/apache/commons/compress/COMPRESS-687/test-issue.7z");
+        try (InputStream inputStream = Compress687Test.class.getClassLoader().getResourceAsStream(FIXTURE);
                 Pack200CompressorInputStream compressInputStream = new Pack200CompressorInputStream(inputStream)) {
             transferTo(compressInputStream, NullOutputStream.INSTANCE);
         }
-        try (InputStream inputStream = Compress687Test.class.getClassLoader().getResourceAsStream("org/apache/commons/compress/COMPRESS-687/test-issue.7z");
+        try (InputStream inputStream = Compress687Test.class.getClassLoader().getResourceAsStream(FIXTURE);
                 Pack200CompressorInputStream compressInputStream = new Pack200CompressorInputStream(inputStream)) {
             IOUtils.copy(compressInputStream, NullOutputStream.INSTANCE);
         }
@@ -44,9 +45,9 @@ public class Compress687Test {
 
     private long transferTo(final InputStream in, final OutputStream out) throws IOException {
         long transferred = 0;
-        final byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
+        final byte[] buffer = new byte[BUFFER_SIZE];
         int read;
-        while ((read = in.read(buffer, 0, DEFAULT_BUFFER_SIZE)) >= 0) {
+        while ((read = in.read(buffer, 0, BUFFER_SIZE)) >= 0) {
             out.write(buffer, 0, read);
             if (transferred < Long.MAX_VALUE) {
                 try {
