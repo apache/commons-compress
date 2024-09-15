@@ -291,6 +291,35 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
         }
     }
 
+    /**
+     * Test correct skip entry data without reading it.
+     */
+    @Test
+    public void testSkip() throws Exception {
+        final long[] skipped = {0};
+        try (InputStream archiveStream = ZipArchiveInputStream.class.getResourceAsStream("/bla.zip");
+             ZipArchiveInputStream zipStream = new ZipArchiveInputStream(new InputStream() {
+                 @Override
+                 public int read() throws IOException {
+                     return archiveStream.read();
+                 }
+
+                 @Override
+                 public long skip(long n) throws IOException {
+                     long x = archiveStream.skip(n);
+                     skipped[0] += x;
+                     return x;
+                 }
+             })) {
+            assertEquals(0, skipped[0]);
+            final long size = zipStream.getNextZipEntry().getCompressedSize();
+            assertTrue(size > 0);
+            assertEquals(0, skipped[0]);
+            zipStream.getNextEntry();
+            assertEquals(size, skipped[0]);
+        }
+    }
+
     @Test
     public void testProperlyReadsStoredEntries() throws IOException {
         try (InputStream fs = newInputStream("bla-stored.zip");
