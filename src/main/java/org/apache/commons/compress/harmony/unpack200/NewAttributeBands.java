@@ -206,48 +206,62 @@ public class NewAttributeBands extends BandSet {
         @Override
         public void addToAttribute(final int n, final NewAttribute attribute) {
             int value = band[n];
-            if (tag.equals("B") || tag.equals("FB")) {
+            switch (tag) {
+            case "B":
+            case "FB":
                 attribute.addInteger(1, value);
-            } else if (tag.equals("SB")) {
+                break;
+            case "SB":
                 attribute.addInteger(1, (byte) value);
-            } else if (tag.equals("H") || tag.equals("FH")) {
+                break;
+            case "H":
+            case "FH":
                 attribute.addInteger(2, value);
-            } else if (tag.equals("SH")) {
+                break;
+            case "SH":
                 attribute.addInteger(2, (short) value);
-            } else if (tag.equals("I") || tag.equals("FI") || tag.equals("SI")) {
+                break;
+            case "I":
+            case "FI":
+            case "SI":
                 attribute.addInteger(4, value);
-            } else if (tag.equals("V") || tag.equals("FV") || tag.equals("SV")) {
-                // Don't add V's - they shouldn't be written out to the class
-                // file
-            } else if (tag.startsWith("PO")) {
-                final char uintType = tag.substring(2).toCharArray()[0];
-                final int length = getLength(uintType);
-                attribute.addBCOffset(length, value);
-            } else if (tag.startsWith("P")) {
-                final char uintType = tag.substring(1).toCharArray()[0];
-                final int length = getLength(uintType);
-                attribute.addBCIndex(length, value);
-            } else if (tag.startsWith("OS")) {
-                final char uintType = tag.substring(2).toCharArray()[0];
-                final int length = getLength(uintType);
-                switch (length) {
-                case 1:
-                    value = (byte) value;
-                    break;
-                case 2:
-                    value = (short) value;
-                    break;
-                case 4:
-                    value = value;
-                    break;
-                default:
-                    break;
+                break;
+            case "V":
+            case "FV":
+            case "SV":
+                break;
+            default:
+                if (tag.startsWith("PO")) {
+                    final char uintType = tag.substring(2).toCharArray()[0];
+                    final int length = getLength(uintType);
+                    attribute.addBCOffset(length, value);
+                } else if (tag.startsWith("P")) {
+                    final char uintType = tag.substring(1).toCharArray()[0];
+                    final int length = getLength(uintType);
+                    attribute.addBCIndex(length, value);
+                } else if (tag.startsWith("OS")) {
+                    final char uintType = tag.substring(2).toCharArray()[0];
+                    final int length = getLength(uintType);
+                    switch (length) {
+                    case 1:
+                        value = (byte) value;
+                        break;
+                    case 2:
+                        value = (short) value;
+                        break;
+                    case 4:
+                        value = value;
+                        break;
+                    default:
+                        break;
+                    }
+                    attribute.addBCLength(length, value);
+                } else if (tag.startsWith("O")) {
+                    final char uintType = tag.substring(1).toCharArray()[0];
+                    final int length = getLength(uintType);
+                    attribute.addBCLength(length, value);
                 }
-                attribute.addBCLength(length, value);
-            } else if (tag.startsWith("O")) {
-                final char uintType = tag.substring(1).toCharArray()[0];
-                final int length = getLength(uintType);
-                attribute.addBCLength(length, value);
+                break;
             }
         }
 

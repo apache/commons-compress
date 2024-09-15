@@ -224,8 +224,6 @@ public class FixedLengthBlockOutputStream extends OutputStream implements Writab
         final int srcRemaining = src.remaining();
 
         if (srcRemaining < buffer.remaining()) {
-            // if we don't have enough bytes in src to fill up a block we must buffer
-            buffer.put(src);
         } else {
             int srcLeft = srcRemaining;
             final int savedLimit = src.limit();
@@ -247,8 +245,9 @@ public class FixedLengthBlockOutputStream extends OutputStream implements Writab
             }
             // copy any remaining bytes into buffer
             src.limit(savedLimit);
-            buffer.put(src);
         }
+        // if we don't have enough bytes in src to fill up a block we must buffer
+        buffer.put(src);
         return srcRemaining;
     }
 

@@ -90,14 +90,19 @@ public class PackingOptions {
                 }
                 // if no attribute is found, add a new attribute
                 if (!prototypeExists) {
-                    if (ERROR.equals(action)) {
+                    switch (action) {
+                    case ERROR:
                         newAttribute = new NewAttribute.ErrorAttribute(name, tag);
-                    } else if (STRIP.equals(action)) {
+                        break;
+                    case STRIP:
                         newAttribute = new NewAttribute.StripAttribute(name, tag);
-                    } else if (PASS.equals(action)) {
+                        break;
+                    case PASS:
                         newAttribute = new NewAttribute.PassAttribute(name, tag);
-                    } else {
+                        break;
+                    default:
                         newAttribute = new NewAttribute(name, action, tag);
+                        break;
                     }
                     prototypes.add(newAttribute);
                 }

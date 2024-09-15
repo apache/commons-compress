@@ -505,7 +505,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
         final boolean is2PhaseSource = ae.getCrc() != ZipArchiveEntry.CRC_UNKNOWN && ae.getSize() != ArchiveEntry.SIZE_UNKNOWN
                 && ae.getCompressedSize() != ArchiveEntry.SIZE_UNKNOWN;
         putArchiveEntry(ae, is2PhaseSource);
-        copyFromZipInputStream(rawStream);
+        copyFromZipInputStream(rawStream, is2PhaseSource);
         closeCopiedEntry(is2PhaseSource);
     }
 
@@ -622,11 +622,13 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
         entry = null;
     }
 
-    private void copyFromZipInputStream(final InputStream src) throws IOException {
+    private void copyFromZipInputStream(final InputStream src, final boolean phased) throws IOException {
         if (entry == null) {
             throw new IllegalStateException("No current entry");
         }
-        ZipUtil.checkRequestedFeatures(entry.entry);
+        if (!phased) {
+            ZipUtil.checkRequestedFeatures(entry.entry);
+        }
         entry.hasWritten = true;
         int length;
         while ((length = src.read(copyBuffer)) >= 0) {
@@ -1247,11 +1249,12 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
         randomStream.writeFully(ZipLong.getBytes(entry.entry.getCrc()), position); position += ZipConstants.WORD;
         if (!hasZip64Extra(entry.entry) || !actuallyNeedsZip64) {
             randomStream.writeFully(ZipLong.getBytes(entry.entry.getCompressedSize()), position); position += ZipConstants.WORD;
-            randomStream.writeFully(ZipLong.getBytes(entry.entry.getSize()), position); position += ZipConstants.WORD;
+            randomStream.writeFully(ZipLong.getBytes(entry.entry.getSize()), position);
         } else {
             randomStream.writeFully(ZipLong.ZIP64_MAGIC.getBytes(), position); position += ZipConstants.WORD;
-            randomStream.writeFully(ZipLong.ZIP64_MAGIC.getBytes(), position); position += ZipConstants.WORD;
+            randomStream.writeFully(ZipLong.ZIP64_MAGIC.getBytes(), position);
         }
+        position += ZipConstants.WORD;
 
         if (hasZip64Extra(entry.entry)) {
             final ByteBuffer name = getName(entry.entry);

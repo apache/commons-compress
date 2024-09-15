@@ -55,7 +55,6 @@ public class DeflateCompressorOutputStream extends CompressorOutputStream<Deflat
      * @param parameters   the deflate parameters to apply
      */
     public DeflateCompressorOutputStream(final OutputStream outputStream, final DeflateParameters parameters) {
-        super();
         this.deflater = new Deflater(parameters.getCompressionLevel(), !parameters.withZlibHeader());
         this.out = new DeflaterOutputStream(outputStream, deflater);
     }
