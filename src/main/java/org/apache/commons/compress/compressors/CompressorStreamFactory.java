@@ -227,15 +227,12 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
         if (inputStream == null) {
             throw new IllegalArgumentException("Stream must not be null.");
         }
-
         if (compressorNames == null || compressorNames.isEmpty()) {
             throw new IllegalArgumentException("Compressor names cannot be null or empty");
         }
-
         if (!inputStream.markSupported()) {
             throw new IllegalArgumentException("Mark is not supported.");
         }
-
         final byte[] signature = new byte[12];
         inputStream.mark(signature.length);
         int signatureLength = -1;
@@ -245,47 +242,36 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
         } catch (final IOException e) {
             throw new CompressorException("IOException while reading signature.", e);
         }
-
         if (compressorNames.contains(BZIP2) && BZip2CompressorInputStream.matches(signature, signatureLength)) {
             return BZIP2;
         }
-
         if (compressorNames.contains(GZIP) && GzipCompressorInputStream.matches(signature, signatureLength)) {
             return GZIP;
         }
-
         if (compressorNames.contains(PACK200) && Pack200CompressorInputStream.matches(signature, signatureLength)) {
             return PACK200;
         }
-
         if (compressorNames.contains(SNAPPY_FRAMED) && FramedSnappyCompressorInputStream.matches(signature, signatureLength)) {
             return SNAPPY_FRAMED;
         }
-
         if (compressorNames.contains(Z) && ZCompressorInputStream.matches(signature, signatureLength)) {
             return Z;
         }
-
         if (compressorNames.contains(DEFLATE) && DeflateCompressorInputStream.matches(signature, signatureLength)) {
             return DEFLATE;
         }
-
         if (compressorNames.contains(XZ) && XZUtils.matches(signature, signatureLength)) {
             return XZ;
         }
-
         if (compressorNames.contains(LZMA) && LZMAUtils.matches(signature, signatureLength)) {
             return LZMA;
         }
-
         if (compressorNames.contains(LZ4_FRAMED) && FramedLZ4CompressorInputStream.matches(signature, signatureLength)) {
             return LZ4_FRAMED;
         }
-
         if (compressorNames.contains(ZSTANDARD) && ZstdUtils.matches(signature, signatureLength)) {
             return ZSTANDARD;
         }
-
         throw new CompressorException("No Compressor found for the stream signature.");
     }
 
