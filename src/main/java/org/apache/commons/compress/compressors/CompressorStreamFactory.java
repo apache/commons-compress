@@ -533,73 +533,58 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
         if (name == null || in == null) {
             throw new IllegalArgumentException("Compressor name and stream must not be null.");
         }
-
         try {
-
             if (GZIP.equalsIgnoreCase(name)) {
                 return new GzipCompressorInputStream(in, actualDecompressConcatenated);
             }
-
             if (BZIP2.equalsIgnoreCase(name)) {
                 return new BZip2CompressorInputStream(in, actualDecompressConcatenated);
             }
-
             if (BROTLI.equalsIgnoreCase(name)) {
                 if (!BrotliUtils.isBrotliCompressionAvailable()) {
                     throw new CompressorException("Brotli compression is not available." + YOU_NEED_BROTLI_DEC);
                 }
                 return new BrotliCompressorInputStream(in);
             }
-
             if (XZ.equalsIgnoreCase(name)) {
                 if (!XZUtils.isXZCompressionAvailable()) {
                     throw new CompressorException("XZ compression is not available." + YOU_NEED_XZ_JAVA);
                 }
                 return new XZCompressorInputStream(in, actualDecompressConcatenated, memoryLimitInKb);
             }
-
             if (ZSTANDARD.equalsIgnoreCase(name)) {
                 if (!ZstdUtils.isZstdCompressionAvailable()) {
                     throw new CompressorException("Zstandard compression is not available." + YOU_NEED_ZSTD_JNI);
                 }
                 return new ZstdCompressorInputStream(in);
             }
-
             if (LZMA.equalsIgnoreCase(name)) {
                 if (!LZMAUtils.isLZMACompressionAvailable()) {
                     throw new CompressorException("LZMA compression is not available" + YOU_NEED_XZ_JAVA);
                 }
                 return new LZMACompressorInputStream(in, memoryLimitInKb);
             }
-
             if (PACK200.equalsIgnoreCase(name)) {
                 return new Pack200CompressorInputStream(in);
             }
-
             if (SNAPPY_RAW.equalsIgnoreCase(name)) {
                 return new SnappyCompressorInputStream(in);
             }
-
             if (SNAPPY_FRAMED.equalsIgnoreCase(name)) {
                 return new FramedSnappyCompressorInputStream(in);
             }
-
             if (Z.equalsIgnoreCase(name)) {
                 return new ZCompressorInputStream(in, memoryLimitInKb);
             }
-
             if (DEFLATE.equalsIgnoreCase(name)) {
                 return new DeflateCompressorInputStream(in);
             }
-
             if (DEFLATE64.equalsIgnoreCase(name)) {
                 return new Deflate64CompressorInputStream(in);
             }
-
             if (LZ4_BLOCK.equalsIgnoreCase(name)) {
                 return new BlockLZ4CompressorInputStream(in);
             }
-
             if (LZ4_FRAMED.equalsIgnoreCase(name)) {
                 return new FramedLZ4CompressorInputStream(in, actualDecompressConcatenated);
             }
@@ -611,7 +596,6 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
         if (compressorStreamProvider != null) {
             return compressorStreamProvider.createCompressorInputStream(name, in, actualDecompressConcatenated);
         }
-
         throw new CompressorException("Compressor: " + name + " not found.");
     }
 
@@ -630,45 +614,34 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
         if (name == null || out == null) {
             throw new IllegalArgumentException("Compressor name and stream must not be null.");
         }
-
         try {
-
             if (GZIP.equalsIgnoreCase(name)) {
                 return new GzipCompressorOutputStream(out);
             }
-
             if (BZIP2.equalsIgnoreCase(name)) {
                 return new BZip2CompressorOutputStream(out);
             }
-
             if (XZ.equalsIgnoreCase(name)) {
                 return new XZCompressorOutputStream(out);
             }
-
             if (PACK200.equalsIgnoreCase(name)) {
                 return new Pack200CompressorOutputStream(out);
             }
-
             if (LZMA.equalsIgnoreCase(name)) {
                 return new LZMACompressorOutputStream(out);
             }
-
             if (DEFLATE.equalsIgnoreCase(name)) {
                 return new DeflateCompressorOutputStream(out);
             }
-
             if (SNAPPY_FRAMED.equalsIgnoreCase(name)) {
                 return new FramedSnappyCompressorOutputStream(out);
             }
-
             if (LZ4_BLOCK.equalsIgnoreCase(name)) {
                 return new BlockLZ4CompressorOutputStream(out);
             }
-
             if (LZ4_FRAMED.equalsIgnoreCase(name)) {
                 return new FramedLZ4CompressorOutputStream(out);
             }
-
             if (ZSTANDARD.equalsIgnoreCase(name)) {
                 return new ZstdCompressorOutputStream(out);
             }
