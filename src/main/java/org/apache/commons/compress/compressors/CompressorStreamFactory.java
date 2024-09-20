@@ -427,7 +427,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
      * If true, decompress until the end of the input. If false, stop after the first stream and leave the input position to point to the next byte after the
      * stream
      */
-    private final Boolean decompressUntilEOF;
+    private final Boolean decompressUntilEof;
     // This is Boolean so setDecompressConcatenated can determine whether it has
     // been set by the ctor
     // once the setDecompressConcatenated method has been removed, it can revert
@@ -449,7 +449,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
      * Constructs an instance with the decompress Concatenated option set to false.
      */
     public CompressorStreamFactory() {
-        this.decompressUntilEOF = null;
+        this.decompressUntilEof = null;
         this.memoryLimitInKb = -1;
     }
 
@@ -475,7 +475,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
      * @since 1.14
      */
     public CompressorStreamFactory(final boolean decompressUntilEOF, final int memoryLimitInKb) {
-        this.decompressUntilEOF = decompressUntilEOF;
+        this.decompressUntilEof = decompressUntilEOF;
         // Also copy to existing variable so can continue to use that as the
         // current value
         this.decompressConcatenated = decompressUntilEOF;
@@ -675,7 +675,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
     }
 
     public Boolean getDecompressUntilEOF() {
-        return decompressUntilEOF;
+        return decompressUntilEof;
     }
 
     @Override
@@ -703,7 +703,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
      */
     @Deprecated
     public void setDecompressConcatenated(final boolean decompressConcatenated) {
-        if (this.decompressUntilEOF != null) {
+        if (this.decompressUntilEof != null) {
             throw new IllegalStateException("Cannot override the setting defined by the constructor");
         }
         this.decompressConcatenated = decompressConcatenated;
