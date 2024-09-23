@@ -29,6 +29,7 @@ jobs:
         uses: actions/checkout@v4
       - name: 'Dependency Review PR'
         uses: actions/dependency-review-action@v4.3.4
+        if: github.event_name != 'master'
       - name: 'Dependency Review'
         uses: actions/dependency-review-action@v4.3.4
         if: github.event_name == 'master'
