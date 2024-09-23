@@ -16,7 +16,10 @@
 # under the License.
 
 name: 'Dependency Review'
-on: [push, pull_request]
+on:
+  pull_request:
+    branches:
+      - master
 
 permissions:
   contents: read
