@@ -465,7 +465,7 @@ public class TarFile implements Closeable {
 
         final ByteBuffer headerBuf = getRecord();
         if (null == headerBuf) {
-            /* hit EOF */
+            // Hit EOF
             currEntry = null;
             return null;
         }
