@@ -50,7 +50,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="yujincheng08, Gary Gregory">ZipArchiveOutputStream.addRawArchiveEntry() should check is2PhaseSource #571.</action> 
       <!-- ADD -->
       <!-- UPDATE -->
-      <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump org.apache.commons:commons-parent from 72 to 75 #563, #567, #574.</action>
+      <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump org.apache.commons:commons-parent from 72 to 76 #563, #567, #574, #582.</action>
       <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump com.github.luben:zstd-jni from 1.5.6-4 to 1.5.6-6 #565, #578.</action>
       <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump org.apache.commons:commons-lang3 from 3.16.0 to 3.17.0 #568.</action>
       <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump commons-io:commons-io from 2.16.1 to 2.17.0 #575.</action>
