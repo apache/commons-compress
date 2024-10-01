@@ -18,15 +18,14 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-import org.hamcrest.core.IsInstanceOf;
 import org.junit.jupiter.api.Test;
 
 public class ZipClassCoverageTest {
@@ -38,7 +37,7 @@ public class ZipClassCoverageTest {
         assertFalse(constructor.isAccessible());
         constructor.setAccessible(true);
         final Object o = constructor.newInstance();
-        assertThat(o, IsInstanceOf.instanceOf(clazz));
+        assertInstanceOf(clazz, o);
         constructor.setAccessible(false);
 
     }

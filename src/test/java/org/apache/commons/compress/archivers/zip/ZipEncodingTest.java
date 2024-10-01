@@ -19,8 +19,8 @@
 
 package org.apache.commons.compress.archivers.zip;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -29,7 +29,6 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
-import org.hamcrest.core.IsInstanceOf;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -68,7 +67,7 @@ public class ZipEncodingTest {
     private void doSimpleEncodingTest(final String name, byte[] testBytes) throws IOException {
 
         final ZipEncoding enc = ZipEncodingHelper.getZipEncoding(name);
-        assertThat(enc, IsInstanceOf.instanceOf(NioZipEncoding.class));
+        assertInstanceOf(NioZipEncoding.class, enc);
         if (testBytes == null) {
 
             testBytes = new byte[256];

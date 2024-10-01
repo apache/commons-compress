@@ -17,10 +17,6 @@
 
 package org.apache.commons.compress.archivers.ar;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -153,28 +149,23 @@ public class ArArchiveInputStreamTest extends AbstractTest {
     @Test
     public void testSimpleInputStream() throws IOException {
         try (InputStream fileInputStream = newInputStream("bla.ar");
-
                 // This default implementation of InputStream.available() always returns zero,
                 // and there are many streams in practice where the total length of the stream is not known.
-
                 InputStream simpleInputStream = new InputStream() {
                     @Override
                     public int read() throws IOException {
                         return fileInputStream.read();
                     }
                 }) {
-
             try (ArArchiveInputStream archiveInputStream = new ArArchiveInputStream(simpleInputStream)) {
                 final ArArchiveEntry entry1 = archiveInputStream.getNextEntry();
-                assertThat(entry1, not(nullValue()));
-                assertThat(entry1.getName(), equalTo("test1.xml"));
-                assertThat(entry1.getLength(), equalTo(610L));
-
+                assertNotNull(entry1);
+                assertEquals("test1.xml", entry1.getName());
+                assertEquals(610L, entry1.getLength());
                 final ArArchiveEntry entry2 = archiveInputStream.getNextEntry();
-                assertThat(entry2.getName(), equalTo("test2.xml"));
-                assertThat(entry2.getLength(), equalTo(82L));
-
-                assertThat(archiveInputStream.getNextEntry(), nullValue());
+                assertEquals("test2.xml", entry2.getName());
+                assertEquals(82L, entry2.getLength());
+                assertNull(archiveInputStream.getNextEntry());
             }
         }
     }
@@ -183,28 +174,23 @@ public class ArArchiveInputStreamTest extends AbstractTest {
     @Test
     public void testSimpleInputStreamDeprecated() throws IOException {
         try (InputStream fileInputStream = newInputStream("bla.ar");
-
                 // This default implementation of InputStream.available() always returns zero,
                 // and there are many streams in practice where the total length of the stream is not known.
-
                 InputStream simpleInputStream = new InputStream() {
                     @Override
                     public int read() throws IOException {
                         return fileInputStream.read();
                     }
                 }) {
-
             try (ArArchiveInputStream archiveInputStream = new ArArchiveInputStream(simpleInputStream)) {
                 final ArArchiveEntry entry1 = archiveInputStream.getNextArEntry();
-                assertThat(entry1, not(nullValue()));
-                assertThat(entry1.getName(), equalTo("test1.xml"));
-                assertThat(entry1.getLength(), equalTo(610L));
-
+                assertNotNull(entry1);
+                assertEquals("test1.xml", entry1.getName());
+                assertEquals(610L, entry1.getLength());
                 final ArArchiveEntry entry2 = archiveInputStream.getNextArEntry();
-                assertThat(entry2.getName(), equalTo("test2.xml"));
-                assertThat(entry2.getLength(), equalTo(82L));
-
-                assertThat(archiveInputStream.getNextArEntry(), nullValue());
+                assertEquals("test2.xml", entry2.getName());
+                assertEquals(82L, entry2.getLength());
+                assertNull(archiveInputStream.getNextArEntry());
             }
         }
     }

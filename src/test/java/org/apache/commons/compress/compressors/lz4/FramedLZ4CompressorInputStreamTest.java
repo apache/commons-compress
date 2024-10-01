@@ -18,8 +18,6 @@
  */
 package org.apache.commons.compress.compressors.lz4;
 
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -248,7 +246,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTest {
                 IOUtils.toByteArray(a);
             }
         }, "expected exception");
-        assertThat(ex.getMessage(), containsString("block checksum"));
+        assertTrue(ex.getMessage().contains("block checksum"));
     }
 
     @Test
@@ -261,7 +259,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTest {
             try (InputStream a = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(input))) {
             }
         }, "expected exception");
-        assertThat(ex.getMessage(), containsString("header checksum mismatch"));
+        assertTrue(ex.getMessage().contains("header checksum mismatch"));
     }
 
     @Test
@@ -274,7 +272,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTest {
             try (InputStream a = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(input))) {
             }
         }, "expected exception");
-        assertThat(ex.getMessage(), containsString("content size"));
+        assertTrue(ex.getMessage().contains("content size"));
     }
 
     @Test
@@ -286,7 +284,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTest {
             try (InputStream a = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(input))) {
             }
         }, "expected exception");
-        assertThat(ex.getMessage(), containsString("BD byte"));
+        assertTrue(ex.getMessage().contains("BD byte"));
     }
 
     @Test
@@ -297,7 +295,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTest {
             try (InputStream a = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(input))) {
             }
         }, "expected exception");
-        assertThat(ex.getMessage(), containsString("frame flags"));
+        assertTrue(ex.getMessage().contains("frame flags"));
     }
 
     @Test
@@ -310,7 +308,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTest {
             try (InputStream a = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(input))) {
             }
         }, "expected exception");
-        assertThat(ex.getMessage(), containsString("header checksum"));
+        assertTrue(ex.getMessage().contains("header checksum"));
     }
 
     @Test
@@ -322,7 +320,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTest {
             try (InputStream a = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(input))) {
             }
         }, "expected exception");
-        assertThat(ex.getMessage(), containsString("version"));
+        assertTrue(ex.getMessage().contains("version"));
     }
 
     @Test
@@ -349,7 +347,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTest {
                 IOUtils.toByteArray(a);
             }
         }, "expected exception");
-        assertThat(ex.getMessage(), containsString("garbage"));
+        assertTrue(ex.getMessage().contains("garbage"));
     }
 
     @Test
@@ -371,7 +369,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTest {
                 IOUtils.toByteArray(a);
             }
         }, "expected exception");
-        assertThat(ex.getMessage(), containsString("garbage"));
+        assertTrue(ex.getMessage().contains("garbage"));
     }
 
     @Test
@@ -391,7 +389,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTest {
                 fail();
             }
         }, "expected exception");
-        assertThat(ex.getMessage(), containsString("garbage"));
+        assertTrue(ex.getMessage().contains("garbage"));
     }
 
     @Test
@@ -410,7 +408,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTest {
                 IOUtils.toByteArray(a);
             }
         }, "expected exception");
-        assertThat(ex.getMessage(), containsString("garbage"));
+        assertTrue(ex.getMessage().contains("garbage"));
     }
 
     @Test
@@ -431,7 +429,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTest {
                 IOUtils.toByteArray(a);
             }
         }, "expected exception");
-        assertThat(ex.getMessage(), containsString("Premature end of stream while skipping frame"));
+        assertTrue(ex.getMessage().contains("Premature end of stream while skipping frame"));
     }
 
     @Test
@@ -451,7 +449,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTest {
                 IOUtils.toByteArray(a);
             }
         }, "expected exception");
-        assertThat(ex.getMessage(), containsString("Premature end of data"));
+        assertTrue(ex.getMessage().contains("Premature end of data"));
     }
 
     @Test
@@ -469,7 +467,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTest {
                 IOUtils.toByteArray(a);
             }
         }, "expected exception");
-        assertThat(ex.getMessage(), containsString("content checksum mismatch"));
+        assertTrue(ex.getMessage().contains("content checksum mismatch"));
     }
 
     @Test
@@ -487,7 +485,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTest {
                 IOUtils.toByteArray(a);
             }
         }, "expected exception");
-        assertThat(ex.getMessage(), containsString("content checksum"));
+        assertTrue(ex.getMessage().contains("content checksum"));
     }
 
     @Test
@@ -506,7 +504,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTest {
                 IOUtils.toByteArray(a);
             }
         }, "expected exception");
-        assertThat(ex.getMessage(), containsString("garbage"));
+        assertTrue(ex.getMessage().contains("garbage"));
     }
 
     @Test

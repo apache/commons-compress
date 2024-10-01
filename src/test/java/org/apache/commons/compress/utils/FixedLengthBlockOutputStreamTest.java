@@ -19,8 +19,6 @@
 package org.apache.commons.compress.utils;
 
 import static java.nio.charset.StandardCharsets.US_ASCII;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -124,7 +122,7 @@ public class FixedLengthBlockOutputStreamTest {
     }
 
     private static void assertContainsAtOffset(final String msg, final byte[] expected, final int offset, final byte[] actual) {
-        assertThat(actual.length, greaterThanOrEqualTo(offset + expected.length));
+        assertTrue(actual.length >= offset + expected.length);
         for (int i = 0; i < expected.length; i++) {
             assertEquals(expected[i], actual[i + offset], String.format("%s ([%d])", msg, i));
         }
