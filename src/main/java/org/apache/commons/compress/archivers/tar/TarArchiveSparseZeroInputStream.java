@@ -16,7 +16,6 @@
  */
 package org.apache.commons.compress.archivers.tar;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -27,11 +26,10 @@ final class TarArchiveSparseZeroInputStream extends InputStream {
     /**
      * Returns 0.
      *
-     * @return 0
-     * @throws IOException
+     * @return 0.
      */
     @Override
-    public int read() throws IOException {
+    public int read() {
         return 0;
     }
 
