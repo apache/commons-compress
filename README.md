@@ -44,7 +44,7 @@ Apache Commons Compress
 ===================
 
 [![Java CI](https://github.com/apache/commons-compress/actions/workflows/maven.yml/badge.svg)](https://github.com/apache/commons-compress/actions/workflows/maven.yml)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-compress/badge.svg?gav=true)](https://maven-badges.herokuapp.com/maven-central/org.apache.commons/commons-compress/?gav=true)
+[![Maven Central](https://img.shields.io/maven-central/v/org.apache.commons/commons-compress?label=Maven%20Central)](https://search.maven.org/artifact/org.apache.commons/commons-compress)
 [![Javadocs](https://javadoc.io/badge/org.apache.commons/commons-compress/1.27.1.svg)](https://javadoc.io/doc/org.apache.commons/commons-compress/1.27.1)
 [![CodeQL](https://github.com/apache/commons-compress/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/apache/commons-compress/actions/workflows/codeql-analysis.yml)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/apache/commons-compress/badge)](https://api.securityscorecards.dev/projects/github.com/apache/commons-compress)
