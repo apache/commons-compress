@@ -524,13 +524,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
      */
     private void drainCurrentEntryData() throws IOException {
         long remaining = current.entry.getCompressedSize() - current.bytesReadFromStream;
-        while (remaining > 0) {
-            final long n = in.read(buf.array(), 0, (int) Math.min(buf.capacity(), remaining));
-            if (n < 0) {
-                throw new EOFException("Truncated ZIP entry: " + ArchiveUtils.sanitize(current.entry.getName()));
-            }
-            count(n);
-            remaining -= n;
+        if (remaining != realSkip(remaining)) {
+            throw new EOFException("Truncated ZIP entry: " + ArchiveUtils.sanitize(current.entry.getName()));
         }
     }
 
@@ -1233,19 +1228,23 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
      *
      * Also updates bytes-read counter.
      */
-    private void realSkip(final long value) throws IOException {
+    private long realSkip(final long value) throws IOException {
         if (value >= 0) {
             long skipped = 0;
             while (skipped < value) {
                 final long rem = value - skipped;
-                final int x = in.read(skipBuf, 0, (int) (skipBuf.length > rem ? rem : skipBuf.length));
-                if (x == -1) {
-                    return;
+                long x = in.skip(rem);
+                if (x == 0) {
+                    if (in.read() == -1) {
+                        return skipped;
+                    } else {
+                        x = 1;
+                    }
                 }
                 count(x);
                 skipped += x;
             }
-            return;
+            return skipped;
         }
         throw new IllegalArgumentException();
     }
