@@ -63,7 +63,7 @@ import org.apache.commons.compress.utils.Sets;
 
 /**
  * <p>
- * Factory to create Compressor[In|Out]putStreams from names. To add other implementations you should extend CompressorStreamFactory and override the
+ * Creates a Compressor[In|Out]putStreams from names. To add other implementations you should extend CompressorStreamFactory and override the
  * appropriate methods (and call their implementation from super of course).
  * </p>
  *
