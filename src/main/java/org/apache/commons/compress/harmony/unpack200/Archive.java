@@ -204,7 +204,7 @@ public class Archive {
                     i++;
                     final Segment segment = new Segment();
                     segment.setLogLevel(logLevel);
-                    segment.setLogStream(logFile != null ? (OutputStream) logFile : (OutputStream) System.out);
+                    segment.setLogStream(logFile != null ? logFile : System.out);
                     segment.setPreRead(false);
 
                     if (i == 1) {
