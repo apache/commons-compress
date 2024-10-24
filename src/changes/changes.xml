@@ -48,6 +48,7 @@ The <action> type attribute can be add,update,fix,remove.
       <!-- FIX -->
       <action type="fix" issue="COMPRESS-686" dev="ggregory" due-to="Richard Blank, Gary Gregory">Better exception messages in SeekableInMemoryByteChannel.</action>
       <action type="fix" dev="ggregory" due-to="yujincheng08, Gary Gregory">ZipArchiveOutputStream.addRawArchiveEntry() should check is2PhaseSource #571.</action> 
+      <action type="fix" dev="ebourg" due-to="Emmanuel Bourg">The runtime dependency on commons-lang3 has been removed</action>
       <!-- ADD -->
       <!-- UPDATE -->
       <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump org.apache.commons:commons-parent from 72 to 78 #563, #567, #574, #582, #587, #595.</action>

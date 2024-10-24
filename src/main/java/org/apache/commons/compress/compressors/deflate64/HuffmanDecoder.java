@@ -31,7 +31,6 @@ import java.util.Arrays;
 import org.apache.commons.compress.utils.BitInputStream;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.ExactMath;
-import org.apache.commons.lang3.ArrayFill;
 
 /**
  * TODO This class can't be final because it is mocked by Mockito.
@@ -362,7 +361,8 @@ class HuffmanDecoder implements Closeable {
         Arrays.fill(FIXED_LITERALS, 256, 280, 7);
         Arrays.fill(FIXED_LITERALS, 280, 288, 8);
 
-        FIXED_DISTANCE = ArrayFill.fill(new int[32], 5);
+        FIXED_DISTANCE = new int[32];
+        Arrays.fill(FIXED_DISTANCE, 5);
     }
 
     private static BinaryTreeNode buildTree(final int[] litTable) {

@@ -53,7 +53,6 @@ import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.ParsingUtils;
 import org.apache.commons.compress.utils.TimeUtils;
 import org.apache.commons.io.file.attribute.FileTimes;
-import org.apache.commons.lang3.SystemProperties;
 
 /**
  * An entry in a <a href="https://www.gnu.org/software/tar/manual/html_node/Standard.html">Tar archive</a>.
@@ -229,7 +228,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      */
     private static String normalizeFileName(String fileName, final boolean preserveAbsolutePath) {
         if (!preserveAbsolutePath) {
-            final String property = SystemProperties.getOsName();
+            final String property = System.getProperty("os.name");
             if (property != null) {
                 final String osName = property.toLowerCase(Locale.ROOT);
 

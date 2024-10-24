@@ -78,7 +78,7 @@ public class Archive {
         this.inputStream = Pack200UnpackerAdapter.newBoundedInputStream(inputStream);
         this.outputStream = outputStream;
         if (inputStream instanceof FileInputStream) {
-            inputPath = Paths.get(Pack200UnpackerAdapter.readPathString((FileInputStream) inputStream));
+            inputPath = Pack200UnpackerAdapter.readPath((FileInputStream) inputStream);
         } else {
             inputPath = null;
         }

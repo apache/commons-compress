@@ -48,7 +48,6 @@ import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.NullOutputStream;
-import org.apache.commons.lang3.ArrayFill;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -148,7 +147,8 @@ public class TarArchiveOutputStreamTest extends AbstractTest {
         assertThrows(IllegalArgumentException.class, () -> testPadding(0, fileName, contents));
 
         // test with "content" that is an exact multiple of record length
-        final byte[] contents2 = ArrayFill.fill(new byte[2048], (byte) 42);
+        final byte[] contents2 = new byte[2048];
+        java.util.Arrays.fill(contents2, (byte) 42);
         testPadding(TarConstants.DEFAULT_BLKSIZE, fileName, contents2);
     }
 

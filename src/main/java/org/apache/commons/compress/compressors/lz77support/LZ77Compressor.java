@@ -19,9 +19,8 @@
 package org.apache.commons.compress.compressors.lz77support;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Objects;
-
-import org.apache.commons.lang3.ArrayFill;
 
 /**
  * Helper class for compression algorithms that use the ideas of LZ77.
@@ -286,7 +285,8 @@ public class LZ77Compressor {
         final int wSize = params.getWindowSize();
         window = new byte[wSize * 2];
         wMask = wSize - 1;
-        head = ArrayFill.fill(new int[HASH_SIZE], NO_MATCH);
+        head = new int[HASH_SIZE];
+        Arrays.fill(head, NO_MATCH);
         prev = new int[wSize];
     }
 

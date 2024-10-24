@@ -22,6 +22,7 @@ import java.io.FileInputStream;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -34,7 +35,6 @@ import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.java.util.jar.Pack200.Unpacker;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.io.input.CloseShieldInputStream;
-import org.apache.commons.lang3.reflect.FieldUtils;
 
 /**
  * This class provides the binding between the standard Pack200 interface and the internal interface for (un)packing.
@@ -56,7 +56,7 @@ public class Pack200UnpackerAdapter extends Pack200Adapter implements Unpacker {
     }
 
     private static BoundedInputStream newBoundedInputStream(final FileInputStream fileInputStream) throws IOException {
-        return newBoundedInputStream(readPathString(fileInputStream));
+        return newBoundedInputStream(readPath(fileInputStream));
     }
 
     @SuppressWarnings("resource") // Caller closes.
@@ -130,17 +130,14 @@ public class Pack200UnpackerAdapter extends Pack200Adapter implements Unpacker {
         return newBoundedInputStream(Paths.get(url.toURI()));
     }
 
-    @SuppressWarnings("unchecked")
-    private static <T> T readField(final Object object, final String fieldName) {
+    static Path readPath(final FileInputStream fis) {
         try {
-            return (T) FieldUtils.readField(object, fieldName, true);
-        } catch (final IllegalAccessException e) {
-            return null;
+            Field field = FileInputStream.class.getDeclaredField("path");
+            field.setAccessible(true);
+            return Paths.get((String) field.get(fis));
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new RuntimeException("Failed to read the path from the FileInputStream", e);
         }
-    }
-
-    static String readPathString(final FileInputStream fis) {
-        return readField(fis, "path");
     }
 
     /**
@@ -150,7 +147,13 @@ public class Pack200UnpackerAdapter extends Pack200Adapter implements Unpacker {
      * @return The wrapped InputStream
      */
     static InputStream unwrap(final FilterInputStream filterInputStream) {
-        return readField(filterInputStream, "in");
+        try {
+            Field field = FilterInputStream.class.getDeclaredField("in");
+            field.setAccessible(true);
+            return (InputStream) field.get(filterInputStream);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new RuntimeException("Failed to unwrap the FilterInputStream", e);
+        }
     }
 
     /**
