@@ -886,8 +886,6 @@ public class NewAttributeBands extends BandSet {
 
     /**
      * Resolve calls in the attribute layout and returns the number of backwards callables
-     *
-     * @param tokens   the attribute layout as a List of AttributeElements
      */
     private void resolveCalls() {
         for (int i = 0; i < attributeLayoutElements.size(); i++) {
