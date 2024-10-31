@@ -18,6 +18,7 @@ package org.apache.commons.compress.harmony.unpack200.bytecode;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 /**
@@ -38,14 +39,15 @@ public class CPUTF8 extends ConstantPoolEntry {
     /**
      * Creates a new CPUTF8 instance
      *
-     * @param utf8 TODO
-     * @param globalIndex - index in CpBands
+     * @param utf8        TODO
+     * @param globalIndex index in CpBands
      * @throws NullPointerException if utf8 is null
      */
     public CPUTF8(final String utf8, final int globalIndex) {
-        super(ConstantPoolEntry.CP_UTF8, globalIndex);
+        super(CP_UTF8, globalIndex);
         this.utf8 = Objects.requireNonNull(utf8, "utf8");
     }
+
     @Override
     public boolean equals(final Object obj) {
         if (this == obj) {
@@ -81,7 +83,7 @@ public class CPUTF8 extends ConstantPoolEntry {
 
     @Override
     public String toString() {
-        return "UTF8: " + utf8;
+        return StandardCharsets.UTF_8.name() + ":" + utf8;
     }
 
     public String underlyingString() {

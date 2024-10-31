@@ -26,10 +26,10 @@ public abstract class CPConstant extends ConstantPoolEntry {
     private final Object value;
 
     /**
-     * Create a new CPConstant
+     * Constructs a new CPConstant.
      *
-     * @param tag TODO
-     * @param value TODO
+     * @param tag         TODO
+     * @param value       TODO
      * @param globalIndex index in CpBands
      * @throws NullPointerException if value is null
      */
@@ -50,10 +50,7 @@ public abstract class CPConstant extends ConstantPoolEntry {
             return false;
         }
         final CPConstant other = (CPConstant) obj;
-        if (!Objects.equals(value, other.value)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(value, other.value);
     }
 
     protected Object getValue() {

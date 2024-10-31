@@ -17,8 +17,6 @@
 package org.apache.commons.compress.archivers.zip;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.apache.commons.compress.AbstractTestCase.mkdir;
-import static org.apache.commons.compress.AbstractTestCase.rmdir;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -26,28 +24,34 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.util.Arrays;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 public class DataDescriptorTest {
 
+    @TempDir
     private File dir;
 
+    private int findCentralDirectory(final byte[] data) {
+        // not a ZIP64 archive, no comment, "End of central directory record" at the end
+        return (int) ZipLong.getValue(data, data.length - 22 + 16);
+    }
+
     @Test
-    public void doesntWriteDataDescriptorForDeflatedEntryOnSeekableOutput() throws IOException {
-        final File f = new File(dir, "test.zip");
-        try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(f)) {
+    public void testDoesntWriteDataDescriptorForDeflatedEntryOnSeekableOutput() throws IOException {
+        final File file = new File(dir, "test.zip");
+        try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(file)) {
             zos.putArchiveEntry(new ZipArchiveEntry("test1.txt"));
             zos.write("foo".getBytes(UTF_8));
             zos.closeArchiveEntry();
         }
 
-        final byte[] data = Files.readAllBytes(f.toPath());
+        final byte[] data = Files.readAllBytes(file.toPath());
 
         final byte[] versionInLFH = Arrays.copyOfRange(data, 4, 6);
         // still 2.0 because of Deflate
@@ -78,7 +82,7 @@ public class DataDescriptorTest {
     }
 
     @Test
-    public void doesntWriteDataDescriptorWhenAddingRawEntries() throws IOException {
+    public void testDoesntWriteDataDescriptorWhenAddingRawEntries() throws IOException {
         final ByteArrayOutputStream init = new ByteArrayOutputStream();
         try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(init)) {
             zos.putArchiveEntry(new ZipArchiveEntry("test1.txt"));
@@ -91,15 +95,16 @@ public class DataDescriptorTest {
             fos.write(init.toByteArray());
         }
 
-        final ByteArrayOutputStream o = new ByteArrayOutputStream();
-        final ZipArchiveEntry zae;
-        try (ZipFile zf = new ZipFile(f);
-             ZipArchiveOutputStream zos = new ZipArchiveOutputStream(o)) {
-            zae = zf.getEntry("test1.txt");
-            zos.addRawArchiveEntry(zae, zf.getRawInputStream(zae));
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try (ZipFile zf = ZipFile.builder().setFile(f).get();
+                ZipArchiveOutputStream zos = new ZipArchiveOutputStream(baos)) {
+            final ZipArchiveEntry zae = zf.getEntry("test1.txt");
+            try (InputStream rawInputStream = zf.getRawInputStream(zae)) {
+                zos.addRawArchiveEntry(zae, rawInputStream);
+            }
         }
 
-        final byte[] data = o.toByteArray();
+        final byte[] data = baos.toByteArray();
         final byte[] versionInLFH = Arrays.copyOfRange(data, 4, 6);
         // still 2.0 because of Deflate
         assertArrayEquals(new byte[] { 20, 0 }, versionInLFH);
@@ -128,30 +133,15 @@ public class DataDescriptorTest {
         assertEquals(sizeFromLFH, sizeFromCDH);
     }
 
-    private int findCentralDirectory(final byte[] data) {
-        // not a ZIP64 archive, no comment, "End of central directory record" at the end
-        return (int) ZipLong.getValue(data, data.length - 22 + 16);
-    }
-
-    @BeforeEach
-    public void setUp() throws Exception {
-        dir = mkdir("ddtest");
-    }
-
-    @AfterEach
-    public void tearDown() {
-        rmdir(dir);
-    }
-
     @Test
-    public void writesDataDescriptorForDeflatedEntryOnUnseekableOutput() throws IOException {
-        final ByteArrayOutputStream o = new ByteArrayOutputStream();
-        try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(o)) {
+    public void testWritesDataDescriptorForDeflatedEntryOnUnseekableOutput() throws IOException {
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(baos)) {
             zos.putArchiveEntry(new ZipArchiveEntry("test1.txt"));
             zos.write("foo".getBytes(UTF_8));
             zos.closeArchiveEntry();
         }
-        final byte[] data = o.toByteArray();
+        final byte[] data = baos.toByteArray();
 
         final byte[] versionInLFH = Arrays.copyOfRange(data, 4, 6);
         // 2.0 because of DD

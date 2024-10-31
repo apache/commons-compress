@@ -22,15 +22,13 @@ package org.apache.commons.compress.archivers.zip;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.commons.compress.utils.CloseShieldFilterInputStream;
-import org.apache.commons.compress.utils.CountingInputStream;
 import org.apache.commons.compress.utils.ExactMath;
 import org.apache.commons.compress.utils.InputStreamStatistics;
+import org.apache.commons.io.input.BoundedInputStream;
+import org.apache.commons.io.input.CloseShieldInputStream;
 
 /**
- * The implode compression method was added to PKZIP 1.01 released in 1989.
- * It was then dropped from PKZIP 2.0 released in 1993 in favor of the deflate
- * method.
+ * The implode compression method was added to PKZIP 1.01 released in 1989. It was then dropped from PKZIP 2.0 released in 1993 in favor of the deflate method.
  * <p>
  * The algorithm is described in the ZIP File Format Specification.
  *
@@ -38,7 +36,7 @@ import org.apache.commons.compress.utils.InputStreamStatistics;
  *
  * @since 1.7
  */
-class ExplodingInputStream extends InputStream implements InputStreamStatistics {
+final class ExplodingInputStream extends InputStream implements InputStreamStatistics {
 
     /** The underlying stream containing the compressed data */
     private final InputStream in;
@@ -71,14 +69,13 @@ class ExplodingInputStream extends InputStream implements InputStreamStatistics 
     private long treeSizes;
 
     /**
-     * Create a new stream decompressing the content of the specified stream
-     * using the explode algorithm.
+     * Constructs a new stream decompressing the content of the specified stream using the explode algorithm.
      *
      * @param dictionarySize the size of the sliding dictionary (4096 or 8192)
      * @param numberOfTrees  the number of trees (2 or 3)
      * @param in             the compressed data stream
      */
-    public ExplodingInputStream(final int dictionarySize, final int numberOfTrees, final InputStream in) {
+    ExplodingInputStream(final int dictionarySize, final int numberOfTrees, final InputStream in) {
         if (dictionarySize != 4096 && dictionarySize != 8192) {
             throw new IllegalArgumentException("The dictionary size must be 4096 or 8192");
         }
@@ -101,6 +98,7 @@ class ExplodingInputStream extends InputStream implements InputStreamStatistics 
 
     /**
      * Fill the sliding dictionary with more data.
+     *
      * @throws IOException on error.
      */
     private void fillBuffer() throws IOException {
@@ -177,14 +175,14 @@ class ExplodingInputStream extends InputStream implements InputStreamStatistics 
     private void init() throws IOException {
         if (bits == null) {
             // we do not want to close in
-            try (CountingInputStream i = new CountingInputStream(new CloseShieldFilterInputStream(in))) {
+            try (BoundedInputStream cis = BoundedInputStream.builder().setInputStream(CloseShieldInputStream.wrap(in)).get()) {
                 if (numberOfTrees == 3) {
-                    literalTree = BinaryTree.decode(i, 256);
+                    literalTree = BinaryTree.decode(cis, 256);
                 }
 
-                lengthTree = BinaryTree.decode(i, 64);
-                distanceTree = BinaryTree.decode(i, 64);
-                treeSizes += i.getBytesRead();
+                lengthTree = BinaryTree.decode(cis, 64);
+                distanceTree = BinaryTree.decode(cis, 64);
+                treeSizes += cis.getCount();
             }
 
             bits = new BitStream(in);

@@ -22,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-
 /**
  * Unit tests for class {@link Folder}.
  *
@@ -30,13 +29,12 @@ import org.junit.jupiter.api.Test;
  */
 public class FolderTest {
 
-
     @Test
     public void testFindBindPairForInStream() {
 
         final Folder folder = new Folder();
         final BindPair[] bindPairArray = new BindPair[1];
-        final BindPair bindPair = new BindPair();
+        final BindPair bindPair = new BindPair(0, 0);
         bindPairArray[0] = bindPair;
         folder.bindPairs = bindPairArray;
 
@@ -44,19 +42,17 @@ public class FolderTest {
 
     }
 
-
     @Test
     public void testGetUnpackSizeForCoderOne() {
 
         final Folder folder = new Folder();
         final Coder[] coderArray = new Coder[5];
-        final Coder coder = new Coder();
+        final Coder coder = new Coder(null, 0, 0, null);
         folder.coders = coderArray;
 
         assertEquals(0L, folder.getUnpackSizeForCoder(coder));
 
     }
-
 
     @Test
     public void testGetUnpackSizeOne() {
@@ -64,7 +60,7 @@ public class FolderTest {
         final Folder folder = new Folder();
         folder.totalOutputStreams = 266L;
         final BindPair[] bindPairArray = new BindPair[1];
-        final BindPair bindPair = new BindPair();
+        final BindPair bindPair = new BindPair(0, 0);
         bindPairArray[0] = bindPair;
         folder.bindPairs = bindPairArray;
         folder.totalOutputStreams = 1L;
@@ -72,7 +68,6 @@ public class FolderTest {
         assertEquals(0L, folder.getUnpackSize());
 
     }
-
 
     @Test
     public void testGetUnpackSizeTwo() {
@@ -82,6 +77,5 @@ public class FolderTest {
         assertEquals(0L, folder.getUnpackSize());
 
     }
-
 
 }

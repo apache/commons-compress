@@ -21,15 +21,17 @@ package org.apache.commons.compress.archivers.tar;
 import java.util.Objects;
 
 /**
- * This class represents struct sparse in a Tar archive.
+ * A {@code struct sparse} in a <a href="https://www.gnu.org/software/tar/manual/html_node/Standard.html">Tar archive</a>.
  * <p>
  * Whereas, "struct sparse" is:
+ * </p>
  * <pre>
  * struct sparse {
  * char offset[12];   // offset 0
  * char numbytes[12]; // offset 12
  * };
  * </pre>
+ *
  * @since 1.20
  */
 public final class TarArchiveStructSparse {
@@ -56,8 +58,7 @@ public final class TarArchiveStructSparse {
             return false;
         }
         final TarArchiveStructSparse that = (TarArchiveStructSparse) o;
-        return offset == that.offset &&
-                numbytes == that.numbytes;
+        return offset == that.offset && numbytes == that.numbytes;
     }
 
     public long getNumbytes() {
@@ -75,9 +76,6 @@ public final class TarArchiveStructSparse {
 
     @Override
     public String toString() {
-        return "TarArchiveStructSparse{" +
-                "offset=" + offset +
-                ", numbytes=" + numbytes +
-                '}';
+        return "TarArchiveStructSparse{" + "offset=" + offset + ", numbytes=" + numbytes + '}';
     }
 }

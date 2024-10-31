@@ -18,14 +18,14 @@
  */
 package org.apache.commons.compress.compressors;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
 
-import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -53,19 +53,20 @@ public class CompressorStreamFactoryRoundtripTest {
     public void testCompressorStreamFactoryRoundtrip(final String compressorName) throws Exception {
         final CompressorStreamProvider factory = new CompressorStreamFactory();
         final ByteArrayOutputStream compressedOs = new ByteArrayOutputStream();
-        final CompressorOutputStream compressorOutputStream = factory.createCompressorOutputStream(compressorName, compressedOs);
         final String fixture = "The quick brown fox jumps over the lazy dog";
-        compressorOutputStream.write(fixture.getBytes(UTF_8));
-        compressorOutputStream.flush();
-        compressorOutputStream.close();
+        try (CompressorOutputStream<?> compressorOutputStream = factory.createCompressorOutputStream(compressorName, compressedOs)) {
+            compressorOutputStream.write(fixture.getBytes(StandardCharsets.UTF_8.name()));
+            compressorOutputStream.flush();
+        }
         final ByteArrayInputStream is = new ByteArrayInputStream(compressedOs.toByteArray());
-        final CompressorInputStream compressorInputStream = factory.createCompressorInputStream(compressorName, is, false);
-        final ByteArrayOutputStream decompressedOs = new ByteArrayOutputStream();
-        IOUtils.copy(compressorInputStream, decompressedOs);
-        compressorInputStream.close();
-        decompressedOs.flush();
-        decompressedOs.close();
-        assertEquals(fixture, decompressedOs.toString("UTF-8"));
+        try (CompressorInputStream compressorInputStream = factory.createCompressorInputStream(compressorName, is, false);
+                ByteArrayOutputStream decompressedOs = new ByteArrayOutputStream()) {
+            IOUtils.copy(compressorInputStream, decompressedOs);
+            compressorInputStream.close();
+            decompressedOs.flush();
+            decompressedOs.close();
+            assertEquals(fixture, decompressedOs.toString(StandardCharsets.UTF_8.name()));
+        }
     }
 
 }

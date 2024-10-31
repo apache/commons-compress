@@ -16,15 +16,17 @@
  */
 package org.apache.commons.compress.harmony.pack200;
 
+import java.nio.file.FileSystems;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.objectweb.asm.Attribute;
 
 /**
- * Utility class to manage the various options available for pack200.
+ * Manages the various options available for pack200.
  */
 public class PackingOptions {
 
@@ -73,8 +75,9 @@ public class PackingOptions {
     private void addOrUpdateAttributeActions(final List<Attribute> prototypes, final Map<String, String> attributeActions, final int tag) {
         if (attributeActions != null && attributeActions.size() > 0) {
             NewAttribute newAttribute;
-            for (final String name : attributeActions.keySet()) {
-                final String action = attributeActions.get(name);
+            for (final Entry<String, String> entry : attributeActions.entrySet()) {
+                final String name = entry.getKey();
+                final String action = entry.getValue();
                 boolean prototypeExists = false;
                 for (final Object prototype : prototypes) {
                     newAttribute = (NewAttribute) prototype;
@@ -87,14 +90,19 @@ public class PackingOptions {
                 }
                 // if no attribute is found, add a new attribute
                 if (!prototypeExists) {
-                    if (ERROR.equals(action)) {
+                    switch (action) {
+                    case ERROR:
                         newAttribute = new NewAttribute.ErrorAttribute(name, tag);
-                    } else if (STRIP.equals(action)) {
+                        break;
+                    case STRIP:
                         newAttribute = new NewAttribute.StripAttribute(name, tag);
-                    } else if (PASS.equals(action)) {
+                        break;
+                    case PASS:
                         newAttribute = new NewAttribute.PassAttribute(name, tag);
-                    } else {
+                        break;
+                    default:
                         newAttribute = new NewAttribute(name, action, tag);
+                        break;
                     }
                     prototypes.add(newAttribute);
                 }
@@ -103,19 +111,17 @@ public class PackingOptions {
     }
 
     /**
-     * Tell the compressor to pass the file with the given name, or if the name is a directory name all files under that
-     * directory will be passed.
+     * Tell the compressor to pass the file with the given name, or if the name is a directory name all files under that directory will be passed.
      *
      * @param passFileName the file name
      */
-    public void addPassFile(String passFileName) {
-        String fileSeparator = System.getProperty("file.separator");
+    public void addPassFile(final String passFileName) {
+        String fileSeparator = FileSystems.getDefault().getSeparator();
         if (fileSeparator.equals("\\")) {
             // Need to escape backslashes for replaceAll(), which uses regex
             fileSeparator += "\\";
         }
-        passFileName = passFileName.replaceAll(fileSeparator, "/");
-        passFiles.add(passFileName);
+        passFiles.add(passFileName.replaceAll(fileSeparator, "/"));
     }
 
     public String getDeflateHint() {
@@ -197,7 +203,7 @@ public class PackingOptions {
                     // Make sure we don't get any false positives (e.g.
                     // exclude "org/apache/harmony/pack" should not match
                     // files under "org/apache/harmony/pack200/")
-                    pass = pass + "/";
+                    pass += "/";
                 }
                 return passFileName.startsWith(pass);
             }
@@ -259,16 +265,15 @@ public class PackingOptions {
     /**
      * Sets the segment limit (equivalent to -S command line option)
      *
-     * @param segmentLimit - the limit in bytes
+     * @param segmentLimit   the limit in bytes
      */
     public void setSegmentLimit(final long segmentLimit) {
         this.segmentLimit = segmentLimit;
     }
 
     /**
-     * Sets strip debug attributes. If true, all debug attributes (i.e. LineNumberTable, SourceFile, LocalVariableTable and
-     * LocalVariableTypeTable attributes) are stripped when reading the input class files and not included in the output
-     * archive.
+     * Sets strip debug attributes. If true, all debug attributes (i.e. LineNumberTable, SourceFile, LocalVariableTable and LocalVariableTypeTable attributes)
+     * are stripped when reading the input class files and not included in the output archive.
      *
      * @param stripDebug If true, all debug attributes.
      */
@@ -279,7 +284,7 @@ public class PackingOptions {
     /**
      * Sets the compressor behavior when an unknown attribute is encountered.
      *
-     * @param unknownAttributeAction - the action to perform
+     * @param unknownAttributeAction   the action to perform
      */
     public void setUnknownAttributeAction(final String unknownAttributeAction) {
         this.unknownAttributeAction = unknownAttributeAction;

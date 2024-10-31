@@ -21,15 +21,12 @@ package org.apache.commons.compress.archivers.jar;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.zip.JarMarker;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 
 /**
- * Subclass that adds a special extra field to the very first entry
- * which allows the created archive to be used as an executable jar on
- * Solaris.
+ * Subclass that adds a special extra field to the very first entry which allows the created archive to be used as an executable jar on Solaris.
  *
  * @NotThreadSafe
  */
@@ -42,9 +39,9 @@ public class JarArchiveOutputStream extends ZipArchiveOutputStream {
     }
 
     /**
-     * Create and instance that wraps the output stream using the provided encoding.
+     * Constructs a new instance that wraps the output stream using the provided encoding.
      *
-     * @param out the output stream to wrap
+     * @param out      the output stream to wrap
      * @param encoding the encoding to use. Use null for the platform default.
      * @since 1.10
      */
@@ -55,11 +52,11 @@ public class JarArchiveOutputStream extends ZipArchiveOutputStream {
 
     // @throws ClassCastException if entry is not an instance of ZipArchiveEntry
     @Override
-    public void putArchiveEntry(final ArchiveEntry ze) throws IOException {
+    public void putArchiveEntry(final ZipArchiveEntry entry) throws IOException {
         if (!jarMarkerAdded) {
-            ((ZipArchiveEntry)ze).addAsFirstExtraField(JarMarker.getInstance());
+            entry.addAsFirstExtraField(JarMarker.getInstance());
             jarMarkerAdded = true;
         }
-        super.putArchiveEntry(ze);
+        super.putArchiveEntry(entry);
     }
 }

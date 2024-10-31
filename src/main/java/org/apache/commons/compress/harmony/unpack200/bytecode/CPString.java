@@ -32,7 +32,7 @@ public class CPString extends CPConstant {
     private int cachedHashCode;
 
     public CPString(final CPUTF8 value, final int globalIndex) {
-        super(ConstantPoolEntry.CP_String, value, globalIndex);
+        super(CP_String, value, globalIndex);
         this.name = value;
     }
 
@@ -46,7 +46,7 @@ public class CPString extends CPConstant {
 
     @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
-        return new ClassFileEntry[] {name};
+        return new ClassFileEntry[] { name };
     }
 
     @Override
@@ -56,6 +56,7 @@ public class CPString extends CPConstant {
         }
         return cachedHashCode;
     }
+
     /**
      * Allows the constant pool entries to resolve their nested entries
      *

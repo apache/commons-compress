@@ -24,9 +24,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.stream.Stream;
 
-import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -35,29 +37,73 @@ public class CpioArchiveTest {
 
     public static Stream<Arguments> factory() {
         return Stream.of(Arguments.of(CpioConstants.FORMAT_NEW), Arguments.of(CpioConstants.FORMAT_NEW_CRC), Arguments.of(CpioConstants.FORMAT_OLD_ASCII),
-            Arguments.of(CpioConstants.FORMAT_OLD_BINARY));
+                Arguments.of(CpioConstants.FORMAT_OLD_BINARY));
+    }
+
+    @Test
+    public void utf18RoundtripTestCtor2() throws Exception {
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            try (CpioArchiveOutputStream os = new CpioArchiveOutputStream(baos, StandardCharsets.UTF_8.name())) {
+                final CpioArchiveEntry entry = new CpioArchiveEntry("Test.txt", 4);
+                os.putArchiveEntry(entry);
+                os.write(new byte[] { 1, 2, 3, 4 });
+                os.closeArchiveEntry();
+            }
+            baos.close();
+            try (ByteArrayInputStream bin = new ByteArrayInputStream(baos.toByteArray());
+                    CpioArchiveInputStream in = new CpioArchiveInputStream(bin, StandardCharsets.UTF_8.name())) {
+                final CpioArchiveEntry entry = in.getNextEntry();
+                assertNotNull(entry);
+                assertEquals("Test.txt", entry.getName());
+                assertArrayEquals(new byte[] { 1, 2, 3, 4 }, IOUtils.toByteArray(in));
+            }
+        }
     }
 
     @ParameterizedTest
     @MethodSource("factory")
-    public void utf18RoundtripTest(final short format) throws Exception {
+    public void utf18RoundtripTestCtor3(final short format) throws Exception {
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-            try (CpioArchiveOutputStream os = new CpioArchiveOutputStream(baos, format, CpioConstants.BLOCK_SIZE, "UTF-16LE")) {
+            try (CpioArchiveOutputStream os = new CpioArchiveOutputStream(baos, format, CpioConstants.BLOCK_SIZE)) {
                 final CpioArchiveEntry entry = new CpioArchiveEntry(format, "T\u00e4st.txt", 4);
                 if (format == CpioConstants.FORMAT_NEW_CRC) {
                     entry.setChksum(10);
                 }
                 os.putArchiveEntry(entry);
-                os.write(new byte[] {1, 2, 3, 4});
+                os.write(new byte[] { 1, 2, 3, 4 });
                 os.closeArchiveEntry();
             }
             baos.close();
             try (ByteArrayInputStream bin = new ByteArrayInputStream(baos.toByteArray());
-                CpioArchiveInputStream in = new CpioArchiveInputStream(bin, "UTF-16LE")) {
-                final CpioArchiveEntry entry = (CpioArchiveEntry) in.getNextEntry();
+                    CpioArchiveInputStream in = new CpioArchiveInputStream(bin)) {
+                final CpioArchiveEntry entry = in.getNextEntry();
+                assertNotNull(entry);
+                assertEquals("T%U00E4st.txt", entry.getName());
+                assertArrayEquals(new byte[] { 1, 2, 3, 4 }, IOUtils.toByteArray(in));
+            }
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("factory")
+    public void utf18RoundtripTestCtor4(final short format) throws Exception {
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            try (CpioArchiveOutputStream os = new CpioArchiveOutputStream(baos, format, CpioConstants.BLOCK_SIZE, StandardCharsets.UTF_16LE.name())) {
+                final CpioArchiveEntry entry = new CpioArchiveEntry(format, "T\u00e4st.txt", 4);
+                if (format == CpioConstants.FORMAT_NEW_CRC) {
+                    entry.setChksum(10);
+                }
+                os.putArchiveEntry(entry);
+                os.write(new byte[] { 1, 2, 3, 4 });
+                os.closeArchiveEntry();
+            }
+            baos.close();
+            try (ByteArrayInputStream bin = new ByteArrayInputStream(baos.toByteArray());
+                    CpioArchiveInputStream in = new CpioArchiveInputStream(bin, StandardCharsets.UTF_16LE.name())) {
+                final CpioArchiveEntry entry = in.getNextEntry();
                 assertNotNull(entry);
                 assertEquals("T\u00e4st.txt", entry.getName());
-                assertArrayEquals(new byte[] {1, 2, 3, 4}, IOUtils.toByteArray(in));
+                assertArrayEquals(new byte[] { 1, 2, 3, 4 }, IOUtils.toByteArray(in));
             }
         }
     }

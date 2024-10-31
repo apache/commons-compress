@@ -43,23 +43,22 @@ import org.tukaani.xz.PowerPCOptions;
 import org.tukaani.xz.SPARCOptions;
 import org.tukaani.xz.X86Options;
 
-class Coders {
+final class Coders {
     static class BCJDecoder extends AbstractCoder {
         private final FilterOptions opts;
+
         BCJDecoder(final FilterOptions opts) {
             this.opts = opts;
         }
 
         @Override
-        InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength,
-                final Coder coder, final byte[] password, final int maxMemoryLimitInKb) throws IOException {
+        InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength, final Coder coder, final byte[] password,
+                final int maxMemoryLimitInKb) throws IOException {
             try {
                 return opts.getInputStream(in);
             } catch (final AssertionError e) {
-                throw new IOException("BCJ filter used in " + archiveName
-                                      + " needs XZ for Java > 1.4 - see "
-                                      + "https://commons.apache.org/proper/commons-compress/limitations.html#7Z",
-                                      e);
+                throw new IOException("BCJ filter used in " + archiveName + " needs XZ for Java > 1.4 - see "
+                        + "https://commons.apache.org/proper/commons-compress/limitations.html#7Z", e);
             }
         }
 
@@ -76,14 +75,13 @@ class Coders {
         }
 
         @Override
-        InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength,
-                final Coder coder, final byte[] password, final int maxMemoryLimitInKb)
-                throws IOException {
+        InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength, final Coder coder, final byte[] password,
+                final int maxMemoryLimitInKb) throws IOException {
             return new BZip2CompressorInputStream(in);
         }
+
         @Override
-        OutputStream encode(final OutputStream out, final Object options)
-                throws IOException {
+        OutputStream encode(final OutputStream out, final Object options) throws IOException {
             final int blockSize = toInt(options, BZip2CompressorOutputStream.MAX_BLOCKSIZE);
             return new BZip2CompressorOutputStream(out, blockSize);
         }
@@ -91,10 +89,11 @@ class Coders {
 
     static class CopyDecoder extends AbstractCoder {
         @Override
-        InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength,
-                final Coder coder, final byte[] password, final int maxMemoryLimitInKb) throws IOException {
+        InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength, final Coder coder, final byte[] password,
+                final int maxMemoryLimitInKb) throws IOException {
             return in;
         }
+
         @Override
         OutputStream encode(final OutputStream out, final Object options) {
             return out;
@@ -107,9 +106,8 @@ class Coders {
         }
 
         @Override
-        InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength,
-                final Coder coder, final byte[] password, final int maxMemoryLimitInKb)
-            throws IOException {
+        InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength, final Coder coder, final byte[] password,
+                final int maxMemoryLimitInKb) throws IOException {
             return new Deflate64CompressorInputStream(in);
         }
     }
@@ -117,10 +115,9 @@ class Coders {
     static class DeflateDecoder extends AbstractCoder {
         static class DeflateDecoderInputStream extends FilterInputStream {
 
-              Inflater inflater;
+            Inflater inflater;
 
-            public DeflateDecoderInputStream(final InflaterInputStream inflaterInputStream,
-                final Inflater inflater) {
+            DeflateDecoderInputStream(final InflaterInputStream inflaterInputStream, final Inflater inflater) {
                 super(inflaterInputStream);
                 this.inflater = inflater;
             }
@@ -135,13 +132,13 @@ class Coders {
             }
 
         }
+
         static class DeflateDecoderOutputStream extends OutputStream {
 
-              final DeflaterOutputStream deflaterOutputStream;
-              Deflater deflater;
+            final DeflaterOutputStream deflaterOutputStream;
+            Deflater deflater;
 
-            public DeflateDecoderOutputStream(final DeflaterOutputStream deflaterOutputStream,
-                final Deflater deflater) {
+            DeflateDecoderOutputStream(final DeflaterOutputStream deflaterOutputStream, final Deflater deflater) {
                 this.deflaterOutputStream = deflaterOutputStream;
                 this.deflater = deflater;
             }
@@ -177,22 +174,21 @@ class Coders {
             super(Number.class);
         }
 
-         @Override
-        InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength,
-                final Coder coder, final byte[] password, final int maxMemoryLimitInKb)
-            throws IOException {
+        @Override
+        InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength, final Coder coder, final byte[] password,
+                final int maxMemoryLimitInKb) throws IOException {
             final Inflater inflater = new Inflater(true);
             // Inflater with nowrap=true has this odd contract for a zero padding
             // byte following the data stream; this used to be zlib's requirement
             // and has been fixed a long time ago, but the contract persists so
             // we comply.
-            // https://docs.oracle.com/javase/7/docs/api/java/util/zip/Inflater.html#Inflater(boolean)
-            final InflaterInputStream inflaterInputStream = new InflaterInputStream(new SequenceInputStream(in,
-                new ByteArrayInputStream(ONE_ZERO_BYTE)), inflater);
+            // https://docs.oracle.com/javase/8/docs/api/java/util/zip/Inflater.html#Inflater(boolean)
+            final InflaterInputStream inflaterInputStream = new InflaterInputStream(new SequenceInputStream(in, new ByteArrayInputStream(ONE_ZERO_BYTE)),
+                    inflater);
             return new DeflateDecoderInputStream(inflaterInputStream, inflater);
         }
 
-         @Override
+        @Override
         OutputStream encode(final OutputStream out, final Object options) {
             final int level = toInt(options, 9);
             final Deflater deflater = new Deflater(level, true);
@@ -223,19 +219,16 @@ class Coders {
         }
     };
 
-    static InputStream addDecoder(final String archiveName, final InputStream is, final long uncompressedLength,
-            final Coder coder, final byte[] password, final int maxMemoryLimitInKb) throws IOException {
+    static InputStream addDecoder(final String archiveName, final InputStream is, final long uncompressedLength, final Coder coder, final byte[] password,
+            final int maxMemoryLimitInKb) throws IOException {
         final AbstractCoder cb = findByMethod(SevenZMethod.byId(coder.decompressionMethodId));
         if (cb == null) {
-            throw new IOException("Unsupported compression method " +
-                                  Arrays.toString(coder.decompressionMethodId)
-                                  + " used in " + archiveName);
+            throw new IOException("Unsupported compression method " + Arrays.toString(coder.decompressionMethodId) + " used in " + archiveName);
         }
         return cb.decode(archiveName, is, uncompressedLength, coder, password, maxMemoryLimitInKb);
     }
 
-    static OutputStream addEncoder(final OutputStream out, final SevenZMethod method,
-                                   final Object options) throws IOException {
+    static OutputStream addEncoder(final OutputStream out, final SevenZMethod method, final Object options) throws IOException {
         final AbstractCoder cb = findByMethod(method);
         if (cb == null) {
             throw new IOException("Unsupported compression method " + method);

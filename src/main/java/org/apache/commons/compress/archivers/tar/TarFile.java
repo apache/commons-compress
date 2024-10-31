@@ -193,9 +193,8 @@ public class TarFile implements Closeable {
      * Constructor for TarFile.
      *
      * @param content the content to use
-     * @param lenient when set to true illegal values for group/userid, mode, device numbers and timestamp will be
-     *                ignored and the fields set to {@link TarArchiveEntry#UNKNOWN}. When set to false such illegal fields cause an
-     *                exception instead.
+     * @param lenient when set to true illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
+     *                {@link TarArchiveEntry#UNKNOWN}. When set to false such illegal fields cause an exception instead.
      * @throws IOException when reading the tar archive fails
      */
     public TarFile(final byte[] content, final boolean lenient) throws IOException {
@@ -227,9 +226,8 @@ public class TarFile implements Closeable {
      * Constructor for TarFile.
      *
      * @param archive the file of the archive to use
-     * @param lenient when set to true illegal values for group/userid, mode, device numbers and timestamp will be
-     *                ignored and the fields set to {@link TarArchiveEntry#UNKNOWN}. When set to false such illegal fields cause an
-     *                exception instead.
+     * @param lenient when set to true illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
+     *                {@link TarArchiveEntry#UNKNOWN}. When set to false such illegal fields cause an exception instead.
      * @throws IOException when reading the tar archive fails
      */
     public TarFile(final File archive, final boolean lenient) throws IOException {
@@ -261,9 +259,8 @@ public class TarFile implements Closeable {
      * Constructor for TarFile.
      *
      * @param archivePath the path of the archive to use
-     * @param lenient     when set to true illegal values for group/userid, mode, device numbers and timestamp will be
-     *                    ignored and the fields set to {@link TarArchiveEntry#UNKNOWN}. When set to false such illegal fields cause an
-     *                    exception instead.
+     * @param lenient     when set to true illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
+     *                    {@link TarArchiveEntry#UNKNOWN}. When set to false such illegal fields cause an exception instead.
      * @throws IOException when reading the tar archive fails
      */
     public TarFile(final Path archivePath, final boolean lenient) throws IOException {
@@ -298,12 +295,12 @@ public class TarFile implements Closeable {
      * @param blockSize  the blocks size to use
      * @param recordSize the record size to use
      * @param encoding   the encoding to use
-     * @param lenient    when set to true illegal values for group/userid, mode, device numbers and timestamp will be
-     *                   ignored and the fields set to {@link TarArchiveEntry#UNKNOWN}. When set to false such illegal fields cause an
-     *                   exception instead.
+     * @param lenient    when set to true illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
+     *                   {@link TarArchiveEntry#UNKNOWN}. When set to false such illegal fields cause an exception instead.
      * @throws IOException when reading the tar archive fails
      */
-    public TarFile(final SeekableByteChannel archive, final int blockSize, final int recordSize, final String encoding, final boolean lenient) throws IOException {
+    public TarFile(final SeekableByteChannel archive, final int blockSize, final int recordSize, final String encoding, final boolean lenient)
+            throws IOException {
         this.archive = archive;
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
         this.recordSize = recordSize;
@@ -319,22 +316,21 @@ public class TarFile implements Closeable {
 
     /**
      * Update the current entry with the read pax headers
-     * @param headers Headers read from the pax header
+     *
+     * @param headers       Headers read from the pax header
      * @param sparseHeaders Sparse headers read from pax header
      */
-    private void applyPaxHeadersToCurrentEntry(final Map<String, String> headers, final List<TarArchiveStructSparse> sparseHeaders)
-        throws IOException {
+    private void applyPaxHeadersToCurrentEntry(final Map<String, String> headers, final List<TarArchiveStructSparse> sparseHeaders) throws IOException {
         currEntry.updateEntryFromPaxHeaders(headers);
         currEntry.setSparseHeaders(sparseHeaders);
     }
 
     /**
-     * Build the input streams consisting of all-zero input streams and non-zero input streams.
-     * When reading from the non-zero input streams, the data is actually read from the original input stream.
-     * The size of each input stream is introduced by the sparse headers.
+     * Build the input streams consisting of all-zero input streams and non-zero input streams. When reading from the non-zero input streams, the data is
+     * actually read from the original input stream. The size of each input stream is introduced by the sparse headers.
      *
-     * @implNote Some all-zero input streams and non-zero input streams have the size of 0. We DO NOT store the
-     *        0 size input streams because they are meaningless.
+     * @implNote Some all-zero input streams and non-zero input streams have the size of 0. We DO NOT store the 0 size input streams because they are
+     *           meaningless.
      */
     private void buildSparseInputStreams() throws IOException {
         final List<InputStream> streams = new ArrayList<>();
@@ -342,14 +338,14 @@ public class TarFile implements Closeable {
         final List<TarArchiveStructSparse> sparseHeaders = currEntry.getOrderedSparseHeaders();
 
         // Stream doesn't need to be closed at all as it doesn't use any resources
-        final InputStream zeroInputStream = new TarArchiveSparseZeroInputStream(); //NOSONAR
+        final InputStream zeroInputStream = new TarArchiveSparseZeroInputStream(); // NOSONAR
         // logical offset into the extracted entry
         long offset = 0;
         long numberOfZeroBytesInSparseEntry = 0;
         for (final TarArchiveStructSparse sparseHeader : sparseHeaders) {
             final long zeroBlockSize = sparseHeader.getOffset() - offset;
             if (zeroBlockSize < 0) {
-                // sparse header says to move backwards inside of the extracted entry
+                // sparse header says to move backwards inside the extracted entry
                 throw new IOException("Corrupted struct sparse detected");
             }
 
@@ -361,8 +357,7 @@ public class TarFile implements Closeable {
 
             // only store the input streams with non-zero size
             if (sparseHeader.getNumbytes() > 0) {
-                final long start =
-                    currEntry.getDataOffset() + sparseHeader.getOffset() - numberOfZeroBytesInSparseEntry;
+                final long start = currEntry.getDataOffset() + sparseHeader.getOffset() - numberOfZeroBytesInSparseEntry;
                 if (start + sparseHeader.getNumbytes() < start) {
                     // possible integer overflow
                     throw new IOException("Unreadable TAR archive, sparse block offset or length too big");
@@ -382,9 +377,8 @@ public class TarFile implements Closeable {
     }
 
     /**
-     * This method is invoked once the end of the archive is hit, it
-     * tries to consume the remaining bytes under the assumption that
-     * the tool creating this archive has padded the last block.
+     * This method is invoked once the end of the archive is hit, it tries to consume the remaining bytes under the assumption that the tool creating this
+     * archive has padded the last block.
      */
     private void consumeRemainderOfLastBlock() throws IOException {
         final long bytesReadOfLastBlock = archive.position() % blockSize;
@@ -394,7 +388,7 @@ public class TarFile implements Closeable {
     }
 
     /**
-     * Get all TAR Archive Entries from the TarFile
+     * Gets all TAR Archive Entries from the TarFile
      *
      * @return All entries from the tar file
      */
@@ -404,6 +398,7 @@ public class TarFile implements Closeable {
 
     /**
      * Gets the input stream for the provided Tar Archive Entry.
+     *
      * @param entry Entry to get the input stream from
      * @return Input stream of the provided entry
      * @throws IOException Corrupted TAR archive. Can't read entry.
@@ -417,15 +412,15 @@ public class TarFile implements Closeable {
     }
 
     /**
-     * Get the next entry in this tar archive as longname data.
+     * Gets the next entry in this tar archive as long name data.
      *
-     * @return The next entry in the archive as longname data, or null.
+     * @return The next entry in the archive as long name data, or null.
      * @throws IOException on error
      */
     private byte[] getLongNameData() throws IOException {
         final ByteArrayOutputStream longName = new ByteArrayOutputStream();
         int length;
-        try (final InputStream in = getInputStream(currEntry)) {
+        try (InputStream in = getInputStream(currEntry)) {
             while ((length = in.read(smallBuf)) >= 0) {
                 longName.write(smallBuf, 0, length);
             }
@@ -449,14 +444,9 @@ public class TarFile implements Closeable {
     }
 
     /**
-     * Get the next entry in this tar archive. This will skip
-     * to the end of the current entry, if there is one, and
-     * place the position of the channel at the header of the
-     * next entry, and read the header and instantiate a new
-     * TarEntry from the header bytes and return that entry.
-     * If there are no more entries in the archive, null will
-     * be returned to indicate that the end of the archive has
-     * been reached.
+     * Gets the next entry in this tar archive. This will skip to the end of the current entry, if there is one, and place the position of the channel at the
+     * header of the next entry, and read the header and instantiate a new TarEntry from the header bytes and return that entry. If there are no more entries in
+     * the archive, null will be returned to indicate that the end of the archive has been reached.
      *
      * @return The next TarEntry in the archive, or null if there is no next entry.
      * @throws IOException when reading the next TarEntry fails
@@ -475,7 +465,7 @@ public class TarFile implements Closeable {
 
         final ByteBuffer headerBuf = getRecord();
         if (null == headerBuf) {
-            /* hit EOF */
+            // Hit EOF
             currEntry = null;
             return null;
         }
@@ -537,15 +527,13 @@ public class TarFile implements Closeable {
     }
 
     /**
-     * Get the next record in this tar archive. This will skip
-     * over any remaining data in the current entry, if there
-     * is one, and place the input stream at the header of the
-     * next entry.
+     * Gets the next record in this tar archive. This will skip over any remaining data in the current entry, if there is one, and place the input stream at the
+     * header of the next entry.
      *
-     * <p>If there are no more entries in the archive, null will be
-     * returned to indicate that the end of the archive has been
-     * reached.  At the same time the {@code hasHitEOF} marker will be
-     * set to true.</p>
+     * <p>
+     * If there are no more entries in the archive, null will be returned to indicate that the end of the archive has been reached. At the same time the
+     * {@code hasHitEOF} marker will be set to true.
+     * </p>
      *
      * @return The next TarEntry in the archive, or null if there is no next entry.
      * @throws IOException when reading the next TarEntry fails
@@ -576,8 +564,8 @@ public class TarFile implements Closeable {
 
     /**
      * <p>
-     * For PAX Format 0.0, the sparse headers(GNU.sparse.offset and GNU.sparse.numbytes)
-     * may appear multi times, and they look like:
+     * For PAX Format 0.0, the sparse headers(GNU.sparse.offset and GNU.sparse.numbytes) may appear multi times, and they look like:
+     *
      * <pre>
      * GNU.sparse.size=size
      * GNU.sparse.numblocks=numblocks
@@ -589,24 +577,24 @@ public class TarFile implements Closeable {
      *
      * <p>
      * For PAX Format 0.1, the sparse headers are stored in a single variable : GNU.sparse.map
+     *
      * <pre>
      * GNU.sparse.map
      *    Map of non-null data chunks. It is a string consisting of comma-separated values "offset,size[,offset-1,size-1...]"
      * </pre>
      *
      * <p>
-     * For PAX Format 1.X:
-     * <br>
-     * The sparse map itself is stored in the file data block, preceding the actual file data.
-     * It consists of a series of decimal numbers delimited by newlines. The map is padded with nulls to the nearest block boundary.
-     * The first number gives the number of entries in the map. Following are map entries, each one consisting of two numbers
-     * giving the offset and size of the data block it describes.
+     * For PAX Format 1.X: <br>
+     * The sparse map itself is stored in the file data block, preceding the actual file data. It consists of a series of decimal numbers delimited by newlines.
+     * The map is padded with nulls to the nearest block boundary. The first number gives the number of entries in the map. Following are map entries, each one
+     * consisting of two numbers giving the offset and size of the data block it describes.
+     *
      * @throws IOException
      */
     private void paxHeaders() throws IOException {
         List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
         final Map<String, String> headers;
-        try (final InputStream input = getInputStream(currEntry)) {
+        try (InputStream input = getInputStream(currEntry)) {
             headers = TarUtils.parsePaxHeaders(input, sparseHeaders, globalPaxHeaders, currEntry.getSize());
         }
 
@@ -622,7 +610,7 @@ public class TarFile implements Closeable {
 
         // for 1.0 PAX Format, the sparse map is stored in the file data block
         if (currEntry.isPaxGNU1XSparse()) {
-            try (final InputStream input = getInputStream(currEntry)) {
+            try (InputStream input = getInputStream(currEntry)) {
                 sparseHeaders = TarUtils.parsePAX1XSparseHeaders(input, recordSize);
             }
             currEntry.setSparseHeaders(sparseHeaders);
@@ -637,8 +625,7 @@ public class TarFile implements Closeable {
 
     private void readGlobalPaxHeaders() throws IOException {
         try (InputStream input = getInputStream(currEntry)) {
-            globalPaxHeaders = TarUtils.parsePaxHeaders(input, globalSparseHeaders, globalPaxHeaders,
-                currEntry.getSize());
+            globalPaxHeaders = TarUtils.parsePaxHeaders(input, globalSparseHeaders, globalPaxHeaders, currEntry.getSize());
         }
         getNextTarEntry(); // Get the actual file entry
 
@@ -648,8 +635,7 @@ public class TarFile implements Closeable {
     }
 
     /**
-     * Adds the sparse chunks from the current entry to the sparse chunks,
-     * including any additional sparse entries following the current entry.
+     * Adds the sparse chunks from the current entry to the sparse chunks, including any additional sparse entries following the current entry.
      *
      * @throws IOException when reading the sparse entry fails
      */
@@ -704,15 +690,14 @@ public class TarFile implements Closeable {
     }
 
     /**
-     * The last record block should be written at the full size, so skip any
-     * additional space used to fill a record after an entry
+     * The last record block should be written at the full size, so skip any additional space used to fill a record after an entry
      *
      * @throws IOException when skipping the padding of the record fails
      */
     private void skipRecordPadding() throws IOException {
         if (!isDirectory() && currEntry.getSize() > 0 && currEntry.getSize() % recordSize != 0) {
-            final long numRecords = (currEntry.getSize() / recordSize) + 1;
-            final long padding = (numRecords * recordSize) - currEntry.getSize();
+            final long numRecords = currEntry.getSize() / recordSize + 1;
+            final long padding = numRecords * recordSize - currEntry.getSize();
             repositionForwardBy(padding);
             throwExceptionIfPositionIsNotInArchive();
         }
@@ -720,6 +705,7 @@ public class TarFile implements Closeable {
 
     /**
      * Checks if the current position of the SeekableByteChannel is in the archive.
+     *
      * @throws IOException If the position is not in the archive
      */
     private void throwExceptionIfPositionIsNotInArchive() throws IOException {
@@ -729,15 +715,13 @@ public class TarFile implements Closeable {
     }
 
     /**
-     * Tries to read the next record resetting the position in the
-     * archive if it is not a EOF record.
+     * Tries to read the next record resetting the position in the archive if it is not an EOF record.
      *
-     * <p>This is meant to protect against cases where a tar
-     * implementation has written only one EOF record when two are
-     * expected. Actually this won't help since a non-conforming
-     * implementation likely won't fill full blocks consisting of - by
-     * default - ten records either so we probably have already read
-     * beyond the archive anyway.</p>
+     * <p>
+     * This is meant to protect against cases where a tar implementation has written only one EOF record when two are expected. Actually this won't help since a
+     * non-conforming implementation likely won't fill full blocks consisting of - by default - ten records either so we probably have already read beyond the
+     * archive anyway.
+     * </p>
      *
      * @throws IOException if reading the record of resetting the position in the archive fails
      */

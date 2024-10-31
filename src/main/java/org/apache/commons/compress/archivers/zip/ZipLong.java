@@ -23,11 +23,12 @@ import java.io.Serializable;
 import org.apache.commons.compress.utils.ByteUtils;
 
 /**
- * Utility class that represents a four byte integer with conversion
- * rules for the little endian byte order of ZIP files.
+ * Utility class that represents a four byte integer with conversion rules for the little-endian byte order of ZIP files.
+ *
  * @Immutable
  */
 public final class ZipLong implements Cloneable, Serializable {
+
     private static final long serialVersionUID = 1L;
 
     /** Central File Header Signature */
@@ -39,41 +40,44 @@ public final class ZipLong implements Cloneable, Serializable {
     /**
      * Data Descriptor signature.
      *
-     * <p>Actually, PKWARE uses this as marker for split/spanned
-     * archives and other archivers have started to use it as Data
-     * Descriptor signature (as well).</p>
+     * <p>
+     * Actually, PKWARE uses this as marker for split/spanned archives and other archivers have started to use it as Data Descriptor signature (as well).
+     * </p>
+     *
      * @since 1.1
      */
     public static final ZipLong DD_SIG = new ZipLong(0X08074B50L);
 
     /**
-     * Value stored in size and similar fields if ZIP64 extensions are
-     * used.
+     * Value stored in size and similar fields if ZIP64 extensions are used.
+     *
      * @since 1.3
      */
     static final ZipLong ZIP64_MAGIC = new ZipLong(ZipConstants.ZIP64_MAGIC);
 
     /**
-     * Marks ZIP archives that were supposed to be split or spanned
-     * but only needed a single segment in then end (so are actually
-     * neither split nor spanned).
+     * Marks ZIP archives that were supposed to be split or spanned but only needed a single segment in then end (so are actually neither split nor spanned).
      *
-     * <p>This is the "PK00" prefix found in some archives.</p>
+     * <p>
+     * This is the "PK00" prefix found in some archives.
+     * </p>
+     *
      * @since 1.5
      */
-    public static final ZipLong SINGLE_SEGMENT_SPLIT_MARKER =
-        new ZipLong(0X30304B50L);
+    public static final ZipLong SINGLE_SEGMENT_SPLIT_MARKER = new ZipLong(0X30304B50L);
 
     /**
      * Archive extra data record signature.
+     *
      * @since 1.5
      */
     public static final ZipLong AED_SIG = new ZipLong(0X08064B50L);
 
     /**
-     * Get value as four bytes in big endian byte order.
+     * Gets value as four bytes in big-endian byte order.
+     *
      * @param value the value to convert
-     * @return value as four bytes in big endian byte order
+     * @return value as four bytes in big-endian byte order
      */
     public static byte[] getBytes(final long value) {
         final byte[] result = new byte[WORD];
@@ -83,6 +87,7 @@ public final class ZipLong implements Cloneable, Serializable {
 
     /**
      * Helper method to get the value as a Java long from a four-byte array
+     *
      * @param bytes the array of bytes
      * @return the corresponding Java long value
      */
@@ -92,7 +97,8 @@ public final class ZipLong implements Cloneable, Serializable {
 
     /**
      * Helper method to get the value as a Java long from four bytes starting at given array offset
-     * @param bytes the array of bytes
+     *
+     * @param bytes  the array of bytes
      * @param offset the offset to start
      * @return the corresponding Java long value
      */
@@ -101,12 +107,11 @@ public final class ZipLong implements Cloneable, Serializable {
     }
 
     /**
-     * put the value as four bytes in big endian byte order.
-     * @param value the Java long to convert to bytes
-     * @param buf the output buffer
-     * @param  offset
-     *         The offset within the output buffer of the first byte to be written.
-     *         must be non-negative and no larger than {@code buf.length-4}
+     * put the value as four bytes in big-endian byte order.
+     *
+     * @param value  the Java long to convert to bytes
+     * @param buf    the output buffer
+     * @param offset The offset within the output buffer of the first byte to be written. must be non-negative and no larger than {@code buf.length-4}
      */
 
     public static void putLong(final long value, final byte[] buf, final int offset) {
@@ -116,24 +121,27 @@ public final class ZipLong implements Cloneable, Serializable {
     private final long value;
 
     /**
-     * Create instance from bytes.
+     * Constructs a new instance from bytes.
+     *
      * @param bytes the bytes to store as a ZipLong
      */
-    public ZipLong (final byte[] bytes) {
+    public ZipLong(final byte[] bytes) {
         this(bytes, 0);
     }
 
     /**
-     * Create instance from the four bytes starting at offset.
-     * @param bytes the bytes to store as a ZipLong
+     * Creates instance from the four bytes starting at offset.
+     *
+     * @param bytes  the bytes to store as a ZipLong
      * @param offset the offset to start
      */
-    public ZipLong (final byte[] bytes, final int offset) {
-        value = ZipLong.getValue(bytes, offset);
+    public ZipLong(final byte[] bytes, final int offset) {
+        value = getValue(bytes, offset);
     }
 
     /**
-     * create instance from a java int.
+     * create instance from a Java int.
+     *
      * @param value the int to store as a ZipLong
      * @since 1.15
      */
@@ -142,7 +150,8 @@ public final class ZipLong implements Cloneable, Serializable {
     }
 
     /**
-     * Create instance from a number.
+     * Creates instance from a number.
+     *
      * @param value the long to store as a ZipLong
      */
     public ZipLong(final long value) {
@@ -155,12 +164,13 @@ public final class ZipLong implements Cloneable, Serializable {
             return super.clone();
         } catch (final CloneNotSupportedException cnfe) {
             // impossible
-            throw new IllegalStateException(cnfe); //NOSONAR
+            throw new UnsupportedOperationException(cnfe); // NOSONAR
         }
     }
 
     /**
      * Override to make two instances with same value equal.
+     *
      * @param o an object to compare
      * @return true if the objects are equal
      */
@@ -173,22 +183,27 @@ public final class ZipLong implements Cloneable, Serializable {
     }
 
     /**
-     * Get value as four bytes in big endian byte order.
-     * @return value as four bytes in big endian order
+     * Gets value as four bytes in big-endian byte order.
+     *
+     * @return value as four bytes in big-endian order
      */
     public byte[] getBytes() {
-        return ZipLong.getBytes(value);
+        return getBytes(value);
     }
 
     /**
-     * Get value as a (signed) java int
+     * Gets value as a (signed) Java int
+     *
      * @return value as int
      * @since 1.15
      */
-    public int getIntValue() { return (int)value;}
+    public int getIntValue() {
+        return (int) value;
+    }
 
     /**
-     * Get value as Java long.
+     * Gets value as Java long.
+     *
      * @return value as a long
      */
     public long getValue() {
@@ -197,6 +212,7 @@ public final class ZipLong implements Cloneable, Serializable {
 
     /**
      * Override to make two instances with same value equal.
+     *
      * @return the value stored in the ZipLong
      */
     @Override

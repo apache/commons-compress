@@ -21,8 +21,8 @@ import java.io.InputStream;
 import java.util.Arrays;
 
 /**
- * A PopulationCodec is a Codec that is well suited to encoding data that shows statistical or repetitive patterns,
- * containing for example a few numbers which are repeated a lot throughout the set, but not necessarily sequentially.
+ * A PopulationCodec is a Codec that is well suited to encoding data that shows statistical or repetitive patterns, containing for example a few numbers which
+ * are repeated a lot throughout the set, but not necessarily sequentially.
  */
 public class PopulationCodec extends Codec {
 
@@ -60,7 +60,7 @@ public class PopulationCodec extends Codec {
     @Override
     public int[] decodeInts(final int n, final InputStream in) throws IOException, Pack200Exception {
         lastBandLength = 0;
-        favoured = new int[n]; // there must be <= n values, but probably a lot
+        favoured = new int[check(n, in)]; // there must be <= n values, but probably a lot
         // less
         int[] result;
         // read table of favorites first
@@ -88,11 +88,11 @@ public class PopulationCodec extends Codec {
         // if tokenCodec needs to be derived from the T, L and K values
         if (tokenCodec == null) {
             if (k < 256) {
-                tokenCodec = Codec.BYTE1;
+                tokenCodec = BYTE1;
             } else {
                 // if k >= 256, b >= 2
                 int b = 1;
-                BHSDCodec codec = null;
+                BHSDCodec codec;
                 while (++b < 5) {
                     codec = new BHSDCodec(b, 256 - l, 0);
                     if (codec.encodes(k)) {
@@ -141,8 +141,7 @@ public class PopulationCodec extends Codec {
         final byte[] band = new byte[favouredEncoded.length + tokensEncoded.length + unfavouredEncoded.length];
         System.arraycopy(favouredEncoded, 0, band, 0, favouredEncoded.length);
         System.arraycopy(tokensEncoded, 0, band, favouredEncoded.length, tokensEncoded.length);
-        System.arraycopy(unfavouredEncoded, 0, band, favouredEncoded.length + tokensEncoded.length,
-            unfavouredEncoded.length);
+        System.arraycopy(unfavouredEncoded, 0, band, favouredEncoded.length + tokensEncoded.length, unfavouredEncoded.length);
         return band;
     }
 

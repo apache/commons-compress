@@ -22,10 +22,12 @@ package org.apache.commons.compress.compressors.lz77support;
  * Parameters of the {@link LZ77Compressor compressor}.
  */
 public final class Parameters {
+
     /**
      * Builder for {@link Parameters} instances.
      */
     public static class Builder {
+
         private final int windowSize;
         private int minBackReferenceLength, maxBackReferenceLength, maxOffset, maxLiteralLength;
         private Integer niceBackReferenceLength, maxCandidates, lazyThreshold;
@@ -44,25 +46,27 @@ public final class Parameters {
 
         /**
          * Creates the {@link Parameters} instance.
+         *
          * @return the configured {@link Parameters} instance.
          */
         public Parameters build() {
             // default settings tuned for a compromise of good compression and acceptable speed
-            final int niceLen = niceBackReferenceLength != null ? niceBackReferenceLength
-                : Math.max(minBackReferenceLength, maxBackReferenceLength / 2);
+            final int niceLen = niceBackReferenceLength != null ? niceBackReferenceLength : Math.max(minBackReferenceLength, maxBackReferenceLength / 2);
             final int candidates = maxCandidates != null ? maxCandidates : Math.max(256, windowSize / 128);
             final boolean lazy = lazyMatches == null || lazyMatches;
-            final int threshold = lazy ? (lazyThreshold != null ? lazyThreshold : niceLen) : minBackReferenceLength;
+            final int threshold = lazy ? lazyThreshold != null ? lazyThreshold : niceLen : minBackReferenceLength;
 
-            return new Parameters(windowSize, minBackReferenceLength, maxBackReferenceLength,
-                maxOffset, maxLiteralLength, niceLen, candidates, lazy, threshold);
+            return new Parameters(windowSize, minBackReferenceLength, maxBackReferenceLength, maxOffset, maxLiteralLength, niceLen, candidates, lazy,
+                    threshold);
         }
 
         /**
-         * Changes the default setting for "nice back-reference length" and "maximum number of candidates" for improved
-         * compression ratio at the cost of compression speed.
+         * Changes the default setting for "nice back-reference length" and "maximum number of candidates" for improved compression ratio at the cost of
+         * compression speed.
+         * <p>
+         * Use this method after configuring "maximum back-reference length".
+         * </p>
          *
-         * <p>Use this method after configuring "maximum back-reference length".</p>
          * @return the builder
          */
         public Builder tunedForCompressionRatio() {
@@ -73,10 +77,12 @@ public final class Parameters {
         }
 
         /**
-         * Changes the default setting for "nice back-reference length" and "maximum number of candidates" for improved
-         * compression speed at the cost of compression ratio.
+         * Changes the default setting for "nice back-reference length" and "maximum number of candidates" for improved compression speed at the cost of
+         * compression ratio.
+         * <p>
+         * Use this method after configuring "maximum back-reference length".
+         * </p>
          *
-         * <p>Use this method after configuring "maximum back-reference length".</p>
          * @return the builder
          */
         public Builder tunedForSpeed() {
@@ -89,11 +95,14 @@ public final class Parameters {
 
         /**
          * Sets whether lazy matching should be performed.
+         * <p>
+         * Lazy matching means that after a back-reference for a certain position has been found the compressor will try to find a longer match for the next
+         * position.
+         * </p>
+         * <p>
+         * Lazy matching is enabled by default and disabled when tuning for speed.
+         * </p>
          *
-         * <p>Lazy matching means that after a back-reference for a certain position has been found the compressor will
-         * try to find a longer match for the next position.</p>
-         *
-         * <p>Lazy matching is enabled by default and disabled when tuning for speed.</p>
          * @param lazy whether lazy matching should be performed
          * @return the builder
          */
@@ -104,9 +113,11 @@ public final class Parameters {
 
         /**
          * Sets the threshold for lazy matching.
+         * <p>
+         * Even if lazy matching is enabled it will not be performed if the length of the back-reference found for the current position is longer than this
+         * value.
+         * </p>
          *
-         * <p>Even if lazy matching is enabled it will not be performed if the length of the back-reference found for
-         * the current position is longer than this value.</p>
          * @param threshold the threshold for lazy matching
          * @return the builder
          */
@@ -117,49 +128,43 @@ public final class Parameters {
 
         /**
          * Sets the maximal length of a back-reference.
+         * <p>
+         * It is recommended to not use this method directly but rather tune a pre-configured builder created by a format specific factory like
+         * {@link org.apache.commons.compress.compressors.snappy.SnappyCompressorOutputStream#createParameterBuilder}.
+         * </p>
          *
-         * <p>It is recommended to not use this method directly but
-         * rather tune a pre-configured builder created by a format
-         * specific factory like {@link
-         * org.apache.commons.compress.compressors.snappy.SnappyCompressorOutputStream#createParameterBuilder}.</p>
-         *
-         * @param maxBackReferenceLength maximal length of a
-         * back-reference found. A value smaller than
-         * {@code minBackReferenceLength} is interpreted as
-         * {@code minBackReferenceLength}. {@code maxBackReferenceLength}
-         * is capped at {@code windowSize - 1}.
+         * @param maxBackReferenceLength maximal length of a back-reference found. A value smaller than {@code minBackReferenceLength} is interpreted as
+         *                               {@code minBackReferenceLength}. {@code maxBackReferenceLength} is capped at {@code windowSize - 1}.
          * @return the builder
          */
         public Builder withMaxBackReferenceLength(final int maxBackReferenceLength) {
             this.maxBackReferenceLength = maxBackReferenceLength < minBackReferenceLength ? minBackReferenceLength
-                : Math.min(maxBackReferenceLength, windowSize - 1);
+                    : Math.min(maxBackReferenceLength, windowSize - 1);
             return this;
         }
 
         /**
          * Sets the maximal length of a literal block.
+         * <p>
+         * It is recommended to not use this method directly but rather tune a pre-configured builder created by a format specific factory like
+         * {@link org.apache.commons.compress.compressors.snappy.SnappyCompressorOutputStream#createParameterBuilder}.
+         * </p>
          *
-         * <p>It is recommended to not use this method directly but
-         * rather tune a pre-configured builder created by a format
-         * specific factory like {@link
-         * org.apache.commons.compress.compressors.snappy.SnappyCompressorOutputStream#createParameterBuilder}.</p>
-         *
-         * @param maxLiteralLength maximal length of a literal
-         * block. Negative numbers and 0 as well as values bigger than
-         * {@code windowSize} are interpreted as
-         * {@code windowSize}.
+         * @param maxLiteralLength maximal length of a literal block. Negative numbers and 0 as well as values bigger than {@code windowSize} are interpreted as
+         *                         {@code windowSize}.
          * @return the builder
          */
         public Builder withMaxLiteralLength(final int maxLiteralLength) {
-            this.maxLiteralLength = maxLiteralLength < 1 ? windowSize
-                : Math.min(maxLiteralLength, windowSize);
+            this.maxLiteralLength = maxLiteralLength < 1 ? windowSize : Math.min(maxLiteralLength, windowSize);
             return this;
         }
 
         /**
          * Sets the maximum number of back-reference candidates that should be consulted.
+         * <p>
+         * This settings can be used to tune the tradeoff between compression speed and compression ratio.
+         * </p>
          *
-         * <p>This settings can be used to tune the tradeoff between compression speed and compression ratio.</p>
          * @param maxCandidates maximum number of back-reference candidates
          * @return the builder
          */
@@ -170,16 +175,13 @@ public final class Parameters {
 
         /**
          * Sets the maximal offset of a back-reference.
+         * <p>
+         * It is recommended to not use this method directly but rather tune a pre-configured builder created by a format specific factory like
+         * {@link org.apache.commons.compress.compressors.snappy.SnappyCompressorOutputStream#createParameterBuilder}.
+         * </p>
          *
-         * <p>It is recommended to not use this method directly but
-         * rather tune a pre-configured builder created by a format
-         * specific factory like {@link
-         * org.apache.commons.compress.compressors.snappy.SnappyCompressorOutputStream#createParameterBuilder}.</p>
-         *
-         * @param maxOffset maximal offset of a back-reference. A
-         * non-positive value as well as values bigger than
-         * {@code windowSize - 1} are interpreted as <code>windowSize
-         * - 1</code>.
+         * @param maxOffset maximal offset of a back-reference. A non-positive value as well as values bigger than {@code windowSize - 1} are interpreted as
+         *                  {@code windowSize * - 1}.
          * @return the builder
          */
         public Builder withMaxOffset(final int maxOffset) {
@@ -189,20 +191,17 @@ public final class Parameters {
 
         /**
          * Sets the minimal length of a back-reference.
+         * <p>
+         * Ensures {@code maxBackReferenceLength} is not smaller than {@code minBackReferenceLength}.
+         * </p>
+         * <p>
+         * It is recommended to not use this method directly but rather tune a pre-configured builder created by a format specific factory like
+         * {@link org.apache.commons.compress.compressors.snappy.SnappyCompressorOutputStream#createParameterBuilder}.
+         * </p>
          *
-         * <p>Ensures {@code maxBackReferenceLength} is not
-         * smaller than {@code minBackReferenceLength}.
-         *
-         * <p>It is recommended to not use this method directly but
-         * rather tune a pre-configured builder created by a format
-         * specific factory like {@link
-         * org.apache.commons.compress.compressors.snappy.SnappyCompressorOutputStream#createParameterBuilder}.</p>
-         *
-         * @param minBackReferenceLength the minimal length of a back-reference found. A
-         * true minimum of 3 is hard-coded inside of this implementation
-         * but bigger lengths can be configured.
-         * @throws IllegalArgumentException if {@code windowSize}
-         * is smaller than {@code minBackReferenceLength}.
+         * @param minBackReferenceLength the minimal length of a back-reference found. A true minimum of 3 is hard-coded inside of this implementation but
+         *                               bigger lengths can be configured.
+         * @throws IllegalArgumentException if {@code windowSize} is smaller than {@code minBackReferenceLength}.
          * @return the builder
          */
         public Builder withMinBackReferenceLength(final int minBackReferenceLength) {
@@ -218,10 +217,13 @@ public final class Parameters {
 
         /**
          * Sets the "nice length" of a back-reference.
+         * <p>
+         * When a back-references if this size has been found, stop searching for longer back-references.
+         * </p>
+         * <p>
+         * This settings can be used to tune the tradeoff between compression speed and compression ratio.
+         * </p>
          *
-         * <p>When a back-references if this size has been found, stop searching for longer back-references.</p>
-         *
-         * <p>This settings can be used to tune the tradeoff between compression speed and compression ratio.</p>
          * @param niceLen the "nice length" of a back-reference
          * @return the builder
          */
@@ -237,18 +239,14 @@ public final class Parameters {
     public static final int TRUE_MIN_BACK_REFERENCE_LENGTH = LZ77Compressor.NUMBER_OF_BYTES_IN_HASH;
 
     /**
-     * Initializes the builder for the compressor's parameters with a
-     * {@code minBackReferenceLength} of 3 and {@code max*Length}
-     * equal to {@code windowSize - 1}.
+     * Initializes the builder for the compressor's parameters with a {@code minBackReferenceLength} of 3 and {@code max*Length} equal to
+     * {@code windowSize - 1}.
+     * <p>
+     * It is recommended to not use this method directly but rather tune a pre-configured builder created by a format specific factory like
+     * {@link org.apache.commons.compress.compressors.snappy.SnappyCompressorOutputStream#createParameterBuilder}.
+     * </p>
      *
-     * <p>It is recommended to not use this method directly but rather
-     * tune a pre-configured builder created by a format specific
-     * factory like {@link
-     * org.apache.commons.compress.compressors.snappy.SnappyCompressorOutputStream#createParameterBuilder}.</p>
-     *
-     * @param windowSize the size of the sliding window - this
-     * determines the maximum offset a back-reference can take. Must
-     * be a power of two.
+     * @param windowSize the size of the sliding window - this determines the maximum offset a back-reference can take. Must be a power of two.
      * @throws IllegalArgumentException if windowSize is not a power of two.
      * @return a builder configured for the given window size
      */
@@ -258,16 +256,16 @@ public final class Parameters {
 
     private static boolean isPowerOfTwo(final int x) {
         // pre-condition: x > 0
-        return (x & (x - 1)) == 0;
+        return (x & x - 1) == 0;
     }
-    private final int windowSize, minBackReferenceLength, maxBackReferenceLength, maxOffset, maxLiteralLength,
-        niceBackReferenceLength, maxCandidates, lazyThreshold;
+
+    private final int windowSize, minBackReferenceLength, maxBackReferenceLength, maxOffset, maxLiteralLength, niceBackReferenceLength, maxCandidates,
+            lazyThreshold;
 
     private final boolean lazyMatching;
 
     private Parameters(final int windowSize, final int minBackReferenceLength, final int maxBackReferenceLength, final int maxOffset,
-            final int maxLiteralLength, final int niceBackReferenceLength, final int maxCandidates, final boolean lazyMatching,
-            final int lazyThreshold) {
+            final int maxLiteralLength, final int niceBackReferenceLength, final int maxCandidates, final boolean lazyMatching, final int lazyThreshold) {
         this.windowSize = windowSize;
         this.minBackReferenceLength = minBackReferenceLength;
         this.maxBackReferenceLength = maxBackReferenceLength;
@@ -278,29 +276,37 @@ public final class Parameters {
         this.lazyMatching = lazyMatching;
         this.lazyThreshold = lazyThreshold;
     }
+
     /**
      * Gets whether to perform lazy matching.
+     *
      * @return whether to perform lazy matching
      */
     public boolean getLazyMatching() {
         return lazyMatching;
     }
+
     /**
      * Gets the threshold for lazy matching.
+     *
      * @return the threshold for lazy matching
      */
     public int getLazyMatchingThreshold() {
         return lazyThreshold;
     }
+
     /**
      * Gets the maximal length of a back-reference found.
+     *
      * @return the maximal length of a back-reference found
      */
     public int getMaxBackReferenceLength() {
         return maxBackReferenceLength;
     }
+
     /**
      * Gets the maximum number of back-reference candidates to consider.
+     *
      * @return the maximum number of back-reference candidates to consider
      */
     public int getMaxCandidates() {
@@ -309,6 +315,7 @@ public final class Parameters {
 
     /**
      * Gets the maximal length of a literal block.
+     *
      * @return the maximal length of a literal block
      */
     public int getMaxLiteralLength() {
@@ -317,6 +324,7 @@ public final class Parameters {
 
     /**
      * Gets the maximal offset of a back-reference found.
+     *
      * @return the maximal offset of a back-reference found
      */
     public int getMaxOffset() {
@@ -325,6 +333,7 @@ public final class Parameters {
 
     /**
      * Gets the minimal length of a back-reference found.
+     *
      * @return the minimal length of a back-reference found
      */
     public int getMinBackReferenceLength() {
@@ -333,6 +342,7 @@ public final class Parameters {
 
     /**
      * Gets the length of a back-reference that is considered nice enough to stop searching for longer ones.
+     *
      * @return the length of a back-reference that is considered nice enough to stop searching
      */
     public int getNiceBackReferenceLength() {
@@ -340,8 +350,8 @@ public final class Parameters {
     }
 
     /**
-     * Gets the size of the sliding window - this determines the
-     * maximum offset a back-reference can take.
+     * Gets the size of the sliding window - this determines the maximum offset a back-reference can take.
+     *
      * @return the size of the sliding window
      */
     public int getWindowSize() {

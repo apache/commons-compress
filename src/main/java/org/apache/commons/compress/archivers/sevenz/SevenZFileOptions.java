@@ -21,17 +21,21 @@ package org.apache.commons.compress.archivers.sevenz;
  *
  * @since 1.19
  * @Immutable
+ * @deprecated Use {@link SevenZFile.Builder}.
  */
+@Deprecated
 public class SevenZFileOptions {
+
     /**
      * Mutable builder for the immutable {@link SevenZFileOptions}.
      *
      * @since 1.19
      */
     public static class Builder {
-        private int maxMemoryLimitInKb = DEFAUL_MEMORY_LIMIT_IN_KB;
-        private boolean useDefaultNameForUnnamedEntries = DEFAULT_USE_DEFAULTNAME_FOR_UNNAMED_ENTRIES;
-        private boolean tryToRecoverBrokenArchives = DEFAULT_TRY_TO_RECOVER_BROKEN_ARCHIVES;
+
+        private int maxMemoryLimitKb = SevenZFile.Builder.MEMORY_LIMIT_IN_KB;
+        private boolean useDefaultNameForUnnamedEntries = SevenZFile.Builder.USE_DEFAULTNAME_FOR_UNNAMED_ENTRIES;
+        private boolean tryToRecoverBrokenArchives = SevenZFile.Builder.TRY_TO_RECOVER_BROKEN_ARCHIVES;
 
         /**
          * Builds the {@link SevenZFileOptions}.
@@ -39,37 +43,32 @@ public class SevenZFileOptions {
          * @return configured {@link SevenZFileOptions}.
          */
         public SevenZFileOptions build() {
-            return new SevenZFileOptions(maxMemoryLimitInKb, useDefaultNameForUnnamedEntries,
-                tryToRecoverBrokenArchives);
+            return new SevenZFileOptions(maxMemoryLimitKb, useDefaultNameForUnnamedEntries, tryToRecoverBrokenArchives);
         }
 
         /**
-         * Sets the maximum amount of memory to use for parsing the
-         * archive and during extraction.
+         * Sets the maximum amount of memory to use for parsing the archive and during extraction.
+         * <p>
+         * Not all codecs will honor this setting. Currently only LZMA and LZMA2 are supported.
+         * </p>
          *
-         * <p>Not all codecs will honor this setting. Currently only lzma
-         * and lzma2 are supported.</p>
-         *
-         * @param maxMemoryLimitInKb limit of the maximum amount of memory to use
+         * @param maxMemoryLimitKb limit of the maximum amount of memory to use
          * @return the reconfigured builder
          */
-        public Builder withMaxMemoryLimitInKb(final int maxMemoryLimitInKb) {
-            this.maxMemoryLimitInKb = maxMemoryLimitInKb;
+        public Builder withMaxMemoryLimitInKb(final int maxMemoryLimitKb) {
+            this.maxMemoryLimitKb = maxMemoryLimitKb;
             return this;
         }
 
         /**
-         * Sets whether {@link SevenZFile} will try to revover broken archives where the CRC of the file's metadata is
-         * 0.
+         * Sets whether {@link SevenZFile} will try to recover broken archives where the CRC of the file's metadata is 0.
          * <p>
-         * This special kind of broken archive is encountered when mutli volume archives are closed prematurely. If
-         * you enable this option SevenZFile will trust data that looks as if it could contain metadata of an archive
-         * and allocate big amounts of memory. It is strongly recommended to not enable this option without setting
-         * {@link #withMaxMemoryLimitInKb} at the same time.
+         * This special kind of broken archive is encountered when mutli volume archives are closed prematurely. If you enable this option SevenZFile will trust
+         * data that looks as if it could contain metadata of an archive and allocate big amounts of memory. It is strongly recommended to not enable this
+         * option without setting {@link #withMaxMemoryLimitInKb} at the same time.
          * </p>
          *
-         * @param tryToRecoverBrokenArchives if true SevenZFile will try to recover archives that are broken in the
-         * specific way
+         * @param tryToRecoverBrokenArchives if true SevenZFile will try to recover archives that are broken in the specific way
          * @return the reconfigured builder
          * @since 1.21
          */
@@ -79,11 +78,9 @@ public class SevenZFileOptions {
         }
 
         /**
-         * Sets whether entries without a name should get their names
-         * set to the archive's default file name.
+         * Sets whether entries without a name should get their names set to the archive's default file name.
          *
-         * @param useDefaultNameForUnnamedEntries if true the name of
-         * unnamed entries will be set to the archive's default name
+         * @param useDefaultNameForUnnamedEntries if true the name of unnamed entries will be set to the archive's default name
          * @return the reconfigured builder
          */
         public Builder withUseDefaultNameForUnnamedEntries(final boolean useDefaultNameForUnnamedEntries) {
@@ -91,57 +88,51 @@ public class SevenZFileOptions {
             return this;
         }
     }
-    private static final int DEFAUL_MEMORY_LIMIT_IN_KB = Integer.MAX_VALUE;
-    private static final boolean DEFAULT_USE_DEFAULTNAME_FOR_UNNAMED_ENTRIES = false;
 
-    private static final boolean DEFAULT_TRY_TO_RECOVER_BROKEN_ARCHIVES = false;
     /**
      * The default options.
-     *
      * <ul>
-     *   <li>no memory limit</li>
-     *   <li>don't modify the name of unnamed entries</li>
+     * <li>no memory limit</li>
+     * <li>don't modify the name of unnamed entries</li>
      * </ul>
      */
-    public static final SevenZFileOptions DEFAULT = new SevenZFileOptions(DEFAUL_MEMORY_LIMIT_IN_KB,
-        DEFAULT_USE_DEFAULTNAME_FOR_UNNAMED_ENTRIES,
-        DEFAULT_TRY_TO_RECOVER_BROKEN_ARCHIVES);
+    public static final SevenZFileOptions DEFAULT = new SevenZFileOptions(SevenZFile.Builder.MEMORY_LIMIT_IN_KB,
+            SevenZFile.Builder.USE_DEFAULTNAME_FOR_UNNAMED_ENTRIES, SevenZFile.Builder.TRY_TO_RECOVER_BROKEN_ARCHIVES);
+
     /**
      * Obtains a builder for SevenZFileOptions.
+     *
      * @return a builder for SevenZFileOptions.
      */
     public static Builder builder() {
         return new Builder();
     }
 
-    private final int maxMemoryLimitInKb;
-
+    private final int maxMemoryLimitKb;
     private final boolean useDefaultNameForUnnamedEntries;
-
     private final boolean tryToRecoverBrokenArchives;
 
-    private SevenZFileOptions(final int maxMemoryLimitInKb, final boolean useDefaultNameForUnnamedEntries,
-        final boolean tryToRecoverBrokenArchives) {
-        this.maxMemoryLimitInKb = maxMemoryLimitInKb;
+    private SevenZFileOptions(final int maxMemoryLimitKb, final boolean useDefaultNameForUnnamedEntries, final boolean tryToRecoverBrokenArchives) {
+        this.maxMemoryLimitKb = maxMemoryLimitKb;
         this.useDefaultNameForUnnamedEntries = useDefaultNameForUnnamedEntries;
         this.tryToRecoverBrokenArchives = tryToRecoverBrokenArchives;
     }
 
     /**
-     * Gets the maximum amount of memory to use for parsing the
-     * archive and during extraction.
-     *
-     * <p>Not all codecs will honor this setting. Currently only lzma
-     * and lzma2 are supported.</p>
+     * Gets the maximum amount of memory to use for parsing the archive and during extraction.
+     * <p>
+     * Not all codecs will honor this setting. Currently only LZMA and LZMA2 are supported.
+     * </p>
      *
      * @return the maximum amount of memory to use for extraction
      */
     public int getMaxMemoryLimitInKb() {
-        return maxMemoryLimitInKb;
+        return maxMemoryLimitKb;
     }
 
     /**
      * Whether {@link SevenZFile} shall try to recover from a certain type of broken archive.
+     *
      * @return whether SevenZFile shall try to recover from a certain type of broken archive.
      * @since 1.21
      */
@@ -150,10 +141,9 @@ public class SevenZFileOptions {
     }
 
     /**
-     * Gets whether entries without a name should get their names set
-     * to the archive's default file name.
-     * @return whether entries without a name should get their names
-     * set to the archive's default file name
+     * Gets whether entries without a name should get their names set to the archive's default file name.
+     *
+     * @return whether entries without a name should get their names set to the archive's default file name
      */
     public boolean getUseDefaultNameForUnnamedEntries() {
         return useDefaultNameForUnnamedEntries;

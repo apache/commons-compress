@@ -22,8 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Annotations class file attribute, either a RuntimeVisibleAnnotations attribute or a RuntimeInvisibleAnnotations
- * attribute.
+ * Annotations class file attribute, either a RuntimeVisibleAnnotations attribute or a RuntimeInvisibleAnnotations attribute.
  */
 public class RuntimeVisibleorInvisibleAnnotationsAttribute extends AnnotationsAttribute {
 
@@ -52,7 +51,7 @@ public class RuntimeVisibleorInvisibleAnnotationsAttribute extends AnnotationsAt
         for (final Annotation annotation : annotations) {
             nested.addAll(annotation.getClassFileEntries());
         }
-        return nested.toArray(ClassFileEntry.NONE);
+        return nested.toArray(NONE);
     }
 
     @Override

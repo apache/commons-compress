@@ -25,7 +25,7 @@ import java.io.IOException;
 public class CPDouble extends CPConstantNumber {
 
     public CPDouble(final Double value, final int globalIndex) {
-        super(ConstantPoolEntry.CP_Double, value, globalIndex);
+        super(CP_Double, value, globalIndex);
     }
 
     @Override

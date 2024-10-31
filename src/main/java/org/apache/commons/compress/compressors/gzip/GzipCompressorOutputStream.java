@@ -33,23 +33,18 @@ import java.util.zip.GZIPOutputStream;
 import org.apache.commons.compress.compressors.CompressorOutputStream;
 
 /**
- * Compressed output stream using the gzip format. This implementation improves
- * over the standard {@link GZIPOutputStream} class by allowing
- * the configuration of the compression level and the header metadata (file name,
- * comment, modification time, operating system and extra flags).
+ * Compressed output stream using the gzip format. This implementation improves over the standard {@link GZIPOutputStream} class by allowing the configuration
+ * of the compression level and the header metadata (file name, comment, modification time, operating system and extra flags).
  *
  * @see <a href="https://tools.ietf.org/html/rfc1952">GZIP File Format Specification</a>
  */
-public class GzipCompressorOutputStream extends CompressorOutputStream {
+public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStream> {
 
     /** Header flag indicating a file name follows the header */
     private static final int FNAME = 1 << 3;
 
     /** Header flag indicating a comment follows the header */
     private static final int FCOMMENT = 1 << 4;
-
-    /** The underlying stream */
-    private final OutputStream out;
 
     /** Deflater used to compress the data */
     private final Deflater deflater;
@@ -65,6 +60,7 @@ public class GzipCompressorOutputStream extends CompressorOutputStream {
 
     /**
      * Creates a gzip compressed output stream with the default parameters.
+     *
      * @param out the stream to compress to
      * @throws IOException if writing fails
      */
@@ -74,14 +70,15 @@ public class GzipCompressorOutputStream extends CompressorOutputStream {
 
     /**
      * Creates a gzip compressed output stream with the specified parameters.
-     * @param out the stream to compress to
+     *
+     * @param out        the stream to compress to
      * @param parameters the parameters to use
      * @throws IOException if writing fails
      *
      * @since 1.7
      */
     public GzipCompressorOutputStream(final OutputStream out, final GzipParameters parameters) throws IOException {
-        this.out = out;
+        super(out);
         this.deflater = new Deflater(parameters.getCompressionLevel(), true);
         this.deflater.setStrategy(parameters.getDeflateStrategy());
         this.deflateBuffer = new byte[parameters.getBufferSize()];
@@ -124,16 +121,6 @@ public class GzipCompressorOutputStream extends CompressorOutputStream {
 
             writeTrailer();
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @since 1.7
-     */
-    @Override
-    public void flush() throws IOException {
-        out.flush();
     }
 
     /**
@@ -194,14 +181,14 @@ public class GzipCompressorOutputStream extends CompressorOutputStream {
     }
 
     private void writeHeader(final GzipParameters parameters) throws IOException {
-        final String filename = parameters.getFilename();
+        final String fileName = parameters.getFileName();
         final String comment = parameters.getComment();
 
         final ByteBuffer buffer = ByteBuffer.allocate(10);
         buffer.order(ByteOrder.LITTLE_ENDIAN);
         buffer.putShort((short) GZIPInputStream.GZIP_MAGIC);
         buffer.put((byte) Deflater.DEFLATED); // compression method (8: deflate)
-        buffer.put((byte) ((filename != null ? FNAME : 0) | (comment != null ? FCOMMENT : 0))); // flags
+        buffer.put((byte) ((fileName != null ? FNAME : 0) | (comment != null ? FCOMMENT : 0))); // flags
         buffer.putInt((int) (parameters.getModificationTime() / 1000));
 
         // extra flags
@@ -218,8 +205,8 @@ public class GzipCompressorOutputStream extends CompressorOutputStream {
 
         out.write(buffer.array());
 
-        if (filename != null) {
-            out.write(getBytes(filename));
+        if (fileName != null) {
+            out.write(getBytes(fileName));
             out.write(0);
         }
 

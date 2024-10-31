@@ -28,36 +28,28 @@ import java.util.jar.JarOutputStream;
 
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.java.util.jar.Pack200;
-import org.apache.commons.compress.utils.CloseShieldFilterInputStream;
-import org.apache.commons.compress.utils.IOUtils;
 
 /**
- * An input stream that decompresses from the Pack200 format to be read
- * as any other stream.
+ * An input stream that decompresses from the Pack200 format to be read as any other stream.
  *
- * <p>The {@link CompressorInputStream#getCount getCount} and {@link
- * CompressorInputStream#getBytesRead getBytesRead} methods always
- * return 0.</p>
+ * <p>
+ * The {@link CompressorInputStream#getCount getCount} and {@link CompressorInputStream#getBytesRead getBytesRead} methods always return 0.
+ * </p>
  *
  * @NotThreadSafe
  * @since 1.3
  */
 public class Pack200CompressorInputStream extends CompressorInputStream {
-    private static final byte[] CAFE_DOOD = {
-        (byte) 0xCA, (byte) 0xFE, (byte) 0xD0, (byte) 0x0D
-    };
+
+    private static final byte[] CAFE_DOOD = { (byte) 0xCA, (byte) 0xFE, (byte) 0xD0, (byte) 0x0D };
     private static final int SIG_LENGTH = CAFE_DOOD.length;
 
     /**
-     * Checks if the signature matches what is expected for a pack200
-     * file (0xCAFED00D).
+     * Checks if the signature matches what is expected for a pack200 file (0xCAFED00D).
      *
-     * @param signature
-     *            the bytes to check
-     * @param length
-     *            the number of bytes to check
-     * @return true, if this stream is a pack200 compressed stream,
-     * false otherwise
+     * @param signature the bytes to check
+     * @param length    the number of bytes to check
+     * @return true, if this stream is a pack200 compressed stream, false otherwise
      */
     public static boolean matches(final byte[] signature, final int length) {
         if (length < SIG_LENGTH) {
@@ -73,209 +65,199 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
         return true;
     }
 
-    private final InputStream originalInput;
+    private final InputStream originalInputStream;
 
-    private final StreamBridge streamBridge;
+    private final AbstractStreamBridge abstractStreamBridge;
 
     /**
-     * Decompresses the given file, caching the decompressed data in
-     * memory.
+     * Decompresses the given file, caching the decompressed data in memory.
      *
-     * @param f the file to decompress
+     * @param file the file to decompress
      * @throws IOException if reading fails
      */
-    public Pack200CompressorInputStream(final File f) throws IOException {
-        this(f, Pack200Strategy.IN_MEMORY);
+    public Pack200CompressorInputStream(final File file) throws IOException {
+        this(file, Pack200Strategy.IN_MEMORY);
     }
 
     /**
-     * Decompresses the given file, caching the decompressed data in
-     * memory and using the given properties.
+     * Decompresses the given file, caching the decompressed data in memory and using the given properties.
      *
-     * @param f the file to decompress
-     * @param props Pack200 properties to use
+     * @param file       the file to decompress
+     * @param properties Pack200 properties to use
      * @throws IOException if reading fails
      */
-    public Pack200CompressorInputStream(final File f,
-                                        final Map<String, String> props)
-        throws IOException {
-        this(f, Pack200Strategy.IN_MEMORY, props);
+    public Pack200CompressorInputStream(final File file, final Map<String, String> properties) throws IOException {
+        this(file, Pack200Strategy.IN_MEMORY, properties);
     }
 
     /**
-     * Decompresses the given file using the given strategy to cache
-     * the results.
+     * Decompresses the given file using the given strategy to cache the results.
      *
-     * @param f the file to decompress
+     * @param file the file to decompress
      * @param mode the strategy to use
      * @throws IOException if reading fails
      */
-    public Pack200CompressorInputStream(final File f, final Pack200Strategy mode)
-        throws IOException {
-        this(null, f, mode, null);
+    public Pack200CompressorInputStream(final File file, final Pack200Strategy mode) throws IOException {
+        this(null, file, mode, null);
     }
 
     /**
-     * Decompresses the given file using the given strategy to cache
-     * the results and the given properties.
+     * Decompresses the given file using the given strategy to cache the results and the given properties.
      *
-     * @param f the file to decompress
-     * @param mode the strategy to use
-     * @param props Pack200 properties to use
+     * @param file       the file to decompress
+     * @param mode       the strategy to use
+     * @param properties Pack200 properties to use
      * @throws IOException if reading fails
      */
-    public Pack200CompressorInputStream(final File f, final Pack200Strategy mode,
-                                        final Map<String, String> props)
-        throws IOException {
-        this(null, f, mode, props);
+    public Pack200CompressorInputStream(final File file, final Pack200Strategy mode, final Map<String, String> properties) throws IOException {
+        this(null, file, mode, properties);
     }
 
     /**
-     * Decompresses the given stream, caching the decompressed data in
-     * memory.
+     * Decompresses the given stream, caching the decompressed data in memory.
      *
-     * <p>When reading from a file the File-arg constructor may
-     * provide better performance.</p>
+     * <p>
+     * When reading from a file the File-arg constructor may provide better performance.
+     * </p>
      *
-     * @param in the InputStream from which this object should be created
+     * @param inputStream the InputStream from which this object should be created
      * @throws IOException if reading fails
      */
-    public Pack200CompressorInputStream(final InputStream in)
-        throws IOException {
-        this(in, Pack200Strategy.IN_MEMORY);
+    public Pack200CompressorInputStream(final InputStream inputStream) throws IOException {
+        this(inputStream, Pack200Strategy.IN_MEMORY);
     }
 
-    private Pack200CompressorInputStream(final InputStream in, final File f,
-                                         final Pack200Strategy mode,
-                                         final Map<String, String> props)
+    private Pack200CompressorInputStream(final InputStream inputStream, final File file, final Pack200Strategy mode, final Map<String, String> properties)
             throws IOException {
-        originalInput = in;
-        streamBridge = mode.newStreamBridge();
-        try (final JarOutputStream jarOut = new JarOutputStream(streamBridge)) {
-            final Pack200.Unpacker u = Pack200.newUnpacker();
-            if (props != null) {
-                u.properties().putAll(props);
+        this.originalInputStream = inputStream;
+        this.abstractStreamBridge = mode.newStreamBridge();
+        try (JarOutputStream jarOut = new JarOutputStream(abstractStreamBridge)) {
+            final Pack200.Unpacker unpacker = Pack200.newUnpacker();
+            if (properties != null) {
+                unpacker.properties().putAll(properties);
             }
-            if (f == null) {
-                // unpack would close this stream but we want to give the call site more control
-                // TODO unpack should not close its given stream.
-                try (final CloseShieldFilterInputStream closeShield = new CloseShieldFilterInputStream(in)) {
-                    u.unpack(closeShield, jarOut);
-                }
+            if (file == null) {
+                unpacker.unpack(inputStream, jarOut);
             } else {
-                u.unpack(f, jarOut);
+                unpacker.unpack(file, jarOut);
             }
         }
     }
 
     /**
-     * Decompresses the given stream, caching the decompressed data in
-     * memory and using the given properties.
+     * Decompresses the given stream, caching the decompressed data in memory and using the given properties.
      *
-     * <p>When reading from a file the File-arg constructor may
-     * provide better performance.</p>
+     * <p>
+     * When reading from a file the File-arg constructor may provide better performance.
+     * </p>
      *
-     * @param in the InputStream from which this object should be created
-     * @param props Pack200 properties to use
+     * @param inputStream the InputStream from which this object should be created
+     * @param properties  Pack200 properties to use
      * @throws IOException if reading fails
      */
-    public Pack200CompressorInputStream(final InputStream in,
-                                        final Map<String, String> props)
-        throws IOException {
-        this(in, Pack200Strategy.IN_MEMORY, props);
+    public Pack200CompressorInputStream(final InputStream inputStream, final Map<String, String> properties) throws IOException {
+        this(inputStream, Pack200Strategy.IN_MEMORY, properties);
     }
 
     /**
-     * Decompresses the given stream using the given strategy to cache
-     * the results.
+     * Decompresses the given stream using the given strategy to cache the results.
      *
-     * <p>When reading from a file the File-arg constructor may
-     * provide better performance.</p>
+     * <p>
+     * When reading from a file the File-arg constructor may provide better performance.
+     * </p>
      *
-     * @param in the InputStream from which this object should be created
-     * @param mode the strategy to use
+     * @param inputStream the InputStream from which this object should be created
+     * @param mode        the strategy to use
      * @throws IOException if reading fails
      */
-    public Pack200CompressorInputStream(final InputStream in,
-                                        final Pack200Strategy mode)
-        throws IOException {
-        this(in, null, mode, null);
+    public Pack200CompressorInputStream(final InputStream inputStream, final Pack200Strategy mode) throws IOException {
+        this(inputStream, null, mode, null);
     }
 
     /**
-     * Decompresses the given stream using the given strategy to cache
-     * the results and the given properties.
+     * Decompresses the given stream using the given strategy to cache the results and the given properties.
      *
-     * <p>When reading from a file the File-arg constructor may
-     * provide better performance.</p>
+     * <p>
+     * When reading from a file the File-arg constructor may provide better performance.
+     * </p>
      *
-     * @param in the InputStream from which this object should be created
-     * @param mode the strategy to use
-     * @param props Pack200 properties to use
+     * @param inputStream the InputStream from which this object should be created
+     * @param mode        the strategy to use
+     * @param properties  Pack200 properties to use
      * @throws IOException if reading fails
      */
-    public Pack200CompressorInputStream(final InputStream in,
-                                        final Pack200Strategy mode,
-                                        final Map<String, String> props)
-        throws IOException {
-        this(in, null, mode, props);
+    public Pack200CompressorInputStream(final InputStream inputStream, final Pack200Strategy mode, final Map<String, String> properties) throws IOException {
+        this(inputStream, null, mode, properties);
     }
 
+    @SuppressWarnings("resource") // Does not allocate
     @Override
     public int available() throws IOException {
-        return streamBridge.getInput().available();
+        return getInputStream().available();
     }
 
     @Override
     public void close() throws IOException {
         try {
-            streamBridge.stop();
+            abstractStreamBridge.stop();
         } finally {
-            if (originalInput != null) {
-                originalInput.close();
+            if (originalInputStream != null) {
+                originalInputStream.close();
             }
         }
     }
 
+    private InputStream getInputStream() throws IOException {
+        return abstractStreamBridge.getInputStream();
+    }
+
+    @SuppressWarnings("resource") // Does not allocate
     @Override
     public synchronized void mark(final int limit) {
         try {
-            streamBridge.getInput().mark(limit);
+            getInputStream().mark(limit);
         } catch (final IOException ex) {
-            throw new UncheckedIOException(ex); //NOSONAR
+            throw new UncheckedIOException(ex); // NOSONAR
         }
     }
 
+    @SuppressWarnings("resource") // Does not allocate
     @Override
     public boolean markSupported() {
         try {
-            return streamBridge.getInput().markSupported();
+            return getInputStream().markSupported();
         } catch (final IOException ex) { // NOSONAR
             return false;
         }
     }
 
+    @SuppressWarnings("resource") // Does not allocate
     @Override
     public int read() throws IOException {
-        return streamBridge.getInput().read();
+        return getInputStream().read();
     }
 
+    @SuppressWarnings("resource") // Does not allocate
     @Override
     public int read(final byte[] b) throws IOException {
-        return streamBridge.getInput().read(b);
+        return getInputStream().read(b);
     }
 
+    @SuppressWarnings("resource") // Does not allocate
     @Override
     public int read(final byte[] b, final int off, final int count) throws IOException {
-        return streamBridge.getInput().read(b, off, count);
-    }
-    @Override
-    public synchronized void reset() throws IOException {
-        streamBridge.getInput().reset();
+        return getInputStream().read(b, off, count);
     }
 
+    @SuppressWarnings("resource") // Does not allocate
+    @Override
+    public synchronized void reset() throws IOException {
+        getInputStream().reset();
+    }
+
+    @SuppressWarnings("resource") // Does not allocate
     @Override
     public long skip(final long count) throws IOException {
-        return IOUtils.skip(streamBridge.getInput(), count);
+        return org.apache.commons.io.IOUtils.skip(getInputStream(), count);
     }
 }

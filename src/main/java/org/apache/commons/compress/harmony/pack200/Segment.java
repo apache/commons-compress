@@ -34,7 +34,6 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 
-
 /**
  * A Pack200 archive consists of one or more Segments.
  */
@@ -86,6 +85,7 @@ public class Segment extends ClassVisitor {
 
         @Override
         public void visitEnd() {
+            // override to noop
         }
 
         @Override
@@ -99,12 +99,12 @@ public class Segment extends ClassVisitor {
     }
 
     /**
-     * Exception indicating that the class currently being visited contains an unknown attribute, which means that by
-     * default the class file needs to be passed through as-is in the file_bands rather than being packed with pack200.
+     * Exception indicating that the class currently being visited contains an unknown attribute, which means that by default the class file needs to be passed
+     * through as-is in the file_bands rather than being packed with pack200.
      */
     public static class PassException extends RuntimeException {
 
-		private static final long serialVersionUID = 1L;
+        private static final long serialVersionUID = 1L;
 
     }
 
@@ -131,8 +131,7 @@ public class Segment extends ClassVisitor {
             this.context = context;
         }
 
-        public SegmentAnnotationVisitor(final int context, final int parameter, final String desc,
-            final boolean visible) {
+        public SegmentAnnotationVisitor(final int context, final int parameter, final String desc, final boolean visible) {
             super(ASM_API);
             this.context = context;
             this.parameter = parameter;
@@ -216,14 +215,11 @@ public class Segment extends ClassVisitor {
         @Override
         public void visitEnd() {
             if (desc == null) {
-                Segment.this.classBands.addAnnotationDefault(nameRU, tags, values, caseArrayN, nestTypeRS, nestNameRU,
-                    nestPairN);
+                Segment.this.classBands.addAnnotationDefault(nameRU, tags, values, caseArrayN, nestTypeRS, nestNameRU, nestPairN);
             } else if (parameter != -1) {
-                Segment.this.classBands.addParameterAnnotation(parameter, desc, visible, nameRU, tags, values, caseArrayN,
-                    nestTypeRS, nestNameRU, nestPairN);
+                Segment.this.classBands.addParameterAnnotation(parameter, desc, visible, nameRU, tags, values, caseArrayN, nestTypeRS, nestNameRU, nestPairN);
             } else {
-                Segment.this.classBands.addAnnotation(context, desc, visible, nameRU, tags, values, caseArrayN, nestTypeRS,
-                    nestNameRU, nestPairN);
+                Segment.this.classBands.addAnnotation(context, desc, visible, nameRU, tags, values, caseArrayN, nestTypeRS, nestNameRU, nestPairN);
             }
         }
 
@@ -238,9 +234,9 @@ public class Segment extends ClassVisitor {
             values.add(value);
         }
     }
+
     /**
-     * SegmentFieldVisitor implements {@code FieldVisitor} to visit the metadata relating to fields in a class
-     * file.
+     * SegmentFieldVisitor implements {@code FieldVisitor} to visit the metadata relating to fields in a class file.
      */
     public class SegmentFieldVisitor extends FieldVisitor {
 
@@ -282,6 +278,7 @@ public class Segment extends ClassVisitor {
         public void visitEnd() {
         }
     }
+
     /**
      * This class implements MethodVisitor to visit the contents and metadata related to methods in a class file.
      *
@@ -357,8 +354,7 @@ public class Segment extends ClassVisitor {
         }
 
         @Override
-        public void visitFrame(final int arg0, final int arg1, final Object[] arg2, final int arg3,
-            final Object[] arg4) {
+        public void visitFrame(final int arg0, final int arg1, final Object[] arg2, final int arg3, final Object[] arg4) {
             // TODO: Java 6 - implement support for this
 
         }
@@ -401,8 +397,7 @@ public class Segment extends ClassVisitor {
         }
 
         @Override
-        public void visitLocalVariable(final String name, final String desc, final String signature, final Label start,
-            final Label end, final int index) {
+        public void visitLocalVariable(final String name, final String desc, final String signature, final Label start, final Label end, final int index) {
             if (!stripDebug) {
                 classBands.addLocalVariable(name, desc, signature, start, end, index);
             }
@@ -429,8 +424,7 @@ public class Segment extends ClassVisitor {
         }
 
         @Override
-        public AnnotationVisitor visitParameterAnnotation(final int parameter, final String desc,
-            final boolean visible) {
+        public AnnotationVisitor visitParameterAnnotation(final int parameter, final String desc, final boolean visible) {
             return new SegmentAnnotationVisitor(MetadataBandGroup.CONTEXT_METHOD, parameter, desc, visible);
         }
 
@@ -455,7 +449,8 @@ public class Segment extends ClassVisitor {
         }
 
     }
-    /** See https://asm.ow2.io/javadoc/org/objectweb/asm/Opcodes.html#ASM4 */
+
+    /** See https://asm.ow2.io/Javadoc/org/objectweb/asm/Opcodes.html#ASM4 */
     public static int ASM_API = Opcodes.ASM4;
     private SegmentHeader segmentHeader;
     private CpBands cpBands;
@@ -544,31 +539,28 @@ public class Segment extends ClassVisitor {
     }
 
     /**
-     * The main method on Segment. Reads in all the class files, packs them and then writes the packed segment out to
-     * the given OutputStream.
+     * The main method on Segment. Reads in all the class files, packs them and then writes the packed segment out to the given OutputStream.
      *
      * @param segmentUnit TODO
-     * @param out the OutputStream to write the packed Segment to
-     * @param options packing options
-     * @throws IOException If an I/O error occurs.
+     * @param out         the OutputStream to write the packed Segment to
+     * @param options     packing options
+     * @throws IOException      If an I/O error occurs.
      * @throws Pack200Exception TODO
      */
-    public void pack(final SegmentUnit segmentUnit, final OutputStream out, final PackingOptions options)
-        throws IOException, Pack200Exception {
+    public void pack(final SegmentUnit segmentUnit, final OutputStream out, final PackingOptions options) throws IOException, Pack200Exception {
         this.options = options;
         this.stripDebug = options.isStripDebug();
         final int effort = options.getEffort();
         nonStandardAttributePrototypes = options.getUnknownAttributePrototypes();
 
-        PackingUtils.log("Start to pack a new segment with " + segmentUnit.fileListSize() + " files including "
-            + segmentUnit.classListSize() + " classes");
+        PackingUtils.log("Start to pack a new segment with " + segmentUnit.fileListSize() + " files including " + segmentUnit.classListSize() + " classes");
 
         PackingUtils.log("Initialize a header for the segment");
         segmentHeader = new SegmentHeader();
         segmentHeader.setFile_count(segmentUnit.fileListSize());
         segmentHeader.setHave_all_code_flags(!stripDebug);
         if (!options.isKeepDeflateHint()) {
-            segmentHeader.setDeflate_hint("true".equals(options.getDeflateHint()));
+            segmentHeader.setDeflate_hint(Boolean.parseBoolean(options.getDeflateHint()));
         }
 
         PackingUtils.log("Setup constant pool bands for the segment");
@@ -626,8 +618,8 @@ public class Segment extends ClassVisitor {
         segmentUnit.addPackedByteAmount(bandsOutputStream.size());
 
         PackingUtils.log("Wrote total of " + segmentUnit.getPackedByteAmount() + " bytes");
-        PackingUtils.log("Transmitted " + segmentUnit.fileListSize() + " files of " + segmentUnit.getByteAmount()
-            + " input bytes in a segment of " + segmentUnit.getPackedByteAmount() + " bytes");
+        PackingUtils.log("Transmitted " + segmentUnit.fileListSize() + " files of " + segmentUnit.getByteAmount() + " input bytes in a segment of "
+                + segmentUnit.getPackedByteAmount() + " bytes");
     }
 
     private void passCurrentClass() {
@@ -667,8 +659,7 @@ public class Segment extends ClassVisitor {
     }
 
     @Override
-    public void visit(final int version, final int access, final String name, final String signature,
-        final String superName, final String[] interfaces) {
+    public void visit(final int version, final int access, final String name, final String signature, final String superName, final String[] interfaces) {
         bcBands.setCurrentClass(name, superName);
         segmentHeader.addMajorVersion(version);
         classBands.addClass(version, access, name, signature, superName, interfaces);
@@ -710,8 +701,7 @@ public class Segment extends ClassVisitor {
     }
 
     @Override
-    public FieldVisitor visitField(final int flags, final String name, final String desc, final String signature,
-        final Object value) {
+    public FieldVisitor visitField(final int flags, final String name, final String desc, final String signature, final Object value) {
         classBands.addField(flags, name, desc, signature, value);
         return fieldVisitor;
     }
@@ -722,8 +712,7 @@ public class Segment extends ClassVisitor {
     }
 
     @Override
-    public MethodVisitor visitMethod(final int flags, final String name, final String desc, final String signature,
-        final String[] exceptions) {
+    public MethodVisitor visitMethod(final int flags, final String name, final String desc, final String signature, final String[] exceptions) {
         classBands.addMethod(flags, name, desc, signature, exceptions);
         return methodVisitor;
     }

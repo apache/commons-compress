@@ -22,6 +22,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.apache.commons.codec.digest.PureJavaCrc32C;
 import org.apache.commons.compress.compressors.CompressorOutputStream;
 import org.apache.commons.compress.compressors.lz77support.Parameters;
 import org.apache.commons.compress.utils.ByteUtils;
@@ -29,28 +30,30 @@ import org.apache.commons.compress.utils.ByteUtils;
 /**
  * CompressorOutputStream for the framing Snappy format.
  *
- * <p>Based on the "spec" in the version "Last revised: 2013-10-25"</p>
+ * <p>
+ * Based on the "spec" in the version "Last revised: 2013-10-25"
+ * </p>
  *
  * @see <a href="https://github.com/google/snappy/blob/master/framing_format.txt">Snappy framing format description</a>
  * @since 1.14
  * @NotThreadSafe
  */
-public class FramedSnappyCompressorOutputStream extends CompressorOutputStream {
+public class FramedSnappyCompressorOutputStream extends CompressorOutputStream<OutputStream> {
     // see spec:
     // > However, we place an additional restriction that the uncompressed data
-    // > in a chunk must be no longer than 65536 bytes. This allows consumers to
+    // > in a chunk must be no longer than 65,536 bytes. This allows consumers to
     // > easily use small fixed-size buffers.
     private static final int MAX_COMPRESSED_BUFFER_SIZE = 1 << 16;
 
     static long mask(long x) {
         // ugly, maybe we should just have used ints and deal with the
         // overflow
-        x = ((x >> 15) | (x << 17));
+        x = x >> 15 | x << 17;
         x += FramedSnappyCompressorInputStream.MASK_OFFSET;
         x &= 0xffffFFFFL;
         return x;
     }
-    private final OutputStream out;
+
     private final Parameters params;
     private final PureJavaCrc32C checksum = new PureJavaCrc32C();
     // used in one-arg write method
@@ -62,26 +65,24 @@ public class FramedSnappyCompressorOutputStream extends CompressorOutputStream {
     private final ByteUtils.ByteConsumer consumer;
 
     /**
-     * Constructs a new output stream that compresses
-     * snappy-framed-compressed data to the specified output stream.
+     * Constructs a new output stream that compresses snappy-framed-compressed data to the specified output stream.
+     *
      * @param out the OutputStream to which to write the compressed data
      * @throws IOException if writing the signature fails
      */
     public FramedSnappyCompressorOutputStream(final OutputStream out) throws IOException {
-        this(out, SnappyCompressorOutputStream.createParameterBuilder(SnappyCompressorInputStream.DEFAULT_BLOCK_SIZE)
-             .build());
+        this(out, SnappyCompressorOutputStream.createParameterBuilder(SnappyCompressorInputStream.DEFAULT_BLOCK_SIZE).build());
     }
 
     /**
-     * Constructs a new output stream that compresses
-     * snappy-framed-compressed data to the specified output stream.
-     * @param out the OutputStream to which to write the compressed data
-     * @param params parameters used to fine-tune compression, in
-     * particular to balance compression ratio vs compression speed.
+     * Constructs a new output stream that compresses snappy-framed-compressed data to the specified output stream.
+     *
+     * @param out    the OutputStream to which to write the compressed data
+     * @param params parameters used to fine-tune compression, in particular to balance compression ratio vs compression speed.
      * @throws IOException if writing the signature fails
      */
     public FramedSnappyCompressorOutputStream(final OutputStream out, final Parameters params) throws IOException {
-        this.out = out;
+        super(out);
         this.params = params;
         consumer = new ByteUtils.OutputStreamByteConsumer(out);
         out.write(FramedSnappyCompressorInputStream.SZ_SIGNATURE);
@@ -97,17 +98,18 @@ public class FramedSnappyCompressorOutputStream extends CompressorOutputStream {
     }
 
     /**
-     * Compresses all remaining data and writes it to the stream,
-     * doesn't close the underlying stream.
+     * Compresses all remaining data and writes it to the stream, doesn't close the underlying stream.
+     *
      * @throws IOException if an error occurs
      */
     public void finish() throws IOException {
-        if (currentIndex > 0) {
-            flushBuffer();
-        }
+        flushBuffer();
     }
 
     private void flushBuffer() throws IOException {
+        if (currentIndex == 0) {
+            return;
+        }
         out.write(FramedSnappyCompressorInputStream.COMPRESSED_CHUNK_TYPE);
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try (OutputStream o = new SnappyCompressorOutputStream(baos, currentIndex, params)) {
@@ -122,18 +124,19 @@ public class FramedSnappyCompressorOutputStream extends CompressorOutputStream {
 
     @Override
     public void write(final byte[] data, int off, int len) throws IOException {
-        if (currentIndex + len > MAX_COMPRESSED_BUFFER_SIZE) {
-            flushBuffer();
-            while (len > MAX_COMPRESSED_BUFFER_SIZE) {
-                System.arraycopy(data, off, buffer, 0, MAX_COMPRESSED_BUFFER_SIZE);
-                off += MAX_COMPRESSED_BUFFER_SIZE;
-                len -= MAX_COMPRESSED_BUFFER_SIZE;
-                currentIndex = MAX_COMPRESSED_BUFFER_SIZE;
+        int blockDataRemaining = buffer.length - currentIndex;
+        while (len > 0) {
+            final int copyLen = Math.min(len, blockDataRemaining);
+            System.arraycopy(data, off, buffer, currentIndex, copyLen);
+            off += copyLen;
+            blockDataRemaining -= copyLen;
+            len -= copyLen;
+            currentIndex += copyLen;
+            if (blockDataRemaining == 0) {
                 flushBuffer();
+                blockDataRemaining = buffer.length;
             }
         }
-        System.arraycopy(data, off, buffer, currentIndex, len);
-        currentIndex += len;
     }
 
     @Override

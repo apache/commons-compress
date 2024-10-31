@@ -25,7 +25,7 @@ import java.io.IOException;
 public class CPFloat extends CPConstantNumber {
 
     public CPFloat(final Float value, final int globalIndex) {
-        super(ConstantPoolEntry.CP_Float, value, globalIndex);
+        super(CP_Float, value, globalIndex);
     }
 
     @Override

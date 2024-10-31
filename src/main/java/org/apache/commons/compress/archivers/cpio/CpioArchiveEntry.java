@@ -33,40 +33,37 @@ import org.apache.commons.compress.utils.ExactMath;
 import org.apache.commons.compress.utils.TimeUtils;
 
 /**
- * A cpio archive consists of a sequence of files. There are several types of
- * headers defined in two categories of new and old format. The headers are
+ * A cpio archive consists of a sequence of files. There are several types of headers defined in two categories of new and old format. The headers are
  * recognized by magic numbers:
  *
  * <ul>
  * <li>"070701" ASCII for new portable format</li>
  * <li>"070702" ASCII for new portable format with CRC</li>
- * <li>"070707" ASCII for old ascii (also known as Portable ASCII, odc or old
- * character format</li>
+ * <li>"070707" ASCII for old ASCII (also known as Portable ASCII, odc or old character format</li>
  * <li>070707 binary for old binary</li>
  * </ul>
  *
- * <p>The old binary format is limited to 16 bits for user id, group
- * id, device, and inode numbers. It is limited to 4 gigabyte file
- * sizes.
+ * <p>
+ * The old binary format is limited to 16 bits for user id, group id, device, and inode numbers. It is limited to 4 gigabyte file sizes.
  *
- * The old ASCII format is limited to 18 bits for the user id, group
- * id, device, and inode numbers. It is limited to 8 gigabyte file
- * sizes.
+ * The old ASCII format is limited to 18 bits for the user id, group id, device, and inode numbers. It is limited to 8 gigabyte file sizes.
  *
  * The new ASCII format is limited to 4 gigabyte file sizes.
  *
- * CPIO 2.5 knows also about tar, but it is not recognized here.</p>
+ * CPIO 2.5 knows also about tar, but it is not recognized here.
+ * </p>
  *
  *
  * <h2>OLD FORMAT</h2>
  *
- * <p>Each file has a 76 (ascii) / 26 (binary) byte header, a variable
- * length, NUL terminated file name, and variable length file data. A
- * header for a file name "TRAILER!!!" indicates the end of the
- * archive.</p>
+ * <p>
+ * Each file has a 76 (ascii) / 26 (binary) byte header, a variable length, NUL terminated file name, and variable length file data. A header for a file name
+ * "TRAILER!!!" indicates the end of the archive.
+ * </p>
  *
- * <p>All the fields in the header are ISO 646 (approximately ASCII)
- * strings of octal numbers, left padded, not NUL terminated.</p>
+ * <p>
+ * All the fields in the header are ISO 646 (approximately ASCII) strings of octal numbers, left padded, not NUL terminated.
+ * </p>
  *
  * <pre>
  * FIELDNAME        NOTES
@@ -96,21 +93,25 @@ import org.apache.commons.compress.utils.TimeUtils;
  * apart from c_mtime and c_filesize which are 32-bit integer values
  * </pre>
  *
- * <p>If necessary, the file name and file data are padded with a NUL byte to an even length</p>
+ * <p>
+ * If necessary, the file name and file data are padded with a NUL byte to an even length
+ * </p>
  *
- * <p>Special files, directories, and the trailer are recorded with
- * the h_filesize field equal to 0.</p>
+ * <p>
+ * Special files, directories, and the trailer are recorded with the h_filesize field equal to 0.
+ * </p>
  *
- * <p>In the ASCII version of this format, the 16-bit entries are represented as 6-byte octal numbers,
- * and the 32-bit entries are represented as 11-byte octal numbers. No padding is added.</p>
+ * <p>
+ * In the ASCII version of this format, the 16-bit entries are represented as 6-byte octal numbers, and the 32-bit entries are represented as 11-byte octal
+ * numbers. No padding is added.
+ * </p>
  *
  * <h3>NEW FORMAT</h3>
  *
- * <p>Each file has a 110 byte header, a variable length, NUL
- * terminated file name, and variable length file data. A header for a
- * file name "TRAILER!!!" indicates the end of the archive. All the
- * fields in the header are ISO 646 (approximately ASCII) strings of
- * hexadecimal numbers, left padded, not NUL terminated.</p>
+ * <p>
+ * Each file has a 110 byte header, a variable length, NUL terminated file name, and variable length file data. A header for a file name "TRAILER!!!" indicates
+ * the end of the archive. All the fields in the header are ISO 646 (approximately ASCII) strings of hexadecimal numbers, left padded, not NUL terminated.
+ * </p>
  *
  * <pre>
  * FIELDNAME        NOTES
@@ -126,29 +127,37 @@ import org.apache.commons.compress.utils.TimeUtils;
  * c_min[8]
  * c_rmaj[8]        only valid for chr and blk special files
  * c_rmin[8]        only valid for chr and blk special files
- * c_namesize[8]    count includes terminating NUL in pathname
+ * c_namesize[8]    count includes terminating NUL in path name
  * c_check[8]       0 for "new" portable format; for CRC format
  *                  the sum of all the bytes in the file
  * </pre>
  *
- * <p>New ASCII Format The "new" ASCII format uses 8-byte hexadecimal
- * fields for all numbers and separates device numbers into separate
- * fields for major and minor numbers.</p>
+ * <p>
+ * New ASCII Format The "new" ASCII format uses 8-byte hexadecimal fields for all numbers and separates device numbers into separate fields for major and minor
+ * numbers.
+ * </p>
  *
- * <p>The pathname is followed by NUL bytes so that the total size of
- * the fixed header plus pathname is a multiple of four. Likewise, the
- * file data is padded to a multiple of four bytes.</p>
+ * <p>
+ * The path name is followed by NUL bytes so that the total size of the fixed header plus path name is a multiple of four. Likewise, the file data is padded to
+ * a multiple of four bytes.
+ * </p>
  *
- * <p>This class uses mutable fields and is not considered to be
- * threadsafe.</p>
+ * <p>
+ * This class uses mutable fields and is not considered to be threadsafe.
+ * </p>
  *
- * <p>Based on code from the jRPM project (http://jrpm.sourceforge.net).</p>
+ * <p>
+ * Based on code from the jRPM project (https://jrpm.sourceforge.net).
+ * </p>
  *
- * <p>The MAGIC numbers and other constants are defined in {@link CpioConstants}</p>
+ * <p>
+ * The MAGIC numbers and other constants are defined in {@link CpioConstants}
+ * </p>
  *
  * <p>
  * N.B. does not handle the cpio "tar" format
  * </p>
+ *
  * @NotThreadSafe
  * @see <a href="https://people.freebsd.org/~kientzle/libarchive/man/cpio.5.txt">https://people.freebsd.org/~kientzle/libarchive/man/cpio.5.txt</a>
  */
@@ -197,29 +206,21 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     private long uid;
 
     /**
-     * Creates a CpioArchiveEntry with a specified name for a
-     * specified file. The format of this entry will be the new
-     * format.
+     * Creates a CpioArchiveEntry with a specified name for a specified file. The format of this entry will be the new format.
      *
-     * @param inputFile
-     *            The file to gather information from.
-     * @param entryName
-     *            The name of this entry.
+     * @param inputFile The file to gather information from.
+     * @param entryName The name of this entry.
      */
     public CpioArchiveEntry(final File inputFile, final String entryName) {
         this(FORMAT_NEW, inputFile, entryName);
     }
 
     /**
-     * Creates a CpioArchiveEntry with a specified name for a
-     * specified file. The format of this entry will be the new
-     * format.
+     * Creates a CpioArchiveEntry with a specified name for a specified file. The format of this entry will be the new format.
      *
-     * @param inputPath
-     *            The file to gather information from.
-     * @param entryName
-     *            The name of this entry.
-     * @param options options indicating how symbolic links are handled.
+     * @param inputPath The file to gather information from.
+     * @param entryName The name of this entry.
+     * @param options   options indicating how symbolic links are handled.
      * @throws IOException if an I/O error occurs
      * @since 1.21
      */
@@ -230,16 +231,16 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Creates a CpioArchiveEntry with a specified format.
      *
-     * @param format
-     *            The cpio format for this entry.
-     * <p>
-     * Possible format values are:
-     * <pre>
+     * @param format The cpio format for this entry.
+     *               <p>
+     *               Possible format values are:
+     *
+     *               <pre>
      * CpioConstants.FORMAT_NEW
      * CpioConstants.FORMAT_NEW_CRC
      * CpioConstants.FORMAT_OLD_BINARY
      * CpioConstants.FORMAT_OLD_ASCII
-     * </pre>
+     *               </pre>
      */
     public CpioArchiveEntry(final short format) {
         switch (format) {
@@ -266,66 +267,58 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Creates a CpioArchiveEntry with a specified name for a
-     * specified file.
+     * Creates a CpioArchiveEntry with a specified name for a specified file.
      *
-     * @param format
-     *            The cpio format for this entry.
-     * @param inputFile
-     *            The file to gather information from.
-     * @param entryName
-     *            The name of this entry.
-     * <p>
-     * Possible format values are:
-     * <pre>
+     * @param format    The cpio format for this entry.
+     * @param inputFile The file to gather information from.
+     * @param entryName The name of this entry.
+     *                  <p>
+     *                  Possible format values are:
+     *
+     *                  <pre>
      * CpioConstants.FORMAT_NEW
      * CpioConstants.FORMAT_NEW_CRC
      * CpioConstants.FORMAT_OLD_BINARY
      * CpioConstants.FORMAT_OLD_ASCII
-     * </pre>
+     *                  </pre>
      *
      * @since 1.1
      */
-    public CpioArchiveEntry(final short format, final File inputFile,
-                            final String entryName) {
+    public CpioArchiveEntry(final short format, final File inputFile, final String entryName) {
         this(format, entryName, inputFile.isFile() ? inputFile.length() : 0);
-        if (inputFile.isDirectory()){
+        if (inputFile.isDirectory()) {
             setMode(C_ISDIR);
-        } else if (inputFile.isFile()){
+        } else if (inputFile.isFile()) {
             setMode(C_ISREG);
         } else {
-            throw new IllegalArgumentException("Cannot determine type of file "
-                                               + inputFile.getName());
+            throw new IllegalArgumentException("Cannot determine type of file " + inputFile.getName());
         }
         // TODO set other fields as needed
         setTime(inputFile.lastModified() / 1000);
     }
 
     /**
-     * Creates a CpioArchiveEntry with a specified name for a
-     * specified path.
+     * Creates a CpioArchiveEntry with a specified name for a specified path.
      *
-     * @param format
-     *            The cpio format for this entry.
-     * @param inputPath
-     *            The file to gather information from.
-     * @param entryName
-     *            The name of this entry.
-     * <p>
-     * Possible format values are:
-     * <pre>
+     * @param format    The cpio format for this entry.
+     * @param inputPath The file to gather information from.
+     * @param entryName The name of this entry.
+     *                  <p>
+     *                  Possible format values are:
+     *
+     *                  <pre>
      * CpioConstants.FORMAT_NEW
      * CpioConstants.FORMAT_NEW_CRC
      * CpioConstants.FORMAT_OLD_BINARY
      * CpioConstants.FORMAT_OLD_ASCII
-     * </pre>
-     * @param options options indicating how symbolic links are handled.
+     *                  </pre>
+     *
+     * @param options   options indicating how symbolic links are handled.
      *
      * @throws IOException if an I/O error occurs
      * @since 1.21
      */
-    public CpioArchiveEntry(final short format, final Path inputPath, final String entryName, final LinkOption... options)
-        throws IOException {
+    public CpioArchiveEntry(final short format, final Path inputPath, final String entryName, final LinkOption... options) throws IOException {
         this(format, entryName, Files.isRegularFile(inputPath, options) ? Files.size(inputPath) : 0);
         if (Files.isDirectory(inputPath, options)) {
             setMode(C_ISDIR);
@@ -341,18 +334,17 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Creates a CpioArchiveEntry with a specified name.
      *
-     * @param format
-     *            The cpio format for this entry.
-     * @param name
-     *            The name of this entry.
-     * <p>
-     * Possible format values are:
-     * <pre>
+     * @param format The cpio format for this entry.
+     * @param name   The name of this entry.
+     *               <p>
+     *               Possible format values are:
+     *
+     *               <pre>
      * CpioConstants.FORMAT_NEW
      * CpioConstants.FORMAT_NEW_CRC
      * CpioConstants.FORMAT_OLD_BINARY
      * CpioConstants.FORMAT_OLD_ASCII
-     * </pre>
+     *               </pre>
      *
      * @since 1.1
      */
@@ -364,52 +356,44 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Creates a CpioArchiveEntry with a specified name.
      *
-     * @param format
-     *            The cpio format for this entry.
-     * @param name
-     *            The name of this entry.
-     * @param size
-     *            The size of this entry
-     * <p>
-     * Possible format values are:
-     * <pre>
+     * @param format The cpio format for this entry.
+     * @param name   The name of this entry.
+     * @param size   The size of this entry
+     *               <p>
+     *               Possible format values are:
+     *
+     *               <pre>
      * CpioConstants.FORMAT_NEW
      * CpioConstants.FORMAT_NEW_CRC
      * CpioConstants.FORMAT_OLD_BINARY
      * CpioConstants.FORMAT_OLD_ASCII
-     * </pre>
+     *               </pre>
      *
      * @since 1.1
      */
-    public CpioArchiveEntry(final short format, final String name,
-                            final long size) {
+    public CpioArchiveEntry(final short format, final String name, final long size) {
         this(format, name);
-        this.setSize(size);
+        setSize(size);
     }
 
     /**
-     * Creates a CpioArchiveEntry with a specified name. The format of
-     * this entry will be the new format.
+     * Creates a CpioArchiveEntry with a specified name. The format of this entry will be the new format.
      *
-     * @param name
-     *            The name of this entry.
+     * @param name The name of this entry.
      */
     public CpioArchiveEntry(final String name) {
         this(FORMAT_NEW, name);
     }
 
     /**
-     * Creates a CpioArchiveEntry with a specified name. The format of
-     * this entry will be the new format.
+     * Creates a CpioArchiveEntry with a specified name. The format of this entry will be the new format.
      *
-     * @param name
-     *            The name of this entry.
-     * @param size
-     *            The size of this entry
+     * @param name The name of this entry.
+     * @param size The size of this entry
      */
     public CpioArchiveEntry(final String name, final long size) {
         this(name);
-        this.setSize(size);
+        setSize(size);
     }
 
     /**
@@ -430,7 +414,9 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     *
      * @see Object#equals(Object)
      */
     @Override
@@ -442,26 +428,22 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
             return false;
         }
         final CpioArchiveEntry other = (CpioArchiveEntry) obj;
-        if (name == null) {
-            return other.name == null;
-        }
-        return name.equals(other.name);
+        return Objects.equals(name, other.name);
     }
 
     /**
      * Gets the alignment boundary for this CPIO format
      *
-     * @return Returns the aligment boundary (0, 2, 4) in bytes
+     * @return the alignment boundary (0, 2, 4) in bytes
      */
     public int getAlignmentBoundary() {
         return this.alignmentBoundary;
     }
 
     /**
-     * Gets the checksum.
-     * Only supported for the new formats.
+     * Gets the checksum. Only supported for the new formats.
      *
-     * @return Returns the checksum.
+     * @return the checksum.
      * @throws UnsupportedOperationException if the format is not a new format
      */
     public long getChksum() {
@@ -489,10 +471,8 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Gets the device id.
      *
-     * @return Returns the device id.
-     * @throws UnsupportedOperationException
-     *             if this method is called for a CpioArchiveEntry with a new
-     *             format.
+     * @return the device id.
+     * @throws UnsupportedOperationException if this method is called for a CpioArchiveEntry with a new format.
      */
     public long getDevice() {
         checkOldFormat();
@@ -502,10 +482,8 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Gets the major device id.
      *
-     * @return Returns the major device id.
-     * @throws UnsupportedOperationException
-     *             if this method is called for a CpioArchiveEntry with an old
-     *             format.
+     * @return the major device id.
+     * @throws UnsupportedOperationException if this method is called for a CpioArchiveEntry with an old format.
      */
     public long getDeviceMaj() {
         checkNewFormat();
@@ -515,7 +493,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Gets the minor device id
      *
-     * @return Returns the minor device id.
+     * @return the minor device id.
      * @throws UnsupportedOperationException if format is not a new format
      */
     public long getDeviceMin() {
@@ -526,7 +504,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Gets the format for this entry.
      *
-     * @return Returns the format.
+     * @return the format.
      */
     public short getFormat() {
         return this.fileFormat;
@@ -535,7 +513,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Gets the group id.
      *
-     * @return Returns the group id.
+     * @return the group id.
      */
     public long getGID() {
         return this.gid;
@@ -544,21 +522,19 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Gets the number of bytes needed to pad the header to the alignment boundary.
      *
-     * @deprecated This method doesn't properly work for multi-byte encodings. And
-     *             creates corrupt archives. Use {@link #getHeaderPadCount(Charset)}
-     *             or {@link #getHeaderPadCount(long)} in any case.
+     * @deprecated This method doesn't properly work for multi-byte encodings. And creates corrupt archives. Use {@link #getHeaderPadCount(Charset)} or
+     *             {@link #getHeaderPadCount(long)} in any case.
      * @return the number of bytes needed to pad the header (0,1,2,3)
      */
     @Deprecated
-    public int getHeaderPadCount(){
+    public int getHeaderPadCount() {
         return getHeaderPadCount(null);
     }
 
     /**
      * Gets the number of bytes needed to pad the header to the alignment boundary.
      *
-     * @param charset
-     *             The character set used to encode the entry name in the stream.
+     * @param charset The character set used to encode the entry name in the stream.
      * @return the number of bytes needed to pad the header (0,1,2,3)
      * @since 1.18
      */
@@ -575,9 +551,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Gets the number of bytes needed to pad the header to the alignment boundary.
      *
-     * @param nameSize
-     *            The length of the name in bytes, as read in the stream.
-     *            Without the trailing zero byte.
+     * @param nameSize The length of the name in bytes, as read in the stream. Without the trailing zero byte.
      * @return the number of bytes needed to pad the header (0,1,2,3)
      *
      * @since 1.18
@@ -600,7 +574,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Gets the header size for this CPIO format
      *
-     * @return Returns the header size in bytes.
+     * @return the header size in bytes.
      */
     public int getHeaderSize() {
         return this.headerSize;
@@ -609,7 +583,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Sets the inode.
      *
-     * @return Returns the inode.
+     * @return the inode.
      */
     public long getInode() {
         return this.inode;
@@ -623,7 +597,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Gets the mode of this entry (e.g. directory, regular file).
      *
-     * @return Returns the mode.
+     * @return the mode.
      */
     public long getMode() {
         return mode == 0 && !CPIO_TRAILER.equals(name) ? C_ISREG : mode;
@@ -632,9 +606,11 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Gets the name.
      *
-     * <p>This method returns the raw name as it is stored inside of the archive.</p>
+     * <p>
+     * This method returns the raw name as it is stored inside of the archive.
+     * </p>
      *
-     * @return Returns the name.
+     * @return the name.
      */
     @Override
     public String getName() {
@@ -644,7 +620,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Gets the number of links.
      *
-     * @return Returns the number of links.
+     * @return the number of links.
      */
     public long getNumberOfLinks() {
         return nlink == 0 ? isDirectory() ? 2 : 1 : nlink;
@@ -653,10 +629,8 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Gets the remote device id.
      *
-     * @return Returns the remote device id.
-     * @throws UnsupportedOperationException
-     *             if this method is called for a CpioArchiveEntry with a new
-     *             format.
+     * @return the remote device id.
+     * @throws UnsupportedOperationException if this method is called for a CpioArchiveEntry with a new format.
      */
     public long getRemoteDevice() {
         checkOldFormat();
@@ -666,10 +640,8 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Gets the remote major device id.
      *
-     * @return Returns the remote major device id.
-     * @throws UnsupportedOperationException
-     *             if this method is called for a CpioArchiveEntry with an old
-     *             format.
+     * @return the remote major device id.
+     * @throws UnsupportedOperationException if this method is called for a CpioArchiveEntry with an old format.
      */
     public long getRemoteDeviceMaj() {
         checkNewFormat();
@@ -679,10 +651,8 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Gets the remote minor device id.
      *
-     * @return Returns the remote minor device id.
-     * @throws UnsupportedOperationException
-     *             if this method is called for a CpioArchiveEntry with an old
-     *             format.
+     * @return the remote minor device id.
+     * @throws UnsupportedOperationException if this method is called for a CpioArchiveEntry with an old format.
      */
     public long getRemoteDeviceMin() {
         checkNewFormat();
@@ -692,7 +662,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Gets the filesize.
      *
-     * @return Returns the filesize.
+     * @return the filesize.
      * @see org.apache.commons.compress.archivers.ArchiveEntry#getSize()
      */
     @Override
@@ -703,7 +673,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Gets the time in seconds.
      *
-     * @return Returns the time.
+     * @return the time.
      */
     public long getTime() {
         return this.mtime;
@@ -712,13 +682,15 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Gets the user id.
      *
-     * @return Returns the user id.
+     * @return the user id.
      */
     public long getUID() {
         return this.uid;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     *
      * @see Object#hashCode()
      */
     @Override
@@ -800,11 +772,9 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Sets the checksum. The checksum is calculated by adding all bytes of a
-     * file to transfer (crc += buf[pos] &amp; 0xFF).
+     * Sets the checksum. The checksum is calculated by adding all bytes of a file to transfer (crc += buf[pos] &amp; 0xFF).
      *
-     * @param chksum
-     *            The checksum to set.
+     * @param chksum The checksum to set.
      */
     public void setChksum(final long chksum) {
         checkNewFormat();
@@ -814,11 +784,8 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Sets the device id.
      *
-     * @param device
-     *            The device id to set.
-     * @throws UnsupportedOperationException
-     *             if this method is called for a CpioArchiveEntry with a new
-     *             format.
+     * @param device The device id to set.
+     * @throws UnsupportedOperationException if this method is called for a CpioArchiveEntry with a new format.
      */
     public void setDevice(final long device) {
         checkOldFormat();
@@ -828,8 +795,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Sets major device id.
      *
-     * @param maj
-     *            The major device id to set.
+     * @param maj The major device id to set.
      */
     public void setDeviceMaj(final long maj) {
         checkNewFormat();
@@ -839,8 +805,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Sets the minor device id
      *
-     * @param min
-     *            The minor device id to set.
+     * @param min The minor device id to set.
      */
     public void setDeviceMin(final long min) {
         checkNewFormat();
@@ -850,8 +815,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Sets the group id.
      *
-     * @param gid
-     *            The group id to set.
+     * @param gid The group id to set.
      */
     public void setGID(final long gid) {
         this.gid = gid;
@@ -860,8 +824,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Sets the inode.
      *
-     * @param inode
-     *            The inode to set.
+     * @param inode The inode to set.
      */
     public void setInode(final long inode) {
         this.inode = inode;
@@ -870,8 +833,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Sets the mode of this entry (e.g. directory, regular file).
      *
-     * @param mode
-     *            The mode to set.
+     * @param mode The mode to set.
      */
     public void setMode(final long mode) {
         final long maskedMode = mode & S_IFMT;
@@ -886,10 +848,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
         case C_ISNWK:
             break;
         default:
-            throw new IllegalArgumentException(
-                                               "Unknown mode. "
-                                               + "Full: " + Long.toHexString(mode)
-                                               + " Masked: " + Long.toHexString(maskedMode));
+            throw new IllegalArgumentException("Unknown mode. " + "Full: " + Long.toHexString(mode) + " Masked: " + Long.toHexString(maskedMode));
         }
 
         this.mode = mode;
@@ -898,8 +857,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Sets the name.
      *
-     * @param name
-     *            The name to set.
+     * @param name The name to set.
      */
     public void setName(final String name) {
         this.name = name;
@@ -908,8 +866,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Sets the number of links.
      *
-     * @param nlink
-     *            The number of links to set.
+     * @param nlink The number of links to set.
      */
     public void setNumberOfLinks(final long nlink) {
         this.nlink = nlink;
@@ -918,11 +875,8 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Sets the remote device id.
      *
-     * @param device
-     *            The remote device id to set.
-     * @throws UnsupportedOperationException
-     *             if this method is called for a CpioArchiveEntry with a new
-     *             format.
+     * @param device The remote device id to set.
+     * @throws UnsupportedOperationException if this method is called for a CpioArchiveEntry with a new format.
      */
     public void setRemoteDevice(final long device) {
         checkOldFormat();
@@ -932,11 +886,8 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Sets the remote major device id.
      *
-     * @param rmaj
-     *            The remote major device id to set.
-     * @throws UnsupportedOperationException
-     *             if this method is called for a CpioArchiveEntry with an old
-     *             format.
+     * @param rmaj The remote major device id to set.
+     * @throws UnsupportedOperationException if this method is called for a CpioArchiveEntry with an old format.
      */
     public void setRemoteDeviceMaj(final long rmaj) {
         checkNewFormat();
@@ -946,11 +897,8 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Sets the remote minor device id.
      *
-     * @param rmin
-     *            The remote minor device id to set.
-     * @throws UnsupportedOperationException
-     *             if this method is called for a CpioArchiveEntry with an old
-     *             format.
+     * @param rmin The remote minor device id to set.
+     * @throws UnsupportedOperationException if this method is called for a CpioArchiveEntry with an old format.
      */
     public void setRemoteDeviceMin(final long rmin) {
         checkNewFormat();
@@ -960,8 +908,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Sets the filesize.
      *
-     * @param size
-     *            The filesize to set.
+     * @param size The filesize to set.
      */
     public void setSize(final long size) {
         if (size < 0 || size > 0xFFFFFFFFL) {
@@ -973,8 +920,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Sets the time.
      *
-     * @param time
-     *            The time to set.
+     * @param time The time to set.
      */
     public void setTime(final FileTime time) {
         this.mtime = TimeUtils.toUnixTime(time);
@@ -983,8 +929,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Sets the time in seconds.
      *
-     * @param time
-     *            The time to set.
+     * @param time The time to set.
      */
     public void setTime(final long time) {
         this.mtime = time;
@@ -993,8 +938,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Sets the user id.
      *
-     * @param uid
-     *            The user id to set.
+     * @param uid The user id to set.
      */
     public void setUID(final long uid) {
         this.uid = uid;

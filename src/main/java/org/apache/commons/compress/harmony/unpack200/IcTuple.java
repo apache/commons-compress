@@ -18,6 +18,7 @@ package org.apache.commons.compress.harmony.unpack200;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * An IcTuple is the set of information that describes an inner class.
@@ -60,17 +61,16 @@ public class IcTuple {
 
     /**
      *
-     * @param C TODO
-     * @param F TODO
-     * @param C2 TODO
-     * @param N TODO
-     * @param cIndex the index of C in cpClass
+     * @param C       TODO
+     * @param F       TODO
+     * @param C2      TODO
+     * @param N       TODO
+     * @param cIndex  the index of C in cpClass
      * @param c2Index the index of C2 in cpClass, or -1 if C2 is null
-     * @param nIndex the index of N in cpUTF8, or -1 if N is null
-     * @param tIndex TODO
+     * @param nIndex  the index of N in cpUTF8, or -1 if N is null
+     * @param tIndex  TODO
      */
-    public IcTuple(final String C, final int F, final String C2, final String N, final int cIndex, final int c2Index,
-        final int nIndex, final int tIndex) {
+    public IcTuple(final String C, final int F, final String C2, final String N, final int cIndex, final int c2Index, final int nIndex, final int tIndex) {
         this.C = C;
         this.F = F;
         this.C2 = C2;
@@ -104,23 +104,13 @@ public class IcTuple {
 
     @Override
     public boolean equals(final Object object) {
-        if ((object == null) || (object.getClass() != this.getClass())) {
+        if (object == null || object.getClass() != this.getClass()) {
             return false;
         }
-        final IcTuple compareTuple = (IcTuple) object;
-
-        if (!nullSafeEquals(this.C, compareTuple.C)) {
-            return false;
-        }
-
-        if (!nullSafeEquals(this.C2, compareTuple.C2)) {
-            return false;
-        }
-
-        if (!nullSafeEquals(this.N, compareTuple.N)) {
-            return false;
-        }
-        return true;
+        final IcTuple other = (IcTuple) object;
+        return Objects.equals(C, other.C)
+                && Objects.equals(C2, other.C2)
+                && Objects.equals(N, other.N);
     }
 
     private void generateHashCode() {
@@ -277,6 +267,7 @@ public class IcTuple {
     public boolean isMember() {
         return member;
     }
+
     /**
      * Answer true if the receiver's bit 16 is set (indicating that explicit outer class and name fields are set).
      *
@@ -311,11 +302,9 @@ public class IcTuple {
     }
 
     /**
-     * Answer true if the receiver is predicted; answer false if the receiver is specified explicitly in the outer and
-     * name fields.
+     * Answer true if the receiver is predicted; answer false if the receiver is specified explicitly in the outer and name fields.
      *
-     * @return true if the receiver is predicted; answer false if the receiver is specified explicitly in the outer and
-     *         name fields.
+     * @return true if the receiver is predicted; answer false if the receiver is specified explicitly in the outer and name fields.
      */
     public boolean predicted() {
         return predictOuter || predictSimple;
@@ -357,13 +346,6 @@ public class IcTuple {
 
     @Override
     public String toString() {
-        final StringBuilder result = new StringBuilder();
-        result.append("IcTuple ");
-        result.append('(');
-        result.append(simpleClassName());
-        result.append(" in ");
-        result.append(outerClassString());
-        result.append(')');
-        return result.toString();
+        return "IcTuple (" + simpleClassName() + " in " + outerClassString() + ')';
     }
 }

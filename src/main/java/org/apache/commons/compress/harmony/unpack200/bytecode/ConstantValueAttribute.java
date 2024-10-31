@@ -52,10 +52,7 @@ public class ConstantValueAttribute extends Attribute {
             return false;
         }
         final ConstantValueAttribute other = (ConstantValueAttribute) obj;
-        if (!Objects.equals(entry, other.entry)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(entry, other.entry);
     }
 
     @Override
@@ -65,14 +62,14 @@ public class ConstantValueAttribute extends Attribute {
 
     @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
-        return new ClassFileEntry[] {getAttributeName(), entry};
+        return new ClassFileEntry[] { getAttributeName(), entry };
     }
 
     @Override
     public int hashCode() {
         final int PRIME = 31;
         int result = super.hashCode();
-        result = PRIME * result + ((entry == null) ? 0 : entry.hashCode());
+        result = PRIME * result + (entry == null ? 0 : entry.hashCode());
         return result;
     }
 

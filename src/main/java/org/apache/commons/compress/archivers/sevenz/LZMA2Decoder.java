@@ -25,7 +25,7 @@ import org.tukaani.xz.FinishableWrapperOutputStream;
 import org.tukaani.xz.LZMA2InputStream;
 import org.tukaani.xz.LZMA2Options;
 
-class LZMA2Decoder extends AbstractCoder {
+final class LZMA2Decoder extends AbstractCoder {
 
     LZMA2Decoder() {
         super(LZMA2Options.class, Number.class);
@@ -46,7 +46,7 @@ class LZMA2Decoder extends AbstractCoder {
         }
     }
 
-    @SuppressWarnings("resource") // Caller closes result.
+    @SuppressWarnings("resource") // Caller closes.
     @Override
     OutputStream encode(final OutputStream out, final Object opts) throws IOException {
         return getOptions(opts).getOutputStream(new FinishableWrapperOutputStream(out));
@@ -60,7 +60,7 @@ class LZMA2Decoder extends AbstractCoder {
             throw new IOException("LZMA2 properties too short");
         }
         final int dictionarySizeBits = 0xff & coder.properties[0];
-        if ((dictionarySizeBits & (~0x3f)) != 0) {
+        if ((dictionarySizeBits & ~0x3f) != 0) {
             throw new IOException("Unsupported LZMA2 property bits");
         }
         if (dictionarySizeBits > 40) {
@@ -69,7 +69,7 @@ class LZMA2Decoder extends AbstractCoder {
         if (dictionarySizeBits == 40) {
             return 0xFFFFffff;
         }
-        return (2 | (dictionarySizeBits & 0x1)) << (dictionarySizeBits / 2 + 11);
+        return (2 | dictionarySizeBits & 0x1) << dictionarySizeBits / 2 + 11;
     }
 
     private int getDictSize(final Object opts) {
@@ -92,15 +92,12 @@ class LZMA2Decoder extends AbstractCoder {
     byte[] getOptionsAsProperties(final Object opts) {
         final int dictSize = getDictSize(opts);
         final int lead = Integer.numberOfLeadingZeros(dictSize);
-        final int secondBit = (dictSize >>> (30 - lead)) - 2;
-        return new byte[] {
-            (byte) ((19 - lead) * 2 + secondBit)
-        };
+        final int secondBit = (dictSize >>> 30 - lead) - 2;
+        return new byte[] { (byte) ((19 - lead) * 2 + secondBit) };
     }
 
     @Override
-    Object getOptionsFromCoder(final Coder coder, final InputStream in)
-        throws IOException {
+    Object getOptionsFromCoder(final Coder coder, final InputStream in) throws IOException {
         return getDictionarySize(coder);
     }
 

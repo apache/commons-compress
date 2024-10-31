@@ -20,11 +20,11 @@ package org.apache.commons.compress.archivers.dump;
 
 import java.io.IOException;
 
-
 /**
  * Dump Archive Exception
  */
 public class DumpArchiveException extends IOException {
+
     private static final long serialVersionUID = 1L;
 
     public DumpArchiveException() {
@@ -35,11 +35,10 @@ public class DumpArchiveException extends IOException {
     }
 
     public DumpArchiveException(final String msg, final Throwable cause) {
-        super(msg);
-        initCause(cause);
+        super(msg, cause);
     }
 
     public DumpArchiveException(final Throwable cause) {
-        initCause(cause);
+        super(cause);
     }
 }

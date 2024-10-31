@@ -40,7 +40,7 @@ public class StreamingNotSupportedException extends ArchiveException {
     }
 
     /**
-     * Returns the format that has been requested/detected.
+     * Gets the format that has been requested/detected.
      *
      * @return the format that has been requested/detected.
      */

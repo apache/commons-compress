@@ -30,14 +30,14 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 
+import org.apache.commons.io.FileUtils;
+
 /**
- * Utility functions
- * @Immutable (has mutable data but it is write-only)
+ * Utility functions.
+ *
+ * @Immutable (has mutable data but it is write-only).
  */
 public final class IOUtils {
-
-    private static final int COPY_BUF_SIZE = 8024;
-    private static final int SKIP_BUF_SIZE = 4096;
 
     /**
      * Empty array of type {@link LinkOption}.
@@ -46,129 +46,100 @@ public final class IOUtils {
      */
     public static final LinkOption[] EMPTY_LINK_OPTIONS = {};
 
-    // This buffer does not need to be synchronized because it is write only; the contents are ignored
-    // Does not affect Immutability
-    private static final byte[] SKIP_BUF = new byte[SKIP_BUF_SIZE];
-
     /**
      * Closes the given Closeable and swallows any IOException that may occur.
+     *
      * @param c Closeable to close, can be null
      * @since 1.7
+     * @deprecated Use {@link org.apache.commons.io.IOUtils#closeQuietly(Closeable)}.
      */
+    @Deprecated
     public static void closeQuietly(final Closeable c) {
-        if (c != null) {
-            try {
-                c.close();
-            } catch (final IOException ignored) { // NOPMD NOSONAR
-            }
-        }
+        org.apache.commons.io.IOUtils.closeQuietly(c);
     }
 
     /**
      * Copies the source file to the given output stream.
-     * @param sourceFile The file to read.
+     *
+     * @param sourceFile   The file to read.
      * @param outputStream The output stream to write.
      * @throws IOException if an I/O error occurs when reading or writing.
      * @since 1.21
+     * @deprecated Use {@link FileUtils#copyFile(File, OutputStream)}.
      */
+    @Deprecated
     public static void copy(final File sourceFile, final OutputStream outputStream) throws IOException {
-        Files.copy(sourceFile.toPath(), outputStream);
+        FileUtils.copyFile(sourceFile, outputStream);
     }
 
     /**
-     * Copies the content of a InputStream into an OutputStream.
-     * Uses a default buffer size of 8024 bytes.
+     * Copies the content of a InputStream into an OutputStream. Uses a default buffer size of 8024 bytes.
      *
-     * @param input
-     *            the InputStream to copy
-     * @param output
-     *            the target, may be null to simulate output to dev/null on Linux and NUL on Windows
+     * @param input  the InputStream to copy
+     * @param output the target, may be null to simulate output to dev/null on Linux and NUL on Windows
      * @return the number of bytes copied
-     * @throws IOException
-     *             if an error occurs
+     * @throws IOException if an error occurs
+     * @deprecated Use {@link org.apache.commons.io.IOUtils#copy(InputStream, OutputStream)}.
      */
+    @Deprecated
     public static long copy(final InputStream input, final OutputStream output) throws IOException {
-        return copy(input, output, COPY_BUF_SIZE);
+        return org.apache.commons.io.IOUtils.copy(input, output);
     }
 
     /**
      * Copies the content of a InputStream into an OutputStream
      *
-     * @param input
-     *            the InputStream to copy
-     * @param output
-     *            the target, may be null to simulate output to dev/null on Linux and NUL on Windows
-     * @param buffersize
-     *            the buffer size to use, must be bigger than 0
+     * @param input      the InputStream to copy
+     * @param output     the target, may be null to simulate output to dev/null on Linux and NUL on Windows
+     * @param bufferSize the buffer size to use, must be bigger than 0
      * @return the number of bytes copied
-     * @throws IOException
-     *             if an error occurs
-     * @throws IllegalArgumentException
-     *             if buffersize is smaller than or equal to 0
+     * @throws IOException              if an error occurs
+     * @throws IllegalArgumentException if bufferSize is smaller than or equal to 0
+     * @deprecated Use {@link org.apache.commons.io.IOUtils#copy(InputStream, OutputStream, int)}.
      */
-    public static long copy(final InputStream input, final OutputStream output, final int buffersize) throws IOException {
-        if (buffersize < 1) {
-            throw new IllegalArgumentException("buffersize must be bigger than 0");
-        }
-        final byte[] buffer = new byte[buffersize];
-        int n = 0;
-        long count = 0;
-        while (-1 != (n = input.read(buffer))) {
-            if (output != null) {
-                output.write(buffer, 0, n);
-            }
-            count += n;
-        }
-        return count;
+    @Deprecated
+    public static long copy(final InputStream input, final OutputStream output, final int bufferSize) throws IOException {
+        return org.apache.commons.io.IOUtils.copy(input, output, bufferSize);
     }
 
     /**
-     * Copies part of the content of a InputStream into an OutputStream.
-     * Uses a default buffer size of 8024 bytes.
+     * Copies part of the content of a InputStream into an OutputStream. Uses a default buffer size of 8024 bytes.
      *
-     * @param input
-     *            the InputStream to copy
-     * @param output
-     *            the target Stream
-     * @param len
-     *            maximum amount of bytes to copy
+     * @param input  the InputStream to copy
+     * @param output the target Stream
+     * @param len    maximum amount of bytes to copy
      * @return the number of bytes copied
-     * @throws IOException
-     *             if an error occurs
+     * @throws IOException if an error occurs
      * @since 1.21
+     * @deprecated Use {@link org.apache.commons.io.IOUtils#copyLarge(InputStream, OutputStream, long, long)}.
      */
-    public static long copyRange(final InputStream input, final long len, final OutputStream output)
-        throws IOException {
-        return copyRange(input, len, output, COPY_BUF_SIZE);
+    @Deprecated
+    public static long copyRange(final InputStream input, final long len, final OutputStream output) throws IOException {
+        return org.apache.commons.io.IOUtils.copyLarge(input, output, 0, len);
     }
 
     /**
      * Copies part of the content of a InputStream into an OutputStream
      *
-     * @param input
-     *            the InputStream to copy
-     * @param len
-     *            maximum amount of bytes to copy
-     * @param output
-     *            the target, may be null to simulate output to dev/null on Linux and NUL on Windows
-     * @param buffersize
-     *            the buffer size to use, must be bigger than 0
+     * @param input      the InputStream to copy
+     * @param length        maximum amount of bytes to copy
+     * @param output     the target, may be null to simulate output to dev/null on Linux and NUL on Windows
+     * @param bufferSize the buffer size to use, must be bigger than 0
      * @return the number of bytes copied
-     * @throws IOException
-     *             if an error occurs
-     * @throws IllegalArgumentException
-     *             if buffersize is smaller than or equal to 0
+     * @throws IOException              if an error occurs
+     * @throws IllegalArgumentException if bufferSize is smaller than or equal to 0
      * @since 1.21
+     * @deprecated No longer used.
      */
-    public static long copyRange(final InputStream input, final long len, final OutputStream output,
-        final int buffersize) throws IOException {
-        if (buffersize < 1) {
-            throw new IllegalArgumentException("buffersize must be bigger than 0");
+    @Deprecated
+    public static long copyRange(final InputStream input, final long length, final OutputStream output, final int bufferSize) throws IOException {
+        if (bufferSize < 1) {
+            throw new IllegalArgumentException("bufferSize must be bigger than 0");
         }
-        final byte[] buffer = new byte[(int) Math.min(buffersize, len)];
+        final byte[] buffer = new byte[(int) Math.min(bufferSize, Math.max(0, length))];
         int n = 0;
         long count = 0;
-        while (count < len && -1 != (n = input.read(buffer, 0, (int) Math.min(len - count, buffer.length)))) {
+        while (count < length && -1 != (n = input.read(buffer, 0, (int) Math.min(length - count, buffer.length)))) {
             if (output != null) {
                 output.write(buffer, 0, n);
             }
@@ -179,17 +150,18 @@ public final class IOUtils {
 
     /**
      * Reads as much from the file as possible to fill the given array.
+     * <p>
+     * This method may invoke read repeatedly to fill the array and only read less bytes than the length of the array if the end of the stream has been reached.
+     * </p>
      *
-     * <p>This method may invoke read repeatedly to fill the array and
-     * only read less bytes than the length of the array if the end of
-     * the stream has been reached.</p>
-     *
-     * @param file file to read
+     * @param file  file to read
      * @param array buffer to fill
      * @return the number of bytes actually read
      * @throws IOException on error
      * @since 1.20
+     * @deprecated Use {@link Files#readAllBytes(java.nio.file.Path)}.
      */
+    @Deprecated
     public static int read(final File file, final byte[] array) throws IOException {
         try (InputStream inputStream = Files.newInputStream(file.toPath())) {
             return readFully(inputStream, array, 0, array.length);
@@ -198,10 +170,9 @@ public final class IOUtils {
 
     /**
      * Reads as much from input as possible to fill the given array.
-     *
-     * <p>This method may invoke read repeatedly to fill the array and
-     * only read less bytes than the length of the array if the end of
-     * the stream has been reached.</p>
+     * <p>
+     * This method may invoke read repeatedly to fill the array and only read less bytes than the length of the array if the end of the stream has been reached.
+     * </p>
      *
      * @param input stream to read from
      * @param array buffer to fill
@@ -212,68 +183,41 @@ public final class IOUtils {
         return readFully(input, array, 0, array.length);
     }
 
-    // toByteArray(InputStream) copied from:
-    // commons/proper/io/trunk/src/main/java/org/apache/commons/io/IOUtils.java?revision=1428941
-    // January 8th, 2013
-    //
-    // Assuming our copy() works just as well as theirs!  :-)
-
     /**
-     * Reads as much from input as possible to fill the given array
-     * with the given amount of bytes.
+     * Reads as much from input as possible to fill the given array with the given amount of bytes.
+     * <p>
+     * This method may invoke read repeatedly to read the bytes and only read less bytes than the requested length if the end of the stream has been reached.
+     * </p>
      *
-     * <p>This method may invoke read repeatedly to read the bytes and
-     * only read less bytes than the requested length if the end of
-     * the stream has been reached.</p>
-     *
-     * @param input stream to read from
-     * @param array buffer to fill
+     * @param input  stream to read from
+     * @param array  buffer to fill
      * @param offset offset into the buffer to start filling at
-     * @param len of bytes to read
+     * @param length    of bytes to read
      * @return the number of bytes actually read
-     * @throws IOException
-     *             if an I/O error has occurred
+     * @throws IOException if an I/O error has occurred
      */
-    public static int readFully(final InputStream input, final byte[] array, final int offset, final int len)
-        throws IOException {
-        if (len < 0 || offset < 0 || len + offset > array.length || len + offset < 0) {
+    public static int readFully(final InputStream input, final byte[] array, final int offset, final int length) throws IOException {
+        if (length < 0 || offset < 0 || length + offset > array.length || length + offset < 0) {
             throw new IndexOutOfBoundsException();
         }
-        int count = 0, x = 0;
-        while (count != len) {
-            x = input.read(array, offset + count, len - count);
-            if (x == -1) {
-                break;
-            }
-            count += x;
-        }
-        return count;
+        return org.apache.commons.io.IOUtils.read(input, array, offset, length);
     }
 
     /**
-     * Reads {@code b.remaining()} bytes from the given channel
-     * starting at the current channel's position.
+     * Reads {@code b.remaining()} bytes from the given channel starting at the current channel's position.
+     * <p>
+     * This method reads repeatedly from the channel until the requested number of bytes are read. This method blocks until the requested number of bytes are
+     * read, the end of the channel is detected, or an exception is thrown.
+     * </p>
      *
-     * <p>This method reads repeatedly from the channel until the
-     * requested number of bytes are read. This method blocks until
-     * the requested number of bytes are read, the end of the channel
-     * is detected, or an exception is thrown.</p>
-     *
-     * @param channel the channel to read from
+     * @param channel    the channel to read from
      * @param byteBuffer the buffer into which the data is read.
-     * @throws IOException - if an I/O error occurs.
-     * @throws EOFException - if the channel reaches the end before reading all the bytes.
+     * @throws IOException  if an I/O error occurs.
+     * @throws EOFException if the channel reaches the end before reading all the bytes.
      */
     public static void readFully(final ReadableByteChannel channel, final ByteBuffer byteBuffer) throws IOException {
         final int expectedLength = byteBuffer.remaining();
-        int read = 0;
-        while (read < expectedLength) {
-            final int readNow = channel.read(byteBuffer);
-            if (readNow <= 0) {
-                break;
-            }
-            read += readNow;
-        }
+        final int read = org.apache.commons.io.IOUtils.read(channel, byteBuffer);
         if (read < expectedLength) {
             throw new EOFException();
         }
@@ -282,106 +226,82 @@ public final class IOUtils {
     /**
      * Gets part of the contents of an {@code InputStream} as a {@code byte[]}.
      *
-     * @param input  the {@code InputStream} to read from
-     * @param len
-     *            maximum amount of bytes to copy
+     * @param input the {@code InputStream} to read from
+     * @param length   maximum amount of bytes to copy
      * @return the requested byte array
      * @throws NullPointerException if the input is null
-     * @throws IOException if an I/O error occurs
+     * @throws IOException          if an I/O error occurs
      * @since 1.21
      */
-    public static byte[] readRange(final InputStream input, final int len) throws IOException {
+    public static byte[] readRange(final InputStream input, final int length) throws IOException {
         final ByteArrayOutputStream output = new ByteArrayOutputStream();
-        copyRange(input, len, output);
+        org.apache.commons.io.IOUtils.copyLarge(input, output, 0, length);
         return output.toByteArray();
     }
 
     /**
      * Gets part of the contents of an {@code ReadableByteChannel} as a {@code byte[]}.
      *
-     * @param input  the {@code ReadableByteChannel} to read from
-     * @param len
-     *            maximum amount of bytes to copy
+     * @param input the {@code ReadableByteChannel} to read from
+     * @param length   maximum amount of bytes to copy
      * @return the requested byte array
      * @throws NullPointerException if the input is null
-     * @throws IOException if an I/O error occurs
+     * @throws IOException          if an I/O error occurs
      * @since 1.21
      */
-    public static byte[] readRange(final ReadableByteChannel input, final int len) throws IOException {
+    public static byte[] readRange(final ReadableByteChannel input, final int length) throws IOException {
         final ByteArrayOutputStream output = new ByteArrayOutputStream();
-        final ByteBuffer b = ByteBuffer.allocate(Math.min(len, COPY_BUF_SIZE));
+        final ByteBuffer b = ByteBuffer.allocate(Math.min(length, org.apache.commons.io.IOUtils.DEFAULT_BUFFER_SIZE));
         int read = 0;
-        while (read < len) {
+        while (read < length) {
             // Make sure we never read more than len bytes
-            b.limit(Math.min(len - read, b.capacity()));
-            final int readNow = input.read(b);
-            if (readNow <= 0) {
+            b.limit(Math.min(length - read, b.capacity()));
+            final int readCount = input.read(b);
+            if (readCount <= 0) {
                 break;
             }
-            output.write(b.array(), 0, readNow);
+            output.write(b.array(), 0, readCount);
             b.rewind();
-            read += readNow;
+            read += readCount;
         }
         return output.toByteArray();
     }
 
     /**
-     * Skips the given number of bytes by repeatedly invoking skip on
-     * the given input stream if necessary.
+     * Skips bytes from an input byte stream.
+     * <p>
+     * This method will only skip less than the requested number of bytes if the end of the input stream has been reached.
+     * </p>
      *
-     * <p>In a case where the stream's skip() method returns 0 before
-     * the requested number of bytes has been skip this implementation
-     * will fall back to using the read() method.</p>
-     *
-     * <p>This method will only skip less than the requested number of
-     * bytes if the end of the input stream has been reached.</p>
-     *
-     * @param input stream to skip bytes in
-     * @param numToSkip the number of bytes to skip
+     * @param input     stream to skip bytes in
+     * @param toSkip the number of bytes to skip
      * @return the number of bytes actually skipped
      * @throws IOException on error
      */
-    public static long skip(final InputStream input, long numToSkip) throws IOException {
-        final long available = numToSkip;
-        while (numToSkip > 0) {
-            final long skipped = input.skip(numToSkip);
-            if (skipped == 0) {
-                break;
-            }
-            numToSkip -= skipped;
-        }
-
-        while (numToSkip > 0) {
-            final int read = readFully(input, SKIP_BUF, 0,
-                                 (int) Math.min(numToSkip, SKIP_BUF_SIZE));
-            if (read < 1) {
-                break;
-            }
-            numToSkip -= read;
-        }
-        return available - numToSkip;
+    public static long skip(final InputStream input, final long toSkip) throws IOException {
+        return org.apache.commons.io.IOUtils.skip(input, toSkip, org.apache.commons.io.IOUtils::byteArray);
     }
 
     /**
      * Gets the contents of an {@code InputStream} as a {@code byte[]}.
      * <p>
-     * This method buffers the input internally, so there is no need to use a
-     * {@code BufferedInputStream}.
+     * This method buffers the input internally, so there is no need to use a {@code BufferedInputStream}.
+     * </p>
      *
-     * @param input  the {@code InputStream} to read from
+     * @param input the {@code InputStream} to read from
      * @return the requested byte array
      * @throws NullPointerException if the input is null
-     * @throws IOException if an I/O error occurs
+     * @throws IOException          if an I/O error occurs
      * @since 1.5
+     * @deprecated Use {@link org.apache.commons.io.IOUtils#toByteArray(InputStream)}.
      */
+    @Deprecated
     public static byte[] toByteArray(final InputStream input) throws IOException {
-        final ByteArrayOutputStream output = new ByteArrayOutputStream();
-        copy(input, output);
-        return output.toByteArray();
+        return org.apache.commons.io.IOUtils.toByteArray(input);
     }
 
     /** Private constructor to prevent instantiation of this utility class. */
-    private IOUtils(){
+    private IOUtils() {
     }
 
 }

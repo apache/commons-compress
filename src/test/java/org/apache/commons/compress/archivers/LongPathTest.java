@@ -18,6 +18,7 @@
 package org.apache.commons.compress.archivers;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -30,7 +31,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Stream;
 
-import org.apache.commons.compress.AbstractTestCase;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ar.ArArchiveInputStream;
 import org.apache.commons.compress.archivers.cpio.CpioArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
@@ -44,10 +45,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 /**
  * Test that can read various tar file examples.
  *
- * Files must be in resources/longpath, and there must be a file.txt containing
- * the list of files in the archives.
+ * Files must be in resources/longpath, and there must be a file.txt containing the list of files in the archives.
  */
-public class LongPathTest extends AbstractTestCase {
+public class LongPathTest extends AbstractTest {
 
     private static final ClassLoader CLASSLOADER = LongPathTest.class.getClassLoader();
     private static final File ARCDIR;
@@ -81,7 +81,6 @@ public class LongPathTest extends AbstractTestCase {
                     FILELIST.add(line);
                 }
             }
-            br.close();
         }
     }
 
@@ -106,14 +105,14 @@ public class LongPathTest extends AbstractTestCase {
             expected.add("META-INF/");
             expected.add("META-INF/MANIFEST.MF");
         }
-        try (ArchiveInputStream ais = factory.createArchiveInputStream(new BufferedInputStream(Files.newInputStream(file.toPath())))) {
+        try (ArchiveInputStream<?> ais = factory.createArchiveInputStream(new BufferedInputStream(Files.newInputStream(file.toPath())))) {
             // check if expected type recognized
             if (name.endsWith(".tar")) {
-                assertTrue(ais instanceof TarArchiveInputStream);
+                assertInstanceOf(TarArchiveInputStream.class, ais);
             } else if (name.endsWith(".jar") || name.endsWith(".zip")) {
-                assertTrue(ais instanceof ZipArchiveInputStream);
+                assertInstanceOf(ZipArchiveInputStream.class, ais);
             } else if (name.endsWith(".cpio")) {
-                assertTrue(ais instanceof CpioArchiveInputStream);
+                assertInstanceOf(CpioArchiveInputStream.class, ais);
                 // Hack: cpio does not add trailing "/" to directory names
                 for (int i = 0; i < expected.size(); i++) {
                     final String ent = expected.get(i);
@@ -122,13 +121,15 @@ public class LongPathTest extends AbstractTestCase {
                     }
                 }
             } else if (name.endsWith(".ar")) {
-                assertTrue(ais instanceof ArArchiveInputStream);
+                assertInstanceOf(ArArchiveInputStream.class, ais);
                 // CPIO does not store directories or directory names
                 expected.clear();
                 for (final String ent : FILELIST) {
-                    if (!ent.endsWith("/")) {// not a directory
+                    if (!ent.endsWith("/")) {
+                        // not a directory
                         final int lastSlash = ent.lastIndexOf('/');
-                        if (lastSlash >= 0) { // extract path name
+                        if (lastSlash >= 0) {
+                            // extract path name
                             expected.add(ent.substring(lastSlash + 1));
                         } else {
                             expected.add(ent);

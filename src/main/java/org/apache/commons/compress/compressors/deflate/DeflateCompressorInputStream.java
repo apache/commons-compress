@@ -24,16 +24,15 @@ import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
 import org.apache.commons.compress.compressors.CompressorInputStream;
-import org.apache.commons.compress.utils.CountingInputStream;
-import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
+import org.apache.commons.io.input.BoundedInputStream;
 
 /**
  * Deflate decompressor.
+ *
  * @since 1.9
  */
-public class DeflateCompressorInputStream extends CompressorInputStream
-    implements InputStreamStatistics {
+public class DeflateCompressorInputStream extends CompressorInputStream implements InputStreamStatistics {
 
     private static final int MAGIC_1 = 0x78;
     private static final int MAGIC_2a = 0x01;
@@ -42,52 +41,42 @@ public class DeflateCompressorInputStream extends CompressorInputStream
     private static final int MAGIC_2d = 0xda;
 
     /**
-     * Checks if the signature matches what is expected for a zlib / deflated file
-     *  with the zlib header.
+     * Checks if the signature matches what is expected for a zlib / deflated file with the zlib header.
      *
-     * @param signature
-     *            the bytes to check
-     * @param length
-     *            the number of bytes to check
-     * @return true, if this stream is zlib / deflate compressed with a header
-     * stream, false otherwise
+     * @param signature the bytes to check
+     * @param length    the number of bytes to check
+     * @return true, if this stream is zlib / deflate compressed with a header stream, false otherwise
      *
      * @since 1.10
      */
     public static boolean matches(final byte[] signature, final int length) {
-        return length > 3 && signature[0] == MAGIC_1 && (
-                signature[1] == (byte) MAGIC_2a ||
-                signature[1] == (byte) MAGIC_2b ||
-                signature[1] == (byte) MAGIC_2c ||
-                signature[1] == (byte) MAGIC_2d);
+        return length > 3 && signature[0] == MAGIC_1
+                && (signature[1] == (byte) MAGIC_2a || signature[1] == (byte) MAGIC_2b || signature[1] == (byte) MAGIC_2c || signature[1] == (byte) MAGIC_2d);
     }
-    private final CountingInputStream countingStream;
+
+    private final BoundedInputStream countingStream;
     private final InputStream in;
 
     private final Inflater inflater;
 
     /**
-     * Creates a new input stream that decompresses Deflate-compressed data
-     * from the specified input stream.
+     * Creates a new input stream that decompresses Deflate-compressed data from the specified input stream.
      *
-     * @param       inputStream where to read the compressed data
-     *
+     * @param inputStream where to read the compressed data
      */
     public DeflateCompressorInputStream(final InputStream inputStream) {
         this(inputStream, new DeflateParameters());
     }
 
     /**
-     * Creates a new input stream that decompresses Deflate-compressed data
-     * from the specified input stream.
+     * Creates a new input stream that decompresses Deflate-compressed data from the specified input stream.
      *
-     * @param       inputStream where to read the compressed data
-     * @param       parameters parameters
+     * @param inputStream where to read the compressed data
+     * @param parameters  parameters
      */
-    public DeflateCompressorInputStream(final InputStream inputStream,
-                                        final DeflateParameters parameters) {
+    public DeflateCompressorInputStream(final InputStream inputStream, final DeflateParameters parameters) {
         inflater = new Inflater(!parameters.withZlibHeader());
-        in = new InflaterInputStream(countingStream = new CountingInputStream(inputStream), inflater);
+        in = new InflaterInputStream(countingStream = BoundedInputStream.builder().setInputStream(inputStream).asSupplier().get(), inflater);
     }
 
     /** {@inheritDoc} */
@@ -111,7 +100,7 @@ public class DeflateCompressorInputStream extends CompressorInputStream
      */
     @Override
     public long getCompressedCount() {
-        return countingStream.getBytesRead();
+        return countingStream.getCount();
     }
 
     /** {@inheritDoc} */
@@ -136,6 +125,6 @@ public class DeflateCompressorInputStream extends CompressorInputStream
     /** {@inheritDoc} */
     @Override
     public long skip(final long n) throws IOException {
-        return IOUtils.skip(in, n);
+        return org.apache.commons.io.IOUtils.skip(in, n);
     }
 }

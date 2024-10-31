@@ -18,6 +18,7 @@
  */
 package org.apache.commons.compress.archivers.cpio;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 /**
@@ -25,16 +26,15 @@ import java.util.Arrays;
  *
  * @Immutable
  */
-class CpioUtil {
+final class CpioUtil {
+
+    static final String DEFAULT_CHARSET_NAME = StandardCharsets.US_ASCII.name();
 
     /**
-     * Converts a byte array to a long. Halfwords can be swapped by setting
-     * swapHalfWord=true.
+     * Converts a byte array to a long. Halfwords can be swapped by setting swapHalfWord=true.
      *
-     * @param number
-     *            An array of bytes containing a number
-     * @param swapHalfWord
-     *            Swap halfwords ([0][1][2][3]->[1][0][3][2])
+     * @param number       An array of bytes containing a number
+     * @param swapHalfWord Swap halfwords ([0][1][2][3]->[1][0][3][2])
      * @return The long value
      * @throws UnsupportedOperationException if number length is not a multiple of 2
      */
@@ -72,21 +72,16 @@ class CpioUtil {
     }
 
     /**
-     * Converts a long number to a byte array
-     * Halfwords can be swapped by setting swapHalfWord=true.
+     * Converts a long number to a byte array Halfwords can be swapped by setting swapHalfWord=true.
      *
-     * @param number
-     *            the input long number to be converted
+     * @param number       the input long number to be converted
      *
-     * @param length
-     *            The length of the returned array
-     * @param swapHalfWord
-     *            Swap halfwords ([0][1][2][3]->[1][0][3][2])
+     * @param length       The length of the returned array
+     * @param swapHalfWord Swap halfwords ([0][1][2][3]->[1][0][3][2])
      * @return The long value
      * @throws UnsupportedOperationException if the length is not a positive multiple of two
      */
-    static byte[] long2byteArray(final long number, final int length,
-            final boolean swapHalfWord) {
+    static byte[] long2byteArray(final long number, final int length, final boolean swapHalfWord) {
         final byte[] ret = new byte[length];
         int pos = 0;
         long tmp_number;

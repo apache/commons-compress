@@ -87,7 +87,7 @@ public class ExceptionsAttribute extends Attribute {
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result = prime * result + ExceptionsAttribute.hashCode(exceptions);
+        result = prime * result + hashCode(exceptions);
         return result;
     }
 
@@ -103,8 +103,7 @@ public class ExceptionsAttribute extends Attribute {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("Exceptions: ");
+        final StringBuilder sb = new StringBuilder("Exceptions: ");
         for (final CPClass exception : exceptions) {
             sb.append(exception);
             sb.append(' ');

@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 public class SevenZArchiveEntryTest {
 
     @Test
-    public void methodConfigurationMattersInEquals() {
+    public void testMethodConfigurationMattersInEquals() {
         final SevenZArchiveEntry z1 = new SevenZArchiveEntry();
         final SevenZArchiveEntry z2 = new SevenZArchiveEntry();
         final SevenZArchiveEntry z3 = new SevenZArchiveEntry();
@@ -42,7 +42,7 @@ public class SevenZArchiveEntryTest {
     }
 
     @Test
-    public void methodOrderMattersInEquals() {
+    public void testMethodOrderMattersInEquals() {
         final SevenZArchiveEntry z1 = new SevenZArchiveEntry();
         final SevenZArchiveEntry z2 = new SevenZArchiveEntry();
         z1.setContentMethods(new SevenZMethodConfiguration(SevenZMethod.LZMA2), new SevenZMethodConfiguration(SevenZMethod.DELTA_FILTER));
@@ -52,7 +52,7 @@ public class SevenZArchiveEntryTest {
     }
 
     @Test
-    public void noMethodsIsDifferentFromSomeMethods() {
+    public void testNoMethodsIsDifferentFromSomeMethods() {
         final SevenZArchiveEntry z1 = new SevenZArchiveEntry();
         final SevenZArchiveEntry z2 = new SevenZArchiveEntry();
         z2.setContentMethods(new SevenZMethodConfiguration(SevenZMethod.COPY));
@@ -61,7 +61,7 @@ public class SevenZArchiveEntryTest {
     }
 
     @Test
-    public void oneMethodsIsDifferentFromTwoMethods() {
+    public void testOneMethodsIsDifferentFromTwoMethods() {
         final SevenZArchiveEntry z1 = new SevenZArchiveEntry();
         final SevenZArchiveEntry z2 = new SevenZArchiveEntry();
         z1.setContentMethods(new SevenZMethodConfiguration(SevenZMethod.COPY));
@@ -71,7 +71,7 @@ public class SevenZArchiveEntryTest {
     }
 
     @Test
-    public void sameMethodsYieldEqualEntries() {
+    public void testSameMethodsYieldEqualEntries() {
         final SevenZArchiveEntry z1 = new SevenZArchiveEntry();
         final SevenZArchiveEntry z2 = new SevenZArchiveEntry();
         z1.setContentMethods(new SevenZMethodConfiguration(SevenZMethod.DELTA_FILTER), new SevenZMethodConfiguration(SevenZMethod.LZMA2));
@@ -81,7 +81,7 @@ public class SevenZArchiveEntryTest {
     }
 
     @Test
-    public void shouldThrowIfAccessDateIsSetToNull() {
+    public void testShouldThrowIfAccessDateIsSetToNull() {
         assertThrows(UnsupportedOperationException.class, () -> {
             final SevenZArchiveEntry entry = new SevenZArchiveEntry();
             entry.setAccessDate(null);
@@ -90,7 +90,7 @@ public class SevenZArchiveEntryTest {
     }
 
     @Test
-    public void shouldThrowIfCreationDateIsSetToNull() {
+    public void testShouldThrowIfCreationDateIsSetToNull() {
         assertThrows(UnsupportedOperationException.class, () -> {
             final SevenZArchiveEntry entry = new SevenZArchiveEntry();
             entry.setCreationDate(null);
@@ -99,7 +99,7 @@ public class SevenZArchiveEntryTest {
     }
 
     @Test
-    public void shouldThrowIfLastModifiedDateIsSetToNull() {
+    public void testShouldThrowIfLastModifiedDateIsSetToNull() {
         assertThrows(UnsupportedOperationException.class, () -> {
             final SevenZArchiveEntry entry = new SevenZArchiveEntry();
             entry.setLastModifiedDate(null);
@@ -108,19 +108,18 @@ public class SevenZArchiveEntryTest {
     }
 
     @Test
-    public void shouldThrowIfNoAccessDateIsSet() {
+    public void testShouldThrowIfNoAccessDateIsSet() {
         assertThrows(UnsupportedOperationException.class, () -> new SevenZArchiveEntry().getAccessDate());
     }
 
     @Test
-    public void shouldThrowIfNoCreationDateIsSet() {
+    public void testShouldThrowIfNoCreationDateIsSet() {
         assertThrows(UnsupportedOperationException.class, () -> new SevenZArchiveEntry().getCreationDate());
     }
 
     @Test
-    public void shouldThrowIfNoLastModifiedDateIsSet() {
+    public void testShouldThrowIfNoLastModifiedDateIsSet() {
         assertThrows(UnsupportedOperationException.class, () -> new SevenZArchiveEntry().getLastModifiedDate());
     }
-
 
 }

@@ -17,48 +17,41 @@
 
 package org.apache.commons.compress.compressors.zstandard;
 
-
 import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.compress.compressors.CompressorInputStream;
-import org.apache.commons.compress.utils.CountingInputStream;
-import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
+import org.apache.commons.io.input.BoundedInputStream;
 
 import com.github.luben.zstd.BufferPool;
 import com.github.luben.zstd.ZstdInputStream;
 
 /**
- * {@link CompressorInputStream} implementation to decode Zstandard encoded stream.
- * Library relies on <a href="https://github.com/luben/zstd-jni/">Zstandard JNI</a>
+ * {@link CompressorInputStream} implementation to decode Zstandard encoded stream. Library relies on <a href="https://github.com/luben/zstd-jni/">Zstandard
+ * JNI</a>
  *
  * @since 1.16
  */
-public class ZstdCompressorInputStream extends CompressorInputStream
-    implements InputStreamStatistics {
+public class ZstdCompressorInputStream extends CompressorInputStream implements InputStreamStatistics {
 
-    private final CountingInputStream countingStream;
+    private final BoundedInputStream countingStream;
     private final ZstdInputStream decIS;
 
     public ZstdCompressorInputStream(final InputStream in) throws IOException {
-        this.decIS = new ZstdInputStream(countingStream = new CountingInputStream(in));
+        this.decIS = new ZstdInputStream(countingStream = BoundedInputStream.builder().setInputStream(in).get());
     }
 
     /**
-     * Creates a new input stream that decompresses zstd-compressed data from
-     * the specific input stream
+     * Creates a new input stream that decompresses zstd-compressed data from the specific input stream
      *
-     * @param in the input stream of compressed data
-     * @param bufferPool a configuration of zstd-jni that allows users to customize
-     *                   how buffers are recycled. Either a
-     *                   {@link com.github.luben.zstd.NoPool} or a
-     *                   {@link com.github.luben.zstd.RecyclingBufferPool} is
-     *                   allowed here.
+     * @param in         the input stream of compressed data
+     * @param bufferPool a configuration of zstd-jni that allows users to customize how buffers are recycled. Either a {@link com.github.luben.zstd.NoPool} or a
+     *                   {@link com.github.luben.zstd.RecyclingBufferPool} is allowed here.
      * @throws IOException if an IO error occurs.
      */
     public ZstdCompressorInputStream(final InputStream in, final BufferPool bufferPool) throws IOException {
-        this.decIS = new ZstdInputStream(countingStream = new CountingInputStream(in), bufferPool);
+        this.decIS = new ZstdInputStream(countingStream = BoundedInputStream.builder().setInputStream(in).get(), bufferPool);
     }
 
     @Override
@@ -76,12 +69,12 @@ public class ZstdCompressorInputStream extends CompressorInputStream
      */
     @Override
     public long getCompressedCount() {
-        return countingStream.getBytesRead();
+        return countingStream.getCount();
     }
 
     @Override
-    public synchronized void mark(final int readlimit) {
-        decIS.mark(readlimit);
+    public synchronized void mark(final int readLimit) {
+        decIS.mark(readLimit);
     }
 
     @Override
@@ -118,7 +111,7 @@ public class ZstdCompressorInputStream extends CompressorInputStream
 
     @Override
     public long skip(final long n) throws IOException {
-        return IOUtils.skip(decIS, n);
+        return org.apache.commons.io.IOUtils.skip(decIS, n);
     }
 
     @Override

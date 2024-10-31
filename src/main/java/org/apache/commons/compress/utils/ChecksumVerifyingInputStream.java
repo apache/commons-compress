@@ -16,96 +16,85 @@
  */
 package org.apache.commons.compress.utils;
 
-import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.zip.CheckedInputStream;
 import java.util.zip.Checksum;
 
 /**
- * Verifies the checksum of the data read once the stream is
- * exhausted.
+ * Verifies the checksum of the data read once the stream is exhausted.
  *
  * @NotThreadSafe
  * @since 1.7
+ * @deprecated Use {@link org.apache.commons.io.input.ChecksumInputStream}.
  */
-public class ChecksumVerifyingInputStream extends FilterInputStream {
-
-    private long bytesRemaining;
-    private final long expectedChecksum;
-    private final Checksum checksum;
+@Deprecated
+public class ChecksumVerifyingInputStream extends CheckedInputStream {
+    private long remaining;
+    private final long expected;
 
     /**
      * Constructs a new instance.
      *
-     * @param checksum Checksum implementation.
-     * @param in the stream to wrap
-     * @param size the of the stream's content
+     * @param checksum         Checksum implementation.
+     * @param in               the stream to wrap
+     * @param size             the of the stream's content
      * @param expectedChecksum the expected checksum
      */
-    public ChecksumVerifyingInputStream(final Checksum checksum, final InputStream in,
-                                        final long size, final long expectedChecksum) {
-        super(in);
-        this.checksum = checksum;
-        this.expectedChecksum = expectedChecksum;
-        this.bytesRemaining = size;
+    public ChecksumVerifyingInputStream(final Checksum checksum, final InputStream in, final long size, final long expectedChecksum) {
+        super(in, checksum);
+        this.expected = expectedChecksum;
+        this.remaining = size;
     }
 
     /**
-     * @return bytes remaining to read
+     * Gets the byte count remaining to read.
+     *
+     * @return bytes remaining to read.
      * @since 1.21
      */
     public long getBytesRemaining() {
-        return bytesRemaining;
+        return remaining;
     }
 
     /**
      * Reads a single byte from the stream
-     * @throws IOException if the underlying stream throws or the
-     * stream is exhausted and the Checksum doesn't match the expected
-     * value
+     *
+     * @throws IOException if the underlying stream throws or the stream is exhausted and the Checksum doesn't match the expected value
      */
     @Override
     public int read() throws IOException {
-        if (bytesRemaining <= 0) {
+        if (remaining <= 0) {
             return -1;
         }
-        final int ret = in.read();
-        if (ret >= 0) {
-            checksum.update(ret);
-            --bytesRemaining;
+        final int data = super.read();
+        if (data >= 0) {
+            --remaining;
         }
         verify();
-        return ret;
+        return data;
     }
 
     /**
      * Reads from the stream into a byte array.
-     * @throws IOException if the underlying stream throws or the
-     * stream is exhausted and the Checksum doesn't match the expected
-     * value
+     *
+     * @throws IOException if the underlying stream throws or the stream is exhausted and the Checksum doesn't match the expected value
      */
     @Override
     public int read(final byte[] b, final int off, final int len) throws IOException {
         if (len == 0) {
             return 0;
         }
-        final int ret = in.read(b, off, len);
-        if (ret >= 0) {
-            checksum.update(b, off, ret);
-            bytesRemaining -= ret;
+        final int readCount = super.read(b, off, len);
+        if (readCount >= 0) {
+            remaining -= readCount;
         }
         verify();
-        return ret;
-    }
-
-    @Override
-    public long skip(final long n) throws IOException {
-        // Can't really skip, we have to hash everything to verify the checksum
-        return read() >= 0 ? 1 : 0;
+        return readCount;
     }
 
     private void verify() throws IOException {
-        if (bytesRemaining <= 0 && expectedChecksum != checksum.getValue()) {
+        if (remaining <= 0 && expected != getChecksum().getValue()) {
             throw new IOException("Checksum verification failed");
         }
     }

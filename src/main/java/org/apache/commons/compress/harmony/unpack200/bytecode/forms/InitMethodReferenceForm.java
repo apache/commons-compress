@@ -23,8 +23,7 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.ClassFileEntry;
 import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
 
 /**
- * Abstract superclass of those classes which look up init methods (these are class specific methods). They use
- * getInitMethodPoolEntry to find the methods.
+ * Abstract superclass of those classes which look up init methods (these are class specific methods). They use getInitMethodPoolEntry to find the methods.
  */
 public abstract class InitMethodReferenceForm extends ClassSpecificReferenceForm {
 
@@ -46,13 +45,10 @@ public abstract class InitMethodReferenceForm extends ClassSpecificReferenceForm
     }
 
     @Override
-    protected void setNestedEntries(final ByteCode byteCode, final OperandManager operandManager, final int offset)
-        throws Pack200Exception {
+    protected void setNestedEntries(final ByteCode byteCode, final OperandManager operandManager, final int offset) throws Pack200Exception {
         final SegmentConstantPool globalPool = operandManager.globalConstantPool();
-        ClassFileEntry[] nested = null;
-        nested = new ClassFileEntry[] {
-            globalPool.getInitMethodPoolEntry(SegmentConstantPool.CP_METHOD, offset, context(operandManager))};
+        final ClassFileEntry[] nested = { globalPool.getInitMethodPoolEntry(SegmentConstantPool.CP_METHOD, offset, context(operandManager)) };
         byteCode.setNested(nested);
-        byteCode.setNestedPositions(new int[][] {{0, 2}});
+        byteCode.setNestedPositions(new int[][] { { 0, 2 } });
     }
 }

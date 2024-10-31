@@ -29,12 +29,11 @@ import org.apache.commons.compress.utils.ExactMath;
 import org.apache.commons.compress.utils.IOUtils;
 
 /**
- * Filter stream that mimics a physical tape drive capable of compressing
- * the data stream.
+ * Filter stream that mimics a physical tape drive capable of compressing the data stream.
  *
  * @NotThreadSafe
  */
-class TapeInputStream extends FilterInputStream {
+final class TapeInputStream extends FilterInputStream {
     private static final int RECORD_SIZE = DumpArchiveConstants.TP_SIZE;
     private byte[] blockBuffer = new byte[DumpArchiveConstants.TP_SIZE];
     private int currBlkIdx = -1;
@@ -48,7 +47,7 @@ class TapeInputStream extends FilterInputStream {
      *
      * @param in the underlying input stream.
      */
-    public TapeInputStream(final InputStream in) {
+    TapeInputStream(final InputStream in) {
         super(in);
     }
 
@@ -115,28 +114,25 @@ class TapeInputStream extends FilterInputStream {
      */
     @Override
     public int read() throws IOException {
-        throw new IllegalArgumentException(
-            "All reads must be multiple of record size (" + RECORD_SIZE +
-            " bytes.");
+        throw new IllegalArgumentException("All reads must be multiple of record size (" + RECORD_SIZE + " bytes.");
     }
 
     /**
      * {@inheritDoc}
      *
-     * <p>reads the full given length unless EOF is reached.</p>
+     * <p>
+     * reads the full given length unless EOF is reached.
+     * </p>
      *
-     * @param len length to read, must be a multiple of the stream's
-     * record size
+     * @param len length to read, must be a multiple of the stream's record size
      */
     @Override
     public int read(final byte[] b, int off, final int len) throws IOException {
         if (len == 0) {
             return 0;
         }
-        if ((len % RECORD_SIZE) != 0) {
-            throw new IllegalArgumentException(
-                "All reads must be multiple of record size (" + RECORD_SIZE +
-                " bytes.");
+        if (len % RECORD_SIZE != 0) {
+            throw new IllegalArgumentException("All reads must be multiple of record size (" + RECORD_SIZE + " bytes.");
         }
 
         int bytes = 0;
@@ -155,7 +151,7 @@ class TapeInputStream extends FilterInputStream {
 
             int n = 0;
 
-            if ((readOffset + (len - bytes)) <= blockSize) {
+            if (readOffset + len - bytes <= blockSize) {
                 // we can read entirely from the buffer.
                 n = len - bytes;
             } else {
@@ -176,15 +172,14 @@ class TapeInputStream extends FilterInputStream {
     /**
      * Read next block. All decompression is handled here.
      *
-     * @param decompress if false the buffer will not be decompressed.
-     *        This is an optimization for longer seeks.
+     * @param decompress if false the buffer will not be decompressed. This is an optimization for longer seeks.
      */
     private void readBlock(final boolean decompress) throws IOException {
         if (in == null) {
             throw new IOException("Input buffer is closed");
         }
 
-        if (!isCompressed || (currBlkIdx == -1)) {
+        if (!isCompressed || currBlkIdx == -1) {
             // file is not compressed
             readFully(blockBuffer, 0, blockSize);
             bytesRead += blockSize;
@@ -201,8 +196,8 @@ class TapeInputStream extends FilterInputStream {
                 bytesRead += blockSize;
             } else {
                 // this block is compressed.
-                final int flags = (h >> 1) & 0x07;
-                int length = (h >> 4) & 0x0FFFFFFF;
+                final int flags = h >> 1 & 0x07;
+                int length = h >> 4 & 0x0FFFFFFF;
                 final byte[] compBuffer = readRange(length);
                 bytesRead += length;
 
@@ -210,8 +205,7 @@ class TapeInputStream extends FilterInputStream {
                     // just in case someone reads the data.
                     Arrays.fill(blockBuffer, (byte) 0);
                 } else {
-                    switch (DumpArchiveConstants.COMPRESSION_TYPE.find(flags &
-                        0x03)) {
+                    switch (DumpArchiveConstants.COMPRESSION_TYPE.find(flags & 0x03)) {
                     case ZLIB:
 
                         final Inflater inflator = new Inflater();
@@ -231,12 +225,10 @@ class TapeInputStream extends FilterInputStream {
                         break;
 
                     case BZLIB:
-                        throw new UnsupportedCompressionAlgorithmException(
-                            "BZLIB2");
+                        throw new UnsupportedCompressionAlgorithmException("BZLIB2");
 
                     case LZO:
-                        throw new UnsupportedCompressionAlgorithmException(
-                            "LZO");
+                        throw new UnsupportedCompressionAlgorithmException("LZO");
 
                     default:
                         throw new UnsupportedCompressionAlgorithmException();
@@ -252,8 +244,7 @@ class TapeInputStream extends FilterInputStream {
     /**
      * Read buffer
      */
-    private void readFully(final byte[] b, final int off, final int len)
-        throws IOException {
+    private void readFully(final byte[] b, final int off, final int len) throws IOException {
         final int count = IOUtils.readFully(in, b, off, len);
         if (count < len) {
             throw new ShortFileException();
@@ -287,30 +278,25 @@ class TapeInputStream extends FilterInputStream {
     }
 
     /**
-     * Set the DumpArchive Buffer's block size. We need to sync the block size with the
-     * dump archive's actual block size since compression is handled at the
+     * Sets the DumpArchive Buffer's block size. We need to sync the block size with the dump archive's actual block size since compression is handled at the
      * block level.
      *
-     * @param recsPerBlock
-     *            records per block
-     * @param isCompressed
-     *            true if the archive is compressed
-     * @throws IOException
-     *             more than one block has been read
-     * @throws IOException
-     *             there was an error reading additional blocks.
-     * @throws IOException
-     *             recsPerBlock is smaller than 1
+     * @param recsPerBlock records per block
+     * @param isCompressed true if the archive is compressed
+     * @throws IOException more than one block has been read
+     * @throws IOException there was an error reading additional blocks.
+     * @throws IOException recsPerBlock is smaller than 1
      */
-    public void resetBlockSize(final int recsPerBlock, final boolean isCompressed)
-        throws IOException {
+    public void resetBlockSize(final int recsPerBlock, final boolean isCompressed) throws IOException {
         this.isCompressed = isCompressed;
 
         if (recsPerBlock < 1) {
-            throw new IOException("Block with " + recsPerBlock
-                + " records found, must be at least 1");
+            throw new IOException("Block with " + recsPerBlock + " records found, must be at least 1");
         }
         blockSize = RECORD_SIZE * recsPerBlock;
+        if (blockSize < 1) {
+            throw new IOException("Block size cannot be less than or equal to 0: " + blockSize);
+        }
 
         // save first block in case we need it again
         final byte[] oldBuffer = blockBuffer;
@@ -327,17 +313,16 @@ class TapeInputStream extends FilterInputStream {
     /**
      * Skip bytes. Same as read but without the arraycopy.
      *
-     * <p>skips the full given length unless EOF is reached.</p>
+     * <p>
+     * skips the full given length unless EOF is reached.
+     * </p>
      *
-     * @param len length to read, must be a multiple of the stream's
-     * record size
+     * @param len length to read, must be a multiple of the stream's record size
      */
     @Override
     public long skip(final long len) throws IOException {
-        if ((len % RECORD_SIZE) != 0) {
-            throw new IllegalArgumentException(
-                "All reads must be multiple of record size (" + RECORD_SIZE +
-                " bytes.");
+        if (len % RECORD_SIZE != 0) {
+            throw new IllegalArgumentException("All reads must be multiple of record size (" + RECORD_SIZE + " bytes.");
         }
 
         long bytes = 0;
@@ -349,7 +334,7 @@ class TapeInputStream extends FilterInputStream {
             // return -1 if there's a problem.
             if (readOffset == blockSize) {
                 try {
-                    readBlock((len - bytes) < blockSize);
+                    readBlock(len - bytes < blockSize);
                 } catch (final ShortFileException sfe) { // NOSONAR
                     return -1;
                 }
@@ -357,7 +342,7 @@ class TapeInputStream extends FilterInputStream {
 
             long n = 0;
 
-            if ((readOffset + (len - bytes)) <= blockSize) {
+            if (readOffset + (len - bytes) <= blockSize) {
                 // we can read entirely from the buffer.
                 n = len - bytes;
             } else {

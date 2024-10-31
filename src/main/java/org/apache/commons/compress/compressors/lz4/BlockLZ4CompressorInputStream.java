@@ -27,7 +27,7 @@ import org.apache.commons.compress.utils.ByteUtils;
 /**
  * CompressorInputStream for the LZ4 block format.
  *
- * @see <a href="http://lz4.github.io/lz4/lz4_Block_format.html">LZ4 Block Format Description</a>
+ * @see <a href="https://lz4.github.io/lz4/lz4_Block_format.html">LZ4 Block Format Description</a>
  * @since 1.14
  * @NotThreadSafe
  */
@@ -36,6 +36,7 @@ public class BlockLZ4CompressorInputStream extends AbstractLZ77CompressorInputSt
     private enum State {
         NO_BLOCK, IN_LITERAL, LOOKING_FOR_BACK_REFERENCE, IN_BACK_REFERENCE, EOF
     }
+
     static final int WINDOW_SIZE = 1 << 16;
     static final int SIZE_BITS = 4;
     static final int BACK_REFERENCE_SIZE_MASK = (1 << SIZE_BITS) - 1;
@@ -51,19 +52,17 @@ public class BlockLZ4CompressorInputStream extends AbstractLZ77CompressorInputSt
     /**
      * Creates a new LZ4 input stream.
      *
-     * @param is
-     *            An InputStream to read compressed data from
+     * @param is An InputStream to read compressed data from
      */
     public BlockLZ4CompressorInputStream(final InputStream is) {
         super(is, WINDOW_SIZE);
     }
 
     /**
-     * @return false if there is no more back-reference - this means this is the
-     * last block of the stream.
+     * @return false if there is no more back-reference - this means this is the last block of the stream.
      */
     private boolean initializeBackReference() throws IOException {
-        int backReferenceOffset = 0;
+        int backReferenceOffset;
         try {
             backReferenceOffset = (int) ByteUtils.fromLittleEndian(supplier, 2);
         } catch (final IOException ex) {
@@ -102,7 +101,7 @@ public class BlockLZ4CompressorInputStream extends AbstractLZ77CompressorInputSt
             return -1;
         case NO_BLOCK: // NOSONAR - fallthrough intended
             readSizes();
-            /*FALLTHROUGH*/
+            /* FALLTHROUGH */
         case IN_LITERAL:
             final int litLen = readLiteral(b, off, len);
             if (!hasMoreDataInBlock()) {
@@ -114,7 +113,7 @@ public class BlockLZ4CompressorInputStream extends AbstractLZ77CompressorInputSt
                 state = State.EOF;
                 return -1;
             }
-            /*FALLTHROUGH*/
+            /* FALLTHROUGH */
         case IN_BACK_REFERENCE:
             final int backReferenceLen = readBackReference(b, off, len);
             if (!hasMoreDataInBlock()) {

@@ -38,12 +38,12 @@ public class CPClass extends ConstantPoolEntry {
     /**
      * Creates a new CPClass
      *
-     * @param name TODO
+     * @param name        TODO
      * @param globalIndex index in CpBands
      * @throws NullPointerException if name is null
      */
     public CPClass(final CPUTF8 name, final int globalIndex) {
-        super(ConstantPoolEntry.CP_Class, globalIndex);
+        super(CP_Class, globalIndex);
         this.name = Objects.requireNonNull(name, "name").underlyingString();
         this.utf8 = name;
     }
@@ -62,6 +62,7 @@ public class CPClass extends ConstantPoolEntry {
         final CPClass other = (CPClass) obj;
         return utf8.equals(other.utf8);
     }
+
     private void generateHashCode() {
         hashCodeComputed = true;
         cachedHashCode = utf8.hashCode();
@@ -73,7 +74,7 @@ public class CPClass extends ConstantPoolEntry {
 
     @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
-        return new ClassFileEntry[] {utf8,};
+        return new ClassFileEntry[] { utf8, };
     }
 
     @Override

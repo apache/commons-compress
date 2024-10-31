@@ -32,14 +32,14 @@ import java.nio.file.Files;
 import java.util.zip.CRC32;
 import java.util.zip.CheckedOutputStream;
 
-import org.apache.commons.compress.utils.BoundedInputStream;
-import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.BoundedInputStream;
 import org.junit.jupiter.api.Test;
 
 public class ExplodeSupportTest {
 
-    private void testArchiveWithImplodeCompression(final String filename, final String entryName) throws IOException {
-        try (ZipFile zip = new ZipFile(new File(filename))) {
+    private void testArchiveWithImplodeCompression(final String fileName, final String entryName) throws IOException {
+        try (ZipFile zip = ZipFile.builder().setFile(fileName).get()) {
             final ZipArchiveEntry entry = zip.getEntries().nextElement();
             assertEquals(entryName, entry.getName(), "entry name");
             assertTrue(zip.canReadEntryData(entry), "entry can't be read");
@@ -47,10 +47,10 @@ public class ExplodeSupportTest {
 
             final ByteArrayOutputStream bout = new ByteArrayOutputStream();
             final CheckedOutputStream out = new CheckedOutputStream(bout, new CRC32());
-            IOUtils.copy(zip.getInputStream(entry), out);
-
-            out.flush();
-
+            try (InputStream inputStream = zip.getInputStream(entry)) {
+                IOUtils.copy(inputStream, out);
+                out.flush();
+            }
             assertEquals(entry.getCrc(), out.getChecksum().getValue(), "CRC32");
         }
     }
@@ -67,10 +67,10 @@ public class ExplodeSupportTest {
 
     @Test
     public void testConstructorThrowsExceptions() {
-        assertThrows(IllegalArgumentException.class, () -> new ExplodingInputStream(4095, 2, new ByteArrayInputStream(new byte[]{})),
+        assertThrows(IllegalArgumentException.class, () -> new ExplodingInputStream(4095, 2, new ByteArrayInputStream(new byte[] {})),
                 "should have failed with illegal argument exception");
 
-        assertThrows(IllegalArgumentException.class, () -> new ExplodingInputStream(4096, 4, new ByteArrayInputStream(new byte[]{})),
+        assertThrows(IllegalArgumentException.class, () -> new ExplodingInputStream(4096, 4, new ByteArrayInputStream(new byte[] {})),
                 "should have failed with illegal argument exception");
     }
 
@@ -84,22 +84,20 @@ public class ExplodeSupportTest {
         testZipStreamWithImplodeCompression("target/test-classes/moby-imploded.zip", "README");
     }
 
-    private void testZipStreamWithImplodeCompression(final String filename, final String entryName) throws IOException {
-        final ZipArchiveInputStream zin = new ZipArchiveInputStream(Files.newInputStream(new File(filename).toPath()));
-        final ZipArchiveEntry entry = zin.getNextZipEntry();
-        assertEquals(entryName, entry.getName(), "entry name");
-        assertTrue(zin.canReadEntryData(entry), "entry can't be read");
-        assertEquals(ZipMethod.IMPLODING.getCode(), entry.getMethod(), "method");
-
-        final InputStream bio = new BoundedInputStream(zin, entry.getSize());
-
-        final ByteArrayOutputStream bout = new ByteArrayOutputStream();
-        final CheckedOutputStream out = new CheckedOutputStream(bout, new CRC32());
-        IOUtils.copy(bio, out);
-
-        out.flush();
-
-        assertEquals(entry.getCrc(), out.getChecksum().getValue(), "CRC32");
+    private void testZipStreamWithImplodeCompression(final String fileName, final String entryName) throws IOException {
+        try (ZipArchiveInputStream zin = new ZipArchiveInputStream(Files.newInputStream(new File(fileName).toPath()))) {
+            final ZipArchiveEntry entry = zin.getNextZipEntry();
+            assertEquals(entryName, entry.getName(), "entry name");
+            assertTrue(zin.canReadEntryData(entry), "entry can't be read");
+            assertEquals(ZipMethod.IMPLODING.getCode(), entry.getMethod(), "method");
+            try (InputStream bio = new BoundedInputStream(zin, entry.getSize())) {
+                final ByteArrayOutputStream bout = new ByteArrayOutputStream();
+                final CheckedOutputStream out = new CheckedOutputStream(bout, new CRC32());
+                IOUtils.copy(bio, out);
+                out.flush();
+                assertEquals(entry.getCrc(), out.getChecksum().getValue(), "CRC32");
+            }
+        }
     }
 
     @Test

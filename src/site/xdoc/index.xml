@@ -27,7 +27,7 @@
             <p>
                 The Apache Commons Compress library defines an API for
                 working with ar, cpio, Unix dump, tar, zip, gzip, XZ,
-                Pack200, bzip2, 7z, arj, lzma, snappy, DEFLATE, lz4,
+                Pack200, bzip2, 7z, arj, LZMA, snappy, DEFLATE, lz4,
                 Brotli, Zstandard, DEFLATE64 and Z files.
             </p>
             <p>
@@ -55,7 +55,7 @@
         </section>
 
         <section name="Status">
-          <p>The current release requires Java 8.</p>
+          <p>The current release requires Java 8 or above.</p>
 
           <p>For a list of changes see the <a href="changes-report.html">Changes Report</a>.</p>
     
@@ -70,11 +70,11 @@
             by <code>ArchiveEntry</code> instances which in turn
             usually correspond to single files or directories.</p>
 
-          <p>Currently the bzip2, Pack200, XZ, gzip, lzma, brotli,
+          <p>Currently the bzip2, Pack200, XZ, gzip, LZMA, brotli,
             Zstandard and Z formats are
             supported as compressors where gzip support is mostly provided by
             the <code>java.util.zip</code> package of the Java
-            class library.  XZ and lzma support is provided by the public
+            class library.  XZ and LZMA support is provided by the public
             domain <a href="https://tukaani.org/xz/java.html">XZ for
             Java</a> library.  Brotli support is provided by the MIT
             licensed <a href="https://github.com/google/brotli">Google
@@ -107,7 +107,7 @@
             problems</a> page lists the currently known problems
             grouped by the format they apply to.</li>
             <li>The <a href="apidocs/index.html">Javadoc</a> of the latest GIT</li>
-            <li>The <a href="https://gitbox.apache.org/repos/asf?p=commons-compress.git;a=tree">GIT
+            <li>The <a href="https://gitbox.apache.org/repos/asf?p=commons-compress.git">GIT
                 repository</a> can be browsed.</li>
             </ul>
         </section>

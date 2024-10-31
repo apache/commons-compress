@@ -18,15 +18,15 @@
  */
 
 /**
- * Provides stream classes for the <a href="http://lz4.github.io/lz4/">LZ4</a> algorithm.
+ * Provides stream classes for the <a href="https://lz4.github.io/lz4/">LZ4</a> algorithm.
  * <p>
- * The block LZ4 format which only contains the compressed data is supported by the <code>BlockLZ4Compressor*putStream</code> classes while the frame format is
- * implemented by <code>FramedLZ4Compressor*putStream</code>. The implementation in Commons Compress is based on the specifications "Last revised: 2015-03-26"
+ * The block LZ4 format which only contains the compressed data is supported by the {@code BlockLZ4Compressor*putStream} classes while the frame format is
+ * implemented by {@code FramedLZ4Compressor*putStream}. The implementation in Commons Compress is based on the specifications "Last revised: 2015-03-26"
  * for the block format and version "1.5.1 (31/03/2015)" for the frame format.
  * </p>
  * <p>
  * Only the frame format can be auto-detected this means you have to speficy the format explicitly if you want to read a block LZ4 stream via
- * <code>CompressorStreamFactory</code>.
+ * {@code CompressorStreamFactory}.
  * </p>
  */
 package org.apache.commons.compress.compressors.lz4;

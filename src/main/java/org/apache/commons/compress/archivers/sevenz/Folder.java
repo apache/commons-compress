@@ -23,28 +23,39 @@ import java.util.LinkedList;
 /**
  * The unit of solid compression.
  */
-class Folder {
+final class Folder {
+
     static final Folder[] EMPTY_FOLDER_ARRAY = {};
-    /// List of coders used in this folder, eg. one for compression, one for encryption.
+
+    /** List of coders used in this folder, e.g. one for compression, one for encryption. */
     Coder[] coders;
-    /// Total number of input streams across all coders.
-    /// this field is currently unused but technically part of the 7z API
+
+    /**
+     * Total number of input streams across all coders. This field is currently unused but technically part of the 7z API.
+     */
     long totalInputStreams;
-    /// Total number of output streams across all coders.
+
+    /** Total number of output streams across all coders. */
     long totalOutputStreams;
-    /// Mapping between input and output streams.
+
+    /** Mapping between input and output streams. */
     BindPair[] bindPairs;
-    /// Indeces of input streams, one per input stream not listed in bindPairs.
+
+    /** Indices of input streams, one per input stream not listed in bindPairs. */
     long[] packedStreams;
-    /// Unpack sizes, per each output stream.
+
+    /** Unpack sizes, per each output stream. */
     long[] unpackSizes;
-    /// Whether the folder has a CRC.
+
+    /** Whether the folder has a CRC. */
     boolean hasCrc;
-    /// The CRC, if present.
+
+    /** The CRC, if present. */
     long crc;
-    /// The number of unpack substreams, product of the number of
-    /// output streams and the number of non-empty files in this
-    /// folder.
+
+    /**
+     * The number of unpack substreams, product of the number of output streams and the number of non-empty files in this folder.
+     */
     int numUnpackSubStreams;
 
     int findBindPairForInStream(final int index) {
@@ -71,32 +82,33 @@ class Folder {
 
     /**
      * Sorts Coders using bind pairs.
-     * <p>The first coder reads from the packed stream (we currently
-     * only support single input stream decoders), the second reads
-     * from the output of the first and so on.</p>
+     * <p>
+     * The first coder reads from the packed stream (we currently only support single input stream decoders), the second reads from the output of the first and
+     * so on.
+     * </p>
      */
     Iterable<Coder> getOrderedCoders() throws IOException {
         if (packedStreams == null || coders == null || packedStreams.length == 0 || coders.length == 0) {
             return Collections.emptyList();
         }
-        final LinkedList<Coder> l = new LinkedList<>();
+        final LinkedList<Coder> list = new LinkedList<>();
         int current = (int) packedStreams[0]; // more that 2^31 coders?
         while (current >= 0 && current < coders.length) {
-            if (l.contains(coders[current])) {
+            if (list.contains(coders[current])) {
                 throw new IOException("folder uses the same coder more than once in coder chain");
             }
-            l.addLast(coders[current]);
+            list.addLast(coders[current]);
             final int pair = findBindPairForOutStream(current);
             current = pair != -1 ? (int) bindPairs[pair].inIndex : -1;
         }
-        return l;
+        return list;
     }
 
     long getUnpackSize() {
         if (totalOutputStreams == 0) {
             return 0;
         }
-        for (int i = ((int) totalOutputStreams) - 1; i >= 0; i--) {
+        for (int i = (int) totalOutputStreams - 1; i >= 0; i--) {
             if (findBindPairForOutStream(i) < 0) {
                 return unpackSizes[i];
             }
@@ -117,12 +129,8 @@ class Folder {
 
     @Override
     public String toString() {
-        return "Folder with " + coders.length + " coders, " + totalInputStreams
-            + " input streams, " + totalOutputStreams + " output streams, "
-            + bindPairs.length + " bind pairs, " + packedStreams.length
-            + " packed streams, " + unpackSizes.length + " unpack sizes, "
-            + (hasCrc ? "with CRC " + crc : "without CRC")
-            + " and " + numUnpackSubStreams + " unpack streams";
+        return "Folder with " + coders.length + " coders, " + totalInputStreams + " input streams, " + totalOutputStreams + " output streams, "
+                + bindPairs.length + " bind pairs, " + packedStreams.length + " packed streams, " + unpackSizes.length + " unpack sizes, "
+                + (hasCrc ? "with CRC " + crc : "without CRC") + " and " + numUnpackSubStreams + " unpack streams";
     }
 }
-

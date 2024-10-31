@@ -25,11 +25,9 @@ import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
 
 /**
- * Iterates all services for a given class through the standard
- * {@link ServiceLoader} mechanism.
+ * Iterates all services for a given class through the standard {@link ServiceLoader} mechanism.
  *
- * @param <E>
- *            The service to load
+ * @param <E> The service to load
  * @since 1.13
  * @deprecated No longer needed.
  */

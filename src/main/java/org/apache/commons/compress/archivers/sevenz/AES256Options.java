@@ -31,7 +31,9 @@ import javax.crypto.spec.SecretKeySpec;
  * @since 1.23
  * @see AES256SHA256Decoder
  */
-class AES256Options {
+final class AES256Options {
+
+    private static final byte[] EMPTY_BYTE_ARRAY = {};
 
     static final String ALGORITHM = "AES";
 
@@ -40,6 +42,7 @@ class AES256Options {
     static SecretKeySpec newSecretKeySpec(final byte[] bytes) {
         return new SecretKeySpec(bytes, ALGORITHM);
     }
+
     private static byte[] randomBytes(final int size) {
         final byte[] bytes = new byte[size];
         try {
@@ -49,6 +52,7 @@ class AES256Options {
         }
         return bytes;
     }
+
     private final byte[] salt;
     private final byte[] iv;
 
@@ -59,18 +63,18 @@ class AES256Options {
     /**
      * @param password password used for encryption
      */
-    public AES256Options(final char[] password) {
-        this(password, new byte[0], randomBytes(16), 19);
+    AES256Options(final char[] password) {
+        this(password, EMPTY_BYTE_ARRAY, randomBytes(16), 19);
     }
 
     /**
-     * @param password password used for encryption
-     * @param salt for password hash salting (enforce password security)
-     * @param iv Initialization Vector (IV) used by cipher algorithm
-     * @param numCyclesPower another password security enforcer parameter that controls the cycles of password hashing. More the
-     *                       this number is high, more security you'll have but also high CPU usage
+     * @param password       password used for encryption
+     * @param salt           for password hash salting (enforce password security)
+     * @param iv             Initialization Vector (IV) used by cipher algorithm
+     * @param numCyclesPower another password security enforcer parameter that controls the cycles of password hashing. More the this number is high, more
+     *                       security you'll have but also high CPU usage
      */
-    public AES256Options(final char[] password, final byte[] salt, final byte[] iv, final int numCyclesPower) {
+    AES256Options(final char[] password, final byte[] salt, final byte[] iv, final int numCyclesPower) {
         this.salt = salt;
         this.iv = iv;
         this.numCyclesPower = numCyclesPower;
@@ -83,10 +87,8 @@ class AES256Options {
             cipher = Cipher.getInstance(TRANSFORMATION);
             cipher.init(Cipher.ENCRYPT_MODE, aesKey, new IvParameterSpec(iv));
         } catch (final GeneralSecurityException generalSecurityException) {
-            throw new IllegalStateException(
-                "Encryption error (do you have the JCE Unlimited Strength Jurisdiction Policy Files installed?)",
-                generalSecurityException
-            );
+            throw new IllegalStateException("Encryption error (do you have the JCE Unlimited Strength Jurisdiction Policy Files installed?)",
+                    generalSecurityException);
         }
     }
 

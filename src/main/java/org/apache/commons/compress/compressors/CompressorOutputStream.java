@@ -18,8 +18,45 @@
  */
 package org.apache.commons.compress.compressors;
 
+import java.io.FilterOutputStream;
 import java.io.OutputStream;
 
-public abstract class CompressorOutputStream extends OutputStream {
-    // empty
+/**
+ * Abstracts all classes that compress an output stream.
+ *
+ * @param <T> The underlying OutputStream type.
+ */
+public abstract class CompressorOutputStream<T extends OutputStream> extends FilterOutputStream {
+
+    /**
+     * Constructs a new instance without a backing OutputStream.
+     * <p>
+     * You must initialize {@code this.out} after construction.
+     * </p>
+     */
+    public CompressorOutputStream() {
+        super(null);
+    }
+
+    /**
+     * Creates an output stream filter built on top of the specified underlying output stream.
+     *
+     * @param out the underlying output stream to be assigned to the field {@code this.out} for later use, or {@code null} if this instance is to be created
+     *            without an underlying stream.
+     * @since 1.27.0
+     */
+    public CompressorOutputStream(final T out) {
+        super(out);
+    }
+
+    /**
+     * Gets the underlying output stream.
+     *
+     * @return the underlying output stream.
+     * @since 1.27.0
+     */
+    @SuppressWarnings("unchecked")
+    protected T out() {
+        return (T) out;
+    }
 }

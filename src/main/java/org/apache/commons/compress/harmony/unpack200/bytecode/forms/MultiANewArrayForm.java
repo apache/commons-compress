@@ -20,8 +20,7 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.ByteCode;
 import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
 
 /**
- * This class implements the byte code form for the multianewarray instruction. It has a class reference and a byte
- * operand.
+ * This class implements the byte code form for the multianewarray instruction. It has a class reference and a byte operand.
  *
  * MultiANewArrayForms (like other anewarray forms) do not track the last new().
  */
@@ -34,15 +33,12 @@ public class MultiANewArrayForm extends ClassRefForm {
     /*
      * (non-Javadoc)
      *
-     * @see
-     * org.apache.commons.compress.harmony.unpack200.bytecode.forms.ByteCodeForm#setByteCodeOperands(org.apache.commons.
-     * compress.harmony.unpack200.bytecode.ByteCode,
-     * org.apache.commons.compress.harmony.unpack200.bytecode.OperandTable,
+     * @see org.apache.commons.compress.harmony.unpack200.bytecode.forms.ByteCodeForm#setByteCodeOperands(org.apache.commons.
+     * compress.harmony.unpack200.bytecode.ByteCode, org.apache.commons.compress.harmony.unpack200.bytecode.OperandTable,
      * org.apache.commons.compress.harmony.unpack200.SegmentConstantPool)
      */
     @Override
-    public void setByteCodeOperands(final ByteCode byteCode, final OperandManager operandManager,
-        final int codeLength) {
+    public void setByteCodeOperands(final ByteCode byteCode, final OperandManager operandManager, final int codeLength) {
         // multianewarray has a class ref and a dimension.
         // The superclass handles the class ref.
         super.setByteCodeOperands(byteCode, operandManager, codeLength);

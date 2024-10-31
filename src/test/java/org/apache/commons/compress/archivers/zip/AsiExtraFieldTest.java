@@ -59,25 +59,25 @@ public class AsiExtraFieldTest implements UnixStat {
         byte[] b = a.getLocalFileDataData();
 
         // CRC manually calculated, sorry
-        byte[] expect = {(byte)0xC6, 0x02, 0x78, (byte)0xB6, // CRC
-                         0123, (byte)0x80,                   // mode
-                         0, 0, 0, 0,                         // link length
-                         5, 0, 6, 0};                        // uid, gid
+        byte[] expect = { (byte) 0xC6, 0x02, 0x78, (byte) 0xB6, // CRC
+                0123, (byte) 0x80, // mode
+                0, 0, 0, 0, // link length
+                5, 0, 6, 0 }; // uid, gid
         assertEquals(expect.length, b.length, "no link");
-        for (int i=0; i<expect.length; i++) {
+        for (int i = 0; i < expect.length; i++) {
             assertEquals(expect[i], b[i], "no link, byte " + i);
         }
 
         a.setLinkedFile("test");
-        expect = new byte[] {0x75, (byte)0x8E, 0x41, (byte)0xFD, // CRC
-                             0123, (byte)0xA0,                   // mode
-                             4, 0, 0, 0,                         // link length
-                             5, 0, 6, 0,                         // uid, gid
-                             (byte)'t', (byte)'e', (byte)'s', (byte)'t'};
+        expect = new byte[] { 0x75, (byte) 0x8E, 0x41, (byte) 0xFD, // CRC
+                0123, (byte) 0xA0, // mode
+                4, 0, 0, 0, // link length
+                5, 0, 6, 0, // uid, gid
+                (byte) 't', (byte) 'e', (byte) 's', (byte) 't' };
         b = a.getLocalFileDataData();
         assertEquals(expect.length, b.length, "no link");
-        for (int i=0; i<expect.length; i++) {
-            assertEquals(expect[i], b[i], "no link, byte "+i);
+        for (int i = 0; i < expect.length; i++) {
+            assertEquals(expect[i], b[i], "no link, byte " + i);
         }
 
     }
@@ -102,10 +102,10 @@ public class AsiExtraFieldTest implements UnixStat {
     @Test
     public void testReparse() throws Exception {
         // CRC manually calculated, sorry
-        final byte[] data1 = {(byte)0xC6, 0x02, 0x78, (byte)0xB6, // CRC
-                              0123, (byte)0x80,                   // mode
-                              0, 0, 0, 0,                         // link length
-                              5, 0, 6, 0};                        // uid, gid
+        final byte[] data1 = { (byte) 0xC6, 0x02, 0x78, (byte) 0xB6, // CRC
+                0123, (byte) 0x80, // mode
+                0, 0, 0, 0, // link length
+                5, 0, 6, 0 }; // uid, gid
         final AsiExtraField a1 = new AsiExtraField();
         a1.parseFromLocalFileData(data1, 0, data1.length);
         assertEquals(data1.length, a1.getLocalFileDataLength().getValue(), "length plain file");
@@ -115,11 +115,11 @@ public class AsiExtraFieldTest implements UnixStat {
         assertEquals(5, a1.getUserId(), "uid plain file");
         assertEquals(6, a1.getGroupId(), "gid plain file");
 
-        final byte[] data2 = {0x75, (byte)0x8E, 0x41, (byte)0xFD,            // CRC
-                                         0123, (byte)0xA0,                   // mode
-                                         4, 0, 0, 0,                         // link length
-                                         5, 0, 6, 0,                         // uid, gid
-                                         (byte)'t', (byte)'e', (byte)'s', (byte)'t'};
+        final byte[] data2 = { 0x75, (byte) 0x8E, 0x41, (byte) 0xFD, // CRC
+                0123, (byte) 0xA0, // mode
+                4, 0, 0, 0, // link length
+                5, 0, 6, 0, // uid, gid
+                (byte) 't', (byte) 'e', (byte) 's', (byte) 't' };
         final AsiExtraField a2 = new AsiExtraField();
         a2.parseFromLocalFileData(data2, 0, data2.length);
         assertEquals(data2.length, a2.getLocalFileDataLength().getValue(), "length link");
@@ -130,10 +130,10 @@ public class AsiExtraFieldTest implements UnixStat {
         assertEquals(6, a2.getGroupId(), "gid link");
         assertEquals("test", a2.getLinkedFile());
 
-        final byte[] data3 = {(byte)0x8E, 0x01, (byte)0xBF, (byte)0x0E,            // CRC
-                                         0123, (byte)0x40,                         // mode
-                                         0, 0, 0, 0,                               // link
-                                         5, 0, 6, 0};                              // uid, gid
+        final byte[] data3 = { (byte) 0x8E, 0x01, (byte) 0xBF, (byte) 0x0E, // CRC
+                0123, (byte) 0x40, // mode
+                0, 0, 0, 0, // link
+                5, 0, 6, 0 }; // uid, gid
         final AsiExtraField a3 = new AsiExtraField();
         a3.parseFromLocalFileData(data3, 0, data3.length);
         assertEquals(data3.length, a3.getLocalFileDataLength().getValue(), "length dir");
@@ -143,13 +143,12 @@ public class AsiExtraFieldTest implements UnixStat {
         assertEquals(5, a3.getUserId(), "uid dir");
         assertEquals(6, a3.getGroupId(), "gid dir");
 
-        final byte[] data4 = {0, 0, 0, 0,                                      // bad CRC
-                                         0123, (byte)0x40,                     // mode
-                                         0, 0, 0, 0,                           // link
-                                         5, 0, 6, 0};                          // uid, gid
+        final byte[] data4 = { 0, 0, 0, 0, // bad CRC
+                0123, (byte) 0x40, // mode
+                0, 0, 0, 0, // link
+                5, 0, 6, 0 }; // uid, gid
         final AsiExtraField a4 = new AsiExtraField();
-        final Exception e = assertThrows(Exception.class, () -> a4.parseFromLocalFileData(data4, 0, data4.length),
-                "should raise bad CRC exception");
+        final Exception e = assertThrows(Exception.class, () -> a4.parseFromLocalFileData(data4, 0, data4.length), "should raise bad CRC exception");
         assertEquals("Bad CRC checksum, expected 0 instead of ebf018e", e.getMessage());
     }
 }

@@ -20,20 +20,23 @@ import java.io.InputStream;
 import java.util.zip.CRC32;
 
 /**
- * A stream that verifies the CRC of the data read once the stream is
- * exhausted.
+ * A stream that verifies the CRC of the data read once the stream is exhausted.
+ *
  * @NotThreadSafe
  * @since 1.6
+ * @deprecated Use {@link org.apache.commons.io.input.ChecksumInputStream}.
  */
+@Deprecated
 public class CRC32VerifyingInputStream extends ChecksumVerifyingInputStream {
-
     /**
      * Constructs a new instance.
      *
-     * @param in the stream to wrap
-     * @param size the of the stream's content
+     * @param in            the stream to wrap
+     * @param size          the of the stream's content
      * @param expectedCrc32 the expected checksum
+     * @deprecated No longer used.
      */
+    @Deprecated
     public CRC32VerifyingInputStream(final InputStream in, final long size, final int expectedCrc32) {
         this(in, size, expectedCrc32 & 0xFFFFffffL);
     }
@@ -41,8 +44,8 @@ public class CRC32VerifyingInputStream extends ChecksumVerifyingInputStream {
     /**
      * Constructs a new instance.
      *
-     * @param in the stream to wrap
-     * @param size the of the stream's content
+     * @param in            the stream to wrap
+     * @param size          the of the stream's content
      * @param expectedCrc32 the expected checksum
      * @since 1.7
      */

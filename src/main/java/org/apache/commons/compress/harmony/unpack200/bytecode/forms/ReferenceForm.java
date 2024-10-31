@@ -40,15 +40,12 @@ public abstract class ReferenceForm extends ByteCodeForm {
     /*
      * (non-Javadoc)
      *
-     * @see
-     * org.apache.commons.compress.harmony.unpack200.bytecode.forms.ByteCodeForm#setByteCodeOperands(org.apache.commons.
-     * compress.harmony.unpack200.bytecode.ByteCode,
-     * org.apache.commons.compress.harmony.unpack200.bytecode.OperandTable,
+     * @see org.apache.commons.compress.harmony.unpack200.bytecode.forms.ByteCodeForm#setByteCodeOperands(org.apache.commons.
+     * compress.harmony.unpack200.bytecode.ByteCode, org.apache.commons.compress.harmony.unpack200.bytecode.OperandTable,
      * org.apache.commons.compress.harmony.unpack200.Segment)
      */
     @Override
-    public void setByteCodeOperands(final ByteCode byteCode, final OperandManager operandManager,
-        final int codeLength) {
+    public void setByteCodeOperands(final ByteCode byteCode, final OperandManager operandManager, final int codeLength) {
         final int offset = getOffset(operandManager);
         try {
             setNestedEntries(byteCode, operandManager, offset);
@@ -57,13 +54,11 @@ public abstract class ReferenceForm extends ByteCodeForm {
         }
     }
 
-    protected void setNestedEntries(final ByteCode byteCode, final OperandManager operandManager, final int offset)
-        throws Pack200Exception {
+    protected void setNestedEntries(final ByteCode byteCode, final OperandManager operandManager, final int offset) throws Pack200Exception {
         final SegmentConstantPool globalPool = operandManager.globalConstantPool();
-        ClassFileEntry[] nested = null;
-        nested = new ClassFileEntry[] {globalPool.getConstantPoolEntry(getPoolID(), offset)};
+        final ClassFileEntry[] nested = { globalPool.getConstantPoolEntry(getPoolID(), offset) };
         Objects.requireNonNull(nested[0], "Null nested entries are not allowed");
         byteCode.setNested(nested);
-        byteCode.setNestedPositions(new int[][] {{0, 2}});
+        byteCode.setNestedPositions(new int[][] { { 0, 2 } });
     }
 }

@@ -22,65 +22,72 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Enumeration;
 
-import org.apache.commons.compress.AbstractTestCase;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.apache.commons.compress.AbstractTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 public class ZipFileIgnoringLocalFileHeaderTest {
 
-    private static ZipFile openZipWithoutLFH(final String fileName) throws IOException {
-        return new ZipFile(AbstractTestCase.getFile(fileName), ZipEncodingHelper.UTF8, true, true);
+    private static ZipFile openZipWithoutLocalFileHeader(final String fileName) throws IOException {
+        // @formatter:off
+        return ZipFile.builder()
+                .setFile(AbstractTest.getFile(fileName))
+                .setCharset(StandardCharsets.UTF_8.name())
+                .setUseUnicodeExtraFields(true)
+                .setIgnoreLocalFileHeader(true)
+                .get();
+        // @formatter:on
     }
 
+    private static ZipFile openZipWithoutLocalFileHeaderDeprecated(final String fileName) throws IOException {
+        return new ZipFile(AbstractTest.getFile(fileName), StandardCharsets.UTF_8.name(), true, true);
+    }
+
+    @TempDir
     private File dir;
 
     @Test
-    public void getEntryWorks() throws IOException {
-        try (final ZipFile zf = openZipWithoutLFH("bla.zip")) {
-            final ZipArchiveEntry ze = zf.getEntry("test1.xml");
-            assertEquals(610, ze.getSize());
-        }
-    }
-
-    @Test
-    public void getRawInputStreamReturnsNotNull() throws IOException {
-        try (final ZipFile zf = openZipWithoutLFH("bla.zip")) {
-            final ZipArchiveEntry ze = zf.getEntry("test1.xml");
-            assertNotNull(zf.getRawInputStream(ze));
-        }
-    }
-
-    @BeforeEach
-    public void setUp() throws Exception {
-        dir = AbstractTestCase.mkdir("dir");
-    }
-
-    @AfterEach
-    public void tearDown() {
-        AbstractTestCase.rmdir(dir);
-    }
-
-    @Test
     public void testDuplicateEntry() throws Exception {
-        try (final ZipFile zf = openZipWithoutLFH("COMPRESS-227.zip")) {
+        try (ZipFile zf = openZipWithoutLocalFileHeader("COMPRESS-227.zip")) {
             int numberOfEntries = 0;
             for (final ZipArchiveEntry entry : zf.getEntries("test1.txt")) {
                 numberOfEntries++;
-                assertNotNull(zf.getInputStream(entry));
+                try (InputStream inputStream = zf.getInputStream(entry)) {
+                    assertNotNull(inputStream);
+                }
             }
             assertEquals(2, numberOfEntries);
         }
     }
 
     @Test
+    public void testGetEntryWorks() throws IOException {
+        try (ZipFile zf = openZipWithoutLocalFileHeader("bla.zip")) {
+            final ZipArchiveEntry ze = zf.getEntry("test1.xml");
+            assertEquals(610, ze.getSize());
+        }
+    }
+
+    @Test
+    public void testGetRawInputStreamReturnsNotNull() throws IOException {
+        try (ZipFile zf = openZipWithoutLocalFileHeader("bla.zip")) {
+            final ZipArchiveEntry ze = zf.getEntry("test1.xml");
+            try (InputStream rawInputStream = zf.getRawInputStream(ze)) {
+                assertNotNull(rawInputStream);
+            }
+        }
+    }
+
+    @Test
     public void testPhysicalOrder() throws IOException {
-        try (final ZipFile zf = openZipWithoutLFH("ordertest.zip")) {
+        try (ZipFile zf = openZipWithoutLocalFileHeader("ordertest.zip")) {
             final Enumeration<ZipArchiveEntry> e = zf.getEntriesInPhysicalOrder();
-            ZipArchiveEntry ze = null;
+            ZipArchiveEntry ze;
             do {
                 ze = e.nextElement();
             } while (e.hasMoreElements());
@@ -90,14 +97,17 @@ public class ZipFileIgnoringLocalFileHeaderTest {
 
     /**
      * Simple unarchive test. Asserts nothing.
+     *
      * @throws Exception
      */
     @Test
     public void testZipUnarchive() throws Exception {
-        try (final ZipFile zf = openZipWithoutLFH("bla.zip")) {
+        try (ZipFile zf = openZipWithoutLocalFileHeaderDeprecated("bla.zip")) {
             for (final Enumeration<ZipArchiveEntry> e = zf.getEntries(); e.hasMoreElements();) {
                 final ZipArchiveEntry entry = e.nextElement();
-                Files.copy(zf.getInputStream(entry), new File(dir, entry.getName()).toPath());
+                try (InputStream inputStream = zf.getInputStream(entry)) {
+                    Files.copy(inputStream, new File(dir, entry.getName()).toPath());
+                }
             }
         }
     }

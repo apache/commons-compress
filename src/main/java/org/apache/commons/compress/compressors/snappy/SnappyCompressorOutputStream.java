@@ -29,29 +29,24 @@ import org.apache.commons.compress.utils.ByteUtils;
 /**
  * CompressorOutputStream for the raw Snappy format.
  *
- * <p>This implementation uses an internal buffer in order to handle
- * the back-references that are at the heart of the LZ77 algorithm.
- * The size of the buffer must be at least as big as the biggest
- * offset used in the compressed stream.  The current version of the
- * Snappy algorithm as defined by Google works on 32k blocks and
- * doesn't contain offsets bigger than 32k which is the default block
- * size used by this class.</p>
+ * <p>
+ * This implementation uses an internal buffer in order to handle the back-references that are at the heart of the LZ77 algorithm. The size of the buffer must
+ * be at least as big as the biggest offset used in the compressed stream. The current version of the Snappy algorithm as defined by Google works on 32k blocks
+ * and doesn't contain offsets bigger than 32k which is the default block size used by this class.
+ * </p>
  *
- * <p>The raw Snappy format requires the uncompressed size to be
- * written at the beginning of the stream using a varint
- * representation, i.e. the number of bytes needed to write the
- * information is not known before the uncompressed size is
- * known. We've chosen to make the uncompressedSize a parameter of the
- * constructor in favor of buffering the whole output until the size
- * is known. When using the {@link FramedSnappyCompressorOutputStream}
- * this limitation is taken care of by the warpping framing
- * format.</p>
+ * <p>
+ * The raw Snappy format requires the uncompressed size to be written at the beginning of the stream using a varint representation, i.e. the number of bytes
+ * needed to write the information is not known before the uncompressed size is known. We've chosen to make the uncompressedSize a parameter of the constructor
+ * in favor of buffering the whole output until the size is known. When using the {@link FramedSnappyCompressorOutputStream} this limitation is taken care of by
+ * the warpping framing format.
+ * </p>
  *
  * @see <a href="https://github.com/google/snappy/blob/master/format_description.txt">Snappy compressed format description</a>
  * @since 1.14
  * @NotThreadSafe
  */
-public class SnappyCompressorOutputStream extends CompressorOutputStream {
+public class SnappyCompressorOutputStream extends CompressorOutputStream<OutputStream> {
     // literal length is stored as (len - 1) either inside the tag
     // (six bits minus four flags) or in 1 to 4 bytes after the tag
     private static final int MAX_LITERAL_SIZE_WITHOUT_SIZE_BYTES = 60;
@@ -91,6 +86,7 @@ public class SnappyCompressorOutputStream extends CompressorOutputStream {
 
     /**
      * Returns a builder correctly configured for the Snappy algorithm using the gven block size.
+     *
      * @param blockSize the block size.
      * @return a builder correctly configured for the Snappy algorithm using the gven block size
      */
@@ -98,14 +94,11 @@ public class SnappyCompressorOutputStream extends CompressorOutputStream {
         // the max offset and max literal length defined by the format
         // are 2^32 - 1 and 2^32 respectively - with blockSize being
         // an integer we will never exceed that
-        return Parameters.builder(blockSize)
-            .withMinBackReferenceLength(MIN_MATCH_LENGTH)
-            .withMaxBackReferenceLength(MAX_MATCH_LENGTH)
-            .withMaxOffset(blockSize)
-            .withMaxLiteralLength(blockSize);
+        return Parameters.builder(blockSize).withMinBackReferenceLength(MIN_MATCH_LENGTH).withMaxBackReferenceLength(MAX_MATCH_LENGTH).withMaxOffset(blockSize)
+                .withMaxLiteralLength(blockSize);
     }
+
     private final LZ77Compressor compressor;
-    private final OutputStream os;
     private final ByteUtils.ByteConsumer consumer;
 
     // used in one-arg write method
@@ -116,7 +109,7 @@ public class SnappyCompressorOutputStream extends CompressorOutputStream {
     /**
      * Constructor using the default block size of 32k.
      *
-     * @param os the outputstream to write compressed data to
+     * @param os               the outputstream to write compressed data to
      * @param uncompressedSize the uncompressed size of data
      * @throws IOException if writing of the size fails
      */
@@ -127,30 +120,26 @@ public class SnappyCompressorOutputStream extends CompressorOutputStream {
     /**
      * Constructor using a configurable block size.
      *
-     * @param os the outputstream to write compressed data to
+     * @param os               the outputstream to write compressed data to
      * @param uncompressedSize the uncompressed size of data
-     * @param blockSize the block size used - must be a power of two
+     * @param blockSize        the block size used - must be a power of two
      * @throws IOException if writing of the size fails
      */
-    public SnappyCompressorOutputStream(final OutputStream os, final long uncompressedSize, final int blockSize)
-        throws IOException {
+    public SnappyCompressorOutputStream(final OutputStream os, final long uncompressedSize, final int blockSize) throws IOException {
         this(os, uncompressedSize, createParameterBuilder(blockSize).build());
     }
 
     /**
      * Constructor providing full control over the underlying LZ77 compressor.
      *
-     * @param os the outputstream to write compressed data to
+     * @param out               the outputstream to write compressed data to
      * @param uncompressedSize the uncompressed size of data
-     * @param params the parameters to use by the compressor - note
-     * that the format itself imposes some limits like a maximum match
-     * length of 64 bytes
+     * @param params           the parameters to use by the compressor - note that the format itself imposes some limits like a maximum match length of 64 bytes
      * @throws IOException if writing of the size fails
      */
-    public SnappyCompressorOutputStream(final OutputStream os, final long uncompressedSize, final Parameters params)
-        throws IOException {
-        this.os = os;
-        consumer = new ByteUtils.OutputStreamByteConsumer(os);
+    public SnappyCompressorOutputStream(final OutputStream out, final long uncompressedSize, final Parameters params) throws IOException {
+        super(out);
+        consumer = new ByteUtils.OutputStreamByteConsumer(out);
         compressor = new LZ77Compressor(params, block -> {
             switch (block.getType()) {
             case LITERAL:
@@ -171,13 +160,13 @@ public class SnappyCompressorOutputStream extends CompressorOutputStream {
         try {
             finish();
         } finally {
-            os.close();
+            out.close();
         }
     }
 
     /**
-     * Compresses all remaining data and writes it to the stream,
-     * doesn't close the underlying stream.
+     * Compresses all remaining data and writes it to the stream, doesn't close the underlying stream.
+     *
      * @throws IOException if an error occurs
      */
     public void finish() throws IOException {
@@ -197,11 +186,11 @@ public class SnappyCompressorOutputStream extends CompressorOutputStream {
         oneByte[0] = (byte) (b & 0xff);
         write(oneByte);
     }
+
     private void writeBackReference(final LZ77Compressor.BackReference block) throws IOException {
         final int len = block.getLength();
         final int offset = block.getOffset();
-        if (len >= MIN_MATCH_LENGTH_WITH_ONE_OFFSET_BYTE && len <= MAX_MATCH_LENGTH_WITH_ONE_OFFSET_BYTE
-            && offset <= MAX_OFFSET_WITH_ONE_OFFSET_BYTE) {
+        if (len >= MIN_MATCH_LENGTH_WITH_ONE_OFFSET_BYTE && len <= MAX_MATCH_LENGTH_WITH_ONE_OFFSET_BYTE && offset <= MAX_OFFSET_WITH_ONE_OFFSET_BYTE) {
             writeBackReferenceWithOneOffsetByte(len, offset);
         } else if (offset < MAX_OFFSET_WITH_TWO_OFFSET_BYTES) {
             writeBackReferenceWithTwoOffsetBytes(len, offset);
@@ -209,22 +198,25 @@ public class SnappyCompressorOutputStream extends CompressorOutputStream {
             writeBackReferenceWithFourOffsetBytes(len, offset);
         }
     }
+
     private void writeBackReferenceWithFourOffsetBytes(final int len, final int offset) throws IOException {
         writeBackReferenceWithLittleEndianOffset(FOUR_BYTE_COPY_TAG, 4, len, offset);
     }
-    private void writeBackReferenceWithLittleEndianOffset(final int tag, final int offsetBytes, final int len, final int offset)
-        throws IOException {
-        os.write(tag | ((len - 1) << 2));
+
+    private void writeBackReferenceWithLittleEndianOffset(final int tag, final int offsetBytes, final int len, final int offset) throws IOException {
+        out.write(tag | len - 1 << 2);
         writeLittleEndian(offsetBytes, offset);
     }
 
     private void writeBackReferenceWithOneOffsetByte(final int len, final int offset) throws IOException {
-        os.write(ONE_BYTE_COPY_TAG | ((len - 4) << 2) | ((offset & 0x700) >> 3));
-        os.write(offset & 0xff);
+        out.write(ONE_BYTE_COPY_TAG | len - 4 << 2 | (offset & 0x700) >> 3);
+        out.write(offset & 0xff);
     }
+
     private void writeBackReferenceWithTwoOffsetBytes(final int len, final int offset) throws IOException {
         writeBackReferenceWithLittleEndianOffset(TWO_BYTE_COPY_TAG, 2, len, offset);
     }
+
     private void writeLiteralBlock(final LZ77Compressor.LiteralBlock block) throws IOException {
         final int len = block.getLength();
         if (len <= MAX_LITERAL_SIZE_WITHOUT_SIZE_BYTES) {
@@ -260,25 +252,25 @@ public class SnappyCompressorOutputStream extends CompressorOutputStream {
         writeLiteralBlockWithSize(TWO_SIZE_BYTE_MARKER, 2, len, block);
     }
 
-    private void writeLiteralBlockWithSize(final int tagByte, final int sizeBytes, final int len, final LZ77Compressor.LiteralBlock block)
-        throws IOException {
-        os.write(tagByte);
+    private void writeLiteralBlockWithSize(final int tagByte, final int sizeBytes, final int len, final LZ77Compressor.LiteralBlock block) throws IOException {
+        out.write(tagByte);
         writeLittleEndian(sizeBytes, len - 1);
-        os.write(block.getData(), block.getOffset(), len);
+        out.write(block.getData(), block.getOffset(), len);
     }
+
     private void writeLittleEndian(final int numBytes, final int num) throws IOException {
         ByteUtils.toLittleEndian(consumer, num, numBytes);
     }
 
     private void writeUncompressedSize(long uncompressedSize) throws IOException {
-        boolean more = false;
+        boolean more;
         do {
             int currentByte = (int) (uncompressedSize & 0x7F);
             more = uncompressedSize > currentByte;
             if (more) {
                 currentByte |= 0x80;
             }
-            os.write(currentByte);
+            out.write(currentByte);
             uncompressedSize >>= 7;
         } while (more);
     }

@@ -18,31 +18,30 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
-import org.hamcrest.core.IsInstanceOf;
 import org.junit.jupiter.api.Test;
 
 public class ZipClassCoverageTest {
 
     @Test
-    public void testConstantConstructor()
-        throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    public void testConstantConstructor() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         final Class<ZipConstants> clazz = ZipConstants.class;
         final Constructor<ZipConstants> constructor = clazz.getDeclaredConstructor();
         assertFalse(constructor.isAccessible());
         constructor.setAccessible(true);
         final Object o = constructor.newInstance();
-        assertThat(o, IsInstanceOf.instanceOf(clazz));
+        assertInstanceOf(clazz, o);
         constructor.setAccessible(false);
 
     }
+
     @Test
     public void testConstructZip64RequiredException() {
         final Zip64RequiredException e = new Zip64RequiredException("critique of pure");
@@ -53,8 +52,7 @@ public class ZipClassCoverageTest {
     public void testMessageException() {
         final ZipArchiveEntry ze = new ZipArchiveEntry("hello");
         final String entryTooBigMessage = Zip64RequiredException.getEntryTooBigMessage(ze);
-        assertEquals("hello's size exceeds the limit of 4GByte.",
-            entryTooBigMessage);
+        assertEquals("hello's size exceeds the limit of 4GByte.", entryTooBigMessage);
     }
 
 }

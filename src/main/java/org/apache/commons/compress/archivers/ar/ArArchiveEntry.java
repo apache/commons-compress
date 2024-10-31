@@ -30,9 +30,10 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 
 /**
  * Represents an archive entry in the "ar" format.
- *
- * Each AR archive starts with "!&lt;arch&gt;" followed by a LF. After these 8 bytes
- * the archive entries are listed. The format of an entry header is as it follows:
+ * <p>
+ * Each AR archive starts with "!&lt;arch&gt;" followed by a LF. After these 8 bytes the archive entries are listed. The format of an entry header is as it
+ * follows:
+ * </p>
  *
  * <pre>
  * START BYTE   END BYTE    NAME                    FORMAT      LENGTH
@@ -44,16 +45,15 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * 48           57          File size (bytes)       Decimal     10
  * 58           59          File magic              \140\012    2
  * </pre>
- *
+ * <p>
  * This specifies that an ar archive entry header contains 60 bytes.
- *
- * Due to the limitation of the file name length to 16 bytes GNU and
- * BSD has their own variants of this format. Currently Commons
- * Compress can read but not write the GNU variant.  It fully supports
- * the BSD variant.
+ * </p>
+ * <p>
+ * Due to the limitation of the file name length to 16 bytes GNU and BSD has their own variants of this format. Currently Commons Compress can read but not
+ * write the GNU variant. It fully supports the BSD variant.
+ * </p>
  *
  * @see <a href="https://www.freebsd.org/cgi/man.cgi?query=ar&sektion=5">ar man page</a>
- *
  * @Immutable
  */
 public class ArArchiveEntry implements ArchiveEntry {
@@ -61,14 +61,14 @@ public class ArArchiveEntry implements ArchiveEntry {
     /** The header for each entry */
     public static final String HEADER = "!<arch>\n";
 
-    /** The trailer for each entry */
+    /** The trailer for each entry {@code 0x60 0x0A} */
     public static final String TRAILER = "`\012";
 
     private static final int DEFAULT_MODE = 33188; // = (octal) 0100644
+
     /**
-     * SVR4/GNU adds a trailing / to names; BSD does not.
-     * They also vary in how names longer than 16 characters are represented.
-     * (Not yet fully supported by this implementation)
+     * SVR4/GNU adds a trailing / to names; BSD does not. They also vary in how names longer than 16 characters are represented. (Not yet fully supported by
+     * this implementation)
      */
     private final String name;
     private final int userId;
@@ -79,54 +79,54 @@ public class ArArchiveEntry implements ArchiveEntry {
 
     /**
      * Creates a new instance using the attributes of the given file
+     *
      * @param inputFile the file to create an entry from
      * @param entryName the name of the entry
      */
     public ArArchiveEntry(final File inputFile, final String entryName) {
         // TODO sort out mode
-        this(entryName, inputFile.isFile() ? inputFile.length() : 0,
-             0, 0, DEFAULT_MODE, inputFile.lastModified() / 1000);
+        this(entryName, inputFile.isFile() ? inputFile.length() : 0, 0, 0, DEFAULT_MODE, inputFile.lastModified() / 1000);
     }
 
     /**
      * Creates a new instance using the attributes of the given file
+     *
      * @param inputPath the file to create an entry from
      * @param entryName the name of the entry
-     * @param options options indicating how symbolic links are handled.
+     * @param options   options indicating how symbolic links are handled.
      * @throws IOException if an I/O error occurs.
      * @since 1.21
      */
     public ArArchiveEntry(final Path inputPath, final String entryName, final LinkOption... options) throws IOException {
         this(entryName, Files.isRegularFile(inputPath, options) ? Files.size(inputPath) : 0, 0, 0, DEFAULT_MODE,
-            Files.getLastModifiedTime(inputPath, options).toMillis() / 1000);
+                Files.getLastModifiedTime(inputPath, options).toMillis() / 1000);
     }
 
     /**
-     * Create a new instance using a couple of default values.
+     * Constructs a new instance using a couple of default values.
      *
-     * <p>Sets userId and groupId to 0, the octal file mode to 644 and
-     * the last modified time to the current time.</p>
+     * <p>
+     * Sets userId and groupId to 0, the octal file mode to 644 and the last modified time to the current time.
+     * </p>
      *
-     * @param name name of the entry
+     * @param name   name of the entry
      * @param length length of the entry in bytes
      */
     public ArArchiveEntry(final String name, final long length) {
-        this(name, length, 0, 0, DEFAULT_MODE,
-             System.currentTimeMillis() / 1000);
+        this(name, length, 0, 0, DEFAULT_MODE, System.currentTimeMillis() / 1000);
     }
 
     /**
-     * Create a new instance.
+     * Constructs a new instance.
      *
-     * @param name name of the entry
-     * @param length length of the entry in bytes
-     * @param userId numeric user id
-     * @param groupId numeric group id
-     * @param mode file mode
+     * @param name         name of the entry
+     * @param length       length of the entry in bytes
+     * @param userId       numeric user id
+     * @param groupId      numeric group id
+     * @param mode         file mode
      * @param lastModified last modified time in seconds since the epoch
      */
-    public ArArchiveEntry(final String name, final long length, final int userId, final int groupId,
-                          final int mode, final long lastModified) {
+    public ArArchiveEntry(final String name, final long length, final int userId, final int groupId, final int mode, final long lastModified) {
         this.name = name;
         if (length < 0) {
             throw new IllegalArgumentException("length must not be negative");
@@ -147,19 +147,22 @@ public class ArArchiveEntry implements ArchiveEntry {
             return false;
         }
         final ArArchiveEntry other = (ArArchiveEntry) obj;
-        if (name == null) {
-            return other.name == null;
-        }
-        return name.equals(other.name);
+        return Objects.equals(name, other.name);
     }
 
+    /**
+     * Gets the group ID.
+     *
+     * @return the group ID.
+     */
     public int getGroupId() {
         return groupId;
     }
 
     /**
-     * Last modified time in seconds since the epoch.
-     * @return the last modified date
+     * Gets the last modified time in seconds since the epoch.
+     *
+     * @return the last modified date.
      */
     public long getLastModified() {
         return lastModified;
@@ -170,10 +173,20 @@ public class ArArchiveEntry implements ArchiveEntry {
         return new Date(1000 * getLastModified());
     }
 
+    /**
+     * Gets the length.
+     *
+     * @return the length.
+     */
     public long getLength() {
         return length;
     }
 
+    /**
+     * Gets the mode.
+     *
+     * @return the mode.
+     */
     public int getMode() {
         return mode;
     }
@@ -185,9 +198,14 @@ public class ArArchiveEntry implements ArchiveEntry {
 
     @Override
     public long getSize() {
-        return this.getLength();
+        return getLength();
     }
 
+    /**
+     * Gets the user ID.
+     *
+     * @return the user ID.
+     */
     public int getUserId() {
         return userId;
     }

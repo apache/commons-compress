@@ -35,11 +35,11 @@ public class CPMember extends ClassFileEntry {
     transient int descriptorIndex;
 
     /**
-     * Create a new CPMember
+     * Constructs a new CPMember.
      *
-     * @param name TODO
+     * @param name       TODO
      * @param descriptor TODO
-     * @param flags TODO
+     * @param flags      TODO
      * @param attributes TODO
      * @throws NullPointerException if name or descriptor is null
      */
@@ -75,19 +75,10 @@ public class CPMember extends ClassFileEntry {
             return false;
         }
         final CPMember other = (CPMember) obj;
-        if (!attributes.equals(other.attributes)) {
-            return false;
-        }
-        if (!descriptor.equals(other.descriptor)) {
-            return false;
-        }
-        if (flags != other.flags) {
-            return false;
-        }
-        if (!name.equals(other.name)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(attributes, other.attributes)
+                && Objects.equals(descriptor, other.descriptor)
+                && flags == other.flags
+                && Objects.equals(name, other.name);
     }
 
     @Override

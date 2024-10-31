@@ -25,47 +25,197 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.ClassFileEntry;
  */
 public class AttributeLayout implements IMatcher {
 
+    /**
+     * {@value}
+     */
     public static final String ACC_ABSTRACT = "ACC_ABSTRACT"; //$NON-NLS-1$
-    public static final String ACC_ANNOTATION = "ACC_ANNOTATION"; //$NON-NLS-1$
-    public static final String ACC_ENUM = "ACC_ENUM"; //$NON-NLS-1$
-    public static final String ACC_FINAL = "ACC_FINAL"; //$NON-NLS-1$
-    public static final String ACC_INTERFACE = "ACC_INTERFACE"; //$NON-NLS-1$
-    public static final String ACC_NATIVE = "ACC_NATIVE"; //$NON-NLS-1$
-    public static final String ACC_PRIVATE = "ACC_PRIVATE"; //$NON-NLS-1$
-    public static final String ACC_PROTECTED = "ACC_PROTECTED"; //$NON-NLS-1$
-    public static final String ACC_PUBLIC = "ACC_PUBLIC"; //$NON-NLS-1$
-    public static final String ACC_STATIC = "ACC_STATIC"; //$NON-NLS-1$
-    public static final String ACC_STRICT = "ACC_STRICT"; //$NON-NLS-1$
-    public static final String ACC_SYNCHRONIZED = "ACC_SYNCHRONIZED"; //$NON-NLS-1$
-    public static final String ACC_SYNTHETIC = "ACC_SYNTHETIC"; //$NON-NLS-1$
-    public static final String ACC_TRANSIENT = "ACC_TRANSIENT"; //$NON-NLS-1$
-    public static final String ACC_VOLATILE = "ACC_VOLATILE"; //$NON-NLS-1$
-    public static final String ATTRIBUTE_ANNOTATION_DEFAULT = "AnnotationDefault"; //$NON-NLS-1$
-    public static final String ATTRIBUTE_CLASS_FILE_VERSION = "class-file version"; //$NON-NLS-1$
-    public static final String ATTRIBUTE_CODE = "Code"; //$NON-NLS-1$
-    public static final String ATTRIBUTE_CONSTANT_VALUE = "ConstantValue"; //$NON-NLS-1$
-    public static final String ATTRIBUTE_DEPRECATED = "Deprecated"; //$NON-NLS-1$
-    public static final String ATTRIBUTE_ENCLOSING_METHOD = "EnclosingMethod"; //$NON-NLS-1$
-    public static final String ATTRIBUTE_EXCEPTIONS = "Exceptions"; //$NON-NLS-1$
-    public static final String ATTRIBUTE_INNER_CLASSES = "InnerClasses"; //$NON-NLS-1$
-    public static final String ATTRIBUTE_LINE_NUMBER_TABLE = "LineNumberTable"; //$NON-NLS-1$
-    public static final String ATTRIBUTE_LOCAL_VARIABLE_TABLE = "LocalVariableTable"; //$NON-NLS-1$
-    public static final String ATTRIBUTE_LOCAL_VARIABLE_TYPE_TABLE = "LocalVariableTypeTable"; //$NON-NLS-1$
-    public static final String ATTRIBUTE_RUNTIME_INVISIBLE_ANNOTATIONS = "RuntimeInvisibleAnnotations"; //$NON-NLS-1$
-    public static final String ATTRIBUTE_RUNTIME_INVISIBLE_PARAMETER_ANNOTATIONS = "RuntimeInvisibleParameterAnnotations"; //$NON-NLS-1$
-    public static final String ATTRIBUTE_RUNTIME_VISIBLE_ANNOTATIONS = "RuntimeVisibleAnnotations"; //$NON-NLS-1$
-    public static final String ATTRIBUTE_RUNTIME_VISIBLE_PARAMETER_ANNOTATIONS = "RuntimeVisibleParameterAnnotations"; //$NON-NLS-1$
-    public static final String ATTRIBUTE_SIGNATURE = "Signature"; //$NON-NLS-1$
-    public static final String ATTRIBUTE_SOURCE_FILE = "SourceFile"; //$NON-NLS-1$
-    public static final int CONTEXT_CLASS = 0;
-    public static final int CONTEXT_CODE = 3;
-    public static final int CONTEXT_FIELD = 1;
-    public static final int CONTEXT_METHOD = 2;
-    public static final String[] contextNames = {"Class", "Field", "Method", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        "Code",}; //$NON-NLS-1$
 
-    private static ClassFileEntry getValue(final String layout, long value, final SegmentConstantPool pool)
-        throws Pack200Exception {
+    /**
+     * {@value}
+     */
+    public static final String ACC_ANNOTATION = "ACC_ANNOTATION"; //$NON-NLS-1$
+
+    /**
+     * {@value}
+     */
+    public static final String ACC_ENUM = "ACC_ENUM"; //$NON-NLS-1$
+
+    /**
+     * {@value}
+     */
+    public static final String ACC_FINAL = "ACC_FINAL"; //$NON-NLS-1$
+
+    /**
+     * {@value}
+     */
+    public static final String ACC_INTERFACE = "ACC_INTERFACE"; //$NON-NLS-1$
+
+    /**
+     * {@value}
+     */
+    public static final String ACC_NATIVE = "ACC_NATIVE"; //$NON-NLS-1$
+
+    /**
+     * {@value}
+     */
+    public static final String ACC_PRIVATE = "ACC_PRIVATE"; //$NON-NLS-1$
+
+    /**
+     * {@value}
+     */
+    public static final String ACC_PROTECTED = "ACC_PROTECTED"; //$NON-NLS-1$
+
+    /**
+     * {@value}
+     */
+    public static final String ACC_PUBLIC = "ACC_PUBLIC"; //$NON-NLS-1$
+
+    /**
+     * {@value}
+     */
+    public static final String ACC_STATIC = "ACC_STATIC"; //$NON-NLS-1$
+
+    /**
+     * {@value}
+     */
+    public static final String ACC_STRICT = "ACC_STRICT"; //$NON-NLS-1$
+
+    /**
+     * {@value}
+     */
+    public static final String ACC_SYNCHRONIZED = "ACC_SYNCHRONIZED"; //$NON-NLS-1$
+
+    /**
+     * {@value}
+     */
+    public static final String ACC_SYNTHETIC = "ACC_SYNTHETIC"; //$NON-NLS-1$
+
+    /**
+     * {@value}
+     */
+    public static final String ACC_TRANSIENT = "ACC_TRANSIENT"; //$NON-NLS-1$
+
+    /**
+     * {@value}
+     */
+    public static final String ACC_VOLATILE = "ACC_VOLATILE"; //$NON-NLS-1$
+
+    /**
+     * {@value}
+     */
+    public static final String ATTRIBUTE_ANNOTATION_DEFAULT = "AnnotationDefault"; //$NON-NLS-1$
+
+    /**
+     * {@value}
+     */
+    public static final String ATTRIBUTE_CLASS_FILE_VERSION = "class-file version"; //$NON-NLS-1$
+
+    /**
+     * {@value}
+     */
+    public static final String ATTRIBUTE_CODE = "Code"; //$NON-NLS-1$
+
+    /**
+     * {@value}
+     */
+    public static final String ATTRIBUTE_CONSTANT_VALUE = "ConstantValue"; //$NON-NLS-1$
+
+    /**
+     * {@value}
+     */
+    public static final String ATTRIBUTE_DEPRECATED = "Deprecated"; //$NON-NLS-1$
+
+    /**
+     * {@value}
+     */
+
+    /**
+     * {@value}
+     */
+    public static final String ATTRIBUTE_ENCLOSING_METHOD = "EnclosingMethod"; //$NON-NLS-1$
+
+    /**
+     * {@value}
+     */
+    public static final String ATTRIBUTE_EXCEPTIONS = "Exceptions"; //$NON-NLS-1$
+
+    /**
+     * {@value}
+     */
+    public static final String ATTRIBUTE_INNER_CLASSES = "InnerClasses"; //$NON-NLS-1$
+
+    /**
+     * {@value}
+     */
+    public static final String ATTRIBUTE_LINE_NUMBER_TABLE = "LineNumberTable"; //$NON-NLS-1$
+
+    /**
+     * {@value}
+     */
+    public static final String ATTRIBUTE_LOCAL_VARIABLE_TABLE = "LocalVariableTable"; //$NON-NLS-1$
+
+    /**
+     * {@value}
+     */
+    public static final String ATTRIBUTE_LOCAL_VARIABLE_TYPE_TABLE = "LocalVariableTypeTable"; //$NON-NLS-1$
+
+    /**
+     * {@value}
+     */
+    public static final String ATTRIBUTE_RUNTIME_INVISIBLE_ANNOTATIONS = "RuntimeInvisibleAnnotations"; //$NON-NLS-1$
+
+    /**
+     * {@value}
+     */
+    public static final String ATTRIBUTE_RUNTIME_INVISIBLE_PARAMETER_ANNOTATIONS = "RuntimeInvisibleParameterAnnotations"; //$NON-NLS-1$
+
+    /**
+     * {@value}
+     */
+    public static final String ATTRIBUTE_RUNTIME_VISIBLE_ANNOTATIONS = "RuntimeVisibleAnnotations"; //$NON-NLS-1$
+
+    /**
+     * {@value}
+     */
+    public static final String ATTRIBUTE_RUNTIME_VISIBLE_PARAMETER_ANNOTATIONS = "RuntimeVisibleParameterAnnotations"; //$NON-NLS-1$
+
+    /**
+     * {@value}
+     */
+    public static final String ATTRIBUTE_SIGNATURE = "Signature"; //$NON-NLS-1$
+
+    /**
+     * {@value}
+     */
+    public static final String ATTRIBUTE_SOURCE_FILE = "SourceFile"; //$NON-NLS-1$
+
+    /**
+     * {@value}
+     */
+    public static final int CONTEXT_CLASS = 0;
+
+    /**
+     * {@value}
+     */
+    public static final int CONTEXT_CODE = 3;
+
+    /**
+     * {@value}
+     */
+    public static final int CONTEXT_FIELD = 1;
+
+    /**
+     * {@value}
+     */
+    public static final int CONTEXT_METHOD = 2;
+
+    /**
+     * Context names.
+     */
+    public static final String[] contextNames = { "Class", "Field", "Method", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            "Code", }; //$NON-NLS-1$
+
+    private static ClassFileEntry getValue(final String layout, long value, final SegmentConstantPool pool) throws Pack200Exception {
         if (layout.startsWith("R")) { //$NON-NLS-1$
             // references
             if (layout.indexOf('N') != -1) {
@@ -109,24 +259,21 @@ public class AttributeLayout implements IMatcher {
     private int backwardsCallCount;
 
     /**
-     * Construct a default AttributeLayout (equivalent to
-     * {@code new AttributeLayout(name, context, layout, index, true);})
+     * Constructs a default AttributeLayout (equivalent to {@code new AttributeLayout(name, context, layout, index, true);})
      *
-     * @param name TODO
+     * @param name    TODO
      * @param context TODO
-     * @param layout TODO
-     * @param index TODO
+     * @param layout  TODO
+     * @param index   TODO
      * @throws Pack200Exception Attribute context out of range.
      * @throws Pack200Exception Cannot have a null layout.
      * @throws Pack200Exception Cannot have an unnamed layout.
      */
-    public AttributeLayout(final String name, final int context, final String layout, final int index)
-        throws Pack200Exception {
+    public AttributeLayout(final String name, final int context, final String layout, final int index) throws Pack200Exception {
         this(name, context, layout, index, true);
     }
 
-    public AttributeLayout(final String name, final int context, final String layout, final int index,
-        final boolean isDefault) throws Pack200Exception {
+    public AttributeLayout(final String name, final int context, final String layout, final int index, final boolean isDefault) throws Pack200Exception {
         this.index = index;
         this.context = context;
         if (index >= 0) {
@@ -134,8 +281,7 @@ public class AttributeLayout implements IMatcher {
         } else {
             this.mask = 0;
         }
-        if (context != CONTEXT_CLASS && context != CONTEXT_CODE && context != CONTEXT_FIELD
-            && context != CONTEXT_METHOD) {
+        if (context != CONTEXT_CLASS && context != CONTEXT_CODE && context != CONTEXT_FIELD && context != CONTEXT_METHOD) {
             throw new Pack200Exception("Attribute context out of range: " + context);
         }
         if (layout == null) {
@@ -156,8 +302,8 @@ public class AttributeLayout implements IMatcher {
         if (layout.indexOf('P') >= 0) {
             return Codec.BCI5;
         }
-        if (layout.indexOf('S') >= 0 && layout.indexOf("KS") < 0 //$NON-NLS-1$
-            && layout.indexOf("RS") < 0) { //$NON-NLS-1$
+        if (layout.indexOf('S') >= 0 && !layout.contains("KS") //$NON-NLS-1$
+                && !layout.contains("RS")) { //$NON-NLS-1$
             return Codec.SIGNED5;
         }
         if (layout.indexOf('B') >= 0) {
@@ -186,8 +332,7 @@ public class AttributeLayout implements IMatcher {
         return getValue(layout, value, pool);
     }
 
-    public ClassFileEntry getValue(final long value, final String type, final SegmentConstantPool pool)
-        throws Pack200Exception {
+    public ClassFileEntry getValue(final long value, final String type, final SegmentConstantPool pool) throws Pack200Exception {
         // TODO This really needs to be better tested, esp. the different types
         // TODO This should have the ability to deal with RUN stuff too, and
         // unions
@@ -198,7 +343,7 @@ public class AttributeLayout implements IMatcher {
             return getValue("KS", value, pool);
         }
         return getValue("K" + type + layout.substring(2), value, //$NON-NLS-1$
-            pool);
+                pool);
     }
 
     @Override
@@ -231,7 +376,7 @@ public class AttributeLayout implements IMatcher {
     }
 
     public int numBackwardsCallables() {
-        if (layout == "*") {
+        if ("*".equals(layout)) {
             return 1;
         }
         return backwardsCallCount;

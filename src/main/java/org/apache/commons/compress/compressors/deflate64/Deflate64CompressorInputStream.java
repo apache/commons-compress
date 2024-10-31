@@ -16,8 +16,7 @@
  */
 package org.apache.commons.compress.compressors.deflate64;
 
-import static org.apache.commons.compress.utils.IOUtils.closeQuietly;
-
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -68,7 +67,8 @@ public class Deflate64CompressorInputStream extends CompressorInputStream implem
     }
 
     private void closeDecoder() {
-        closeQuietly(decoder);
+        final Closeable c = decoder;
+        org.apache.commons.io.IOUtils.closeQuietly(c);
         decoder = null;
     }
 
@@ -88,14 +88,14 @@ public class Deflate64CompressorInputStream extends CompressorInputStream implem
         while (true) {
             final int r = read(oneByte);
             switch (r) {
-                case 1:
-                    return oneByte[0] & 0xFF;
-                case -1:
-                    return -1;
-                case 0:
-                    continue;
-                default:
-                    throw new IllegalStateException("Invalid return value from read: " + r);
+            case 1:
+                return oneByte[0] & 0xFF;
+            case -1:
+                return -1;
+            case 0:
+                continue;
+            default:
+                throw new IllegalStateException("Invalid return value from read: " + r);
             }
         }
     }

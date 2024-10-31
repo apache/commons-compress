@@ -16,23 +16,20 @@
  */
 package org.apache.commons.compress.archivers.tar;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * This is an InputStream that always return 0,
- * this is used when reading the "holes" of a sparse file
+ * This is an InputStream that always return 0, this is used when reading the "holes" of a sparse file
  */
-class TarArchiveSparseZeroInputStream extends InputStream {
+final class TarArchiveSparseZeroInputStream extends InputStream {
 
     /**
      * Returns 0.
      *
-     * @return 0
-     * @throws IOException
+     * @return 0.
      */
     @Override
-    public int read() throws IOException {
+    public int read() {
         return 0;
     }
 

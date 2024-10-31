@@ -22,6 +22,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.PriorityQueue;
@@ -35,23 +36,24 @@ import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.IOUtils;
 
 /**
- * The DumpArchiveInputStream reads a UNIX dump archive as an InputStream.
- * Methods are provided to position at each successive entry in
- * the archive, and the read each entry as a normal input stream
- * using read().
- *
- * There doesn't seem to exist a hint on the encoding of string values
- * in any piece documentation.  Given the main purpose of dump/restore
- * is backing up a system it seems very likely the format uses the
- * current default encoding of the system.
- *
+ * The DumpArchiveInputStream reads a UNIX dump archive as an InputStream. Methods are provided to position at each successive entry in the archive, and the
+ * read each entry as a normal input stream using read().
+ * <p>
+ * There doesn't seem to exist a hint on the encoding of string values in any piece documentation. Given the main purpose of dump/restore is backing up a system
+ * it seems very likely the format uses the current default encoding of the system.
+ * </p>
  * @NotThreadSafe
+ * @since 1.3
  */
-public class DumpArchiveInputStream extends ArchiveInputStream {
+public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry> {
+
+    private static final String CURRENT_PATH_SEGMENT = ".";
+    private static final String PARENT_PATH_SEGMENT = "..";
+
     /**
-     * Look at the first few bytes of the file to decide if it's a dump
-     * archive. With 32 bytes we can look at the magic value, with a full
-     * 1k we can verify the checksum.
+     * Look at the first few bytes of the file to decide if it's a dump archive. With 32 bytes we can look at the magic value, with a full 1k we can verify the
+     * checksum.
+     *
      * @param buffer data to match
      * @param length length of data
      * @return whether the buffer seems to contain dump data
@@ -68,9 +70,9 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
         }
 
         // this will work in a pinch.
-        return DumpArchiveConstants.NFS_MAGIC == DumpArchiveUtil.convert32(buffer,
-            24);
+        return DumpArchiveConstants.NFS_MAGIC == DumpArchiveUtil.convert32(buffer, 24);
     }
+
     private final DumpArchiveSummary summary;
     private DumpArchiveEntry active;
     private boolean isClosed;
@@ -85,13 +87,13 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
 
     protected TapeInputStream raw;
 
-    // map of ino -> dirent entry. We can use this to reconstruct full paths.
+    /** Map of ino -> dirent entry. We can use this to reconstruct full paths. */
     private final Map<Integer, Dirent> names = new HashMap<>();
 
-    // map of ino -> (directory) entry when we're missing one or more elements in the path.
+    /** Map of ino -> (directory) entry when we're missing one or more elements in the path. */
     private final Map<Integer, DumpArchiveEntry> pending = new HashMap<>();
 
-    // queue of (directory) entries where we now have the full path.
+    /** Queue of (directory) entries where we now have the full path. */
     private final Queue<DumpArchiveEntry> queue;
 
     /**
@@ -99,12 +101,8 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
      */
     private final ZipEncoding zipEncoding;
 
-    // the provided encoding (for unit tests)
-    final String encoding;
-
     /**
-     * Constructor using the platform's default encoding for file
-     * names.
+     * Constructor using the platform's default encoding for file names.
      *
      * @param is stream to read from
      * @throws ArchiveException on error
@@ -114,19 +112,17 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
     }
 
     /**
-     * Constructor.
+     * Constructs a new instance.
      *
-     * @param is stream to read from
-     * @param encoding the encoding to use for file names, use null
-     * for the platform's default encoding
+     * @param is       stream to read from
+     * @param encoding the encoding to use for file names, use null for the platform's default encoding
      * @since 1.6
      * @throws ArchiveException on error
      */
-    public DumpArchiveInputStream(final InputStream is, final String encoding)
-        throws ArchiveException {
+    public DumpArchiveInputStream(final InputStream is, final String encoding) throws ArchiveException {
+        super(is, encoding);
         this.raw = new TapeInputStream(is);
         this.hasHitEOF = false;
-        this.encoding = encoding;
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
 
         try {
@@ -154,19 +150,18 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
         }
 
         // put in a dummy record for the root node.
-        final Dirent root = new Dirent(2, 2, 4, ".");
+        final Dirent root = new Dirent(2, 2, 4, CURRENT_PATH_SEGMENT);
         names.put(2, root);
 
         // use priority based on queue to ensure parent directories are
         // released first.
-        queue = new PriorityQueue<>(10,
-                (p, q) -> {
-                    if (p.getOriginalName() == null || q.getOriginalName() == null) {
-                        return Integer.MAX_VALUE;
-                    }
+        queue = new PriorityQueue<>(10, (p, q) -> {
+            if (p.getOriginalName() == null || q.getOriginalName() == null) {
+                return Integer.MAX_VALUE;
+            }
 
-                    return p.getOriginalName().compareTo(q.getOriginalName());
-                });
+            return p.getOriginalName().compareTo(q.getOriginalName());
+        });
     }
 
     /**
@@ -192,10 +187,13 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
     }
 
     /**
-     * Read the next entry.
+     * Reads the next entry.
+     *
      * @return the next entry
      * @throws IOException on error
+     * @deprecated Use {@link #getNextEntry()}.
      */
+    @Deprecated
     public DumpArchiveEntry getNextDumpEntry() throws IOException {
         return getNextEntry();
     }
@@ -220,8 +218,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
             // block by block. We may want to revisit this if
             // the unnecessary decompression time adds up.
             while (readIdx < active.getHeaderCount()) {
-                if (!active.isSparseRecord(readIdx++)
-                    && raw.skip(DumpArchiveConstants.TP_SIZE) == -1) {
+                if (!active.isSparseRecord(readIdx++) && raw.skip(DumpArchiveConstants.TP_SIZE) == -1) {
                     throw new EOFException();
                 }
             }
@@ -239,9 +236,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
 
             // skip any remaining segments for prior file.
             while (DumpArchiveConstants.SEGMENT_TYPE.ADDR == active.getHeaderType()) {
-                if (raw.skip((long) DumpArchiveConstants.TP_SIZE
-                             * (active.getHeaderCount()
-                                - active.getHeaderHoles())) == -1) {
+                if (raw.skip((long) DumpArchiveConstants.TP_SIZE * (active.getHeaderCount() - active.getHeaderHoles())) == -1) {
                     throw new EOFException();
                 }
 
@@ -294,51 +289,50 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
     }
 
     /**
-     * Get full path for specified archive entry, or null if there's a gap.
+     * Gets full path for specified archive entry, or null if there's a gap.
      *
      * @param entry
-     * @return  full path for specified archive entry, or null if there's a gap.
+     * @return full path for specified archive entry, or null if there's a gap.
+     * @throws DumpArchiveException Infinite loop detected in directory entries.
      */
-    private String getPath(final DumpArchiveEntry entry) {
+    private String getPath(final DumpArchiveEntry entry) throws DumpArchiveException {
         // build the stack of elements. It's possible that we're
         // still missing an intermediate value and if so we
         final Stack<String> elements = new Stack<>();
+        final BitSet visited = new BitSet();
         Dirent dirent = null;
-
         for (int i = entry.getIno();; i = dirent.getParentIno()) {
             if (!names.containsKey(i)) {
                 elements.clear();
                 break;
             }
-
+            if (visited.get(i)) {
+                throw new DumpArchiveException("Duplicate node " + i);
+            }
             dirent = names.get(i);
+            visited.set(i);
             elements.push(dirent.getName());
-
             if (dirent.getIno() == dirent.getParentIno()) {
                 break;
             }
         }
-
         // if an element is missing defer the work and read next entry.
         if (elements.isEmpty()) {
             pending.put(entry.getIno(), entry);
-
             return null;
         }
-
         // generate full path from stack of elements.
         final StringBuilder sb = new StringBuilder(elements.pop());
-
         while (!elements.isEmpty()) {
             sb.append('/');
             sb.append(elements.pop());
         }
-
         return sb.toString();
     }
 
     /**
-     * Return the archive summary information.
+     * Gets the archive summary information.
+     *
      * @return the summary
      */
     public DumpArchiveSummary getSummary() {
@@ -348,9 +342,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
     /**
      * Reads bytes from the current dump archive entry.
      *
-     * This method is aware of the boundaries of the current
-     * entry in the archive and will deal with them as if they
-     * were this stream's start and EOF.
+     * This method is aware of the boundaries of the current entry in the archive and will deal with them as if they were this stream's start and EOF.
      *
      * @param buf The buffer into which to place bytes read.
      * @param off The offset at which to place bytes read.
@@ -437,8 +429,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
         }
 
         // we don't do anything with this yet.
-        if (raw.skip((long) DumpArchiveConstants.TP_SIZE * active.getHeaderCount())
-            == -1) {
+        if (raw.skip((long) DumpArchiveConstants.TP_SIZE * active.getHeaderCount()) == -1) {
             throw new EOFException();
         }
         readIdx = active.getHeaderCount();
@@ -461,8 +452,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
         }
 
         // we don't do anything with this yet.
-        if (raw.skip((long) DumpArchiveConstants.TP_SIZE * active.getHeaderCount())
-            == -1) {
+        if (raw.skip((long) DumpArchiveConstants.TP_SIZE * active.getHeaderCount()) == -1) {
             throw new EOFException();
         }
         readIdx = active.getHeaderCount();
@@ -471,20 +461,17 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
     /**
      * Read directory entry.
      */
-    private void readDirectoryEntry(DumpArchiveEntry entry)
-        throws IOException {
+    private void readDirectoryEntry(DumpArchiveEntry entry) throws IOException {
         long size = entry.getEntrySize();
         boolean first = true;
 
-        while (first ||
-                DumpArchiveConstants.SEGMENT_TYPE.ADDR == entry.getHeaderType()) {
+        while (first || DumpArchiveConstants.SEGMENT_TYPE.ADDR == entry.getHeaderType()) {
             // read the header that we just peeked at.
             if (!first) {
                 raw.readRecord();
             }
 
-            if (!names.containsKey(entry.getIno()) &&
-                    DumpArchiveConstants.SEGMENT_TYPE.INODE == entry.getHeaderType()) {
+            if (!names.containsKey(entry.getIno()) && DumpArchiveConstants.SEGMENT_TYPE.INODE == entry.getHeaderType()) {
                 pending.put(entry.getIno(), entry);
             }
 
@@ -501,16 +488,18 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
 
             int reclen = 0;
 
-            for (int i = 0; i < datalen - 8 && i < size - 8;
-                    i += reclen) {
+            for (int i = 0; i < datalen - 8 && i < size - 8; i += reclen) {
                 final int ino = DumpArchiveUtil.convert32(blockBuffer, i);
                 reclen = DumpArchiveUtil.convert16(blockBuffer, i + 4);
+                if (reclen == 0) {
+                    throw new DumpArchiveException("reclen cannot be 0");
+                }
 
                 final byte type = blockBuffer[i + 6];
 
                 final String name = DumpArchiveUtil.decode(zipEncoding, blockBuffer, i + 8, blockBuffer[i + 7]);
 
-                if (".".equals(name) || "..".equals(name)) {
+                if (CURRENT_PATH_SEGMENT.equals(name) || PARENT_PATH_SEGMENT.equals(name)) {
                     // do nothing...
                     continue;
                 }
@@ -518,24 +507,21 @@ public class DumpArchiveInputStream extends ArchiveInputStream {
                 final Dirent d = new Dirent(ino, entry.getIno(), type, name);
 
                 /*
-                if ((type == 4) && names.containsKey(ino)) {
-                    System.out.println("we already have ino: " +
-                                       names.get(ino));
-                }
-                */
+                 * if ((type == 4) && names.containsKey(ino)) { System.out.println("we already have ino: " + names.get(ino)); }
+                 */
 
                 names.put(ino, d);
 
                 // check whether this allows us to fill anything in the pending list.
-                pending.forEach((k, v) -> {
+                for (final Map.Entry<Integer, DumpArchiveEntry> mapEntry : pending.entrySet()) {
+                    final DumpArchiveEntry v = mapEntry.getValue();
                     final String path = getPath(v);
-
                     if (path != null) {
                         v.setName(path);
-                        v.setSimpleName(names.get(k).getName());
+                        v.setSimpleName(names.get(mapEntry.getKey()).getName());
                         queue.add(v);
                     }
-                });
+                }
 
                 // remove anything that we found. (We can't do it earlier
                 // because of concurrent modification exceptions.)

@@ -18,20 +18,24 @@
 package org.apache.commons.compress.utils;
 
 /**
- * This interface provides statistics on the current decompression stream.
- * The stream consumer can use that statistics to handle abnormal
- * compression ratios, i.e. to prevent ZIP bombs.
+ * This interface provides statistics on the current decompression stream. The stream consumer can use that statistics to handle abnormal compression ratios,
+ * i.e. to prevent ZIP bombs.
  *
  * @since 1.17
  */
 public interface InputStreamStatistics {
+
     /**
-     * @return the amount of raw or compressed bytes read by the stream
+     * Gets the amount of raw or compressed bytes read by the stream.
+     *
+     * @return the amount of raw or compressed bytes read by the stream.
      */
     long getCompressedCount();
 
     /**
-     * @return the amount of decompressed bytes returned by the stream
+     * Gets the amount of decompressed bytes returned by the stream.
+     *
+     * @return the amount of decompressed bytes returned by the stream.
      */
     long getUncompressedCount();
 }

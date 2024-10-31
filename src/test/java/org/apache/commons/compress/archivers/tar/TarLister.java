@@ -25,16 +25,19 @@ import java.nio.file.Files;
 /**
  * Simple command line application that lists the contents of a tar archive.
  *
- * <p>The name of the archive must be given as a command line argument.</p>
- * <p>The optional second argument specifies the encoding to assume for file names.</p>
+ * <p>
+ * The name of the archive must be given as a command line argument.
+ * </p>
+ * <p>
+ * The optional second argument specifies the encoding to assume for file names.
+ * </p>
  *
  * @since 1.11
  */
 public final class TarLister {
 
     private static void log(final TarArchiveEntry ae) {
-        final StringBuilder sb = new StringBuilder(Integer.toOctalString(ae.getMode()))
-            .append(" ");
+        final StringBuilder sb = new StringBuilder(Integer.toOctalString(ae.getMode())).append(" ");
         String name = ae.getUserName();
         if (name != null && !name.isEmpty()) {
             sb.append(name);

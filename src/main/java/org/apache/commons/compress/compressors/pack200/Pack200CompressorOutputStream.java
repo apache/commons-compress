@@ -33,67 +33,54 @@ import org.apache.commons.compress.java.util.jar.Pack200;
  * @NotThreadSafe
  * @since 1.3
  */
-public class Pack200CompressorOutputStream extends CompressorOutputStream {
+public class Pack200CompressorOutputStream extends CompressorOutputStream<OutputStream> {
     private boolean finished;
-    private final OutputStream originalOutput;
-    private final StreamBridge streamBridge;
+    private final AbstractStreamBridge abstractStreamBridge;
     private final Map<String, String> properties;
 
     /**
-     * Compresses the given stream, caching the compressed data in
-     * memory.
+     * Compresses the given stream, caching the compressed data in memory.
      *
      * @param out the stream to write to
      * @throws IOException if writing fails
      */
-    public Pack200CompressorOutputStream(final OutputStream out)
-        throws IOException {
+    public Pack200CompressorOutputStream(final OutputStream out) throws IOException {
         this(out, Pack200Strategy.IN_MEMORY);
     }
 
     /**
-     * Compresses the given stream, caching the compressed data in
-     * memory and using the given properties.
+     * Compresses the given stream, caching the compressed data in memory and using the given properties.
      *
-     * @param out the stream to write to
+     * @param out   the stream to write to
      * @param props Pack200 properties to use
      * @throws IOException if writing fails
      */
-    public Pack200CompressorOutputStream(final OutputStream out,
-                                         final Map<String, String> props)
-        throws IOException {
+    public Pack200CompressorOutputStream(final OutputStream out, final Map<String, String> props) throws IOException {
         this(out, Pack200Strategy.IN_MEMORY, props);
     }
 
     /**
-     * Compresses the given stream using the given strategy to cache
-     * the results.
+     * Compresses the given stream using the given strategy to cache the results.
      *
-     * @param out the stream to write to
+     * @param out  the stream to write to
      * @param mode the strategy to use
      * @throws IOException if writing fails
      */
-    public Pack200CompressorOutputStream(final OutputStream out,
-                                         final Pack200Strategy mode)
-        throws IOException {
+    public Pack200CompressorOutputStream(final OutputStream out, final Pack200Strategy mode) throws IOException {
         this(out, mode, null);
     }
 
     /**
-     * Compresses the given stream using the given strategy to cache
-     * the results and the given properties.
+     * Compresses the given stream using the given strategy to cache the results and the given properties.
      *
-     * @param out the stream to write to
-     * @param mode the strategy to use
+     * @param out   the stream to write to
+     * @param mode  the strategy to use
      * @param props Pack200 properties to use
      * @throws IOException if writing fails
      */
-    public Pack200CompressorOutputStream(final OutputStream out,
-                                         final Pack200Strategy mode,
-                                         final Map<String, String> props)
-        throws IOException {
-        originalOutput = out;
-        streamBridge = mode.newStreamBridge();
+    public Pack200CompressorOutputStream(final OutputStream out, final Pack200Strategy mode, final Map<String, String> props) throws IOException {
+        super(out);
+        abstractStreamBridge = mode.newStreamBridge();
         properties = props;
     }
 
@@ -103,9 +90,9 @@ public class Pack200CompressorOutputStream extends CompressorOutputStream {
             finish();
         } finally {
             try {
-                streamBridge.stop();
+                abstractStreamBridge.stop();
             } finally {
-                originalOutput.close();
+                out.close();
             }
         }
     }
@@ -117,24 +104,24 @@ public class Pack200CompressorOutputStream extends CompressorOutputStream {
             if (properties != null) {
                 p.properties().putAll(properties);
             }
-            try (JarInputStream ji = new JarInputStream(streamBridge.getInput())) {
-                p.pack(ji, originalOutput);
+            try (JarInputStream ji = new JarInputStream(abstractStreamBridge.getInputStream())) {
+                p.pack(ji, out);
             }
         }
     }
 
     @Override
     public void write(final byte[] b) throws IOException {
-        streamBridge.write(b);
+        abstractStreamBridge.write(b);
     }
 
     @Override
     public void write(final byte[] b, final int from, final int length) throws IOException {
-        streamBridge.write(b, from, length);
+        abstractStreamBridge.write(b, from, length);
     }
 
     @Override
     public void write(final int b) throws IOException {
-        streamBridge.write(b);
+        abstractStreamBridge.write(b);
     }
 }

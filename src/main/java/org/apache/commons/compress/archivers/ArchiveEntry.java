@@ -18,14 +18,18 @@
  */
 package org.apache.commons.compress.archivers;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Date;
 
 /**
- * Represents an entry of an archive.
+ * An entry of an archive.
  */
 public interface ArchiveEntry {
 
-    /** Special value indicating that the size is unknown */
+    /**
+     * Special value ({@value}) indicating that the size is unknown.
+     */
     long SIZE_UNKNOWN = -1;
 
     /**
@@ -38,8 +42,9 @@ public interface ArchiveEntry {
 
     /**
      * Gets the name of the entry in this archive. May refer to a file or directory or other item.
-     *
-     * <p>This method returns the raw name as it is stored inside of the archive.</p>
+     * <p>
+     * This method returns the raw name as it is stored inside of the archive.
+     * </p>
      *
      * @return The name of this entry in the archive.
      */
@@ -53,9 +58,27 @@ public interface ArchiveEntry {
     long getSize();
 
     /**
-     * Returns true if this entry refers to a directory.
+     * Tests whether this entry refers to a directory (true).
      *
      * @return true if this entry refers to a directory.
      */
     boolean isDirectory();
+
+    /**
+     * Resolves this entry in the given parent Path.
+     *
+     * @param parentPath the {@link Path#resolve(Path)} receiver.
+     * @return a resolved and normalized Path.
+     * @throws IOException if this method detects a Zip slip.
+     * @since 1.26.0
+     */
+    default Path resolveIn(final Path parentPath) throws IOException {
+        final String name = getName();
+        final Path outputFile = parentPath.resolve(name).normalize();
+        if (!outputFile.startsWith(parentPath)) {
+            throw new IOException(String.format("Zip slip '%s' + '%s' -> '%s'", parentPath, name, outputFile));
+        }
+        return outputFile;
+    }
+
 }

@@ -39,15 +39,16 @@ public class BinaryTreeTest {
 
         assertNotNull(tree);
 
-        final BitStream stream = new BitStream(new ByteArrayInputStream(new byte[] { (byte) 0x8D, (byte) 0xC5, (byte) 0x11, 0x00 }));
-        assertEquals(0, tree.read(stream));
-        assertEquals(1, tree.read(stream));
-        assertEquals(2, tree.read(stream));
-        assertEquals(3, tree.read(stream));
-        assertEquals(4, tree.read(stream));
-        assertEquals(5, tree.read(stream));
-        assertEquals(6, tree.read(stream));
-        assertEquals(7, tree.read(stream));
+        try (BitStream stream = new BitStream(new ByteArrayInputStream(new byte[] { (byte) 0x8D, (byte) 0xC5, (byte) 0x11, 0x00 }))) {
+            assertEquals(0, tree.read(stream));
+            assertEquals(1, tree.read(stream));
+            assertEquals(2, tree.read(stream));
+            assertEquals(3, tree.read(stream));
+            assertEquals(4, tree.read(stream));
+            assertEquals(5, tree.read(stream));
+            assertEquals(6, tree.read(stream));
+            assertEquals(7, tree.read(stream));
+        }
     }
 
     @Test

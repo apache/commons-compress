@@ -40,22 +40,21 @@ public class CPNameAndType extends ConstantPoolEntry {
     private int cachedHashCode;
 
     /**
-     * Create a new CPNameAndType
+     * Constructs a new CPNameAndType.
      *
-     * @param name TODO
-     * @param descriptor TODO
-     * @param globalIndex - index in CpBands
+     * @param name        TODO
+     * @param descriptor  TODO
+     * @param globalIndex index in CpBands
      * @throws NullPointerException if name or descriptor is null
      */
     public CPNameAndType(final CPUTF8 name, final CPUTF8 descriptor, final int globalIndex) {
-        super(ConstantPoolEntry.CP_NameAndType, globalIndex);
+        super(CP_NameAndType, globalIndex);
         this.name = Objects.requireNonNull(name, "name");
         this.descriptor = Objects.requireNonNull(descriptor, "descriptor");
     }
 
     /*
-     * field_info { u2 access_flags; u2 name_index; u2 descriptor_index; u2 attributes_count; attribute_info
-     * attributes[attributes_count]; }
+     * field_info { u2 access_flags; u2 name_index; u2 descriptor_index; u2 attributes_count; attribute_info attributes[attributes_count]; }
      */
 
     @Override
@@ -70,13 +69,8 @@ public class CPNameAndType extends ConstantPoolEntry {
             return false;
         }
         final CPNameAndType other = (CPNameAndType) obj;
-        if (!descriptor.equals(other.descriptor)) {
-            return false;
-        }
-        if (!name.equals(other.name)) {
-            return false;
-        }
-        return true;
+        return Objects.equals(descriptor, other.descriptor)
+                && Objects.equals(name, other.name);
     }
 
     private void generateHashCode() {
@@ -90,8 +84,9 @@ public class CPNameAndType extends ConstantPoolEntry {
 
     @Override
     protected ClassFileEntry[] getNestedClassFileEntries() {
-        return new ClassFileEntry[] {name, descriptor};
+        return new ClassFileEntry[] { name, descriptor };
     }
+
     @Override
     public int hashCode() {
         if (!hashCodeComputed) {
@@ -101,8 +96,8 @@ public class CPNameAndType extends ConstantPoolEntry {
     }
 
     /**
-     * Answers the invokeinterface count argument when the receiver is treated as an invokeinterface target. This value
-     * is not meaningful if the receiver is not an invokeinterface target.
+     * Answers the invokeinterface count argument when the receiver is treated as an invokeinterface target. This value is not meaningful if the receiver is not
+     * an invokeinterface target.
      *
      * @return count
      */

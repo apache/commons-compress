@@ -23,17 +23,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class represents a sparse entry in a Tar archive.
+ * A sparse entry in a <a href="https://www.gnu.org/software/tar/manual/html_node/Standard.html">Tar archive</a>.
  *
  * <p>
  * The C structure for a sparse entry is:
+ *
  * <pre>
  * struct posix_header {
  * struct sparse sp[21]; // TarConstants.SPARSELEN_GNU_SPARSE     - offset 0
  * char isextended;      // TarConstants.ISEXTENDEDLEN_GNU_SPARSE - offset 504
  * };
  * </pre>
+ *
  * Whereas, "struct sparse" is:
+ *
  * <pre>
  * struct sparse {
  * char offset[12];   // offset 0
@@ -41,9 +44,11 @@ import java.util.List;
  * };
  * </pre>
  *
- * <p>Each such struct describes a block of data that has actually been written to the archive. The offset describes
- * where in the extracted file the data is supposed to start and the numbytes provides the length of the block. When
- * extracting the entry the gaps between the sparse structs are equivalent to areas filled with zero bytes.</p>
+ * <p>
+ * Each such struct describes a block of data that has actually been written to the archive. The offset describes where in the extracted file the data is
+ * supposed to start and the numbytes provides the length of the block. When extracting the entry the gaps between the sparse structs are equivalent to areas
+ * filled with zero bytes.
+ * </p>
  */
 
 public class TarArchiveSparseEntry implements TarConstants {
@@ -53,8 +58,7 @@ public class TarArchiveSparseEntry implements TarConstants {
     private final List<TarArchiveStructSparse> sparseHeaders;
 
     /**
-     * Construct an entry from an archive's header bytes. File is set
-     * to null.
+     * Constructs an entry from an archive's header bytes. File is set to null.
      *
      * @param headerBuf The header bytes from a tar archive entry.
      * @throws IOException on unknown format
@@ -67,7 +71,8 @@ public class TarArchiveSparseEntry implements TarConstants {
     }
 
     /**
-     * Obtains information about the configuration for the sparse entry.
+     * Gets information about the configuration for the sparse entry.
+     *
      * @since 1.20
      * @return information about the configuration for the sparse entry.
      */

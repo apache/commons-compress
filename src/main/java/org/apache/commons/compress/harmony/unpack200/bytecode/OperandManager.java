@@ -21,8 +21,8 @@ import org.apache.commons.compress.harmony.unpack200.Segment;
 import org.apache.commons.compress.harmony.unpack200.SegmentConstantPool;
 
 /**
- * This class keeps track of operands used. It provides API to let other classes get next elements, and also knows about
- * which classes have been used recently in super, this and new references.
+ * Tracks operands, provides methods to let other classes get next elements, and also knows about which classes have been used recently in super, this and new
+ * references.
  */
 public class OperandManager {
 
@@ -76,11 +76,10 @@ public class OperandManager {
     String superClass;
     String newClass;
 
-    public OperandManager(final int[] bcCaseCount, final int[] bcCaseValue, final int[] bcByte, final int[] bcShort,
-        final int[] bcLocal, final int[] bcLabel, final int[] bcIntRef, final int[] bcFloatRef, final int[] bcLongRef,
-        final int[] bcDoubleRef, final int[] bcStringRef, final int[] bcClassRef, final int[] bcFieldRef,
-        final int[] bcMethodRef, final int[] bcIMethodRef, final int[] bcThisField, final int[] bcSuperField,
-        final int[] bcThisMethod, final int[] bcSuperMethod, final int[] bcInitRef, final int[] wideByteCodes) {
+    public OperandManager(final int[] bcCaseCount, final int[] bcCaseValue, final int[] bcByte, final int[] bcShort, final int[] bcLocal, final int[] bcLabel,
+            final int[] bcIntRef, final int[] bcFloatRef, final int[] bcLongRef, final int[] bcDoubleRef, final int[] bcStringRef, final int[] bcClassRef,
+            final int[] bcFieldRef, final int[] bcMethodRef, final int[] bcIMethodRef, final int[] bcThisField, final int[] bcSuperField,
+            final int[] bcThisMethod, final int[] bcSuperMethod, final int[] bcInitRef, final int[] wideByteCodes) {
         this.bcCaseCount = bcCaseCount;
         this.bcCaseValue = bcCaseValue;
         this.bcByte = bcByte;

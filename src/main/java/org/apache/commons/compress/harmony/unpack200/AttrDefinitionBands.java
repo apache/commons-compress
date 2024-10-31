@@ -67,10 +67,8 @@ public class AttrDefinitionBands extends BandSet {
     public void read(final InputStream in) throws IOException, Pack200Exception {
         final int attributeDefinitionCount = header.getAttributeDefinitionCount();
         attributeDefinitionHeader = decodeBandInt("attr_definition_headers", in, Codec.BYTE1, attributeDefinitionCount);
-        attributeDefinitionName = parseReferences("attr_definition_name", in, Codec.UNSIGNED5, attributeDefinitionCount,
-            cpUTF8);
-        attributeDefinitionLayout = parseReferences("attr_definition_layout", in, Codec.UNSIGNED5,
-            attributeDefinitionCount, cpUTF8);
+        attributeDefinitionName = parseReferences("attr_definition_name", in, Codec.UNSIGNED5, attributeDefinitionCount, cpUTF8);
+        attributeDefinitionLayout = parseReferences("attr_definition_layout", in, Codec.UNSIGNED5, attributeDefinitionCount, cpUTF8);
 
         attributeDefinitionMap = new AttributeLayoutMap();
 
@@ -84,8 +82,7 @@ public class AttrDefinitionBands extends BandSet {
             if (index == -1) {
                 index = overflowIndex++;
             }
-            final AttributeLayout layout = new AttributeLayout(attributeDefinitionName[i], context,
-                attributeDefinitionLayout[i], index, false);
+            final AttributeLayout layout = new AttributeLayout(attributeDefinitionName[i], context, attributeDefinitionLayout[i], index, false);
             final NewAttributeBands newBands = new NewAttributeBands(segment, layout);
             attributeDefinitionMap.add(layout, newBands);
         }
@@ -109,8 +106,7 @@ public class AttrDefinitionBands extends BandSet {
         MetadataBandGroup.setRvaAttributeName(segment.getCpBands().cpUTF8Value("RuntimeVisibleAnnotations"));
         MetadataBandGroup.setRiaAttributeName(segment.getCpBands().cpUTF8Value("RuntimeInvisibleAnnotations"));
         MetadataBandGroup.setRvpaAttributeName(segment.getCpBands().cpUTF8Value("RuntimeVisibleParameterAnnotations"));
-        MetadataBandGroup
-            .setRipaAttributeName(segment.getCpBands().cpUTF8Value("RuntimeInvisibleParameterAnnotations"));
+        MetadataBandGroup.setRipaAttributeName(segment.getCpBands().cpUTF8Value("RuntimeInvisibleParameterAnnotations"));
     }
 
     @Override

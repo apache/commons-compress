@@ -17,7 +17,7 @@
 
 package org.apache.commons.compress.archivers.zip;
 
-import static org.apache.commons.compress.AbstractTestCase.getFile;
+import static org.apache.commons.compress.AbstractTest.getFile;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -33,8 +33,7 @@ import org.junit.jupiter.api.Test;
 public class EncryptedArchiveTest {
 
     @Test
-    public void testReadPasswordEncryptedEntryViaStream()
-        throws IOException {
+    public void testReadPasswordEncryptedEntryViaStream() throws IOException {
         final File file = getFile("password-encrypted.zip");
         try (ZipArchiveInputStream zin = new ZipArchiveInputStream(Files.newInputStream(file.toPath()))) {
             final ZipArchiveEntry zae = zin.getNextZipEntry();
@@ -51,16 +50,13 @@ public class EncryptedArchiveTest {
     }
 
     @Test
-    public void testReadPasswordEncryptedEntryViaZipFile()
-        throws IOException {
-        final File file = getFile("password-encrypted.zip");
-        try (final ZipFile zf = new ZipFile(file)) {
+    public void testReadPasswordEncryptedEntryViaZipFile() throws IOException {
+        try (ZipFile zf = ZipFile.builder().setFile(getFile("password-encrypted.zip")).get()) {
             final ZipArchiveEntry zae = zf.getEntry("LICENSE.txt");
             assertTrue(zae.getGeneralPurposeBit().usesEncryption());
             assertFalse(zae.getGeneralPurposeBit().usesStrongEncryption());
             assertFalse(zf.canReadEntryData(zae));
-            final UnsupportedZipFeatureException ex = assertThrows(UnsupportedZipFeatureException.class, () -> zf.getInputStream(zae),
-                    "expected an exception");
+            final UnsupportedZipFeatureException ex = assertThrows(UnsupportedZipFeatureException.class, () -> zf.getInputStream(zae), "expected an exception");
             assertSame(UnsupportedZipFeatureException.Feature.ENCRYPTION, ex.getFeature());
         }
     }

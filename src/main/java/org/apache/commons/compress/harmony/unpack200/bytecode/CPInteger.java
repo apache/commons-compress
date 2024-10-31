@@ -25,7 +25,7 @@ import java.io.IOException;
 public class CPInteger extends CPConstantNumber {
 
     public CPInteger(final Integer value, final int globalIndex) {
-        super(ConstantPoolEntry.CP_Integer, value, globalIndex);
+        super(CP_Integer, value, globalIndex);
     }
 
     @Override

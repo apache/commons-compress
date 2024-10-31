@@ -54,6 +54,52 @@
         the descriptions here are incomplete, please report them
         privately to the Apache Security Team. Thank you.</p>
 
+        <subsection name="Fixed in Apache Commons Compress 1.26.0">
+          <p><b>Important: Denial of Service</b> <a
+          href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2024-25710">CVE-2024-25710</a></p>
+          <p>This affects version 1.3 through 1.25.0.</p>
+          <p>This denial of service is caused by an infinite loop reading a corrupted DUMP file.</p>
+          <p>Users are recommended to upgrade to version 1.26.0 which fixes the issue.</p>
+          <p>Credit to Yakov Shafranovich, Amazon Web Services (reporter).</p>
+
+          <p><b>Moderate: Denial of Service</b> <a
+          href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2024-26308">CVE-2024-26308</a></p>
+          <p>You can get an OutOfMemoryError unpacking a broken Pack200 file.</p>
+          <p>This issue affects Commons Compress 1.21 before 1.26.0.</p>
+          <p>Users are recommended to upgrade to version 1.26.0 which fixes the issue.</p>
+          <p>Credit to Yakov Shafranovich, Amazon Web Services (reporter).</p>
+        </subsection>
+
+        <subsection name="Fixed in Apache Commons Compress 1.24.0">
+          <p><b>Moderate: Denial of Service</b> <a
+          href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-42503">CVE-2023-42503</a></p>
+          
+          <p>Improper Input Validation, Uncontrolled Resource Consumption vulnerability in Apache Commons Compress in TAR parsing.</p>
+          <p>This issue affects Apache Commons Compress: from 1.22 before 1.24.0.</p>
+          <p>Users are recommended to upgrade to version 1.24.0, which fixes the issue.</p>
+          <p>A third party can create a malformed TAR file by manipulating file modification times headers, 
+             which when parsed with Apache Commons Compress, will cause a denial of service issue via CPU consumption.</p>
+          <p>In version 1.22 of Apache Commons Compress, support was added for file modification times with higher precision 
+             (issue # COMPRESS-612<sup><a href="#Ref-1-24-1">[1]</a></sup>).
+             The format for the PAX extended headers carrying this data consists of two numbers separated by a period<sup><a href="#Ref-1-24-2">[2]</a></sup>, 
+             indicating seconds and subsecond precision (for example “1647221103.5998539”). The impacted fields are “atime”, “ctime”, “mtime” and 
+             “LIBARCHIVE.creationtime”. No input validation is performed prior to the parsing of header values.</p>
+          <p>Parsing of these numbers uses the BigDecimal<sup><a href="#Ref-1-24-3">[3]</a></sup> class from the JDK which has a publicly known algorithmic complexity issue when doing 
+             operations on large numbers, causing denial of service (see issue # JDK-6560193<sup><a href="#Ref-1-24-4">[4]</a></sup>). A third party can manipulate file time headers 
+             in a TAR file by placing a number with a very long fraction (300,000 digits) or a number with exponent notation (such as “9e9999999”) 
+             within a file modification time header, and the parsing of files with these headers will take hours instead of seconds, leading to a 
+             denial of service via exhaustion of CPU resources. This issue is similar to CVE-2012-2098<sup><a href="#Ref-1-24-5">[5]</a></sup>.</p>
+          <ul>
+            <li id="Ref-1-24-1">[1]: <a href="https://issues.apache.org/jira/browse/COMPRESS-612">COMPRESS-612</a></li>
+            <li id="Ref-1-24-2">[2]: <a href="https://pubs.opengroup.org/onlinepubs/9699919799/utilities/pax.html#tag_20_92_13_05">PAX extended headers</a></li>
+            <li id="Ref-1-24-3">[3]: <a href="https://docs.oracle.com/javase/8/docs/api/java/math/BigDecimal.html">BigDecimal</a></li>
+            <li id="Ref-1-24-4">[4]: <a href="https://bugs.openjdk.org/browse/JDK-6560193">JDK-6560193</a></li>
+            <li id="Ref-1-24-5">[5]: <a href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2012-2098">CVE-2012-2098</a></li>
+          </ul>
+          <p>Only applications using CompressorStreamFactory class (with auto-detection of file types), TarArchiveInputStream and TarFile 
+             classes to parse TAR files are impacted. Since this code was introduced in v1.22, only that version and later versions are impacted.</p>
+        </subsection>
+
         <subsection name="Fixed in Apache Commons Compress 1.21">
           <p><b>Low: Denial of Service</b> <a
           href="https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-35515">CVE-2021-35515</a></p>

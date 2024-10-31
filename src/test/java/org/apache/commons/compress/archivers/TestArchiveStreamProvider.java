@@ -37,12 +37,14 @@ public class TestArchiveStreamProvider implements ArchiveStreamProvider {
     }
 
     @Override
-    public ArchiveInputStream createArchiveInputStream(final String name, final InputStream in, final String encoding) throws ArchiveException {
+    public <T extends ArchiveInputStream<? extends ArchiveEntry>> T createArchiveInputStream(final String name, final InputStream in, final String encoding)
+            throws ArchiveException {
         throw new ArchiveInvocationConfirmationException(name);
     }
 
     @Override
-    public ArchiveOutputStream createArchiveOutputStream(final String name, final OutputStream out, final String encoding) throws ArchiveException {
+    public <T extends ArchiveOutputStream<? extends ArchiveEntry>> T createArchiveOutputStream(final String name, final OutputStream out, final String encoding)
+            throws ArchiveException {
         throw new ArchiveInvocationConfirmationException(name);
     }
 

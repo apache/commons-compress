@@ -28,7 +28,7 @@ import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
 import org.apache.commons.compress.utils.ArchiveUtils;
 import org.junit.jupiter.api.Test;
 
-public class ArchiveUtilsTest extends AbstractTestCase {
+public class ArchiveUtilsTest extends AbstractTest {
 
     private static final int bytesToTest = 50;
     private static final byte[] byteTest = new byte[bytesToTest];
@@ -50,36 +50,6 @@ public class ArchiveUtilsTest extends AbstractTestCase {
     }
 
     @Test
-    public void sanitizeLeavesShortStringsAlone() {
-        final String input = "012345678901234567890123456789012345678901234567890123456789";
-        assertEquals(input, ArchiveUtils.sanitize(input));
-    }
-
-    @Test
-    public void sanitizeRemovesUnprintableCharacters() {
-        final String input = "\b12345678901234567890123456789012345678901234567890123456789";
-        final String expected = "?12345678901234567890123456789012345678901234567890123456789";
-        assertEquals(expected, ArchiveUtils.sanitize(input));
-    }
-
-    @Test
-    public void sanitizeShortensString() {
-        // @formatter:off
-        final String input = "012345678901234567890123456789012345678901234567890123456789"
-            + "012345678901234567890123456789012345678901234567890123456789"
-            + "012345678901234567890123456789012345678901234567890123456789"
-            + "012345678901234567890123456789012345678901234567890123456789"
-            + "012345678901234567890123456789012345678901234567890123456789";
-        final String expected = "012345678901234567890123456789012345678901234567890123456789"
-            + "012345678901234567890123456789012345678901234567890123456789"
-            + "012345678901234567890123456789012345678901234567890123456789"
-            + "012345678901234567890123456789012345678901234567890123456789"
-            + "012345678901...";
-        // @formatter:on
-        assertEquals(expected, ArchiveUtils.sanitize(input));
-    }
-
-    @Test
     public void testAsciiConversions() {
         asciiToByteAndBackOK("");
         asciiToByteAndBackOK("abcd");
@@ -88,8 +58,8 @@ public class ArchiveUtilsTest extends AbstractTestCase {
 
     @Test
     public void testCompareAscii() {
-        final byte[] buffer1 = {'a', 'b', 'c'};
-        final byte[] buffer2 = {'d', 'e', 'f', 0};
+        final byte[] buffer1 = { 'a', 'b', 'c' };
+        final byte[] buffer2 = { 'd', 'e', 'f', 0 };
         assertTrue(ArchiveUtils.matchAsciiBuffer("abc", buffer1));
         assertFalse(ArchiveUtils.matchAsciiBuffer("abc\0", buffer1));
         assertTrue(ArchiveUtils.matchAsciiBuffer("def\0", buffer2));
@@ -98,9 +68,9 @@ public class ArchiveUtilsTest extends AbstractTestCase {
 
     @Test
     public void testCompareBA() {
-        final byte[] buffer1 = {1, 2, 3};
-        final byte[] buffer2 = {1, 2, 3, 0};
-        final byte[] buffer3 = {1, 2, 3};
+        final byte[] buffer1 = { 1, 2, 3 };
+        final byte[] buffer2 = { 1, 2, 3, 0 };
+        final byte[] buffer3 = { 1, 2, 3 };
         assertTrue(ArchiveUtils.isEqual(buffer1, buffer2, true));
         assertFalse(ArchiveUtils.isEqual(buffer1, buffer2, false));
         assertFalse(ArchiveUtils.isEqual(buffer1, buffer2));
@@ -119,14 +89,44 @@ public class ArchiveUtilsTest extends AbstractTestCase {
     @Test
     public void testIsEqualWithNullWithPositive() {
         final byte[] byteArray = new byte[8];
-        byteArray[1] = (byte) (-77);
+        byteArray[1] = (byte) -77;
         assertFalse(ArchiveUtils.isEqualWithNull(byteArray, 0, (byte) 0, byteArray, (byte) 0, (byte) 80));
+    }
+
+    @Test
+    public void testSanitizeLeavesShortStringsAlone() {
+        final String input = "012345678901234567890123456789012345678901234567890123456789";
+        assertEquals(input, ArchiveUtils.sanitize(input));
+    }
+
+    @Test
+    public void testSanitizeRemovesUnprintableCharacters() {
+        final String input = "\b12345678901234567890123456789012345678901234567890123456789";
+        final String expected = "?12345678901234567890123456789012345678901234567890123456789";
+        assertEquals(expected, ArchiveUtils.sanitize(input));
+    }
+
+    @Test
+    public void testSanitizeShortensString() {
+        // @formatter:off
+        final String input = "012345678901234567890123456789012345678901234567890123456789"
+            + "012345678901234567890123456789012345678901234567890123456789"
+            + "012345678901234567890123456789012345678901234567890123456789"
+            + "012345678901234567890123456789012345678901234567890123456789"
+            + "012345678901234567890123456789012345678901234567890123456789";
+        final String expected = "012345678901234567890123456789012345678901234567890123456789"
+            + "012345678901234567890123456789012345678901234567890123456789"
+            + "012345678901234567890123456789012345678901234567890123456789"
+            + "012345678901234567890123456789012345678901234567890123456789"
+            + "012345678901...";
+        // @formatter:on
+        assertEquals(expected, ArchiveUtils.sanitize(input));
     }
 
     @Test
     public void testToAsciiBytes() {
         final byte[] byteArray = ArchiveUtils.toAsciiBytes("SOCKET");
-        assertArrayEquals(new byte[] {(byte) 83, (byte) 79, (byte) 67, (byte) 75, (byte) 69, (byte) 84}, byteArray);
+        assertArrayEquals(new byte[] { (byte) 83, (byte) 79, (byte) 67, (byte) 75, (byte) 69, (byte) 84 }, byteArray);
         assertFalse(ArchiveUtils.isEqualWithNull(byteArray, 0, 46, byteArray, 63, 0));
     }
 

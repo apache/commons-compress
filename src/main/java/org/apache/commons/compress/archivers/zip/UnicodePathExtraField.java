@@ -20,11 +20,11 @@ package org.apache.commons.compress.archivers.zip;
 /**
  * Info-ZIP Unicode Path Extra Field (0x7075):
  *
- * <p>Stores the UTF-8 version of the file name field as stored in the
- * local header and central directory header.</p>
+ * <p>
+ * Stores the UTF-8 version of the file name field as stored in the local header and central directory header.
+ * </p>
  *
- * @see <a href="https://www.pkware.com/documents/casestudies/APPNOTE.TXT">PKWARE
- * APPNOTE.TXT, section 4.6.9</a>
+ * @see <a href="https://www.pkware.com/documents/casestudies/APPNOTE.TXT">PKWARE APPNOTE.TXT, section 4.6.9</a>
  *
  * @NotThreadSafe super-class is not thread-safe
  */
@@ -32,14 +32,13 @@ public class UnicodePathExtraField extends AbstractUnicodeExtraField {
 
     public static final ZipShort UPATH_ID = new ZipShort(0x7075);
 
-    public UnicodePathExtraField () {
+    public UnicodePathExtraField() {
     }
 
     /**
-     * Assemble as unicode path extension from the name given as
-     * text as well as the encoded bytes actually written to the archive.
+     * Assemble as unicode path extension from the name given as text as well as the encoded bytes actually written to the archive.
      *
-     * @param name The file name
+     * @param name  The file name
      * @param bytes the bytes actually written to the archive
      */
     public UnicodePathExtraField(final String name, final byte[] bytes) {
@@ -47,14 +46,12 @@ public class UnicodePathExtraField extends AbstractUnicodeExtraField {
     }
 
     /**
-     * Assemble as unicode path extension from the name given as
-     * text as well as the encoded bytes actually written to the archive.
+     * Assemble as unicode path extension from the name given as text as well as the encoded bytes actually written to the archive.
      *
-     * @param text The file name
+     * @param text  The file name
      * @param bytes the bytes actually written to the archive
-     * @param off The offset of the encoded file name in {@code bytes}.
-     * @param len The length of the encoded file name or comment in
-     * {@code bytes}.
+     * @param off   The offset of the encoded file name in {@code bytes}.
+     * @param len   The length of the encoded file name or comment in {@code bytes}.
      */
     public UnicodePathExtraField(final String text, final byte[] bytes, final int off, final int len) {
         super(text, bytes, off, len);

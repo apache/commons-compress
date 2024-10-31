@@ -22,6 +22,7 @@ import java.nio.ByteBuffer;
 
 /**
  * NIO backed bounded input stream for reading a predefined amount of data from.
+ *
  * @ThreadSafe this base class is thread safe but implementations must not be.
  * @since 1.21
  */
@@ -32,7 +33,7 @@ public abstract class BoundedArchiveInputStream extends InputStream {
     private long loc;
 
     /**
-     * Create a new bounded input stream.
+     * Constructs a new bounded input stream.
      *
      * @param start     position in the stream from where the reading of this bounded stream starts.
      * @param remaining amount of bytes which are allowed to read from the bounded stream.
@@ -86,7 +87,8 @@ public abstract class BoundedArchiveInputStream extends InputStream {
     }
 
     /**
-     * Read content of the stream into a {@link ByteBuffer}.
+     * Reads content of the stream into a {@link ByteBuffer}.
+     *
      * @param pos position to start the read.
      * @param buf buffer to add the read content.
      * @return number of read bytes.

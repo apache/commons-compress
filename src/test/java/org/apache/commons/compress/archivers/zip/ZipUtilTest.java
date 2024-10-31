@@ -36,22 +36,16 @@ import org.junit.jupiter.api.Test;
 
 public class ZipUtilTest {
 
-    static void assertDosDate(
-            final long value,
-            final int year,
-            final int month,
-            final int day,
-            final int hour,
-            final int minute,
-            final int second) {
+    static void assertDosDate(final long value, final int year, final int month, final int day, final int hour, final int minute, final int second) {
         int pos = 0;
-        assertEquals((year - 1980), ((int) (value << pos)) >>> (32 - 7));
-        assertEquals(month, ((int) (value << (pos += 7))) >>> (32 - 4));
-        assertEquals(day, ((int) (value << (pos += 4))) >>> (32 - 5));
-        assertEquals(hour, ((int) (value << (pos += 5))) >>> (32 - 5));
-        assertEquals(minute, ((int) (value << (pos += 5))) >>> (32 - 6));
-        assertEquals(second, ((int) (value << (pos + 6))) >>> (32 - 5) << 1); // DOS dates only store even seconds
+        assertEquals(year - 1980, (int) (value << pos) >>> 32 - 7);
+        assertEquals(month, (int) (value << (pos += 7)) >>> 32 - 4);
+        assertEquals(day, (int) (value << (pos += 4)) >>> 32 - 5);
+        assertEquals(hour, (int) (value << (pos += 5)) >>> 32 - 5);
+        assertEquals(minute, (int) (value << (pos += 5)) >>> 32 - 6);
+        assertEquals(second, (int) (value << pos + 6) >>> 32 - 5 << 1); // DOS dates only store even seconds
     }
+
     static Instant toLocalInstant(final String date) {
         return LocalDateTime.parse(date).atZone(ZoneId.systemDefault()).toInstant();
     }
@@ -68,16 +62,16 @@ public class ZipUtilTest {
         final int year = cal.get(Calendar.YEAR);
         final int month = cal.get(Calendar.MONTH) + 1;
         // @formatter:off
-        final long value = ((year - 1980) << 25)
-            | (month << 21)
-            | (cal.get(Calendar.DAY_OF_MONTH) << 16)
-            | (cal.get(Calendar.HOUR_OF_DAY) << 11)
-            | (cal.get(Calendar.MINUTE) << 5)
-            | (cal.get(Calendar.SECOND) >> 1);
+        final long value = year - 1980 << 25
+            | month << 21
+            | cal.get(Calendar.DAY_OF_MONTH) << 16
+            | cal.get(Calendar.HOUR_OF_DAY) << 11
+            | cal.get(Calendar.MINUTE) << 5
+            | cal.get(Calendar.SECOND) >> 1;
         // @formatter:on
 
         final byte[] result = new byte[4];
-        result[0] = (byte) ((value & 0xFF));
+        result[0] = (byte) (value & 0xFF);
         result[1] = (byte) ((value & 0xFF00) >> 8);
         result[2] = (byte) ((value & 0xFF0000) >> 16);
         result[3] = (byte) ((value & 0xFF000000L) >> 24);
@@ -86,12 +80,9 @@ public class ZipUtilTest {
 
     @Test
     public void testAdjustToLong() {
-        assertEquals(Integer.MAX_VALUE,
-                     ZipUtil.adjustToLong(Integer.MAX_VALUE));
-        assertEquals(((long) Integer.MAX_VALUE) + 1,
-                     ZipUtil.adjustToLong(Integer.MAX_VALUE + 1));
-        assertEquals(2 * ((long) Integer.MAX_VALUE),
-                     ZipUtil.adjustToLong(2 * Integer.MAX_VALUE));
+        assertEquals(Integer.MAX_VALUE, ZipUtil.adjustToLong(Integer.MAX_VALUE));
+        assertEquals((long) Integer.MAX_VALUE + 1, ZipUtil.adjustToLong(Integer.MAX_VALUE + 1));
+        assertEquals(2 * (long) Integer.MAX_VALUE, ZipUtil.adjustToLong(2 * Integer.MAX_VALUE));
     }
 
     @Test
@@ -105,8 +96,7 @@ public class ZipUtilTest {
         assertEquals(Long.MIN_VALUE, ZipUtil.bigToLong(big3));
 
         final BigInteger big4 = big2.add(big1);
-        assertThrows(IllegalArgumentException.class, () -> ZipUtil.bigToLong(big4),
-                "Should have thrown IllegalArgumentException");
+        assertThrows(IllegalArgumentException.class, () -> ZipUtil.bigToLong(big4), "Should have thrown IllegalArgumentException");
 
         final BigInteger big5 = big3.subtract(big1);
         assertThrows(IllegalArgumentException.class, () -> ZipUtil.bigToLong(big5),
@@ -130,11 +120,11 @@ public class ZipUtilTest {
         testDosTime = ZipUtil.toDosTime(time);
         testDate = ZipUtil.fromDosTime(testDosTime);
         // the minimal time unit for dos time is 2 seconds
-        assertEquals(testDate.getTime() / 2000, (time.getTime() / 2000));
+        assertEquals(testDate.getTime() / 2000, time.getTime() / 2000);
     }
 
     @Test
-    public void testInsideCalendar(){
+    public void testInsideCalendar() {
         final long date = toLocalInstant("1985-02-01T09:00:00").toEpochMilli();
         final byte[] b1 = ZipUtil.toDosTime(date);
         assertEquals(0, b1[0]);
@@ -142,33 +132,37 @@ public class ZipUtilTest {
         assertEquals(65, b1[2]);
         assertEquals(10, b1[3]);
     }
+
     @Test
-    public void testInsideCalendar_bigValue(){
+    public void testInsideCalendar_bigValue() {
         final long date = toLocalInstant("2097-11-27T23:59:59").toEpochMilli();
         final long value = ZipLong.getValue(ZipUtil.toDosTime(date));
         assertDosDate(value, 2097, 11, 27, 23, 59, 58); // DOS dates only store even seconds
     }
 
     @Test
-    public void testInsideCalendar_long(){
+    public void testInsideCalendar_long() {
         final long date = toLocalInstant("1985-02-01T09:00:00").toEpochMilli();
         final long value = ZipLong.getValue(ZipUtil.toDosTime(date));
         assertDosDate(value, 1985, 2, 1, 9, 0, 0);
     }
 
     @Test
-    public void testInsideCalendar_modernDate(){
+    public void testInsideCalendar_modernDate() {
         final long date = toLocalInstant("2022-12-27T16:18:23").toEpochMilli();
         final long value = ZipLong.getValue(ZipUtil.toDosTime(date));
         assertDosDate(value, 2022, 12, 27, 16, 18, 22); // DOS dates only store even seconds
     }
 
     @Test
-    public void testIsDosTime(){
+    public void testIsDosTime() {
         assertFalse(ZipUtil.isDosTime(toLocalInstant("1975-01-31T23:00:00").toEpochMilli()));
         assertTrue(ZipUtil.isDosTime(toLocalInstant("1980-01-03T00:00:00").toEpochMilli()));
         assertTrue(ZipUtil.isDosTime(toLocalInstant("2097-11-27T00:00:00").toEpochMilli()));
         assertFalse(ZipUtil.isDosTime(toLocalInstant("2099-01-01T00:00:00").toEpochMilli()));
+        // The lowest data/time expressable as DOS Time, see comment in ZipUtil#DOSTIME_BEFORE_1980
+        final long lowestExpressableDosTime = 1 << 21 | 1 << 16; // 0x210000
+        assertTrue(ZipUtil.isDosTime(ZipUtil.dosToJavaTime(lowestExpressableDosTime)));
     }
 
     @Test
@@ -192,21 +186,20 @@ public class ZipUtilTest {
         assertEquals(0x80000000L, big3.longValue());
         assertEquals(Long.MAX_VALUE, big4.longValue());
 
-        assertThrows(IllegalArgumentException.class, () -> ZipUtil.longToBig(l5),
-                "ZipUtil.longToBig(long) should have thrown IllegalArgumentException");
+        assertThrows(IllegalArgumentException.class, () -> ZipUtil.longToBig(l5), "ZipUtil.longToBig(long) should have thrown IllegalArgumentException");
     }
 
     @Test
-    public void testMinTime(){
+    public void testMinTime() {
         final byte[] b1 = ZipUtil.toDosTime(0);
         final byte b10 = b1[0]; // Save the first byte
         b1[0]++; // change it
         final byte[] b2 = ZipUtil.toDosTime(0); // get the same time
-        assertEquals(b10,b2[0]); // first byte should still be the same
+        assertEquals(b10, b2[0]); // first byte should still be the same
     }
 
     @Test
-    public void testOutsideCalendar(){
+    public void testOutsideCalendar() {
         final long date = toLocalInstant("1975-01-31T23:00:00").toEpochMilli();
         final byte[] b1 = ZipUtil.toDosTime(date);
         assertEquals(0, b1[0]);
@@ -216,7 +209,7 @@ public class ZipUtilTest {
     }
 
     @Test
-    public void testOutsideCalendar_long(){
+    public void testOutsideCalendar_long() {
         final long date = toLocalInstant("1975-01-31T23:00:00").toEpochMilli();
         final long value = ZipLong.getValue(ZipUtil.toDosTime(date));
         assertDosDate(value, 1980, 1, 1, 0, 0, 0);
@@ -225,20 +218,20 @@ public class ZipUtilTest {
     @Test
     public void testReverse() {
         final byte[][] bTest = new byte[6][];
-        bTest[0] = new byte[]{};
-        bTest[1] = new byte[]{1};
-        bTest[2] = new byte[]{1, 2};
-        bTest[3] = new byte[]{1, 2, 3};
-        bTest[4] = new byte[]{1, 2, 3, 4};
-        bTest[5] = new byte[]{1, 2, 3, 4, 5};
+        bTest[0] = new byte[] {};
+        bTest[1] = new byte[] { 1 };
+        bTest[2] = new byte[] { 1, 2 };
+        bTest[3] = new byte[] { 1, 2, 3 };
+        bTest[4] = new byte[] { 1, 2, 3, 4 };
+        bTest[5] = new byte[] { 1, 2, 3, 4, 5 };
 
         final byte[][] rTest = new byte[6][];
-        rTest[0] = new byte[]{};
-        rTest[1] = new byte[]{1};
-        rTest[2] = new byte[]{2, 1};
-        rTest[3] = new byte[]{3, 2, 1};
-        rTest[4] = new byte[]{4, 3, 2, 1};
-        rTest[5] = new byte[]{5, 4, 3, 2, 1};
+        rTest[0] = new byte[] {};
+        rTest[1] = new byte[] { 1 };
+        rTest[2] = new byte[] { 2, 1 };
+        rTest[3] = new byte[] { 3, 2, 1 };
+        rTest[4] = new byte[] { 4, 3, 2, 1 };
+        rTest[5] = new byte[] { 5, 4, 3, 2, 1 };
 
         assertEquals(bTest.length, rTest.length, "test and result arrays are same length");
 

@@ -22,32 +22,33 @@ import java.io.Closeable;
 import java.io.IOException;
 
 /**
- * Callback that is informed about a closable resource that has been
- * wrapped around a passed in stream or channel by Expander or
- * Archiver when Expander or Archiver no longer need them.
+ * Callback that is informed about a closable resource that has been wrapped around a passed in stream or channel by Expander or Archiver when Expander or
+ * Archiver no longer need them.
  *
- * <p>This provides a way to close said resources in the calling code.</p>
+ * <p>
+ * This provides a way to close said resources in the calling code.
+ * </p>
  *
  * @since 1.19
  */
 public interface CloseableConsumer {
+
     /**
      * Closes the passed in Closeable immediately.
      */
     CloseableConsumer CLOSING_CONSUMER = Closeable::close;
 
     /**
-     * Completely ignores the passed in Closeable.
+     * Ignores the passed in Closeable.
      */
-    CloseableConsumer NULL_CONSUMER = c -> { };
+    CloseableConsumer NULL_CONSUMER = c -> {
+    };
 
     /**
-     * Callback that is informed about a closable resource that has
-     * been wrapped around a passed in stream or channel by Expander
-     * or Archiver when Expander or Archiver no longer need them.
+     * Callback that is informed about a Closeable resource that has been wrapped around a passed in stream or channel by Expander or Archiver when Expander or
+     * Archiver no longer need them.
      *
-     * @param c Closeable created by Expander or Archiver that is now
-     * no longer used
+     * @param c Closeable created by Expander or Archiver that is now no longer used
      *
      * @throws IOException on error
      */

@@ -19,8 +19,8 @@ package org.apache.commons.compress.harmony.pack200;
 import java.util.Arrays;
 
 /**
- * IntList is based on {@code java.util.ArrayList}, but is written specifically for ints in order to reduce boxing
- * and unboxing to Integers, reduce the memory required and improve performance of pack200.
+ * IntList is based on {@link java.util.ArrayList}, but is written specifically for ints in order to reduce boxing and unboxing to Integers, reduce the memory
+ * required and improve performance of pack200.
  */
 public class IntList {
 
@@ -69,7 +69,7 @@ public class IntList {
         if (0 < location && location < size) {
             if (firstIndex == 0 && lastIndex == array.length) {
                 growForInsert(location, 1);
-            } else if ((location < size / 2 && firstIndex > 0) || lastIndex == array.length) {
+            } else if (location < size / 2 && firstIndex > 0 || lastIndex == array.length) {
                 System.arraycopy(array, firstIndex, array, --firstIndex, location);
             } else {
                 final int index = location + firstIndex;
@@ -110,7 +110,7 @@ public class IntList {
     }
 
     public int get(final int location) {
-        if (0 <= location && location < (lastIndex - firstIndex)) {
+        if (0 <= location && location < lastIndex - firstIndex) {
             return array[firstIndex + location];
         }
         throw new IndexOutOfBoundsException("" + location);
@@ -193,7 +193,7 @@ public class IntList {
     }
 
     public void increment(final int location) {
-        if ((0 > location) || (location >= (lastIndex - firstIndex))) {
+        if (0 > location || location >= lastIndex - firstIndex) {
             throw new IndexOutOfBoundsException("" + location);
         }
         array[firstIndex + location]++;
@@ -206,7 +206,7 @@ public class IntList {
     public int remove(final int location) {
         int result;
         final int size = lastIndex - firstIndex;
-        if ((0 > location) || (location >= size)) {
+        if (0 > location || location >= size) {
             throw new IndexOutOfBoundsException();
         }
         if (location == size - 1) {

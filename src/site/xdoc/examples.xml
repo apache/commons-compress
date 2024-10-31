@@ -31,7 +31,7 @@
         collect multiple entries inside a single (potentially
         compressed) archive are archiver formats.</p>
 
-        <p>The compressor formats supported are gzip, bzip2, xz, lzma,
+        <p>The compressor formats supported are gzip, bzip2, XZ, LZMA,
         Pack200, DEFLATE, Brotli, DEFLATE64, ZStandard and Z, the archiver formats are 7z, ar, arj,
         cpio, dump, tar and zip.  Pack200 is a special case as it can
         only compress JAR files.</p>
@@ -82,7 +82,7 @@ CompressorInputStream input = new CompressorStreamFactory()
     .createCompressorInputStream(originalInput);
 ]]></source>
 
-        <p>Note that there is no way to detect the lzma or Brotli formats so only
+        <p>Note that there is no way to detect the LZMA or Brotli formats so only
         the two-arg version of
         <code>createCompressorInputStream</code> can be used.  Prior
         to Compress 1.9 the .Z format hasn't been auto-detected
@@ -433,13 +433,13 @@ LOOP UNTIL entry.getSize() HAS BEEN READ {
 
         <h4><a name="Recovering from Certain Broken 7z Archives"></a>Recovering from Certain Broken 7z Archives</h4>
 
-        <p>Starting with Compress 1.19 <code>SevenZFile</code> tries
+        <p><code>SevenZFile</code> tries
         to recover archives that look as if they were part of a
         multi-volume archive where the first volume has been removed
         too early.</p>
 
-        <p>Starting with Compress 1.21 this option has to be enabled
-        explicitly in <code>SevenZFileOptions</code>. The way recovery
+        <p>This option has to be enabled
+        explicitly in <code>SevenZFile.Builder</code>. The way recovery
         works is by Compress scanning an archive from the end for
         something that might look like valid 7z metadata and use that,
         if it can successfully parse the block of data. When doing so
@@ -447,7 +447,7 @@ LOOP UNTIL entry.getSize() HAS BEEN READ {
         metadata of very large archives which in turn may make
         Compress allocate a lot of memory. Therefore we strongly
         recommend you also set a memory limit inside the
-        <code>SevenZFileOptions</code> if you enable recovery.</p>
+        <code>SevenZFile.Builder</code> if you enable recovery.</p>
       </subsection>
 
       <subsection name="ar">
@@ -757,7 +757,7 @@ public class ScatterSample {
     <section name="Compressors">
 
       <subsection name="Concatenated Streams">
-        <p>For the bzip2, gzip and xz formats as well as the framed
+        <p>For the bzip2, gzip and XZ formats as well as the framed
         lz4 format a single compressed file
         may actually consist of several streams that will be
         concatenated by the command line utilities when decompressing
@@ -991,7 +991,7 @@ in.close();
           public domain <a href="https://tukaani.org/xz/java.html">XZ
           for Java</a> library.</p>
 
-        <p>Uncompressing a given lzma compressed file (you would
+        <p>Uncompressing a given LZMA compressed file (you would
           certainly add exception handling and make sure all streams
           get closed properly):</p>
 <source><![CDATA[
@@ -1008,7 +1008,7 @@ out.close();
 lzmaIn.close();
 ]]></source>
 
-        <p>Compressing a given file using lzma (you would
+        <p>Compressing a given file using LZMA (you would
           certainly add exception handling and make sure all streams
           get closed properly):</p>
 <source><![CDATA[

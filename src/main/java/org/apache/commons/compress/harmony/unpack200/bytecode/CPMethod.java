@@ -30,6 +30,7 @@ public class CPMethod extends CPMember {
     public CPMethod(final CPUTF8 name, final CPUTF8 descriptor, final long flags, final List<Attribute> attributes) {
         super(name, descriptor, flags, attributes);
     }
+
     private void generateHashCode() {
         hashCodeComputed = true;
         final int PRIME = 31;

@@ -32,14 +32,14 @@
  * <a href="https://download.oracle.com/javase/1.5.0/docs/api/java/util/jar/Pack200.html">API documentation of Pack200</a>.
  * </p>
  * <p>
- * The streams of this package work on non-deflated streams, i.e. archives like those created with the <code>--no-gzip</code> option of the JDK's
- * <code>pack200</code> command line tool. If you want to work on deflated streams you must use an additional stream layer - for example by using Apache Commons
+ * The streams of this package work on non-deflated streams, i.e. archives like those created with the {@code --no-gzip} option of the JDK's
+ * {@code pack200} command line tool. If you want to work on deflated streams you must use an additional stream layer - for example by using Apache Commons
  * Compress' gzip package.
  * </p>
  * <p>
- * The Pack200 API provided by the Java class library doesn't lend itself to real stream processing. <code>Pack200CompressorInputStream</code> will uncompress
- * its input immediately and then provide an <code>InputStream</code> to a cached result. Likewise <code>Pack200CompressorOutputStream</code> will not write
- * anything to the given OutputStream until <code>finish</code> or <code>close</code> is called - at which point the cached output written so far gets
+ * The Pack200 API provided by the Java class library doesn't lend itself to real stream processing. {@code Pack200CompressorInputStream} will uncompress
+ * its input immediately and then provide an {@code InputStream} to a cached result. Likewise {@code Pack200CompressorOutputStream} will not write
+ * anything to the given OutputStream until {@code finish} or {@code close} is called - at which point the cached output written so far gets
  * compressed.
  * </p>
  * <p>
@@ -47,14 +47,14 @@
  * switch to the temporary file option if your archives are really big.
  * </p>
  * <p>
- * Given there always is an intermediate result the <code>getBytesRead</code> and <code>getCount</code> methods of <code>Pack200CompressorInputStream</code> are
+ * Given there always is an intermediate result the {@code getBytesRead} and {@code getCount} methods of {@code Pack200CompressorInputStream} are
  * meaningless (read from the real stream or from the intermediate result?) and always return 0.
  * </p>
  * <p>
  * During development of the initial version several attempts have been made to use a real streaming API based for example on
- * <code>Piped(In|Out)putStream</code> or explicit stream pumping like Commons Exec's <code>InputStreamPumper</code> but they have all failed because they rely
- * on the output end to be consumed completely or else the <code>(un)pack</code> will block forever. Especially for <code>Pack200InputStream</code> it is very
- * likely that it will be wrapped in a <code>ZipArchiveInputStream</code> which will never read the archive completely as it is not interested in the ZIP
+ * {@code Piped(In|Out)putStream} or explicit stream pumping like Commons Exec's {@code InputStreamPumper} but they have all failed because they rely
+ * on the output end to be consumed completely or else the {@code (un)pack} will block forever. Especially for {@code Pack200InputStream} it is very
+ * likely that it will be wrapped in a {@code ZipArchiveInputStream} which will never read the archive completely as it is not interested in the ZIP
  * central directory data at the end of the JAR archive.
  * </p>
  */

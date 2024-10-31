@@ -22,8 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Parameter annotations class file attribute, either a RuntimeVisibleParameterAnnotations attribute or a
- * RuntimeInvisibleParameterAnnotations attribute.
+ * Parameter annotations class file attribute, either a RuntimeVisibleParameterAnnotations attribute or a RuntimeInvisibleParameterAnnotations attribute.
  */
 public class RuntimeVisibleorInvisibleParameterAnnotationsAttribute extends AnnotationsAttribute {
 
@@ -70,12 +69,12 @@ public class RuntimeVisibleorInvisibleParameterAnnotationsAttribute extends Anno
         }
 
     }
+
     private final int numParameters;
 
     private final ParameterAnnotation[] parameterAnnotations;
 
-    public RuntimeVisibleorInvisibleParameterAnnotationsAttribute(final CPUTF8 name,
-        final ParameterAnnotation[] parameterAnnotations) {
+    public RuntimeVisibleorInvisibleParameterAnnotationsAttribute(final CPUTF8 name, final ParameterAnnotation[] parameterAnnotations) {
         super(name);
         this.numParameters = parameterAnnotations.length;
         this.parameterAnnotations = parameterAnnotations;
@@ -97,7 +96,7 @@ public class RuntimeVisibleorInvisibleParameterAnnotationsAttribute extends Anno
         for (final ParameterAnnotation parameterAnnotation : parameterAnnotations) {
             nested.addAll(parameterAnnotation.getClassFileEntries());
         }
-        return nested.toArray(ClassFileEntry.NONE);
+        return nested.toArray(NONE);
     }
 
     @Override

@@ -23,26 +23,25 @@ import java.io.InputStream;
 
 import org.apache.commons.compress.MemoryLimitException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
-import org.apache.commons.compress.utils.CountingInputStream;
-import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
+import org.apache.commons.io.input.BoundedInputStream;
 import org.tukaani.xz.SingleXZInputStream;
 import org.tukaani.xz.XZ;
 import org.tukaani.xz.XZInputStream;
 
 /**
  * XZ decompressor.
+ *
  * @since 1.4
  */
-public class XZCompressorInputStream extends CompressorInputStream
-    implements InputStreamStatistics {
+public class XZCompressorInputStream extends CompressorInputStream implements InputStreamStatistics {
 
     /**
      * Checks if the signature matches what is expected for a .xz file.
      *
-     * @param   signature     the bytes to check
-     * @param   length        the number of bytes to check
-     * @return  true if signature matches the .xz magic bytes, false otherwise
+     * @param signature the bytes to check
+     * @param length    the number of bytes to check
+     * @return true if signature matches the .xz magic bytes, false otherwise
      */
     public static boolean matches(final byte[] signature, final int length) {
         if (length < XZ.HEADER_MAGIC.length) {
@@ -57,77 +56,53 @@ public class XZCompressorInputStream extends CompressorInputStream
 
         return true;
     }
-    private final CountingInputStream countingStream;
+
+    private final BoundedInputStream countingStream;
 
     private final InputStream in;
 
     /**
-     * Creates a new input stream that decompresses XZ-compressed data
-     * from the specified input stream. This doesn't support
-     * concatenated .xz files.
+     * Creates a new input stream that decompresses XZ-compressed data from the specified input stream. This doesn't support concatenated .xz files.
      *
-     * @param       inputStream where to read the compressed data
+     * @param inputStream where to read the compressed data
      *
-     * @throws      IOException if the input is not in the .xz format,
-     *                          the input is corrupt or truncated, the .xz
-     *                          headers specify options that are not supported
-     *                          by this implementation, or the underlying
-     *                          {@code inputStream} throws an exception
+     * @throws IOException if the input is not in the .xz format, the input is corrupt or truncated, the .xz headers specify options that are not supported by
+     *                     this implementation, or the underlying {@code inputStream} throws an exception
      */
-    public XZCompressorInputStream(final InputStream inputStream)
-            throws IOException {
+    public XZCompressorInputStream(final InputStream inputStream) throws IOException {
         this(inputStream, false);
     }
 
     /**
-     * Creates a new input stream that decompresses XZ-compressed data
-     * from the specified input stream.
+     * Creates a new input stream that decompresses XZ-compressed data from the specified input stream.
      *
-     * @param       inputStream where to read the compressed data
-     * @param       decompressConcatenated
-     *                          if true, decompress until the end of the
-     *                          input; if false, stop after the first .xz
-     *                          stream and leave the input position to point
-     *                          to the next byte after the .xz stream
+     * @param inputStream            where to read the compressed data
+     * @param decompressConcatenated if true, decompress until the end of the input; if false, stop after the first .xz stream and leave the input position to
+     *                               point to the next byte after the .xz stream
      *
-     * @throws      IOException if the input is not in the .xz format,
-     *                          the input is corrupt or truncated, the .xz
-     *                          headers specify options that are not supported
-     *                          by this implementation, or the underlying
-     *                          {@code inputStream} throws an exception
+     * @throws IOException if the input is not in the .xz format, the input is corrupt or truncated, the .xz headers specify options that are not supported by
+     *                     this implementation, or the underlying {@code inputStream} throws an exception
      */
-    public XZCompressorInputStream(final InputStream inputStream,
-                                   final boolean decompressConcatenated)
-            throws IOException {
+    public XZCompressorInputStream(final InputStream inputStream, final boolean decompressConcatenated) throws IOException {
         this(inputStream, decompressConcatenated, -1);
     }
 
     /**
-     * Creates a new input stream that decompresses XZ-compressed data
-     * from the specified input stream.
+     * Creates a new input stream that decompresses XZ-compressed data from the specified input stream.
      *
-     * @param       inputStream where to read the compressed data
-     * @param       decompressConcatenated
-     *                          if true, decompress until the end of the
-     *                          input; if false, stop after the first .xz
-     *                          stream and leave the input position to point
-     *                          to the next byte after the .xz stream
-     * @param       memoryLimitInKb memory limit used when reading blocks.  If
-     *                          the estimated memory limit is exceeded on {@link #read()},
-     *                          a {@link MemoryLimitException} is thrown.
+     * @param inputStream            where to read the compressed data
+     * @param decompressConcatenated if true, decompress until the end of the input; if false, stop after the first .xz stream and leave the input position to
+     *                               point to the next byte after the .xz stream
+     * @param memoryLimitInKb        memory limit used when reading blocks. If the estimated memory limit is exceeded on {@link #read()}, a
+     *                               {@link MemoryLimitException} is thrown.
      *
-     * @throws      IOException if the input is not in the .xz format,
-     *                          the input is corrupt or truncated, the .xz
-     *                          headers specify options that are not supported
-     *                          by this implementation,
-     *                          or the underlying {@code inputStream} throws an exception
+     * @throws IOException if the input is not in the .xz format, the input is corrupt or truncated, the .xz headers specify options that are not supported by
+     *                     this implementation, or the underlying {@code inputStream} throws an exception
      *
      * @since 1.14
      */
-    public XZCompressorInputStream(final InputStream inputStream,
-                                   final boolean decompressConcatenated, final int memoryLimitInKb)
-            throws IOException {
-        countingStream = new CountingInputStream(inputStream);
+    public XZCompressorInputStream(final InputStream inputStream, final boolean decompressConcatenated, final int memoryLimitInKb) throws IOException {
+        countingStream = BoundedInputStream.builder().setInputStream(inputStream).get();
         if (decompressConcatenated) {
             in = new XZInputStream(countingStream, memoryLimitInKb);
         } else {
@@ -150,7 +125,7 @@ public class XZCompressorInputStream extends CompressorInputStream
      */
     @Override
     public long getCompressedCount() {
-        return countingStream.getBytesRead();
+        return countingStream.getCount();
     }
 
     @Override
@@ -174,7 +149,7 @@ public class XZCompressorInputStream extends CompressorInputStream
             count(ret);
             return ret;
         } catch (final org.tukaani.xz.MemoryLimitException e) {
-            //convert to commons-compress MemoryLimtException
+            // convert to commons-compress MemoryLimtException
             throw new MemoryLimitException(e.getMemoryNeeded(), e.getMemoryLimit(), e);
         }
     }
@@ -182,9 +157,9 @@ public class XZCompressorInputStream extends CompressorInputStream
     @Override
     public long skip(final long n) throws IOException {
         try {
-            return IOUtils.skip(in, n);
+            return org.apache.commons.io.IOUtils.skip(in, n);
         } catch (final org.tukaani.xz.MemoryLimitException e) {
-            //convert to commons-compress MemoryLimtException
+            // convert to commons-compress MemoryLimtException
             throw new MemoryLimitException(e.getMemoryNeeded(), e.getMemoryLimit(), e);
         }
     }

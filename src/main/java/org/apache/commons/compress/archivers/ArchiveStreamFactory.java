@@ -49,10 +49,8 @@ import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.Sets;
 
 /**
- * Factory to create Archive[In|Out]putStreams from names or the first bytes of
- * the InputStream. In order to add other implementations, you should extend
- * ArchiveStreamFactory and override the appropriate methods (and call their
- * implementation from super of course).
+ * Creates an Archive[In|Out]putStreams from names or the first bytes of the InputStream. In order to add other implementations, you should extend
+ * ArchiveStreamFactory and override the appropriate methods (and call their implementation from super of course).
  *
  * Compressing a ZIP-File:
  *
@@ -75,12 +73,13 @@ import org.apache.commons.compress.utils.Sets;
  * <pre>
  * final InputStream is = Files.newInputStream(input.toPath());
  * ArchiveInputStream in = new ArchiveStreamFactory().createArchiveInputStream(ArchiveStreamFactory.ZIP, is);
- * ZipArchiveEntry entry = (ZipArchiveEntry)in.getNextEntry();
+ * ZipArchiveEntry entry = (ZipArchiveEntry) in.getNextEntry();
  * OutputStream out = Files.newOutputStream(dir.toPath().resolve(entry.getName()));
  * IOUtils.copy(in, out);
  * out.close();
  * in.close();
  * </pre>
+ *
  * @Immutable provided that the deprecated method setEntryEncoding is not used.
  * @ThreadSafe even if the deprecated method setEntryEncoding is used
  */
@@ -88,7 +87,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
 
     private static final int TAR_HEADER_SIZE = 512;
 
-    private static final int MAX_TAR_RECORDS = 10;
+    private static final int TAR_TEST_ENTRY_COUNT = 10;
 
     private static final int DUMP_SIGNATURE_SIZE = 32;
 
@@ -96,6 +95,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
 
     /**
      * The singleton instance using the platform default encoding.
+     *
      * @since 1.21
      */
     public static final ArchiveStreamFactory DEFAULT = new ArchiveStreamFactory();
@@ -142,50 +142,56 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
 
     /**
      * Constant (value {@value}) used to identify the AR archive format.
+     *
      * @since 1.1
      */
     public static final String AR = "ar";
 
     /**
-     * Constant (value {@value}) used to identify the ARJ archive format.
-     * Not supported as an output stream type.
+     * Constant (value {@value}) used to identify the ARJ archive format. Not supported as an output stream type.
+     *
      * @since 1.6
      */
     public static final String ARJ = "arj";
 
     /**
      * Constant (value {@value}) used to identify the CPIO archive format.
+     *
      * @since 1.1
      */
     public static final String CPIO = "cpio";
 
     /**
-     * Constant (value {@value}) used to identify the Unix DUMP archive format.
-     * Not supported as an output stream type.
+     * Constant (value {@value}) used to identify the UNIX DUMP archive format. Not supported as an output stream type.
+     *
      * @since 1.3
      */
     public static final String DUMP = "dump";
 
     /**
      * Constant (value {@value}) used to identify the JAR archive format.
+     *
      * @since 1.1
      */
     public static final String JAR = "jar";
 
     /**
      * Constant used to identify the TAR archive format.
+     *
      * @since 1.1
      */
     public static final String TAR = "tar";
 
     /**
      * Constant (value {@value}) used to identify the ZIP archive format.
+     *
      * @since 1.1
      */
     public static final String ZIP = "zip";
 
     /**
      * Constant (value {@value}) used to identify the 7z archive format.
+     *
      * @since 1.8
      */
     public static final String SEVEN_Z = "7z";
@@ -201,7 +207,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
      *     If the first non-directory record with length > 1 is parseable, then
      *     {@link ArchiveStreamFactory#TAR} is returned.  There are heuristic
      *     limits set on the number of bytes read ({@link ArchiveStreamFactory#TAR_HEADER_SIZE})
-     *     and the maximum number of records to read ({@link ArchiveStreamFactory#MAX_TAR_RECORDS}).
+     *     and the maximum number of records to read ({@link ArchiveStreamFactory#TAR_TEST_ENTRY_COUNT}).
      *
      * @param in input stream
      * @return type of archiver if found
@@ -227,9 +233,11 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
             throw new ArchiveException("IOException while reading signature.", e);
         }
 
+        // For now JAR files are detected as ZIP files.
         if (ZipArchiveInputStream.matches(signature, signatureLength)) {
             return ZIP;
         }
+        // For now JAR files are detected as ZIP files.
         if (JarArchiveInputStream.matches(signature, signatureLength)) {
             return JAR;
         }
@@ -272,57 +280,42 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
             return TAR;
         }
 
-        // COMPRESS-117 - improve auto-recognition
+        // COMPRESS-117
         if (signatureLength >= TAR_HEADER_SIZE) {
-            TarArchiveInputStream tais = null;
-            try {
-                tais = new TarArchiveInputStream(new ByteArrayInputStream(tarHeader));
+            try (TarArchiveInputStream inputStream = new TarArchiveInputStream(new ByteArrayInputStream(tarHeader))) {
                 // COMPRESS-191 - verify the header checksum
                 // COMPRESS-644 - do not allow zero byte file entries
-                TarArchiveEntry tae = tais.getNextTarEntry();
-                //try to find the first non-directory entry within the first 10 entries.
+                TarArchiveEntry entry = inputStream.getNextEntry();
+                // try to find the first non-directory entry within the first 10 entries.
                 int count = 0;
-                while (tae != null && tae.isDirectory() && count++ < MAX_TAR_RECORDS) {
-                    tae = tais.getNextTarEntry();
+                while (entry != null && entry.isDirectory() && entry.isCheckSumOK() && count++ < TAR_TEST_ENTRY_COUNT) {
+                    entry = inputStream.getNextEntry();
                 }
-                if (tae != null && !tae.isDirectory()
-                        && tae.getSize() > 0 && tae.isCheckSumOK()) {
+                if (entry != null && entry.isCheckSumOK() && !entry.isDirectory() && entry.getSize() > 0 || count > 0) {
                     return TAR;
                 }
-            } catch (final Exception e) { // NOPMD NOSONAR
-                // can generate IllegalArgumentException as well
-                // as IOException
-                // autodetection, simply not a TAR
-                // ignored
-            } finally {
-                IOUtils.closeQuietly(tais);
+            } catch (final Exception ignored) {
+                // can generate IllegalArgumentException as well as IOException auto-detection, simply not a TAR ignored
             }
         }
         throw new ArchiveException("No Archiver found for the stream signature");
     }
 
     /**
-     * Constructs a new sorted map from input stream provider names to provider
-     * objects.
+     * Constructs a new sorted map from input stream provider names to provider objects.
      *
      * <p>
-     * The map returned by this method will have one entry for each provider for
-     * which support is available in the current Java virtual machine. If two or
-     * more supported provider have the same name then the resulting map will
-     * contain just one of them; which one it will contain is not specified.
+     * The map returned by this method will have one entry for each provider for which support is available in the current Java virtual machine. If two or more
+     * supported provider have the same name then the resulting map will contain just one of them; which one it will contain is not specified.
      * </p>
      *
      * <p>
-     * The invocation of this method, and the subsequent use of the resulting
-     * map, may cause time-consuming disk or network I/O operations to occur.
-     * This method is provided for applications that need to enumerate all of
-     * the available providers, for example to allow user provider selection.
+     * The invocation of this method, and the subsequent use of the resulting map, may cause time-consuming disk or network I/O operations to occur. This method
+     * is provided for applications that need to enumerate all of the available providers, for example to allow user provider selection.
      * </p>
      *
      * <p>
-     * This method may return different results at different times if new
-     * providers are dynamically made available to the current Java virtual
-     * machine.
+     * This method may return different results at different times if new providers are dynamically made available to the current Java virtual machine.
      * </p>
      *
      * @return An immutable, map from names to provider objects
@@ -338,27 +331,20 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
     }
 
     /**
-     * Constructs a new sorted map from output stream provider names to provider
-     * objects.
+     * Constructs a new sorted map from output stream provider names to provider objects.
      *
      * <p>
-     * The map returned by this method will have one entry for each provider for
-     * which support is available in the current Java virtual machine. If two or
-     * more supported provider have the same name then the resulting map will
-     * contain just one of them; which one it will contain is not specified.
+     * The map returned by this method will have one entry for each provider for which support is available in the current Java virtual machine. If two or more
+     * supported provider have the same name then the resulting map will contain just one of them; which one it will contain is not specified.
      * </p>
      *
      * <p>
-     * The invocation of this method, and the subsequent use of the resulting
-     * map, may cause time-consuming disk or network I/O operations to occur.
-     * This method is provided for applications that need to enumerate all of
-     * the available providers, for example to allow user provider selection.
+     * The invocation of this method, and the subsequent use of the resulting map, may cause time-consuming disk or network I/O operations to occur. This method
+     * is provided for applications that need to enumerate all of the available providers, for example to allow user provider selection.
      * </p>
      *
      * <p>
-     * This method may return different results at different times if new
-     * providers are dynamically made available to the current Java virtual
-     * machine.
+     * This method may return different results at different times if new providers are dynamically made available to the current Java virtual machine.
      * </p>
      *
      * @return An immutable, map from names to provider objects
@@ -382,11 +368,6 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
     }
 
     /**
-     * Entry encoding, null for the platform default.
-     */
-    private final String encoding;
-
-    /**
      * Entry encoding, null for the default.
      */
     private volatile String entryEncoding;
@@ -396,64 +377,62 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
     private SortedMap<String, ArchiveStreamProvider> archiveOutputStreamProviders;
 
     /**
-     * Create an instance using the platform default encoding.
+     * Constructs an instance using the platform default encoding.
      */
     public ArchiveStreamFactory() {
         this(null);
     }
 
     /**
-     * Create an instance using the specified encoding.
+     * Constructs an instance using the specified encoding.
      *
-     * @param encoding the encoding to be used.
+     * @param entryEncoding the encoding to be used.
      *
      * @since 1.10
      */
-    public ArchiveStreamFactory(final String encoding) {
-        this.encoding = encoding;
-        // Also set the original field so can continue to use it.
-        this.entryEncoding = encoding;
+    public ArchiveStreamFactory(final String entryEncoding) {
+        this.entryEncoding = entryEncoding;
     }
 
     /**
-     * Create an archive input stream from an input stream, autodetecting
-     * the archive type from the first few bytes of the stream. The InputStream
-     * must support marks, like BufferedInputStream.
+     * Creates an archive input stream from an input stream, autodetecting the archive type from the first few bytes of the stream. The InputStream must support
+     * marks, like BufferedInputStream.
      *
-     * @param in the input stream
+     * @param <I> The {@link ArchiveInputStream} type.
+     * @param in  the input stream
      * @return the archive input stream
-     * @throws ArchiveException if the archiver name is not known
-     * @throws StreamingNotSupportedException if the format cannot be
-     * read from a stream
-     * @throws IllegalArgumentException if the stream is null or does not support mark
+     * @throws ArchiveException               if the archiver name is not known
+     * @throws StreamingNotSupportedException if the format cannot be read from a stream
+     * @throws IllegalArgumentException       if the stream is null or does not support mark
      */
-    public ArchiveInputStream createArchiveInputStream(final InputStream in)
-            throws ArchiveException {
+    public <I extends ArchiveInputStream<? extends ArchiveEntry>> I createArchiveInputStream(final InputStream in) throws ArchiveException {
         return createArchiveInputStream(detect(in), in);
     }
 
     /**
      * Creates an archive input stream from an archiver name and an input stream.
      *
-     * @param archiverName the archive name,
-     * i.e. {@value #AR}, {@value #ARJ}, {@value #ZIP}, {@value #TAR}, {@value #JAR}, {@value #CPIO}, {@value #DUMP} or {@value #SEVEN_Z}
-     * @param in the input stream
+     * @param <I>          The {@link ArchiveInputStream} type.
+     * @param archiverName the archive name, i.e. {@value #AR}, {@value #ARJ}, {@value #ZIP}, {@value #TAR}, {@value #JAR}, {@value #CPIO}, {@value #DUMP} or
+     *                     {@value #SEVEN_Z}
+     * @param in           the input stream
      * @return the archive input stream
-     * @throws ArchiveException if the archiver name is not known
-     * @throws StreamingNotSupportedException if the format cannot be
-     * read from a stream
-     * @throws IllegalArgumentException if the archiver name or stream is null
+     * @throws ArchiveException               if the archiver name is not known
+     * @throws StreamingNotSupportedException if the format cannot be read from a stream
+     * @throws IllegalArgumentException       if the archiver name or stream is null
      */
-    public ArchiveInputStream createArchiveInputStream(final String archiverName, final InputStream in) throws ArchiveException {
+    public <I extends ArchiveInputStream<? extends ArchiveEntry>> I createArchiveInputStream(final String archiverName, final InputStream in)
+            throws ArchiveException {
         return createArchiveInputStream(archiverName, in, entryEncoding);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public ArchiveInputStream createArchiveInputStream(final String archiverName, final InputStream in,
+    public <I extends ArchiveInputStream<? extends ArchiveEntry>> I createArchiveInputStream(final String archiverName, final InputStream in,
             final String actualEncoding) throws ArchiveException {
 
         if (archiverName == null) {
-            throw new IllegalArgumentException("Archivername must not be null.");
+            throw new IllegalArgumentException("Archiver name must not be null.");
         }
 
         if (in == null) {
@@ -461,43 +440,43 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
         }
 
         if (AR.equalsIgnoreCase(archiverName)) {
-            return new ArArchiveInputStream(in);
+            return (I) new ArArchiveInputStream(in);
         }
         if (ARJ.equalsIgnoreCase(archiverName)) {
             if (actualEncoding != null) {
-                return new ArjArchiveInputStream(in, actualEncoding);
+                return (I) new ArjArchiveInputStream(in, actualEncoding);
             }
-            return new ArjArchiveInputStream(in);
+            return (I) new ArjArchiveInputStream(in);
         }
         if (ZIP.equalsIgnoreCase(archiverName)) {
             if (actualEncoding != null) {
-                return new ZipArchiveInputStream(in, actualEncoding);
+                return (I) new ZipArchiveInputStream(in, actualEncoding);
             }
-            return new ZipArchiveInputStream(in);
+            return (I) new ZipArchiveInputStream(in);
         }
         if (TAR.equalsIgnoreCase(archiverName)) {
             if (actualEncoding != null) {
-                return new TarArchiveInputStream(in, actualEncoding);
+                return (I) new TarArchiveInputStream(in, actualEncoding);
             }
-            return new TarArchiveInputStream(in);
+            return (I) new TarArchiveInputStream(in);
         }
         if (JAR.equalsIgnoreCase(archiverName) || APK.equalsIgnoreCase(archiverName)) {
             if (actualEncoding != null) {
-                return new JarArchiveInputStream(in, actualEncoding);
+                return (I) new JarArchiveInputStream(in, actualEncoding);
             }
-            return new JarArchiveInputStream(in);
+            return (I) new JarArchiveInputStream(in);
         }
         if (CPIO.equalsIgnoreCase(archiverName)) {
             if (actualEncoding != null) {
-                return new CpioArchiveInputStream(in, actualEncoding);
+                return (I) new CpioArchiveInputStream(in, actualEncoding);
             }
-            return new CpioArchiveInputStream(in);
+            return (I) new CpioArchiveInputStream(in);
         }
         if (DUMP.equalsIgnoreCase(archiverName)) {
             if (actualEncoding != null) {
-                return new DumpArchiveInputStream(in, actualEncoding);
+                return (I) new DumpArchiveInputStream(in, actualEncoding);
             }
-            return new DumpArchiveInputStream(in);
+            return (I) new DumpArchiveInputStream(in);
         }
         if (SEVEN_Z.equalsIgnoreCase(archiverName)) {
             throw new StreamingNotSupportedException(SEVEN_Z);
@@ -514,58 +493,57 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
     /**
      * Creates an archive output stream from an archiver name and an output stream.
      *
-     * @param archiverName the archive name,
-     * i.e. {@value #AR}, {@value #ZIP}, {@value #TAR}, {@value #JAR} or {@value #CPIO}
-     * @param out the output stream
+     * @param <O>          The {@link ArchiveOutputStream} type.
+     * @param archiverName the archive name, i.e. {@value #AR}, {@value #ZIP}, {@value #TAR}, {@value #JAR} or {@value #CPIO}
+     * @param out          the output stream
      * @return the archive output stream
-     * @throws ArchiveException if the archiver name is not known
-     * @throws StreamingNotSupportedException if the format cannot be
-     * written to a stream
-     * @throws IllegalArgumentException if the archiver name or stream is null
+     * @throws ArchiveException               if the archiver name is not known
+     * @throws StreamingNotSupportedException if the format cannot be written to a stream
+     * @throws IllegalArgumentException       if the archiver name or stream is null
      */
-    public ArchiveOutputStream createArchiveOutputStream(final String archiverName, final OutputStream out)
+    public <O extends ArchiveOutputStream<? extends ArchiveEntry>> O createArchiveOutputStream(final String archiverName, final OutputStream out)
             throws ArchiveException {
         return createArchiveOutputStream(archiverName, out, entryEncoding);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public ArchiveOutputStream createArchiveOutputStream(
-            final String archiverName, final OutputStream out, final String actualEncoding)
-            throws ArchiveException {
+    public <O extends ArchiveOutputStream<? extends ArchiveEntry>> O createArchiveOutputStream(final String archiverName, final OutputStream out,
+            final String actualEncoding) throws ArchiveException {
         if (archiverName == null) {
-            throw new IllegalArgumentException("Archivername must not be null.");
+            throw new IllegalArgumentException("Archiver name must not be null.");
         }
         if (out == null) {
             throw new IllegalArgumentException("OutputStream must not be null.");
         }
 
         if (AR.equalsIgnoreCase(archiverName)) {
-            return new ArArchiveOutputStream(out);
+            return (O) new ArArchiveOutputStream(out);
         }
         if (ZIP.equalsIgnoreCase(archiverName)) {
             final ZipArchiveOutputStream zip = new ZipArchiveOutputStream(out);
             if (actualEncoding != null) {
                 zip.setEncoding(actualEncoding);
             }
-            return zip;
+            return (O) zip;
         }
         if (TAR.equalsIgnoreCase(archiverName)) {
             if (actualEncoding != null) {
-                return new TarArchiveOutputStream(out, actualEncoding);
+                return (O) new TarArchiveOutputStream(out, actualEncoding);
             }
-            return new TarArchiveOutputStream(out);
+            return (O) new TarArchiveOutputStream(out);
         }
         if (JAR.equalsIgnoreCase(archiverName)) {
             if (actualEncoding != null) {
-                return new JarArchiveOutputStream(out, actualEncoding);
+                return (O) new JarArchiveOutputStream(out, actualEncoding);
             }
-            return new JarArchiveOutputStream(out);
+            return (O) new JarArchiveOutputStream(out);
         }
         if (CPIO.equalsIgnoreCase(archiverName)) {
             if (actualEncoding != null) {
-                return new CpioArchiveOutputStream(out, actualEncoding);
+                return (O) new CpioArchiveOutputStream(out, actualEncoding);
             }
-            return new CpioArchiveOutputStream(out);
+            return (O) new CpioArchiveOutputStream(out);
         }
         if (SEVEN_Z.equalsIgnoreCase(archiverName)) {
             throw new StreamingNotSupportedException(SEVEN_Z);
@@ -581,23 +559,20 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
 
     public SortedMap<String, ArchiveStreamProvider> getArchiveInputStreamProviders() {
         if (archiveInputStreamProviders == null) {
-            archiveInputStreamProviders = Collections
-                    .unmodifiableSortedMap(findAvailableArchiveInputStreamProviders());
+            archiveInputStreamProviders = Collections.unmodifiableSortedMap(findAvailableArchiveInputStreamProviders());
         }
         return archiveInputStreamProviders;
     }
 
     public SortedMap<String, ArchiveStreamProvider> getArchiveOutputStreamProviders() {
         if (archiveOutputStreamProviders == null) {
-            archiveOutputStreamProviders = Collections
-                    .unmodifiableSortedMap(findAvailableArchiveOutputStreamProviders());
+            archiveOutputStreamProviders = Collections.unmodifiableSortedMap(findAvailableArchiveOutputStreamProviders());
         }
         return archiveOutputStreamProviders;
     }
 
     /**
-     * Gets the encoding to use for arj, jar, ZIP, dump, cpio and tar
-     * files, or null for the archiver default.
+     * Gets the encoding to use for arj, jar, ZIP, dump, cpio and tar files, or null for the archiver default.
      *
      * @return entry encoding, or null for the archiver default
      * @since 1.5
@@ -622,15 +597,9 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
      * @param entryEncoding the entry encoding, null uses the archiver default.
      * @since 1.5
      * @deprecated 1.10 use {@link #ArchiveStreamFactory(String)} to specify the encoding
-     * @throws IllegalStateException if the constructor {@link #ArchiveStreamFactory(String)}
-     * was used to specify the factory encoding.
      */
     @Deprecated
     public void setEntryEncoding(final String entryEncoding) {
-        // Note: this does not detect new ArchiveStreamFactory(null) but that does not set the encoding anyway
-        if (encoding != null) {
-            throw new IllegalStateException("Cannot overide encoding set by the constructor");
-        }
         this.entryEncoding = entryEncoding;
     }
 

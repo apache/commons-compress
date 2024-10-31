@@ -19,8 +19,8 @@ package org.apache.commons.compress;
 import java.io.IOException;
 
 /**
- * Exception thrown when trying to read an encrypted entry or file without
- * configuring a password.
+ * Exception thrown when trying to read an encrypted entry or file without configuring a password.
+ *
  * @since 1.10
  */
 public class PasswordRequiredException extends IOException {
@@ -28,10 +28,9 @@ public class PasswordRequiredException extends IOException {
     private static final long serialVersionUID = 1391070005491684483L;
 
     /**
-     * Create a new exception.
+     * Constructs a new exception.
      *
-     * @param name name of the archive containing encrypted streams or
-     * the encrypted file.
+     * @param name name of the archive containing encrypted streams or the encrypted file.
      */
     public PasswordRequiredException(final String name) {
         super("Cannot read encrypted content from " + name + " without a password.");

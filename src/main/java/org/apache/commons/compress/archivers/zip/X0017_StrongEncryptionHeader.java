@@ -24,7 +24,9 @@ import java.util.zip.ZipException;
 /**
  * Strong Encryption Header (0x0017).
  *
- * <p>Certificate-based encryption:</p>
+ * <p>
+ * Certificate-based encryption:
+ * </p>
  *
  * <pre>
  * Value     Size     Description
@@ -43,18 +45,14 @@ import java.util.zip.ZipException;
  * Flags -   This defines the processing flags.
  * </pre>
  *
- *           <ul>
- *           <li>0x0007 - reserved for future use
- *           <li>0x000F - reserved for future use
- *           <li>0x0100 - Indicates non-OAEP key wrapping was used.  If this
- *                        this field is set, the version needed to extract must
- *                        be at least 61.  This means OAEP key wrapping is not
- *                        used when generating a Master Session Key using
- *                        ErdData.
- *           <li>0x4000 - ErdData must be decrypted using 3DES-168, otherwise use the
- *                        same algorithm used for encrypting the file contents.
- *           <li>0x8000 - reserved for future use
- *           </ul>
+ * <ul>
+ * <li>0x0007 - reserved for future use
+ * <li>0x000F - reserved for future use
+ * <li>0x0100 - Indicates non-OAEP key wrapping was used. If this this field is set, the version needed to extract must be at least 61. This means OAEP key
+ * wrapping is not used when generating a Master Session Key using ErdData.
+ * <li>0x4000 - ErdData must be decrypted using 3DES-168, otherwise use the same algorithm used for encrypting the file contents.
+ * <li>0x8000 - reserved for future use
+ * </ul>
  *
  * <pre>
  * RCount - This defines the number intended recipients whose
@@ -78,7 +76,9 @@ import java.util.zip.ZipException;
  *           SRList is determined using RCount * HSize.
  * </pre>
  *
- * <p>Password-based Extra Field 0x0017 in central header only.</p>
+ * <p>
+ * Password-based Extra Field 0x0017 in central header only.
+ * </p>
  *
  * <pre>
  * Value     Size     Description
@@ -92,10 +92,13 @@ import java.util.zip.ZipException;
  * (more?)
  * </pre>
  *
- * <p><b>Format</b> - the data format identifier for this record. The only value
- * allowed at this time is the integer value 2.</p>
+ * <p>
+ * <b>Format</b> - the data format identifier for this record. The only value allowed at this time is the integer value 2.
+ * </p>
  *
- * <p>Password-based Extra Field 0x0017 preceding compressed file data.</p>
+ * <p>
+ * Password-based Extra Field 0x0017 preceding compressed file data.
+ * </p>
  *
  * <pre>
  * Value     Size     Description
@@ -120,7 +123,7 @@ import java.util.zip.ZipException;
  *          The IVData can be completely random data.  If the size of
  *          the randomly generated data does not match the block size
  *          it should be complemented with zero's or truncated as
- *          necessary.  If IVSize is 0,then IV = CRC32 + Uncompressed
+ *          necessary.  If IVSize is 0, then IV = CRC32 + Uncompressed
  *          File Size (as a 64 bit little-endian, unsigned integer value).
  *
  * Format -  the data format identifier for this record.  The only
@@ -157,7 +160,9 @@ import java.util.zip.ZipException;
  *         stream of encrypted data for a file.
  * </pre>
  *
- * <p>Reserved1 - Certificate Decryption Header Reserved1 Data:</p>
+ * <p>
+ * Reserved1 - Certificate Decryption Header Reserved1 Data:
+ * </p>
  *
  * <pre>
  * Value     Size     Description
@@ -165,11 +170,14 @@ import java.util.zip.ZipException;
  * RCount    4 bytes  Number of recipients.
  * </pre>
  *
- * <p>RCount - This defines the number intended recipients whose public keys were
- * used for encryption. This defines the number of elements in the REList field
- * defined below.</p>
+ * <p>
+ * RCount - This defines the number intended recipients whose public keys were used for encryption. This defines the number of elements in the REList field
+ * defined below.
+ * </p>
  *
- * <p>Reserved2 - Certificate Decryption Header Reserved2 Data Structures:</p>
+ * <p>
+ * Reserved2 - Certificate Decryption Header Reserved2 Data Structures:
+ * </p>
  *
  * <pre>
  * Value     Size     Description
@@ -193,7 +201,9 @@ import java.util.zip.ZipException;
  *           Element data structure as follows:
  * </pre>
  *
- * <p>Recipient Element (REList) Data Structure:</p>
+ * <p>
+ * Recipient Element (REList) Data Structure:
+ * </p>
  *
  * <pre>
  * Value     Size     Description
@@ -221,7 +231,9 @@ import java.util.zip.ZipException;
  *           For more details see https://msdn.microsoft.com/en-us/library/aa920051.aspx
  * </pre>
  *
- * <p><b>Flags</b> - Processing flags needed for decryption</p>
+ * <p>
+ * <b>Flags</b> - Processing flags needed for decryption
+ * </p>
  *
  * <ul>
  * <li>0x0001 - Password is required to decrypt</li>
@@ -229,23 +241,23 @@ import java.util.zip.ZipException;
  * <li>0x0003 - Password or certificate required to decrypt</li>
  * <li>0x0007 - reserved for future use
  * <li>0x000F - reserved for future use
- * <li>0x0100 - indicates non-OAEP key wrapping was used. If this field is set
- * the version needed to extract must be at least 61. This means OAEP key
- * wrapping is not used when generating a Master Session Key using ErdData.
- * <li>0x4000 - ErdData must be decrypted using 3DES-168, otherwise use the same
- * algorithm used for encrypting the file contents.
+ * <li>0x0100 - indicates non-OAEP key wrapping was used. If this field is set the version needed to extract must be at least 61. This means OAEP key wrapping
+ * is not used when generating a Master Session Key using ErdData.
+ * <li>0x4000 - ErdData must be decrypted using 3DES-168, otherwise use the same algorithm used for encrypting the file contents.
  * <li>0x8000 - reserved for future use.
  * </ul>
  *
- * <p><b>See the section describing the Strong Encryption Specification for
- * details. Refer to the section in this document entitled
- * "Incorporating PKWARE Proprietary Technology into Your Product" for more
- * information.</b></p>
+ * <p>
+ * <b>See the section describing the Strong Encryption Specification for details. Refer to the section in this document entitled "Incorporating PKWARE
+ * Proprietary Technology into Your Product" for more information.</b>
+ * </p>
  *
  * @NotThreadSafe
  * @since 1.11
  */
 public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
+
+    static final ZipShort HEADER_ID = new ZipShort(0x0017);
 
     private int format; // TODO written but not read
 
@@ -255,34 +267,36 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
     private long rcount;
     private HashAlgorithm hashAlg;
     private int hashSize;
-    // encryption data
+
+    /** Encryption data/ */
     private byte[] ivData;
 
     private byte[] erdData;
-    // encryption key
+
+    /** Encryption key. */
     private byte[] recipientKeyHash;
 
     private byte[] keyBlob;
-    // password verification data
+
+    /** Password verification data. */
     private byte[] vData;
 
     private byte[] vCRC32;
 
     public X0017_StrongEncryptionHeader() {
-        super(new ZipShort(0x0017));
+        super(HEADER_ID);
     }
 
-    private void assertDynamicLengthFits(final String what, final int dynamicLength, final int prefixLength,
-        final int length) throws ZipException {
+    private void assertDynamicLengthFits(final String what, final int dynamicLength, final int prefixLength, final int length) throws ZipException {
         if (prefixLength + dynamicLength > length) {
-            throw new ZipException("Invalid X0017_StrongEncryptionHeader: " + what + " "
-                + dynamicLength + " doesn't fit into " + length + " bytes of data at position "
-                + prefixLength);
+            throw new ZipException("Invalid X0017_StrongEncryptionHeader: " + what + " " + dynamicLength + " doesn't fit into " + length
+                    + " bytes of data at position " + prefixLength);
         }
     }
 
     /**
-     * Get encryption algorithm.
+     * Gets encryption algorithm.
+     *
      * @return the encryption algorithm
      */
     public EncryptionAlgorithm getEncryptionAlgorithm() {
@@ -290,7 +304,8 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
     }
 
     /**
-     * Get hash algorithm.
+     * Gets hash algorithm.
+     *
      * @return the hash algorithm
      */
     public HashAlgorithm getHashAlgorithm() {
@@ -298,7 +313,8 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
     }
 
     /**
-     * Get record count.
+     * Gets record count.
+     *
      * @return the record count
      */
     public long getRecordCount() {
@@ -308,13 +324,12 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
     /**
      * Parse central directory format.
      *
-     * @param data the buffer to read data from
+     * @param data   the buffer to read data from
      * @param offset offset into buffer to read data
      * @param length the length of data
      * @throws ZipException if an error occurs
      */
-    public void parseCentralDirectoryFormat(final byte[] data, final int offset, final int length)
-        throws ZipException {
+    public void parseCentralDirectoryFormat(final byte[] data, final int offset, final int length) throws ZipException {
         assertMinimalLength(12, length);
         // TODO: double check we really do not want to call super here
         this.format = ZipShort.getValue(data, offset);
@@ -333,15 +348,16 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
     /**
      * Parse file header format.
      *
-     * <p>(Password only?)</p>
+     * <p>
+     * (Password only?)
+     * </p>
      *
-     * @param data the buffer to read data from
+     * @param data   the buffer to read data from
      * @param offset offset into buffer to read data
      * @param length the length of data
      * @throws ZipException if an error occurs
      */
-    public void parseFileFormat(final byte[] data, final int offset, final int length)
-        throws ZipException {
+    public void parseFileFormat(final byte[] data, final int offset, final int length) throws ZipException {
         assertMinimalLength(4, length);
         final int ivSize = ZipShort.getValue(data, offset);
         assertDynamicLengthFits("ivSize", ivSize, 4, length);
@@ -368,8 +384,7 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
             final int vSize = ZipShort.getValue(data, offset + ivSize + 20 + erdSize);
             assertDynamicLengthFits("vSize", vSize, ivSize + 22 + erdSize, length);
             if (vSize < 4) {
-                throw new ZipException("Invalid X0017_StrongEncryptionHeader: vSize " + vSize
-                    + " is too small to hold CRC");
+                throw new ZipException("Invalid X0017_StrongEncryptionHeader: vSize " + vSize + " is too small to hold CRC");
             }
             assertMinimalLength(offset + ivSize + 22 + erdSize, vSize - 4);
             this.vData = Arrays.copyOfRange(data, offset + ivSize + 22 + erdSize, vSize - 4);
@@ -382,8 +397,7 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
             final int resize = ZipShort.getValue(data, offset + ivSize + 24 + erdSize);
 
             if (resize < this.hashSize) {
-                throw new ZipException("Invalid X0017_StrongEncryptionHeader: resize " + resize
-                    + " is too small to hold hashSize" + this.hashSize);
+                throw new ZipException("Invalid X0017_StrongEncryptionHeader: resize " + resize + " is too small to hold hashSize" + this.hashSize);
             }
             // TODO: this looks suspicious, 26 rather than 24 would be "after" resize
             assertDynamicLengthFits("resize", resize, ivSize + 24 + erdSize, length);
@@ -394,8 +408,7 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
             assertMinimalLength(ivSize + 26 + erdSize + resize + 2, length);
             final int vSize = ZipShort.getValue(data, offset + ivSize + 26 + erdSize + resize);
             if (vSize < 4) {
-                throw new ZipException("Invalid X0017_StrongEncryptionHeader: vSize " + vSize
-                    + " is too small to hold CRC");
+                throw new ZipException("Invalid X0017_StrongEncryptionHeader: vSize " + vSize + " is too small to hold CRC");
             }
             // TODO: these offsets look even more suspicious, the constant should likely be 28 rather than 22
             assertDynamicLengthFits("vSize", vSize, ivSize + 22 + erdSize + resize, length);
@@ -408,15 +421,13 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
     }
 
     @Override
-    public void parseFromCentralDirectoryData(final byte[] data, final int offset, final int length)
-        throws ZipException {
+    public void parseFromCentralDirectoryData(final byte[] data, final int offset, final int length) throws ZipException {
         super.parseFromCentralDirectoryData(data, offset, length);
         parseCentralDirectoryFormat(data, offset, length);
     }
 
     @Override
-    public void parseFromLocalFileData(final byte[] data, final int offset, final int length)
-        throws ZipException {
+    public void parseFromLocalFileData(final byte[] data, final int offset, final int length) throws ZipException {
         super.parseFromLocalFileData(data, offset, length);
         parseFileFormat(data, offset, length);
     }

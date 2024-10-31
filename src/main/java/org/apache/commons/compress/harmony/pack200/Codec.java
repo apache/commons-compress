@@ -19,14 +19,16 @@ package org.apache.commons.compress.harmony.pack200;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.commons.io.input.BoundedInputStream;
+
 /**
  * A Codec allows a sequence of bytes to be decoded into integer values (or vice versa).
- *
- * There are a number of standard Codecs ({@link #UDELTA5}, {@link #UNSIGNED5}, {@link #BYTE1}, {@link #CHAR3}) that are
- * used in the implementation of many bands; but there are a variety of other ones, and indeed the specification assumes
- * that other combinations of values can result in more specific and efficient formats. There are also a sequence of
- * canonical encodings defined by the Pack200 specification, which allow a Codec to be referred to by canonical number.
- * {@link CodecEncoding#getCodec(int, InputStream, Codec)})
+ * <p>
+ * There are a number of standard Codecs ({@link #UDELTA5}, {@link #UNSIGNED5}, {@link #BYTE1}, {@link #CHAR3}) that are used in the implementation of many
+ * bands; but there are a variety of other ones, and indeed the specification assumes that other combinations of values can result in more specific and
+ * efficient formats. There are also a sequence of canonical encodings defined by the Pack200 specification, which allow a Codec to be referred to by canonical
+ * number. {@link CodecEncoding#getCodec(int, InputStream, Codec)})
+ * </p>
  */
 public abstract class Codec {
 
@@ -46,20 +48,19 @@ public abstract class Codec {
     public static final BHSDCodec BYTE1 = new BHSDCodec(1, 256);
 
     /**
-     * CHAR3 = (3,128): Used for storing text (UTF-8) strings. NB This isn't quite the same as UTF-8, but has similar
-     * properties; ASCII characters &lt; 127 are stored in a single byte.
+     * CHAR3 = (3,128): Used for storing text (UTF-8) strings. This isn't quite the same as UTF-8, but has similar properties; ASCII characters &lt; 127 are
+     * stored in a single byte.
      */
     public static final BHSDCodec CHAR3 = new BHSDCodec(3, 128);
 
     /**
-     * DELTA5 = (5,64,1,1): Used for the majority of numerical codings where there is a correlated sequence of signed
-     * values.
+     * DELTA5 = (5,64,1,1): Used for the majority of numerical codings where there is a correlated sequence of signed values.
      */
     public static final BHSDCodec DELTA5 = new BHSDCodec(5, 64, 1, 1);
 
     /**
-     * MDELTA5 = (5,64,2,1): Used for the majority of numerical codings where there is a correlated sequence of signed
-     * values, but where most of them are expected to be non-negative.
+     * MDELTA5 = (5,64,2,1): Used for the majority of numerical codings where there is a correlated sequence of signed values, but where most of them are
+     * expected to be non-negative.
      */
     public static final BHSDCodec MDELTA5 = new BHSDCodec(5, 64, 2, 1);
 
@@ -69,8 +70,7 @@ public abstract class Codec {
     public static final BHSDCodec SIGNED5 = new BHSDCodec(5, 64, 1);
 
     /**
-     * UDELTA5 = (5,64,0,1): Used for the majority of numerical codings where there is a correlated sequence of unsigned
-     * values.
+     * UDELTA5 = (5,64,0,1): Used for the majority of numerical codings where there is a correlated sequence of unsigned values.
      */
     public static final BHSDCodec UDELTA5 = new BHSDCodec(5, 64, 0, 1);
 
@@ -81,22 +81,40 @@ public abstract class Codec {
 
     public int lastBandLength;
 
+    int check(final int n, final InputStream in) throws Pack200Exception {
+        if (in instanceof BoundedInputStream) {
+            final BoundedInputStream bin = (BoundedInputStream) in;
+            final long count = bin.getCount();
+            final long maxLength = bin.getMaxCount();
+            if (maxLength > -1) {
+                final long remaining = maxLength - count;
+                final String format = "Can't read beyond end of stream (n = %,d, count = %,d, maxLength = %,d, remaining = %,d)";
+                if (count < -1) {
+                    throw new Pack200Exception(String.format(format, n, count, maxLength, remaining));
+                }
+                if (n > remaining) {
+                    throw new Pack200Exception(String.format(format, n, count, maxLength, remaining));
+                }
+            }
+        }
+        return n;
+    }
+
     /**
-     * Decode a sequence of bytes from the given input stream, returning the value as a long. Note that this method can
-     * only be applied for non-delta encodings.
+     * Decodes a sequence of bytes from the given input stream, returning the value as a long. Note that this method can only be applied for non-delta
+     * encodings.
      *
      * @param in the input stream to read from
      * @return the value as a long
-     * @throws IOException if there is a problem reading from the underlying input stream
+     * @throws IOException      if there is a problem reading from the underlying input stream
      * @throws Pack200Exception if the encoding is a delta encoding
      */
     public abstract int decode(InputStream in) throws IOException, Pack200Exception;
 
     /**
-     * Decode a sequence of bytes from the given input stream, returning the value as a long. If this encoding is a
-     * delta encoding (d=1) then the previous value must be passed in as a parameter. If it is a non-delta encoding,
-     * then it does not matter what value is passed in, so it makes sense for the value to be passed in by default using
-     * code similar to:
+     * Decodes a sequence of bytes from the given input stream, returning the value as a long. If this encoding is a delta encoding (d=1) then the previous
+     * value must be passed in as a parameter. If it is a non-delta encoding, then it does not matter what value is passed in, so it makes sense for the value
+     * to be passed in by default using code similar to:
      *
      * <pre>
      * long last = 0;
@@ -106,27 +124,27 @@ public abstract class Codec {
      * }
      * </pre>
      *
-     * @param in the input stream to read from
+     * @param in   the input stream to read from
      * @param last the previous value read, which must be supplied if the codec is a delta encoding
      * @return the value as a long
-     * @throws IOException if there is a problem reading from the underlying input stream
+     * @throws IOException      if there is a problem reading from the underlying input stream
      * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid
      */
     public abstract int decode(InputStream in, long last) throws IOException, Pack200Exception;
 
     /**
-     * Decodes a sequence of {@code n} values from {@code in}. This should probably be used in most cases,
-     * since some codecs (such as {@link PopulationCodec}) only work when the number of values to be read is known.
+     * Decodes a sequence of {@code n} values from {@code in}. This should probably be used in most cases, since some codecs (such as {@link PopulationCodec})
+     * only work when the number of values to be read is known.
      *
-     * @param n the number of values to decode
+     * @param n  the number of values to decode
      * @param in the input stream to read from
      * @return an array of {@code int} values corresponding to values decoded
-     * @throws IOException if there is a problem reading from the underlying input stream
+     * @throws IOException      if there is a problem reading from the underlying input stream
      * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid
      */
     public int[] decodeInts(final int n, final InputStream in) throws IOException, Pack200Exception {
         lastBandLength = 0;
-        final int[] result = new int[n];
+        final int[] result = new int[check(n, in)];
         int last = 0;
         for (int i = 0; i < n; i++) {
             result[i] = last = decode(in, last);
@@ -137,17 +155,15 @@ public abstract class Codec {
     /**
      * Decodes a sequence of {@code n} values from {@code in}.
      *
-     * @param n the number of values to decode
-     * @param in the input stream to read from
+     * @param n          the number of values to decode
+     * @param in         the input stream to read from
      * @param firstValue the first value in the band if it has already been read
-     * @return an array of {@code int} values corresponding to values decoded, with firstValue as the first value
-     *         in the array.
-     * @throws IOException if there is a problem reading from the underlying input stream
+     * @return an array of {@code int} values corresponding to values decoded, with firstValue as the first value in the array.
+     * @throws IOException      if there is a problem reading from the underlying input stream
      * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid
      */
-    public int[] decodeInts(final int n, final InputStream in, final int firstValue)
-        throws IOException, Pack200Exception {
-        final int[] result = new int[n + 1];
+    public int[] decodeInts(final int n, final InputStream in, final int firstValue) throws IOException, Pack200Exception {
+        final int[] result = new int[check(n, in) + 1];
         result[0] = firstValue;
         int last = firstValue;
         for (int i = 1; i < n + 1; i++) {
@@ -157,7 +173,7 @@ public abstract class Codec {
     }
 
     /**
-     * Encode a single value into a sequence of bytes. Note that this method can only be used for non-delta encodings.
+     * Encodes a single value into a sequence of bytes. Note that this method can only be used for non-delta encodings.
      *
      * @param value the value to encode
      * @return the encoded bytes
@@ -166,17 +182,17 @@ public abstract class Codec {
     public abstract byte[] encode(int value) throws Pack200Exception;
 
     /**
-     * Encode a single value into a sequence of bytes.
+     * Encodes a single value into a sequence of bytes.
      *
      * @param value the value to encode
-     * @param last the previous value encoded (for delta encodings)
+     * @param last  the previous value encoded (for delta encodings)
      * @return the encoded bytes
      * @throws Pack200Exception TODO
      */
     public abstract byte[] encode(int value, int last) throws Pack200Exception;
 
     /**
-     * Encode a sequence of integers into a byte array
+     * Encodes a sequence of integers into a byte array
      *
      * @param ints the values to encode
      * @return byte[] encoded bytes

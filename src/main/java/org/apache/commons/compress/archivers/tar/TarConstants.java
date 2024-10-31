@@ -20,9 +20,10 @@ package org.apache.commons.compress.archivers.tar;
 
 /**
  * This interface contains all the definitions used in the package.
- *
- * For tar formats (FORMAT_OLDGNU, FORMAT_POSIX, etc.) see GNU tar
- * <I>tar.h</I> type <I>enum archive_format</I>
+ * <p>
+ * For tar formats (FORMAT_OLDGNU, FORMAT_POSIX, etc.) see GNU tar <a href="https://git.savannah.gnu.org/cgit/tar.git/tree/src/tar.h?h=v1.35">tar.h</a> and type
+ * {@code enum archive_format}.
+ * </p>
  */
 // CheckStyle:InterfaceIsTypeCheck OFF (bc)
 public interface TarConstants {
@@ -39,7 +40,7 @@ public interface TarConstants {
     int FORMAT_OLDGNU = 2;
 
     /**
-     * Pure Posix format.
+     * Pure POSIX format.
      */
     int FORMAT_POSIX = 3;
 
@@ -131,55 +132,46 @@ public interface TarConstants {
 
     /**
      * Length of the prefix field.
-     *
      */
     int PREFIXLEN = 155;
 
     /**
      * The length of the access time field in an old GNU header buffer.
-     *
      */
     int ATIMELEN_GNU = 12;
 
     /**
      * The length of the created time field in an old GNU header buffer.
-     *
      */
     int CTIMELEN_GNU = 12;
 
     /**
      * The length of the multivolume start offset field in an old GNU header buffer.
-     *
      */
     int OFFSETLEN_GNU = 12;
 
     /**
      * The length of the long names field in an old GNU header buffer.
-     *
      */
     int LONGNAMESLEN_GNU = 4;
 
     /**
      * The length of the padding field in an old GNU header buffer.
-     *
      */
     int PAD2LEN_GNU = 1;
 
     /**
      * The sum of the length of all sparse headers in an old GNU header buffer.
-     *
      */
     int SPARSELEN_GNU = 96;
 
     /**
      * The length of the is extension field in an old GNU header buffer.
-     *
      */
     int ISEXTENDEDLEN_GNU = 1;
 
     /**
      * The length of the real size field in an old GNU header buffer.
-     *
      */
     int REALSIZELEN_GNU = 12;
 
@@ -213,19 +205,16 @@ public interface TarConstants {
 
     /**
      * The sum of the length of all sparse headers in a sparse header buffer.
-     *
      */
     int SPARSELEN_GNU_SPARSE = 504;
 
     /**
      * The length of the is extension field in a sparse header buffer.
-     *
      */
     int ISEXTENDEDLEN_GNU_SPARSE = 1;
 
     /**
-     * LF_ constants represent the "link flag" of an entry, or more commonly, the "entry type". This is the "old way" of
-     * indicating a normal file.
+     * LF_ constants represent the "link flag" of an entry, or more commonly, the "entry type". This is the "old way" of indicating a normal file.
      */
     byte LF_OLDNORM = 0;
 
@@ -278,7 +267,7 @@ public interface TarConstants {
     byte LF_CONTIG = (byte) '7';
 
     /**
-     * Identifies the *next* file on the tape as having a long linkname.
+     * Identifies the *next* file on the tape as having a long link name.
      */
     byte LF_GNUTYPE_LONGLINK = (byte) 'K';
 
@@ -289,6 +278,7 @@ public interface TarConstants {
 
     /**
      * Sparse file type.
+     *
      * @since 1.1.1
      */
     byte LF_GNUTYPE_SPARSE = (byte) 'S';
@@ -297,6 +287,7 @@ public interface TarConstants {
 
     /**
      * Identifies the entry as a Pax extended header.
+     *
      * @since 1.1
      */
     byte LF_PAX_EXTENDED_HEADER_LC = (byte) 'x';
@@ -324,6 +315,9 @@ public interface TarConstants {
 
     /**
      * The magic tag representing a POSIX tar archive.
+     * <p>
+     * "ustar" and a null.
+     * </p>
      */
     String MAGIC_POSIX = "ustar\0";
     String VERSION_POSIX = "00";
@@ -334,14 +328,14 @@ public interface TarConstants {
     String MAGIC_GNU = "ustar ";
 
     /**
-     * One of two two possible GNU versions
+     * One of two possible GNU versions
      */
     String VERSION_GNU_SPACE = " \0";
 
     /**
-     * One of two two possible GNU versions
+     * One of two possible GNU versions
      */
-    String VERSION_GNU_ZERO  = "0\0";
+    String VERSION_GNU_ZERO = "0\0";
 
     /**
      * The magic tag representing an Ant tar archive.
@@ -365,8 +359,8 @@ public interface TarConstants {
     String GNU_LONGLINK = "././@LongLink"; // TODO rename as LONGLINK_GNU ?
 
     /**
-     * The magix string used in the last four bytes of the header to
-     * identify the xstar format.
+     * The magix string used in the last four bytes of the header to identify the xstar format.
+     *
      * @since 1.11
      */
     String MAGIC_XSTAR = "tar\0";
@@ -381,12 +375,14 @@ public interface TarConstants {
 
     /**
      * Offset inside the header for the xstar magic bytes.
+     *
      * @since 1.11
      */
     int XSTAR_MAGIC_OFFSET = 508;
 
     /**
      * Length of the XSTAR magic.
+     *
      * @since 1.11
      */
     int XSTAR_MAGIC_LEN = 4;

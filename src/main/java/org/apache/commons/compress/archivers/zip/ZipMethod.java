@@ -38,59 +38,51 @@ public enum ZipMethod {
     STORED(ZipEntry.STORED),
 
     /**
-     * UnShrinking.
-     * dynamic Lempel-Ziv-Welch-Algorithm
+     * UnShrinking. dynamic Lempel-Ziv-Welch-Algorithm
      *
-     * @see <a href="https://www.pkware.com/documents/casestudies/APPNOTE.TXT">Explanation of fields: compression
-     *      method: (2 bytes)</a>
+     * @see <a href="https://www.pkware.com/documents/casestudies/APPNOTE.TXT">Explanation of fields: compression method: (2 bytes)</a>
      */
     UNSHRINKING(1),
 
     /**
      * Reduced with compression factor 1.
      *
-     * @see <a href="https://www.pkware.com/documents/casestudies/APPNOTE.TXT">Explanation of fields: compression
-     *      method: (2 bytes)</a>
+     * @see <a href="https://www.pkware.com/documents/casestudies/APPNOTE.TXT">Explanation of fields: compression method: (2 bytes)</a>
      */
     EXPANDING_LEVEL_1(2),
 
     /**
      * Reduced with compression factor 2.
      *
-     * @see <a href="https://www.pkware.com/documents/casestudies/APPNOTE.TXT">Explanation of fields: compression
-     *      method: (2 bytes)</a>
+     * @see <a href="https://www.pkware.com/documents/casestudies/APPNOTE.TXT">Explanation of fields: compression method: (2 bytes)</a>
      */
     EXPANDING_LEVEL_2(3),
 
     /**
      * Reduced with compression factor 3.
      *
-     * @see <a href="https://www.pkware.com/documents/casestudies/APPNOTE.TXT">Explanation of fields: compression
-     *      method: (2 bytes)</a>
+     * @see <a href="https://www.pkware.com/documents/casestudies/APPNOTE.TXT">Explanation of fields: compression method: (2 bytes)</a>
      */
     EXPANDING_LEVEL_3(4),
 
     /**
      * Reduced with compression factor 4.
      *
-     * @see <a href="https://www.pkware.com/documents/casestudies/APPNOTE.TXT">Explanation of fields: compression
-     *      method: (2 bytes)</a>
+     * @see <a href="https://www.pkware.com/documents/casestudies/APPNOTE.TXT">Explanation of fields: compression method: (2 bytes)</a>
      */
     EXPANDING_LEVEL_4(5),
 
     /**
      * Imploding.
      *
-     * @see <a href="https://www.pkware.com/documents/casestudies/APPNOTE.TXT">Explanation of fields: compression
-     *      method: (2 bytes)</a>
+     * @see <a href="https://www.pkware.com/documents/casestudies/APPNOTE.TXT">Explanation of fields: compression method: (2 bytes)</a>
      */
     IMPLODING(6),
 
     /**
      * Tokenization.
      *
-     * @see <a href="https://www.pkware.com/documents/casestudies/APPNOTE.TXT">Explanation of fields: compression
-     *      method: (2 bytes)</a>
+     * @see <a href="https://www.pkware.com/documents/casestudies/APPNOTE.TXT">Explanation of fields: compression method: (2 bytes)</a>
      */
     TOKENIZATION(7),
 
@@ -130,7 +122,6 @@ public enum ZipMethod {
      */
     LZMA(14),
 
-
     /**
      * Compression Method 95 for XZ.
      *
@@ -159,7 +150,6 @@ public enum ZipMethod {
      */
     PPMD(98),
 
-
     /**
      * Compression Method 99 for AES encryption.
      *
@@ -185,11 +175,10 @@ public enum ZipMethod {
     }
 
     /**
-     * returns the {@link ZipMethod} for the given code or null if the
-     * method is not known.
+     * returns the {@link ZipMethod} for the given code or null if the method is not known.
+     *
      * @param code the code
-     * @return the {@link ZipMethod} for the given code or null if the
-     * method is not known.
+     * @return the {@link ZipMethod} for the given code or null if the method is not known.
      */
     public static ZipMethod getMethodByCode(final int code) {
         return codeToEnum.get(code);
@@ -207,7 +196,6 @@ public enum ZipMethod {
     ZipMethod(final int code) {
         this.code = code;
     }
-
 
     /**
      * the code of the compression method.

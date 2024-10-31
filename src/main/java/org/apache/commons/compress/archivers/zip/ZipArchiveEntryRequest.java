@@ -29,6 +29,7 @@ public class ZipArchiveEntryRequest {
 
     /**
      * Creates a ZipArchiveEntryRequest
+     *
      * @param zipArchiveEntry The entry to use
      * @param payloadSupplier The payload that will be added to the ZIP entry.
      * @return The newly created request
@@ -44,7 +45,6 @@ public class ZipArchiveEntryRequest {
     private final ZipArchiveEntry zipArchiveEntry;
     private final InputStreamSupplier payloadSupplier;
 
-
     private final int method;
 
     private ZipArchiveEntryRequest(final ZipArchiveEntry zipArchiveEntry, final InputStreamSupplier payloadSupplier) {
@@ -56,23 +56,25 @@ public class ZipArchiveEntryRequest {
 
     /**
      * Gets the compression method to use
+     *
      * @return The compression method to use
      */
-    public int getMethod(){
-       return method;
+    public int getMethod() {
+        return method;
     }
 
     /**
      * Gets the payload that will be added to this ZIP entry
+     *
      * @return The input stream.
      */
     public InputStream getPayloadStream() {
         return payloadSupplier.get();
     }
 
-
     /**
-     * Gets the underlying entry. Do not use this methods from threads that did not create the instance itself !
+     * Gets the underlying entry. Do not use this method from threads that did not create the instance itself !
+     *
      * @return the zipArchiveEntry that is basis for this request
      */
     ZipArchiveEntry getZipArchiveEntry() {

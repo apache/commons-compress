@@ -20,35 +20,26 @@ package org.apache.commons.compress.archivers.cpio;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
-import org.apache.commons.compress.AbstractTestCase;
-import org.apache.commons.compress.archivers.ArchiveEntry;
-import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.compress.AbstractTest;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
-public class CpioArchiveInputStreamTest extends AbstractTestCase {
+public class CpioArchiveInputStreamTest extends AbstractTest {
 
-    @Test
-    public void multiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
-        final byte[] buf = new byte[2];
-        try (InputStream in = newInputStream("bla.cpio"); CpioArchiveInputStream archive = new CpioArchiveInputStream(in)) {
-            final ArchiveEntry e = archive.getNextEntry();
-            IOUtils.toByteArray(archive);
-            assertEquals(-1, archive.read(buf));
-            assertEquals(-1, archive.read(buf));
+    private long consumeEntries(final CpioArchiveInputStream in) throws IOException {
+        long count = 0;
+        CpioArchiveEntry entry;
+        while ((entry = in.getNextEntry()) != null) {
+            count++;
+            assertNotNull(entry);
         }
-    }
-
-    @Test
-    public void singleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
-        try (InputStream in = newInputStream("bla.cpio"); CpioArchiveInputStream archive = new CpioArchiveInputStream(in)) {
-            final ArchiveEntry e = archive.getNextEntry();
-            IOUtils.toByteArray(archive);
-            assertEquals(-1, archive.read());
-            assertEquals(-1, archive.read());
-        }
+        return count;
     }
 
     @Test
@@ -57,12 +48,10 @@ public class CpioArchiveInputStreamTest extends AbstractTestCase {
         expected.append("./test1.xml<?xml version=\"1.0\"?>\n");
         expected.append("<empty/>./test2.xml<?xml version=\"1.0\"?>\n");
         expected.append("<empty/>\n");
-
         final StringBuilder result = new StringBuilder();
-        try (final CpioArchiveInputStream in = new CpioArchiveInputStream(newInputStream("bla.cpio"))) {
+        try (CpioArchiveInputStream in = new CpioArchiveInputStream(newInputStream("bla.cpio"))) {
             CpioArchiveEntry entry;
-
-            while ((entry = (CpioArchiveEntry) in.getNextEntry()) != null) {
+            while ((entry = in.getNextEntry()) != null) {
                 result.append(entry.getName());
                 int tmp;
                 while ((tmp = in.read()) != -1) {
@@ -75,32 +64,51 @@ public class CpioArchiveInputStreamTest extends AbstractTestCase {
 
     @Test
     public void testCpioUnarchiveCreatedByRedlineRpm() throws Exception {
-        int count = 0;
-        try (final CpioArchiveInputStream in = new CpioArchiveInputStream(newInputStream("redline.cpio"))) {
-            CpioArchiveEntry entry = null;
-
-            while ((entry = (CpioArchiveEntry) in.getNextEntry()) != null) {
-                count++;
-                assertNotNull(entry);
-            }
+        long count = 0;
+        try (CpioArchiveInputStream in = new CpioArchiveInputStream(newInputStream("redline.cpio"))) {
+            count = consumeEntries(in);
         }
-
         assertEquals(count, 1);
     }
 
     @Test
     public void testCpioUnarchiveMultibyteCharName() throws Exception {
-        int count = 0;
-        try (final CpioArchiveInputStream in = new CpioArchiveInputStream(newInputStream("COMPRESS-459.cpio"), "UTF-8")) {
-            CpioArchiveEntry entry = null;
-
-            while ((entry = (CpioArchiveEntry) in.getNextEntry()) != null) {
-                count++;
-                assertNotNull(entry);
-            }
+        long count = 0;
+        try (CpioArchiveInputStream in = new CpioArchiveInputStream(newInputStream("COMPRESS-459.cpio"), StandardCharsets.UTF_8.name())) {
+            count = consumeEntries(in);
         }
-
         assertEquals(2, count);
+    }
+
+    @Test
+    public void testInvalidLongValueInMetadata() throws Exception {
+        try (InputStream in = newInputStream("org/apache/commons/compress/cpio/bad_long_value.cpio");
+             CpioArchiveInputStream archive = new CpioArchiveInputStream(in)) {
+            assertThrows(IOException.class, archive::getNextEntry);
+        }
+    }
+
+    @Test
+    public void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
+        final byte[] buf = new byte[2];
+        try (InputStream in = newInputStream("bla.cpio");
+                CpioArchiveInputStream archive = new CpioArchiveInputStream(in)) {
+            assertNotNull(archive.getNextEntry());
+            IOUtils.toByteArray(archive);
+            assertEquals(-1, archive.read(buf));
+            assertEquals(-1, archive.read(buf));
+        }
+    }
+
+    @Test
+    public void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
+        try (InputStream in = newInputStream("bla.cpio");
+                CpioArchiveInputStream archive = new CpioArchiveInputStream(in)) {
+            assertNotNull(archive.getNextEntry());
+            IOUtils.toByteArray(archive);
+            assertEquals(-1, archive.read());
+            assertEquals(-1, archive.read());
+        }
     }
 
 }

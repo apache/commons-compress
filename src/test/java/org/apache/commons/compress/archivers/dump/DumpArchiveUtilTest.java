@@ -18,34 +18,45 @@
  */
 package org.apache.commons.compress.archivers.dump;
 
+import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+
+import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 
 public class DumpArchiveUtilTest {
 
     @Test
-    public void convert16() {
-        assertEquals(0xABCD,
-                     DumpArchiveUtil.convert16(new byte[] {
-                             (byte) 0xCD, (byte) 0xAB
-                         }, 0));
+    public void testConvert16() {
+        assertEquals(0xABCD, DumpArchiveUtil.convert16(new byte[] { (byte) 0xCD, (byte) 0xAB }, 0));
     }
 
     @Test
-    public void convert32() {
-        assertEquals(0xABCDEF01,
-                     DumpArchiveUtil.convert32(new byte[] {
-                             1, (byte) 0xEF, (byte) 0xCD, (byte) 0xAB
-                         }, 0));
+    public void testConvert32() {
+        assertEquals(0xABCDEF01, DumpArchiveUtil.convert32(new byte[] { 1, (byte) 0xEF, (byte) 0xCD, (byte) 0xAB }, 0));
     }
 
     @Test
-    public void convert64() {
-        assertEquals(0xABCDEF0123456780L,
-                     DumpArchiveUtil.convert64(new byte[] {
-                             (byte) 0x80, 0x67, 0x45, 0x23, 1, (byte) 0xEF,
-                             (byte) 0xCD, (byte) 0xAB
-                         }, 0));
+    public void testConvert64() {
+        assertEquals(0xABCDEF0123456780L, DumpArchiveUtil.convert64(new byte[] { (byte) 0x80, 0x67, 0x45, 0x23, 1, (byte) 0xEF, (byte) 0xCD, (byte) 0xAB }, 0));
     }
+
+    @Test
+    public void testDecodeInvalidArguments() {
+        assertThrows(IOException.class, () -> DumpArchiveUtil.decode(null, new byte[10], 10, -1));
+    }
+
+    @Test
+    public void testVerifyNoMagic() {
+        assertFalse(DumpArchiveUtil.verify(new byte[32]));
+    }
+
+    @Test
+    public void testVerifyNullArgument() {
+        assertFalse(DumpArchiveUtil.verify(null));
+    }
+
 }
+
