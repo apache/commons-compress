@@ -25,7 +25,7 @@ import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.Objects;
 
-import org.apache.commons.io.Charsets;
+import org.apache.commons.compress.utils.Charsets;
 import org.apache.commons.io.function.IOConsumer;
 import org.apache.commons.io.function.IOIterator;
 import org.apache.commons.io.input.NullInputStream;
