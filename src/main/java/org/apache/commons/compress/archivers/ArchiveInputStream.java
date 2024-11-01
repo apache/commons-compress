@@ -50,6 +50,9 @@ import org.apache.commons.io.input.NullInputStream;
  */
 public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterInputStream {
 
+    /**
+     * @since 1.27.0
+     */
     class ArchiveEntryIOIterator implements IOIterator<E> {
 
         private E next;
@@ -171,7 +174,7 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
      * @param action The action to be performed for each element
      * @throws IOException          if an I/O error occurs.
      * @throws NullPointerException if the specified action is null
-     * @since 2.17.0
+     * @since 1.27.0
      */
     public void forEach(final IOConsumer<? super E> action) throws IOException {
         iterator().forEachRemaining(Objects.requireNonNull(action));
@@ -215,6 +218,9 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
      */
     public abstract E getNextEntry() throws IOException;
 
+    /**
+     * @since 1.27.0
+     */
     public IOIterator<E> iterator() {
         return new ArchiveEntryIOIterator();
     }
