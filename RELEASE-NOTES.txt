@@ -251,6 +251,7 @@ New Features
 *            Add and use ArchiveInputStream.getCharset(). Thanks to Gary Gregory. 
 *            Add and use ArchiveEntry.resolveIn(Path). Thanks to Gary Gregory. 
 *            Add Maven property project.build.outputTimestamp for build reproducibility. Thanks to Gary Gregory. 
+*            Add new runtime dependencies on commons-codec, commons-lang3 and commons-io
 
 Fixed Bugs
 ---------

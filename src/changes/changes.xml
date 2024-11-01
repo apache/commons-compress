@@ -164,6 +164,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Romain Manni-Bucau, Gary Gregory">Drop reflection from ExtraFieldUtils static initialization #480.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Preserve exception causation in ExtraFieldUtils.register(Class).</action>
       <!-- ADD -->
+      <action type="add" dev="ggregory" due-to="Gary Gregory">New runtime dependencies on commons-codec, commons-lang3 and commons-io.</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add and use ZipFile.builder(), ZipFile.Builder, and deprecate constructors.</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add and use SevenZFile.builder(), SevenZFile.Builder, and deprecate constructors.</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add and use ArchiveInputStream.getCharset().</action>
