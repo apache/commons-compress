@@ -22,9 +22,9 @@ package org.apache.commons.compress.archivers.zip;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 
 import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.lang3.ArrayFill;
 
 /**
  * Binary tree of positive values.
@@ -140,8 +140,7 @@ final class BinaryTree {
         if (depth < 0 || depth > 30) {
             throw new IllegalArgumentException("depth must be bigger than 0 and not bigger than 30" + " but is " + depth);
         }
-        tree = new int[(int) ((1L << depth + 1) - 1)];
-        Arrays.fill(tree, UNDEFINED);
+        tree = ArrayFill.fill(new int[(int) ((1L << depth + 1) - 1)], UNDEFINED);
     }
 
     /**

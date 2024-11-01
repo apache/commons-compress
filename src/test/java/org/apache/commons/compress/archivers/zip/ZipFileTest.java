@@ -58,6 +58,7 @@ import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.function.IORunnable;
+import org.apache.commons.lang3.ArrayFill;
 import org.apache.commons.lang3.SystemUtils;
 import org.junit.Assume;
 import org.junit.jupiter.api.AfterEach;
@@ -943,8 +944,7 @@ public class ZipFileTest extends AbstractTest {
         zf = new ZipFile(archive);
         final ZipArchiveEntry ze = zf.getEntry("lots-of-as");
         assertEquals(42, ze.getSize());
-        final byte[] expected = new byte[42];
-        Arrays.fill(expected, (byte) 'a');
+        final byte[] expected = ArrayFill.fill(new byte[42], (byte) 'a');
         try (InputStream inputStream = zf.getInputStream(ze)) {
             assertArrayEquals(expected, IOUtils.toByteArray(inputStream));
         }
