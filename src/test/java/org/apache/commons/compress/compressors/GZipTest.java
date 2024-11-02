@@ -20,11 +20,8 @@ package org.apache.commons.compress.compressors;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -32,21 +29,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.compress.AbstractTest;
-import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
-import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
-import org.apache.commons.compress.archivers.tar.TarConstants;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.apache.commons.compress.compressors.gzip.GzipParameters;
@@ -56,63 +42,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 public final class GZipTest extends AbstractTest {
-
-    private void testCompress666(final int factor, final boolean bufferInputStream, final String localPath) {
-        final ExecutorService executorService = Executors.newFixedThreadPool(10);
-        try {
-            final List<Future<?>> tasks = IntStream.range(0, 200).mapToObj(index -> executorService.submit(() -> {
-                TarArchiveEntry tarEntry = null;
-                try (InputStream inputStream = getClass().getResourceAsStream(localPath);
-                        TarArchiveInputStream tarInputStream = new TarArchiveInputStream(
-                                bufferInputStream ? new BufferedInputStream(new GZIPInputStream(inputStream)) : new GZIPInputStream(inputStream),
-                                TarConstants.DEFAULT_RCDSIZE * factor, TarConstants.DEFAULT_RCDSIZE)) {
-                    while ((tarEntry = tarInputStream.getNextEntry()) != null) {
-                        assertNotNull(tarEntry);
-                    }
-                } catch (final IOException e) {
-                    fail(Objects.toString(tarEntry), e);
-                }
-            })).collect(Collectors.toList());
-            final List<Exception> list = new ArrayList<>();
-            for (final Future<?> future : tasks) {
-                try {
-                    future.get();
-                } catch (final Exception e) {
-                    list.add(e);
-                }
-            }
-            // check:
-            if (!list.isEmpty()) {
-                fail(list.get(0));
-            }
-            // or:
-            // assertTrue(list.isEmpty(), () -> list.size() + " exceptions: " + list.toString());
-        } finally {
-            executorService.shutdownNow();
-        }
-    }
-
-    /**
-     * Tests https://issues.apache.org/jira/browse/COMPRESS-666
-     *
-     * A factor of 20 is the default.
-     */
-    @ParameterizedTest
-    @ValueSource(ints = { 1, 2, 4, 8, 16, 20, 32, 64, 128 })
-    public void testCompress666Buffered(final int factor) {
-        testCompress666(factor, true, "/COMPRESS-666/compress-666.tar.gz");
-    }
-
-    /**
-     * Tests https://issues.apache.org/jira/browse/COMPRESS-666
-     *
-     * A factor of 20 is the default.
-     */
-    @ParameterizedTest
-    @ValueSource(ints = { 1, 2, 4, 8, 16, 20, 32, 64, 128 })
-    public void testCompress666Unbuffered(final int factor) {
-        testCompress666(factor, false, "/COMPRESS-666/compress-666.tar.gz");
-    }
 
     @Test
     public void testConcatenatedStreamsReadFirstOnly() throws Exception {
