@@ -24,6 +24,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.zip.CRC32;
 import java.util.zip.Deflater;
@@ -133,15 +134,19 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
      * @return
      * @throws IOException
      */
-    private byte[] getBytes(final String string) throws IOException {
+    private byte[] getBytes(final String string, final Charset charset) throws IOException {
         if (GzipUtils.GZIP_ENCODING.newEncoder().canEncode(string)) {
             return string.getBytes(GzipUtils.GZIP_ENCODING);
         }
-        try {
-            return new URI(null, null, string, null).toASCIIString().getBytes(StandardCharsets.US_ASCII);
-        } catch (final URISyntaxException e) {
-            throw new IOException(string, e);
+        if (charset == null) {
+            try {
+                return new URI(null, null, string, null).toASCIIString().getBytes(StandardCharsets.US_ASCII);
+            } catch (final URISyntaxException e) {
+                throw new IOException(string, e);
+            }
         }
+        //support for non-ASCII characters in filenames
+        return string.getBytes(charset);
     }
 
     /**
@@ -183,6 +188,7 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
     private void writeHeader(final GzipParameters parameters) throws IOException {
         final String fileName = parameters.getFileName();
         final String comment = parameters.getComment();
+        final Charset filenameCharset = parameters.getFilenameCharset();
 
         final ByteBuffer buffer = ByteBuffer.allocate(10);
         buffer.order(ByteOrder.LITTLE_ENDIAN);
@@ -206,12 +212,12 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
         out.write(buffer.array());
 
         if (fileName != null) {
-            out.write(getBytes(fileName));
+            out.write(getBytes(fileName, filenameCharset));
             out.write(0);
         }
 
         if (comment != null) {
-            out.write(getBytes(comment));
+            out.write(getBytes(comment, filenameCharset));
             out.write(0);
         }
     }

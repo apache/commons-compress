@@ -20,6 +20,7 @@
 package org.apache.commons.compress.compressors.gzip;
 
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.util.zip.Deflater;
 
 /**
@@ -38,6 +39,7 @@ public class GzipParameters {
     private int operatingSystem = 255; // Unknown OS by default
     private int bufferSize = 512;
     private int deflateStrategy = Deflater.DEFAULT_STRATEGY;
+    private Charset filenameCharset;
 
     /**
      * Gets size of the buffer used to retrieve compressed data.
@@ -97,6 +99,10 @@ public class GzipParameters {
 
     public int getOperatingSystem() {
         return operatingSystem;
+    }
+
+    public Charset getFilenameCharset() {
+        return filenameCharset;
     }
 
     /**
@@ -196,5 +202,9 @@ public class GzipParameters {
      */
     public void setOperatingSystem(final int operatingSystem) {
         this.operatingSystem = operatingSystem;
+    }
+
+    public void setFilenameCharset(final Charset filenameCharset) {
+        this.filenameCharset = filenameCharset;
     }
 }
