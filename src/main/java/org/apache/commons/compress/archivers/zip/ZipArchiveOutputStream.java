@@ -54,7 +54,7 @@ import org.apache.commons.compress.utils.Charsets;
  * </p>
  * <p>
  * As of Apache Commons Compress 1.3, the class transparently supports Zip64 extensions and thus individual entries and archives larger than 4 GB or with more
- * than 65,536 entries in most cases but explicit control is provided via {@link #setUseZip64}. If the stream can not use SeekableByteChannel and you try to
+ * than 65,536 entries in most cases but explicit control is provided via {@link #setUseZip64}. If the stream cannot use SeekableByteChannel and you try to
  * write a ZipArchiveEntry of unknown size, then Zip64 extensions will be disabled by default.
  * </p>
  *

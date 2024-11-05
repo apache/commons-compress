@@ -196,7 +196,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     private static final long TWO_EXP_32 = ZIP64_MAGIC + 1;
 
     private static final String USE_ZIPFILE_INSTEAD_OF_STREAM_DISCLAIMER = " while reading a stored entry using data descriptor. Either the archive is broken"
-            + " or it can not be read using ZipArchiveInputStream and you must use ZipFile."
+            + " or it cannot be read using ZipArchiveInputStream and you must use ZipFile."
             + " A common cause for this is a ZIP archive containing a ZIP archive."
             + " See https://commons.apache.org/proper/commons-compress/zip.html#ZipArchiveInputStream_vs_ZipFile";
 

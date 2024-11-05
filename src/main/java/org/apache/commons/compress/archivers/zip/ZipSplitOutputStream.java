@@ -213,7 +213,7 @@ final class ZipSplitOutputStream extends RandomAccessOutputStream {
     }
 
     /**
-     * Some data can not be written to different split segments, for example:
+     * Some data cannot be written to different split segments, for example:
      * <p>
      * 4.4.1.5 The end of central directory record and the Zip64 end of central directory locator record MUST reside on the same disk when splitting or spanning
      * an archive.
