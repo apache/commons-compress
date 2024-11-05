@@ -29,7 +29,7 @@ import java.io.ObjectInputStream;
 import org.junit.jupiter.api.Test;
 
 /**
- * Unit tests for class {@link AES256SHA256Decoder}.
+ * Tests for class {@link AES256SHA256Decoder}.
  *
  * @see AES256SHA256Decoder
  **/

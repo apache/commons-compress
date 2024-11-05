@@ -30,7 +30,7 @@ import java.util.zip.CheckedInputStream;
 import org.junit.jupiter.api.Test;
 
 /**
- * Unit tests for class {@link ChecksumCalculatingInputStream org.apache.commons.compress.utils.ChecksumCalculatingInputStream}.
+ * Tests for class {@link ChecksumCalculatingInputStream org.apache.commons.compress.utils.ChecksumCalculatingInputStream}.
  *
  * @see ChecksumCalculatingInputStream
  */

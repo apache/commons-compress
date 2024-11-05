@@ -28,7 +28,7 @@ import java.util.zip.CRC32;
 import org.junit.jupiter.api.Test;
 
 /**
- * Unit tests for class {@link ChecksumVerifyingInputStream org.apache.commons.compress.utils.ChecksumVerifyingInputStream}.
+ * Tests for class {@link ChecksumVerifyingInputStream org.apache.commons.compress.utils.ChecksumVerifyingInputStream}.
  *
  * @see ChecksumVerifyingInputStream
  */
