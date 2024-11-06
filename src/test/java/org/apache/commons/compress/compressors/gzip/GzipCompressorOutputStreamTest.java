@@ -44,9 +44,9 @@ public class GzipCompressorOutputStreamTest {
         Files.write(tempSourceFile, "<text>Hello World!</text>".getBytes(StandardCharsets.ISO_8859_1));
         final Path targetFile = Files.createTempFile(EXPECTED_BASE_NAME, ".gz");
         final GzipParameters parameters = new GzipParameters();
-        // if your system is Windows with Chinese, and your file name is Chinese, you need set the filenameCharset to GBK
-        // otherwise your filename is different with use GzipCompressorOutputStream without set GzipParameters
-        // and the same situation in Linux, need set the filenameCharset to UTF-8
+        // If your system is Windows with Chinese, and your file name is Chinese, you need set the fileNameCharset to GBK
+        // otherwise your file name is different with use GzipCompressorOutputStream without set GzipParameters
+        // and the same situation in Linux, need set the fileNameCharset to UTF-8
         parameters.setFileNameCharset(fileNameCharset);
         assertEquals(fileNameCharset, parameters.getFileNameCharset());
         parameters.setFileName(EXPECTED_FILE_NAME);
