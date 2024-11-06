@@ -33,6 +33,15 @@ import java.util.zip.Deflater;
 public class GzipParameters {
 
     private int compressionLevel = Deflater.DEFAULT_COMPRESSION;
+
+    /**
+     * The most recent modification time (MTIME) of the original file being compressed.
+     * <p>
+     * The time is in Unix format, for example, seconds since 00:00:00 GMT, Jan. 1, 1970. (Note that this may cause problems for MS-DOS and other systems that
+     * use local rather than Universal time.) If the compressed data did not come from a file, MTIME is set to the time at which compression started. MTIME = 0
+     * means no time stamp is available.
+     * </p>
+     */
     private long modificationTime;
     private String fileName;
     private String comment;
@@ -92,6 +101,17 @@ public class GzipParameters {
         return fileName;
     }
 
+
+    /**
+     * Gets the most recent modification time (MTIME) of the original file being compressed.
+     * <p>
+     * The time is in Unix format, for example, seconds since 00:00:00 GMT, Jan. 1, 1970. (Note that this may cause problems for MS-DOS and other systems that
+     * use local rather than Universal time.) If the compressed data did not come from a file, MTIME is set to the time at which compression started. MTIME = 0
+     * means no time stamp is available.
+     * </p>
+     *
+     * @return the most recent modification time.
+     */
     public long getModificationTime() {
         return modificationTime;
     }
@@ -165,7 +185,12 @@ public class GzipParameters {
     }
 
     /**
-     * Sets the modification time of the compressed file.
+     * Sets the modification time (MTIME) of the compressed file.
+     * <p>
+     * The time is in Unix format, for example, seconds since 00:00:00 GMT, Jan. 1, 1970. (Note that this may cause problems for MS-DOS and other systems that
+     * use local rather than Universal time.) If the compressed data did not come from a file, MTIME is set to the time at which compression started. MTIME = 0
+     * means no time stamp is available.
+     * </p>
      *
      * @param modificationTime the modification time, in milliseconds
      */
