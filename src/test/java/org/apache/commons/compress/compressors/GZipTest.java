@@ -207,7 +207,12 @@ public final class GZipTest extends AbstractTest {
         parameters.setModificationInstant(MTIME);
         assertEquals(MTIME.getEpochSecond(), parameters.getModificationTime());
         assertEquals(MTIME, parameters.getModificationInstant());
+        parameters.setOS(GzipParameters.OS.Z_SYSTEM);
+        assertEquals(GzipParameters.OS.Z_SYSTEM, parameters.getOS());
+        parameters.setOS(null);
+        assertEquals(GzipParameters.OS.UNKNOWN, parameters.getOS());
         parameters.setOperatingSystem(13);
+        assertEquals(GzipParameters.OS.ACORN_RISCOS, parameters.getOS());
         parameters.setFilename("test3.xml");
         assertEquals(parameters.getFilename(), parameters.getFileName());
         parameters.setFileName("test3.xml");
@@ -223,6 +228,7 @@ public final class GZipTest extends AbstractTest {
         assertEquals(Deflater.BEST_COMPRESSION, readParams.getCompressionLevel());
         assertEquals(123456000, readParams.getModificationTime());
         assertEquals(13, readParams.getOperatingSystem());
+        assertEquals(GzipParameters.OS.ACORN_RISCOS, readParams.getOS());
         assertEquals("test3.xml", readParams.getFileName());
         assertEquals("test3.xml", readParams.getFilename());
         assertEquals("Umlaute möglich?", readParams.getComment());
