@@ -201,6 +201,9 @@ public final class GZipTest extends AbstractTest {
 
         final GzipParameters parameters = new GzipParameters();
         parameters.setCompressionLevel(Deflater.BEST_COMPRESSION);
+        assertEquals(0, parameters.getModificationTime());
+        parameters.setModificationInstant(null);
+        assertEquals(0, parameters.getModificationTime());
         parameters.setModificationInstant(MTIME);
         assertEquals(MTIME.getEpochSecond(), parameters.getModificationTime());
         assertEquals(MTIME, parameters.getModificationInstant());
