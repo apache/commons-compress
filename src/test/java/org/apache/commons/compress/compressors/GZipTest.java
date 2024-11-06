@@ -44,7 +44,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 public final class GZipTest extends AbstractTest {
 
-    private static final Instant MTIME = Instant.ofEpochSecond(123456000);
+    private static final int MTIME = 123456000;
+    private static final Instant MTIME_INSTANT = Instant.ofEpochSecond(MTIME);
 
     @Test
     public void testConcatenatedStreamsReadFirstOnly() throws Exception {
@@ -204,9 +205,9 @@ public final class GZipTest extends AbstractTest {
         assertEquals(0, parameters.getModificationTime());
         parameters.setModificationInstant(null);
         assertEquals(0, parameters.getModificationTime());
-        parameters.setModificationInstant(MTIME);
-        assertEquals(MTIME.getEpochSecond(), parameters.getModificationTime());
-        assertEquals(MTIME, parameters.getModificationInstant());
+        parameters.setModificationInstant(MTIME_INSTANT);
+        assertEquals(MTIME_INSTANT.getEpochSecond(), parameters.getModificationTime());
+        assertEquals(MTIME_INSTANT, parameters.getModificationInstant());
         parameters.setOS(GzipParameters.OS.Z_SYSTEM);
         assertEquals(GzipParameters.OS.Z_SYSTEM, parameters.getOS());
         parameters.setOS(null);

@@ -285,7 +285,7 @@ public class GzipParameters {
      * means no time stamp is available.
      * </p>
      */
-    private long modificationTime;
+    private Instant modificationTime = Instant.EPOCH;
     private String fileName;
     private String comment;
     private OS operatingSystem = OS.UNKNOWN; // Unknown OS by default
@@ -352,21 +352,21 @@ public class GzipParameters {
      * @since 1.28.0
      */
     public Instant getModificationInstant() {
-        return Instant.ofEpochSecond(modificationTime);
+        return modificationTime;
     }
 
     /**
-     * Gets the most recent modification time (MTIME) of the original file being compressed.
+     * Gets the most recent modification time (MTIME) of the original file being compressed, in seconds since 00:00:00 GMT, Jan. 1, 1970.
      * <p>
      * The time is in Unix format, for example, seconds since 00:00:00 GMT, Jan. 1, 1970. (Note that this may cause problems for MS-DOS and other systems that
      * use local rather than Universal time.) If the compressed data did not come from a file, MTIME is set to the time at which compression started. MTIME = 0
      * means no time stamp is available.
      * </p>
      *
-     * @return the most recent modification time.
+     * @return the most recent modification time in seconds since 00:00:00 GMT, Jan. 1, 1970.
      */
     public long getModificationTime() {
-        return modificationTime;
+        return modificationTime.getEpochSecond();
     }
 
     /**
@@ -459,21 +459,21 @@ public class GzipParameters {
      * @since 1.28.0
      */
     public void setModificationInstant(final Instant modificationTime) {
-        this.modificationTime = modificationTime != null ? modificationTime.getEpochSecond() : 0;
+        this.modificationTime = modificationTime != null ? modificationTime : Instant.EPOCH;
     }
 
     /**
-     * Sets the modification time (MTIME) of the compressed file.
+     * Sets the modification time (MTIME) of the compressed file, in seconds since 00:00:00 GMT, Jan. 1, 1970.
      * <p>
      * The time is in Unix format, for example, seconds since 00:00:00 GMT, Jan. 1, 1970. (Note that this may cause problems for MS-DOS and other systems that
      * use local rather than Universal time.) If the compressed data did not come from a file, MTIME is set to the time at which compression started. MTIME = 0
      * means no time stamp is available.
      * </p>
      *
-     * @param modificationTime the modification time, in milliseconds
+     * @param modificationTime the modification time, in seconds.
      */
     public void setModificationTime(final long modificationTime) {
-        this.modificationTime = modificationTime;
+        this.modificationTime = Instant.ofEpochSecond(modificationTime);
     }
 
     /**
