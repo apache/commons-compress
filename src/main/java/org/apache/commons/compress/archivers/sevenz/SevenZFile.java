@@ -1104,6 +1104,7 @@ public class SevenZFile implements Closeable {
      * @throws IOException if an I/O error has occurred
      */
     public int read() throws IOException {
+        @SuppressWarnings("resource") // does not allocate
         final int b = getCurrentStream().read();
         if (b >= 0) {
             uncompressedBytesReadFromCurrentEntry++;
@@ -1135,11 +1136,12 @@ public class SevenZFile implements Closeable {
         if (len == 0) {
             return 0;
         }
-        final int cnt = getCurrentStream().read(b, off, len);
-        if (cnt > 0) {
-            uncompressedBytesReadFromCurrentEntry += cnt;
+        @SuppressWarnings("resource") // does not allocate
+        final int current = getCurrentStream().read(b, off, len);
+        if (current > 0) {
+            uncompressedBytesReadFromCurrentEntry += current;
         }
-        return cnt;
+        return current;
     }
 
     private BitSet readAllOrBits(final ByteBuffer header, final int size) throws IOException {
