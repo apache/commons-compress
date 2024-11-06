@@ -511,4 +511,13 @@ public class GzipParameters {
     public void setOS(final OS os) {
         this.operatingSystem = os != null ? os : OS.UNKNOWN;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("GzipParameters [compressionLevel=").append(compressionLevel).append(", modificationTime=").append(modificationTime)
+                .append(", fileName=").append(fileName).append(", comment=").append(comment).append(", operatingSystem=").append(operatingSystem)
+                .append(", bufferSize=").append(bufferSize).append(", deflateStrategy=").append(deflateStrategy).append("]");
+        return builder.toString();
+    }
 }
