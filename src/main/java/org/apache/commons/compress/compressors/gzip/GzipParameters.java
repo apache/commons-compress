@@ -27,6 +27,7 @@ import java.util.zip.Deflater;
  *
  * @see GzipCompressorInputStream
  * @see GzipCompressorOutputStream
+ * @see <a href="https://datatracker.ietf.org/doc/html/rfc1952">RFC 1952 GZIP File Format Specification</a>
  * @since 1.7
  */
 public class GzipParameters {

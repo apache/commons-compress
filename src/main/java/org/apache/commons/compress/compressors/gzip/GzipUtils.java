@@ -28,6 +28,7 @@ import org.apache.commons.compress.compressors.FileNameUtil;
 /**
  * Utility code for the gzip compression format.
  *
+ * @see <a href="https://datatracker.ietf.org/doc/html/rfc1952">RFC 1952 GZIP File Format Specification</a>
  * @ThreadSafe
  */
 public class GzipUtils {

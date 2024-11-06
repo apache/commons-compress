@@ -36,7 +36,7 @@ import org.apache.commons.compress.compressors.CompressorOutputStream;
  * Compressed output stream using the gzip format. This implementation improves over the standard {@link GZIPOutputStream} class by allowing the configuration
  * of the compression level and the header metadata (file name, comment, modification time, operating system and extra flags).
  *
- * @see <a href="https://tools.ietf.org/html/rfc1952">GZIP File Format Specification</a>
+ * @see <a href="https://datatracker.ietf.org/doc/html/rfc1952">RFC 1952 GZIP File Format Specification</a>
  */
 public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStream> {
 
