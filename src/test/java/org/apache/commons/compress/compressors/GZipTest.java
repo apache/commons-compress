@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.time.Instant;
 import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
 
@@ -42,6 +43,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 public final class GZipTest extends AbstractTest {
+
+    private static final Instant MTIME = Instant.ofEpochSecond(123456000);
 
     @Test
     public void testConcatenatedStreamsReadFirstOnly() throws Exception {
@@ -198,7 +201,9 @@ public final class GZipTest extends AbstractTest {
 
         final GzipParameters parameters = new GzipParameters();
         parameters.setCompressionLevel(Deflater.BEST_COMPRESSION);
-        parameters.setModificationTime(123456000);
+        parameters.setModificationInstant(MTIME);
+        assertEquals(MTIME.getEpochSecond(), parameters.getModificationTime());
+        assertEquals(MTIME, parameters.getModificationInstant());
         parameters.setOperatingSystem(13);
         parameters.setFilename("test3.xml");
         assertEquals(parameters.getFilename(), parameters.getFileName());
