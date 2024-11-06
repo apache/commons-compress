@@ -303,6 +303,11 @@ public class GzipParameters {
         return this.bufferSize;
     }
 
+    /**
+     * Gets an arbitrary user-defined comment.
+     *
+     * @return a user-defined comment.
+     */
     public String getComment() {
         return comment;
     }
@@ -410,6 +415,11 @@ public class GzipParameters {
         this.bufferSize = bufferSize;
     }
 
+    /**
+     * Sets an arbitrary user-defined comment.
+     *
+     * @param comment a user-defined comment.
+     */
     public void setComment(final String comment) {
         this.comment = comment;
     }
