@@ -20,8 +20,11 @@
 package org.apache.commons.compress.compressors.gzip;
 
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.time.Instant;
 import java.util.zip.Deflater;
+
+import org.apache.commons.io.Charsets;
 
 /**
  * Parameters for the GZIP compressor.
@@ -287,6 +290,7 @@ public class GzipParameters {
      */
     private Instant modificationTime = Instant.EPOCH;
     private String fileName;
+    private Charset fileNameCharset = GzipUtils.GZIP_ENCODING;
     private String comment;
     private OS operatingSystem = OS.UNKNOWN; // Unknown OS by default
     private int bufferSize = 512;
@@ -358,6 +362,19 @@ public class GzipParameters {
         return fileName;
     }
 
+
+    /**
+     * Gets the Charset to use for writing file names and comments.
+     * <p>
+     * The default value is {@link GzipUtils#GZIP_ENCODING}.
+     * </p>
+     *
+     * @return the Charset to use for writing file names and comments.
+     * @since 1.28.0
+     */
+    public Charset getFileNameCharset() {
+        return fileNameCharset;
+    }
 
     /**
      * Gets the most recent modification time (MTIME) of the original file being compressed.
@@ -472,6 +489,23 @@ public class GzipParameters {
     }
 
     /**
+     * Sets the Charset to use for writing file names and comments, where null maps to {@link GzipUtils#GZIP_ENCODING}.
+     * <p>
+     * <em>Setting a value other than {@link GzipUtils#GZIP_ENCODING} is not compliant with the <a href="https://datatracker.ietf.org/doc/html/rfc1952">RFC 1952
+     * GZIP File Format Specification</a></em>. Use at your own risk of interoperability issues.
+     * </p>
+     * <p>
+     * The default value is {@link GzipUtils#GZIP_ENCODING}.
+     * </p>
+     *
+     * @param charset the Charset to use for writing file names and comments, null maps to {@link GzipUtils#GZIP_ENCODING}.
+     * @since 1.28.0
+     */
+    public void setFileNameCharset(final Charset charset) {
+        this.fileNameCharset = Charsets.toCharset(charset, GzipUtils.GZIP_ENCODING);
+    }
+
+    /**
      * Sets the modification time (MTIME) of the compressed file.
      *
      * @param modificationTime the modification time, in milliseconds
@@ -533,7 +567,7 @@ public class GzipParameters {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
         builder.append("GzipParameters [compressionLevel=").append(compressionLevel).append(", modificationTime=").append(modificationTime)
                 .append(", fileName=").append(fileName).append(", comment=").append(comment).append(", operatingSystem=").append(operatingSystem)
                 .append(", bufferSize=").append(bufferSize).append(", deflateStrategy=").append(deflateStrategy).append("]");
