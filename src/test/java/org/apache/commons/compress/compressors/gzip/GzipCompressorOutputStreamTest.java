@@ -62,7 +62,7 @@ public class GzipCompressorOutputStreamTest {
     }
 
     /**
-     * Tests Chinese Filename for Windows behavior.
+     * Tests Chinese file name for Windows behavior.
      *
      * @throws IOException When the test fails.
      */
@@ -73,7 +73,7 @@ public class GzipCompressorOutputStreamTest {
     }
 
     /**
-     * Tests Chinese Filename for Windows behavior.
+     * Tests Chinese file name for Windows behavior.
      *
      * @throws IOException When the test fails.
      */
