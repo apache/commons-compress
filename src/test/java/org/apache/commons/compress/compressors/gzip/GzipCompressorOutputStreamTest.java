@@ -20,6 +20,7 @@
 package org.apache.commons.compress.compressors.gzip;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -66,9 +67,19 @@ public class GzipCompressorOutputStreamTest {
      * @throws IOException When the test fails.
      */
     @Test
-    public void testChineseFileName() throws IOException {
-        testChineseFileName(EXPECTED_FILE_NAME, EXPECTED_FILE_NAME, StandardCharsets.UTF_8);
+    public void testChineseFileNameGBK() throws IOException {
+        assumeTrue(Charset.isSupported("GBK"));
         testChineseFileName(EXPECTED_FILE_NAME, EXPECTED_FILE_NAME, Charset.forName("GBK"));
+    }
+
+    /**
+     * Tests Chinese Filename for Windows behavior.
+     *
+     * @throws IOException When the test fails.
+     */
+    @Test
+    public void testChineseFileNameUTF8() throws IOException {
+        testChineseFileName(EXPECTED_FILE_NAME, EXPECTED_FILE_NAME, StandardCharsets.UTF_8);
     }
 
     private void testFileName(final String expected, final String sourceFile) throws IOException {
