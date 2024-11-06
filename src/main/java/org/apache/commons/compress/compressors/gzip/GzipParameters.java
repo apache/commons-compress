@@ -307,6 +307,15 @@ public class GzipParameters {
         return comment;
     }
 
+    /**
+     * Gets the compression level.
+     *
+     * @return the compression level.
+     * @see Deflater#NO_COMPRESSION
+     * @see Deflater#BEST_SPEED
+     * @see Deflater#DEFAULT_COMPRESSION
+     * @see Deflater#BEST_COMPRESSION
+     */
     public int getCompressionLevel() {
         return compressionLevel;
     }
