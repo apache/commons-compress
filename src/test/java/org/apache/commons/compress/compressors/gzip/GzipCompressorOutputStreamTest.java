@@ -55,7 +55,7 @@ public class GzipCompressorOutputStreamTest {
             Files.copy(tempSourceFile, gos);
         }
         try (GzipCompressorInputStream gis = new GzipCompressorInputStream(Files.newInputStream(targetFile))) {
-            final byte[] fileNameBytes = gis.getMetaData().getFileName().getBytes(Charset.forName("ISO-8859-1"));
+            final byte[] fileNameBytes = gis.getMetaData().getFileName().getBytes(StandardCharsets.ISO_8859_1);
             final String unicodeFileName = new String(fileNameBytes, fileNameCharset);
             assertEquals(expected, unicodeFileName);
         }
