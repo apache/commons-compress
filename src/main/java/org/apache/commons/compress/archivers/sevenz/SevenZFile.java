@@ -1916,8 +1916,7 @@ public class SevenZFile implements Closeable {
             final boolean hasAttributes = (bits & 0x20) != 0;
             final boolean moreAlternativeMethods = (bits & 0x80) != 0;
             if (moreAlternativeMethods) {
-                throw new IOException("Alternative methods are unsupported, please report. " + // NOSONAR
-                        "The reference implementation doesn't support them either.");
+                throw new IOException("Alternative methods are unsupported, please report. The reference implementation doesn't support them either.");
             }
 
             if (isSimple) {
