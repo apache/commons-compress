@@ -101,6 +101,13 @@ public class GzipParameters {
         return operatingSystem;
     }
 
+    /**
+     * Gets the filename charset.
+     *
+     * @return the file name charset.
+     *
+     * @since 1.27.2
+     */
     public Charset getFilenameCharset() {
         return filenameCharset;
     }
@@ -203,6 +210,14 @@ public class GzipParameters {
     public void setOperatingSystem(final int operatingSystem) {
         this.operatingSystem = operatingSystem;
     }
+
+    /**
+     * set filename charset.
+     * for ex, if your system in Windows with Chinese, it means your filename encode with GBK
+     * if your system in Linux with Chinese, it means your filename encode with UTF-8
+     *
+     * @param filenameCharset the filename charset
+     */
 
     public void setFilenameCharset(final Charset filenameCharset) {
         this.filenameCharset = filenameCharset;
