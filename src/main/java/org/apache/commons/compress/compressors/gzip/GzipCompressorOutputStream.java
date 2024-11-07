@@ -20,12 +20,9 @@ package org.apache.commons.compress.compressors.gzip;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.zip.CRC32;
 import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
@@ -123,29 +120,6 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
     }
 
     /**
-     * Gets the bytes encoded in the {@value GzipUtils#GZIP_ENCODING} Charset.
-     * <p>
-     * If the string cannot be encoded directly with {@value GzipUtils#GZIP_ENCODING}, then use URI-style percent encoding.
-     * </p>
-     *
-     * @param string          The string to encode.
-     * @param charset Overrides the default charset
-     * @return bytes encoded with the given charset if non-null, otherwise use {@value GzipUtils#GZIP_ENCODING} or {@link StandardCharsets#US_ASCII} if
-     *         GZIP_ENCODING fails.
-     * @throws IOException When an ASCII encoded error occurs.
-     */
-    private byte[] getBytes(final String string, final Charset charset) throws IOException {
-        if (charset.newEncoder().canEncode(string)) {
-            return string.getBytes(charset);
-        }
-        try {
-            return new URI(null, null, string, null).toASCIIString().getBytes(StandardCharsets.US_ASCII);
-        } catch (final URISyntaxException e) {
-            throw new IOException(string, e);
-        }
-    }
-
-    /**
      * {@inheritDoc}
      *
      * @since 1.1
@@ -167,11 +141,9 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
         }
         if (length > 0) {
             deflater.setInput(buffer, offset, length);
-
             while (!deflater.needsInput()) {
                 deflate();
             }
-
             crc.update(buffer, offset, length);
         }
     }
@@ -182,15 +154,15 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
     }
 
     /**
-     * Writes a NUL-terminated String.
+     * Writes a NUL-terminated String encoded with the {@code charset}.
      *
      * @param value The String to write.
-     * @param parameters Specifies the Charset to use.
+     * @param charset Specifies the Charset to use.
      * @throws IOException if an I/O error occurs.
      */
-    private void write(final String value, final GzipParameters parameters) throws IOException {
+    private void write(final String value, final Charset charset) throws IOException {
         if (value != null) {
-            out.write(getBytes(value, parameters.getFileNameCharset()));
+            out.write(value.getBytes(charset));
             out.write(0);
         }
     }
@@ -215,8 +187,8 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
         }
         buffer.put((byte) parameters.getOperatingSystem());
         out.write(buffer.array());
-        write(fileName, parameters);
-        write(comment, parameters);
+        write(fileName, parameters.getFileNameCharset());
+        write(comment, parameters.getFileNameCharset());
     }
 
     private void writeTrailer() throws IOException {

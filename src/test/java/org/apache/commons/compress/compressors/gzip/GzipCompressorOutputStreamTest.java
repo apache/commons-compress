@@ -107,7 +107,7 @@ public class GzipCompressorOutputStreamTest {
     }
 
     /**
-     * Tests COMPRESS-638.
+     * Tests COMPRESS-638. Use {@link GzipParameters#setFileNameCharset(Charset)} if you want non-ISO-8859-1 characters.
      *
      * GZip RFC requires ISO 8859-1 (LATIN-1).
      *
@@ -116,6 +116,6 @@ public class GzipCompressorOutputStreamTest {
     @Test
     public void testFileNameChinesePercentEncoded() throws IOException {
         // "Test Chinese name"
-        testFileName("%E6%B5%8B%E8%AF%95%E4%B8%AD%E6%96%87%E5%90%8D%E7%A7%B0.xml", EXPECTED_FILE_NAME);
+        testFileName("??????.xml", EXPECTED_FILE_NAME);
     }
 }
