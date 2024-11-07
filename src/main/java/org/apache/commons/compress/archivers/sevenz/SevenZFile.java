@@ -959,7 +959,7 @@ public class SevenZFile implements Closeable {
     /**
      * Gets a copy of meta-data of all archive entries.
      * <p>
-     * This method only provides meta-data, the entries can not be used to read the contents, you still need to process all entries in order using
+     * This method only provides meta-data, the entries cannot be used to read the contents, you still need to process all entries in order using
      * {@link #getNextEntry} for that.
      * </p>
      * <p>
@@ -1104,6 +1104,7 @@ public class SevenZFile implements Closeable {
      * @throws IOException if an I/O error has occurred
      */
     public int read() throws IOException {
+        @SuppressWarnings("resource") // does not allocate
         final int b = getCurrentStream().read();
         if (b >= 0) {
             uncompressedBytesReadFromCurrentEntry++;
@@ -1135,11 +1136,12 @@ public class SevenZFile implements Closeable {
         if (len == 0) {
             return 0;
         }
-        final int cnt = getCurrentStream().read(b, off, len);
-        if (cnt > 0) {
-            uncompressedBytesReadFromCurrentEntry += cnt;
+        @SuppressWarnings("resource") // does not allocate
+        final int current = getCurrentStream().read(b, off, len);
+        if (current > 0) {
+            uncompressedBytesReadFromCurrentEntry += current;
         }
-        return cnt;
+        return current;
     }
 
     private BitSet readAllOrBits(final ByteBuffer header, final int size) throws IOException {
@@ -1914,8 +1916,7 @@ public class SevenZFile implements Closeable {
             final boolean hasAttributes = (bits & 0x20) != 0;
             final boolean moreAlternativeMethods = (bits & 0x80) != 0;
             if (moreAlternativeMethods) {
-                throw new IOException("Alternative methods are unsupported, please report. " + // NOSONAR
-                        "The reference implementation doesn't support them either.");
+                throw new IOException("Alternative methods are unsupported, please report. The reference implementation doesn't support them either.");
             }
 
             if (isSimple) {

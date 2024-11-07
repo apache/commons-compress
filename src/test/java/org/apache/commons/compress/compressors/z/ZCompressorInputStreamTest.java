@@ -36,7 +36,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
 /**
- * Unit tests for class {@link ZCompressorInputStream}.
+ * Tests for class {@link ZCompressorInputStream}.
  *
  * @see ZCompressorInputStream
  */

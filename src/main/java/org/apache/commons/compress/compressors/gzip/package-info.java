@@ -23,5 +23,7 @@
  * The classes in this package are wrappers around {@link java.util.zip.GZIPInputStream java.util.zip.GZIPInputStream} and {@link java.util.zip.GZIPOutputStream
  * java.util.zip.GZIPOutputStream}.
  * </p>
+ *
+ * @see <a href="https://datatracker.ietf.org/doc/html/rfc1952">RFC 1952 GZIP File Format Specification</a>
  */
 package org.apache.commons.compress.compressors.gzip;

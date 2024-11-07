@@ -62,7 +62,7 @@ import org.apache.commons.io.input.BoundedInputStream;
  * of the concatenated data of all of the encoded GZIP members in order.
  * </p>
  *
- * @see "https://tools.ietf.org/html/rfc1952"
+ * @see <a href="https://datatracker.ietf.org/doc/html/rfc1952">RFC 1952 GZIP File Format Specification</a>
  */
 public class GzipCompressorInputStream extends CompressorInputStream implements InputStreamStatistics {
 

@@ -26,7 +26,7 @@ import java.util.NoSuchElementException;
 import org.junit.jupiter.api.Test;
 
 /**
- * Unit tests for class {@link ServiceLoaderIterator org.apache.commons.compress.utils.ServiceLoaderIterator}.
+ * Tests for class {@link ServiceLoaderIterator org.apache.commons.compress.utils.ServiceLoaderIterator}.
  *
  * @see ServiceLoaderIterator
  */

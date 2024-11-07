@@ -23,7 +23,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -204,7 +203,7 @@ public class Archive {
                     i++;
                     final Segment segment = new Segment();
                     segment.setLogLevel(logLevel);
-                    segment.setLogStream(logFile != null ? (OutputStream) logFile : (OutputStream) System.out);
+                    segment.setLogStream(logFile != null ? logFile : System.out);
                     segment.setPreRead(false);
 
                     if (i == 1) {

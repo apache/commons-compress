@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 /**
- * Unit tests for class {@link Folder}.
+ * Tests for class {@link Folder}.
  *
  * @see Folder
  */

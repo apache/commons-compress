@@ -27,7 +27,7 @@ import java.io.IOException;
 import org.junit.jupiter.api.Test;
 
 /**
- * Unit tests for class {@link XZCompressorOutputStream}.
+ * Tests for class {@link XZCompressorOutputStream}.
  *
  * @see XZCompressorOutputStream
  */

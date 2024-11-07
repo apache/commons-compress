@@ -49,7 +49,7 @@ import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.Sets;
 
 /**
- * Factory to create Archive[In|Out]putStreams from names or the first bytes of the InputStream. In order to add other implementations, you should extend
+ * Creates an Archive[In|Out]putStreams from names or the first bytes of the InputStream. In order to add other implementations, you should extend
  * ArchiveStreamFactory and override the appropriate methods (and call their implementation from super of course).
  *
  * Compressing a ZIP-File:

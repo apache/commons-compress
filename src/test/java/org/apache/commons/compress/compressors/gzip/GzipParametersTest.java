@@ -20,6 +20,7 @@
 package org.apache.commons.compress.compressors.gzip;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.zip.Deflater;
 
@@ -36,5 +37,13 @@ public class GzipParametersTest {
         assertEquals(Deflater.DEFAULT_STRATEGY, gzipParameters.getDeflateStrategy());
         gzipParameters.setDeflateStrategy(Deflater.HUFFMAN_ONLY);
         assertEquals(Deflater.HUFFMAN_ONLY, gzipParameters.getDeflateStrategy());
+    }
+
+    @Test
+    public void testToString() {
+        final GzipParameters gzipParameters = new GzipParameters();
+        assertTrue(gzipParameters.toString().contains("UNKNOWN"));
+        gzipParameters.setOS(GzipParameters.OS.Z_SYSTEM);
+        assertTrue(gzipParameters.toString().contains("Z_SYSTEM"));
     }
 }

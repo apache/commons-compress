@@ -264,7 +264,7 @@ public class ParallelScatterZipCreator {
      * </p>
      * <p>
      * Calling this method will shut down the {@link ExecutorService} used by this class. If any of the {@link Callable}s {@link #submitStreamAwareCallable
-     * submit}ted to this instance throws an exception, the archive can not be created properly and this method will throw an exception.
+     * submit}ted to this instance throws an exception, the archive cannot be created properly and this method will throw an exception.
      * </p>
      *
      * @param targetStream The {@link ZipArchiveOutputStream} to receive the contents of the scatter streams

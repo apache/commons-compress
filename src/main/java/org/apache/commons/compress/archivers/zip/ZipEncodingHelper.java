@@ -23,7 +23,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.UnsupportedCharsetException;
 
-import org.apache.commons.io.Charsets;
+import org.apache.commons.compress.utils.Charsets;
 
 /**
  * Static helper functions for robustly encoding file names in ZIP files.

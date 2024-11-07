@@ -26,7 +26,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 /**
- * Unit tests for class {@link ParsingUtils}.
+ * Tests for class {@link ParsingUtils}.
  *
  * @see ParsingUtils
  */

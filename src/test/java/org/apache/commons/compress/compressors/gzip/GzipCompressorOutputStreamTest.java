@@ -20,6 +20,7 @@
 package org.apache.commons.compress.compressors.gzip;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -34,6 +35,52 @@ import org.junit.jupiter.api.Test;
  * Tests {@link GzipCompressorOutputStream}.
  */
 public class GzipCompressorOutputStreamTest {
+
+    private static final String EXPECTED_BASE_NAME = "\u6D4B\u8BD5\u4E2D\u6587\u540D\u79F0";
+    private static final String EXPECTED_FILE_NAME = EXPECTED_BASE_NAME + ".xml";
+
+    private void testChineseFileName(final String expected, final String sourceFile, final Charset fileNameCharset) throws IOException {
+        final Path tempSourceFile = Files.createTempFile(sourceFile, sourceFile);
+        Files.write(tempSourceFile, "<text>Hello World!</text>".getBytes(StandardCharsets.ISO_8859_1));
+        final Path targetFile = Files.createTempFile(EXPECTED_BASE_NAME, ".gz");
+        final GzipParameters parameters = new GzipParameters();
+        // If your system is Windows with Chinese, and your file name is Chinese, you need set the fileNameCharset to GBK
+        // otherwise your file name is different with use GzipCompressorOutputStream without set GzipParameters
+        // and the same situation in Linux, need set the fileNameCharset to UTF-8
+        parameters.setFileNameCharset(fileNameCharset);
+        assertEquals(fileNameCharset, parameters.getFileNameCharset());
+        parameters.setFileName(EXPECTED_FILE_NAME);
+        try (OutputStream fos = Files.newOutputStream(targetFile);
+                GzipCompressorOutputStream gos = new GzipCompressorOutputStream(fos, parameters)) {
+            Files.copy(tempSourceFile, gos);
+        }
+        try (GzipCompressorInputStream gis = new GzipCompressorInputStream(Files.newInputStream(targetFile))) {
+            final byte[] fileNameBytes = gis.getMetaData().getFileName().getBytes(StandardCharsets.ISO_8859_1);
+            final String unicodeFileName = new String(fileNameBytes, fileNameCharset);
+            assertEquals(expected, unicodeFileName);
+        }
+    }
+
+    /**
+     * Tests Chinese file name for Windows behavior.
+     *
+     * @throws IOException When the test fails.
+     */
+    @Test
+    public void testChineseFileNameGBK() throws IOException {
+        assumeTrue(Charset.isSupported("GBK"));
+        testChineseFileName(EXPECTED_FILE_NAME, EXPECTED_FILE_NAME, Charset.forName("GBK"));
+    }
+
+    /**
+     * Tests Chinese file name for Windows behavior.
+     *
+     * @throws IOException When the test fails.
+     */
+    @Test
+    public void testChineseFileNameUTF8() throws IOException {
+        testChineseFileName(EXPECTED_FILE_NAME, EXPECTED_FILE_NAME, StandardCharsets.UTF_8);
+    }
 
     private void testFileName(final String expected, final String sourceFile) throws IOException {
         final Path tempSourceFile = Files.createTempFile(sourceFile, sourceFile);
@@ -69,40 +116,6 @@ public class GzipCompressorOutputStreamTest {
     @Test
     public void testFileNameChinesePercentEncoded() throws IOException {
         // "Test Chinese name"
-        testFileName("%E6%B5%8B%E8%AF%95%E4%B8%AD%E6%96%87%E5%90%8D%E7%A7%B0.xml", "\u6D4B\u8BD5\u4E2D\u6587\u540D\u79F0.xml");
-    }
-
-    private void testChineseFilename(final String expected, final String sourceFile) throws IOException {
-        Charset filenameCharset = Charset.forName("GBK");
-        final Path tempSourceFile = Files.createTempFile(sourceFile, sourceFile);
-        Files.write(tempSourceFile, "<text>Hello World!</text>".getBytes(StandardCharsets.ISO_8859_1));
-        final Path targetFile = Files.createTempFile("\u6D4B\u8BD5\u4E2D\u6587\u540D\u79F0", ".gz");
-        final GzipParameters parameters = new GzipParameters();
-        // if your system is Windows with Chinese, and your filename is Chinese, you need set the filenameCharset to GBK
-        // otherwise your filename is different with use GzipCompressorOutputStream without set GzipParameters
-        // and the same situation in Linux, need set the filenameCharset to UTF-8
-        parameters.setFilenameCharset(filenameCharset);
-        assertEquals(filenameCharset, parameters.getFilenameCharset());
-        parameters.setFilename("\u6D4B\u8BD5\u4E2D\u6587\u540D\u79F0.xml");
-        try (OutputStream fos = Files.newOutputStream(targetFile);
-             GzipCompressorOutputStream gos = new GzipCompressorOutputStream(fos, parameters)) {
-            Files.copy(tempSourceFile, gos);
-        }
-        try (GzipCompressorInputStream gis = new GzipCompressorInputStream(Files.newInputStream(targetFile))) {
-            byte[] fileNameBytes = gis.getMetaData().getFileName().getBytes(Charset.forName("ISO-8859-1"));
-            String unicodeFileName = new String(fileNameBytes, filenameCharset);
-            assertEquals(expected, unicodeFileName);
-        }
-    }
-    /**
-     * Tests GzipCompressorOutputStream
-     *
-     * GZip for Chinese Filename in Windows
-     *
-     * @throws IOException When the test fails.
-     */
-    @Test
-    public void testChineseFileNameGBK() throws IOException {
-        testChineseFilename("\u6D4B\u8BD5\u4E2D\u6587\u540D\u79F0.xml","\u6D4B\u8BD5\u4E2D\u6587\u540D\u79F0.xml");
+        testFileName("%E6%B5%8B%E8%AF%95%E4%B8%AD%E6%96%87%E5%90%8D%E7%A7%B0.xml", EXPECTED_FILE_NAME);
     }
 }

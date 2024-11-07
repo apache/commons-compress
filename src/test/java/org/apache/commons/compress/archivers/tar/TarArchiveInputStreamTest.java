@@ -27,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -37,10 +38,18 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 import java.util.TimeZone;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.compress.AbstractTest;
@@ -49,6 +58,8 @@ import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.function.IOConsumer;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 public class TarArchiveInputStreamTest extends AbstractTest {
 
@@ -439,4 +450,60 @@ public class TarArchiveInputStreamTest extends AbstractTest {
         }
     }
 
+    private void testCompress666(final int factor, final boolean bufferInputStream, final String localPath) {
+        final ExecutorService executorService = Executors.newFixedThreadPool(10);
+        try {
+            final List<Future<?>> tasks = IntStream.range(0, 200).mapToObj(index -> executorService.submit(() -> {
+                TarArchiveEntry tarEntry = null;
+                try (InputStream inputStream = getClass().getResourceAsStream(localPath);
+                     TarArchiveInputStream tarInputStream = new TarArchiveInputStream(
+                             bufferInputStream ? new BufferedInputStream(new GZIPInputStream(inputStream)) : new GZIPInputStream(inputStream),
+                             TarConstants.DEFAULT_RCDSIZE * factor, TarConstants.DEFAULT_RCDSIZE)) {
+                    while ((tarEntry = tarInputStream.getNextEntry()) != null) {
+                        assertNotNull(tarEntry);
+                    }
+                } catch (final IOException e) {
+                    fail(Objects.toString(tarEntry), e);
+                }
+            })).collect(Collectors.toList());
+            final List<Exception> list = new ArrayList<>();
+            for (final Future<?> future : tasks) {
+                try {
+                    future.get();
+                } catch (final Exception e) {
+                    list.add(e);
+                }
+            }
+            // check:
+            if (!list.isEmpty()) {
+                fail(list.get(0));
+            }
+            // or:
+            // assertTrue(list.isEmpty(), () -> list.size() + " exceptions: " + list.toString());
+        } finally {
+            executorService.shutdownNow();
+        }
+    }
+
+    /**
+     * Tests https://issues.apache.org/jira/browse/COMPRESS-666
+     *
+     * A factor of 20 is the default.
+     */
+    @ParameterizedTest
+    @ValueSource(ints = { 1, 2, 4, 8, 16, 20, 32, 64, 128 })
+    public void testCompress666Buffered(final int factor) {
+        testCompress666(factor, true, "/COMPRESS-666/compress-666.tar.gz");
+    }
+
+    /**
+     * Tests https://issues.apache.org/jira/browse/COMPRESS-666
+     *
+     * A factor of 20 is the default.
+     */
+    @ParameterizedTest
+    @ValueSource(ints = { 1, 2, 4, 8, 16, 20, 32, 64, 128 })
+    public void testCompress666Unbuffered(final int factor) {
+        testCompress666(factor, false, "/COMPRESS-666/compress-666.tar.gz");
+    }
 }

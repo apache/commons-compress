@@ -719,7 +719,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
      *
      * @param parsingBehavior controls parsing of extra fields.
      * @return an array of the extra fields
-     * @throws ZipException if parsing fails, can not happen if {@code
+     * @throws ZipException if parsing fails, cannot happen if {@code
      * parsingBehavior}  is {@link ExtraFieldParsingMode#BEST_EFFORT}.
      * @since 1.19
      */
@@ -1365,7 +1365,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     @Override
     public void setMethod(final int method) {
         if (method < 0) {
-            throw new IllegalArgumentException("ZIP compression method can not be negative: " + method);
+            throw new IllegalArgumentException("ZIP compression method cannot be negative: " + method);
         }
         this.method = method;
     }

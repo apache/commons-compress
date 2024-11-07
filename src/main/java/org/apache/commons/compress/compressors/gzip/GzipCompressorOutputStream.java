@@ -37,7 +37,7 @@ import org.apache.commons.compress.compressors.CompressorOutputStream;
  * Compressed output stream using the gzip format. This implementation improves over the standard {@link GZIPOutputStream} class by allowing the configuration
  * of the compression level and the header metadata (file name, comment, modification time, operating system and extra flags).
  *
- * @see <a href="https://tools.ietf.org/html/rfc1952">GZIP File Format Specification</a>
+ * @see <a href="https://datatracker.ietf.org/doc/html/rfc1952">RFC 1952 GZIP File Format Specification</a>
  */
 public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStream> {
 
@@ -115,11 +115,9 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
     public void finish() throws IOException {
         if (!deflater.finished()) {
             deflater.finish();
-
             while (!deflater.finished()) {
                 deflate();
             }
-
             writeTrailer();
         }
     }
@@ -130,23 +128,21 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
      * If the string cannot be encoded directly with {@value GzipUtils#GZIP_ENCODING}, then use URI-style percent encoding.
      * </p>
      *
-     * @param string The string to encode.
-     * @return
-     * @throws IOException
+     * @param string          The string to encode.
+     * @param charset Overrides the default charset
+     * @return bytes encoded with the given charset if non-null, otherwise use {@value GzipUtils#GZIP_ENCODING} or {@link StandardCharsets#US_ASCII} if
+     *         GZIP_ENCODING fails.
+     * @throws IOException When an ASCII encoded error occurs.
      */
     private byte[] getBytes(final String string, final Charset charset) throws IOException {
-        if (GzipUtils.GZIP_ENCODING.newEncoder().canEncode(string)) {
-            return string.getBytes(GzipUtils.GZIP_ENCODING);
+        if (charset.newEncoder().canEncode(string)) {
+            return string.getBytes(charset);
         }
-        if (charset == null) {
-            try {
-                return new URI(null, null, string, null).toASCIIString().getBytes(StandardCharsets.US_ASCII);
-            } catch (final URISyntaxException e) {
-                throw new IOException(string, e);
-            }
+        try {
+            return new URI(null, null, string, null).toASCIIString().getBytes(StandardCharsets.US_ASCII);
+        } catch (final URISyntaxException e) {
+            throw new IOException(string, e);
         }
-        //support for non-ASCII characters in filenames
-        return string.getBytes(charset);
     }
 
     /**
@@ -185,18 +181,29 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
         write(new byte[] { (byte) (b & 0xff) }, 0, 1);
     }
 
+    /**
+     * Writes a NUL-terminated String.
+     *
+     * @param value The String to write.
+     * @param parameters Specifies the Charset to use.
+     * @throws IOException if an I/O error occurs.
+     */
+    private void write(final String value, final GzipParameters parameters) throws IOException {
+        if (value != null) {
+            out.write(getBytes(value, parameters.getFileNameCharset()));
+            out.write(0);
+        }
+    }
+
     private void writeHeader(final GzipParameters parameters) throws IOException {
         final String fileName = parameters.getFileName();
         final String comment = parameters.getComment();
-        final Charset filenameCharset = parameters.getFilenameCharset();
-
         final ByteBuffer buffer = ByteBuffer.allocate(10);
         buffer.order(ByteOrder.LITTLE_ENDIAN);
         buffer.putShort((short) GZIPInputStream.GZIP_MAGIC);
         buffer.put((byte) Deflater.DEFLATED); // compression method (8: deflate)
         buffer.put((byte) ((fileName != null ? FNAME : 0) | (comment != null ? FCOMMENT : 0))); // flags
         buffer.putInt((int) (parameters.getModificationTime() / 1000));
-
         // extra flags
         final int compressionLevel = parameters.getCompressionLevel();
         if (compressionLevel == Deflater.BEST_COMPRESSION) {
@@ -206,20 +213,10 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
         } else {
             buffer.put((byte) 0);
         }
-
         buffer.put((byte) parameters.getOperatingSystem());
-
         out.write(buffer.array());
-
-        if (fileName != null) {
-            out.write(getBytes(fileName, filenameCharset));
-            out.write(0);
-        }
-
-        if (comment != null) {
-            out.write(getBytes(comment, filenameCharset));
-            out.write(0);
-        }
+        write(fileName, parameters);
+        write(comment, parameters);
     }
 
     private void writeTrailer() throws IOException {
@@ -227,7 +224,6 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
         buffer.order(ByteOrder.LITTLE_ENDIAN);
         buffer.putInt((int) crc.getValue());
         buffer.putInt(deflater.getTotalIn());
-
         out.write(buffer.array());
     }
 
