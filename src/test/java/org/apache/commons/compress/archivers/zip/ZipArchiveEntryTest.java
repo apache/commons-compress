@@ -106,7 +106,7 @@ public class ZipArchiveEntryTest {
     }
 
     /**
-     * Test case for <a href="https://issues.apache.org/jira/browse/COMPRESS-93" >COMPRESS-93</a>.
+     * Test case for <a href="https://issues.apache.org/jira/browse/COMPRESS-93">COMPRESS-93</a>.
      */
     @Test
     public void testCompressionMethod() throws Exception {
@@ -265,7 +265,7 @@ public class ZipArchiveEntryTest {
     }
 
     /**
-     * Test case for <a href="https://issues.apache.org/jira/browse/COMPRESS-94" >COMPRESS-94</a>.
+     * Test case for <a href="https://issues.apache.org/jira/browse/COMPRESS-94">COMPRESS-94</a>.
      */
     @Test
     public void testNotEquals() {

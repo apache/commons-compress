@@ -692,7 +692,7 @@ public class ZipFileTest extends AbstractTest {
     }
 
     /**
-     * Test case for <a href="https://issues.apache.org/jira/browse/COMPRESS-621" >COMPRESS-621</a>.
+     * Test case for <a href="https://issues.apache.org/jira/browse/COMPRESS-621">COMPRESS-621</a>.
      */
     @Test
     public void testReadingOfExtraDataBeforeZip() throws IOException {
@@ -714,7 +714,7 @@ public class ZipFileTest extends AbstractTest {
     }
 
     /**
-     * Test case for <a href="https://issues.apache.org/jira/browse/COMPRESS-264" >COMPRESS-264</a>.
+     * Test case for <a href="https://issues.apache.org/jira/browse/COMPRESS-264">COMPRESS-264</a>.
      */
     @Test
     public void testReadingOfFirstStoredEntry() throws Exception {
@@ -864,7 +864,7 @@ public class ZipFileTest extends AbstractTest {
     }
 
     /**
-     * Test case for <a href="https://issues.apache.org/jira/browse/COMPRESS-208" >COMPRESS-208</a>.
+     * Test case for <a href="https://issues.apache.org/jira/browse/COMPRESS-208">COMPRESS-208</a>.
      */
     @Test
     public void testSkipsPK00Prefix() throws Exception {

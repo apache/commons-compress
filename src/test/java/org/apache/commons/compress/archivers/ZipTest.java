@@ -681,7 +681,7 @@ public final class ZipTest extends AbstractTest {
     /**
      * Test case for being able to skip an entry in an {@link ZipArchiveInputStream} even if the compression method of that entry is unsupported.
      *
-     * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-93" >COMPRESS-93</a>
+     * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-93">COMPRESS-93</a>
      */
     @Test
     public void testSkipEntryWithUnsupportedCompressionMethod() throws IOException {
@@ -695,7 +695,7 @@ public final class ZipTest extends AbstractTest {
     }
 
     /**
-     * Test case for <a href="https://issues.apache.org/jira/browse/COMPRESS-208" >COMPRESS-208</a>.
+     * Test case for <a href="https://issues.apache.org/jira/browse/COMPRESS-208">COMPRESS-208</a>.
      */
     @Test
     public void testSkipsPK00Prefix() throws Exception {
@@ -710,7 +710,7 @@ public final class ZipTest extends AbstractTest {
     }
 
     /**
-     * Test case for <a href="https://issues.apache.org/jira/browse/COMPRESS-93" >COMPRESS-93</a>.
+     * Test case for <a href="https://issues.apache.org/jira/browse/COMPRESS-93">COMPRESS-93</a>.
      */
     @Test
     public void testTokenizationCompressionMethod() throws IOException {

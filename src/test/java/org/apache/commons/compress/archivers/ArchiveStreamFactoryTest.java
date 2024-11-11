@@ -285,7 +285,7 @@ public class ArchiveStreamFactoryTest extends AbstractTest {
     }
 
     /**
-     * Test case for <a href="https://issues.apache.org/jira/browse/COMPRESS-267" >COMPRESS-267</a>.
+     * Test case for <a href="https://issues.apache.org/jira/browse/COMPRESS-267">COMPRESS-267</a>.
      */
     @Test
     public void testDetectsAndThrowsFor7z() throws Exception {
@@ -408,7 +408,7 @@ public class ArchiveStreamFactoryTest extends AbstractTest {
     }
 
     /**
-     * Tests case for <a href="https://issues.apache.org/jira/browse/COMPRESS-208" >COMPRESS-208</a>.
+     * Tests case for <a href="https://issues.apache.org/jira/browse/COMPRESS-208">COMPRESS-208</a>.
      */
     @Test
     public void testSkipsPK00Prefix() throws Exception {
@@ -432,7 +432,7 @@ public class ArchiveStreamFactoryTest extends AbstractTest {
     }
 
     /**
-     * Test case for <a href="https://issues.apache.org/jira/browse/COMPRESS-674" >COMPRESS-674</a>.
+     * Test case for <a href="https://issues.apache.org/jira/browse/COMPRESS-674">COMPRESS-674</a>.
      */
     @Test
     void testUtf16TextIsNotTAR() {

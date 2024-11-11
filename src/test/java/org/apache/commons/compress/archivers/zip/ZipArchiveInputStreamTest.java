@@ -176,7 +176,7 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
     }
 
     /**
-     * Test case for <a href="https://issues.apache.org/jira/browse/COMPRESS-351" >COMPRESS-351</a>.
+     * Test case for <a href="https://issues.apache.org/jira/browse/COMPRESS-351">COMPRESS-351</a>.
      */
     @Test
     public void testMessageWithCorruptFileName() throws Exception {
@@ -395,7 +395,7 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
     }
 
     /**
-     * Test case for <a href="https://issues.apache.org/jira/browse/COMPRESS-264" >COMPRESS-264</a>.
+     * Test case for <a href="https://issues.apache.org/jira/browse/COMPRESS-264">COMPRESS-264</a>.
      */
     @Test
     public void testReadingOfFirstStoredEntry() throws Exception {
@@ -685,7 +685,7 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
     }
 
     /**
-     * Test case for <a href="https://issues.apache.org/jira/browse/COMPRESS-364" >COMPRESS-364</a>.
+     * Test case for <a href="https://issues.apache.org/jira/browse/COMPRESS-364">COMPRESS-364</a>.
      */
     @Test
     public void testWithBytesAfterData() throws Exception {

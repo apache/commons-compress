@@ -788,7 +788,7 @@ public class SevenZFileTest extends AbstractTest {
     }
 
     /**
-     * Test case for <a href="https://issues.apache.org/jira/browse/COMPRESS-681" >COMPRESS-681</a>.
+     * Test case for <a href="https://issues.apache.org/jira/browse/COMPRESS-681">COMPRESS-681</a>.
      */
     @Test
     public void testReadingArchiveProperties() throws IOException {
