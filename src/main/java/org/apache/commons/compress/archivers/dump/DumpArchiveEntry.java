@@ -56,12 +56,12 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  *
  * struct  s_spcl {
  *   int32_t c_type;             // record type (see below)
- *   int32_t <b>c_date</b>;             // date of this dump
- *   int32_t <b>c_ddate</b>;            // date of previous dump
+ *   int32_t <strong>c_date</strong>;             // date of this dump
+ *   int32_t <strong>c_ddate</strong>;            // date of previous dump
  *   int32_t c_volume;           // dump volume number
  *   u_int32_t c_tapea;          // logical block of this record
  *   dump_ino_t c_ino;           // number of inode
- *   int32_t <b>c_magic</b>;            // magic number (see above)
+ *   int32_t <strong>c_magic</strong>;            // magic number (see above)
  *   int32_t c_checksum;         // record checksum
  * #ifdef  __linux__
  *   struct  new_bsd_inode c_dinode;
@@ -74,11 +74,11 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * #endif
  *   int32_t c_count;            // number of valid c_addr entries
  *   union u_data c_data;        // see above
- *   char    <b>c_label[LBLSIZE]</b>;   // dump label
- *   int32_t <b>c_level</b>;            // level of this dump
- *   char    <b>c_filesys[NAMELEN]</b>; // name of dumpped file system
- *   char    <b>c_dev[NAMELEN]</b>;     // name of dumpped device
- *   char    <b>c_host[NAMELEN]</b>;    // name of dumpped host
+ *   char    <strong>c_label[LBLSIZE]</strong>;   // dump label
+ *   int32_t <strong>c_level</strong>;            // level of this dump
+ *   char    <strong>c_filesys[NAMELEN]</strong>; // name of dumpped file system
+ *   char    <strong>c_dev[NAMELEN]</strong>;     // name of dumpped device
+ *   char    <strong>c_host[NAMELEN]</strong>;    // name of dumpped host
  *   int32_t c_flags;            // additional information (see below)
  *   int32_t c_firstrec;         // first record on volume
  *   int32_t c_ntrec;            // blocksize on volume
@@ -110,7 +110,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * #define EXT2_XATTR_MAGIC2       0xEA020001  // in inode EA
  * </pre>
  * <p>
- * The fields in <b>bold</b> are the same for all blocks. (This permitted multiple dumps to be written to a single tape.)
+ * The fields in <strong>bold</strong> are the same for all blocks. (This permitted multiple dumps to be written to a single tape.)
  * </p>
  *
  * <p>

@@ -31,14 +31,15 @@ import org.apache.commons.io.function.IOIterator;
 import org.apache.commons.io.input.NullInputStream;
 
 /**
- * Archive input streams <b>MUST</b> override the {@link #read(byte[], int, int)} - or {@link #read()} - method so that reading from the stream generates EOF
- * for the end of data in each entry as well as at the end of the file proper.
+ * Archive input streams <strong>MUST</strong> override the {@link #read(byte[], int, int)} - or {@link #read()} - method so that reading from the stream
+ * generates EOF for the end of data in each entry as well as at the end of the file proper.
  * <p>
  * The {@link #getNextEntry()} method is used to reset the input stream ready for reading the data from the next entry.
  * </p>
  * <p>
  * The input stream classes must also implement a method with the signature:
  * </p>
+ *
  * <pre>
  * public static boolean matches(byte[] signature, int length)
  * </pre>

@@ -93,7 +93,7 @@ import java.util.zip.ZipException;
  * </pre>
  *
  * <p>
- * <b>Format</b> - the data format identifier for this record. The only value allowed at this time is the integer value 2.
+ * <strong>Format</strong> - the data format identifier for this record. The only value allowed at this time is the integer value 2.
  * </p>
  *
  * <p>
@@ -232,7 +232,7 @@ import java.util.zip.ZipException;
  * </pre>
  *
  * <p>
- * <b>Flags</b> - Processing flags needed for decryption
+ * <strong>Flags</strong> - Processing flags needed for decryption
  * </p>
  *
  * <ul>

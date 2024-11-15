@@ -32,7 +32,7 @@ import java.util.zip.ZipException;
  * strong encryption.
  * </p>
  *
- * <b>Algorithm IDs</b> - integer identifier of the encryption algorithm from the following range
+ * <strong>Algorithm IDs</strong> - integer identifier of the encryption algorithm from the following range
  *
  * <ul>
  * <li>0x6601 - DES</li>
@@ -49,7 +49,7 @@ import java.util.zip.ZipException;
  * <li>0xFFFF - Unknown algorithm</li>
  * </ul>
  *
- * <b>Hash Algorithms</b> - integer identifier of the hash algorithm from the following range
+ * <strong>Hash Algorithms</strong> - integer identifier of the hash algorithm from the following range
  *
  * <ul>
  * <li>0x0000 - none</li>

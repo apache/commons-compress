@@ -39,11 +39,12 @@ import org.apache.commons.io.file.attribute.FileTimes;
  * Unfortunately, 32 (signed) bits can only store dates up to the year 2037, and so this extra field will eventually be obsolete. Enjoy it while it lasts!
  * </p>
  * <ul>
- * <li><b>modifyTime:</b> most recent time of file/directory modification (or file/dir creation if the entry has not been modified since it was created).</li>
- * <li><b>accessTime:</b> most recent time file/directory was opened (e.g., read from disk). Many people disable their operating systems from updating this
- * value using the NOATIME mount option to optimize disk behavior, and thus it's not always reliable. In those cases it's always equal to modifyTime.</li>
- * <li><b>*createTime:</b> modern Linux file systems (e.g., ext2 and newer) do not appear to store a value like this, and so it's usually omitted altogether in
- * the ZIP extra field. Perhaps other UNIX systems track this.</li>
+ * <li><strong>modifyTime:</strong> most recent time of file/directory modification (or file/dir creation if the entry has not been modified since it was
+ * created).</li>
+ * <li><strong>accessTime:</strong> most recent time file/directory was opened (e.g., read from disk). Many people disable their operating systems from updating
+ * this value using the NOATIME mount option to optimize disk behavior, and thus it's not always reliable. In those cases it's always equal to modifyTime.</li>
+ * <li><strong>*createTime:</strong> modern Linux file systems (e.g., ext2 and newer) do not appear to store a value like this, and so it's usually omitted
+ * altogether in the ZIP extra field. Perhaps other UNIX systems track this.</li>
  * </ul>
  * <p>
  * We're using the field definition given in Info-Zip's source archive: zip-3.0.tar.gz/proginfo/extrafld.txt
