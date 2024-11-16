@@ -18,10 +18,12 @@
  */
 package org.apache.commons.compress.archivers;
 
+import java.io.IOException;
+
 /**
  * Signals that an Archive exception of some sort has occurred.
  */
-public class ArchiveException extends Exception {
+public class ArchiveException extends IOException {
 
     /** Serial. */
     private static final long serialVersionUID = 2772690708123267100L;

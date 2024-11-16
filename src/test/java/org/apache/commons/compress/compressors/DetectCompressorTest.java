@@ -269,7 +269,7 @@ public final class DetectCompressorTest {
 
         final CompressorException ce = assertThrows(CompressorException.class,
                 () -> CompressorStreamFactory.detect(new BufferedInputStream(new BrokenInputStream())), "Expected IOException");
-        assertEquals("IOException while reading signature.", ce.getMessage());
+        assertEquals("Failed to read signature.", ce.getMessage());
     }
 
     @ParameterizedTest
