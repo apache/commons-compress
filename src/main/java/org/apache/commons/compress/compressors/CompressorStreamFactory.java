@@ -240,7 +240,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
             signatureLength = IOUtils.readFully(inputStream, signature);
             inputStream.reset();
         } catch (final IOException e) {
-            throw new CompressorException("IOException while reading signature.", e);
+            throw new CompressorException("Failed to read signature.", e);
         }
         if (compressorNames.contains(BZIP2) && BZip2CompressorInputStream.matches(signature, signatureLength)) {
             return BZIP2;
@@ -632,7 +632,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
                 return new ZstdCompressorOutputStream(out);
             }
         } catch (final IOException e) {
-            throw new CompressorException("Could not create CompressorOutputStream", e);
+            throw new CompressorException("Could not create CompressorOutputStream.", e);
         }
         final CompressorStreamProvider compressorStreamProvider = getCompressorOutputStreamProviders().get(toKey(name));
         if (compressorStreamProvider != null) {

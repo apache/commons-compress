@@ -224,7 +224,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
             signatureLength = IOUtils.readFully(in, signature);
             in.reset();
         } catch (final IOException e) {
-            throw new ArchiveException("IOException while reading signature.", e);
+            throw new ArchiveException("Failure reading signature.", e);
         }
 
         // For now JAR files are detected as ZIP files.
