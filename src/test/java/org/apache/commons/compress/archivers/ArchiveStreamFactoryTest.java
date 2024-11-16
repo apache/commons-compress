@@ -281,7 +281,7 @@ public class ArchiveStreamFactoryTest extends AbstractTest {
 
         final ArchiveException e3 = assertThrows(ArchiveException.class, () -> ArchiveStreamFactory.detect(new BufferedInputStream(new BrokenInputStream())),
                 "Expected ArchiveException");
-        assertEquals("IOException while reading signature.", e3.getMessage());
+        assertEquals("Failure reading signature.", e3.getMessage());
     }
 
     /**
