@@ -19,17 +19,17 @@
 package org.apache.commons.compress.compressors;
 
 /**
- * Compressor related exception
+ * Signals that an Compressor exception of some sort has occurred.
  */
 public class CompressorException extends Exception {
 
-    /** Serial */
+    /** Serial. */
     private static final long serialVersionUID = -2932901310255908814L;
 
     /**
      * Constructs a new exception with the specified detail message. The cause is not initialized.
      *
-     * @param message the detail message
+     * @param message The message (which is saved for later retrieval by the {@link #getMessage()} method).
      */
     public CompressorException(final String message) {
         super(message);
@@ -38,8 +38,9 @@ public class CompressorException extends Exception {
     /**
      * Constructs a new exception with the specified detail message and cause.
      *
-     * @param message the detail message
-     * @param cause   the cause
+     * @param message The message (which is saved for later retrieval by the {@link #getMessage()} method)
+     * @param cause   The cause (which is saved for later retrieval by the {@link #getCause()} method). A null indicates that the cause is nonexistent or
+     *                unknown.
      */
     public CompressorException(final String message, final Throwable cause) {
         super(message, cause);

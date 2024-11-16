@@ -19,7 +19,7 @@
 package org.apache.commons.compress.archivers;
 
 /**
- * Archiver related Exception.
+ * Signals that an Archive exception of some sort has occurred.
  */
 public class ArchiveException extends Exception {
 
@@ -29,7 +29,7 @@ public class ArchiveException extends Exception {
     /**
      * Constructs a new exception with the specified detail message. The cause is not initialized.
      *
-     * @param message the detail message.
+     * @param message The message (which is saved for later retrieval by the {@link #getMessage()} method).
      */
     public ArchiveException(final String message) {
         super(message);
@@ -38,8 +38,9 @@ public class ArchiveException extends Exception {
     /**
      * Constructs a new exception with the specified detail message and cause.
      *
-     * @param message the detail message.
-     * @param cause   the cause.
+     * @param message The message (which is saved for later retrieval by the {@link #getMessage()} method).
+     * @param cause   The cause (which is saved for later retrieval by the {@link #getCause()} method). A null value indicates that the cause is nonexistent or
+     *                unknown.
      */
     public ArchiveException(final String message, final Exception cause) {
         super(message, cause);
