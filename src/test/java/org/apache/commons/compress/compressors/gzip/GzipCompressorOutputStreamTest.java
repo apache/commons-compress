@@ -19,8 +19,11 @@
 
 package org.apache.commons.compress.compressors.gzip;
 
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.IOException;
@@ -30,8 +33,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.commons.compress.compressors.gzip.HeaderExtraField.SubField;
+import org.apache.commons.compress.compressors.gzip.ExtraField.SubField;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -104,15 +108,15 @@ public class GzipCompressorOutputStreamTest {
         "2, 32763, false"
     })
     // @formatter:on
-    public void testExtraSubfields(final int subfieldQty, final Integer payloadSize, final boolean shouldFail) throws IOException {
+    public void testExtraSubfields(final int subFieldCount, final Integer payloadSize, final boolean shouldFail) throws IOException {
         final Path tempSourceFile = Files.createTempFile("test_gzip_extra_", ".txt");
         final Path targetFile = Files.createTempFile("test_gzip_extra_", ".txt.gz");
         Files.write(tempSourceFile, "Hello World!".getBytes(StandardCharsets.ISO_8859_1));
         final GzipParameters parameters = new GzipParameters();
-        final HeaderExtraField extra = new HeaderExtraField();
+        final ExtraField extra = new ExtraField();
         boolean failed = false;
-        final byte[][] payloads = new byte[subfieldQty][];
-        for (int i = 0; i < subfieldQty; i++) {
+        final byte[][] payloads = new byte[subFieldCount][];
+        for (int i = 0; i < subFieldCount; i++) {
             if (payloadSize != null) {
                 payloads[i] = new byte[payloadSize];
                 Arrays.fill(payloads[i], (byte) ('a' + i));
@@ -128,20 +132,36 @@ public class GzipCompressorOutputStreamTest {
         if (shouldFail) {
             return;
         }
-        parameters.setExtra(extra);
+        parameters.setExtraField(extra);
         try (OutputStream fos = Files.newOutputStream(targetFile);
                 GzipCompressorOutputStream gos = new GzipCompressorOutputStream(fos, parameters)) {
             Files.copy(tempSourceFile, gos);
         }
         try (GzipCompressorInputStream gis = new GzipCompressorInputStream(Files.newInputStream(targetFile))) {
-            final HeaderExtraField extra2 = gis.getMetaData().getExtra();
-            for (int i = 0; i < subfieldQty; i++) {
+            final ExtraField extra2 = gis.getMetaData().getExtraField();
+            for (int i = 0; i < subFieldCount; i++) {
                 final SubField sf = extra2.getSubFieldAt(i);
                 assertEquals("z" + i, sf.getId()); // id was saved/loaded correctly
-                final byte[] ba = sf.getPayload();
-                assertArrayEquals("field " + i + " has wrong payload", payloads[i], ba);
+                assertArrayEquals(payloads[i], sf.getPayload(), "field " + i + " has wrong payload");
             }
+            final AtomicInteger i = new AtomicInteger();
+            gis.getMetaData().getExtraField().forEach(sf -> {
+                assertEquals("z" + i, sf.getId()); // id was saved/loaded correctly
+                assertArrayEquals(payloads[i.intValue()], sf.getPayload(), "field " + i + " has wrong payload");
+                i.incrementAndGet();
+            });
         }
+    }
+
+    @Test
+    public void testExtraSubfieldsEmpty() {
+        final ExtraField extra = new ExtraField();
+        assertEquals(0, extra.toByteArray().length);
+        assertFalse(extra.iterator().hasNext());
+        extra.forEach(e -> {
+            fail("Not emprt");
+        });
+        assertThrows(IndexOutOfBoundsException.class, () -> extra.getSubFieldAt(0));
     }
 
     private void testFileName(final String expected, final String sourceFile) throws IOException {

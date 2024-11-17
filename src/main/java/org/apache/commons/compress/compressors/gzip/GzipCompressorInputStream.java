@@ -250,7 +250,7 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
             xlen |= inData.readUnsignedByte() << 8;
             final byte[] extra = new byte[xlen];
             inData.readFully(extra);
-            parameters.setExtra(HeaderExtraField.fromBytes(extra));
+            parameters.setExtraField(ExtraField.fromBytes(extra));
         }
 
         // Original file name
