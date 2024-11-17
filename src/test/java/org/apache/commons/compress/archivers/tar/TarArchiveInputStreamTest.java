@@ -135,6 +135,63 @@ public class TarArchiveInputStreamTest extends AbstractTest {
         }
     }
 
+    private void testCompress666(final int factor, final boolean bufferInputStream, final String localPath) {
+        final ExecutorService executorService = Executors.newFixedThreadPool(10);
+        try {
+            final List<Future<?>> tasks = IntStream.range(0, 200).mapToObj(index -> executorService.submit(() -> {
+                TarArchiveEntry tarEntry = null;
+                try (InputStream inputStream = getClass().getResourceAsStream(localPath);
+                     TarArchiveInputStream tarInputStream = new TarArchiveInputStream(
+                             bufferInputStream ? new BufferedInputStream(new GZIPInputStream(inputStream)) : new GZIPInputStream(inputStream),
+                             TarConstants.DEFAULT_RCDSIZE * factor, TarConstants.DEFAULT_RCDSIZE)) {
+                    while ((tarEntry = tarInputStream.getNextEntry()) != null) {
+                        assertNotNull(tarEntry);
+                    }
+                } catch (final IOException e) {
+                    fail(Objects.toString(tarEntry), e);
+                }
+            })).collect(Collectors.toList());
+            final List<Exception> list = new ArrayList<>();
+            for (final Future<?> future : tasks) {
+                try {
+                    future.get();
+                } catch (final Exception e) {
+                    list.add(e);
+                }
+            }
+            // check:
+            if (!list.isEmpty()) {
+                fail(list.get(0));
+            }
+            // or:
+            // assertTrue(list.isEmpty(), () -> list.size() + " exceptions: " + list.toString());
+        } finally {
+            executorService.shutdownNow();
+        }
+    }
+
+    /**
+     * Tests https://issues.apache.org/jira/browse/COMPRESS-666
+     *
+     * A factor of 20 is the default.
+     */
+    @ParameterizedTest
+    @ValueSource(ints = { 1, 2, 4, 8, 16, 20, 32, 64, 128 })
+    public void testCompress666Buffered(final int factor) {
+        testCompress666(factor, true, "/COMPRESS-666/compress-666.tar.gz");
+    }
+
+    /**
+     * Tests https://issues.apache.org/jira/browse/COMPRESS-666
+     *
+     * A factor of 20 is the default.
+     */
+    @ParameterizedTest
+    @ValueSource(ints = { 1, 2, 4, 8, 16, 20, 32, 64, 128 })
+    public void testCompress666Unbuffered(final int factor) {
+        testCompress666(factor, false, "/COMPRESS-666/compress-666.tar.gz");
+    }
+
     @Test
     public void testDatePriorToEpochInGNUFormat() throws Exception {
         datePriorToEpoch("preepoch-star.tar");
@@ -448,62 +505,5 @@ public class TarArchiveInputStreamTest extends AbstractTest {
             assertTrue(tae.isSymbolicLink());
             assertTrue(tae.isCheckSumOK());
         }
-    }
-
-    private void testCompress666(final int factor, final boolean bufferInputStream, final String localPath) {
-        final ExecutorService executorService = Executors.newFixedThreadPool(10);
-        try {
-            final List<Future<?>> tasks = IntStream.range(0, 200).mapToObj(index -> executorService.submit(() -> {
-                TarArchiveEntry tarEntry = null;
-                try (InputStream inputStream = getClass().getResourceAsStream(localPath);
-                     TarArchiveInputStream tarInputStream = new TarArchiveInputStream(
-                             bufferInputStream ? new BufferedInputStream(new GZIPInputStream(inputStream)) : new GZIPInputStream(inputStream),
-                             TarConstants.DEFAULT_RCDSIZE * factor, TarConstants.DEFAULT_RCDSIZE)) {
-                    while ((tarEntry = tarInputStream.getNextEntry()) != null) {
-                        assertNotNull(tarEntry);
-                    }
-                } catch (final IOException e) {
-                    fail(Objects.toString(tarEntry), e);
-                }
-            })).collect(Collectors.toList());
-            final List<Exception> list = new ArrayList<>();
-            for (final Future<?> future : tasks) {
-                try {
-                    future.get();
-                } catch (final Exception e) {
-                    list.add(e);
-                }
-            }
-            // check:
-            if (!list.isEmpty()) {
-                fail(list.get(0));
-            }
-            // or:
-            // assertTrue(list.isEmpty(), () -> list.size() + " exceptions: " + list.toString());
-        } finally {
-            executorService.shutdownNow();
-        }
-    }
-
-    /**
-     * Tests https://issues.apache.org/jira/browse/COMPRESS-666
-     *
-     * A factor of 20 is the default.
-     */
-    @ParameterizedTest
-    @ValueSource(ints = { 1, 2, 4, 8, 16, 20, 32, 64, 128 })
-    public void testCompress666Buffered(final int factor) {
-        testCompress666(factor, true, "/COMPRESS-666/compress-666.tar.gz");
-    }
-
-    /**
-     * Tests https://issues.apache.org/jira/browse/COMPRESS-666
-     *
-     * A factor of 20 is the default.
-     */
-    @ParameterizedTest
-    @ValueSource(ints = { 1, 2, 4, 8, 16, 20, 32, 64, 128 })
-    public void testCompress666Unbuffered(final int factor) {
-        testCompress666(factor, false, "/COMPRESS-666/compress-666.tar.gz");
     }
 }

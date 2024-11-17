@@ -36,8 +36,43 @@ import java.util.stream.Collectors;
  */
 public class Extra {
 
+    /**
+     * The carrier for a subfield in the gzip extra.
+     */
+    public static class SubField {
+        byte si1;
+        byte si2;
+        byte[] payload;
+
+        SubField() {
+        }
+
+        SubField(byte si1, byte si2, byte[] payload) {
+            this.si1 = si1;
+            this.si2 = si2;
+            this.payload = payload;
+        }
+
+        /**
+         * The 2 char iso-8859-1 string made from the si1 and si2 bytes of the sub field
+         * id.
+         */
+        public String getId() {
+            return "" + ((char) (si1 & 0xff)) + ((char) (si2 & 0xff));
+        }
+
+        /**
+         * The subfield payload.
+         */
+        public byte[] getPayload() {
+            return payload;
+        }
+    }
     static final int MAX_SIZE = 0xFFFF;
+
     static final byte[] ZERO_BYTES = new byte[0];
+
+    // --------------
 
     static Extra fromBytes(byte[] ba) throws IOException {
         if (ba == null) {
@@ -71,44 +106,11 @@ public class Extra {
 
         return e;
     }
-
-    // --------------
-
     private final List<SubField> fieldsList = new ArrayList<>();
+
     private int totalSize = 0;
 
     public Extra() {
-    }
-
-    public boolean isEmpty() {
-        return fieldsList.isEmpty();
-    }
-
-    public void clear() {
-        fieldsList.clear();
-        totalSize = 0;
-    }
-
-    /**
-     * The bytes count of this extra payload when encoded. This does not include its
-     * own 16 bits size. For N sub fields, the total is all subfields payloads + 4N.
-     */
-    public int getEncodedSize() {
-        return totalSize;
-    }
-
-    /**
-     * The count of subfields contained in this extra.
-     */
-    public int getSize() {
-        return fieldsList.size();
-    }
-
-    /**
-     * @return an unmodifiable copy of the subfields list.
-     */
-    public List<SubField> getFieldsList() {
-        return Collections.unmodifiableList(fieldsList);
     }
 
     /**
@@ -147,6 +149,62 @@ public class Extra {
         return this;
     }
 
+    public void clear() {
+        fieldsList.clear();
+        totalSize = 0;
+    }
+
+    /**
+     * Find the 1st subfield that matches the id.
+     *
+     * @return the SubField if found, null otherwise.
+     */
+    public SubField findFirstSubField(String subfieldId) {
+        return fieldsList.stream().filter(f -> f.getId().equals(subfieldId)).findFirst().orElse(null);
+    }
+
+    /**
+     * The bytes count of this extra payload when encoded. This does not include its
+     * own 16 bits size. For N sub fields, the total is all subfields payloads + 4N.
+     */
+    public int getEncodedSize() {
+        return totalSize;
+    }
+
+    /**
+     * @return an unmodifiable copy of the subfields list.
+     */
+    public List<SubField> getFieldsList() {
+        return Collections.unmodifiableList(fieldsList);
+    }
+
+    /**
+     * The count of subfields contained in this extra.
+     */
+    public int getSize() {
+        return fieldsList.size();
+    }
+
+    public boolean isEmpty() {
+        return fieldsList.isEmpty();
+    }
+
+    /**
+     * Give all 2-chars ISO-8859-1 strings denoting the subfields. Note that this is
+     * imprecise as ids can repeat. Use the methods with indexes to find a specific
+     * occurence.
+     */
+    public List<String> listIds() {
+        return fieldsList.stream().map(SubField::getId).collect(Collectors.toList());
+    }
+
+    /**
+     * Find the subfield at the given index.
+     */
+    public SubField subFieldAt(int i) {
+        return fieldsList.get(i);
+    }
+
     byte[] toBytes() {
         if (fieldsList.isEmpty()) {
             return ZERO_BYTES;
@@ -164,64 +222,6 @@ public class Extra {
             pos += f.payload.length;
         }
         return ba;
-    }
-
-    /**
-     * Give all 2-chars ISO-8859-1 strings denoting the subfields. Note that this is
-     * imprecise as ids can repeat. Use the methods with indexes to find a specific
-     * occurence.
-     */
-    public List<String> listIds() {
-        return fieldsList.stream().map(SubField::getId).collect(Collectors.toList());
-    }
-
-    /**
-     * Find the 1st subfield that matches the id.
-     *
-     * @return the SubField if found, null otherwise.
-     */
-    public SubField findFirstSubField(String subfieldId) {
-        return fieldsList.stream().filter(f -> f.getId().equals(subfieldId)).findFirst().orElse(null);
-    }
-
-    /**
-     * Find the subfield at the given index.
-     */
-    public SubField subFieldAt(int i) {
-        return fieldsList.get(i);
-    }
-
-    /**
-     * The carrier for a subfield in the gzip extra.
-     */
-    public static class SubField {
-        byte si1;
-        byte si2;
-        byte[] payload;
-
-        SubField() {
-        }
-
-        SubField(byte si1, byte si2, byte[] payload) {
-            this.si1 = si1;
-            this.si2 = si2;
-            this.payload = payload;
-        }
-
-        /**
-         * The 2 char iso-8859-1 string made from the si1 and si2 bytes of the sub field
-         * id.
-         */
-        public String getId() {
-            return "" + ((char) (si1 & 0xff)) + ((char) (si2 & 0xff));
-        }
-
-        /**
-         * The subfield payload.
-         */
-        public byte[] getPayload() {
-            return payload;
-        }
     }
 
 }

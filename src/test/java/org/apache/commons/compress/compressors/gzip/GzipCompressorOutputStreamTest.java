@@ -87,43 +87,6 @@ public class GzipCompressorOutputStreamTest {
         testChineseFileName(EXPECTED_FILE_NAME, EXPECTED_FILE_NAME, StandardCharsets.UTF_8);
     }
 
-    private void testFileName(final String expected, final String sourceFile) throws IOException {
-        final Path tempSourceFile = Files.createTempFile(sourceFile, sourceFile);
-        Files.write(tempSourceFile, "<text>Hello World!</text>".getBytes(StandardCharsets.ISO_8859_1));
-        final Path targetFile = Files.createTempFile("test", ".gz");
-        final GzipParameters parameters = new GzipParameters();
-        parameters.setFilename(sourceFile);
-        assertEquals(parameters.getFilename(), parameters.getFileName());
-        parameters.setFileName(sourceFile);
-        assertEquals(parameters.getFilename(), parameters.getFileName());
-        try (OutputStream fos = Files.newOutputStream(targetFile);
-                GzipCompressorOutputStream gos = new GzipCompressorOutputStream(fos, parameters)) {
-            Files.copy(tempSourceFile, gos);
-        }
-        try (GzipCompressorInputStream gis = new GzipCompressorInputStream(Files.newInputStream(targetFile))) {
-            assertEquals(expected, gis.getMetaData().getFileName());
-            assertEquals(expected, gis.getMetaData().getFilename());
-        }
-    }
-
-    @Test
-    public void testFileNameAscii() throws IOException {
-        testFileName("ASCII.xml", "ASCII.xml");
-    }
-
-    /**
-     * Tests COMPRESS-638. Use {@link GzipParameters#setFileNameCharset(Charset)} if you want non-ISO-8859-1 characters.
-     *
-     * GZip RFC requires ISO 8859-1 (LATIN-1).
-     *
-     * @throws IOException When the test fails.
-     */
-    @Test
-    public void testFileNameChinesePercentEncoded() throws IOException {
-        // "Test Chinese name"
-        testFileName("??????.xml", EXPECTED_FILE_NAME);
-    }
-
     /**
      * Tests the gzip extra header containing subfields.
      *
@@ -186,6 +149,43 @@ public class GzipCompressorOutputStreamTest {
                 assertArrayEquals("field " + i + " has wrong payload", payloads[i], ba);
             }
         }
+    }
+
+    private void testFileName(final String expected, final String sourceFile) throws IOException {
+        final Path tempSourceFile = Files.createTempFile(sourceFile, sourceFile);
+        Files.write(tempSourceFile, "<text>Hello World!</text>".getBytes(StandardCharsets.ISO_8859_1));
+        final Path targetFile = Files.createTempFile("test", ".gz");
+        final GzipParameters parameters = new GzipParameters();
+        parameters.setFilename(sourceFile);
+        assertEquals(parameters.getFilename(), parameters.getFileName());
+        parameters.setFileName(sourceFile);
+        assertEquals(parameters.getFilename(), parameters.getFileName());
+        try (OutputStream fos = Files.newOutputStream(targetFile);
+                GzipCompressorOutputStream gos = new GzipCompressorOutputStream(fos, parameters)) {
+            Files.copy(tempSourceFile, gos);
+        }
+        try (GzipCompressorInputStream gis = new GzipCompressorInputStream(Files.newInputStream(targetFile))) {
+            assertEquals(expected, gis.getMetaData().getFileName());
+            assertEquals(expected, gis.getMetaData().getFilename());
+        }
+    }
+
+    @Test
+    public void testFileNameAscii() throws IOException {
+        testFileName("ASCII.xml", "ASCII.xml");
+    }
+
+    /**
+     * Tests COMPRESS-638. Use {@link GzipParameters#setFileNameCharset(Charset)} if you want non-ISO-8859-1 characters.
+     *
+     * GZip RFC requires ISO 8859-1 (LATIN-1).
+     *
+     * @throws IOException When the test fails.
+     */
+    @Test
+    public void testFileNameChinesePercentEncoded() throws IOException {
+        // "Test Chinese name"
+        testFileName("??????.xml", EXPECTED_FILE_NAME);
     }
 
 }
