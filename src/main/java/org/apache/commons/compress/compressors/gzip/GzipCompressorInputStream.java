@@ -244,17 +244,13 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
         }
         parameters.setOperatingSystem(inData.readUnsignedByte());
 
-        // Extra field, ignored
+        // Extra field
         if ((flg & FEXTRA) != 0) {
             int xlen = inData.readUnsignedByte();
             xlen |= inData.readUnsignedByte() << 8;
-
-            // This isn't as efficient as calling in.skip would be,
-            // but it's lazier to handle unexpected end of input this way.
-            // Most files don't have an extra field anyway.
-            while (xlen-- > 0) {
-                inData.readUnsignedByte();
-            }
+            byte[] extra = new byte[xlen];
+            inData.readFully(extra);
+            parameters.setExtra(Extra.fromBytes(extra));
         }
 
         // Original file name
