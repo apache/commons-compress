@@ -26,6 +26,7 @@ import java.util.zip.Deflater;
 
 import org.apache.commons.io.Charsets;
 
+
 /**
  * Parameters for the GZIP compressor.
  *
@@ -289,6 +290,7 @@ public class GzipParameters {
      * </p>
      */
     private Instant modificationTime = Instant.EPOCH;
+    private Extra extra;
     private String fileName;
     private Charset fileNameCharset = GzipUtils.GZIP_ENCODING;
     private String comment;
@@ -339,6 +341,16 @@ public class GzipParameters {
      */
     public int getDeflateStrategy() {
         return deflateStrategy;
+    }
+
+    /**
+     * Gets the Extra.
+     *
+     * @return the extra.
+     * @since 1.28.0
+     */
+    public Extra getExtra() {
+        return extra;
     }
 
     /**
@@ -466,6 +478,18 @@ public class GzipParameters {
      */
     public void setDeflateStrategy(final int deflateStrategy) {
         this.deflateStrategy = deflateStrategy;
+    }
+
+    /**
+     * Sets the Extra subfields. Note that a non-null Extra will appear in the gzip
+     * header regardless of the presence of subfields, while a null Extra will not
+     * appear at all.
+     *
+     * @param extra the collections of extra sub fields.
+     * @since 1.28.0
+     */
+    public void setExtra(Extra extra) {
+        this.extra = extra;
     }
 
     /**

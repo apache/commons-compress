@@ -38,6 +38,9 @@ import org.apache.commons.compress.compressors.CompressorOutputStream;
  */
 public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStream> {
 
+    /** Header flag indicating an EXTRA subfields collection follows the header */
+    private static final int FEXTRA = 1 << 2;
+
     /** Header flag indicating a file name follows the header */
     private static final int FNAME = 1 << 3;
 
@@ -170,11 +173,12 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
     private void writeHeader(final GzipParameters parameters) throws IOException {
         final String fileName = parameters.getFileName();
         final String comment = parameters.getComment();
+        final byte[] extra = parameters.getExtra() != null ? parameters.getExtra().toBytes() : null;
         final ByteBuffer buffer = ByteBuffer.allocate(10);
         buffer.order(ByteOrder.LITTLE_ENDIAN);
         buffer.putShort((short) GZIPInputStream.GZIP_MAGIC);
         buffer.put((byte) Deflater.DEFLATED); // compression method (8: deflate)
-        buffer.put((byte) ((fileName != null ? FNAME : 0) | (comment != null ? FCOMMENT : 0))); // flags
+        buffer.put((byte) ((extra != null ? FEXTRA : 0) | (fileName != null ? FNAME : 0) | (comment != null ? FCOMMENT : 0))); // flags
         buffer.putInt((int) (parameters.getModificationTime() / 1000));
         // extra flags
         final int compressionLevel = parameters.getCompressionLevel();
@@ -187,6 +191,11 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
         }
         buffer.put((byte) parameters.getOperatingSystem());
         out.write(buffer.array());
+        if (extra != null) {
+            out.write(extra.length & 0xff); // little endian
+            out.write((extra.length >>> 8) & 0xff);
+            out.write(extra);
+        }
         write(fileName, parameters.getFileNameCharset());
         write(comment, parameters.getFileNameCharset());
     }
