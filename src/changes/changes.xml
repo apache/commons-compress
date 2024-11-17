@@ -56,6 +56,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add GzipParameters.OS, setOS(OS), getOS().</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add GzipParameters.toString().</action>
       <action type="add" dev="ggregory" issue="COMPRESS-638" due-to="vincexjl, Gary Gregory, Piotr P. Karwasz">Add GzipParameters.setFileNameCharset(Charset) and getFileNameCharset() to override the default ISO-8859-1 Charset #602.</action>
+      <action type="add" dev="ggregory" due-to="ddeschenes-1, Gary Gregory">Add support for gzip extra subfields, see GzipParameters.setExtra(HeaderExtraField) #604.</action>
       <!-- UPDATE -->
       <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump org.apache.commons:commons-parent from 72 to 78 #563, #567, #574, #582, #587, #595.</action>
       <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump com.github.luben:zstd-jni from 1.5.6-4 to 1.5.6-7 #565, #578, #601.</action>
