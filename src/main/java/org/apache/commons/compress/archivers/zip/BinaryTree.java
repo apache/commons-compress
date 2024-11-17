@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.compress.utils.IOUtils;
-import org.apache.commons.lang3.ArrayFill;
+import org.apache.commons.compress.internal.lang3.ArrayFill;
 
 /**
  * Binary tree of positive values.

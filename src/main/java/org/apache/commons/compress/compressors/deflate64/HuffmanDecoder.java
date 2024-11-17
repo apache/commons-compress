@@ -28,10 +28,10 @@ import java.io.InputStream;
 import java.nio.ByteOrder;
 import java.util.Arrays;
 
+import org.apache.commons.compress.internal.lang3.ArrayFill;
 import org.apache.commons.compress.utils.BitInputStream;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.ExactMath;
-import org.apache.commons.lang3.ArrayFill;
 
 /**
  * TODO This class can't be final because it is mocked by Mockito.
