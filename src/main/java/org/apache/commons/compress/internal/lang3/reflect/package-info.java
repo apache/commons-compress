@@ -20,7 +20,9 @@
  * A private copy of methods from Commons Lang.
  * <p>
  *   See
- *   <a href="{@docRoot}/org/apache/commons/compress/internal/lang3/package-summary.html#package_description>{@code org.apache.commons.compress.internal.lang3} package description</a>
+ *   <a href="{@docRoot}/org/apache/commons/compress/internal/lang3/package-summary.html#package_description>
+ *     {@code org.apache.commons.compress.internal.lang3} package description
+ *   </a>
  *   for more information.
  * </p>
  */
