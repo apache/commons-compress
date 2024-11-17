@@ -290,7 +290,7 @@ public class GzipParameters {
      * </p>
      */
     private Instant modificationTime = Instant.EPOCH;
-    private Extra extra;
+    private HeaderExtraField extra;
     private String fileName;
     private Charset fileNameCharset = GzipUtils.GZIP_ENCODING;
     private String comment;
@@ -344,12 +344,12 @@ public class GzipParameters {
     }
 
     /**
-     * Gets the Extra.
+     * Gets the Extra subfields from the header.
      *
-     * @return the extra.
+     * @return the extra subfields from the header.
      * @since 1.28.0
      */
-    public Extra getExtra() {
+    public HeaderExtraField getExtra() {
         return extra;
     }
 
@@ -481,14 +481,13 @@ public class GzipParameters {
     }
 
     /**
-     * Sets the Extra subfields. Note that a non-null Extra will appear in the gzip
-     * header regardless of the presence of subfields, while a null Extra will not
+     * Sets the extra subfields. Note that a non-null extra will appear in the gzip header regardless of the presence of subfields, while a null extra will not
      * appear at all.
      *
-     * @param extra the collections of extra sub fields.
+     * @param extra the series of extra sub fields.
      * @since 1.28.0
      */
-    public void setExtra(Extra extra) {
+    public void setExtra(final HeaderExtraField extra) {
         this.extra = extra;
     }
 

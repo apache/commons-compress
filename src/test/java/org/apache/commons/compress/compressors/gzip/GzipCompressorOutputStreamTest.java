@@ -31,7 +31,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 
-import org.apache.commons.compress.compressors.gzip.Extra.SubField;
+import org.apache.commons.compress.compressors.gzip.HeaderExtraField.SubField;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -93,6 +93,7 @@ public class GzipCompressorOutputStreamTest {
      * @throws IOException When the test fails.
      */
     @ParameterizedTest
+    // @formatter:off
     @CsvSource({
         "1,      , true",
         "1,     0, false",
@@ -102,50 +103,42 @@ public class GzipCompressorOutputStreamTest {
         "2, 32764, true",
         "2, 32763, false"
     })
-    public void testExtraSubfields(int subfieldQty, Integer payloadSize, boolean shouldFail) throws IOException {
+    // @formatter:on
+    public void testExtraSubfields(final int subfieldQty, final Integer payloadSize, final boolean shouldFail) throws IOException {
         final Path tempSourceFile = Files.createTempFile("test_gzip_extra_", ".txt");
         final Path targetFile = Files.createTempFile("test_gzip_extra_", ".txt.gz");
-
         Files.write(tempSourceFile, "Hello World!".getBytes(StandardCharsets.ISO_8859_1));
-
         final GzipParameters parameters = new GzipParameters();
-        Extra extra = new Extra();
-
+        final HeaderExtraField extra = new HeaderExtraField();
         boolean failed = false;
-
-        byte[][] payloads = new byte[subfieldQty][];
+        final byte[][] payloads = new byte[subfieldQty][];
         for (int i = 0; i < subfieldQty; i++) {
             if (payloadSize != null) {
                 payloads[i] = new byte[payloadSize];
                 Arrays.fill(payloads[i], (byte) ('a' + i));
             }
-
             try {
-                extra.appendSubField("z" + i, payloads[i]);
-            } catch (Exception e) {
+                extra.addSubField("z" + i, payloads[i]);
+            } catch (final NullPointerException | IOException e) {
                 failed = true;
                 break;
             }
         }
-
         assertEquals(shouldFail, failed, "appending subfield " + (shouldFail ? "succes" : "failure") + " was not expected.");
         if (shouldFail) {
             return;
         }
-
         parameters.setExtra(extra);
-
         try (OutputStream fos = Files.newOutputStream(targetFile);
                 GzipCompressorOutputStream gos = new GzipCompressorOutputStream(fos, parameters)) {
             Files.copy(tempSourceFile, gos);
         }
-
         try (GzipCompressorInputStream gis = new GzipCompressorInputStream(Files.newInputStream(targetFile))) {
-            Extra extra2 = gis.getMetaData().getExtra();
+            final HeaderExtraField extra2 = gis.getMetaData().getExtra();
             for (int i = 0; i < subfieldQty; i++) {
-                SubField sf = extra2.subFieldAt(i);
+                final SubField sf = extra2.getSubFieldAt(i);
                 assertEquals("z" + i, sf.getId()); // id was saved/loaded correctly
-                byte[] ba = sf.getPayload();
+                final byte[] ba = sf.getPayload();
                 assertArrayEquals("field " + i + " has wrong payload", payloads[i], ba);
             }
         }

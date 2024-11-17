@@ -248,9 +248,9 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
         if ((flg & FEXTRA) != 0) {
             int xlen = inData.readUnsignedByte();
             xlen |= inData.readUnsignedByte() << 8;
-            byte[] extra = new byte[xlen];
+            final byte[] extra = new byte[xlen];
             inData.readFully(extra);
-            parameters.setExtra(Extra.fromBytes(extra));
+            parameters.setExtra(HeaderExtraField.fromBytes(extra));
         }
 
         // Original file name

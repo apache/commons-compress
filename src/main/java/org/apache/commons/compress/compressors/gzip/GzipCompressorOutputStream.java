@@ -173,7 +173,7 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
     private void writeHeader(final GzipParameters parameters) throws IOException {
         final String fileName = parameters.getFileName();
         final String comment = parameters.getComment();
-        final byte[] extra = parameters.getExtra() != null ? parameters.getExtra().toBytes() : null;
+        final byte[] extra = parameters.getExtra() != null ? parameters.getExtra().toByteArray() : null;
         final ByteBuffer buffer = ByteBuffer.allocate(10);
         buffer.order(ByteOrder.LITTLE_ENDIAN);
         buffer.putShort((short) GZIPInputStream.GZIP_MAGIC);
@@ -193,7 +193,7 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
         out.write(buffer.array());
         if (extra != null) {
             out.write(extra.length & 0xff); // little endian
-            out.write((extra.length >>> 8) & 0xff);
+            out.write(extra.length >>> 8 & 0xff);
             out.write(extra);
         }
         write(fileName, parameters.getFileNameCharset());
