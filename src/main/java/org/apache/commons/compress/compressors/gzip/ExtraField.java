@@ -185,6 +185,43 @@ public class ExtraField implements Iterable<SubField> {
     }
 
     /**
+     * Removes all subfields from this instance.
+     */
+    public void clear() {
+        subFields.clear();
+        totalSize = 0;
+    }
+
+    /**
+     * Finds the first subfield that matched the id if found, null otherwise
+     *
+     * @return the 1st SubField that matched or null.
+     */
+    public SubField findFirstSubField(String subfieldId) {
+        return subFields.stream().filter(f -> f.getId().equals(subfieldId)).findFirst().orElse(null);
+    }
+
+    /**
+     * Calculate the size in bytes of the encoded extra field. This does not include
+     * its own 16 bits size when embeded in the gzip header. For N sub fields, the
+     * total is all subfields payloads bytes + 4N.
+     *
+     * @return the bytes count of this extra payload when encoded.
+     */
+    public int getEncodedSize() {
+        return totalSize;
+    }
+
+    /**
+     * Return the count of subfields currently in in this extra field.
+     *
+     * @return the count of subfields contained in this instance.
+     */
+    public int getSize() {
+        return subFields.size();
+    }
+
+    /**
      * Gets the subfield at the given index.
      *
      * @param index index of the element to return
@@ -193,6 +230,15 @@ public class ExtraField implements Iterable<SubField> {
      */
     public SubField getSubFieldAt(final int index) {
         return subFields.get(index);
+    }
+
+    /**
+     * Test is this extra field has no subfields.
+     *
+     * @return true if there are no subfields, false otherwise.
+     */
+    public boolean isEmpty() {
+        return subFields.isEmpty();
     }
 
     /**
@@ -221,52 +267,6 @@ public class ExtraField implements Iterable<SubField> {
             pos += f.payload.length;
         }
         return ba;
-    }
-
-    /**
-     * Test is this extra field has no subfields.
-     *
-     * @return true if there are no subfields, false otherwise.
-     */
-    public boolean isEmpty() {
-        return subFields.isEmpty();
-    }
-
-    /**
-     * Removes all subfields from this instance.
-     */
-    public void clear() {
-        subFields.clear();
-        totalSize = 0;
-    }
-
-    /**
-     * Calculate the size in bytes of the encoded extra field. This does not include
-     * its own 16 bits size when embeded in the gzip header. For N sub fields, the
-     * total is all subfields payloads bytes + 4N.
-     *
-     * @return the bytes count of this extra payload when encoded.
-     */
-    public int getEncodedSize() {
-        return totalSize;
-    }
-
-    /**
-     * Return the count of subfields currently in in this extra field.
-     *
-     * @return the count of subfields contained in this instance.
-     */
-    public int getSize() {
-        return subFields.size();
-    }
-
-    /**
-     * Finds the first subfield that matched the id if found, null otherwise
-     *
-     * @return the 1st SubField that matched or null.
-     */
-    public SubField findFirstSubField(String subfieldId) {
-        return subFields.stream().filter(f -> f.getId().equals(subfieldId)).findFirst().orElse(null);
     }
 
 }
