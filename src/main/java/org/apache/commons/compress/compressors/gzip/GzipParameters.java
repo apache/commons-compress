@@ -290,7 +290,7 @@ public class GzipParameters {
      * </p>
      */
     private Instant modificationTime = Instant.EPOCH;
-    private HeaderExtraField extra;
+    private ExtraField extraField;
     private String fileName;
     private Charset fileNameCharset = GzipUtils.GZIP_ENCODING;
     private String comment;
@@ -349,8 +349,8 @@ public class GzipParameters {
      * @return the extra subfields from the header.
      * @since 1.28.0
      */
-    public HeaderExtraField getExtra() {
-        return extra;
+    public ExtraField getExtraField() {
+        return extraField;
     }
 
     /**
@@ -487,8 +487,8 @@ public class GzipParameters {
      * @param extra the series of extra sub fields.
      * @since 1.28.0
      */
-    public void setExtra(final HeaderExtraField extra) {
-        this.extra = extra;
+    public void setExtraField(final ExtraField extra) {
+        this.extraField = extra;
     }
 
     /**

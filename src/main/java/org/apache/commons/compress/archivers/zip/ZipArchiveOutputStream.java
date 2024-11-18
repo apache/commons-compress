@@ -38,7 +38,7 @@ import java.util.zip.ZipException;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.utils.ByteUtils;
-import org.apache.commons.compress.utils.Charsets;
+import org.apache.commons.io.Charsets;
 
 /**
  * Reimplementation of {@link java.util.zip.ZipOutputStream java.util.zip.ZipOutputStream} to handle the extended functionality of this package, especially

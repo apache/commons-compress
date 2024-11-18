@@ -25,7 +25,7 @@ import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.Objects;
 
-import org.apache.commons.compress.utils.Charsets;
+import org.apache.commons.io.Charsets;
 import org.apache.commons.io.function.IOConsumer;
 import org.apache.commons.io.function.IOIterator;
 import org.apache.commons.io.input.NullInputStream;
@@ -52,6 +52,8 @@ import org.apache.commons.io.input.NullInputStream;
 public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterInputStream {
 
     /**
+     * An iterator over a collection of a specific {@link ArchiveEntry} type.
+     *
      * @since 1.27.0
      */
     class ArchiveEntryIOIterator implements IOIterator<E> {
@@ -79,7 +81,7 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
         /**
          * Always returns null, this is a "native" IOIterator.
          *
-         * @return null.
+         * @return Always returns null.
          */
         @Override
         public Iterator<E> unwrap() {
@@ -92,7 +94,7 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
 
     private final byte[] single = new byte[1];
 
-    /** The number of bytes read in this stream */
+    /** The number of bytes read in this stream. */
     private long bytesRead;
 
     private Charset charset;
@@ -100,8 +102,9 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
     /**
      * Constructs a new instance.
      */
+    @SuppressWarnings("resource")
     public ArchiveInputStream() {
-        this(NullInputStream.INSTANCE, Charset.defaultCharset());
+        this(new NullInputStream(), Charset.defaultCharset());
     }
 
     /**
@@ -134,9 +137,8 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
      * Some archive formats support variants or details that are not supported (yet).
      * </p>
      *
-     * @param archiveEntry the entry to test
+     * @param archiveEntry the entry to test.
      * @return This implementation always returns true.
-     *
      * @since 1.1
      */
     public boolean canReadEntryData(final ArchiveEntry archiveEntry) {
@@ -144,18 +146,18 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
     }
 
     /**
-     * Increments the counter of already read bytes. Doesn't increment if the EOF has been hit (read == -1)
+     * Increments the counter of already read bytes. Doesn't increment if the EOF has been hit (read == -1).
      *
-     * @param read the number of bytes read
+     * @param read the number of bytes read.
      */
     protected void count(final int read) {
         count((long) read);
     }
 
     /**
-     * Increments the counter of already read bytes. Doesn't increment if the EOF has been hit (read == -1)
+     * Increments the counter of already read bytes. Doesn't increment if the EOF has been hit (read == -1).
      *
-     * @param read the number of bytes read
+     * @param read the number of bytes read.
      * @since 1.1
      */
     protected void count(final long read) {
@@ -172,9 +174,9 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
      * has specified a concurrent modification policy.
      * </p>
      *
-     * @param action The action to be performed for each element
+     * @param action The action to be performed for each element.
      * @throws IOException          if an I/O error occurs.
-     * @throws NullPointerException if the specified action is null
+     * @throws NullPointerException if the specified action is null.
      * @since 1.27.0
      */
     public void forEach(final IOConsumer<? super E> action) throws IOException {
@@ -184,7 +186,7 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
     /**
      * Gets the current number of bytes read from this stream.
      *
-     * @return the number of read bytes
+     * @return the number of read bytes.
      * @since 1.1
      */
     public long getBytesRead() {
@@ -203,7 +205,7 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
     /**
      * Gets the current number of bytes read from this stream.
      *
-     * @return the number of read bytes
+     * @return the number of read .
      * @deprecated this method may yield wrong results for large archives, use {@link #getBytesRead()} instead.
      */
     @Deprecated
@@ -220,6 +222,9 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
     public abstract E getNextEntry() throws IOException;
 
     /**
+     * Returns an iterator over the SubField elements in this extra field in proper sequence.
+     *
+     * @return an iterator over the SubField elements in this extra field in proper sequence.
      * @since 1.27.0
      */
     public IOIterator<E> iterator() {
@@ -228,8 +233,9 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
 
     /**
      * Does nothing.
-     *
+     * <p>
      * TODO [COMPRESS-670] Support mark() and reset() in ArchiveInputStream.
+     * </p>
      *
      * @param readlimit ignored.
      */
@@ -240,8 +246,9 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
 
     /**
      * Always returns false.
-     *
+     * <p>
      * TODO [COMPRESS-670] Support mark() and reset() in ArchiveInputStream.
+     * </p>
      *
      * @return Always returns false.
      */
@@ -262,13 +269,15 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
 
     /**
      * Reads a byte of data. This method will block until enough input is available.
-     *
+     * <p>
      * Simply calls the {@link #read(byte[], int, int)} method.
-     *
+     * </p>
+     * <p>
      * MUST be overridden if the {@link #read(byte[], int, int)} method is not overridden; may be overridden otherwise.
+     * </p>
      *
-     * @return the byte read, or -1 if end of input is reached
-     * @throws IOException if an I/O error has occurred
+     * @return the byte read, or -1 if end of input is reached.
+     * @throws IOException if an I/O error has occurred.
      */
     @Override
     public int read() throws IOException {
@@ -278,8 +287,9 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
 
     /**
      * Does nothing.
-     *
+     * <p>
      * TODO [COMPRESS-670] Support mark() and reset() in ArchiveInputStream.
+     * </p>
      *
      * @throws IOException not thrown here but may be thrown from a subclass.
      */

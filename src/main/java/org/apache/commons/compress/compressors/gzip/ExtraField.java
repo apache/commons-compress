@@ -21,8 +21,11 @@ package org.apache.commons.compress.compressors.gzip;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+
+import org.apache.commons.compress.compressors.gzip.ExtraField.SubField;
 
 /**
  * If the {@code FLG.FEXTRA} bit is set, an "extra field" is present in the header, with total length XLEN bytes. It consists of a series of subfields, each of
@@ -40,7 +43,7 @@ import java.util.Objects;
  * @see <a href="https://datatracker.ietf.org/doc/html/rfc1952">RFC 1952 GZIP File Format Specification</a>
  * @since 1.28.0
  */
-public class HeaderExtraField {
+public class ExtraField implements Iterable<SubField> {
 
     /**
      * If the {@code FLG.FEXTRA} bit is set, an "extra field" is present in the header, with total length XLEN bytes. It consists of a series of subfields, each
@@ -51,6 +54,20 @@ public class HeaderExtraField {
      * |SI1|SI2|  LEN  |... LEN bytes of subfield data ...|
      * +---+---+---+---+==================================+
      * </pre>
+     * <p>
+     * The reserved IDs are:
+     * </p>
+     * <pre>
+     * SI1         SI2         Data
+     * ----------  ----------  ----
+     * 0x41 ('A')  0x70 ('P')  Apollo file type information
+     * </pre>
+     * <p>
+     * Subfield IDs with {@code SI2 = 0} are reserved for future use.
+     * </p>
+     * <p>
+     * LEN gives the length of the subfield data, excluding the 4 initial bytes.
+     * </p>
      *
      * @see <a href="https://datatracker.ietf.org/doc/html/rfc1952">RFC 1952 GZIP File Format Specification</a>
      */
@@ -85,31 +102,31 @@ public class HeaderExtraField {
         }
     }
 
-    static final int MAX_SIZE = 0xFFFF;
+    private static final int MAX_SIZE = 0xFFFF;
 
-    static final byte[] ZERO_BYTES = {};
+    private static final byte[] ZERO_BYTES = {};
 
-    static HeaderExtraField fromBytes(final byte[] ba) throws IOException {
-        if (ba == null) {
+    static ExtraField fromBytes(final byte[] bytes) throws IOException {
+        if (bytes == null) {
             return null;
         }
-        final HeaderExtraField extra = new HeaderExtraField();
+        final ExtraField extra = new ExtraField();
         int pos = 0;
-        while (pos <= ba.length - 4) {
-            final byte si1 = ba[pos++];
-            final byte si2 = ba[pos++];
-            final int sublen = ba[pos++] & 0xff | (ba[pos++] & 0xff) << 8;
-            if (sublen > ba.length - pos) {
-                throw new IOException("Extra subfield lenght exceeds remaining bytes in extra: " + sublen + " > " + (ba.length - pos));
+        while (pos <= bytes.length - 4) {
+            final byte si1 = bytes[pos++];
+            final byte si2 = bytes[pos++];
+            final int sublen = bytes[pos++] & 0xff | (bytes[pos++] & 0xff) << 8;
+            if (sublen > bytes.length - pos) {
+                throw new IOException("Extra subfield lenght exceeds remaining bytes in extra: " + sublen + " > " + (bytes.length - pos));
             }
             final byte[] payload = new byte[sublen];
-            System.arraycopy(ba, pos, payload, 0, sublen);
+            System.arraycopy(bytes, pos, payload, 0, sublen);
             pos += sublen;
             extra.subFields.add(new SubField(si1, si2, payload));
             extra.totalSize = pos;
         }
-        if (pos < ba.length) {
-            throw new IOException("" + (ba.length - pos) + " remaining bytes not used to parse an extra subfield.");
+        if (pos < bytes.length) {
+            throw new IOException("" + (bytes.length - pos) + " remaining bytes not used to parse an extra subfield.");
         }
         return extra;
     }
@@ -121,7 +138,7 @@ public class HeaderExtraField {
     /**
      * Constructs a new instance.
      */
-    public HeaderExtraField() {
+    public ExtraField() {
     }
 
     /**
@@ -132,19 +149,19 @@ public class HeaderExtraField {
      * @return this instance.
      * @throws NullPointerException if {@code id} is {@code null}.
      * @throws NullPointerException if {@code payload} is {@code null}.
-     * @throws IllegalArgumentException if the subfield is not 2-chars or the payload is null
+     * @throws IllegalArgumentException if the subfield is not 2 characters or the payload is null
      * @throws IOException              if appending this subfield would exceed the max size 65535 of the extra header.
      */
-    public HeaderExtraField addSubField(final String id, final byte[] payload) throws IOException {
+    public ExtraField addSubField(final String id, final byte[] payload) throws IOException {
         Objects.requireNonNull(id, "payload");
         Objects.requireNonNull(payload, "payload");
         if (id.length() != 2) {
-            throw new IllegalArgumentException("Subfield id must be a 2-chars ISO-8859-1 string.");
+            throw new IllegalArgumentException("Subfield id must be a 2 character ISO-8859-1 string.");
         }
         final char si1 = id.charAt(0);
         final char si2 = id.charAt(1);
         if ((si1 & 0xff00) != 0 || (si2 & 0xff00) != 0) {
-            throw new IllegalArgumentException("Subfield id must be a 2-chars ISO-8859-1 string.");
+            throw new IllegalArgumentException("Subfield id must be a 2 character ISO-8859-1 string.");
         }
         final SubField f = new SubField((byte) (si1 & 0xff), (byte) (si2 & 0xff), payload);
         final int len = 4 + payload.length;
@@ -165,6 +182,16 @@ public class HeaderExtraField {
      */
     public SubField getSubFieldAt(final int index) {
         return subFields.get(index);
+    }
+
+    /**
+     * Returns an iterator over the SubField elements in this extra field in proper sequence.
+     *
+     * @return an iterator over the SubField elements in this extra field in proper sequence.
+     */
+    @Override
+    public Iterator<SubField> iterator() {
+        return subFields.iterator();
     }
 
     byte[] toByteArray() {

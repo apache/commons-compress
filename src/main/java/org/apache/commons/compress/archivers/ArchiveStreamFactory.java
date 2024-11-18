@@ -551,6 +551,12 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
         throw new ArchiveException("Archiver: " + archiverName + " not found.");
     }
 
+    /**
+     * Gets an unmodifiable sorted map from input stream provider names to provider objects.
+     *
+     * @return an unmodifiable sorted map of from input stream provider names to provider objects.
+     * @see #findAvailableArchiveInputStreamProviders()
+     */
     public SortedMap<String, ArchiveStreamProvider> getArchiveInputStreamProviders() {
         if (archiveInputStreamProviders == null) {
             archiveInputStreamProviders = Collections.unmodifiableSortedMap(findAvailableArchiveInputStreamProviders());
@@ -558,6 +564,12 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
         return archiveInputStreamProviders;
     }
 
+    /**
+     * Gets an unmodifiable sorted map from output stream provider names to provider objects.
+     *
+     * @return an unmodifiable sorted map of from input stream provider names to provider objects.
+     * @see #findAvailableArchiveInputStreamProviders()
+     */
     public SortedMap<String, ArchiveStreamProvider> getArchiveOutputStreamProviders() {
         if (archiveOutputStreamProviders == null) {
             archiveOutputStreamProviders = Collections.unmodifiableSortedMap(findAvailableArchiveOutputStreamProviders());
