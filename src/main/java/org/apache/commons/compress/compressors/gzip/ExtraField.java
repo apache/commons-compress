@@ -29,17 +29,15 @@ import java.util.Objects;
 import org.apache.commons.compress.compressors.gzip.ExtraField.SubField;
 
 /**
- * If the {@code FLG.FEXTRA} bit is set, an "extra field" is present in the
- * header, with total length XLEN bytes.
+ * If the {@code FLG.FEXTRA} bit is set, an "extra field" is present in the header, with total length XLEN bytes.
  *
  * <pre>
  * +---+---+=================================+
- * | XLEN  |...XLEN bytes of "extra field"...| (more-->)
+ * | XLEN  |...XLEN bytes of "extra field"...| (more...)
  * +---+---+=================================+
  * </pre>
  *
- * This class represents the extra field payload (excluding the XLEN 2 bytes).
- * The ExtraField payload consists of a series of subfields, each of the form:
+ * This class represents the extra field payload (excluding the XLEN 2 bytes). The ExtraField payload consists of a series of subfields, each of the form:
  *
  * <pre>
  * +---+---+---+---+==================================+
@@ -47,9 +45,8 @@ import org.apache.commons.compress.compressors.gzip.ExtraField.SubField;
  * +---+---+---+---+==================================+
  * </pre>
  *
- * This class does not expose the internal subfields list to prevent adding
- * subfields without total extra length validation. The class is iterable, but
- * this iterator is immutable.
+ * This class does not expose the internal subfields list to prevent adding subfields without total extra length validation. The class is iterable, but this
+ * iterator is immutable.
  *
  * @see <a href="https://datatracker.ietf.org/doc/html/rfc1952">RFC 1952 GZIP File Format Specification</a>
  * @since 1.28.0
@@ -57,8 +54,8 @@ import org.apache.commons.compress.compressors.gzip.ExtraField.SubField;
 public class ExtraField implements Iterable<SubField> {
 
     /**
-     * If the {@code FLG.FEXTRA} bit is set, an "extra field" is present in the header, with total length XLEN bytes.
-     * It consists of a series of subfields, each of the form:
+     * If the {@code FLG.FEXTRA} bit is set, an "extra field" is present in the header, with total length XLEN bytes. It consists of a series of subfields, each
+     * of the form:
      *
      * <pre>
      * +---+---+---+---+==================================+
@@ -68,6 +65,7 @@ public class ExtraField implements Iterable<SubField> {
      * <p>
      * The reserved IDs are:
      * </p>
+     *
      * <pre>
      * SI1         SI2         Data
      * ----------  ----------  ----
@@ -155,11 +153,11 @@ public class ExtraField implements Iterable<SubField> {
     /**
      * Append a subfield by a 2-chars ISO-8859-1 string. The char at index 0 and 1 are respectiovely si1 and si2 (subfield id 1 and 2).
      *
-     * @param id The subfield ID.
+     * @param id      The subfield ID.
      * @param payload The subfield payload.
      * @return this instance.
-     * @throws NullPointerException if {@code id} is {@code null}.
-     * @throws NullPointerException if {@code payload} is {@code null}.
+     * @throws NullPointerException     if {@code id} is {@code null}.
+     * @throws NullPointerException     if {@code payload} is {@code null}.
      * @throws IllegalArgumentException if the subfield is not 2 characters or the payload is null
      * @throws IOException              if appending this subfield would exceed the max size 65535 of the extra header.
      */
@@ -193,18 +191,18 @@ public class ExtraField implements Iterable<SubField> {
     }
 
     /**
-     * Finds the first subfield that matched the id if found, null otherwise
+     * Finds the first subfield that matched the id if found, null otherwise.
      *
-     * @return the 1st SubField that matched or null.
+     * @param id The ID to find.
+     * @return The first SubField that matched or null.
      */
-    public SubField findFirstSubField(String subfieldId) {
-        return subFields.stream().filter(f -> f.getId().equals(subfieldId)).findFirst().orElse(null);
+    public SubField findFirstSubField(final String id) {
+        return subFields.stream().filter(f -> f.getId().equals(id)).findFirst().orElse(null);
     }
 
     /**
-     * Calculate the size in bytes of the encoded extra field. This does not include
-     * its own 16 bits size when embeded in the gzip header. For N sub fields, the
-     * total is all subfields payloads bytes + 4N.
+     * Gets the size in bytes of the encoded extra field. This does not include its own 16 bits size when embeded in the gzip header. For N sub fields,
+     * the total is all subfields payloads bytes + 4N.
      *
      * @return the bytes count of this extra payload when encoded.
      */
@@ -213,27 +211,18 @@ public class ExtraField implements Iterable<SubField> {
     }
 
     /**
-     * Return the count of subfields currently in in this extra field.
-     *
-     * @return the count of subfields contained in this instance.
-     */
-    public int getSize() {
-        return subFields.size();
-    }
-
-    /**
      * Gets the subfield at the given index.
      *
-     * @param index index of the element to return
-     * @return the subfield at the specified position in this list
-     * @throws IndexOutOfBoundsException if the index is out of range ({@code index &lt; 0 || index &gt;= size()})
+     * @param index index of the element to return.
+     * @return the subfield at the specified position in this list.
+     * @throws IndexOutOfBoundsException if the index is out of range ({@code index &lt; 0 || index &gt;= size()}).
      */
-    public SubField getSubFieldAt(final int index) {
+    public SubField getSubField(final int index) {
         return subFields.get(index);
     }
 
     /**
-     * Test is this extra field has no subfields.
+     * Tests is this extra field has no subfields.
      *
      * @return true if there are no subfields, false otherwise.
      */
@@ -242,14 +231,22 @@ public class ExtraField implements Iterable<SubField> {
     }
 
     /**
-     * Returns an immutable iterator over the SubField elements in this extra field
-     * in the order they were added.
+     * Returns an unmodifiable iterator over the elements in the SubField list in proper sequence.
      *
-     * @return an immutable naturally ordered iterator over the SubField elements.
+     * @return an unmodifiable naturally ordered iterator over the SubField elements.
      */
     @Override
     public Iterator<SubField> iterator() {
         return Collections.unmodifiableList(subFields).iterator();
+    }
+
+    /**
+     * Gets the count of subfields currently in in this extra field.
+     *
+     * @return the count of subfields contained in this instance.
+     */
+    public int size() {
+        return subFields.size();
     }
 
     byte[] toByteArray() {

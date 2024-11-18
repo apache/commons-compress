@@ -147,13 +147,13 @@ public class GzipCompressorOutputStreamTest {
         try (GzipCompressorInputStream gis = new GzipCompressorInputStream(Files.newInputStream(targetFile))) {
             final ExtraField extra2 = gis.getMetaData().getExtraField();
             assertEquals(subFieldCount == 0, extra2.isEmpty());
-            assertEquals(subFieldCount, extra2.getSize());
+            assertEquals(subFieldCount, extra2.size());
             assertEquals(4 * subFieldCount + subFieldCount * payloadSize, extra2.getEncodedSize());
             ArrayList<SubField> listCopy = new ArrayList<>();
             extra2.forEach(listCopy::add);
             assertEquals(subFieldCount, listCopy.size());
             for (int i = 0; i < subFieldCount; i++) {
-                final SubField sf = extra2.getSubFieldAt(i);
+                final SubField sf = extra2.getSubField(i);
                 assertSame(sf, listCopy.get(i));
                 assertSame(sf, extra2.findFirstSubField("z" + i));
                 assertEquals("z" + i, sf.getId()); // id was saved/loaded correctly
@@ -172,7 +172,7 @@ public class GzipCompressorOutputStreamTest {
         extra.forEach(e -> {
             fail("Not emprt");
         });
-        assertThrows(IndexOutOfBoundsException.class, () -> extra.getSubFieldAt(0));
+        assertThrows(IndexOutOfBoundsException.class, () -> extra.getSubField(0));
     }
 
     private void testFileName(final String expected, final String sourceFile) throws IOException {
