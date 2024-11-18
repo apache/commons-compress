@@ -22,16 +22,16 @@ import java.util.Arrays;
 
 public final class ArrayFill {
 
-  public static int[] fill(final int[] a, final int val) {
-    Arrays.fill(a, val);
-    return a;
-  }
+    public static int[] fill(final int[] a, final int val) {
+        Arrays.fill(a, val);
+        return a;
+    }
 
-  public static byte[] fill(final byte[] a, final byte val) {
-    Arrays.fill(a, val);
-    return a;
-  }
+    public static byte[] fill(final byte[] a, final byte val) {
+        Arrays.fill(a, val);
+        return a;
+    }
 
-  private ArrayFill() {
-  }
+    private ArrayFill() {
+    }
 }

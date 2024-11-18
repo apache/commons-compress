@@ -24,38 +24,38 @@ import java.lang.reflect.Field;
 
 public final class FieldUtils {
 
-  public static Object readField(final Object target, final String fieldName, final boolean forceAccess) throws IllegalAccessException {
-    requireNonNull(target, "target");
-    requireNonNull(fieldName, "fieldName");
-    final Class<?> cls = target.getClass();
-    final Field field = getField(cls, fieldName, forceAccess);
-    if (field == null) {
-      throw new IllegalArgumentException(String.format("Cannot locate field %s on %s", fieldName, cls));
-    }
-    return field.get(target);
-  }
-
-  private static Field getField(final Class<?> cls, final String fieldName, final boolean forceAccess) {
-    requireNonNull(cls, "cls");
-    requireNonNull(fieldName, "fieldName");
-    Class<?> currentClass = cls;
-    while (currentClass != null) {
-      try {
-        final Field field = currentClass.getDeclaredField(fieldName);
-        // getDeclaredField checks for non-public scopes as well
-        // and it returns accurate results
-        if (forceAccess && !field.isAccessible()) {
-          field.setAccessible(true);
+    public static Object readField(final Object target, final String fieldName, final boolean forceAccess) throws IllegalAccessException {
+        requireNonNull(target, "target");
+        requireNonNull(fieldName, "fieldName");
+        final Class<?> cls = target.getClass();
+        final Field field = getField(cls, fieldName, forceAccess);
+        if (field == null) {
+            throw new IllegalArgumentException(String.format("Cannot locate field %s on %s", fieldName, cls));
         }
-        return field;
-      } catch (final NoSuchFieldException ignored) {
-        // ignore
-      }
-      currentClass = currentClass.getSuperclass();
+        return field.get(target);
     }
-    return null;
-  }
 
-  private FieldUtils() {
-  }
+    private static Field getField(final Class<?> cls, final String fieldName, final boolean forceAccess) {
+        requireNonNull(cls, "cls");
+        requireNonNull(fieldName, "fieldName");
+        Class<?> currentClass = cls;
+        while (currentClass != null) {
+            try {
+                final Field field = currentClass.getDeclaredField(fieldName);
+                // getDeclaredField checks for non-public scopes as well
+                // and it returns accurate results
+                if (forceAccess && !field.isAccessible()) {
+                    field.setAccessible(true);
+                }
+                return field;
+            } catch (final NoSuchFieldException ignored) {
+                // ignore
+            }
+            currentClass = currentClass.getSuperclass();
+        }
+        return null;
+    }
+
+    private FieldUtils() {
+    }
 }
