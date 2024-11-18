@@ -20,14 +20,10 @@ package org.apache.commons.compress.internal.lang3;
 
 public final class SystemProperties {
 
-  public static String getOsName() {
-    try {
-      return System.getProperty("os.name");
-    } catch (final SecurityException e) {
-      return null;
+    public static String getOsName() {
+        return System.getProperty("os.name");
     }
-  }
 
-  private SystemProperties() {
-  }
+    private SystemProperties() {
+    }
 }
