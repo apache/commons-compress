@@ -22,6 +22,8 @@ package org.apache.commons.compress.compressors.gzip;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
@@ -32,8 +34,8 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.compress.compressors.gzip.ExtraField.SubField;
 import org.junit.jupiter.api.Test;
@@ -94,11 +96,12 @@ public class GzipCompressorOutputStreamTest {
     /**
      * Tests the gzip extra header containing subfields.
      *
-     * @throws IOException When the test fails.
+     * @throws IOException When the test has issues with the underlying file system or unexpected gzip operations.
      */
     @ParameterizedTest
     // @formatter:off
     @CsvSource({
+        "0,    42, false",
         "1,      , true",
         "1,     0, false",
         "1, 65531, false",
@@ -108,7 +111,8 @@ public class GzipCompressorOutputStreamTest {
         "2, 32763, false"
     })
     // @formatter:on
-    public void testExtraSubfields(final int subFieldCount, final Integer payloadSize, final boolean shouldFail) throws IOException {
+    public void testExtraSubfields(final int subFieldCount, final Integer payloadSize, final boolean shouldFail)
+            throws IOException {
         final Path tempSourceFile = Files.createTempFile("test_gzip_extra_", ".txt");
         final Path targetFile = Files.createTempFile("test_gzip_extra_", ".txt.gz");
         Files.write(tempSourceFile, "Hello World!".getBytes(StandardCharsets.ISO_8859_1));
@@ -128,9 +132,12 @@ public class GzipCompressorOutputStreamTest {
                 break;
             }
         }
-        assertEquals(shouldFail, failed, "appending subfield " + (shouldFail ? "succes" : "failure") + " was not expected.");
+        assertEquals(shouldFail, failed, "add subfield " + (shouldFail ? "succes" : "failure") + " was not expected.");
         if (shouldFail) {
             return;
+        }
+        if (subFieldCount > 0) {
+            assertThrows(UnsupportedOperationException.class, () -> extra.iterator().remove());
         }
         parameters.setExtraField(extra);
         try (OutputStream fos = Files.newOutputStream(targetFile);
@@ -139,17 +146,21 @@ public class GzipCompressorOutputStreamTest {
         }
         try (GzipCompressorInputStream gis = new GzipCompressorInputStream(Files.newInputStream(targetFile))) {
             final ExtraField extra2 = gis.getMetaData().getExtraField();
+            assertEquals(subFieldCount == 0, extra2.isEmpty());
+            assertEquals(subFieldCount, extra2.getSize());
+            assertEquals(4 * subFieldCount + subFieldCount * payloadSize, extra2.getEncodedSize());
+            ArrayList<SubField> listCopy = new ArrayList<>();
+            extra2.forEach(listCopy::add);
+            assertEquals(subFieldCount, listCopy.size());
             for (int i = 0; i < subFieldCount; i++) {
                 final SubField sf = extra2.getSubFieldAt(i);
+                assertSame(sf, listCopy.get(i));
+                assertSame(sf, extra2.findFirstSubField("z" + i));
                 assertEquals("z" + i, sf.getId()); // id was saved/loaded correctly
                 assertArrayEquals(payloads[i], sf.getPayload(), "field " + i + " has wrong payload");
             }
-            final AtomicInteger i = new AtomicInteger();
-            gis.getMetaData().getExtraField().forEach(sf -> {
-                assertEquals("z" + i, sf.getId()); // id was saved/loaded correctly
-                assertArrayEquals(payloads[i.intValue()], sf.getPayload(), "field " + i + " has wrong payload");
-                i.incrementAndGet();
-            });
+            extra2.clear();
+            assertTrue(extra2.isEmpty());
         }
     }
 

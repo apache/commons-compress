@@ -21,6 +21,7 @@ package org.apache.commons.compress.compressors.gzip;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -28,8 +29,17 @@ import java.util.Objects;
 import org.apache.commons.compress.compressors.gzip.ExtraField.SubField;
 
 /**
- * If the {@code FLG.FEXTRA} bit is set, an "extra field" is present in the header, with total length XLEN bytes. It consists of a series of subfields, each of
- * the form:
+ * If the {@code FLG.FEXTRA} bit is set, an "extra field" is present in the
+ * header, with total length XLEN bytes.
+ *
+ * <pre>
+ * +---+---+=================================+
+ * | XLEN  |...XLEN bytes of "extra field"...| (more-->)
+ * +---+---+=================================+
+ * </pre>
+ *
+ * This class represents the extra field payload (excluding the XLEN 2 bytes).
+ * The ExtraField payload consists of a series of subfields, each of the form:
  *
  * <pre>
  * +---+---+---+---+==================================+
@@ -37,8 +47,9 @@ import org.apache.commons.compress.compressors.gzip.ExtraField.SubField;
  * +---+---+---+---+==================================+
  * </pre>
  *
- * This class does not expose the internal subfields list to prevent adding subfields without total extra length validation. However a copy of the list is
- * available.
+ * This class does not expose the internal subfields list to prevent adding
+ * subfields without total extra length validation. The class is iterable, but
+ * this iterator is immutable.
  *
  * @see <a href="https://datatracker.ietf.org/doc/html/rfc1952">RFC 1952 GZIP File Format Specification</a>
  * @since 1.28.0
@@ -46,8 +57,8 @@ import org.apache.commons.compress.compressors.gzip.ExtraField.SubField;
 public class ExtraField implements Iterable<SubField> {
 
     /**
-     * If the {@code FLG.FEXTRA} bit is set, an "extra field" is present in the header, with total length XLEN bytes. It consists of a series of subfields, each
-     * of the form:
+     * If the {@code FLG.FEXTRA} bit is set, an "extra field" is present in the header, with total length XLEN bytes.
+     * It consists of a series of subfields, each of the form:
      *
      * <pre>
      * +---+---+---+---+==================================+
@@ -185,13 +196,14 @@ public class ExtraField implements Iterable<SubField> {
     }
 
     /**
-     * Returns an iterator over the SubField elements in this extra field in proper sequence.
+     * Returns an immutable iterator over the SubField elements in this extra field
+     * in the order they were added.
      *
-     * @return an iterator over the SubField elements in this extra field in proper sequence.
+     * @return an immutable naturally ordered iterator over the SubField elements.
      */
     @Override
     public Iterator<SubField> iterator() {
-        return subFields.iterator();
+        return Collections.unmodifiableList(subFields).iterator();
     }
 
     byte[] toByteArray() {
@@ -209,6 +221,52 @@ public class ExtraField implements Iterable<SubField> {
             pos += f.payload.length;
         }
         return ba;
+    }
+
+    /**
+     * Test is this extra field has no subfields.
+     *
+     * @return true if there are no subfields, false otherwise.
+     */
+    public boolean isEmpty() {
+        return subFields.isEmpty();
+    }
+
+    /**
+     * Removes all subfields from this instance.
+     */
+    public void clear() {
+        subFields.clear();
+        totalSize = 0;
+    }
+
+    /**
+     * Calculate the size in bytes of the encoded extra field. This does not include
+     * its own 16 bits size when embeded in the gzip header. For N sub fields, the
+     * total is all subfields payloads bytes + 4N.
+     *
+     * @return the bytes count of this extra payload when encoded.
+     */
+    public int getEncodedSize() {
+        return totalSize;
+    }
+
+    /**
+     * Return the count of subfields currently in in this extra field.
+     *
+     * @return the count of subfields contained in this instance.
+     */
+    public int getSize() {
+        return subFields.size();
+    }
+
+    /**
+     * Finds the first subfield that matched the id if found, null otherwise
+     *
+     * @return the 1st SubField that matched or null.
+     */
+    public SubField findFirstSubField(String subfieldId) {
+        return subFields.stream().filter(f -> f.getId().equals(subfieldId)).findFirst().orElse(null);
     }
 
 }
