@@ -21,7 +21,7 @@ package org.apache.commons.compress.compressors.lz77support;
 import java.io.IOException;
 import java.util.Objects;
 
-import org.apache.commons.lang3.ArrayFill;
+import org.apache.commons.compress.internal.lang3.ArrayFill;
 
 /**
  * Helper class for compression algorithms that use the ideas of LZ77.

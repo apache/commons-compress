@@ -31,10 +31,10 @@ import java.util.jar.JarOutputStream;
 
 import org.apache.commons.compress.harmony.pack200.Pack200Adapter;
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
+import org.apache.commons.compress.internal.lang3.reflect.FieldUtils;
 import org.apache.commons.compress.java.util.jar.Pack200.Unpacker;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.io.input.CloseShieldInputStream;
-import org.apache.commons.lang3.reflect.FieldUtils;
 
 /**
  * This class provides the binding between the standard Pack200 interface and the internal interface for (un)packing.
