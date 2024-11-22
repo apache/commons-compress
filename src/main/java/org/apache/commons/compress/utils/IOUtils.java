@@ -73,12 +73,13 @@ public final class IOUtils {
     }
 
     /**
-     * Copies the content of a InputStream into an OutputStream. Uses a default buffer size of 8024 bytes.
+     * Copies the content of a InputStream into an OutputStream. Uses a default buffer size of 8192 bytes.
      *
      * @param input  the InputStream to copy
-     * @param output the target, may be null to simulate output to dev/null on Linux and NUL on Windows
-     * @return the number of bytes copied
+     * @param output the target
+     * @return the number of bytes copied, or -1 if greater than {@link Integer#MAX_VALUE}
      * @throws IOException if an error occurs
+     * @throws NullPointerException if the {@code input} or the {@code output} is {@code null}
      * @deprecated Use {@link org.apache.commons.io.IOUtils#copy(InputStream, OutputStream)}.
      */
     @Deprecated
@@ -90,11 +91,11 @@ public final class IOUtils {
      * Copies the content of a InputStream into an OutputStream
      *
      * @param input      the InputStream to copy
-     * @param output     the target, may be null to simulate output to dev/null on Linux and NUL on Windows
+     * @param output     the target
      * @param bufferSize the buffer size to use, must be bigger than 0
      * @return the number of bytes copied
      * @throws IOException              if an error occurs
-     * @throws IllegalArgumentException if bufferSize is smaller than or equal to 0
+     * @throws NullPointerException if the {@code input} or the {@code output} is {@code null}
      * @deprecated Use {@link org.apache.commons.io.IOUtils#copy(InputStream, OutputStream, int)}.
      */
     @Deprecated
@@ -103,7 +104,7 @@ public final class IOUtils {
     }
 
     /**
-     * Copies part of the content of a InputStream into an OutputStream. Uses a default buffer size of 8024 bytes.
+     * Copies part of the content of a InputStream into an OutputStream. Uses a default buffer size of 8192 bytes.
      *
      * @param input  the InputStream to copy
      * @param output the target Stream
@@ -291,7 +292,7 @@ public final class IOUtils {
      * @param input the {@code InputStream} to read from
      * @return the requested byte array
      * @throws NullPointerException if the input is null
-     * @throws IOException          if an I/O error occurs
+     * @throws IOException          if an I/O error occurs or reads more than {@link Integer#MAX_VALUE} occurs
      * @since 1.5
      * @deprecated Use {@link org.apache.commons.io.IOUtils#toByteArray(InputStream)}.
      */
