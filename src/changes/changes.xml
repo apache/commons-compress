@@ -49,7 +49,8 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" issue="COMPRESS-686" dev="ggregory" due-to="Richard Blank, Gary Gregory">Better exception messages in SeekableInMemoryByteChannel.</action>
       <action type="fix" dev="ggregory" due-to="yujincheng08, Gary Gregory">ZipArchiveOutputStream.addRawArchiveEntry() should check is2PhaseSource #571.</action> 
       <action type="fix" dev="ggregory" due-to="Gary Gregory, Arturo Bernal">ArchiveException extends IOException #605, see also https://github.com/apache/httpcomponents-client/pull/580.</action> 
-      <action type="fix" dev="ggregory" due-to="Gary Gregory, Arturo Bernal">CompressorException extends IOException #605, see also https://github.com/apache/httpcomponents-client/pull/580.</action> 
+      <action type="fix" dev="ggregory" due-to="Gary Gregory, Arturo Bernal">CompressorException extends IOException #605, see also https://github.com/apache/httpcomponents-client/pull/580.</action>
+      <action type="fix" dev="ggregory" due-to="Glavo">Update outdated descriptions in IOUtils and IOUtilsTest #612.</action> 
       <!-- ADD -->
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add GzipParameters.getModificationInstant().</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add GzipParameters.setModificationInstant(Instant).</action>
