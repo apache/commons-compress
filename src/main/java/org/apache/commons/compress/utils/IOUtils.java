@@ -76,9 +76,10 @@ public final class IOUtils {
      * Copies the content of a InputStream into an OutputStream. Uses a default buffer size of 8024 bytes.
      *
      * @param input  the InputStream to copy
-     * @param output the target, may be null to simulate output to dev/null on Linux and NUL on Windows
+     * @param output the target
      * @return the number of bytes copied
      * @throws IOException if an error occurs
+     * @throws NullPointerException if the {@code input} or the {@code output} is {@code null}
      * @deprecated Use {@link org.apache.commons.io.IOUtils#copy(InputStream, OutputStream)}.
      */
     @Deprecated
@@ -90,11 +91,11 @@ public final class IOUtils {
      * Copies the content of a InputStream into an OutputStream
      *
      * @param input      the InputStream to copy
-     * @param output     the target, may be null to simulate output to dev/null on Linux and NUL on Windows
+     * @param output     the target
      * @param bufferSize the buffer size to use, must be bigger than 0
      * @return the number of bytes copied
      * @throws IOException              if an error occurs
-     * @throws IllegalArgumentException if bufferSize is smaller than or equal to 0
+     * @throws NullPointerException if the {@code input} or the {@code output} is {@code null}
      * @deprecated Use {@link org.apache.commons.io.IOUtils#copy(InputStream, OutputStream, int)}.
      */
     @Deprecated

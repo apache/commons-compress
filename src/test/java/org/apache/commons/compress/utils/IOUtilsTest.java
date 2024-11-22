@@ -107,7 +107,7 @@ public class IOUtilsTest {
     }
 
     @Test
-    public void testCopyThrowsOnZeroBufferSize() throws IOException {
+    public void testCopyOnZeroBufferSize() throws IOException {
         assertEquals(0, IOUtils.copy(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY), new ByteArrayOutputStream(), 0));
     }
 
