@@ -137,7 +137,7 @@ public final class ZipEightByteInteger implements Serializable {
      * @param offset the offset to start
      */
     public ZipEightByteInteger(final byte[] bytes, final int offset) {
-        value = getLongValue(bytes, offset);
+        this.value = getLongValue(bytes, offset);
     }
 
     /**
@@ -146,7 +146,7 @@ public final class ZipEightByteInteger implements Serializable {
      * @param value the long to store as a ZipEightByteInteger
      */
     public ZipEightByteInteger(final long value) {
-        this(BigInteger.valueOf(value));
+        this.value = value;
     }
 
     /**
