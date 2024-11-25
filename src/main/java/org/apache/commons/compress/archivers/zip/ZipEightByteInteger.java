@@ -64,6 +64,16 @@ public final class ZipEightByteInteger implements Serializable {
 
     public static final ZipEightByteInteger ZERO = new ZipEightByteInteger(0);
 
+    private static final BigInteger HIGHEST_BIT = BigInteger.ONE.shiftLeft(63);
+
+    static BigInteger toUnsignedBigInteger(final long value) {
+        if (value >= 0L) {
+            return BigInteger.valueOf(value);
+        } else {
+            return BigInteger.valueOf(value & Long.MAX_VALUE).add(HIGHEST_BIT);
+        }
+    }
+
     /**
      * Gets value as eight bytes in big-endian byte order.
      *

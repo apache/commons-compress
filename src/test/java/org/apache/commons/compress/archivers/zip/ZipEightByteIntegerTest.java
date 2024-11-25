@@ -29,6 +29,12 @@ import org.junit.jupiter.api.Test;
  */
 public class ZipEightByteIntegerTest {
 
+    @Test
+    public void testToUnsignedBigInteger() {
+        assertEquals(BigInteger.valueOf(Long.MAX_VALUE), ZipEightByteInteger.toUnsignedBigInteger(Long.MAX_VALUE));
+        assertEquals(BigInteger.valueOf(Long.MAX_VALUE).shiftLeft(1), ZipEightByteInteger.toUnsignedBigInteger(0XFFFFFFFFFFFFFFFEL));
+    }
+
     /**
      * Test conversion from bytes.
      */
