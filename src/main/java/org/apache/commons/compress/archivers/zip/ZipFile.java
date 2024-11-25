@@ -499,7 +499,6 @@ public class ZipFile implements Closeable {
 
     private static SeekableByteChannel openZipChannel(final Path path, final long maxNumberOfDisks, final OpenOption[] openOptions) throws IOException {
         final FileChannel channel = FileChannel.open(path, StandardOpenOption.READ);
-        final List<FileChannel> channels = new ArrayList<>();
         try {
             final boolean is64 = positionAtEndOfCentralDirectoryRecord(channel);
             long numberOfDisks;
@@ -546,7 +545,6 @@ public class ZipFile implements Closeable {
             }).collect(Collectors.toList()), openOptions);
         } catch (final Throwable ex) {
             org.apache.commons.io.IOUtils.closeQuietly(channel);
-            channels.forEach(org.apache.commons.io.IOUtils::closeQuietly);
             throw ex;
         }
     }
