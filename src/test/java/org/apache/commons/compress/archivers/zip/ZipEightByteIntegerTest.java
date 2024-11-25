@@ -29,6 +29,9 @@ import org.junit.jupiter.api.Test;
  */
 public class ZipEightByteIntegerTest {
 
+    /**
+     * Test {@link ZipEightByteInteger#toUnsignedBigInteger(long)}.
+     */
     @Test
     public void testToUnsignedBigInteger() {
         assertEquals(BigInteger.valueOf(Long.MAX_VALUE), ZipEightByteInteger.toUnsignedBigInteger(Long.MAX_VALUE));

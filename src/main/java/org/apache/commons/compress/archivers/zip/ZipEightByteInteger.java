@@ -35,6 +35,9 @@ public final class ZipEightByteInteger implements Serializable {
 
     private static final BigInteger HIGHEST_BIT = BigInteger.ONE.shiftLeft(63);
 
+    /**
+     * package private for tests only.
+     */
     static BigInteger toUnsignedBigInteger(final long value) {
         if (value >= 0L) {
             return BigInteger.valueOf(value);
