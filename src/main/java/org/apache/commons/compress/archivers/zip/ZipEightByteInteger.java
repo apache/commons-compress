@@ -16,10 +16,10 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import static org.apache.commons.compress.archivers.zip.ZipConstants.BYTE_MASK;
-
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 /**
  * Utility class that represents an eight byte integer with conversion rules for the little-endian byte order of ZIP files.
@@ -30,37 +30,6 @@ import java.math.BigInteger;
  */
 public final class ZipEightByteInteger implements Serializable {
     private static final long serialVersionUID = 1L;
-
-    private static final int BYTE_1 = 1;
-    private static final int BYTE_1_MASK = 0xFF00;
-    private static final int BYTE_1_SHIFT = 8;
-
-    private static final int BYTE_2 = 2;
-    private static final int BYTE_2_MASK = 0xFF0000;
-    private static final int BYTE_2_SHIFT = 16;
-
-    private static final int BYTE_3 = 3;
-    private static final long BYTE_3_MASK = 0xFF000000L;
-    private static final int BYTE_3_SHIFT = 24;
-
-    private static final int BYTE_4 = 4;
-    private static final long BYTE_4_MASK = 0xFF00000000L;
-    private static final int BYTE_4_SHIFT = 32;
-
-    private static final int BYTE_5 = 5;
-    private static final long BYTE_5_MASK = 0xFF0000000000L;
-    private static final int BYTE_5_SHIFT = 40;
-
-    private static final int BYTE_6 = 6;
-    private static final long BYTE_6_MASK = 0xFF000000000000L;
-    private static final int BYTE_6_SHIFT = 48;
-
-    private static final int BYTE_7 = 7;
-    private static final long BYTE_7_MASK = 0x7F00000000000000L;
-    private static final int BYTE_7_SHIFT = 56;
-
-    private static final int LEFTMOST_BIT_SHIFT = 63;
-    private static final byte LEFTMOST_BIT = (byte) 0x80;
 
     public static final ZipEightByteInteger ZERO = new ZipEightByteInteger(0);
 
@@ -81,20 +50,7 @@ public final class ZipEightByteInteger implements Serializable {
      * @return value as eight bytes in big-endian byte order
      */
     public static byte[] getBytes(final BigInteger value) {
-        final byte[] result = new byte[8];
-        final long val = value.longValue();
-        result[0] = (byte) (val & BYTE_MASK);
-        result[BYTE_1] = (byte) ((val & BYTE_1_MASK) >> BYTE_1_SHIFT);
-        result[BYTE_2] = (byte) ((val & BYTE_2_MASK) >> BYTE_2_SHIFT);
-        result[BYTE_3] = (byte) ((val & BYTE_3_MASK) >> BYTE_3_SHIFT);
-        result[BYTE_4] = (byte) ((val & BYTE_4_MASK) >> BYTE_4_SHIFT);
-        result[BYTE_5] = (byte) ((val & BYTE_5_MASK) >> BYTE_5_SHIFT);
-        result[BYTE_6] = (byte) ((val & BYTE_6_MASK) >> BYTE_6_SHIFT);
-        result[BYTE_7] = (byte) ((val & BYTE_7_MASK) >> BYTE_7_SHIFT);
-        if (value.testBit(LEFTMOST_BIT_SHIFT)) {
-            result[BYTE_7] |= LEFTMOST_BIT;
-        }
-        return result;
+        return getBytes(value.longValue());
     }
 
     /**
@@ -104,7 +60,9 @@ public final class ZipEightByteInteger implements Serializable {
      * @return value as eight bytes in big-endian byte order
      */
     public static byte[] getBytes(final long value) {
-        return getBytes(BigInteger.valueOf(value));
+        ByteBuffer buffer = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN);
+        buffer.putLong(value);
+        return buffer.array();
     }
 
     /**
@@ -125,7 +83,7 @@ public final class ZipEightByteInteger implements Serializable {
      * @return the corresponding Java long value
      */
     public static long getLongValue(final byte[] bytes, final int offset) {
-        return getValue(bytes, offset).longValue();
+        return ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).getLong(offset);
     }
 
     /**
@@ -146,19 +104,10 @@ public final class ZipEightByteInteger implements Serializable {
      * @return the corresponding Java BigInteger value
      */
     public static BigInteger getValue(final byte[] bytes, final int offset) {
-        long value = (long) bytes[offset + BYTE_7] << BYTE_7_SHIFT & BYTE_7_MASK;
-        value += (long) bytes[offset + BYTE_6] << BYTE_6_SHIFT & BYTE_6_MASK;
-        value += (long) bytes[offset + BYTE_5] << BYTE_5_SHIFT & BYTE_5_MASK;
-        value += (long) bytes[offset + BYTE_4] << BYTE_4_SHIFT & BYTE_4_MASK;
-        value += (long) bytes[offset + BYTE_3] << BYTE_3_SHIFT & BYTE_3_MASK;
-        value += (long) bytes[offset + BYTE_2] << BYTE_2_SHIFT & BYTE_2_MASK;
-        value += (long) bytes[offset + BYTE_1] << BYTE_1_SHIFT & BYTE_1_MASK;
-        value += (long) bytes[offset] & BYTE_MASK;
-        final BigInteger val = BigInteger.valueOf(value);
-        return (bytes[offset + BYTE_7] & LEFTMOST_BIT) == LEFTMOST_BIT ? val.setBit(LEFTMOST_BIT_SHIFT) : val;
+        return toUnsignedBigInteger(getLongValue(bytes, offset));
     }
 
-    private final BigInteger value;
+    private final long value;
 
     /**
      * Constructs a new instance from a number.
@@ -166,7 +115,7 @@ public final class ZipEightByteInteger implements Serializable {
      * @param value the BigInteger to store as a ZipEightByteInteger
      */
     public ZipEightByteInteger(final BigInteger value) {
-        this.value = value;
+        this.value = value.longValue();
     }
 
     /**
@@ -185,7 +134,7 @@ public final class ZipEightByteInteger implements Serializable {
      * @param offset the offset to start
      */
     public ZipEightByteInteger(final byte[] bytes, final int offset) {
-        value = getValue(bytes, offset);
+        value = getLongValue(bytes, offset);
     }
 
     /**
@@ -208,7 +157,7 @@ public final class ZipEightByteInteger implements Serializable {
         if (!(o instanceof ZipEightByteInteger)) {
             return false;
         }
-        return value.equals(((ZipEightByteInteger) o).getValue());
+        return value == (((ZipEightByteInteger) o).value);
     }
 
     /**
@@ -226,7 +175,7 @@ public final class ZipEightByteInteger implements Serializable {
      * @return value as a long
      */
     public long getLongValue() {
-        return value.longValue();
+        return value;
     }
 
     /**
@@ -235,7 +184,7 @@ public final class ZipEightByteInteger implements Serializable {
      * @return value as a BigInteger
      */
     public BigInteger getValue() {
-        return value;
+        return toUnsignedBigInteger(value);
     }
 
     /**
@@ -245,7 +194,7 @@ public final class ZipEightByteInteger implements Serializable {
      */
     @Override
     public int hashCode() {
-        return value.hashCode();
+        return Long.hashCode(value);
     }
 
     @Override
