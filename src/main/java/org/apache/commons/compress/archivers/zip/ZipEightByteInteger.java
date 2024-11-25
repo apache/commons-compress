@@ -160,7 +160,7 @@ public final class ZipEightByteInteger implements Serializable {
         if (!(o instanceof ZipEightByteInteger)) {
             return false;
         }
-        return value == (((ZipEightByteInteger) o).value);
+        return value == ((ZipEightByteInteger) o).value;
     }
 
     /**
