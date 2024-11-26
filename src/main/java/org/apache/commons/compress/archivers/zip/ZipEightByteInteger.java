@@ -202,6 +202,6 @@ public final class ZipEightByteInteger implements Serializable {
 
     @Override
     public String toString() {
-        return "ZipEightByteInteger value: " + value;
+        return "ZipEightByteInteger value: " + Long.toUnsignedString(value);
     }
 }
