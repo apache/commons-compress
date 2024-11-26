@@ -36,17 +36,6 @@ public final class ZipEightByteInteger implements Serializable {
     private static final BigInteger HIGHEST_BIT = BigInteger.ONE.shiftLeft(63);
 
     /**
-     * package private for tests only.
-     */
-    static BigInteger toUnsignedBigInteger(final long value) {
-        if (value >= 0L) {
-            return BigInteger.valueOf(value);
-        } else {
-            return BigInteger.valueOf(value & Long.MAX_VALUE).add(HIGHEST_BIT);
-        }
-    }
-
-    /**
      * Gets value as eight bytes in big-endian byte order.
      *
      * @param value the value to convert
@@ -108,6 +97,17 @@ public final class ZipEightByteInteger implements Serializable {
      */
     public static BigInteger getValue(final byte[] bytes, final int offset) {
         return toUnsignedBigInteger(getLongValue(bytes, offset));
+    }
+
+    /**
+     * package private for tests only.
+     */
+    static BigInteger toUnsignedBigInteger(final long value) {
+        if (value >= 0L) {
+            return BigInteger.valueOf(value);
+        } else {
+            return BigInteger.valueOf(value & Long.MAX_VALUE).add(HIGHEST_BIT);
+        }
     }
 
     private final long value;
