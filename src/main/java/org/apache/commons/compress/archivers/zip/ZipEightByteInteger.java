@@ -33,7 +33,7 @@ public final class ZipEightByteInteger implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
-     * Constant for a value of zero. 
+     * Constant for a value of zero.
      */
     public static final ZipEightByteInteger ZERO = new ZipEightByteInteger(0);
 
@@ -56,7 +56,7 @@ public final class ZipEightByteInteger implements Serializable {
      * @return value as eight bytes in big-endian byte order
      */
     public static byte[] getBytes(final long value) {
-        ByteBuffer buffer = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN);
+        final ByteBuffer buffer = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN);
         buffer.putLong(value);
         return buffer.array();
     }
