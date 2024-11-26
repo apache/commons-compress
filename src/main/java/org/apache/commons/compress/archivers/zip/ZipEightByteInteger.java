@@ -109,9 +109,8 @@ public final class ZipEightByteInteger implements Serializable {
     static BigInteger toUnsignedBigInteger(final long value) {
         if (value >= 0L) {
             return BigInteger.valueOf(value);
-        } else {
-            return BigInteger.valueOf(value & Long.MAX_VALUE).add(HIGHEST_BIT);
         }
+        return BigInteger.valueOf(value & Long.MAX_VALUE).add(HIGHEST_BIT);
     }
 
     private final long value;
