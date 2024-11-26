@@ -49,6 +49,18 @@ public class ZipEightByteIntegerTest {
     }
 
     /**
+     * Test conversion from max value.
+     */
+    @Test
+    public void testBIFromMaxValue() {
+        // https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT
+        // 4.4.1.1 All fields unless otherwise noted are unsigned and stored in Intel low-byte:high-byte, low-word:high-word order.
+        final ZipEightByteInteger zipEightByteInteger = new ZipEightByteInteger(
+                new byte[] { (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF });
+        assertEquals("18446744073709551615", zipEightByteInteger.getValue().toString());
+    }
+
+    /**
      * Test conversion to bytes.
      */
     @Test
