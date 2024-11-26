@@ -58,9 +58,7 @@ public final class ZipEightByteInteger implements Serializable {
      * @return value as eight bytes in big-endian byte order
      */
     public static byte[] getBytes(final long value) {
-        final ByteBuffer buffer = ByteBuffer.allocate(BYTES).order(ByteOrder.LITTLE_ENDIAN);
-        buffer.putLong(value);
-        return buffer.array();
+        return ByteBuffer.allocate(BYTES).order(ByteOrder.LITTLE_ENDIAN).putLong(value).array();
     }
 
     /**
@@ -114,7 +112,6 @@ public final class ZipEightByteInteger implements Serializable {
         }
         return BigInteger.valueOf(value & Long.MAX_VALUE).add(HIGHEST_BIT);
     }
-
     private final long value;
 
     /**
