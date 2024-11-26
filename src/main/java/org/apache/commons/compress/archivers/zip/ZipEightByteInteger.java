@@ -29,8 +29,12 @@ import java.nio.ByteOrder;
  * @since 1.2
  */
 public final class ZipEightByteInteger implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Constant for a value of zero. 
+     */
     public static final ZipEightByteInteger ZERO = new ZipEightByteInteger(0);
 
     private static final BigInteger HIGHEST_BIT = BigInteger.ONE.shiftLeft(63);
