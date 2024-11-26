@@ -30,6 +30,8 @@ import java.nio.ByteOrder;
  */
 public final class ZipEightByteInteger implements Serializable {
 
+    private static final int BYTES = 8;
+
     private static final long serialVersionUID = 1L;
 
     /**
@@ -56,7 +58,7 @@ public final class ZipEightByteInteger implements Serializable {
      * @return value as eight bytes in big-endian byte order
      */
     public static byte[] getBytes(final long value) {
-        final ByteBuffer buffer = ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN);
+        final ByteBuffer buffer = ByteBuffer.allocate(BYTES).order(ByteOrder.LITTLE_ENDIAN);
         buffer.putLong(value);
         return buffer.array();
     }
