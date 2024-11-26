@@ -194,9 +194,9 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
     }
 
     /**
-     * Gets the Charest.
+     * Gets the Charset.
      *
-     * @return the Charest.
+     * @return the Charset.
      */
     public Charset getCharset() {
         return charset;
