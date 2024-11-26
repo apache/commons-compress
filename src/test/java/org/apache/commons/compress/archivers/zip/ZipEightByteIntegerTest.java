@@ -149,7 +149,10 @@ public class ZipEightByteIntegerTest {
      */
     @Test
     public void testToString() {
-        assertEquals("ZipEightByteInteger value: 18446744073709551615", newMaxValue().toString());
+        assertEquals("0", ZipEightByteInteger.ZERO.toString());
+        assertEquals("0", ZipEightByteInteger.getValue(new byte[ZipEightByteInteger.BYTES]).toString());
+        assertEquals(Long.toString(Long.MAX_VALUE), new ZipEightByteInteger(BigInteger.valueOf(Long.MAX_VALUE)).toString());
+        assertEquals("18446744073709551615", newMaxValue().toString());
     }
 
     /**

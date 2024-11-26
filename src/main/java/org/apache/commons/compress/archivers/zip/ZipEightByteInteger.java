@@ -30,7 +30,7 @@ import java.nio.ByteOrder;
  */
 public final class ZipEightByteInteger implements Serializable {
 
-    private static final int BYTES = 8;
+    static final int BYTES = 8;
 
     private static final long serialVersionUID = 1L;
 
@@ -204,6 +204,6 @@ public final class ZipEightByteInteger implements Serializable {
 
     @Override
     public String toString() {
-        return "ZipEightByteInteger value: " + Long.toUnsignedString(value);
+        return Long.toUnsignedString(value);
     }
 }
