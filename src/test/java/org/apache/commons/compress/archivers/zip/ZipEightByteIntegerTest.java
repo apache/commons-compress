@@ -30,6 +30,15 @@ import org.junit.jupiter.api.Test;
 public class ZipEightByteIntegerTest {
 
     /**
+     * Test {@link ZipEightByteInteger#toUnsignedBigInteger(long)}.
+     */
+    @Test
+    public void testToUnsignedBigInteger() {
+        assertEquals(BigInteger.valueOf(Long.MAX_VALUE), ZipEightByteInteger.toUnsignedBigInteger(Long.MAX_VALUE));
+        assertEquals(BigInteger.valueOf(Long.MAX_VALUE).shiftLeft(1), ZipEightByteInteger.toUnsignedBigInteger(0XFFFFFFFFFFFFFFFEL));
+    }
+
+    /**
      * Test conversion from bytes.
      */
     @Test
@@ -100,6 +109,16 @@ public class ZipEightByteIntegerTest {
     }
 
     /**
+     * Test conversion from bytes.
+     */
+    @Test
+    public void testBILongFromBytes() {
+        final byte[] val = { (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF };
+        final ZipEightByteInteger zl = new ZipEightByteInteger(val);
+        assertEquals(0XFFFFFFFFFFFFFFFFL, zl.getLongValue(), "longValue from bytes");
+    }
+
+    /**
      * Test conversion to bytes.
      */
     @Test
@@ -125,5 +144,15 @@ public class ZipEightByteIntegerTest {
         final ZipEightByteInteger zl = new ZipEightByteInteger(
                 new byte[] { (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF });
         assertEquals(BigInteger.valueOf(Long.MAX_VALUE).shiftLeft(1).setBit(0), zl.getValue());
+    }
+
+    /**
+     * Test {@link ZipEightByteInteger#toString()}.
+     */
+    @Test
+    public void testToString() {
+        final ZipEightByteInteger zipEightByteInteger = new ZipEightByteInteger(
+                new byte[] { (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF });
+        assertEquals("ZipEightByteInteger value: 18446744073709551615", zipEightByteInteger.toString());
     }
 }
