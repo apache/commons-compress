@@ -30,6 +30,9 @@ import java.nio.ByteOrder;
  */
 public final class ZipEightByteInteger implements Serializable {
 
+    /**
+     *  The number of bytes used to represent an instance in binary form.
+     */
     static final int BYTES = 8;
 
     private static final long serialVersionUID = 1L;
@@ -112,6 +115,10 @@ public final class ZipEightByteInteger implements Serializable {
         }
         return BigInteger.valueOf(value & Long.MAX_VALUE).add(HIGHEST_BIT);
     }
+
+    /**
+     * The value is treated as unsigned.
+     */
     private final long value;
 
     /**
