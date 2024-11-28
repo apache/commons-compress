@@ -200,7 +200,6 @@ public class ParallelScatterZipCreator {
      * {@link ZipArchiveEntryRequestSupplier}.
      *
      * @see #createCallable(ZipArchiveEntry, InputStreamSupplier)
-     *
      * @param zipArchiveEntryRequestSupplier Should supply the entry to be added.
      * @return A callable that should subsequently be passed to #submitStreamAwareCallable, possibly in a wrapped/adapted from. The value of this callable is
      *         not used, but any exceptions happening inside the compression will be propagated through the callable.
@@ -235,7 +234,6 @@ public class ParallelScatterZipCreator {
      * Submits a callable for compression.
      *
      * @see ParallelScatterZipCreator#createCallable for details of if/when to use this.
-     *
      * @param callable The callable to run, created by {@link #createCallable createCallable}, possibly wrapped by caller.
      */
     public final void submit(final Callable<? extends Object> callable) {
@@ -249,7 +247,6 @@ public class ParallelScatterZipCreator {
      * Submits a callable for compression.
      *
      * @see ParallelScatterZipCreator#createCallable for details of if/when to use this.
-     *
      * @param callable The callable to run, created by {@link #createCallable createCallable}, possibly wrapped by caller.
      * @since 1.19
      */

@@ -37,7 +37,6 @@ import org.apache.commons.compress.utils.ByteUtils;
  * </p>
  *
  * @see <a href="https://www.pkware.com/documents/casestudies/APPNOTE.TXT">PKWARE APPNOTE.TXT, section 4.5.3</a>
- *
  * @since 1.2
  * @NotThreadSafe
  */
@@ -72,7 +71,6 @@ public class Zip64ExtendedInformationExtraField implements ZipExtraField {
      *
      * @param size           the entry's original size
      * @param compressedSize the entry's compressed size
-     *
      * @throws IllegalArgumentException if size or compressedSize is null
      */
     public Zip64ExtendedInformationExtraField(final ZipEightByteInteger size, final ZipEightByteInteger compressedSize) {
@@ -86,7 +84,6 @@ public class Zip64ExtendedInformationExtraField implements ZipExtraField {
      * @param compressedSize       the entry's compressed size
      * @param relativeHeaderOffset the entry's offset
      * @param diskStart            the disk start
-     *
      * @throws IllegalArgumentException if size or compressedSize is null
      */
     public Zip64ExtendedInformationExtraField(final ZipEightByteInteger size, final ZipEightByteInteger compressedSize,

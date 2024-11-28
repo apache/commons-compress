@@ -40,7 +40,6 @@ public class LZMACompressorInputStream extends CompressorInputStream implements 
      * @param signature the bytes to check
      * @param length    the number of bytes to check
      * @return true, if this stream is an LZMA compressed stream, false otherwise
-     *
      * @since 1.10
      */
     public static boolean matches(final byte[] signature, final int length) {
@@ -55,7 +54,6 @@ public class LZMACompressorInputStream extends CompressorInputStream implements 
      * Creates a new input stream that decompresses LZMA-compressed data from the specified input stream.
      *
      * @param inputStream where to read the compressed data
-     *
      * @throws IOException if the input is not in the .lzma format, the input is corrupt or truncated, the .lzma headers specify sizes that are not supported by
      *                     this implementation, or the underlying {@code inputStream} throws an exception
      */
@@ -67,9 +65,7 @@ public class LZMACompressorInputStream extends CompressorInputStream implements 
      * Creates a new input stream that decompresses LZMA-compressed data from the specified input stream.
      *
      * @param inputStream     where to read the compressed data
-     *
      * @param memoryLimitInKb calculated memory use threshold. Throws MemoryLimitException if calculate memory use is above this threshold
-     *
      * @throws IOException if the input is not in the .lzma format, the input is corrupt or truncated, the .lzma headers specify sizes that are not supported by
      *                     this implementation, or the underlying {@code inputStream} throws an exception
      *

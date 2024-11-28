@@ -114,7 +114,6 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
      *
      * @param is         An InputStream to read compressed data from
      * @param windowSize Size of the window kept for back-references, must be bigger than the biggest offset expected.
-     *
      * @throws IllegalArgumentException if windowSize is not bigger than 0
      */
     public AbstractLZ77CompressorInputStream(final InputStream is, final int windowSize) {

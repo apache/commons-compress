@@ -197,7 +197,6 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
      * Reads the real name from the current stream assuming the very first bytes to be read are the real file name.
      *
      * @see #isBSDLongName
-     *
      * @since 1.3
      */
     private String getBSDLongName(final String bsdLongName) throws IOException {

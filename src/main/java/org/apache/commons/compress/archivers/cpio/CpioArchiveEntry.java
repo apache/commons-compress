@@ -314,7 +314,6 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      *                  </pre>
      *
      * @param options   options indicating how symbolic links are handled.
-     *
      * @throws IOException if an I/O error occurs
      * @since 1.21
      */
@@ -553,7 +552,6 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      *
      * @param nameSize The length of the name in bytes, as read in the stream. Without the trailing zero byte.
      * @return the number of bytes needed to pad the header (0,1,2,3)
-     *
      * @since 1.18
      */
     public int getHeaderPadCount(final long nameSize) {

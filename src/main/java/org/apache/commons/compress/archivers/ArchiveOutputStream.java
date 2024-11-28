@@ -169,7 +169,6 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Filter
      * @param inputFile the file to create the entry from
      * @param entryName name to use for the entry
      * @return the ArchiveEntry set up with details from the file
-     *
      * @throws IOException if an I/O error occurs
      */
     public abstract E createArchiveEntry(File inputFile, String entryName) throws IOException;
@@ -191,7 +190,6 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Filter
      * @param entryName name to use for the entry
      * @param options   options indicating how symbolic links are handled.
      * @return the ArchiveEntry set up with details from the file
-     *
      * @throws IOException if an I/O error occurs
      * @since 1.21
      */

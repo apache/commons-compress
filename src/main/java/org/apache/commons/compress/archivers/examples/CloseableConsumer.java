@@ -49,7 +49,6 @@ public interface CloseableConsumer {
      * Archiver no longer need them.
      *
      * @param c Closeable created by Expander or Archiver that is now no longer used
-     *
      * @throws IOException on error
      */
     void accept(Closeable c) throws IOException;

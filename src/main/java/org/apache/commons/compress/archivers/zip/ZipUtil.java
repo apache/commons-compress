@@ -277,7 +277,6 @@ public abstract class ZipUtil {
      * Reverses a byte[] array. Reverses in-place (thus provided array is mutated), but also returns same for convenience.
      *
      * @param array to reverse (mutated in-place, but also returned for convenience).
-     *
      * @return the reversed array (mutated in-place, but also returned for convenience).
      * @since 1.5
      */

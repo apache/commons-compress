@@ -264,7 +264,6 @@ public class SevenZOutputFile implements Closeable {
      * @param entryName the name to use
      * @param options   options indicating how symbolic links are handled.
      * @return the ArchiveEntry set up with details from the file
-     *
      * @throws IOException on error
      * @since 1.21
      */

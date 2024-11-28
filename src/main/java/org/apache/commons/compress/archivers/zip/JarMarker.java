@@ -109,7 +109,6 @@ public final class JarMarker implements ZipExtraField {
      * @param data   an array of bytes
      * @param offset the start offset
      * @param length the number of bytes in the array from offset
-     *
      * @throws ZipException on error
      */
     @Override

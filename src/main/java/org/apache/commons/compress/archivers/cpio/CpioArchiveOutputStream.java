@@ -120,7 +120,6 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
      * @param out       The cpio stream
      * @param format    The format of the stream
      * @param blockSize The block size of the archive.
-     *
      * @since 1.1
      */
     public CpioArchiveOutputStream(final OutputStream out, final short format, final int blockSize) {
@@ -134,7 +133,6 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
      * @param format    The format of the stream
      * @param blockSize The block size of the archive.
      * @param encoding  The encoding of file names to write - use null for the platform's default.
-     *
      * @since 1.6
      */
     public CpioArchiveOutputStream(final OutputStream out, final short format, final int blockSize, final String encoding) {

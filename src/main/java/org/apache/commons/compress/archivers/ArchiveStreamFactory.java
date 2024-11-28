@@ -381,7 +381,6 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
      * Constructs an instance using the specified encoding.
      *
      * @param entryEncoding the encoding to be used.
-     *
      * @since 1.10
      */
     public ArchiveStreamFactory(final String entryEncoding) {

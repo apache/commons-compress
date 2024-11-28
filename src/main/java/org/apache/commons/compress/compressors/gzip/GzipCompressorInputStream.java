@@ -80,7 +80,6 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
      * @param signature the bytes to check
      * @param length    the number of bytes to check
      * @return true if this is a .gz stream, false otherwise
-     *
      * @since 1.1
      */
     public static boolean matches(final byte[] signature, final int length) {
@@ -132,7 +131,6 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
      * This is equivalent to {@code GzipCompressorInputStream(inputStream, false)} and thus will not decompress concatenated .gz files.
      *
      * @param inputStream the InputStream from which this object should be created of
-     *
      * @throws IOException if the stream could not be created
      */
     public GzipCompressorInputStream(final InputStream inputStream) throws IOException {
@@ -148,7 +146,6 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
      *
      * @param inputStream            the InputStream from which this object should be created of
      * @param decompressConcatenated if true, decompress until the end of the input; if false, stop after the first .gz member
-     *
      * @throws IOException if the stream could not be created
      */
     public GzipCompressorInputStream(final InputStream inputStream, final boolean decompressConcatenated) throws IOException {

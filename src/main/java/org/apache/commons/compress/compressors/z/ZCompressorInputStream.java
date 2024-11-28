@@ -42,7 +42,6 @@ public class ZCompressorInputStream extends LZWInputStream {
      * @param signature the bytes to check
      * @param length    the number of bytes to check
      * @return true, if this stream is a UNIX compress compressed stream, false otherwise
-     *
      * @since 1.9
      */
     public static boolean matches(final byte[] signature, final int length) {

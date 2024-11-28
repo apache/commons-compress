@@ -21,7 +21,6 @@ package org.apache.commons.compress.archivers.zip;
  * The different modes {@link ZipArchiveOutputStream} can operate in.
  *
  * @see ZipArchiveOutputStream#setUseZip64
- *
  * @since 1.3
  */
 public enum Zip64Mode {

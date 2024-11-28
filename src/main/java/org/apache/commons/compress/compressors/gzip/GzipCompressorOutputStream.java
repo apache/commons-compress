@@ -75,7 +75,6 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
      * @param out        the stream to compress to
      * @param parameters the parameters to use
      * @throws IOException if writing fails
-     *
      * @since 1.7
      */
     public GzipCompressorOutputStream(final OutputStream out, final GzipParameters parameters) throws IOException {

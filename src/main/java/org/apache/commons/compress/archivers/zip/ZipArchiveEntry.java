@@ -708,7 +708,6 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
      *
      * @param includeUnparseable whether to also return unparseable extra fields as {@link UnparseableExtraFieldData} if such data exists.
      * @return an array of the extra fields
-     *
      * @since 1.1
      */
     public ZipExtraField[] getExtraFields(final boolean includeUnparseable) {
@@ -823,7 +822,6 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
      * Gets the compression method of this entry, or -1 if the compression method has not been specified.
      *
      * @return compression method
-     *
      * @since 1.1
      */
     @Override
@@ -926,7 +924,6 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
      * </p>
      *
      * @return The last modification time of the entry in milliseconds since the epoch, or -1 if not specified
-     *
      * @see #setTime(long)
      * @see #setLastModifiedTime(FileTime)
      */
@@ -951,7 +948,6 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
      * Gets up extra field data that couldn't be parsed correctly.
      *
      * @return null if no such field exists.
-     *
      * @since 1.1
      */
     public UnparseableExtraFieldData getUnparseableExtraFieldData() {
@@ -1361,7 +1357,6 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
      * Sets the compression method of this entry.
      *
      * @param method compression method
-     *
      * @since 1.1
      */
     @Override

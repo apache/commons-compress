@@ -403,7 +403,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      *
      * @param file         the file that will become the last part of the split archive
      * @param zipSplitSize maximum size of a single part of the split archive created by this stream. Must be between 64kB and about 4GB.
-     *
      * @throws IOException              on error
      * @throws IllegalArgumentException if zipSplitSize is not in the required range
      * @since 1.20

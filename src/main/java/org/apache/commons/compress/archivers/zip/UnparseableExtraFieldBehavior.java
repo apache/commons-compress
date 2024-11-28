@@ -35,7 +35,6 @@ public interface UnparseableExtraFieldBehavior {
      * @param local         whether the extra field data stems from the local file header. If this is false then the data is part if the central directory
      *                      header extra data.
      * @param claimedLength length of the extra field claimed by the third and forth byte if it did follow the recommended pattern
-     *
      * @return null if the data should be ignored or an extra field implementation that represents the data
      * @throws ZipException if an error occurs or unparseable extra fields must not be accepted
      */

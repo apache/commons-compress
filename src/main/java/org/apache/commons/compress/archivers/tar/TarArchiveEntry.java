@@ -609,7 +609,6 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      *
      * @param name                 the entry name
      * @param preserveAbsolutePath whether to allow leading slashes or drive letters in the name.
-     *
      * @since 1.1
      */
     public TarArchiveEntry(String name, final boolean preserveAbsolutePath) {
@@ -647,7 +646,6 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * @param name                 the entry name
      * @param linkFlag             the entry link flag.
      * @param preserveAbsolutePath whether to allow leading slashes or drive letters in the name.
-     *
      * @since 1.5
      */
     public TarArchiveEntry(final String name, final byte linkFlag, final boolean preserveAbsolutePath) {
@@ -1214,7 +1212,6 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * Tests whether this is a Pax header.
      *
      * @return {@code true} if this is a Pax header.
-     *
      * @since 1.1
      */
     public boolean isGlobalPaxHeader() {
@@ -1328,7 +1325,6 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * Tests whether this is a Pax header.
      *
      * @return {@code true} if this is a Pax header.
-     *
      * @since 1.1
      */
     public boolean isPaxHeader() {
@@ -1816,7 +1812,6 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * Sets this entry's link name.
      *
      * @param link the link name to use.
-     *
      * @since 1.1
      */
     public void setLinkName(final String link) {

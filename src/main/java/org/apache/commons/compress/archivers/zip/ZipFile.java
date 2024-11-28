@@ -177,7 +177,6 @@ public class ZipFile implements Closeable {
          * Sets max number of multi archive disks, default is 1 (no multi archive).
          *
          * @param maxNumberOfDisks max number of multi archive disks.
-         *
          * @return {@code this} instance.
          */
         public Builder setMaxNumberOfDisks(final long maxNumberOfDisks) {
@@ -690,7 +689,6 @@ public class ZipFile implements Closeable {
      * Opens the given file for reading, assuming "UTF8" for file names.
      *
      * @param file the archive.
-     *
      * @throws IOException if an error occurs while reading the file.
      * @deprecated Use {@link Builder#get()}.
      */
@@ -823,7 +821,6 @@ public class ZipFile implements Closeable {
      * </p>
      *
      * @param channel the archive.
-     *
      * @throws IOException if an error occurs while reading the file.
      * @since 1.13
      * @deprecated Use {@link Builder#get()}.
@@ -1097,7 +1094,6 @@ public class ZipFile implements Closeable {
      * </p>
      *
      * @return all entries as {@link ZipArchiveEntry} instances
-     *
      * @since 1.1
      */
     public Enumeration<ZipArchiveEntry> getEntriesInPhysicalOrder() {

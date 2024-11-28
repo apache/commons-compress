@@ -411,7 +411,6 @@ public abstract class BandSet {
      * @param count     the number of references to decode
      * @param reference the array of values to use for the references
      * @return Parsed references.
-     *
      * @throws IOException      if a problem occurs during reading from the underlying stream
      * @throws Pack200Exception if a problem occurs with an unexpected value or unsupported Codec
      */
@@ -431,7 +430,6 @@ public abstract class BandSet {
      * @param counts    the numbers of references to decode for each array entry
      * @param reference the array of values to use for the references
      * @return Parsed references.
-     *
      * @throws IOException      if a problem occurs during reading from the underlying stream
      * @throws Pack200Exception if a problem occurs with an unexpected value or unsupported Codec
      */

@@ -25,7 +25,6 @@ package org.apache.commons.compress.archivers.zip;
  * </p>
  *
  * @see <a href="https://www.pkware.com/documents/casestudies/APPNOTE.TXT">PKWARE APPNOTE.TXT, section 4.6.8</a>
- *
  * @NotThreadSafe super-class is not thread-safe
  */
 public class UnicodeCommentExtraField extends AbstractUnicodeExtraField {

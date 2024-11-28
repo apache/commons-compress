@@ -179,7 +179,6 @@ public class ExtraFieldUtils {
      *              data.
      * @return the filled field, will never be {@code null}
      * @throws ZipException if an error occurs
-     *
      * @since 1.19
      */
     public static ZipExtraField fillExtraField(final ZipExtraField ze, final byte[] data, final int off, final int len, final boolean local)
@@ -301,7 +300,6 @@ public class ExtraFieldUtils {
      * @param local           whether data originates from the local file data or the central directory
      * @return an array of ExtraFields
      * @throws ZipException on error
-     *
      * @since 1.19
      */
     public static ZipExtraField[] parse(final byte[] data, final boolean local, final ExtraFieldParsingBehavior parsingBehavior) throws ZipException {
@@ -341,7 +339,6 @@ public class ExtraFieldUtils {
      * @param onUnparseableData what to do if the extra field data cannot be parsed.
      * @return an array of ExtraFields
      * @throws ZipException on error
-     *
      * @since 1.1
      */
     public static ZipExtraField[] parse(final byte[] data, final boolean local, final UnparseableExtraField onUnparseableData) throws ZipException {
@@ -372,7 +369,6 @@ public class ExtraFieldUtils {
      * </p>
      *
      * @param clazz the class to register.
-     *
      * @deprecated Use {@link ZipArchiveInputStream#setExtraFieldSupport} instead
      *             to not leak instances between archives and applications.
      */

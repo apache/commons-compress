@@ -65,7 +65,6 @@ public class XZCompressorInputStream extends CompressorInputStream implements In
      * Creates a new input stream that decompresses XZ-compressed data from the specified input stream. This doesn't support concatenated .xz files.
      *
      * @param inputStream where to read the compressed data
-     *
      * @throws IOException if the input is not in the .xz format, the input is corrupt or truncated, the .xz headers specify options that are not supported by
      *                     this implementation, or the underlying {@code inputStream} throws an exception
      */

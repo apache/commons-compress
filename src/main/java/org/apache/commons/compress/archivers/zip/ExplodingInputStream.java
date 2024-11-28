@@ -33,7 +33,6 @@ import org.apache.commons.io.input.CloseShieldInputStream;
  * The algorithm is described in the ZIP File Format Specification.
  *
  * @see <a href="https://www.pkware.com/documents/casestudies/APPNOTE.TXT">ZIP File Format Specification</a>
- *
  * @since 1.7
  */
 final class ExplodingInputStream extends InputStream implements InputStreamStatistics {

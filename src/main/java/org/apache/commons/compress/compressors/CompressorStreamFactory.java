@@ -207,7 +207,6 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
      * @return type of compressor stream detected
      * @throws CompressorException      if no compressor stream type was detected or if something else went wrong
      * @throws IllegalArgumentException if stream is null or does not support mark
-     *
      * @since 1.14
      */
     public static String detect(final InputStream inputStream) throws CompressorException {
