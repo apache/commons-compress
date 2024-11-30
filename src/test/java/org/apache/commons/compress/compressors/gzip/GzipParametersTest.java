@@ -24,9 +24,9 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.nio.charset.Charset;
 import java.util.zip.Deflater;
 
+import org.apache.commons.io.Charsets;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -53,11 +53,10 @@ public class GzipParametersTest {
         "UTF-16BE  , helloworld, false"
     })
     //@formatter:on
-    public void testIllegalCommentOrFileName(final Charset charset, final String text) {
+    public void testIllegalCommentOrFileName(final String charsetName, final String text) {
         final GzipParameters gzipParameters = new GzipParameters();
-        if (charset != null) {
-            gzipParameters.setFileNameCharset(charset);
-        }
+        // null resets to default value
+        gzipParameters.setFileNameCharset(Charsets.toCharset(charsetName, null));
         assertThrows(IllegalArgumentException.class, () -> gzipParameters.setComment(text));
         assertNull(gzipParameters.getComment());
         assertThrows(IllegalArgumentException.class, () -> gzipParameters.setFilename(text));
@@ -77,11 +76,10 @@ public class GzipParametersTest {
         "UTF-8     , helloéworld"
     })
     //@formatter:on
-    public void testLegalCommentOrFileName(final Charset charset, final String text) {
+    public void testLegalCommentOrFileName(final String charsetName, final String text) {
         final GzipParameters gzipParameters = new GzipParameters();
-        if (charset != null) {
-            gzipParameters.setFileNameCharset(charset);
-        }
+        // null resets to default value
+        gzipParameters.setFileNameCharset(Charsets.toCharset(charsetName, null));
         gzipParameters.setComment(text);
         assertEquals(text, gzipParameters.getComment());
         gzipParameters.setFilename(text);
