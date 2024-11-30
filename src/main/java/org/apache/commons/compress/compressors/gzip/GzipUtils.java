@@ -55,7 +55,7 @@ public class GzipUtils {
     }
 
     /**
-     * Encoding for file name and comments per the <a href="https://tools.ietf.org/html/rfc1952">GZIP File Format Specification</a>.
+     * Charset for file name and comments per the <a href="https://tools.ietf.org/html/rfc1952">GZIP File Format Specification</a>.
      */
     static final Charset GZIP_ENCODING = StandardCharsets.ISO_8859_1;
 

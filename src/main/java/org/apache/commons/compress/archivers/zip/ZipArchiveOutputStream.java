@@ -198,7 +198,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     public static final int STORED = java.util.zip.ZipEntry.STORED;
 
     /**
-     * Default encoding for file names and comment.
+     * Default Charset for file names and comment.
      */
     static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
