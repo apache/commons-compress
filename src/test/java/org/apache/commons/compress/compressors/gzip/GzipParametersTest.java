@@ -52,14 +52,16 @@ public class GzipParametersTest {
     }
 
     @ParameterizedTest
-    @CsvSource({ //@formatter:off
+    //@formatter:off
+    @CsvSource({
         "          , helloworld",
-        "          , helloéworld",
+        "          , helloÃ©world",
         "ISO-8859-1, helloworld",
-        "ISO-8859-1, helloéworld",
+        "ISO-8859-1, helloÃ©world",
         "UTF-8     , helloworld",
-        "UTF-8     , helloéworld",
-    })//@formatter:on
+        "UTF-8     , helloÃ©world"
+    })
+    //@formatter:on
     public void testLegalCommentOrFileName(final String charset, final String text) {
         final GzipParameters p = new GzipParameters();
         if (charset != null) {
@@ -71,12 +73,14 @@ public class GzipParametersTest {
     }
 
     @ParameterizedTest
-    @CsvSource({ //@formatter:off
+    //@formatter:off
+    @CsvSource({
         "          , hello\0world, false",
         "ISO-8859-1, hello\0world, false",
         "UTF-8     , hello\0world, false",
-        "UTF-16BE  , helloworld, false",
-    })//@formatter:on
+        "UTF-16BE  , helloworld, false"
+    })
+    //@formatter:on
     public void testIllegalCommentOrFileName(final String charset, final String text) {
         final GzipParameters p = new GzipParameters();
         if (charset != null) {
