@@ -20,11 +20,15 @@
 package org.apache.commons.compress.compressors.gzip;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.nio.charset.Charset;
 import java.util.zip.Deflater;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 /**
  * Tests {@link GzipParameters}.
@@ -45,5 +49,45 @@ public class GzipParametersTest {
         assertTrue(gzipParameters.toString().contains("UNKNOWN"));
         gzipParameters.setOS(GzipParameters.OS.Z_SYSTEM);
         assertTrue(gzipParameters.toString().contains("Z_SYSTEM"));
+    }
+
+    @ParameterizedTest
+    //@formatter:off
+    @CsvSource({
+        "          , helloworld",
+        "          , helloéworld",
+        "ISO-8859-1, helloworld",
+        "ISO-8859-1, helloéworld",
+        "UTF-8     , helloworld",
+        "UTF-8     , helloéworld"
+    })
+    //@formatter:on
+    public void testLegalCommentOrFileName(final String charset, final String text) {
+        final GzipParameters p = new GzipParameters();
+        if (charset != null) {
+            p.setFileNameCharset(Charset.forName(charset));
+        }
+        p.setComment(text);
+        p.setFilename(text);
+        p.setFileName(text);
+    }
+
+    @ParameterizedTest
+    //@formatter:off
+    @CsvSource({
+        "          , hello\0world, false",
+        "ISO-8859-1, hello\0world, false",
+        "UTF-8     , hello\0world, false",
+        "UTF-16BE  , helloworld, false"
+    })
+    //@formatter:on
+    public void testIllegalCommentOrFileName(final String charset, final String text) {
+        final GzipParameters p = new GzipParameters();
+        if (charset != null) {
+            p.setFileNameCharset(Charset.forName(charset));
+        }
+        assertThrows(IllegalArgumentException.class, () -> p.setComment(text));
+        assertThrows(IllegalArgumentException.class, () -> p.setFilename(text));
+        assertThrows(IllegalArgumentException.class, () -> p.setFileName(text));
     }
 }

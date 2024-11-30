@@ -25,7 +25,8 @@ import java.time.Instant;
 import java.util.zip.Deflater;
 
 import org.apache.commons.io.Charsets;
-
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Parameters for the GZIP compressor.
@@ -298,6 +299,13 @@ public class GzipParameters {
     private int bufferSize = 512;
     private int deflateStrategy = Deflater.DEFAULT_STRATEGY;
 
+    private String requireNonNulByte(final String text) {
+        if (StringUtils.isNotEmpty(text) && ArrayUtils.contains(text.getBytes(fileNameCharset), (byte) 0)) {
+            throw new IllegalArgumentException("String encoded in Charset '" + fileNameCharset + "' contains the nul byte 0 which is not supported in gzip.");
+        }
+        return text;
+    }
+
     /**
      * Gets size of the buffer used to retrieve compressed data.
      *
@@ -448,9 +456,10 @@ public class GzipParameters {
      * Sets an arbitrary user-defined comment.
      *
      * @param comment a user-defined comment.
+     * @throws IllegalArgumentException if the encoded bytes would contain a nul byte '\0' reserved for gzip field termination.
      */
     public void setComment(final String comment) {
-        this.comment = comment;
+        this.comment = requireNonNulByte(comment);
     }
 
     /**
@@ -495,20 +504,22 @@ public class GzipParameters {
      * Sets the name of the compressed file.
      *
      * @param fileName the name of the file without the directory path
+     * @throws IllegalArgumentException if the encoded bytes would contain a nul byte '\0' reserved for gzip field termination.
      * @deprecated Use {@link #setFileName(String)}.
      */
     @Deprecated
     public void setFilename(final String fileName) {
-        this.fileName = fileName;
+        setFileName(fileName);
     }
 
     /**
      * Sets the name of the compressed file.
      *
      * @param fileName the name of the file without the directory path
+     * @throws IllegalArgumentException if the encoded bytes would contain a nul byte '\0' reserved for gzip field termination.
      */
     public void setFileName(final String fileName) {
-        this.fileName = fileName;
+        this.fileName = requireNonNulByte(fileName);
     }
 
     /**
