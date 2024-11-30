@@ -26,7 +26,7 @@ import java.util.zip.Deflater;
 
 import org.apache.commons.io.Charsets;
 import org.apache.commons.lang3.ArrayUtils;
-
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Parameters for the GZIP compressor.
@@ -300,11 +300,8 @@ public class GzipParameters {
     private int deflateStrategy = Deflater.DEFAULT_STRATEGY;
 
     private String requireNonNulByte(final String text) {
-        if (text != null && text.length() > 0) {
-            if (ArrayUtils.contains(text.getBytes(fileNameCharset), (byte) 0)) {
-                throw new IllegalArgumentException(
-                        "String encoded in Charset '" + fileNameCharset + "' contains the nul byte 0 which is not supported in gzip.");
-            }
+        if (StringUtils.isNotEmpty(text) && ArrayUtils.contains(text.getBytes(fileNameCharset), (byte) 0)) {
+            throw new IllegalArgumentException("String encoded in Charset '" + fileNameCharset + "' contains the nul byte 0 which is not supported in gzip.");
         }
         return text;
     }
