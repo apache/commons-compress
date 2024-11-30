@@ -299,13 +299,6 @@ public class GzipParameters {
     private int bufferSize = 512;
     private int deflateStrategy = Deflater.DEFAULT_STRATEGY;
 
-    private String requireNonNulByte(final String text) {
-        if (StringUtils.isNotEmpty(text) && ArrayUtils.contains(text.getBytes(fileNameCharset), (byte) 0)) {
-            throw new IllegalArgumentException("String encoded in Charset '" + fileNameCharset + "' contains the nul byte 0 which is not supported in gzip.");
-        }
-        return text;
-    }
-
     /**
      * Gets size of the buffer used to retrieve compressed data.
      *
@@ -382,7 +375,6 @@ public class GzipParameters {
         return fileName;
     }
 
-
     /**
      * Gets the Charset to use for writing file names and comments.
      * <p>
@@ -395,6 +387,7 @@ public class GzipParameters {
     public Charset getFileNameCharset() {
         return fileNameCharset;
     }
+
 
     /**
      * Gets the most recent modification time (MTIME) of the original file being compressed.
@@ -437,6 +430,13 @@ public class GzipParameters {
      */
     public OS getOS() {
         return operatingSystem;
+    }
+
+    private String requireNonNulByte(final String text) {
+        if (StringUtils.isNotEmpty(text) && ArrayUtils.contains(text.getBytes(fileNameCharset), (byte) 0)) {
+            throw new IllegalArgumentException("String encoded in Charset '" + fileNameCharset + "' contains the nul byte 0 which is not supported in gzip.");
+        }
+        return text;
     }
 
     /**

@@ -20,6 +20,7 @@
 package org.apache.commons.compress.compressors.gzip;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -43,12 +44,26 @@ public class GzipParametersTest {
         assertEquals(Deflater.HUFFMAN_ONLY, gzipParameters.getDeflateStrategy());
     }
 
-    @Test
-    public void testToString() {
+    @ParameterizedTest
+    //@formatter:off
+    @CsvSource({
+        "          , hello\0world, false",
+        "ISO-8859-1, hello\0world, false",
+        "UTF-8     , hello\0world, false",
+        "UTF-16BE  , helloworld, false"
+    })
+    //@formatter:on
+    public void testIllegalCommentOrFileName(final Charset charset, final String text) {
         final GzipParameters gzipParameters = new GzipParameters();
-        assertTrue(gzipParameters.toString().contains("UNKNOWN"));
-        gzipParameters.setOS(GzipParameters.OS.Z_SYSTEM);
-        assertTrue(gzipParameters.toString().contains("Z_SYSTEM"));
+        if (charset != null) {
+            gzipParameters.setFileNameCharset(charset);
+        }
+        assertThrows(IllegalArgumentException.class, () -> gzipParameters.setComment(text));
+        assertNull(gzipParameters.getComment());
+        assertThrows(IllegalArgumentException.class, () -> gzipParameters.setFilename(text));
+        assertNull(gzipParameters.getFileName());
+        assertThrows(IllegalArgumentException.class, () -> gzipParameters.setFileName(text));
+        assertNull(gzipParameters.getFileName());
     }
 
     @ParameterizedTest
@@ -62,32 +77,24 @@ public class GzipParametersTest {
         "UTF-8     , helloéworld"
     })
     //@formatter:on
-    public void testLegalCommentOrFileName(final String charset, final String text) {
-        final GzipParameters p = new GzipParameters();
+    public void testLegalCommentOrFileName(final Charset charset, final String text) {
+        final GzipParameters gzipParameters = new GzipParameters();
         if (charset != null) {
-            p.setFileNameCharset(Charset.forName(charset));
+            gzipParameters.setFileNameCharset(charset);
         }
-        p.setComment(text);
-        p.setFilename(text);
-        p.setFileName(text);
+        gzipParameters.setComment(text);
+        assertEquals(text, gzipParameters.getComment());
+        gzipParameters.setFilename(text);
+        assertEquals(text, gzipParameters.getFileName());
+        gzipParameters.setFileName(text);
+        assertEquals(text, gzipParameters.getFileName());
     }
 
-    @ParameterizedTest
-    //@formatter:off
-    @CsvSource({
-        "          , hello\0world, false",
-        "ISO-8859-1, hello\0world, false",
-        "UTF-8     , hello\0world, false",
-        "UTF-16BE  , helloworld, false"
-    })
-    //@formatter:on
-    public void testIllegalCommentOrFileName(final String charset, final String text) {
-        final GzipParameters p = new GzipParameters();
-        if (charset != null) {
-            p.setFileNameCharset(Charset.forName(charset));
-        }
-        assertThrows(IllegalArgumentException.class, () -> p.setComment(text));
-        assertThrows(IllegalArgumentException.class, () -> p.setFilename(text));
-        assertThrows(IllegalArgumentException.class, () -> p.setFileName(text));
+    @Test
+    public void testToString() {
+        final GzipParameters gzipParameters = new GzipParameters();
+        assertTrue(gzipParameters.toString().contains("UNKNOWN"));
+        gzipParameters.setOS(GzipParameters.OS.Z_SYSTEM);
+        assertTrue(gzipParameters.toString().contains("Z_SYSTEM"));
     }
 }
