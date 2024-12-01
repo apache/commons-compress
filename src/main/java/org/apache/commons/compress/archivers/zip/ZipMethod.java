@@ -96,21 +96,21 @@ public enum ZipMethod {
     /**
      * Compression Method 9 for enhanced deflate.
      *
-     * @see <a href="https://www.winzip.com/wz54.htm">https://www.winzip.com/wz54.htm</a>
+     * @see <a href="https://www.pkware.com/documents/casestudies/APPNOTE.TXT">Explanation of fields: compression method: (2 bytes)</a>
      */
     ENHANCED_DEFLATED(9),
 
     /**
      * PKWARE Data Compression Library Imploding.
      *
-     * @see <a href="https://www.winzip.com/wz54.htm">https://www.winzip.com/wz54.htm</a>
+     * @see <a href="https://www.pkware.com/documents/casestudies/APPNOTE.TXT">Explanation of fields: compression method: (2 bytes)</a>
      */
     PKWARE_IMPLODING(10),
 
     /**
      * Compression Method 12 for bzip2.
      *
-     * @see <a href="https://www.winzip.com/wz54.htm">https://www.winzip.com/wz54.htm</a>
+     * @see <a href="https://www.pkware.com/documents/casestudies/APPNOTE.TXT">Explanation of fields: compression method: (2 bytes)</a>
      */
     BZIP2(12),
 
@@ -118,42 +118,42 @@ public enum ZipMethod {
      * Compression Method 14 for LZMA.
      *
      * @see <a href="https://www.7-zip.org/sdk.html">https://www.7-zip.org/sdk.html</a>
-     * @see <a href="https://www.winzip.com/wz54.htm">https://www.winzip.com/wz54.htm</a>
+     * @see <a href="https://www.pkware.com/documents/casestudies/APPNOTE.TXT">Explanation of fields: compression method: (2 bytes)</a>
      */
     LZMA(14),
 
     /**
      * Compression Method 95 for XZ.
      *
-     * @see <a href="https://www.winzip.com/wz54.htm">https://www.winzip.com/wz54.htm</a>
+     * @see <a href="https://www.pkware.com/documents/casestudies/APPNOTE.TXT">Explanation of fields: compression method: (2 bytes)</a>
      */
     XZ(95),
 
     /**
      * Compression Method 96 for Jpeg compression.
      *
-     * @see <a href="https://www.winzip.com/wz54.htm">https://www.winzip.com/wz54.htm</a>
+     * @see <a href="https://www.pkware.com/documents/casestudies/APPNOTE.TXT">Explanation of fields: compression method: (2 bytes)</a>
      */
     JPEG(96),
 
     /**
      * Compression Method 97 for WavPack.
      *
-     * @see <a href="https://www.winzip.com/wz54.htm">https://www.winzip.com/wz54.htm</a>
+     * @see <a href="https://www.pkware.com/documents/casestudies/APPNOTE.TXT">Explanation of fields: compression method: (2 bytes)</a>
      */
     WAVPACK(97),
 
     /**
      * Compression Method 98 for PPMd.
      *
-     * @see <a href="https://www.winzip.com/wz54.htm">https://www.winzip.com/wz54.htm</a>
+     * @see <a href="https://www.pkware.com/documents/casestudies/APPNOTE.TXT">Explanation of fields: compression method: (2 bytes)</a>
      */
     PPMD(98),
 
     /**
      * Compression Method 99 for AES encryption.
      *
-     * @see <a href="https://www.winzip.com/wz54.htm">https://www.winzip.com/wz54.htm</a>
+     * @see <a href="https://www.pkware.com/documents/casestudies/APPNOTE.TXT">Explanation of fields: compression method: (2 bytes)</a>
      */
     AES_ENCRYPTED(99),
 
