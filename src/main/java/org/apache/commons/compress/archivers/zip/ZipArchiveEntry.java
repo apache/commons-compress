@@ -936,9 +936,9 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     }
 
     /**
-     * Gets the UNIX permission.
+     * Gets the Unix permission.
      *
-     * @return the unix permissions
+     * @return the Unix permissions.
      */
     public int getUnixMode() {
         return platform != PLATFORM_UNIX ? 0 : (int) (getExternalAttributes() >> SHORT_SHIFT & SHORT_MASK);
@@ -1045,10 +1045,10 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     }
 
     /**
-     * Returns true if this entry represents a unix symlink, in which case the entry's content contains the target path for the symlink.
+     * Returns true if this entry represents a Unix symlink, in which case the entry's content contains the target path for the symlink.
      *
      * @since 1.5
-     * @return true if the entry represents a unix symlink, false otherwise.
+     * @return true if the entry represents a Unix symlink, false otherwise.
      */
     public boolean isUnixSymlink() {
         return (getUnixMode() & UnixStat.FILE_TYPE_FLAG) == UnixStat.LINK_FLAG;
