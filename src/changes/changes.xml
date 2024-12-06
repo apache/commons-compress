@@ -17,7 +17,6 @@
  specific language governing permissions and limitations
  under the License.
 -->
-
 <!--
 This file is also used by the maven-changes-plugin to generate the release notes.
 Useful ways of finding items to add to this file are:
@@ -36,7 +35,6 @@ mvn changes:announcement-generate -Prelease-notes [-Dchanges.version=m.n]
 
 The <action> type attribute can be add,update,fix,remove.
 -->
-
 <document xmlns="http://maven.apache.org/changes/1.0.0"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
