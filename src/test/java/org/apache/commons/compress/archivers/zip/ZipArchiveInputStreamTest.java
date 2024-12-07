@@ -726,7 +726,7 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
         // Reads the central directory
         try (ZipFile zipFile = ZipFile.builder().setFile("target/zipWithLinks.zip").get()) {
             assertTrue(zipFile.getEntry("link").isUnixSymlink(), "'link' detected but it's not sym link");
-            assertFalse(zipFile.getEntry("original").isUnixSymlink(), "'link' detected but it's not sym link");
+            assertFalse(zipFile.getEntry("original").isUnixSymlink(), "'original' detected but it's not sym link");
         }
         // Doesn't reads the central directory
         try (ZipArchiveInputStream zipInputStream = new ZipArchiveInputStream(new FileInputStream("target/zipWithLinks.zip"))) {
