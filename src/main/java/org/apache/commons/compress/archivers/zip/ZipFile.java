@@ -134,6 +134,9 @@ public class ZipFile implements Closeable {
         private boolean ignoreLocalFileHeader;
         private long maxNumberOfDisks = 1;
 
+        /**
+         * Constructs a new instance.
+         */
         public Builder() {
             setCharset(DEFAULT_CHARSET);
             setCharsetDefault(DEFAULT_CHARSET);
