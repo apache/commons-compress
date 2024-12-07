@@ -26,10 +26,10 @@ import org.apache.commons.io.file.attribute.FileTimes;
 /**
  * Utility class for handling time-related types and conversions.
  * <p>
- * Understanding UNIX vs NTFS timestamps:
+ * Understanding Unix vs NTFS timestamps:
  * </p>
  * <ul>
- * <li>A <a href="https://en.wikipedia.org/wiki/Unix_time">UNIX timestamp</a> is a primitive long starting at the UNIX Epoch on January 1st, 1970 at Coordinated
+ * <li>A <a href="https://en.wikipedia.org/wiki/Unix_time">Unix timestamp</a> is a primitive long starting at the Unix Epoch on January 1st, 1970 at Coordinated
  * Universal Time (UTC)</li>
  * <li>An <a href="https://learn.microsoft.com/en-us/windows/win32/sysinfo/file-times">NTFS timestamp</a> is a file time is a 64-bit value that represents the
  * number of 100-nanosecond intervals that have elapsed since 12:00 A.M. January 1, 1601 Coordinated Universal Time (UTC).</li>
@@ -46,20 +46,20 @@ public final class TimeUtils {
      * <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/ms724290%28v=vs.85%29.aspx">Windows File Times</a>
      * <p>
      * A file time is a 64-bit value that represents the number of 100-nanosecond intervals that have elapsed since 12:00 A.M. January 1, 1601 Coordinated
-     * Universal Time (UTC). This is the offset of Windows time 0 to UNIX epoch in 100-nanosecond intervals.
+     * Universal Time (UTC). This is the offset of Windows time 0 to Unix epoch in 100-nanosecond intervals.
      * </p>
      */
     static final long WINDOWS_EPOCH_OFFSET = -116444736000000000L;
 
     /**
-     * Tests whether a FileTime can be safely represented in the standard UNIX time.
+     * Tests whether a FileTime can be safely represented in the standard Unix time.
      *
      * <p>
      * TODO ? If the FileTime is null, this method always returns true.
      * </p>
      *
      * @param time the FileTime to evaluate, can be null.
-     * @return true if the time exceeds the minimum or maximum UNIX time, false otherwise.
+     * @return true if the time exceeds the minimum or maximum Unix time, false otherwise.
      * @deprecated use {@link FileTimes#isUnixTime(FileTime)}
      */
     @Deprecated
@@ -68,10 +68,10 @@ public final class TimeUtils {
     }
 
     /**
-     * Tests whether a given number of seconds (since Epoch) can be safely represented in the standard UNIX time.
+     * Tests whether a given number of seconds (since Epoch) can be safely represented in the standard Unix time.
      *
      * @param seconds the number of seconds (since Epoch) to evaluate.
-     * @return true if the time can be represented in the standard UNIX time, false otherwise.
+     * @return true if the time can be represented in the standard Unix time, false otherwise.
      * @deprecated Use {@link FileTimes#isUnixTime(long)}
      */
     @Deprecated
@@ -168,10 +168,10 @@ public final class TimeUtils {
     }
 
     /**
-     * Converts {@link FileTime} to standard UNIX time.
+     * Converts {@link FileTime} to standard Unix time.
      *
      * @param fileTime the original FileTime.
-     * @return the UNIX timestamp.
+     * @return the Unix timestamp.
      */
     public static long toUnixTime(final FileTime fileTime) {
         return FileTimes.toUnixTime(fileTime);
@@ -189,9 +189,9 @@ public final class TimeUtils {
     }
 
     /**
-     * Converts standard UNIX time (in seconds, UTC/GMT) to {@link FileTime}.
+     * Converts standard Unix time (in seconds, UTC/GMT) to {@link FileTime}.
      *
-     * @param time UNIX timestamp (in seconds, UTC/GMT).
+     * @param time Unix timestamp (in seconds, UTC/GMT).
      * @return the corresponding FileTime.
      * @deprecated Use {@link FileTimes#fromUnixTime(long)}
      */

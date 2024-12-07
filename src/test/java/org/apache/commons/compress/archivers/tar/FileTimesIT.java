@@ -371,7 +371,7 @@ public class FileTimesIT extends AbstractTest {
         }
     }
 
-    // Old UNIX V7 tar format
+    // Old Unix V7 tar format
     @Test
     public void testReadTimeFromTarV7() throws Exception {
         final String file = "COMPRESS-612/test-times-v7.tar";

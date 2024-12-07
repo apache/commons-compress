@@ -134,7 +134,7 @@ public class ArjArchiveEntry implements ArchiveEntry {
      * <p>
      * Note the interpretation of time is different depending on the HostOS that has created the archive. While an OS that is {@link #isHostOsUnix considered to
      * be Unix} stores time in a time zone independent manner, other platforms only use the local time. I.e. if an archive has been created at midnight UTC on a
-     * machine in time zone UTC this method will return midnight regardless of time zone if the archive has been created on a non-UNIX system and a time taking
+     * machine in time zone UTC this method will return midnight regardless of time zone if the archive has been created on a non-Unix system and a time taking
      * the current time zone into account if the archive has been created on Unix.
      * </p>
      *
@@ -191,12 +191,12 @@ public class ArjArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * File mode of this entry as UNIX stat value.
+     * File mode of this entry as Unix stat value.
      *
      * <p>
-     * Will only be non-zero of the host os was UNIX.
+     * Will only be non-zero of the host os was Unix.
      *
-     * @return the UNIX mode
+     * @return the Unix mode
      */
     public int getUnixMode() {
         return isHostOsUnix() ? getMode() : 0;
@@ -219,9 +219,9 @@ public class ArjArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Is the operating system the archive has been created on one that is considered a UNIX OS by arj?
+     * Is the operating system the archive has been created on one that is considered a Unix OS by arj?
      *
-     * @return whether the operating system the archive has been created on is considered a UNIX OS by arj
+     * @return whether the operating system the archive has been created on is considered a Unix OS by arj
      */
     public boolean isHostOsUnix() {
         return getHostOs() == HostOs.UNIX || getHostOs() == HostOs.NEXT;

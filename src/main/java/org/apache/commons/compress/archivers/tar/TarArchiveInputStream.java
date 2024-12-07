@@ -41,7 +41,7 @@ import org.apache.commons.compress.utils.BoundedInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 
 /**
- * The TarInputStream reads a UNIX tar archive as an InputStream. methods are provided to position at each successive entry in the archive, and the read each
+ * The TarInputStream reads a Unix tar archive as an InputStream. methods are provided to position at each successive entry in the archive, and the read each
  * entry as a normal input stream using read().
  *
  * @NotThreadSafe

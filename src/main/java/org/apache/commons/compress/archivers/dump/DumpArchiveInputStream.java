@@ -36,7 +36,7 @@ import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.IOUtils;
 
 /**
- * The DumpArchiveInputStream reads a UNIX dump archive as an InputStream. Methods are provided to position at each successive entry in the archive, and the
+ * The DumpArchiveInputStream reads a Unix dump archive as an InputStream. Methods are provided to position at each successive entry in the archive, and the
  * read each entry as a normal input stream using read().
  * <p>
  * There doesn't seem to exist a hint on the encoding of string values in any piece documentation. Given the main purpose of dump/restore is backing up a system

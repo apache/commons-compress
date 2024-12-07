@@ -149,7 +149,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
     public static final String SNAPPY_RAW = "snappy-raw";
 
     /**
-     * Constant (value {@value}) used to identify the traditional UNIX compress method. Not supported as an output stream type.
+     * Constant (value {@value}) used to identify the traditional Unix compress method. Not supported as an output stream type.
      *
      * @since 1.7
      */

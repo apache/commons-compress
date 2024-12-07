@@ -1402,9 +1402,9 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     }
 
     /**
-     * Sets the platform (UNIX or FAT).
+     * Sets the platform (Unix or FAT).
      *
-     * @param platform an {@code int} value - 0 is FAT, 3 is UNIX
+     * @param platform an {@code int} value - 0 is FAT, 3 is Unix
      */
     protected void setPlatform(final int platform) {
         this.platform = platform;
@@ -1473,7 +1473,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     }
 
     /**
-     * Sets UNIX permissions in a way that is understood by Info-Zip's unzip command.
+     * Sets Unix permissions in a way that is understood by Info-Zip's unzip command.
      *
      * @param mode an {@code int} value
      */

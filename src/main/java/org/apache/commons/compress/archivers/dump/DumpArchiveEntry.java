@@ -130,7 +130,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * // copied from the FreeBSD 2.0 &lt;ufs/ufs/dinode.h&gt; include file
  * //
  * struct new_bsd_inode {
- *   __u16       di_mode;           // file type, standard UNIX permissions
+ *   __u16       di_mode;           // file type, standard Unix permissions
  *   __s16       di_nlink;          // number of hard links to file.
  *   union {
  *      __u16       oldids[2];
