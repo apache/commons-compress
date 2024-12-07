@@ -52,7 +52,6 @@ import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayFill;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -725,7 +724,7 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
             zipOutputStream.closeArchiveEntry();
         }
         // Reads the central directory
-        try (ZipFile zipFile = new ZipFile.Builder().setFile("target/zipWithLinks.zip").get()) {
+        try (ZipFile zipFile = ZipFile.builder().setFile("target/zipWithLinks.zip").get()) {
             assertTrue(zipFile.getEntry("link").isUnixSymlink(), "'link' detected but it's not sym link");
             assertFalse(zipFile.getEntry("original").isUnixSymlink(), "'link' detected but it's not sym link");
         }
