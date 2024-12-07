@@ -91,15 +91,15 @@ public class ZipUtilTest {
         final BigInteger big2 = BigInteger.valueOf(Long.MAX_VALUE);
         final BigInteger big3 = BigInteger.valueOf(Long.MIN_VALUE);
 
-        assertEquals(1L, ZipUtil.bigToLong(big1));
-        assertEquals(Long.MAX_VALUE, ZipUtil.bigToLong(big2));
-        assertEquals(Long.MIN_VALUE, ZipUtil.bigToLong(big3));
+        assertEquals(1L, ZipUtil.toLong(big1));
+        assertEquals(Long.MAX_VALUE, ZipUtil.toLong(big2));
+        assertEquals(Long.MIN_VALUE, ZipUtil.toLong(big3));
 
         final BigInteger big4 = big2.add(big1);
-        assertThrows(IllegalArgumentException.class, () -> ZipUtil.bigToLong(big4), "Should have thrown IllegalArgumentException");
+        assertThrows(IllegalArgumentException.class, () -> ZipUtil.toLong(big4), "Should have thrown IllegalArgumentException");
 
         final BigInteger big5 = big3.subtract(big1);
-        assertThrows(IllegalArgumentException.class, () -> ZipUtil.bigToLong(big5),
+        assertThrows(IllegalArgumentException.class, () -> ZipUtil.toLong(big5),
                 "ZipUtil.bigToLong(BigInteger) should have thrown IllegalArgumentException");
     }
 

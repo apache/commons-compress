@@ -174,7 +174,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
      * @return the GID value.
      */
     public long getGID() {
-        return ZipUtil.bigToLong(gid);
+        return ZipUtil.toLong(gid);
     }
 
     /**
@@ -257,7 +257,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
      * @return the UID value.
      */
     public long getUID() {
-        return ZipUtil.bigToLong(uid);
+        return ZipUtil.toLong(uid);
     }
 
     @Override

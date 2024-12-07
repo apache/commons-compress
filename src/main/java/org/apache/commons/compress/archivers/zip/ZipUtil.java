@@ -113,19 +113,6 @@ public abstract class ZipUtil {
     }
 
     /**
-     * Converts a BigInteger into a long, and blows up (NumberFormatException) if the BigInteger is too big.
-     *
-     * @param big BigInteger to convert.
-     * @return long representation of the BigInteger.
-     */
-    static long bigToLong(final BigInteger big) {
-        if (big.bitLength() <= 63) { // bitLength() doesn't count the sign bit.
-            return big.longValue();
-        }
-        throw new NumberFormatException("The BigInteger cannot fit inside a 64 bit java long: [" + big + "]");
-    }
-
-    /**
      * Tests if this library is able to read or write the given entry.
      */
     static boolean canHandleEntryData(final ZipArchiveEntry entry) {
@@ -387,6 +374,20 @@ public abstract class ZipUtil {
      */
     public static void toDosTime(final long t, final byte[] buf, final int offset) {
         ZipLong.putLong(javaToDosTime(t), buf, offset);
+    }
+
+    /**
+     * Converts a BigInteger to a long, and throws a NumberFormatException if the BigInteger is too big.
+     *
+     * @param big BigInteger to convert.
+     * @return {@code BigInteger} converted to a {@code long}.
+     */
+    static long toLong(final BigInteger big) {
+        try {
+            return big.longValueExact();
+        } catch (final ArithmeticException e) {
+            throw new NumberFormatException("The BigInteger cannot fit inside a 64 bit java long: [" + big + "]");
+        }
     }
 
     /**
