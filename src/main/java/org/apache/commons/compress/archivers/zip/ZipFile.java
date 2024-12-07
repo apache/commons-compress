@@ -577,6 +577,40 @@ public class ZipFile implements Closeable {
     }
 
     /**
+     * Converts a raw version made by int to a <a href="https://pkwaredownloads.blob.core.windows.net/pkware-general/Documentation/APPNOTE_6.2.0.TXT">platform
+     * code</a>.
+     * <ul>
+     * <li>0 - MS-DOS and OS/2 (FAT / VFAT / FAT32 file systems)</li>
+     * <li>1 - Amiga</li>
+     * <li>2 - OpenVMS</li>
+     * <li>3 - Unix</li>
+     * <li>4 - VM/CMS</li>
+     * <li>5 - Atari ST</li>
+     * <li>6 - OS/2 H.P.F.S.</li>
+     * <li>7 - Macintosh</li>
+     * <li>8 - Z-System</li>
+     * <li>9 - CP/M</li>
+     * <li>10 - Windows NTFS</li>
+     * <li>11 - MVS (OS/390 - Z/OS)</li>
+     * <li>12 - VSE</li>
+     * <li>13 - Acorn Risc</li>
+     * <li>14 - VFAT</li>
+     * <li>15 - alternate MVS</li>
+     * <li>16 - BeOS</li>
+     * <li>17 - Tandem</li>
+     * <li>18 - OS/400</li>
+     * <li>19 - OS/X (Darwin)</li>
+     * <li>20 thru 255 - unused</li>
+     * </ul>
+     *
+     * @param versionMadeBy version/
+     * @return a platform code.
+     */
+    static int toPlatform(final int versionMadeBy) {
+        return versionMadeBy >> BYTE_SHIFT & NIBLET_MASK;
+    }
+
+    /**
      * Searches the archive backwards from minDistance to maxDistance for the given signature, positions the RandomaccessFile right at the signature if it has
      * been found.
      */
@@ -1399,7 +1433,7 @@ public class ZipFile implements Closeable {
         final int versionMadeBy = ZipShort.getValue(cfhBuf, off);
         off += ZipConstants.SHORT;
         ze.setVersionMadeBy(versionMadeBy);
-        ze.setPlatform(versionMadeBy >> BYTE_SHIFT & NIBLET_MASK);
+        ze.setPlatform(toPlatform(versionMadeBy));
 
         ze.setVersionRequired(ZipShort.getValue(cfhBuf, off));
         off += ZipConstants.SHORT; // version required

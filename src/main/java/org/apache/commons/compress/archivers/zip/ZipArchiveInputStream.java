@@ -680,13 +680,13 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
             }
             throw new ZipException(String.format("Unexpected record signature: 0x%x", sig.getValue()));
         }
-
+        // off: go past the signature
         int off = WORD;
         current = new CurrentEntry();
-
+        // get version
         final int versionMadeBy = ZipShort.getValue(lfhBuf, off);
         off += SHORT;
-        current.entry.setPlatform(versionMadeBy >> ZipFile.BYTE_SHIFT & ZipFile.NIBLET_MASK);
+        current.entry.setPlatform(ZipFile.toPlatform(versionMadeBy));
 
         final GeneralPurposeBit gpFlag = GeneralPurposeBit.parse(lfhBuf, off);
         final boolean hasUTF8Flag = gpFlag.usesUTF8ForNames();
