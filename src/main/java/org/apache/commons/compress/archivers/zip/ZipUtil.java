@@ -307,12 +307,11 @@ public abstract class ZipUtil {
      * @param b byte to convert to int
      * @return int representation of the provided byte
      * @since 1.5
+     * @deprecated Use {@link Byte#toUnsignedInt(byte)}.
      */
+    @Deprecated
     public static int signedByteToUnsignedInt(final byte b) {
-        if (b >= 0) {
-            return b;
-        }
-        return 256 + b;
+        return Byte.toUnsignedInt(b);
     }
 
     /**

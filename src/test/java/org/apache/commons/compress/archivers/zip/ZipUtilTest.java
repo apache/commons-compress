@@ -248,7 +248,7 @@ public class ZipUtilTest {
         int expectedVal = 128;
         for (int i = Byte.MIN_VALUE; i <= Byte.MAX_VALUE; i++) {
             final byte b = (byte) i;
-            assertEquals(expectedVal, ZipUtil.signedByteToUnsignedInt(b));
+            assertEquals(expectedVal, Byte.toUnsignedInt(b));
             expectedVal++;
             if (expectedVal == 256) {
                 expectedVal = 0;
