@@ -598,7 +598,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     /**
      * Writes all necessary data for this entry.
      *
-     * @param phased This entry is second phase of a 2-phase ZIP creation, size, compressed size and crc are known in ZipArchiveEntry
+     * @param phased This entry is second phase of a 2-phase ZIP creation, size, compressed size and CRC are known in ZipArchiveEntry
      * @throws IOException            on error
      * @throws Zip64RequiredException if the entry's uncompressed or compressed size exceeds 4 GByte and {@link #setUseZip64} is {@link Zip64Mode#Never}.
      */
@@ -1181,7 +1181,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * to complete the process.
      *
      * @param archiveEntry The archiveEntry
-     * @param phased       If true size, compressedSize and crc required to be known up-front in the archiveEntry
+     * @param phased       If true size, compressedSize and CRC required to be known up-front in the archiveEntry
      * @throws ClassCastException     if entry is not an instance of ZipArchiveEntry
      * @throws Zip64RequiredException if the entry's uncompressed or compressed size is known to exceed 4 GByte and {@link #setUseZip64} is
      *                                {@link Zip64Mode#Never}.
@@ -1707,7 +1707,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
 
         final byte[] localHeader = createLocalFileHeader(ze, name, encodable, phased, localHeaderStart);
         metaData.put(ze, new EntryMetaData(localHeaderStart, usesDataDescriptor(ze.getMethod(), phased)));
-        entry.localDataStart = localHeaderStart + LFH_CRC_OFFSET; // At crc offset
+        entry.localDataStart = localHeaderStart + LFH_CRC_OFFSET; // At CRC offset
         writeCounted(localHeader);
         entry.dataStart = streamCompressor.getTotalBytesWritten();
     }

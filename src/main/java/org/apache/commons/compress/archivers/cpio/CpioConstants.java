@@ -29,7 +29,7 @@ public interface CpioConstants {
     /** Magic number of a cpio entry in the new format */
     String MAGIC_NEW = "070701";
 
-    /** Magic number of a cpio entry in the new format with crc */
+    /** Magic number of a cpio entry in the new format with CRC */
     String MAGIC_NEW_CRC = "070702";
 
     /** Magic number of a cpio entry in the old ascii format */

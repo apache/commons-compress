@@ -30,7 +30,7 @@ import java.util.zip.ZipEntry;
 import org.apache.commons.compress.parallel.ScatterGatherBackingStore;
 
 /**
- * Encapsulates a {@link Deflater} and crc calculator, handling multiple types of output streams. Currently {@link java.util.zip.ZipEntry#DEFLATED} and
+ * Encapsulates a {@link Deflater} and CRC calculator, handling multiple types of output streams. Currently {@link java.util.zip.ZipEntry#DEFLATED} and
  * {@link java.util.zip.ZipEntry#STORED} are the only supported compression methods.
  *
  * @since 1.10
