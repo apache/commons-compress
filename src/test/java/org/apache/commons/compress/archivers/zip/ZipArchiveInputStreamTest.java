@@ -30,6 +30,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -50,6 +52,7 @@ import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayFill;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -703,6 +706,60 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
         }
     }
 
+    /**
+     * Tests COMPRESS-689.
+     */
+    @Test
+    public void testWriteZipWithLinks() throws IOException {
+        try (OutputStream output = new FileOutputStream("target/zipWithLinks.zip");
+                ZipArchiveOutputStream zipOutputStream = new ZipArchiveOutputStream(output)) {
+            zipOutputStream.putArchiveEntry(new ZipArchiveEntry("original"));
+            zipOutputStream.write("original content".getBytes());
+            zipOutputStream.closeArchiveEntry();
+            final ZipArchiveEntry entry = new ZipArchiveEntry("link");
+            entry.setUnixMode(UnixStat.LINK_FLAG | 0444);
+            assertEquals(ZipArchiveEntry.PLATFORM_UNIX, entry.getPlatform());
+            assertTrue(entry.isUnixSymlink());
+            zipOutputStream.putArchiveEntry(entry);
+            zipOutputStream.write("original".getBytes());
+            zipOutputStream.closeArchiveEntry();
+        }
+        // Reads the central directory
+        try (ZipFile zipFile = new ZipFile.Builder().setFile("target/zipWithLinks.zip").get()) {
+            assertTrue(zipFile.getEntry("link").isUnixSymlink(), "'link' detected but it's not sym link");
+            assertFalse(zipFile.getEntry("original").isUnixSymlink(), "'link' detected but it's not sym link");
+        }
+        // Doesn't reads the central directory
+        try (ZipArchiveInputStream zipInputStream = new ZipArchiveInputStream(new FileInputStream("target/zipWithLinks.zip"))) {
+            ZipArchiveEntry entry;
+            int entriesCount = 0;
+            while ((entry = zipInputStream.getNextEntry()) != null) {
+                if ("link".equals(entry.getName())) {
+                    // This information is only set in the central directory
+                    // assertTrue(entry.isUnixSymlink(), "'link' detected but it's not sym link");
+                } else {
+                    assertFalse(entry.isUnixSymlink(), "'original' detected but it's sym link and should be regular file");
+                }
+                entriesCount++;
+            }
+            assertEquals(2, entriesCount);
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = { true, false })
+    public void testZipInputStream(final boolean allowStoredEntriesWithDataDescriptor) {
+        try (ZipArchiveInputStream zIn = new ZipArchiveInputStream(Files.newInputStream(Paths.get("src/test/resources/COMPRESS-647/test.zip")),
+                StandardCharsets.UTF_8.name(), false, allowStoredEntriesWithDataDescriptor)) {
+            ZipArchiveEntry zae = zIn.getNextEntry();
+            while (zae != null) {
+                zae = zIn.getNextEntry();
+            }
+        } catch (final IOException e) {
+            // Ignore expected exception
+        }
+    }
+
     @Test
     public void testZipUsingStoredWithDDAndNoDDSignature() throws IOException {
         try (InputStream inputStream = forgeZipInputStream();
@@ -766,19 +823,4 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
             assertArrayEquals("entry-content\n".getBytes(StandardCharsets.UTF_8), content);
         }
     }
-
-    @ParameterizedTest
-    @ValueSource(booleans = { true, false })
-    public void zipInputStream(final boolean allowStoredEntriesWithDataDescriptor) {
-        try (ZipArchiveInputStream zIn = new ZipArchiveInputStream(Files.newInputStream(Paths.get("src/test/resources/COMPRESS-647/test.zip")),
-                StandardCharsets.UTF_8.name(), false, allowStoredEntriesWithDataDescriptor)) {
-            ZipArchiveEntry zae = zIn.getNextEntry();
-            while (zae != null) {
-                zae = zIn.getNextEntry();
-            }
-        } catch (final IOException e) {
-            // Ignore expected exception
-        }
-    }
-
 }
