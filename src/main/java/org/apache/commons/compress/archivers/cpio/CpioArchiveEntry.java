@@ -181,7 +181,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     private long chksum;
 
     /** Number of bytes in the file */
-    private long filesize;
+    private long fileSize;
 
     private long gid;
 
@@ -459,7 +459,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
         if (this.alignmentBoundary == 0) {
             return 0;
         }
-        final long size = this.filesize;
+        final long size = this.fileSize;
         final int remain = (int) (size % this.alignmentBoundary);
         if (remain > 0) {
             return this.alignmentBoundary - remain;
@@ -665,7 +665,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      */
     @Override
     public long getSize() {
-        return this.filesize;
+        return this.fileSize;
     }
 
     /**
@@ -912,7 +912,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
         if (size < 0 || size > 0xFFFFFFFFL) {
             throw new IllegalArgumentException("Invalid entry size <" + size + ">");
         }
-        this.filesize = size;
+        this.fileSize = size;
     }
 
     /**
