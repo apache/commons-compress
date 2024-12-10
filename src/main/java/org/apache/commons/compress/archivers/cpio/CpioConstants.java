@@ -20,10 +20,12 @@ package org.apache.commons.compress.archivers.cpio;
 
 /**
  * All constants needed by CPIO.
- *
- * based on code from the jRPM project (jrpm.sourceforge.net)
- *
- * http://www.opengroup.org/onlinepubs/9699919799/basedefs/cpio.h.html has a list of the C_xxx constants.
+ * <p>
+ * Based on code from the <a href="jrpm.sourceforge.net">jRPM project</a>.
+ * </p>
+ * <p>
+ * A list of the {@code C_xxx} constants is <a href="http://www.opengroup.org/onlinepubs/9699919799/basedefs/cpio.h.html">here</a>.
+ * </p>
  */
 public interface CpioConstants {
     /** Magic number of a cpio entry in the new format */
@@ -32,7 +34,7 @@ public interface CpioConstants {
     /** Magic number of a cpio entry in the new format with CRC */
     String MAGIC_NEW_CRC = "070702";
 
-    /** Magic number of a cpio entry in the old ascii format */
+    /** Magic number of a cpio entry in the old ASCII format */
     String MAGIC_OLD_ASCII = "070707";
 
     /** Magic number of a cpio entry in the old binary format */
@@ -41,10 +43,10 @@ public interface CpioConstants {
     /** Write/read a CpioArchiveEntry in the new format. FORMAT_ constants are internal. */
     short FORMAT_NEW = 1;
 
-    /** Write/read a CpioArchiveEntry in the new format with crc. FORMAT_ constants are internal. */
+    /** Write/read a CpioArchiveEntry in the new format with CRC. FORMAT_ constants are internal. */
     short FORMAT_NEW_CRC = 2;
 
-    /** Write/read a CpioArchiveEntry in the old ascii format. FORMAT_ constants are internal. */
+    /** Write/read a CpioArchiveEntry in the old ASCII format. FORMAT_ constants are internal. */
     short FORMAT_OLD_ASCII = 4;
 
     /** Write/read a CpioArchiveEntry in the old binary format. FORMAT_ constants are internal. */
