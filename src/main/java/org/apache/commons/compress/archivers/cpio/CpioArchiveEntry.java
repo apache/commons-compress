@@ -658,9 +658,9 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Gets the filesize.
+     * Gets the file size.
      *
-     * @return the filesize.
+     * @return the file size.
      * @see org.apache.commons.compress.archivers.ArchiveEntry#getSize()
      */
     @Override
@@ -904,9 +904,9 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Sets the filesize.
+     * Sets the file size.
      *
-     * @param size The filesize to set.
+     * @param size The file size to set.
      */
     public void setSize(final long size) {
         if (size < 0 || size > 0xFFFFFFFFL) {
