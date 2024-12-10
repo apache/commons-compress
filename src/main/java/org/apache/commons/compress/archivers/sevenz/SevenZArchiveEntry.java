@@ -252,13 +252,13 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Gets whether this entry has got a crc.
+     * Gets whether this entry has got a CRC.
      *
      * <p>
      * In general entries without streams don't have a CRC either.
      * </p>
      *
-     * @return whether this entry has got a crc.
+     * @return whether this entry has got a CRC.
      */
     public boolean getHasCrc() {
         return hasCrc;
@@ -571,9 +571,9 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Sets whether this entry has got a crc.
+     * Sets whether this entry has got a CRC.
      *
-     * @param hasCrc whether this entry has got a crc.
+     * @param hasCrc whether this entry has got a CRC.
      */
     public void setHasCrc(final boolean hasCrc) {
         this.hasCrc = hasCrc;
