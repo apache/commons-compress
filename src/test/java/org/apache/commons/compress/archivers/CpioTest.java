@@ -159,12 +159,7 @@ public final class CpioTest extends AbstractTest {
             in.setSize(tmp.length());
             in.setMode(CpioConstants.C_ISREG);
             tos.putArchiveEntry(in);
-            final byte[] b = new byte[(int) tmp.length()];
-            try (InputStream fis = Files.newInputStream(tmp.toPath())) {
-                while (fis.read(b) > 0) {
-                    tos.write(b);
-                }
-            }
+            Files.copy(tmp.toPath(), tos);
             tos.closeArchiveEntry();
         }
         final CpioArchiveEntry out;
@@ -185,12 +180,7 @@ public final class CpioTest extends AbstractTest {
         try (CpioArchiveOutputStream tos = new CpioArchiveOutputStream(Files.newOutputStream(archive.toPath()))) {
             final CpioArchiveEntry in = new CpioArchiveEntry(tmp, "foo");
             tos.putArchiveEntry(in);
-            final byte[] b = new byte[(int) tmp.length()];
-            try (InputStream fis = Files.newInputStream(tmp.toPath())) {
-                while (fis.read(b) > 0) {
-                    tos.write(b);
-                }
-            }
+            Files.copy(tmp.toPath(), tos);
             tos.closeArchiveEntry();
         }
         final CpioArchiveEntry out;
@@ -203,4 +193,5 @@ public final class CpioTest extends AbstractTest {
         assertEquals(tmp.lastModified() / 1000, out.getLastModifiedDate().getTime() / 1000);
         assertFalse(out.isDirectory());
     }
+
 }
