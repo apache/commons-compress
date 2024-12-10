@@ -26,6 +26,9 @@ package org.apache.commons.compress.archivers.cpio;
  * <p>
  * A list of the {@code C_xxx} constants is <a href="http://www.opengroup.org/onlinepubs/9699919799/basedefs/cpio.h.html">here</a>.
  * </p>
+ * <p>
+ * TODO Next major version: Update to a class.
+ * </p>
  */
 public interface CpioConstants {
     /** Magic number of a cpio entry in the new format */
