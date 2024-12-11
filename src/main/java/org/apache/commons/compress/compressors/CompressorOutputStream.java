@@ -24,12 +24,12 @@ import java.io.OutputStream;
 /**
  * Abstracts all classes that compress an output stream.
  *
- * @param <T> The underlying OutputStream type.
+ * @param <T> The underlying {@link OutputStream} type.
  */
 public abstract class CompressorOutputStream<T extends OutputStream> extends FilterOutputStream {
 
     /**
-     * Constructs a new instance without a backing OutputStream.
+     * Constructs a new instance without a backing {@link OutputStream}.
      * <p>
      * You must initialize {@code this.out} after construction.
      * </p>
@@ -39,7 +39,7 @@ public abstract class CompressorOutputStream<T extends OutputStream> extends Fil
     }
 
     /**
-     * Creates an output stream filter built on top of the specified underlying output stream.
+     * Creates an output stream filter built on top of the specified underlying {@link OutputStream}.
      *
      * @param out the underlying output stream to be assigned to the field {@code this.out} for later use, or {@code null} if this instance is to be created
      *            without an underlying stream.
