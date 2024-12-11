@@ -70,20 +70,20 @@ public final class ZipTest extends AbstractTest {
 
     final ZipArchiveEntryPredicate allFilesPredicate = zipArchiveEntry -> true;
 
-    private void addFilesToZip(final ZipArchiveOutputStream zipArchiveOutputStream, final File fileToAdd) throws IOException {
+    private void addFilesToZip(final ZipArchiveOutputStream outputStream, final File fileToAdd) throws IOException {
         if (fileToAdd.isDirectory()) {
             for (final File file : fileToAdd.listFiles()) {
-                addFilesToZip(zipArchiveOutputStream, file);
+                addFilesToZip(outputStream, file);
             }
         } else {
             final ZipArchiveEntry zipArchiveEntry = new ZipArchiveEntry(fileToAdd.getPath());
             zipArchiveEntry.setMethod(ZipEntry.DEFLATED);
 
-            zipArchiveOutputStream.putArchiveEntry(zipArchiveEntry);
+            outputStream.putArchiveEntry(zipArchiveEntry);
             try {
-                Files.copy(fileToAdd.toPath(), zipArchiveOutputStream);
+                outputStream.write(fileToAdd);
             } finally {
-                zipArchiveOutputStream.closeArchiveEntry();
+                outputStream.closeArchiveEntry();
             }
         }
     }
@@ -527,7 +527,7 @@ public final class ZipTest extends AbstractTest {
             in.setTime(file.lastModified());
             in.setSize(file.length());
             outputStream.putArchiveEntry(in);
-            Files.copy(file.toPath(), outputStream);
+            outputStream.write(file);
             outputStream.closeArchiveEntry();
         }
         try (ZipFile zf = newZipFile(archive)) {
@@ -547,7 +547,7 @@ public final class ZipTest extends AbstractTest {
         try (ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(archive)) {
             final ZipArchiveEntry in = new ZipArchiveEntry(file, "foo");
             outputStream.putArchiveEntry(in);
-            Files.copy(file.toPath(), outputStream);
+            outputStream.write(file);
             outputStream.closeArchiveEntry();
         }
         try (ZipFile zf = newZipFile(archive)) {
@@ -756,11 +756,11 @@ public final class ZipTest extends AbstractTest {
             try (ArchiveOutputStream<ZipArchiveEntry> os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("zip", out)) {
                 // entry 1
                 os.putArchiveEntry(new ZipArchiveEntry("testdata/test1.xml"));
-                Files.copy(file1.toPath(), os);
+                os.write(file1);
                 os.closeArchiveEntry();
                 // entry 2
                 os.putArchiveEntry(new ZipArchiveEntry("testdata/test2.xml"));
-                Files.copy(file2.toPath(), os);
+                os.write(file2);
                 os.closeArchiveEntry();
             }
         }
@@ -827,7 +827,7 @@ public final class ZipTest extends AbstractTest {
         try (ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(archivePath)) {
             final ZipArchiveEntry in = outputStream.createArchiveEntry(tmpFilePath, "foo");
             outputStream.putArchiveEntry(in);
-            Files.copy(tmpFilePath, outputStream);
+            outputStream.write(tmpFilePath);
             outputStream.closeArchiveEntry();
         }
         try (ZipFile zf = newZipFile(archiveFile)) {

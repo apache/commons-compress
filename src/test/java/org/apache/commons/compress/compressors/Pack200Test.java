@@ -54,11 +54,11 @@ public final class Pack200Test extends AbstractTest {
                 JarArchiveOutputStream os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("jar", out)) {
 
             os.putArchiveEntry(new ZipArchiveEntry("testdata/test1.xml"));
-            Files.copy(file1.toPath(), os);
+            os.write(file1);
             os.closeArchiveEntry();
 
             os.putArchiveEntry(new ZipArchiveEntry("testdata/test2.xml"));
-            Files.copy(file2.toPath(), os);
+            os.write(file2);
             os.closeArchiveEntry();
         }
 

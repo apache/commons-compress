@@ -17,7 +17,6 @@
 
 package org.apache.commons.compress.archivers.zip;
 
-import static java.nio.charset.StandardCharsets.US_ASCII;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -91,7 +90,7 @@ public class UTF8ZipFilesTest extends AbstractTest {
             }
 
             zos.putArchiveEntry(ze);
-            zos.write("Hello, world!".getBytes(US_ASCII));
+            zos.writeUsAscii("Hello, world!");
             zos.closeArchiveEntry();
 
             ze = new ZipArchiveEntry(EURO_FOR_DOLLAR_TXT);
@@ -103,7 +102,7 @@ public class UTF8ZipFilesTest extends AbstractTest {
             }
 
             zos.putArchiveEntry(ze);
-            zos.write("Give me your money!".getBytes(US_ASCII));
+            zos.writeUsAscii("Give me your money!");
             zos.closeArchiveEntry();
 
             ze = new ZipArchiveEntry(ASCII_TXT);
@@ -116,7 +115,7 @@ public class UTF8ZipFilesTest extends AbstractTest {
             }
 
             zos.putArchiveEntry(ze);
-            zos.write("ascii".getBytes(US_ASCII));
+            zos.writeUsAscii("ascii");
             zos.closeArchiveEntry();
 
             zos.finish();

@@ -64,7 +64,7 @@ public final class XZTest extends AbstractTest {
         final File output = newTempFile("test1.xml.xz");
         try (OutputStream out = Files.newOutputStream(output.toPath())) {
             try (CompressorOutputStream<?> cos = new CompressorStreamFactory().createCompressorOutputStream("xz", out)) {
-                Files.copy(input.toPath(), cos);
+                cos.write(input);
             }
         }
     }

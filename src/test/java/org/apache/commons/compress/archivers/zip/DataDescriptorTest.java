@@ -16,7 +16,6 @@
  */
 package org.apache.commons.compress.archivers.zip;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -47,7 +46,7 @@ public class DataDescriptorTest {
         final File file = new File(dir, "test.zip");
         try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(file)) {
             zos.putArchiveEntry(new ZipArchiveEntry("test1.txt"));
-            zos.write("foo".getBytes(UTF_8));
+            zos.writeUtf8("foo");
             zos.closeArchiveEntry();
         }
 
@@ -86,7 +85,7 @@ public class DataDescriptorTest {
         final ByteArrayOutputStream init = new ByteArrayOutputStream();
         try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(init)) {
             zos.putArchiveEntry(new ZipArchiveEntry("test1.txt"));
-            zos.write("foo".getBytes(UTF_8));
+            zos.writeUtf8("foo");
             zos.closeArchiveEntry();
         }
 
@@ -138,7 +137,7 @@ public class DataDescriptorTest {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(baos)) {
             zos.putArchiveEntry(new ZipArchiveEntry("test1.txt"));
-            zos.write("foo".getBytes(UTF_8));
+            zos.writeUtf8("foo");
             zos.closeArchiveEntry();
         }
         final byte[] data = baos.toByteArray();

@@ -39,12 +39,13 @@ public final class JarTest extends AbstractTest {
 
         try (OutputStream out = Files.newOutputStream(output.toPath());
                 ArchiveOutputStream<ZipArchiveEntry> os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("jar", out)) {
+            // file 1
             os.putArchiveEntry(new ZipArchiveEntry("testdata/test1.xml"));
-            Files.copy(file1.toPath(), os);
+            os.write(file1);
             os.closeArchiveEntry();
-
+            // file 2
             os.putArchiveEntry(new ZipArchiveEntry("testdata/test2.xml"));
-            Files.copy(file2.toPath(), os);
+            os.write(file2);
             os.closeArchiveEntry();
         }
     }

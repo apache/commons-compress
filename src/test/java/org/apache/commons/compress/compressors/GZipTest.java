@@ -121,7 +121,7 @@ public final class GZipTest extends AbstractTest {
         final File output = newTempFile("test1.xml.gz");
         try (OutputStream out = Files.newOutputStream(output.toPath())) {
             try (CompressorOutputStream<?> cos = new CompressorStreamFactory().createCompressorOutputStream("gz", out)) {
-                Files.copy(input.toPath(), cos);
+                cos.write(input);
             }
         }
     }
@@ -220,7 +220,7 @@ public final class GZipTest extends AbstractTest {
         assertEquals(parameters.getFilename(), parameters.getFileName());
         parameters.setComment("Umlaute möglich?");
         try (GzipCompressorOutputStream out = new GzipCompressorOutputStream(bout, parameters)) {
-            Files.copy(getFile("test3" + ".xml").toPath(), out);
+            out.write(getFile("test3" + ".xml"));
         }
 
         final GzipCompressorInputStream input = new GzipCompressorInputStream(new ByteArrayInputStream(bout.toByteArray()));

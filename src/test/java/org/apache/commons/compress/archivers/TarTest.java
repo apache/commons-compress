@@ -171,7 +171,7 @@ public final class TarTest extends AbstractTest {
             entryIn.setModTime(file.lastModified());
             entryIn.setSize(file.length());
             outputStream.putArchiveEntry(entryIn);
-            Files.copy(file.toPath(), outputStream);
+            outputStream.write(file);
             outputStream.closeArchiveEntry();
         }
         final TarArchiveEntry entryOut;
@@ -193,7 +193,7 @@ public final class TarTest extends AbstractTest {
         final TarArchiveEntry in = new TarArchiveEntry(file, "foo");
         try (TarArchiveOutputStream outputStream = new TarArchiveOutputStream(Files.newOutputStream(archive.toPath()))) {
             outputStream.putArchiveEntry(in);
-            Files.copy(file.toPath(), outputStream);
+            outputStream.write(file);
             outputStream.closeArchiveEntry();
         }
         final TarArchiveEntry out;
@@ -238,7 +238,7 @@ public final class TarTest extends AbstractTest {
             entry.setGroupName("excalibur");
             entry.setMode(0100000);
             os.putArchiveEntry(entry);
-            Files.copy(file1.toPath(), os);
+            os.write(file1);
             os.closeArchiveEntry();
         }
     }
@@ -262,7 +262,7 @@ public final class TarTest extends AbstractTest {
             entry.setGroupName("excalibur");
             entry.setMode(0100000);
             os.putArchiveEntry(entry);
-            Files.copy(file1.toPath(), os);
+            os.write(file1);
             os.closeArchiveEntry();
         }
 
@@ -279,7 +279,7 @@ public final class TarTest extends AbstractTest {
             entry2.setGroupName("excalibur");
             entry2.setMode(0100000);
             os2.putArchiveEntry(entry);
-            Files.copy(file1.toPath(), os2);
+            os2.write(file1);
             os2.closeArchiveEntry();
         } catch (final IOException e) {
             assertTrue(true);
@@ -365,7 +365,7 @@ public final class TarTest extends AbstractTest {
         try (TarArchiveOutputStream outputStream = new TarArchiveOutputStream(Files.newOutputStream(archive.toPath()))) {
             final TarArchiveEntry in = new TarArchiveEntry(file, "foo");
             outputStream.putArchiveEntry(in);
-            Files.copy(file.toPath(), outputStream);
+            outputStream.write(file);
             outputStream.closeArchiveEntry();
             outputStream.close();
             try (TarFile tarFile = new TarFile(archive)) {
@@ -411,9 +411,8 @@ public final class TarTest extends AbstractTest {
             in.setModTime(file.lastModified());
             in.setSize(file.length());
             outputStream.putArchiveEntry(in);
-            Files.copy(file.toPath(), outputStream);
+            outputStream.write(file);
             outputStream.closeArchiveEntry();
-
             try (TarFile tarFile = new TarFile(archive)) {
                 final TarArchiveEntry entry = tarFile.getEntries().get(0);
                 assertNotNull(entry);

@@ -19,11 +19,12 @@
 package org.apache.commons.compress.archivers;
 
 import java.io.File;
-import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
+
+import org.apache.commons.compress.CompressFilterOutputStream;
 
 /**
  * Archive output stream implementations are expected to override the {@link #write(byte[], int, int)} method to improve performance. They should also override
@@ -49,7 +50,7 @@ import java.nio.file.Path;
  *
  * @param <E> The type of {@link ArchiveEntry} consumed.
  */
-public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends FilterOutputStream {
+public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends CompressFilterOutputStream<OutputStream> {
 
     static final int BYTE_MASK = 0xFF;
 
@@ -76,7 +77,7 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Filter
      * </p>
      */
     public ArchiveOutputStream() {
-        super(null);
+        super();
     }
 
     /**
@@ -202,6 +203,7 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Filter
      *
      * @throws IOException Maybe thrown by subclasses if the user forgets to close the entry.
      */
+    @SuppressWarnings("unused") // for subclasses
     public void finish() throws IOException {
         finished = true;
     }

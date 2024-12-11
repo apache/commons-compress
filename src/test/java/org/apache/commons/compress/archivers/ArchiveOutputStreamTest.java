@@ -24,7 +24,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.file.Files;
 
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ar.ArArchiveEntry;
@@ -37,20 +36,20 @@ import org.junit.jupiter.api.Test;
 public class ArchiveOutputStreamTest<O extends ArchiveOutputStream<E>, E extends ArchiveEntry> extends AbstractTest {
 
     private O createArchiveWithDummyEntry(final String archiveType, final OutputStream out1, final File dummy) throws Exception {
-        final O aos1 = factory.createArchiveOutputStream(archiveType, out1);
-        aos1.putArchiveEntry(aos1.createArchiveEntry(dummy, "dummy"));
-        Files.copy(dummy.toPath(), aos1);
-        return aos1;
+        final O outputStream = factory.createArchiveOutputStream(archiveType, out1);
+        outputStream.putArchiveEntry(outputStream.createArchiveEntry(dummy, "dummy"));
+        outputStream.write(dummy);
+        return outputStream;
     }
 
     private void doCallSequence(final String archiveType) throws Exception {
         final OutputStream out1 = new ByteArrayOutputStream();
         final File dummy = getFile("test1.xml"); // need a real file
 
-        try (O aos1 = factory.createArchiveOutputStream(archiveType, out1)) {
-            aos1.putArchiveEntry(aos1.createArchiveEntry(dummy, "dummy"));
-            Files.copy(dummy.toPath(), aos1);
-            aos1.closeArchiveEntry();
+        try (O outputStream = factory.createArchiveOutputStream(archiveType, out1)) {
+            outputStream.putArchiveEntry(outputStream.createArchiveEntry(dummy, "dummy"));
+            outputStream.write(dummy);
+            outputStream.closeArchiveEntry();
             // omitted finish
         }
 
@@ -60,7 +59,7 @@ public class ArchiveOutputStreamTest<O extends ArchiveOutputStream<E>, E extends
         assertThrows(IOException.class, aos2::closeArchiveEntry, "Should have raised IOException - closeArchiveEntry() called before putArchiveEntry()");
 
         aos2.putArchiveEntry(aos2.createArchiveEntry(dummy, "dummy"));
-        Files.copy(dummy.toPath(), aos2);
+        aos2.write(dummy);
 
         // TODO check if second putArchiveEntry() can follow without closeAE?
 

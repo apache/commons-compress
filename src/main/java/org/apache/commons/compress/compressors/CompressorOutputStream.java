@@ -18,15 +18,16 @@
  */
 package org.apache.commons.compress.compressors;
 
-import java.io.FilterOutputStream;
 import java.io.OutputStream;
+
+import org.apache.commons.compress.CompressFilterOutputStream;
 
 /**
  * Abstracts all classes that compress an output stream.
  *
  * @param <T> The underlying {@link OutputStream} type.
  */
-public abstract class CompressorOutputStream<T extends OutputStream> extends FilterOutputStream {
+public abstract class CompressorOutputStream<T extends OutputStream> extends CompressFilterOutputStream<T> {
 
     /**
      * Constructs a new instance without a backing {@link OutputStream}.
@@ -35,7 +36,7 @@ public abstract class CompressorOutputStream<T extends OutputStream> extends Fil
      * </p>
      */
     public CompressorOutputStream() {
-        super(null);
+        super();
     }
 
     /**
@@ -49,14 +50,4 @@ public abstract class CompressorOutputStream<T extends OutputStream> extends Fil
         super(out);
     }
 
-    /**
-     * Gets the underlying output stream.
-     *
-     * @return the underlying output stream.
-     * @since 1.27.0
-     */
-    @SuppressWarnings("unchecked")
-    protected T out() {
-        return (T) out;
-    }
 }

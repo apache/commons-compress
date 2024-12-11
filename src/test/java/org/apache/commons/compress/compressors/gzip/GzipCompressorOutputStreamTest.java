@@ -63,7 +63,7 @@ public class GzipCompressorOutputStreamTest {
         parameters.setFileName(EXPECTED_FILE_NAME);
         try (OutputStream fos = Files.newOutputStream(targetFile);
                 GzipCompressorOutputStream gos = new GzipCompressorOutputStream(fos, parameters)) {
-            Files.copy(tempSourceFile, gos);
+            gos.write(tempSourceFile);
         }
         try (GzipCompressorInputStream gis = new GzipCompressorInputStream(Files.newInputStream(targetFile))) {
             final byte[] fileNameBytes = gis.getMetaData().getFileName().getBytes(StandardCharsets.ISO_8859_1);
@@ -142,7 +142,7 @@ public class GzipCompressorOutputStreamTest {
         parameters.setExtraField(extra);
         try (OutputStream fos = Files.newOutputStream(targetFile);
                 GzipCompressorOutputStream gos = new GzipCompressorOutputStream(fos, parameters)) {
-            Files.copy(tempSourceFile, gos);
+            gos.write(tempSourceFile);
         }
         try (GzipCompressorInputStream gis = new GzipCompressorInputStream(Files.newInputStream(targetFile))) {
             final ExtraField extra2 = gis.getMetaData().getExtraField();
@@ -186,7 +186,7 @@ public class GzipCompressorOutputStreamTest {
         assertEquals(parameters.getFilename(), parameters.getFileName());
         try (OutputStream fos = Files.newOutputStream(targetFile);
                 GzipCompressorOutputStream gos = new GzipCompressorOutputStream(fos, parameters)) {
-            Files.copy(tempSourceFile, gos);
+            gos.write(tempSourceFile);
         }
         try (GzipCompressorInputStream gis = new GzipCompressorInputStream(Files.newInputStream(targetFile))) {
             assertEquals(expected, gis.getMetaData().getFileName());

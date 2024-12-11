@@ -125,7 +125,7 @@ public abstract class AbstractTest extends AbstractTempDirTest {
             throws IOException, FileNotFoundException {
         final E entry = outputStream.createArchiveEntry(inputFile, fileName);
         outputStream.putArchiveEntry(entry);
-        Files.copy(inputFile.toPath(), outputStream);
+        outputStream.write(inputFile);
         outputStream.closeArchiveEntry();
         archiveList.add(fileName);
     }

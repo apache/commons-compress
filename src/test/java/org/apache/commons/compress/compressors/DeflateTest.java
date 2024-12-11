@@ -42,7 +42,7 @@ public final class DeflateTest extends AbstractTest {
         final File output = newTempFile("test1.xml.deflatez");
         try (OutputStream out = Files.newOutputStream(output.toPath())) {
             try (CompressorOutputStream<?> cos = new CompressorStreamFactory().createCompressorOutputStream("deflate", out)) {
-                Files.copy(input.toPath(), cos);
+                cos.write(input);
             }
         }
     }
@@ -76,8 +76,8 @@ public final class DeflateTest extends AbstractTest {
         try (OutputStream out = Files.newOutputStream(output.toPath())) {
             final DeflateParameters params = new DeflateParameters();
             params.setWithZlibHeader(false);
-            try (CompressorOutputStream cos = new DeflateCompressorOutputStream(out, params)) {
-                Files.copy(input.toPath(), cos);
+            try (CompressorOutputStream<?> cos = new DeflateCompressorOutputStream(out, params)) {
+                cos.write(input);
             }
         }
     }

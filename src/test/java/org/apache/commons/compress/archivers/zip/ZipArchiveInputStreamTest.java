@@ -785,7 +785,7 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
                 final ZipArchiveEntry entry = new ZipArchiveEntry("file-1.txt");
                 entry.setMethod(ZipEntry.DEFLATED);
                 zos.putArchiveEntry(entry);
-                zos.write("entry-content\n".getBytes(StandardCharsets.UTF_8));
+                zos.writeUtf8("entry-content\n");
                 zos.closeArchiveEntry();
             }
         }
@@ -809,7 +809,7 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
                 final ZipArchiveEntry entry = new ZipArchiveEntry("file-1.txt");
                 entry.setMethod(ZipEntry.DEFLATED);
                 zos.putArchiveEntry(entry);
-                zos.write("entry-content\n".getBytes(StandardCharsets.UTF_8));
+                zos.writeUtf8("entry-content\n");
                 zos.closeArchiveEntry();
             }
         }

@@ -68,7 +68,7 @@ public final class BlockLZ4CompressorRoundtripTest extends AbstractTest {
         final File outputSz = newTempFile(input.getName() + ".block.lz4");
         try (OutputStream os = Files.newOutputStream(outputSz.toPath());
                 BlockLZ4CompressorOutputStream los = new BlockLZ4CompressorOutputStream(os, params)) {
-            Files.copy(input.toPath(), los);
+            los.write(input);
         }
         try (InputStream is = Files.newInputStream(input.toPath());
                 BlockLZ4CompressorInputStream sis = new BlockLZ4CompressorInputStream(Files.newInputStream(outputSz.toPath()))) {

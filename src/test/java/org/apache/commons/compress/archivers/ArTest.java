@@ -49,12 +49,13 @@ public final class ArTest extends AbstractTest {
 
         try (OutputStream out = Files.newOutputStream(output.toPath());
                 ArArchiveOutputStream os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("ar", out)) {
+            // file 1
             os.putArchiveEntry(new ArArchiveEntry("test1.xml", file1.length()));
-            Files.copy(file1.toPath(), os);
+            os.write(file1);
             os.closeArchiveEntry();
-
+            // file 2
             os.putArchiveEntry(new ArArchiveEntry("test2.xml", file2.length()));
-            Files.copy(file2.toPath(), os);
+            os.write(file2);
             os.closeArchiveEntry();
         }
     }
@@ -69,12 +70,13 @@ public final class ArTest extends AbstractTest {
             // create
             try (OutputStream out = Files.newOutputStream(output.toPath());
                     ArchiveOutputStream<ArArchiveEntry> os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("ar", out)) {
+                // file 1
                 os.putArchiveEntry(new ArArchiveEntry("test1.xml", file1.length()));
-                Files.copy(file1.toPath(), os);
+                os.write(file1);
                 os.closeArchiveEntry();
-
+                // file 2
                 os.putArchiveEntry(new ArArchiveEntry("test2.xml", file2.length()));
-                Files.copy(file2.toPath(), os);
+                os.write(file2);
                 os.closeArchiveEntry();
             }
         }
@@ -146,12 +148,13 @@ public final class ArTest extends AbstractTest {
 
             try (OutputStream out = Files.newOutputStream(output.toPath());
                     ArchiveOutputStream<ArArchiveEntry> os = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("ar", out)) {
+                // file 1
                 os.putArchiveEntry(new ArArchiveEntry("test1.xml", file1.length()));
-                Files.copy(file1.toPath(), os);
+                os.write(file1);
                 os.closeArchiveEntry();
-
+                // file 2
                 os.putArchiveEntry(new ArArchiveEntry("test2.xml", file2.length()));
-                Files.copy(file2.toPath(), os);
+                os.write(file2);
                 os.closeArchiveEntry();
             }
         }
@@ -160,7 +163,6 @@ public final class ArTest extends AbstractTest {
         try (InputStream is = Files.newInputStream(output.toPath());
                 ArchiveInputStream<ArArchiveEntry> in = new ArchiveStreamFactory().createArchiveInputStream(new BufferedInputStream(is))) {
             final ArArchiveEntry entry = in.getNextEntry();
-
             final File target = newTempFile(entry.getName());
             Files.copy(in, target.toPath());
         }
@@ -173,7 +175,7 @@ public final class ArTest extends AbstractTest {
         try (ArArchiveOutputStream aos = new ArArchiveOutputStream(Files.newOutputStream(archive.toPath()))) {
             final ArArchiveEntry in = new ArArchiveEntry("foo", file.length(), 0, 0, 0, file.lastModified() / 1000);
             aos.putArchiveEntry(in);
-            Files.copy(file.toPath(), aos);
+            aos.write(file);
             aos.closeArchiveEntry();
         }
         //
@@ -195,7 +197,7 @@ public final class ArTest extends AbstractTest {
         try (ArArchiveOutputStream aos = new ArArchiveOutputStream(Files.newOutputStream(archive.toPath()))) {
             final ArArchiveEntry in = new ArArchiveEntry(file, "foo");
             aos.putArchiveEntry(in);
-            Files.copy(file.toPath(), aos);
+            aos.write(file);
             aos.closeArchiveEntry();
         }
         final ArArchiveEntry out;
@@ -217,7 +219,7 @@ public final class ArTest extends AbstractTest {
         try (ArArchiveOutputStream aos = new ArArchiveOutputStream(Files.newOutputStream(archive.toPath()))) {
             final ArArchiveEntry in = new ArArchiveEntry(file.toPath(), "foo");
             aos.putArchiveEntry(in);
-            Files.copy(file.toPath(), aos);
+            aos.write(file);
             aos.closeArchiveEntry();
         }
         final ArArchiveEntry out;

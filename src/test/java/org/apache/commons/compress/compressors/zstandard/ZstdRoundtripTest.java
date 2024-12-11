@@ -45,7 +45,7 @@ public class ZstdRoundtripTest extends AbstractTest {
         final File output = newTempFile(input.getFileName() + ".zstd");
         try (FileOutputStream os = new FileOutputStream(output);
                 ZstdCompressorOutputStream zos = oc.wrap(os)) {
-            Files.copy(input, zos);
+            zos.write(input);
         }
         try (ZstdCompressorInputStream zis = new ZstdCompressorInputStream(Files.newInputStream(output.toPath()))) {
             final byte[] expected = Files.readAllBytes(input);
@@ -65,7 +65,7 @@ public class ZstdRoundtripTest extends AbstractTest {
         final File output = newTempFile(input.getFileName() + ".zstd");
         try (OutputStream os = Files.newOutputStream(output.toPath());
                 CompressorOutputStream<?> zos = new CompressorStreamFactory().createCompressorOutputStream("zstd", os)) {
-            Files.copy(input, zos);
+            zos.write(input);
         }
         try (InputStream inputStream = Files.newInputStream(output.toPath());
                 CompressorInputStream zis = new CompressorStreamFactory().createCompressorInputStream("zstd", inputStream)) {

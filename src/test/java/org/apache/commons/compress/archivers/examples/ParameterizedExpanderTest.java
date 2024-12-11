@@ -137,10 +137,10 @@ public class ParameterizedExpanderTest extends AbstractTest {
             aos.putArchiveEntry(aos.createArchiveEntry(getTempDirFile(), "a/b/c"));
             aos.closeArchiveEntry();
             aos.putArchiveEntry(aos.createArchiveEntry(dummy, "a/b/d.txt"));
-            aos.write("Hello, world 1".getBytes(UTF_8));
+            aos.writeUtf8("Hello, world 1");
             aos.closeArchiveEntry();
             aos.putArchiveEntry(aos.createArchiveEntry(dummy, "a/b/c/e.txt"));
-            aos.write("Hello, world 2".getBytes(UTF_8));
+            aos.writeUtf8("Hello, world 2");
             aos.closeArchiveEntry();
             aos.finish();
         }

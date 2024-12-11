@@ -1812,17 +1812,13 @@ public class Zip64SupportIT {
     private File buildZipWithZip64Mode(final String fileName, final Zip64Mode zip64Mode, final File inputFile) throws Throwable {
         final File outputFile = getTempFile(fileName);
         outputFile.createNewFile();
-        try (ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(new BufferedOutputStream(new FileOutputStream(outputFile)))) {
-            zipArchiveOutputStream.setUseZip64(zip64Mode);
-            zipArchiveOutputStream.setCreateUnicodeExtraFields(ZipArchiveOutputStream.UnicodeExtraFieldPolicy.ALWAYS);
-
-            zipArchiveOutputStream.putArchiveEntry(new ZipArchiveEntry("input.bin"));
-
-            Files.copy(inputFile.toPath(), zipArchiveOutputStream);
-
-            zipArchiveOutputStream.closeArchiveEntry();
+        try (ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(new BufferedOutputStream(new FileOutputStream(outputFile)))) {
+            outputStream.setUseZip64(zip64Mode);
+            outputStream.setCreateUnicodeExtraFields(ZipArchiveOutputStream.UnicodeExtraFieldPolicy.ALWAYS);
+            outputStream.putArchiveEntry(new ZipArchiveEntry("input.bin"));
+            outputStream.write(inputFile);
+            outputStream.closeArchiveEntry();
         }
-
         return outputFile;
     }
 

@@ -61,7 +61,7 @@ public final class FramedSnappyTest extends AbstractTest {
         final File outputSz = newTempFile(input.getName() + ".sz");
         try (OutputStream os = Files.newOutputStream(outputSz.toPath());
                 CompressorOutputStream<?> sos = new CompressorStreamFactory().createCompressorOutputStream("snappy-framed", os)) {
-            Files.copy(input.toPath(), sos);
+            sos.write(input);
         }
         try (InputStream is = Files.newInputStream(input.toPath());
                 CompressorInputStream sis = new CompressorStreamFactory().createCompressorInputStream("snappy-framed",

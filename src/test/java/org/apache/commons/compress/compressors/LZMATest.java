@@ -42,7 +42,7 @@ public final class LZMATest extends AbstractTest {
         final File compressed = newTempFile("test1.xml.xz");
         try (OutputStream out = Files.newOutputStream(compressed.toPath())) {
             try (CompressorOutputStream<?> cos = new CompressorStreamFactory().createCompressorOutputStream("lzma", out)) {
-                Files.copy(input, cos);
+                cos.write(input);
             }
         }
         final byte[] orig = Files.readAllBytes(input);

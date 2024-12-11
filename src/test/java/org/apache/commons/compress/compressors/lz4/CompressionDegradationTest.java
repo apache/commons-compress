@@ -39,7 +39,7 @@ public class CompressionDegradationTest {
                 FramedLZ4CompressorOutputStream compress = new FramedLZ4CompressorOutputStream(byteStream)) {
             String compressedValue = null;
             try {
-                compress.write(value.getBytes(StandardCharsets.UTF_8));
+                compress.writeUtf8(value);
                 compress.finish();
                 compressedValue = Base64.getEncoder().encodeToString(byteStream.toByteArray());
             } finally {

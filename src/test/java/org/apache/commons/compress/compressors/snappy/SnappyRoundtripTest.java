@@ -57,7 +57,7 @@ public final class SnappyRoundtripTest extends AbstractTest {
         final File outputSz = newTempFile(input.getFileName() + ".raw.sz");
         try (OutputStream os = Files.newOutputStream(outputSz.toPath());
                 SnappyCompressorOutputStream sos = new SnappyCompressorOutputStream(os, Files.size(input), params)) {
-            Files.copy(input, sos);
+            sos.write(input);
         }
         try (SnappyCompressorInputStream sis = new SnappyCompressorInputStream(Files.newInputStream(outputSz.toPath()), params.getWindowSize())) {
             final byte[] expected = Files.readAllBytes(input);

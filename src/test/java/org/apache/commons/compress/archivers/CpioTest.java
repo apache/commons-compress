@@ -51,12 +51,13 @@ public final class CpioTest extends AbstractTest {
 
         try (OutputStream outputStream = Files.newOutputStream(output.toPath());
                 ArchiveOutputStream<CpioArchiveEntry> archiveOutputStream = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("cpio", outputStream)) {
+            // file 1
             archiveOutputStream.putArchiveEntry(new CpioArchiveEntry("test1.xml", file1.length()));
-            Files.copy(file1.toPath(), archiveOutputStream);
+            archiveOutputStream.write(file1);
             archiveOutputStream.closeArchiveEntry();
-
+            // file 2
             archiveOutputStream.putArchiveEntry(new CpioArchiveEntry("test2.xml", file2.length()));
-            Files.copy(file2.toPath(), archiveOutputStream);
+            archiveOutputStream.write(file2);
             archiveOutputStream.closeArchiveEntry();
         }
     }
@@ -71,16 +72,17 @@ public final class CpioTest extends AbstractTest {
 
         try (OutputStream outputStream = Files.newOutputStream(output.toPath());
                 ArchiveOutputStream<CpioArchiveEntry> archiveOutputStream = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("cpio", outputStream)) {
+            // file 1
             CpioArchiveEntry entry = new CpioArchiveEntry("test1.xml", file1Length);
             entry.setMode(CpioConstants.C_ISREG);
             archiveOutputStream.putArchiveEntry(entry);
-            Files.copy(file1.toPath(), archiveOutputStream);
+            archiveOutputStream.write(file1);
             archiveOutputStream.closeArchiveEntry();
-
+            // file 2
             entry = new CpioArchiveEntry("test2.xml", file2Length);
             entry.setMode(CpioConstants.C_ISREG);
             archiveOutputStream.putArchiveEntry(entry);
-            Files.copy(file2.toPath(), archiveOutputStream);
+            archiveOutputStream.write(file2);
             archiveOutputStream.closeArchiveEntry();
             archiveOutputStream.finish();
             archiveOutputStream.close();
@@ -162,7 +164,7 @@ public final class CpioTest extends AbstractTest {
             in.setSize(tmp.length());
             in.setMode(CpioConstants.C_ISREG);
             tos.putArchiveEntry(in);
-            Files.copy(tmp.toPath(), tos);
+            tos.write(tmp);
             tos.closeArchiveEntry();
         }
         final CpioArchiveEntry out;
@@ -183,7 +185,7 @@ public final class CpioTest extends AbstractTest {
         try (CpioArchiveOutputStream tos = new CpioArchiveOutputStream(Files.newOutputStream(archive.toPath()))) {
             final CpioArchiveEntry in = new CpioArchiveEntry(tmp, "foo");
             tos.putArchiveEntry(in);
-            Files.copy(tmp.toPath(), tos);
+            tos.write(tmp);
             tos.closeArchiveEntry();
         }
         final CpioArchiveEntry out;

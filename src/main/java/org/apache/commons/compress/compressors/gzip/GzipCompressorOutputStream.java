@@ -162,7 +162,7 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
      * @param charset Specifies the Charset to use.
      * @throws IOException if an I/O error occurs.
      */
-    private void write(final String value, final Charset charset) throws IOException {
+    private void writeC(final String value, final Charset charset) throws IOException {
         if (value != null) {
             out.write(value.getBytes(charset));
             out.write(0);
@@ -195,8 +195,8 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
             out.write(extra.length >>> 8 & 0xff);
             out.write(extra);
         }
-        write(fileName, parameters.getFileNameCharset());
-        write(comment, parameters.getFileNameCharset());
+        writeC(fileName, parameters.getFileNameCharset());
+        writeC(comment, parameters.getFileNameCharset());
     }
 
     private void writeTrailer() throws IOException {

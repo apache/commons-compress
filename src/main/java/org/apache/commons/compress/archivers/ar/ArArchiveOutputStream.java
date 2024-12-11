@@ -18,8 +18,6 @@
  */
 package org.apache.commons.compress.archivers.ar;
 
-import static java.nio.charset.StandardCharsets.US_ASCII;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -27,7 +25,6 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
-import org.apache.commons.compress.utils.ArchiveUtils;
 
 /**
  * Implements the "ar" archive format as an output stream.
@@ -164,13 +161,11 @@ public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
     }
 
     private int write(final String data) throws IOException {
-        final byte[] bytes = data.getBytes(US_ASCII);
-        write(bytes);
-        return bytes.length;
+        return writeUsAscii(data).length;
     }
 
-    private void writeArchiveHeader() throws IOException {
-        out.write(ArchiveUtils.toAsciiBytes(ArArchiveEntry.HEADER));
+    private byte[] writeArchiveHeader() throws IOException {
+        return writeUsAscii(ArArchiveEntry.HEADER);
     }
 
     private int writeEntryHeader(final ArArchiveEntry entry) throws IOException {

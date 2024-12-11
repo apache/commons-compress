@@ -47,18 +47,17 @@ public class TarMemoryFileSystemTest {
         final String user = "commons";
         final String group = "compress";
         try (FileSystem fileSystem = MemoryFileSystemBuilder.newLinux().addUser(user).addGroup(group).build()) {
-            final Path source = fileSystem.getPath("original-file.txt");
-            Files.write(source, "Test".getBytes(UTF_8));
-            Files.setAttribute(source, "posix:owner", (UserPrincipal) () -> user);
-            Files.setAttribute(source, "posix:group", (GroupPrincipal) () -> group);
+            final Path pathSource = fileSystem.getPath("original-file.txt");
+            Files.write(pathSource, "Test".getBytes(UTF_8));
+            Files.setAttribute(pathSource, "posix:owner", (UserPrincipal) () -> user);
+            Files.setAttribute(pathSource, "posix:group", (GroupPrincipal) () -> group);
 
             final Path target = fileSystem.getPath("original-file.tar");
             try (OutputStream out = Files.newOutputStream(target);
                     ArchiveOutputStream<ArchiveEntry> tarOut = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(ArchiveStreamFactory.TAR, out)) {
-                final TarArchiveEntry entry = new TarArchiveEntry(source);
+                final TarArchiveEntry entry = new TarArchiveEntry(pathSource);
                 tarOut.putArchiveEntry(entry);
-
-                Files.copy(source, tarOut);
+                tarOut.write(pathSource);
                 tarOut.closeArchiveEntry();
             }
 
@@ -77,14 +76,12 @@ public class TarMemoryFileSystemTest {
         try (FileSystem fileSystem = MemoryFileSystemBuilder.newLinux().build()) {
             final Path p = fileSystem.getPath("test.txt");
             Files.write(p, "Test".getBytes(UTF_8));
-
             final File f = File.createTempFile("commons-compress-memoryfs", ".tar");
             try (OutputStream out = Files.newOutputStream(f.toPath());
                     ArchiveOutputStream<ArchiveEntry> tarOut = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(ArchiveStreamFactory.TAR, out)) {
                 final TarArchiveEntry entry = new TarArchiveEntry(p);
                 tarOut.putArchiveEntry(entry);
-
-                Files.copy(p, tarOut);
+                tarOut.write(p);
                 tarOut.closeArchiveEntry();
                 assertEquals(f.length(), tarOut.getBytesWritten());
             } finally {
@@ -105,7 +102,7 @@ public class TarMemoryFileSystemTest {
                 entry.setSize(content.length());
                 tarOut.putArchiveEntry(entry);
 
-                tarOut.write("Test".getBytes(UTF_8));
+                tarOut.writeUtf8("Test");
                 tarOut.closeArchiveEntry();
 
                 assertTrue(Files.exists(p));

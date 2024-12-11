@@ -30,7 +30,6 @@ import java.util.HashMap;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
-import org.apache.commons.compress.utils.ArchiveUtils;
 
 /**
  * CpioArchiveOutputStream is a stream for writing CPIO streams. All formats of CPIO are supported (old ASCII, old binary, new portable format and the new
@@ -271,8 +270,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
 
     private void pad(final int count) throws IOException {
         if (count > 0) {
-            final byte[] buff = new byte[count];
-            out.write(buff);
+            out.write(new byte[count]);
             count(count);
         }
     }
@@ -365,8 +363,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
         } else {
             tmpStr = tmp.substring(tmp.length() - length);
         }
-        final byte[] b = ArchiveUtils.toAsciiBytes(tmpStr);
-        out.write(b);
+        final byte[] b = writeUsAsciiRaw(tmpStr);
         count(b.length);
     }
 
@@ -391,17 +388,17 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
     private void writeHeader(final CpioArchiveEntry e) throws IOException {
         switch (e.getFormat()) {
         case FORMAT_NEW:
-            out.write(ArchiveUtils.toAsciiBytes(MAGIC_NEW));
+            writeUsAsciiRaw(MAGIC_NEW);
             count(6);
             writeNewEntry(e);
             break;
         case FORMAT_NEW_CRC:
-            out.write(ArchiveUtils.toAsciiBytes(MAGIC_NEW_CRC));
+            writeUsAsciiRaw(MAGIC_NEW_CRC);
             count(6);
             writeNewEntry(e);
             break;
         case FORMAT_OLD_ASCII:
-            out.write(ArchiveUtils.toAsciiBytes(MAGIC_OLD_ASCII));
+            writeUsAsciiRaw(MAGIC_OLD_ASCII);
             count(6);
             writeOldAsciiEntry(e);
             break;

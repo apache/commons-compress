@@ -54,12 +54,12 @@ public class Archiver {
 
     private static class ArchiverFileVisitor<O extends ArchiveOutputStream<E>, E extends ArchiveEntry> extends SimpleFileVisitor<Path> {
 
-        private final O target;
+        private final O outputStream;
         private final Path directory;
         private final LinkOption[] linkOptions;
 
         private ArchiverFileVisitor(final O target, final Path directory, final LinkOption... linkOptions) {
-            this.target = target;
+            this.outputStream = target;
             this.directory = directory;
             this.linkOptions = linkOptions == null ? IOUtils.EMPTY_LINK_OPTIONS : linkOptions.clone();
         }
@@ -74,13 +74,13 @@ public class Archiver {
             Objects.requireNonNull(attrs);
             final String name = directory.relativize(path).toString().replace('\\', '/');
             if (!name.isEmpty()) {
-                final E archiveEntry = target.createArchiveEntry(path, isFile || name.endsWith("/") ? name : name + "/", linkOptions);
-                target.putArchiveEntry(archiveEntry);
+                final E archiveEntry = outputStream.createArchiveEntry(path, isFile || name.endsWith("/") ? name : name + "/", linkOptions);
+                outputStream.putArchiveEntry(archiveEntry);
                 if (isFile) {
-                    // Refactor this as a BiConsumer on Java 8
-                    Files.copy(path, target);
+                    // Refactor this as a BiConsumer on Java 8?
+                    outputStream.write(path);
                 }
-                target.closeArchiveEntry();
+                outputStream.closeArchiveEntry();
             }
             return FileVisitResult.CONTINUE;
         }

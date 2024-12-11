@@ -404,14 +404,14 @@ public class ZipFileTest extends AbstractTest {
                 inflatedEntry.setMethod(ZipEntry.DEFLATED);
                 inflatedEntry.setAlignment(1024);
                 zipOutput.putArchiveEntry(inflatedEntry);
-                zipOutput.write("Hello Deflated\n".getBytes(UTF_8));
+                zipOutput.writeUtf8("Hello Deflated\n");
                 zipOutput.closeArchiveEntry();
 
                 final ZipArchiveEntry storedEntry = new ZipArchiveEntry("stored.txt");
                 storedEntry.setMethod(ZipEntry.STORED);
                 storedEntry.setAlignment(1024);
                 zipOutput.putArchiveEntry(storedEntry);
-                zipOutput.write("Hello Stored\n".getBytes(UTF_8));
+                zipOutput.writeUtf8("Hello Stored\n");
                 zipOutput.closeArchiveEntry();
 
                 final ZipArchiveEntry storedEntry2 = new ZipArchiveEntry("stored2.txt");
@@ -419,14 +419,14 @@ public class ZipFileTest extends AbstractTest {
                 storedEntry2.setAlignment(1024);
                 storedEntry2.addExtraField(new ResourceAlignmentExtraField(1));
                 zipOutput.putArchiveEntry(storedEntry2);
-                zipOutput.write("Hello overload-alignment Stored\n".getBytes(UTF_8));
+                zipOutput.writeUtf8("Hello overload-alignment Stored\n");
                 zipOutput.closeArchiveEntry();
 
                 final ZipArchiveEntry storedEntry3 = new ZipArchiveEntry("stored3.txt");
                 storedEntry3.setMethod(ZipEntry.STORED);
                 storedEntry3.addExtraField(new ResourceAlignmentExtraField(1024));
                 zipOutput.putArchiveEntry(storedEntry3);
-                zipOutput.write("Hello copy-alignment Stored\n".getBytes(UTF_8));
+                zipOutput.writeUtf8("Hello copy-alignment Stored\n");
                 zipOutput.closeArchiveEntry();
 
             }
@@ -970,7 +970,7 @@ public class ZipFileTest extends AbstractTest {
                 final ZipArchiveEntry entry = new ZipArchiveEntry("file-1.txt");
                 entry.setMethod(ZipEntry.DEFLATED);
                 zos.putArchiveEntry(entry);
-                zos.write("entry-content\n".getBytes(StandardCharsets.UTF_8));
+                zos.writeUtf8("entry-content\n");
                 zos.closeArchiveEntry();
             }
         }

@@ -26,6 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.apache.commons.compress.AbstractTest;
+import org.apache.commons.compress.compressors.CompressorOutputStream;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
@@ -36,8 +37,8 @@ public class FactoryTest extends AbstractTest {
         final Path input = getPath("bla.tar");
         final Path outputSz = getTempDirFile().toPath().resolve(input.getFileName() + "." + format + ".lz4");
         try (OutputStream os = Files.newOutputStream(outputSz);
-                OutputStream los = new CompressorStreamFactory().createCompressorOutputStream(format, os)) {
-            Files.copy(input, los);
+                CompressorOutputStream<?> los = new CompressorStreamFactory().createCompressorOutputStream(format, os)) {
+            los.write(input);
         }
         try (InputStream is = Files.newInputStream(input);
                 InputStream sis = new CompressorStreamFactory().createCompressorInputStream(format, Files.newInputStream(outputSz))) {
