@@ -173,12 +173,7 @@ public final class ArTest extends AbstractTest {
         try (ArArchiveOutputStream aos = new ArArchiveOutputStream(Files.newOutputStream(archive.toPath()))) {
             final ArArchiveEntry in = new ArArchiveEntry("foo", file.length(), 0, 0, 0, file.lastModified() / 1000);
             aos.putArchiveEntry(in);
-            final byte[] b = new byte[(int) file.length()];
-            try (InputStream fis = Files.newInputStream(file.toPath())) {
-                while (fis.read(b) > 0) {
-                    aos.write(b);
-                }
-            }
+            Files.copy(file.toPath(), aos);
             aos.closeArchiveEntry();
         }
         //
@@ -200,12 +195,7 @@ public final class ArTest extends AbstractTest {
         try (ArArchiveOutputStream aos = new ArArchiveOutputStream(Files.newOutputStream(archive.toPath()))) {
             final ArArchiveEntry in = new ArArchiveEntry(file, "foo");
             aos.putArchiveEntry(in);
-            final byte[] b = new byte[(int) file.length()];
-            try (InputStream fis = Files.newInputStream(file.toPath())) {
-                while (fis.read(b) > 0) {
-                    aos.write(b);
-                }
-            }
+            Files.copy(file.toPath(), aos);
             aos.closeArchiveEntry();
         }
         final ArArchiveEntry out;
@@ -227,12 +217,7 @@ public final class ArTest extends AbstractTest {
         try (ArArchiveOutputStream aos = new ArArchiveOutputStream(Files.newOutputStream(archive.toPath()))) {
             final ArArchiveEntry in = new ArArchiveEntry(file.toPath(), "foo");
             aos.putArchiveEntry(in);
-            final byte[] b = new byte[(int) file.length()];
-            try (InputStream fis = Files.newInputStream(file.toPath())) {
-                while (fis.read(b) > 0) {
-                    aos.write(b);
-                }
-            }
+            Files.copy(file.toPath(), aos);
             aos.closeArchiveEntry();
         }
         final ArArchiveEntry out;
