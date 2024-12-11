@@ -240,18 +240,18 @@ public final class ZipTest extends AbstractTest {
     public void testBuildArtificialSplitZip32Test() throws IOException {
         final File outputZipFile = newTempFile("artificialSplitZip.zip");
         final long splitSize = 64 * 1024L; /* 64 KB */
-        try (ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(outputZipFile, splitSize)) {
-            zipArchiveOutputStream.setUseZip64(Zip64Mode.Never);
+        try (ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(outputZipFile, splitSize)) {
+            outputStream.setUseZip64(Zip64Mode.Never);
             final ZipArchiveEntry ze1 = new ZipArchiveEntry("file01");
             ze1.setMethod(ZipEntry.STORED);
-            zipArchiveOutputStream.putArchiveEntry(ze1);
-            zipArchiveOutputStream.write(createArtificialData(65536));
-            zipArchiveOutputStream.closeArchiveEntry();
+            outputStream.putArchiveEntry(ze1);
+            outputStream.write(createArtificialData(65536));
+            outputStream.closeArchiveEntry();
             final ZipArchiveEntry ze2 = new ZipArchiveEntry("file02");
             ze2.setMethod(ZipEntry.DEFLATED);
-            zipArchiveOutputStream.putArchiveEntry(ze2);
-            zipArchiveOutputStream.write(createArtificialData(65536));
-            zipArchiveOutputStream.closeArchiveEntry();
+            outputStream.putArchiveEntry(ze2);
+            outputStream.write(createArtificialData(65536));
+            outputStream.closeArchiveEntry();
         }
 
         try (ZipFile zipFile = ZipFile.builder()
@@ -272,18 +272,18 @@ public final class ZipTest extends AbstractTest {
         final File outputZipFile = newTempFile("artificialSplitZip.zip");
         final long splitSize = 64 * 1024L; /* 64 KB */
         final byte[] data = createArtificialData(128 * 1024);
-        try (ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(outputZipFile, splitSize)) {
-            zipArchiveOutputStream.setUseZip64(Zip64Mode.Always);
+        try (ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(outputZipFile, splitSize)) {
+            outputStream.setUseZip64(Zip64Mode.Always);
             final ZipArchiveEntry ze1 = new ZipArchiveEntry("file01");
             ze1.setMethod(ZipEntry.STORED);
-            zipArchiveOutputStream.putArchiveEntry(ze1);
-            zipArchiveOutputStream.write(data);
-            zipArchiveOutputStream.closeArchiveEntry();
+            outputStream.putArchiveEntry(ze1);
+            outputStream.write(data);
+            outputStream.closeArchiveEntry();
             final ZipArchiveEntry ze2 = new ZipArchiveEntry("file02");
             ze2.setMethod(ZipEntry.DEFLATED);
-            zipArchiveOutputStream.putArchiveEntry(ze2);
-            zipArchiveOutputStream.write(data);
-            zipArchiveOutputStream.closeArchiveEntry();
+            outputStream.putArchiveEntry(ze2);
+            outputStream.write(data);
+            outputStream.closeArchiveEntry();
         }
         try (ZipFile zipFile = ZipFile.builder().setPath(outputZipFile.toPath()).setMaxNumberOfDisks(Integer.MAX_VALUE).get()) {
             assertArrayEquals(data, IOUtils.toByteArray(zipFile.getInputStream(zipFile.getEntry("file01"))));
@@ -302,13 +302,13 @@ public final class ZipTest extends AbstractTest {
         // 36 is length of central directory entry
         // 1 is remaining byte in first archive, this should be skipped
         final byte[] data1 = createArtificialData(64 * 1024 - 4 - 36 - 52 - 1);
-        try (ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(outputZipFile, splitSize)) {
-            zipArchiveOutputStream.setUseZip64(Zip64Mode.Never);
+        try (ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(outputZipFile, splitSize)) {
+            outputStream.setUseZip64(Zip64Mode.Never);
             final ZipArchiveEntry ze1 = new ZipArchiveEntry("file01");
             ze1.setMethod(ZipEntry.STORED);
-            zipArchiveOutputStream.putArchiveEntry(ze1);
-            zipArchiveOutputStream.write(data1);
-            zipArchiveOutputStream.closeArchiveEntry();
+            outputStream.putArchiveEntry(ze1);
+            outputStream.write(data1);
+            outputStream.closeArchiveEntry();
         }
         assertEquals(64 * 1024L - 1, Files.size(outputZipFile.toPath().getParent().resolve("artificialSplitZip.z01")));
         try (ZipFile zipFile = ZipFile.builder().setPath(outputZipFile.toPath()).setMaxNumberOfDisks(Integer.MAX_VALUE).get()) {
@@ -335,28 +335,28 @@ public final class ZipTest extends AbstractTest {
         // 13 is remaining size of third local file header
         // 1 is to wrap to next part
         final byte[] data4 = createArtificialData(64 * 1024 - 13 + 1);
-        try (ZipArchiveOutputStream zipArchiveOutputStream = new ZipArchiveOutputStream(outputZipFile, splitSize)) {
-            zipArchiveOutputStream.setUseZip64(Zip64Mode.Never);
+        try (ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(outputZipFile, splitSize)) {
+            outputStream.setUseZip64(Zip64Mode.Never);
             final ZipArchiveEntry ze1 = new ZipArchiveEntry("file01");
             ze1.setMethod(ZipEntry.STORED);
-            zipArchiveOutputStream.putArchiveEntry(ze1);
-            zipArchiveOutputStream.write(data1);
-            zipArchiveOutputStream.closeArchiveEntry();
+            outputStream.putArchiveEntry(ze1);
+            outputStream.write(data1);
+            outputStream.closeArchiveEntry();
             final ZipArchiveEntry ze2 = new ZipArchiveEntry("file02");
             ze2.setMethod(ZipEntry.STORED);
-            zipArchiveOutputStream.putArchiveEntry(ze2);
-            zipArchiveOutputStream.write(data2);
-            zipArchiveOutputStream.closeArchiveEntry();
+            outputStream.putArchiveEntry(ze2);
+            outputStream.write(data2);
+            outputStream.closeArchiveEntry();
             final ZipArchiveEntry ze3 = new ZipArchiveEntry("file03");
             ze3.setMethod(ZipEntry.STORED);
-            zipArchiveOutputStream.putArchiveEntry(ze3);
-            zipArchiveOutputStream.write(data3);
-            zipArchiveOutputStream.closeArchiveEntry();
+            outputStream.putArchiveEntry(ze3);
+            outputStream.write(data3);
+            outputStream.closeArchiveEntry();
             final ZipArchiveEntry ze4 = new ZipArchiveEntry("file04");
             ze4.setMethod(ZipEntry.STORED);
-            zipArchiveOutputStream.putArchiveEntry(ze4);
-            zipArchiveOutputStream.write(data4);
-            zipArchiveOutputStream.closeArchiveEntry();
+            outputStream.putArchiveEntry(ze4);
+            outputStream.write(data4);
+            outputStream.closeArchiveEntry();
         }
         try (ZipFile zipFile = ZipFile.builder().setPath(outputZipFile.toPath()).setMaxNumberOfDisks(Integer.MAX_VALUE).get()) {
             assertArrayEquals(data1, IOUtils.toByteArray(zipFile.getInputStream(zipFile.getEntry("file01"))));
@@ -520,52 +520,42 @@ public final class ZipTest extends AbstractTest {
 
     @Test
     public void testExplicitFileEntry() throws Exception {
-        final File tmp = createTempFile();
+        final File file = createTempFile();
         final File archive = createTempFile("test.", ".zip");
-        try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(archive)) {
+        try (ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(archive)) {
             final ZipArchiveEntry in = new ZipArchiveEntry("foo");
-            in.setTime(tmp.lastModified());
-            in.setSize(tmp.length());
-            zos.putArchiveEntry(in);
-            final byte[] b = new byte[(int) tmp.length()];
-            try (InputStream fis = Files.newInputStream(tmp.toPath())) {
-                while (fis.read(b) > 0) {
-                    zos.write(b);
-                }
-            }
-            zos.closeArchiveEntry();
+            in.setTime(file.lastModified());
+            in.setSize(file.length());
+            outputStream.putArchiveEntry(in);
+            Files.copy(file.toPath(), outputStream);
+            outputStream.closeArchiveEntry();
         }
         try (ZipFile zf = newZipFile(archive)) {
             final ZipArchiveEntry out = zf.getEntry("foo");
             assertNotNull(out);
             assertEquals("foo", out.getName());
-            assertEquals(tmp.length(), out.getSize());
-            assertEquals(tmp.lastModified() / 2000, out.getLastModifiedDate().getTime() / 2000);
+            assertEquals(file.length(), out.getSize());
+            assertEquals(file.lastModified() / 2000, out.getLastModifiedDate().getTime() / 2000);
             assertFalse(out.isDirectory());
         }
     }
 
     @Test
     public void testFileEntryFromFile() throws Exception {
-        final File tmpFile = createTempFile();
+        final File file = createTempFile();
         final File archive = createTempFile("test.", ".zip");
-        try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(archive)) {
-            final ZipArchiveEntry in = new ZipArchiveEntry(tmpFile, "foo");
-            zos.putArchiveEntry(in);
-            final byte[] b = new byte[(int) tmpFile.length()];
-            try (InputStream fis = Files.newInputStream(tmpFile.toPath())) {
-                while (fis.read(b) > 0) {
-                    zos.write(b);
-                }
-            }
-            zos.closeArchiveEntry();
+        try (ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(archive)) {
+            final ZipArchiveEntry in = new ZipArchiveEntry(file, "foo");
+            outputStream.putArchiveEntry(in);
+            Files.copy(file.toPath(), outputStream);
+            outputStream.closeArchiveEntry();
         }
         try (ZipFile zf = newZipFile(archive)) {
             final ZipArchiveEntry out = zf.getEntry("foo");
             assertNotNull(out);
             assertEquals("foo", out.getName());
-            assertEquals(tmpFile.length(), out.getSize());
-            assertEquals(tmpFile.lastModified() / 2000, out.getLastModifiedDate().getTime() / 2000);
+            assertEquals(file.length(), out.getSize());
+            assertEquals(file.lastModified() / 2000, out.getLastModifiedDate().getTime() / 2000);
             assertFalse(out.isDirectory());
         }
     }
@@ -834,16 +824,11 @@ public final class ZipTest extends AbstractTest {
         final Path tmpFilePath = tmpFile.toPath();
         final File archiveFile = createTempFile("test.", ".zip");
         archivePath = archiveFile.toPath();
-        try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(archivePath)) {
-            final ZipArchiveEntry in = zos.createArchiveEntry(tmpFilePath, "foo");
-            zos.putArchiveEntry(in);
-            final byte[] b = new byte[(int) tmpFile.length()];
-            try (InputStream fis = Files.newInputStream(tmpFile.toPath())) {
-                while (fis.read(b) > 0) {
-                    zos.write(b);
-                }
-            }
-            zos.closeArchiveEntry();
+        try (ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(archivePath)) {
+            final ZipArchiveEntry in = outputStream.createArchiveEntry(tmpFilePath, "foo");
+            outputStream.putArchiveEntry(in);
+            Files.copy(tmpFilePath, outputStream);
+            outputStream.closeArchiveEntry();
         }
         try (ZipFile zf = newZipFile(archiveFile)) {
             final ZipArchiveEntry out = zf.getEntry("foo");
