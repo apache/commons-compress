@@ -48,6 +48,7 @@ import java.util.TimeZone;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.zip.GZIPInputStream;
@@ -403,6 +404,15 @@ public class TarArchiveInputStreamTest extends AbstractTest {
                     entry = is.getNextTarEntry();
                 }
             });
+        }
+    }
+
+    @Test
+    public void testShouldThrowAnExceptionOnTruncatedStream() throws Exception {
+        final Path dir = createTempDirectory("COMPRESS-279");
+        try (TarArchiveInputStream is = getTestStream("/COMPRESS-279-fail.tar")) {
+            final AtomicInteger count = new AtomicInteger();
+            assertThrows(IOException.class, () -> is.forEach(entry -> Files.copy(is, dir.resolve(String.valueOf(count.getAndIncrement())))));
         }
     }
 
