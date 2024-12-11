@@ -26,6 +26,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,6 +37,7 @@ import org.apache.commons.compress.archivers.cpio.CpioArchiveEntry;
 import org.apache.commons.compress.archivers.cpio.CpioArchiveInputStream;
 import org.apache.commons.compress.archivers.cpio.CpioArchiveOutputStream;
 import org.apache.commons.compress.archivers.cpio.CpioConstants;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
 public final class CpioTest extends AbstractTest {
@@ -192,6 +195,39 @@ public final class CpioTest extends AbstractTest {
         assertEquals(tmp.length(), out.getSize());
         assertEquals(tmp.lastModified() / 1000, out.getLastModifiedDate().getTime() / 1000);
         assertFalse(out.isDirectory());
+    }
+
+    /**
+     * Tests COMPRESS-690.
+     */
+    @Test
+    public void testSymbolicLinkFileEntry() throws Exception {
+        final File tmp = createTempFile();
+        final File archive = createTempFile("test.", ".cpio");
+        final String name = "EntryName";
+        final String nameLink = "LinkName";
+        final Charset charset = StandardCharsets.UTF_8;
+        try (CpioArchiveOutputStream tos = new CpioArchiveOutputStream(Files.newOutputStream(archive.toPath()))) {
+            final CpioArchiveEntry entry = new CpioArchiveEntry(name);
+            entry.setTime(tmp.lastModified() / 1000);
+            entry.setSize(nameLink.length());
+            entry.setMode(CpioConstants.C_ISLNK);
+            assertTrue(entry.isSymbolicLink());
+            tos.putArchiveEntry(entry);
+            tos.write(nameLink.getBytes(charset));
+            tos.closeArchiveEntry();
+        }
+        final CpioArchiveEntry entry;
+        try (CpioArchiveInputStream tis = new CpioArchiveInputStream(Files.newInputStream(archive.toPath()))) {
+            entry = tis.getNextEntry();
+            assertEquals(nameLink, IOUtils.toString(tis, charset));
+        }
+        assertNotNull(entry);
+        assertEquals(name, entry.getName());
+        assertTrue(entry.isSymbolicLink());
+        assertEquals(nameLink.length(), entry.getSize());
+        assertEquals(tmp.lastModified() / 1000, entry.getLastModifiedDate().getTime() / 1000);
+        assertFalse(entry.isDirectory());
     }
 
 }
