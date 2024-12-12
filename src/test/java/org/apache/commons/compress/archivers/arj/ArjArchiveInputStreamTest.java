@@ -81,7 +81,42 @@ public class ArjArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testArjUnarchive() throws Exception {
+    public void testFirstHeaderSizeSetToZero() throws Exception {
+        try (InputStream in = newInputStream("org/apache/commons/compress/arj/zero_sized_headers-fail.arj")) {
+            final ArchiveException ex = assertThrows(ArchiveException.class, () -> {
+                try (ArjArchiveInputStream archive = new ArjArchiveInputStream(in)) {
+                    // Do nothing, ArchiveException already thrown
+                    fail("ArchiveException not thrown.");
+                }
+            });
+            assertTrue(ex.getCause() instanceof IOException);
+        }
+    }
+
+    @Test
+    public void testForEach() throws Exception {
+        final StringBuilder expected = new StringBuilder();
+        expected.append("test1.xml<?xml version=\"1.0\"?>\n");
+        expected.append("<empty/>test2.xml<?xml version=\"1.0\"?>\n");
+        expected.append("<empty/>\n");
+        final StringBuilder result = new StringBuilder();
+        try (ArjArchiveInputStream in = new ArjArchiveInputStream(newInputStream("bla.arj"))) {
+            in.forEach(entry -> {
+                result.append(entry.getName());
+                int tmp;
+                // read() one at a time
+                while ((tmp = in.read()) != -1) {
+                    result.append((char) tmp);
+                }
+                assertFalse(entry.isDirectory());
+                assertArjArchiveEntry(entry);
+            });
+        }
+        assertEquals(expected.toString(), result.toString());
+    }
+
+    @Test
+    public void testGetNextEntry() throws Exception {
         final StringBuilder expected = new StringBuilder();
         expected.append("test1.xml<?xml version=\"1.0\"?>\n");
         expected.append("<empty/>test2.xml<?xml version=\"1.0\"?>\n");
@@ -104,16 +139,27 @@ public class ArjArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testArjUnarchiveRead() throws Exception {
+    public void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
+        final byte[] buf = new byte[2];
+        try (InputStream in = newInputStream("bla.arj");
+                ArjArchiveInputStream archive = new ArjArchiveInputStream(in)) {
+            assertNotNull(archive.getNextEntry());
+            IOUtils.toByteArray(archive);
+            assertEquals(-1, archive.read(buf));
+            assertEquals(-1, archive.read(buf));
+            assertForEach(archive);
+        }
+    }
+
+    @Test
+    public void testRead() throws Exception {
         final StringBuilder expected = new StringBuilder();
         expected.append("test1.xml<?xml version=\"1.0\"?>\n");
         expected.append("<empty/>test2.xml<?xml version=\"1.0\"?>\n");
         expected.append("<empty/>\n");
         final Charset charset = Charset.defaultCharset();
-        ByteArrayOutputStream actual;
         try (ByteArrayOutputStream result = new ByteArrayOutputStream();
                 ArjArchiveInputStream in = new ArjArchiveInputStream(newInputStream("bla.arj"))) {
-            actual = result;
             ArjArchiveEntry entry;
             while ((entry = in.getNextEntry()) != null) {
                 result.write(entry.getName().getBytes(charset));
@@ -125,23 +171,21 @@ public class ArjArchiveInputStreamTest extends AbstractTest {
                 assertFalse(entry.isDirectory());
                 assertArjArchiveEntry(entry);
             }
+            result.flush();
+            assertEquals(expected.toString(), result.toString(charset));
         }
-        assertEquals(expected.toString(), actual.toString(charset));
     }
 
     @Test
-    public void testArjUnarchiveReadByteArray() throws Exception {
+    public void testReadByteArray() throws Exception {
         final StringBuilder expected = new StringBuilder();
         expected.append("test1.xml<?xml version=\"1.0\"?>\n");
         expected.append("<empty/>test2.xml<?xml version=\"1.0\"?>\n");
         expected.append("<empty/>\n");
         final Charset charset = Charset.defaultCharset();
-        ByteArrayOutputStream actual;
         try (ByteArrayOutputStream result = new ByteArrayOutputStream();
                 ArjArchiveInputStream in = new ArjArchiveInputStream(newInputStream("bla.arj"))) {
-            actual = result;
-            ArjArchiveEntry entry;
-            while ((entry = in.getNextEntry()) != null) {
+            in.forEach(entry -> {
                 result.write(entry.getName().getBytes(charset));
                 final byte[] tmp = new byte[2];
                 // read(byte[]) at a time
@@ -151,24 +195,22 @@ public class ArjArchiveInputStreamTest extends AbstractTest {
                 }
                 assertFalse(entry.isDirectory());
                 assertArjArchiveEntry(entry);
-            }
+            });
+            result.flush();
+            assertEquals(expected.toString(), result.toString(charset));
         }
-        assertEquals(expected.toString(), actual.toString(charset));
     }
 
     @Test
-    public void testArjUnarchiveReadByteArrayIndex() throws Exception {
+    public void testReadByteArrayIndex() throws Exception {
         final StringBuilder expected = new StringBuilder();
         expected.append("test1.xml<?xml version=\"1.0\"?>\n");
         expected.append("<empty/>test2.xml<?xml version=\"1.0\"?>\n");
         expected.append("<empty/>\n");
         final Charset charset = Charset.defaultCharset();
-        ByteArrayOutputStream actual;
         try (ByteArrayOutputStream result = new ByteArrayOutputStream();
                 ArjArchiveInputStream in = new ArjArchiveInputStream(newInputStream("bla.arj"))) {
-            actual = result;
-            ArjArchiveEntry entry;
-            while ((entry = in.getNextEntry()) != null) {
+            in.forEach(entry -> {
                 result.write(entry.getName().getBytes(charset));
                 final byte[] tmp = new byte[10];
                 // read(byte[],int,int) at a time
@@ -178,34 +220,9 @@ public class ArjArchiveInputStreamTest extends AbstractTest {
                 }
                 assertFalse(entry.isDirectory());
                 assertArjArchiveEntry(entry);
-            }
-        }
-        assertEquals(expected.toString(), actual.toString(charset));
-    }
-
-    @Test
-    public void testFirstHeaderSizeSetToZero() throws Exception {
-        try (InputStream in = newInputStream("org/apache/commons/compress/arj/zero_sized_headers-fail.arj")) {
-            final ArchiveException ex = assertThrows(ArchiveException.class, () -> {
-                try (ArjArchiveInputStream archive = new ArjArchiveInputStream(in)) {
-                    // Do nothing, ArchiveException already thrown
-                    fail("ArchiveException not thrown.");
-                }
             });
-            assertTrue(ex.getCause() instanceof IOException);
-        }
-    }
-
-    @Test
-    public void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
-        final byte[] buf = new byte[2];
-        try (InputStream in = newInputStream("bla.arj");
-                ArjArchiveInputStream archive = new ArjArchiveInputStream(in)) {
-            assertNotNull(archive.getNextEntry());
-            IOUtils.toByteArray(archive);
-            assertEquals(-1, archive.read(buf));
-            assertEquals(-1, archive.read(buf));
-            assertForEach(archive);
+            result.flush();
+            assertEquals(expected.toString(), result.toString(charset));
         }
     }
 
