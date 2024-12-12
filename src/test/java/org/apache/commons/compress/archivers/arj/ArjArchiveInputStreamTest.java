@@ -29,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.Calendar;
 import java.util.TimeZone;
 
@@ -98,7 +99,78 @@ public class ArjArchiveInputStreamTest extends AbstractTest {
                 assertArjArchiveEntry(entry);
             }
         }
-        assertEquals(result.toString(), expected.toString());
+        assertEquals(expected.toString(), result.toString());
+    }
+
+    @Test
+    public void testArjUnarchiveRead() throws Exception {
+        final StringBuilder expected = new StringBuilder();
+        expected.append("test1.xml<?xml version=\"1.0\"?>\n");
+        expected.append("<empty/>test2.xml<?xml version=\"1.0\"?>\n");
+        expected.append("<empty/>\n");
+        final StringBuilder result = new StringBuilder();
+        try (ArjArchiveInputStream in = new ArjArchiveInputStream(newInputStream("bla.arj"))) {
+            ArjArchiveEntry entry;
+            while ((entry = in.getNextEntry()) != null) {
+                result.append(entry.getName());
+                int tmp;
+                // read() one at a time
+                while ((tmp = in.read()) != -1) {
+                    result.append((char) tmp);
+                }
+                assertFalse(entry.isDirectory());
+                assertArjArchiveEntry(entry);
+            }
+        }
+        assertEquals(expected.toString(), result.toString());
+    }
+
+    @Test
+    public void testArjUnarchiveReadByteArray() throws Exception {
+        final StringBuilder expected = new StringBuilder();
+        expected.append("test1.xml<?xml version=\"1.0\"?>\n");
+        expected.append("<empty/>test2.xml<?xml version=\"1.0\"?>\n");
+        expected.append("<empty/>\n");
+        final StringBuilder result = new StringBuilder();
+        try (ArjArchiveInputStream in = new ArjArchiveInputStream(newInputStream("bla.arj"))) {
+            ArjArchiveEntry entry;
+            while ((entry = in.getNextEntry()) != null) {
+                result.append(entry.getName());
+                final byte[] tmp = new byte[2];
+                // read(byte[]) at a time
+                int count;
+                while ((count = in.read(tmp)) != -1) {
+                    result.append(new String(tmp, 0, count, Charset.defaultCharset()));
+                }
+                assertFalse(entry.isDirectory());
+                assertArjArchiveEntry(entry);
+            }
+        }
+        assertEquals(expected.toString(), result.toString());
+    }
+
+    @Test
+    public void testArjUnarchiveReadByteArrayIndex() throws Exception {
+        final StringBuilder expected = new StringBuilder();
+        expected.append("test1.xml<?xml version=\"1.0\"?>\n");
+        expected.append("<empty/>test2.xml<?xml version=\"1.0\"?>\n");
+        expected.append("<empty/>\n");
+        final StringBuilder result = new StringBuilder();
+        try (ArjArchiveInputStream in = new ArjArchiveInputStream(newInputStream("bla.arj"))) {
+            ArjArchiveEntry entry;
+            while ((entry = in.getNextEntry()) != null) {
+                result.append(entry.getName());
+                final byte[] tmp = new byte[10];
+                // read(byte[],int,int) at a time
+                int count;
+                while ((count = in.read(tmp, 0, 2)) != -1) {
+                    result.append(new String(tmp, 0, count, Charset.defaultCharset()));
+                }
+                assertFalse(entry.isDirectory());
+                assertArjArchiveEntry(entry);
+            }
+        }
+        assertEquals(expected.toString(), result.toString());
     }
 
     @Test
