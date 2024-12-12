@@ -142,10 +142,7 @@ public class ZstdCompressorInputStreamTest extends AbstractTest {
                 ZstdCompressorInputStream zstdInputStream = new ZstdCompressorInputStream(inputStream)) {
             final byte[] expected = readAllBytes("zstandard.testdata");
             final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            int readByte = -1;
-            while ((readByte = zstdInputStream.read()) != -1) {
-                bos.write(readByte);
-            }
+            IOUtils.copy(zstdInputStream, bos);
             assertArrayEquals(expected, bos.toByteArray());
         }
     }
@@ -157,10 +154,7 @@ public class ZstdCompressorInputStreamTest extends AbstractTest {
                 ZstdCompressorInputStream zstdInputStream = new ZstdCompressorInputStream(inputStream, NoPool.INSTANCE)) {
             final byte[] expected = readAllBytes("zstandard.testdata");
             final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            int readByte = -1;
-            while ((readByte = zstdInputStream.read()) != -1) {
-                bos.write(readByte);
-            }
+            IOUtils.copy(zstdInputStream, bos);
             assertArrayEquals(expected, bos.toByteArray());
         }
     }
@@ -172,10 +166,7 @@ public class ZstdCompressorInputStreamTest extends AbstractTest {
                 ZstdCompressorInputStream zstdInputStream = new ZstdCompressorInputStream(inputStream, RecyclingBufferPool.INSTANCE)) {
             final byte[] expected = readAllBytes("zstandard.testdata");
             final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            int readByte = -1;
-            while ((readByte = zstdInputStream.read()) != -1) {
-                bos.write(readByte);
-            }
+            IOUtils.copy(zstdInputStream, bos);
             assertArrayEquals(expected, bos.toByteArray());
         }
     }

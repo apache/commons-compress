@@ -54,10 +54,7 @@ public class BrotliCompressorInputStreamTest extends AbstractTest {
                 BrotliCompressorInputStream brotliInputStream = new BrotliCompressorInputStream(inputStream)) {
             final byte[] expected = readAllBytes("brotli.testdata.uncompressed");
             final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            int readByte = -1;
-            while ((readByte = brotliInputStream.read()) != -1) {
-                bos.write(readByte);
-            }
+            IOUtils.copy(brotliInputStream, bos);
             assertArrayEquals(expected, bos.toByteArray());
         }
     }

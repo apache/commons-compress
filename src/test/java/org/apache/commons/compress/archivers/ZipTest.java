@@ -219,15 +219,10 @@ public final class ZipTest extends AbstractTest {
     }
 
     private void readStream(final InputStream in, final ArchiveEntry entry, final Map<String, List<List<Long>>> map) throws IOException {
-        final byte[] buf = new byte[4096];
         final InputStreamStatistics stats = (InputStreamStatistics) in;
-        while (in.read(buf) != -1) {
-            // consume all.
-        }
-
+        IOUtils.consume(in);
         final String name = entry.getName();
         final List<List<Long>> list = map.computeIfAbsent(name, k -> new ArrayList<>());
-
         final long t = stats.getUncompressedCount();
         final long b = stats.getCompressedCount();
         list.add(Arrays.asList(t, b));
