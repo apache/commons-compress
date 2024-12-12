@@ -36,6 +36,7 @@ import java.util.TimeZone;
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -108,21 +109,24 @@ public class ArjArchiveInputStreamTest extends AbstractTest {
         expected.append("test1.xml<?xml version=\"1.0\"?>\n");
         expected.append("<empty/>test2.xml<?xml version=\"1.0\"?>\n");
         expected.append("<empty/>\n");
-        final StringBuilder result = new StringBuilder();
-        try (ArjArchiveInputStream in = new ArjArchiveInputStream(newInputStream("bla.arj"))) {
+        final Charset charset = Charset.defaultCharset();
+        ByteArrayOutputStream actual;
+        try (ByteArrayOutputStream result = new ByteArrayOutputStream();
+                ArjArchiveInputStream in = new ArjArchiveInputStream(newInputStream("bla.arj"))) {
+            actual = result;
             ArjArchiveEntry entry;
             while ((entry = in.getNextEntry()) != null) {
-                result.append(entry.getName());
+                result.write(entry.getName().getBytes(charset));
                 int tmp;
                 // read() one at a time
                 while ((tmp = in.read()) != -1) {
-                    result.append((char) tmp);
+                    result.write(tmp);
                 }
                 assertFalse(entry.isDirectory());
                 assertArjArchiveEntry(entry);
             }
         }
-        assertEquals(expected.toString(), result.toString());
+        assertEquals(expected.toString(), actual.toString(charset));
     }
 
     @Test
@@ -131,22 +135,25 @@ public class ArjArchiveInputStreamTest extends AbstractTest {
         expected.append("test1.xml<?xml version=\"1.0\"?>\n");
         expected.append("<empty/>test2.xml<?xml version=\"1.0\"?>\n");
         expected.append("<empty/>\n");
-        final StringBuilder result = new StringBuilder();
-        try (ArjArchiveInputStream in = new ArjArchiveInputStream(newInputStream("bla.arj"))) {
+        final Charset charset = Charset.defaultCharset();
+        ByteArrayOutputStream actual;
+        try (ByteArrayOutputStream result = new ByteArrayOutputStream();
+                ArjArchiveInputStream in = new ArjArchiveInputStream(newInputStream("bla.arj"))) {
+            actual = result;
             ArjArchiveEntry entry;
             while ((entry = in.getNextEntry()) != null) {
-                result.append(entry.getName());
+                result.write(entry.getName().getBytes(charset));
                 final byte[] tmp = new byte[2];
                 // read(byte[]) at a time
                 int count;
                 while ((count = in.read(tmp)) != -1) {
-                    result.append(new String(tmp, 0, count, Charset.defaultCharset()));
+                    result.write(tmp, 0, count);
                 }
                 assertFalse(entry.isDirectory());
                 assertArjArchiveEntry(entry);
             }
         }
-        assertEquals(expected.toString(), result.toString());
+        assertEquals(expected.toString(), actual.toString(charset));
     }
 
     @Test
@@ -155,22 +162,25 @@ public class ArjArchiveInputStreamTest extends AbstractTest {
         expected.append("test1.xml<?xml version=\"1.0\"?>\n");
         expected.append("<empty/>test2.xml<?xml version=\"1.0\"?>\n");
         expected.append("<empty/>\n");
-        final StringBuilder result = new StringBuilder();
-        try (ArjArchiveInputStream in = new ArjArchiveInputStream(newInputStream("bla.arj"))) {
+        final Charset charset = Charset.defaultCharset();
+        ByteArrayOutputStream actual;
+        try (ByteArrayOutputStream result = new ByteArrayOutputStream();
+                ArjArchiveInputStream in = new ArjArchiveInputStream(newInputStream("bla.arj"))) {
+            actual = result;
             ArjArchiveEntry entry;
             while ((entry = in.getNextEntry()) != null) {
-                result.append(entry.getName());
+                result.write(entry.getName().getBytes(charset));
                 final byte[] tmp = new byte[10];
                 // read(byte[],int,int) at a time
                 int count;
                 while ((count = in.read(tmp, 0, 2)) != -1) {
-                    result.append(new String(tmp, 0, count, Charset.defaultCharset()));
+                    result.write(tmp, 0, count);
                 }
                 assertFalse(entry.isDirectory());
                 assertArjArchiveEntry(entry);
             }
         }
-        assertEquals(expected.toString(), result.toString());
+        assertEquals(expected.toString(), actual.toString(charset));
     }
 
     @Test
