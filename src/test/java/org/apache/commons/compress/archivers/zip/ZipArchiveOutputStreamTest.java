@@ -35,25 +35,28 @@ public class ZipArchiveOutputStreamTest extends AbstractTempDirTest {
 
     @Test
     public void testFileBasics() throws IOException {
-        try (ZipArchiveOutputStream stream = new ZipArchiveOutputStream(createTempFile())) {
-            assertTrue(stream.isSeekable());
+        ZipArchiveOutputStream ref;
+        try (ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(createTempFile())) {
+            ref = outputStream;
+            assertTrue(outputStream.isSeekable());
         }
+        assertTrue(ref.isClosed());
     }
 
     @Test
     public void testOutputStreamBasics() throws IOException {
-        try (ZipArchiveOutputStream stream = new ZipArchiveOutputStream(new ByteArrayOutputStream())) {
-            assertFalse(stream.isSeekable());
+        try (ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(new ByteArrayOutputStream())) {
+            assertFalse(outputStream.isSeekable());
         }
     }
 
     @Test
     public void testSetEncoding() throws IOException {
-        try (ZipArchiveOutputStream stream = new ZipArchiveOutputStream(createTempFile())) {
-            stream.setEncoding(StandardCharsets.UTF_8.name());
-            assertEquals(StandardCharsets.UTF_8.name(), stream.getEncoding());
-            stream.setEncoding(null);
-            assertEquals(Charset.defaultCharset().name(), stream.getEncoding());
+        try (ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(createTempFile())) {
+            outputStream.setEncoding(StandardCharsets.UTF_8.name());
+            assertEquals(StandardCharsets.UTF_8.name(), outputStream.getEncoding());
+            outputStream.setEncoding(null);
+            assertEquals(Charset.defaultCharset().name(), outputStream.getEncoding());
         }
     }
 }

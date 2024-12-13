@@ -55,6 +55,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="ddeschenes-1, Gary Gregory">Throw an IllegalArgumentException when a file name or comment in gzip parameters encodes to a byte array with a 0 byte #618.</action>
       <action type="fix" dev="ggregory" due-to="Glavo">Update outdated links in ZipMethod Javadoc #619.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Deprecate ZipUtil.signedByteToUnsignedInt(byte) in favor of Byte.toUnsignedInt(byte).</action> 
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">ZipArchiveOutputStream.close() does not close its underlying output stream.</action> 
       <!-- ADD -->
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add GzipParameters.getModificationInstant().</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add GzipParameters.setModificationInstant(Instant).</action>

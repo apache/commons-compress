@@ -904,7 +904,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      */
     void destroy() throws IOException {
         if (out != null) {
-            out.close();
+            super.close();
         }
     }
 
