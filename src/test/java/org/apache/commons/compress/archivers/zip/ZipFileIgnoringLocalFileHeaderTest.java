@@ -102,13 +102,12 @@ public class ZipFileIgnoringLocalFileHeaderTest {
      */
     @Test
     public void testZipUnarchive() throws Exception {
-        try (ZipFile zf = openZipWithoutLocalFileHeaderDeprecated("bla.zip")) {
-            for (final Enumeration<ZipArchiveEntry> e = zf.getEntries(); e.hasMoreElements();) {
-                final ZipArchiveEntry entry = e.nextElement();
-                try (InputStream inputStream = zf.getInputStream(entry)) {
+        try (ZipFile zipFile = openZipWithoutLocalFileHeaderDeprecated("bla.zip")) {
+            zipFile.stream().forEach(entry -> {
+                try (InputStream inputStream = zipFile.getInputStream(entry)) {
                     Files.copy(inputStream, new File(dir, entry.getName()).toPath());
                 }
-            }
+            });
         }
     }
 }

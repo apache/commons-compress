@@ -478,8 +478,8 @@ public class X5455_ExtendedTimestampTest {
 
         final File archive = AbstractTest.getFile("COMPRESS-210_unix_time_zip_test.zip");
 
-        try (ZipFile zf = ZipFile.builder().setFile(archive).get()) {
-            final Enumeration<ZipArchiveEntry> en = zf.getEntries();
+        try (ZipFile zipFile = ZipFile.builder().setFile(archive).get()) {
+            final Enumeration<ZipArchiveEntry> en = zipFile.getEntries();
 
             // We expect EVERY entry of this ZIP file
             // to contain extra field 0x5455.

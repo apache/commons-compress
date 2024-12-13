@@ -61,6 +61,7 @@ import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.build.AbstractOrigin.ByteArrayOrigin;
 import org.apache.commons.io.build.AbstractStreamBuilder;
+import org.apache.commons.io.function.IOStream;
 import org.apache.commons.io.input.BoundedInputStream;
 
 /**
@@ -1701,4 +1702,19 @@ public class ZipFile implements Closeable {
         IOUtils.readFully(archive, wordBbuf);
         return Arrays.equals(wordBuf, ZipArchiveOutputStream.LFH_SIG);
     }
+
+    /**
+     * Returns an ordered {@code Stream} over the ZIP file entries.
+     * <p>
+     * Entries appear in the {@code Stream} in the order they appear in the central directory of the ZIP file.
+     * </p>
+     *
+     * @return an ordered {@code Stream} of entries in this ZIP file.
+     * @throws IllegalStateException if the ZIP file has been closed.
+     * @since 1.28.0
+     */
+    public IOStream<? extends ZipArchiveEntry> stream() {
+        return IOStream.adapt(entries.stream());
+    }
+
 }

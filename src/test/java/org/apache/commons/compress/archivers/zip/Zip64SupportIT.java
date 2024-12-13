@@ -36,12 +36,16 @@ import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.util.Enumeration;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.ZipEntry;
 
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.io.RandomAccessFileMode;
 import org.junit.jupiter.api.Test;
 
+/**
+ * Tests {@link ZipFile} Zip64 support.
+ */
 public class Zip64SupportIT {
 
     interface ZipOutputTest {
@@ -158,21 +162,18 @@ public class Zip64SupportIT {
         }
     }
 
-    private static void read100KFilesUsingZipFileImpl(final File f) throws IOException {
-        ZipFile zf = null;
+    private static void read100KFilesUsingZipFileImpl(final File file) throws IOException {
+        ZipFile zipFile = null;
         try {
-            zf = ZipFile.builder().setFile(f).get();
-            int files = 0;
-            for (final Enumeration<ZipArchiveEntry> e = zf.getEntries(); e.hasMoreElements();) {
-                final ZipArchiveEntry zae = e.nextElement();
-                if (!zae.isDirectory()) {
-                    files++;
-                    assertEquals(0, zae.getSize());
-                }
-            }
-            assertEquals(ONE_HUNDRED_THOUSAND, files);
+            zipFile = ZipFile.builder().setFile(file).get();
+            AtomicInteger files = new AtomicInteger();
+            zipFile.stream().filter(e -> !e.isDirectory()).forEach(e -> {
+                files.incrementAndGet();
+                assertEquals(0, e.getSize());
+            });
+            assertEquals(ONE_HUNDRED_THOUSAND, files.get());
         } finally {
-            ZipFile.closeQuietly(zf);
+            ZipFile.closeQuietly(zipFile);
         }
     }
 
@@ -1812,6 +1813,7 @@ public class Zip64SupportIT {
     private File buildZipWithZip64Mode(final String fileName, final Zip64Mode zip64Mode, final File inputFile) throws Throwable {
         final File outputFile = getTempFile(fileName);
         outputFile.createNewFile();
+
         try (ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(new BufferedOutputStream(new FileOutputStream(outputFile)))) {
             outputStream.setUseZip64(zip64Mode);
             outputStream.setCreateUnicodeExtraFields(ZipArchiveOutputStream.UnicodeExtraFieldPolicy.ALWAYS);

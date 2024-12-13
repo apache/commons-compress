@@ -23,13 +23,11 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Objects;
 
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
 import org.apache.commons.compress.archivers.tar.TarFile;
-import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 
 /**
@@ -163,9 +161,7 @@ public final class Lister {
     private  void listZipUsingZipFile(final Path file) throws IOException {
         try (ZipFile zipFile = ZipFile.builder().setPath(file).get()) {
             println("Created " + zipFile);
-            for (final Enumeration<ZipArchiveEntry> en = zipFile.getEntries(); en.hasMoreElements();) {
-                println(en.nextElement());
-            }
+            zipFile.stream().forEach(this::println);
         }
     }
 

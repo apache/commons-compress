@@ -1030,9 +1030,9 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     }
 
     /**
-     * Is this entry a directory?
+     * Tests whether this entry is a directory.
      *
-     * @return true if the entry is a directory
+     * @return true if the entry is a directory.
      */
     @Override
     public boolean isDirectory() {
@@ -1045,7 +1045,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     }
 
     /**
-     * Returns true if this entry represents a Unix symlink, in which case the entry's content contains the target path for the symlink.
+     * Tests whether this entry represents a Unix symlink, in which case the entry's content contains the target path for the symlink.
      *
      * @since 1.5
      * @return true if the entry represents a Unix symlink, false otherwise.

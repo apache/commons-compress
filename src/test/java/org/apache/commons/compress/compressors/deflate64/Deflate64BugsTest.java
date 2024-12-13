@@ -19,9 +19,7 @@ package org.apache.commons.compress.compressors.deflate64;
 import static org.apache.commons.compress.AbstractTest.getFile;
 
 import java.io.InputStream;
-import java.util.Enumeration;
 
-import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.junit.jupiter.api.Test;
 
@@ -29,12 +27,10 @@ public class Deflate64BugsTest {
 
     @Test
     public void testReadBeyondMemoryException() throws Exception {
-        try (ZipFile zfile = ZipFile.builder().setFile(getFile("COMPRESS-380/COMPRESS-380-readbeyondmemory.zip")).get()) {
-            final Enumeration<ZipArchiveEntry> entries = zfile.getEntries();
-            while (entries.hasMoreElements()) {
-                final ZipArchiveEntry e = entries.nextElement();
+        try (ZipFile zipFile = ZipFile.builder().setFile(getFile("COMPRESS-380/COMPRESS-380-readbeyondmemory.zip")).get()) {
+            zipFile.stream().forEach(e -> {
                 final byte[] buf = new byte[1024 * 8];
-                try (InputStream is = zfile.getInputStream(e)) {
+                try (InputStream is = zipFile.getInputStream(e)) {
                     while (true) {
                         final int read = is.read(buf);
                         if (read == -1) {
@@ -42,7 +38,7 @@ public class Deflate64BugsTest {
                         }
                     }
                 }
-            }
+            });
         }
     }
 }

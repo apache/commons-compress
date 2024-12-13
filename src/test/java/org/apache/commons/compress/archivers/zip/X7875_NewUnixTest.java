@@ -25,7 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Enumeration;
 import java.util.zip.ZipException;
 
 import org.apache.commons.compress.utils.ByteUtils;
@@ -166,17 +165,12 @@ public class X7875_NewUnixTest {
 
     @Test
     public void testSampleFile() throws Exception {
-        try (ZipFile zf = ZipFile.builder().setFile(getFile("COMPRESS-211_uid_gid_zip_test.zip")).get()) {
-            final Enumeration<ZipArchiveEntry> en = zf.getEntries();
-
+        try (ZipFile zipFile = ZipFile.builder().setFile(getFile("COMPRESS-211_uid_gid_zip_test.zip")).get()) {
             // We expect EVERY entry of this ZIP file (dir & file) to
             // contain extra field 0x7875.
-            while (en.hasMoreElements()) {
-
-                final ZipArchiveEntry zae = en.nextElement();
+            zipFile.stream().forEach(zae -> {
                 final String name = zae.getName();
                 final X7875_NewUnix xf = (X7875_NewUnix) zae.getExtraField(X7875);
-
                 // The directory entry in the test ZIP file is uid/gid 1000.
                 long expected = 1000;
                 if (name.contains("uid555_gid555")) {
@@ -196,7 +190,7 @@ public class X7875_NewUnixTest {
                 }
                 assertEquals(expected, xf.getUID());
                 assertEquals(expected, xf.getGID());
-            }
+            });
         }
     }
 
