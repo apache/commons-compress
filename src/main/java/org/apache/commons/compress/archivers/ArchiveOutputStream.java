@@ -235,7 +235,7 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Compre
      * @return whether this instance was successfully closed.
      * @since 1.27.0
      */
-    protected boolean isClosed() {
+    public boolean isClosed() {
         return closed;
     }
 

@@ -23,7 +23,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,24 +34,25 @@ public class ArArchiveOutputStreamTest extends AbstractTest {
 
     @Test
     public void testLongFileNamesCauseExceptionByDefault() throws IOException {
-        try (ArArchiveOutputStream os = new ArArchiveOutputStream(new ByteArrayOutputStream())) {
+        ArArchiveOutputStream ref;
+        try (ArArchiveOutputStream outputStream = new ArArchiveOutputStream(new ByteArrayOutputStream())) {
+            ref = outputStream;
             final ArArchiveEntry ae = new ArArchiveEntry("this_is_a_long_name.txt", 0);
-            final IOException ex = assertThrows(IOException.class, () -> os.putArchiveEntry(ae));
+            final IOException ex = assertThrows(IOException.class, () -> outputStream.putArchiveEntry(ae));
             assertTrue(ex.getMessage().startsWith("File name too long"));
         }
+        assertTrue(ref.isClosed());
     }
 
     @Test
     public void testLongFileNamesWorkUsingBSDDialect() throws Exception {
         final File file = createTempFile();
-        try (OutputStream fos = Files.newOutputStream(file.toPath());
-                ArArchiveOutputStream os = new ArArchiveOutputStream(fos)) {
-            os.setLongFileMode(ArArchiveOutputStream.LONGFILE_BSD);
+        try (ArArchiveOutputStream outputStream = new ArArchiveOutputStream(Files.newOutputStream(file.toPath()))) {
+            outputStream.setLongFileMode(ArArchiveOutputStream.LONGFILE_BSD);
             final ArArchiveEntry ae = new ArArchiveEntry("this_is_a_long_name.txt", 14);
-            os.putArchiveEntry(ae);
-            os.write(new byte[] { 'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!', '\n' });
-            os.closeArchiveEntry();
-
+            outputStream.putArchiveEntry(ae);
+            outputStream.write(new byte[] { 'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!', '\n' });
+            outputStream.closeArchiveEntry();
             final List<String> expected = new ArrayList<>();
             expected.add("this_is_a_long_name.txt");
             checkArchiveContent(file, expected);

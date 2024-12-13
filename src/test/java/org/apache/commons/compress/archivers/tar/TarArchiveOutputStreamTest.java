@@ -56,17 +56,19 @@ public class TarArchiveOutputStreamTest extends AbstractTest {
 
     private static byte[] createTarArchiveContainingOneDirectory(final String fileName, final Date modificationDate) throws IOException {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try (TarArchiveOutputStream tarOut = new TarArchiveOutputStream(baos, 1024)) {
-            tarOut.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU);
+        TarArchiveOutputStream ref;
+        try (TarArchiveOutputStream outputStream = new TarArchiveOutputStream(baos, 1024)) {
+            ref = outputStream;
+            outputStream.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU);
             final TarArchiveEntry tarEntry = new TarArchiveEntry("d");
             tarEntry.setModTime(modificationDate);
             tarEntry.setMode(TarArchiveEntry.DEFAULT_DIR_MODE);
             tarEntry.setModTime(modificationDate.getTime());
             tarEntry.setName(fileName);
-            tarOut.putArchiveEntry(tarEntry);
-            tarOut.closeArchiveEntry();
+            outputStream.putArchiveEntry(tarEntry);
+            outputStream.closeArchiveEntry();
         }
-
+        assertTrue(ref.isClosed());
         return baos.toByteArray();
     }
 
