@@ -34,7 +34,7 @@ public class CpioArchiveOutputStreamTest extends AbstractTest {
     public void testWriteOldBinary() throws Exception {
         final File file = getFile("test1.xml");
         final File output = newTempFile("test.cpio");
-        CpioArchiveOutputStream ref;
+        final CpioArchiveOutputStream ref;
         try (CpioArchiveOutputStream outputStream = new CpioArchiveOutputStream(Files.newOutputStream(output.toPath()), CpioConstants.FORMAT_OLD_BINARY)) {
             ref = outputStream;
             outputStream.putArchiveEntry(new CpioArchiveEntry(CpioConstants.FORMAT_OLD_BINARY, file, "test1.xml"));

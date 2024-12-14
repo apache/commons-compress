@@ -56,7 +56,7 @@ public class TarArchiveOutputStreamTest extends AbstractTest {
 
     private static byte[] createTarArchiveContainingOneDirectory(final String fileName, final Date modificationDate) throws IOException {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        TarArchiveOutputStream ref;
+        final TarArchiveOutputStream ref;
         try (TarArchiveOutputStream outputStream = new TarArchiveOutputStream(baos, 1024)) {
             ref = outputStream;
             outputStream.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU);
