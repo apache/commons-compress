@@ -290,7 +290,7 @@ public class GzipParameters {
      * means no time stamp is available.
      * </p>
      */
-    private Instant modificationTime = Instant.EPOCH;
+    private Instant modificationInstant = Instant.EPOCH;
     private ExtraField extraField;
     private String fileName;
     private Charset fileNameCharset = GzipUtils.GZIP_ENCODING;
@@ -396,7 +396,7 @@ public class GzipParameters {
      * @since 1.28.0
      */
     public Instant getModificationInstant() {
-        return modificationTime;
+        return modificationInstant;
     }
 
     /**
@@ -410,7 +410,7 @@ public class GzipParameters {
      * @return the most recent modification time in seconds since 00:00:00 GMT, Jan. 1, 1970.
      */
     public long getModificationTime() {
-        return modificationTime.getEpochSecond();
+        return modificationInstant.getEpochSecond();
     }
 
     /**
@@ -546,7 +546,7 @@ public class GzipParameters {
      * @since 1.28.0
      */
     public void setModificationInstant(final Instant modificationTime) {
-        this.modificationTime = modificationTime != null ? modificationTime : Instant.EPOCH;
+        this.modificationInstant = modificationTime != null ? modificationTime : Instant.EPOCH;
     }
 
     /**
@@ -557,10 +557,10 @@ public class GzipParameters {
      * means no time stamp is available.
      * </p>
      *
-     * @param modificationTime the modification time, in seconds.
+     * @param modificationTimeSeconds the modification time, in seconds.
      */
-    public void setModificationTime(final long modificationTime) {
-        this.modificationTime = Instant.ofEpochSecond(modificationTime);
+    public void setModificationTime(final long modificationTimeSeconds) {
+        this.modificationInstant = Instant.ofEpochSecond(modificationTimeSeconds);
     }
 
     /**
@@ -602,7 +602,7 @@ public class GzipParameters {
     @Override
     public String toString() {
         final StringBuilder builder = new StringBuilder();
-        builder.append("GzipParameters [compressionLevel=").append(compressionLevel).append(", modificationTime=").append(modificationTime)
+        builder.append("GzipParameters [compressionLevel=").append(compressionLevel).append(", modificationTime=").append(modificationInstant)
                 .append(", fileName=").append(fileName).append(", comment=").append(comment).append(", operatingSystem=").append(operatingSystem)
                 .append(", bufferSize=").append(bufferSize).append(", deflateStrategy=").append(deflateStrategy).append("]");
         return builder.toString();
