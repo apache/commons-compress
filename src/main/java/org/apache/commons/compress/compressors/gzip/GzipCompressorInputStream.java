@@ -227,7 +227,7 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
             throw new IOException("Reserved flags are set in the .gz header");
         }
 
-        parameters.setModificationTime(ByteUtils.fromLittleEndian(inData, 4) * 1000);
+        parameters.setModificationTime(ByteUtils.fromLittleEndian(inData, 4));
         switch (inData.readUnsignedByte()) { // extra flags
         case 2:
             parameters.setCompressionLevel(Deflater.BEST_COMPRESSION);

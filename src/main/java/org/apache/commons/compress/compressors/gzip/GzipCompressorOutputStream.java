@@ -178,7 +178,7 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
         buffer.putShort((short) GZIPInputStream.GZIP_MAGIC);
         buffer.put((byte) Deflater.DEFLATED); // compression method (8: deflate)
         buffer.put((byte) ((extra != null ? FEXTRA : 0) | (fileName != null ? FNAME : 0) | (comment != null ? FCOMMENT : 0))); // flags
-        buffer.putInt((int) (parameters.getModificationTime() / 1000));
+        buffer.putInt((int) (parameters.getModificationTime()));
         // extra flags
         final int compressionLevel = parameters.getCompressionLevel();
         if (compressionLevel == Deflater.BEST_COMPRESSION) {
