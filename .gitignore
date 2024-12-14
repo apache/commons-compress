@@ -8,3 +8,4 @@ target
 *~
 /.externalToolBuilders/
 /maven-eclipse.xml
+/.java-version
