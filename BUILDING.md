@@ -31,11 +31,11 @@ Some tests are only run when specific profiles are enabled, these
 tests require a lot of disk space as they test behavior for very large
 archives.
 
-    mvn test -Prun-tarit
+    mvn test -Prun-tar-it
 
 runs tests for tar archives and requires more than 8GiB of disk space.
 
-    mvn test -Prun-zipit
+    mvn test -Prun-zip-it
 
 runs tests for zip archives that require up to 20 GiB of disk
 space. In addition the tests will run for a long time (more than ten

@@ -434,7 +434,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
   <profiles>
     <!-- Add long running tests as **/*IT.java -->
     <profile>
-      <id>run-zipit</id>
+      <id>run-zip-it</id>
       <build>
         <plugins>
           <plugin>
@@ -466,7 +466,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
       </build>
     </profile>
     <profile>
-      <id>run-tarit</id>
+      <id>run-tar-it</id>
       <build>
         <plugins>
           <plugin>
