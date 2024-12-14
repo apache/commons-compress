@@ -26,7 +26,7 @@ import org.tukaani.xz.LZMA2Options;
 import org.tukaani.xz.XZOutputStream;
 
 /**
- * XZ compressor.
+ * Compresses an output stream using the XZ and LZMA2 compression options.
  *
  * <em>Calling flush()</em>
  * <p>
@@ -53,9 +53,11 @@ public class XZCompressorOutputStream extends CompressorOutputStream<XZOutputStr
      * Creates a new XZ compressor using the specified LZMA2 preset level.
      * <p>
      * The presets 0-3 are fast presets with medium compression. The presets 4-6 are fairly slow presets with high compression. The default preset is 6.
+     * </p>
      * <p>
      * The presets 7-9 are like the preset 6 but use bigger dictionaries and have higher compressor and decompressor memory requirements. Unless the
      * uncompressed size of the file exceeds 8&nbsp;MiB, 16&nbsp;MiB, or 32&nbsp;MiB, it is waste of memory to use the presets 7, 8, or 9, respectively.
+     * </p>
      *
      * @param outputStream the stream to wrap
      * @param preset       the preset
