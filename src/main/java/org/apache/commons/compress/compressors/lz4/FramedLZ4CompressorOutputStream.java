@@ -209,7 +209,7 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream<Outp
         try {
             finish();
         } finally {
-            out.close();
+            super.close();
         }
     }
 

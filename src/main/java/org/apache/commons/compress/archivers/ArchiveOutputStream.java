@@ -61,11 +61,6 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Compre
     private long bytesWritten;
 
     /**
-     * Whether this instance was successfully closed.
-     */
-    private boolean closed;
-
-    /**
      * Whether this instance was successfully finished.
      */
     private boolean finished;
@@ -116,24 +111,6 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Compre
         if (isFinished()) {
             throw new IOException("Stream has already been finished.");
         }
-    }
-
-    /**
-     * Check to make sure that this stream has not been closed
-     *
-     * @throws IOException if the stream is already closed
-     * @since 1.27.0
-     */
-    protected void checkOpen() throws IOException {
-        if (isClosed()) {
-            throw new IOException("Stream closed");
-        }
-    }
-
-    @Override
-    public void close() throws IOException {
-        super.close();
-        closed = true;
     }
 
     /**
@@ -227,16 +204,6 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Compre
     @Deprecated
     public int getCount() {
         return (int) bytesWritten;
-    }
-
-    /**
-     * Tests whether this instance was successfully closed.
-     *
-     * @return whether this instance was successfully closed.
-     * @since 1.27.0
-     */
-    public boolean isClosed() {
-        return closed;
     }
 
     /**

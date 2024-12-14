@@ -53,9 +53,6 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
     /** The buffer receiving the compressed data from the deflater */
     private final byte[] deflateBuffer;
 
-    /** Indicates if the stream has been closed */
-    private boolean closed;
-
     /** The checksum of the uncompressed data */
     private final CRC32 crc = new CRC32();
 
@@ -87,13 +84,12 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
 
     @Override
     public void close() throws IOException {
-        if (!closed) {
+        if (!isClosed()) {
             try {
                 finish();
             } finally {
                 deflater.end();
-                out.close();
-                closed = true;
+                super.close();
             }
         }
     }

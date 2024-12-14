@@ -160,7 +160,7 @@ public class SnappyCompressorOutputStream extends CompressorOutputStream<OutputS
         try {
             finish();
         } finally {
-            out.close();
+            super.close();
         }
     }
 

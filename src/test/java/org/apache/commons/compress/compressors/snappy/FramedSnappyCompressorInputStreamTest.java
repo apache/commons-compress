@@ -196,6 +196,8 @@ public final class FramedSnappyCompressorInputStreamTest extends AbstractTest {
         try (FramedSnappyCompressorOutputStream compressor = new FramedSnappyCompressorOutputStream(buffer)) {
             compressor.write(bytes);
             compressor.finish();
+            compressor.close();
+            assertTrue(compressor.isClosed());
         }
         final byte[] bulkOutput = buffer.toByteArray();
         buffer = new ByteArrayOutputStream();
@@ -204,6 +206,8 @@ public final class FramedSnappyCompressorInputStreamTest extends AbstractTest {
                 compressor.write(element);
             }
             compressor.finish();
+            compressor.close();
+            assertTrue(compressor.isClosed());
         }
         assertArrayEquals(bulkOutput, buffer.toByteArray());
     }

@@ -92,7 +92,7 @@ public class Pack200CompressorOutputStream extends CompressorOutputStream<Output
             try {
                 abstractStreamBridge.stop();
             } finally {
-                out.close();
+                super.close();
             }
         }
     }
