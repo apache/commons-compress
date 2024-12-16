@@ -295,9 +295,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
                 finish();
             }
         } finally {
-            if (!isClosed()) {
-                super.close();
-            }
+            super.close();
         }
     }
 

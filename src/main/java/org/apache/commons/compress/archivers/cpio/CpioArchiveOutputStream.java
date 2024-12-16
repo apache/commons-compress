@@ -175,9 +175,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
                 finish();
             }
         } finally {
-            if (!isClosed()) {
-                super.close();
-            }
+            super.close();
         }
     }
 
