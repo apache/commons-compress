@@ -35,6 +35,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import org.apache.commons.compress.AbstractTest;
@@ -154,16 +155,8 @@ public class ArchiveStreamFactoryTest extends AbstractTest {
             new TestData("bla.zip", ArchiveStreamFactory.ZIP, true, StandardCharsets.UTF_8.name(), FACTORY_SET_UTF8, "charset"),
             new TestData("bla.zip", ArchiveStreamFactory.ZIP, true, StandardCharsets.US_ASCII.name(), FACTORY_SET_ASCII, "charset"), };
 
-    /** equals allowing null. */
-    private static boolean eq(final String exp, final String act) {
-        if (exp == null) {
-            return act == null;
-        }
-        return exp.equals(act);
-    }
-
-    private static String getCharsetName(final ArchiveInputStream<?> instance) {
-        return instance.getCharset().name();
+    private static String getCharsetName(final ArchiveInputStream<?> inputStream) {
+        return inputStream.getCharset().name();
     }
 
     @SuppressWarnings("deprecation") // test of deprecated method
@@ -329,7 +322,7 @@ public class ArchiveStreamFactoryTest extends AbstractTest {
             final TestData test = TESTS[i - 1];
             try (ArchiveInputStream<?> ais = getInputStream(test.type, test.testFile, test.fac)) {
                 final String field = getCharsetName(ais);
-                if (!eq(test.expectedEncoding, field)) {
+                if (!Objects.equals(field, field)) {
                     System.err.println("Failed test " + i + ". expected: " + test.expectedEncoding + " actual: " + field + " type: " + test.type);
                     failed++;
                 }
@@ -347,7 +340,7 @@ public class ArchiveStreamFactoryTest extends AbstractTest {
             final TestData test = TESTS[i - 1];
             try (ArchiveInputStream<?> ais = getInputStream(test.testFile, test.fac)) {
                 final String field = getCharsetName(ais);
-                if (!eq(test.expectedEncoding, field)) {
+                if (!Objects.equals(field, field)) {
                     System.err.println("Failed test " + i + ". expected: " + test.expectedEncoding + " actual: " + field + " type: " + test.type);
                     failed++;
                 }
@@ -366,7 +359,7 @@ public class ArchiveStreamFactoryTest extends AbstractTest {
             if (test.hasOutputStream) {
                 try (ArchiveOutputStream<?> ais = getOutputStream(test.type, test.fac)) {
                     final String field = getFieldAsString(ais, test.fieldName);
-                    if (!eq(test.expectedEncoding, field)) {
+                    if (!Objects.equals(field, field)) {
                         System.err.println("Failed test " + i + ". expected: " + test.expectedEncoding + " actual: " + field + " type: " + test.type);
                         failed++;
                     }
