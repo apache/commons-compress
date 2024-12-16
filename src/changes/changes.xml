@@ -76,7 +76,8 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump com.github.marschall:memoryfilesystem from 2.8.0 to 2.8.1 #577.</action>
       <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump org.ow2.asm:asm from 9.7 to 9.7.1 #586.</action>
       <!-- REMOVE -->
-      <action type="remove" dev="ggregory" issue="COMPRESS-638" due-to="vincexjl, Gary Gregory, Piotr P. Karwasz">GzipCompressorOutputStream no longer percent-endcodes in US-ASCII a file name or comment that the Charset in GzipParameters.setFileNameCharset(Charset) cannot encode.</action>     
+      <action type="remove" dev="ggregory" issue="COMPRESS-638" due-to="vincexjl, Gary Gregory, Piotr P. Karwasz">GzipCompressorOutputStream no longer percent-endcodes in US-ASCII a file name or comment that the Charset in GzipParameters.setFileNameCharset(Charset) cannot encode.</action>
+      <action type="update" dev="ggregory" due-to="Gary Gregory">Remove ZstdCompressorOutputStream.toString(), it was misleading by returning the delegate's toString().</action>
     </release>
     <release version="1.27.1" date="2024-08-16" description="This is a feature and maintenance release. Java 8 or later is required.">
      <action type="fix" issue="COMPRESS-686" dev="ggregory" due-to="Richard Blank, Gary Gregory">Compression into BZip2 format has unexpected end of file when using a BufferedOutputStream.</action>

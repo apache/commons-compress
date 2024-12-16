@@ -92,11 +92,6 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream<ZstdOutpu
     }
 
     @Override
-    public String toString() {
-        return out.toString();
-    }
-
-    @Override
     public void write(final byte[] buf, final int off, final int len) throws IOException {
         out.write(buf, off, len);
     }
