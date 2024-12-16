@@ -85,9 +85,9 @@ public abstract class CompressFilterOutputStream<T extends OutputStream> extends
     }
 
     /**
-     * Check to make sure that this stream has not been closed
+     * Check to make sure that this stream has not been closed.
      *
-     * @throws IOException if the stream is already closed
+     * @throws IOException if the stream is already closed.
      */
     protected void checkOpen() throws IOException {
         if (isClosed()) {
