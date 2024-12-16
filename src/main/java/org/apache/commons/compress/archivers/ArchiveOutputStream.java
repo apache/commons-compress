@@ -62,6 +62,9 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Compre
 
     /**
      * Whether this instance was successfully finished.
+     * <p>
+     * The state transition usually is open, to finished, to closed.
+     * </p>
      */
     private boolean finished;
 
