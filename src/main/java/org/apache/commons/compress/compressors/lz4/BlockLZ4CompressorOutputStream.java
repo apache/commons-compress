@@ -187,8 +187,6 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream<Outpu
 
     // used in one-arg write method
     private final byte[] oneByte = new byte[1];
-    private boolean finished;
-
     private final Deque<Pair> pairs = new LinkedList<>();
 
     // keeps track of the last window-size bytes (64k) in order to be
@@ -348,9 +346,9 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream<Outpu
      * @throws IOException if an error occurs
      */
     public void finish() throws IOException {
-        if (!finished) {
+        if (!isFinished()) {
             compressor.finish();
-            finished = true;
+            super.finish();
         }
     }
 

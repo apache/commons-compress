@@ -61,14 +61,6 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Compre
     private long bytesWritten;
 
     /**
-     * Whether this instance was successfully finished.
-     * <p>
-     * The state transition usually is open, to finished, to closed.
-     * </p>
-     */
-    private boolean finished;
-
-    /**
      * Constructs a new instance without a backing OutputStream.
      * <p>
      * You must initialize {@code this.out} after construction.
@@ -179,16 +171,6 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Compre
     }
 
     /**
-     * Finishes the addition of entries to this stream, without closing it. Additional data can be written, if the format supports it.
-     *
-     * @throws IOException Maybe thrown by subclasses if the user forgets to close the entry.
-     */
-    @SuppressWarnings("unused") // for subclasses
-    public void finish() throws IOException {
-        finished = true;
-    }
-
-    /**
      * Gets the current number of bytes written to this stream.
      *
      * @return the number of written bytes
@@ -207,16 +189,6 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Compre
     @Deprecated
     public int getCount() {
         return (int) bytesWritten;
-    }
-
-    /**
-     * Tests whether this instance was successfully finished.
-     *
-     * @return whether this instance was successfully finished.
-     * @since 1.27.0
-     */
-    protected boolean isFinished() {
-        return finished;
     }
 
     /**

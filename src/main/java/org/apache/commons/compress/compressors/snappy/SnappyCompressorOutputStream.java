@@ -104,8 +104,6 @@ public class SnappyCompressorOutputStream extends CompressorOutputStream<OutputS
     // used in one-arg write method
     private final byte[] oneByte = new byte[1];
 
-    private boolean finished;
-
     /**
      * Constructor using the default block size of 32k.
      *
@@ -170,9 +168,9 @@ public class SnappyCompressorOutputStream extends CompressorOutputStream<OutputS
      * @throws IOException if an error occurs
      */
     public void finish() throws IOException {
-        if (!finished) {
+        if (!isFinished()) {
             compressor.finish();
-            finished = true;
+            super.finish();
         }
     }
 

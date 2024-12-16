@@ -150,8 +150,6 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream<Outp
     private final byte[] blockData;
     private final Parameters params;
 
-    private boolean finished;
-
     // used for frame header checksum and content checksum, if requested
     private final org.apache.commons.codec.digest.XXHash32 contentHash = new org.apache.commons.codec.digest.XXHash32();
     // used for block checksum, if requested
@@ -219,10 +217,10 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream<Outp
      * @throws IOException if an error occurs
      */
     public void finish() throws IOException {
-        if (!finished) {
+        if (!isFinished()) {
             flushBlock();
             writeTrailer();
-            finished = true;
+            super.finish();
         }
     }
 

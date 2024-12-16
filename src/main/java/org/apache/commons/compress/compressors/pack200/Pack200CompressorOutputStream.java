@@ -34,7 +34,6 @@ import org.apache.commons.compress.java.util.jar.Pack200;
  * @since 1.3
  */
 public class Pack200CompressorOutputStream extends CompressorOutputStream<OutputStream> {
-    private boolean finished;
     private final AbstractStreamBridge abstractStreamBridge;
     private final Map<String, String> properties;
 
@@ -98,8 +97,8 @@ public class Pack200CompressorOutputStream extends CompressorOutputStream<Output
     }
 
     public void finish() throws IOException {
-        if (!finished) {
-            finished = true;
+        if (!isFinished()) {
+            super.finish();
             final Pack200.Packer p = Pack200.newPacker();
             if (properties != null) {
                 p.properties().putAll(properties);

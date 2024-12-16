@@ -56,6 +56,13 @@ public abstract class CompressFilterOutputStream<T extends OutputStream> extends
      * Whether this instance was successfully closed.
      */
     private final AtomicBoolean closed = new AtomicBoolean();
+    /**
+     * Whether this instance was successfully finished.
+     * <p>
+     * The state transition usually is open, to finished, to closed.
+     * </p>
+     */
+    private boolean finished;
 
     /**
      * Constructs a new instance without a backing {@link OutputStream}.
@@ -97,6 +104,15 @@ public abstract class CompressFilterOutputStream<T extends OutputStream> extends
     }
 
     /**
+     * Finishes the addition of entries to this stream, without closing it. Additional data can be written, if the format supports it.
+     *
+     * @throws IOException Maybe thrown by subclasses if the user forgets to close the entry.
+     */
+    public void finish() throws IOException {
+        finished = true;
+    }
+
+    /**
      * Tests whether this instance was successfully closed.
      *
      * @return whether this instance was successfully closed.
@@ -104,6 +120,16 @@ public abstract class CompressFilterOutputStream<T extends OutputStream> extends
      */
     public boolean isClosed() {
         return closed.get();
+    }
+
+    /**
+     * Tests whether this instance was successfully finished.
+     *
+     * @return whether this instance was successfully finished.
+     * @since 1.27.0
+     */
+    protected boolean isFinished() {
+        return finished;
     }
 
     /**
