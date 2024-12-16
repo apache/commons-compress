@@ -35,7 +35,7 @@ public class ZipArchiveOutputStreamTest extends AbstractTempDirTest {
 
     @Test
     public void testFileBasics() throws IOException {
-        ZipArchiveOutputStream ref;
+        final ZipArchiveOutputStream ref;
         try (ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(createTempFile())) {
             ref = outputStream;
             assertTrue(outputStream.isSeekable());

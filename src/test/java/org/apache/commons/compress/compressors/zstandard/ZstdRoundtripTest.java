@@ -18,6 +18,7 @@
 package org.apache.commons.compress.compressors.zstandard;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -34,6 +35,9 @@ import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
+/**
+ * Tests {@link ZstdCompressorOutputStream}.
+ */
 public class ZstdRoundtripTest extends AbstractTest {
 
     private interface OutputStreamCreator {
@@ -46,6 +50,8 @@ public class ZstdRoundtripTest extends AbstractTest {
         try (FileOutputStream os = new FileOutputStream(output);
                 ZstdCompressorOutputStream zos = oc.wrap(os)) {
             zos.write(input);
+            zos.close();
+            assertTrue(zos.isClosed());
         }
         try (ZstdCompressorInputStream zis = new ZstdCompressorInputStream(Files.newInputStream(output.toPath()))) {
             final byte[] expected = Files.readAllBytes(input);

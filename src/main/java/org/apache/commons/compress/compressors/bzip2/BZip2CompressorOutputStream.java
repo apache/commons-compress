@@ -23,7 +23,6 @@ import java.io.OutputStream;
 import java.util.Arrays;
 
 import org.apache.commons.compress.compressors.CompressorOutputStream;
-import org.apache.commons.io.IOUtils;
 
 /**
  * An output stream that compresses into the BZip2 format into another stream.
@@ -398,8 +397,6 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream<OutputSt
 
     private BlockSort blockSorter;
 
-    private volatile boolean closed;
-
     /**
      * Constructs a new {@code BZip2CompressorOutputStream} with a blocksize of 900k.
      *
@@ -475,19 +472,13 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream<OutputSt
         this.bsLive = bsLiveShadow + n;
     }
 
-    private void checkClosed() throws IOException {
-        if (closed) {
-            throw new IOException("Stream closed");
-        }
-    }
-
     @Override
     public void close() throws IOException {
-        if (!closed) {
+        if (!isClosed()) {
             try {
                 finish();
             } finally {
-                IOUtils.close(out);
+                super.close();
             }
         }
     }
@@ -545,8 +536,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream<OutputSt
     }
 
     public void finish() throws IOException {
-        if (!closed) {
-            closed = true;
+        if (!isClosed()) {
             try {
                 if (this.runLength > 0) {
                     writeRun();
@@ -1167,7 +1157,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream<OutputSt
         if (offs + len > buf.length) {
             throw new IndexOutOfBoundsException("offs(" + offs + ") + len(" + len + ") > buf.length(" + buf.length + ").");
         }
-        checkClosed();
+        checkOpen();
         for (final int hi = offs + len; offs < hi;) {
             write0(buf[offs++]);
         }
@@ -1175,7 +1165,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream<OutputSt
 
     @Override
     public void write(final int b) throws IOException {
-        checkClosed();
+        checkOpen();
         write0(b);
     }
 

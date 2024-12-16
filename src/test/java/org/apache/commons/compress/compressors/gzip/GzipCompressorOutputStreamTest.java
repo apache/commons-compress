@@ -143,6 +143,8 @@ public class GzipCompressorOutputStreamTest {
         try (OutputStream fos = Files.newOutputStream(targetFile);
                 GzipCompressorOutputStream gos = new GzipCompressorOutputStream(fos, parameters)) {
             gos.write(tempSourceFile);
+            gos.close();
+            assertTrue(gos.isClosed());
         }
         try (GzipCompressorInputStream gis = new GzipCompressorInputStream(Files.newInputStream(targetFile))) {
             final ExtraField extra2 = gis.getMetaData().getExtraField();

@@ -19,6 +19,7 @@
 package org.apache.commons.compress.compressors.snappy;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -58,6 +59,8 @@ public final class SnappyRoundtripTest extends AbstractTest {
         try (OutputStream os = Files.newOutputStream(outputSz.toPath());
                 SnappyCompressorOutputStream sos = new SnappyCompressorOutputStream(os, Files.size(input), params)) {
             sos.write(input);
+            sos.close();
+            assertTrue(sos.isClosed());
         }
         try (SnappyCompressorInputStream sis = new SnappyCompressorInputStream(Files.newInputStream(outputSz.toPath()), params.getWindowSize())) {
             final byte[] expected = Files.readAllBytes(input);

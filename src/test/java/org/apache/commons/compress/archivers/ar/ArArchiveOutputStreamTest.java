@@ -34,7 +34,7 @@ public class ArArchiveOutputStreamTest extends AbstractTest {
 
     @Test
     public void testLongFileNamesCauseExceptionByDefault() throws IOException {
-        ArArchiveOutputStream ref;
+        final ArArchiveOutputStream ref;
         try (ArArchiveOutputStream outputStream = new ArArchiveOutputStream(new ByteArrayOutputStream())) {
             ref = outputStream;
             final ArArchiveEntry ae = new ArArchiveEntry("this_is_a_long_name.txt", 0);

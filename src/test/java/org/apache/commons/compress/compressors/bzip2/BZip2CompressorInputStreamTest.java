@@ -20,6 +20,7 @@ package org.apache.commons.compress.compressors.bzip2;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -78,6 +79,7 @@ public class BZip2CompressorInputStreamTest extends AbstractTest {
             bzipOut.write(rawData);
             bzipOut.flush();
             bzipOut.close();
+            assertTrue(bzipOut.isClosed());
             baos.flush();
         }
 

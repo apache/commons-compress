@@ -287,7 +287,7 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream<Outpu
         try {
             finish();
         } finally {
-            out.close();
+            super.close();
         }
     }
 

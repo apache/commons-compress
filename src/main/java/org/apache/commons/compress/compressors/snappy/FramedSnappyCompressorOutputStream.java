@@ -93,7 +93,7 @@ public class FramedSnappyCompressorOutputStream extends CompressorOutputStream<O
         try {
             finish();
         } finally {
-            out.close();
+            super.close();
         }
     }
 
