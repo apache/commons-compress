@@ -1347,10 +1347,10 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * Defaults to false.
      * </p>
      *
-     * @param b whether to fall back to UTF and the language encoding flag if the file name cannot be encoded using the specified encoding.
+     * @param fallbackToUTF8 whether to fall back to UTF and the language encoding flag if the file name cannot be encoded using the specified encoding.
      */
-    public void setFallbackToUTF8(final boolean b) {
-        fallbackToUTF8 = b;
+    public void setFallbackToUTF8(final boolean fallbackToUTF8) {
+        this.fallbackToUTF8 = fallbackToUTF8;
     }
 
     /**
