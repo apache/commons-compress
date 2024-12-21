@@ -482,7 +482,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     /**
      * Adds an archive entry with a raw input stream.
      * <p>
-     * If crc, size and compressed size are supplied on the entry, these values will be used as-is. Zip64 status is re-established based on the settings in this
+     * If CRC, size and compressed size are supplied on the entry, these values will be used as-is. Zip64 status is re-established based on the settings in this
      * stream, and the supplied value is ignored.
      * </p>
      * <p>

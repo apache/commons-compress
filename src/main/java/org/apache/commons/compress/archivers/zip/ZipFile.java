@@ -284,7 +284,7 @@ public class ZipFile implements Closeable {
         /* compression method              */ + ZipConstants.SHORT
         /* last mod file time              */ + ZipConstants.SHORT
         /* last mod file date              */ + ZipConstants.SHORT
-        /* crc-32                          */ + ZipConstants.WORD
+        /* CRC-32                          */ + ZipConstants.WORD
         /* compressed size                 */ + ZipConstants.WORD
         /* uncompressed size               */ + ZipConstants.WORD
         /* file name length                */ + ZipConstants. SHORT
@@ -453,7 +453,7 @@ public class ZipFile implements Closeable {
         /* compression method              */ + ZipConstants.SHORT
         /* last mod file time              */ + ZipConstants.SHORT
         /* last mod file date              */ + ZipConstants.SHORT
-        /* crc-32                          */ + ZipConstants.WORD
+        /* CRC-32                          */ + ZipConstants.WORD
         /* compressed size                 */ + ZipConstants.WORD
         /* uncompressed size               */ + (long) ZipConstants.WORD;
     // @formatter:on

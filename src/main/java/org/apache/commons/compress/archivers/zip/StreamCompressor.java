@@ -250,9 +250,9 @@ public abstract class StreamCompressor implements Closeable {
     }
 
     /**
-     * Gets the crc32 of the last deflated file
+     * Gets the CRC-32 of the last deflated file
      *
-     * @return the crc32
+     * @return the CRC-32
      */
 
     public long getCrc32() {
