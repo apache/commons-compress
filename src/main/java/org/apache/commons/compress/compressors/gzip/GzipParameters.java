@@ -298,6 +298,7 @@ public class GzipParameters {
     private OS operatingSystem = OS.UNKNOWN; // Unknown OS by default
     private int bufferSize = 512;
     private int deflateStrategy = Deflater.DEFAULT_STRATEGY;
+    private boolean hcrc;
 
     /**
      * Gets size of the buffer used to retrieve compressed data.
@@ -432,6 +433,15 @@ public class GzipParameters {
         return operatingSystem;
     }
 
+    /**
+     * Returns if the header crc is to be added (when writing) or was present (when reading).
+     *
+     * @return true is header crc si to be added (on write) or was found (after read).
+     */
+    public boolean hasHcrc() {
+        return hcrc;
+    }
+
     private String requireNonNulByte(final String text) {
         if (StringUtils.isNotEmpty(text) && ArrayUtils.contains(text.getBytes(fileNameCharset), (byte) 0)) {
             throw new IllegalArgumentException("String encoded in Charset '" + fileNameCharset + "' contains the nul byte 0 which is not supported in gzip.");
@@ -489,6 +499,7 @@ public class GzipParameters {
         this.deflateStrategy = deflateStrategy;
     }
 
+
     /**
      * Sets the extra subfields. Note that a non-null extra will appear in the gzip header regardless of the presence of subfields, while a null extra will not
      * appear at all.
@@ -537,6 +548,15 @@ public class GzipParameters {
      */
     public void setFileNameCharset(final Charset charset) {
         this.fileNameCharset = Charsets.toCharset(charset, GzipUtils.GZIP_ENCODING);
+    }
+
+    /**
+     * Establishes the presence of the header flag FLG.FHCRC and its headers crc16 value.
+     *
+     * @param hcrc when true, the header crc16 is calculated and inserted in the gzip header on write; on read it means it was present.
+     */
+    public void setHcrc(boolean hcrc) {
+        this.hcrc = hcrc;
     }
 
     /**
@@ -598,6 +618,7 @@ public class GzipParameters {
     public void setOS(final OS os) {
         this.operatingSystem = os != null ? os : OS.UNKNOWN;
     }
+
 
     @Override
     public String toString() {

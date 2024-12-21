@@ -28,6 +28,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
@@ -37,7 +39,10 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.compress.compressors.gzip.ExtraField.SubField;
+import org.apache.commons.compress.compressors.gzip.GzipParameters.OS;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -212,6 +217,56 @@ public class GzipCompressorOutputStreamTest {
     public void testFileNameChinesePercentEncoded() throws IOException {
         // "Test Chinese name"
         testFileName("??????.xml", EXPECTED_FILE_NAME);
+    }
+
+
+    /**
+     * Tests the gzip header CRC.
+     *
+     * @throws IOException When the test has issues with the underlying file system or unexpected gzip operations.
+     */
+    @Test
+    public void testHcrc() throws IOException, DecoderException {
+        final GzipParameters parameters = new GzipParameters();
+        parameters.setHcrc(true);
+        parameters.setModificationTime(0x66554433); // avoid changing time
+        parameters.setFileName("AAAA");
+        parameters.setComment("ZZZZ");
+        parameters.setOS(OS.UNIX);
+        final ExtraField extra = new ExtraField();
+        extra.addSubField("BB", "CCCC".getBytes(StandardCharsets.ISO_8859_1));
+        parameters.setExtraField(extra);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try (GzipCompressorOutputStream gos = new GzipCompressorOutputStream(baos, parameters)) {
+            // no thing to write for this test.
+        }
+        byte[] result = baos.toByteArray();
+        byte[] headerExpected = Hex.decodeHex("1f8b" // id1 id2
+                + "08" //cm
+                + "1e" //flg(FEXTRA|FNAME|FCOMMENT|FHCRC)
+                + "33445566" // mtime little endian
+                + "00" + "03" // xfl os
+                + "0800" + "4242" + "0400" + "43434343" //xlen sfid sflen "CCCC"
+                + "4141414100" // "AAAA" with \0
+                + "5a5a5a5a00" // "ZZZZ" with \0
+                + "d842" //crc32 = 839242d8
+                + "0300" // empty deflate stream
+                + "00000000" // crs32
+                + "00000000" // isize
+        );
+        assertArrayEquals(Arrays.copyOfRange(headerExpected, 0, headerExpected.length - 1), Arrays.copyOfRange(result, 0, headerExpected.length - 1));
+        try (GzipCompressorInputStream gis = new GzipCompressorInputStream(new ByteArrayInputStream(result))) {
+            GzipParameters md = gis.getMetaData();
+            assertTrue(md.hasHcrc());
+            assertEquals(0x66554433, md.getModificationTime());
+            assertEquals(1, md.getExtraField().size());
+            SubField sf = md.getExtraField().iterator().next();
+            assertEquals("BB", sf.getId());
+            assertEquals("CCCC", new String(sf.getPayload(), StandardCharsets.ISO_8859_1));
+            assertEquals("AAAA", md.getFileName());
+            assertEquals("ZZZZ", md.getComment());
+            assertEquals(OS.UNIX, md.getOS());
+        }
     }
 
 }
