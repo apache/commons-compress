@@ -47,6 +47,9 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
     /** Header flag indicating a comment follows the header */
     private static final int FCOMMENT = 1 << 4;
 
+    /** Header flag indicating a header crc follows the header */
+    private static final int FHCRC = 1 << 1;
+
     /** Deflater used to compress the data */
     private final Deflater deflater;
 
@@ -107,6 +110,7 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
      * @since 1.7
      * @throws IOException on error
      */
+    @Override
     public void finish() throws IOException {
         if (!deflater.finished()) {
             deflater.finish();
@@ -160,8 +164,11 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
      */
     private void writeC(final String value, final Charset charset) throws IOException {
         if (value != null) {
-            out.write(value.getBytes(charset));
+            byte[] ba = value.getBytes(charset);
+            out.write(ba);
             out.write(0);
+            crc.update(ba);
+            crc.update(0);
         }
     }
 
@@ -173,7 +180,11 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
         buffer.order(ByteOrder.LITTLE_ENDIAN);
         buffer.putShort((short) GZIPInputStream.GZIP_MAGIC);
         buffer.put((byte) Deflater.DEFLATED); // compression method (8: deflate)
-        buffer.put((byte) ((extra != null ? FEXTRA : 0) | (fileName != null ? FNAME : 0) | (comment != null ? FCOMMENT : 0))); // flags
+        buffer.put((byte) ((extra != null ? FEXTRA : 0)
+                | (fileName != null ? FNAME : 0)
+                | (comment != null ? FCOMMENT : 0)
+                | (parameters.hasHcrc() ? FHCRC : 0)
+        )); // flags
         buffer.putInt((int) (parameters.getModificationInstant().getEpochSecond()));
         // extra flags
         final int compressionLevel = parameters.getCompressionLevel();
@@ -185,14 +196,26 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
             buffer.put((byte) 0);
         }
         buffer.put((byte) parameters.getOperatingSystem());
+
         out.write(buffer.array());
+        crc.update(buffer.array());
         if (extra != null) {
             out.write(extra.length & 0xff); // little endian
             out.write(extra.length >>> 8 & 0xff);
             out.write(extra);
+            crc.update(extra.length & 0xff);
+            crc.update(extra.length >>> 8 & 0xff);
+            crc.update(extra);
         }
         writeC(fileName, parameters.getFileNameCharset());
         writeC(comment, parameters.getFileNameCharset());
+
+        if (parameters.hasHcrc()) {
+            int v = (int) crc.getValue() & 0xffff;
+            out.write(v & 0xff);
+            out.write((v >>> 8) & 0xff);
+        }
+        crc.reset();
     }
 
     private void writeTrailer() throws IOException {
