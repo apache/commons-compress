@@ -386,7 +386,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
      * @see #isGNUStringTable
      */
     private ArArchiveEntry readGNUStringTable(final byte[] length, final int offset, final int len) throws IOException {
-        int bufflen;
+        final int bufflen;
         try {
             bufflen = asInt(length, offset, len); // Assume length will fit in an int
         } catch (final NumberFormatException ex) {

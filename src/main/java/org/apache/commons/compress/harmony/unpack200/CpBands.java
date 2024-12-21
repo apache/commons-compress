@@ -184,7 +184,7 @@ public class CpBands extends BandSet {
     }
 
     public CPUTF8 cpSignatureValue(final int index) {
-        int globalIndex;
+        final int globalIndex;
         if (cpSignatureInts[index] != -1) {
             globalIndex = cpSignatureInts[index];
         } else {

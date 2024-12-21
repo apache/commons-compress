@@ -1392,13 +1392,8 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
             return "xustar".equals(archType) || "exustar".equals(archType);
         }
         // Check if this is XUSTAR
-        if (isInvalidPrefix(header)) {
-            return false;
-        }
-        if (isInvalidXtarTime(header, XSTAR_ATIME_OFFSET, ATIMELEN_XSTAR)) {
-            return false;
-        }
-        if (isInvalidXtarTime(header, XSTAR_CTIME_OFFSET, CTIMELEN_XSTAR)) {
+        if (isInvalidPrefix(header) || isInvalidXtarTime(header, XSTAR_ATIME_OFFSET, ATIMELEN_XSTAR)
+                || isInvalidXtarTime(header, XSTAR_CTIME_OFFSET, CTIMELEN_XSTAR)) {
             return false;
         }
         return true;

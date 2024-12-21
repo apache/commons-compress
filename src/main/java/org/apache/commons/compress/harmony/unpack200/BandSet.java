@@ -80,7 +80,7 @@ public abstract class BandSet {
             return getFirst;
         }
         final int first = getFirst[0];
-        int[] band;
+        final int[] band;
         if (codec.isSigned() && first >= -256 && first <= -1) {
             // Non-default codec should be used
             codecUsed = CodecEncoding.getCodec(-1 - first, header.getBandHeadersInputStream(), codec);
@@ -375,7 +375,7 @@ public abstract class BandSet {
             sum += counts[i];
         }
         int[] hi = null;
-        int[] lo;
+        final int[] lo;
         if (hiCodec != null) {
             hi = decodeBandInt(name, in, hiCodec, sum);
         }

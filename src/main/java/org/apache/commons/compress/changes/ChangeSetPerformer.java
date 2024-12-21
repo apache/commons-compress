@@ -152,11 +152,7 @@ public class ChangeSetPerformer<I extends ArchiveInputStream<E>, O extends Archi
             for (final Change<E> change : workingSet) {
                 final ChangeType type = change.getType();
                 final String target = change.getTargetFileName();
-                if (type == ChangeType.DELETE && source.equals(target)) {
-                    return true;
-                }
-
-                if (type == ChangeType.DELETE_DIR && source.startsWith(target + "/")) {
+                if (type == ChangeType.DELETE && source.equals(target) || type == ChangeType.DELETE_DIR && source.startsWith(target + "/")) {
                     return true;
                 }
             }

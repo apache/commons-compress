@@ -48,6 +48,7 @@ public class LZMACompressorOutputStream extends CompressorOutputStream<LZMAOutpu
      *
      * @throws IOException on error
      */
+    @Override
     @SuppressWarnings("resource") // instance variable access
     public void finish() throws IOException {
         out().finish();

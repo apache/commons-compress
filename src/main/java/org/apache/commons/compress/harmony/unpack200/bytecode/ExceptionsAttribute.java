@@ -57,10 +57,7 @@ public class ExceptionsAttribute extends Attribute {
         if (this == obj) {
             return true;
         }
-        if (!super.equals(obj)) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
+        if (!super.equals(obj) || getClass() != obj.getClass()) {
             return false;
         }
         final ExceptionsAttribute other = (ExceptionsAttribute) obj;

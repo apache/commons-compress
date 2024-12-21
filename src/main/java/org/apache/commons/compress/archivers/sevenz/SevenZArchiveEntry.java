@@ -112,10 +112,7 @@ public class SevenZArchiveEntry implements ArchiveEntry {
         }
         final Iterator<? extends SevenZMethodConfiguration> i2 = c2.iterator();
         for (final SevenZMethodConfiguration element : c1) {
-            if (!i2.hasNext()) {
-                return false;
-            }
-            if (!element.equals(i2.next())) {
+            if (!i2.hasNext() || !element.equals(i2.next())) {
                 return false;
             }
         }

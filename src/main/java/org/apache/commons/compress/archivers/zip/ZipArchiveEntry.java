@@ -736,7 +736,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
         final List<ZipExtraField> centralFields = new ArrayList<>(Arrays.asList(parseExtraFields(central, false, parsingBehavior)));
         final List<ZipExtraField> merged = new ArrayList<>();
         for (final ZipExtraField l : localFields) {
-            ZipExtraField c;
+            final ZipExtraField c;
             if (l instanceof UnparseableExtraFieldData) {
                 c = findUnparseable(centralFields);
             } else {

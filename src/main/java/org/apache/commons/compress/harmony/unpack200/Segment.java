@@ -145,8 +145,7 @@ public class Segment {
                         firstDollar = index;
                     }
                 }
-                String fileName;
-
+                final String fileName;
                 if (firstDollar > -1 && i <= firstDollar) {
                     fileName = fullName.substring(i, firstDollar) + ".java";
                 } else {

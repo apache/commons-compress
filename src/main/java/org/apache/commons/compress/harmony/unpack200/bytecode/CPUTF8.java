@@ -53,10 +53,7 @@ public class CPUTF8 extends ConstantPoolEntry {
         if (this == obj) {
             return true;
         }
-        if (obj == null) {
-            return false;
-        }
-        if (this.getClass() != obj.getClass()) {
+        if (obj == null || this.getClass() != obj.getClass()) {
             return false;
         }
         final CPUTF8 other = (CPUTF8) obj;

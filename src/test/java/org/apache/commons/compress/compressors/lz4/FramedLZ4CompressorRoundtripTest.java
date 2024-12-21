@@ -77,7 +77,7 @@ public final class FramedLZ4CompressorRoundtripTest extends AbstractTest {
 
     private void roundTripTest(final String testFile, final FramedLZ4CompressorOutputStream.Parameters params) throws IOException {
         final File input = getFile(testFile);
-        byte[] expected;
+        final byte[] expected;
         try (InputStream is = Files.newInputStream(input.toPath())) {
             expected = IOUtils.toByteArray(is);
         }

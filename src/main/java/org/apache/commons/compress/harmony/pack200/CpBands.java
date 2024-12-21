@@ -265,7 +265,7 @@ public class CpBands extends BandSet {
         CPSignature cpS = stringsToCpSignature.get(signature);
         if (cpS == null) {
             final List<CPClass> cpClasses = new ArrayList<>();
-            CPUTF8 signatureUTF8;
+            final CPUTF8 signatureUTF8;
             if (signature.length() > 1 && signature.indexOf('L') != -1) {
                 final List<String> classes = new ArrayList<>();
                 final char[] chars = signature.toCharArray();

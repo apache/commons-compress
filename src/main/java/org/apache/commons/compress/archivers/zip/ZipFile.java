@@ -503,7 +503,7 @@ public class ZipFile implements Closeable {
         final FileChannel channel = FileChannel.open(path, StandardOpenOption.READ);
         try {
             final boolean is64 = positionAtEndOfCentralDirectoryRecord(channel);
-            long numberOfDisks;
+            final long numberOfDisks;
             if (is64) {
                 channel.position(channel.position() + ZipConstants.WORD + ZipConstants.WORD + ZipConstants.DWORD);
                 final ByteBuffer buf = ByteBuffer.allocate(ZipConstants.WORD);

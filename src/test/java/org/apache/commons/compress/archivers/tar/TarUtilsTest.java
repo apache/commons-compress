@@ -54,17 +54,15 @@ public class TarUtilsTest extends AbstractTest {
 
     private void checkRoundTripOctal(final long value, final int bufsize) {
         final byte[] buffer = new byte[bufsize];
-        long parseValue;
         TarUtils.formatLongOctalBytes(value, buffer, 0, buffer.length);
-        parseValue = TarUtils.parseOctal(buffer, 0, buffer.length);
+        final long parseValue = TarUtils.parseOctal(buffer, 0, buffer.length);
         assertEquals(value, parseValue);
     }
 
     private void checkRoundTripOctalOrBinary(final long value, final int bufsize) {
         final byte[] buffer = new byte[bufsize];
-        long parseValue;
         TarUtils.formatLongOctalOrBinaryBytes(value, buffer, 0, buffer.length);
-        parseValue = TarUtils.parseOctalOrBinary(buffer, 0, buffer.length);
+        final long parseValue = TarUtils.parseOctalOrBinary(buffer, 0, buffer.length);
         assertEquals(value, parseValue);
     }
 

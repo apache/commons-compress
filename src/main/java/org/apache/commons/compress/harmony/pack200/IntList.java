@@ -204,7 +204,7 @@ public class IntList {
     }
 
     public int remove(final int location) {
-        int result;
+        final int result;
         final int size = lastIndex - firstIndex;
         if (0 > location || location >= size) {
             throw new IndexOutOfBoundsException();

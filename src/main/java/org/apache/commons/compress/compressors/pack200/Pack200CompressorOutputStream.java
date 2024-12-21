@@ -96,6 +96,7 @@ public class Pack200CompressorOutputStream extends CompressorOutputStream<Output
         }
     }
 
+    @Override
     public void finish() throws IOException {
         if (!isFinished()) {
             super.finish();

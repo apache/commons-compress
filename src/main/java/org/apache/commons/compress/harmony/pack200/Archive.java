@@ -217,7 +217,7 @@ public class Archive {
 
     private void doNormalPack() throws IOException, Pack200Exception {
         PackingUtils.log("Start to perform a normal packing");
-        List<PackingFile> packingFileList;
+        final List<PackingFile> packingFileList;
         if (jarInputStream != null) {
             packingFileList = PackingUtils.getPackingFileListFromJar(jarInputStream, options.isKeepFileOrder());
         } else {

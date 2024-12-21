@@ -502,7 +502,7 @@ public class BcBands extends BandSet {
                     }
                     methodAttributesList.add(indexForCodeAttr, codeAttr);
                     codeAttr.renumber(codeAttr.byteCodeOffsets);
-                    List<Attribute> currentAttributes;
+                    final List<Attribute> currentAttributes;
                     if (allCodeHasFlags) {
                         currentAttributes = orderedCodeAttributes.get(i);
                     } else if (codeHasFlags[i]) {

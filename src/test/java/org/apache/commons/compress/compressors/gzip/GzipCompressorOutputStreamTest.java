@@ -151,7 +151,7 @@ public class GzipCompressorOutputStreamTest {
             assertEquals(subFieldCount == 0, extra2.isEmpty());
             assertEquals(subFieldCount, extra2.size());
             assertEquals(4 * subFieldCount + subFieldCount * payloadSize, extra2.getEncodedSize());
-            ArrayList<SubField> listCopy = new ArrayList<>();
+            final ArrayList<SubField> listCopy = new ArrayList<>();
             extra2.forEach(listCopy::add);
             assertEquals(subFieldCount, listCopy.size());
             for (int i = 0; i < subFieldCount; i++) {

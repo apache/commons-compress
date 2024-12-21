@@ -492,7 +492,7 @@ public class X5455_ExtendedTimestampTest {
                 final String name = zae.getName();
                 final int x = name.lastIndexOf('/');
                 final String yearString = name.substring(x + 1);
-                int year;
+                final int year;
                 try {
                     year = Integer.parseInt(yearString);
                 } catch (final NumberFormatException nfe) {

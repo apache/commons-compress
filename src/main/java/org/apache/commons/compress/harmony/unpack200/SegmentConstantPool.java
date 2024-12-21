@@ -112,7 +112,7 @@ public class SegmentConstantPool {
     public ConstantPoolEntry getClassSpecificPoolEntry(final int cp, final long desiredIndex, final String desiredClassName) throws Pack200Exception {
         final int index = (int) desiredIndex;
         int realIndex = -1;
-        String[] array;
+        final String[] array;
         switch (cp) {
         case CP_FIELD:
             array = bands.getCpFieldClass();

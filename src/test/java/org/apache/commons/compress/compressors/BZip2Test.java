@@ -43,7 +43,7 @@ public final class BZip2Test extends AbstractTest {
 
     @Test
     public void testBzipCreation() throws Exception {
-        File output;
+        final File output;
         final File input = getFile("test.txt");
         {
             output = newTempFile("test.txt.bz2");

@@ -255,7 +255,7 @@ public class MetadataBandGroup extends BandSet {
     public void pack(final OutputStream out) throws IOException, Pack200Exception {
         PackingUtils.log("Writing metadata band group...");
         if (hasContent()) {
-            String contextStr;
+            final String contextStr;
             if (context == CONTEXT_CLASS) {
                 contextStr = "Class";
             } else if (context == CONTEXT_FIELD) {

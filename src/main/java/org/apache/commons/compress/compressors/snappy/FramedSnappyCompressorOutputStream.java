@@ -102,6 +102,7 @@ public class FramedSnappyCompressorOutputStream extends CompressorOutputStream<O
      *
      * @throws IOException if an error occurs
      */
+    @Override
     public void finish() throws IOException {
         flushBuffer();
     }

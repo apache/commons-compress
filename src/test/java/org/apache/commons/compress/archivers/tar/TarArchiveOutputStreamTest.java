@@ -73,7 +73,7 @@ public class TarArchiveOutputStreamTest extends AbstractTest {
     }
 
     private byte[] getResourceContents(final String name) throws IOException {
-        ByteArrayOutputStream bos;
+        final ByteArrayOutputStream bos;
         try (InputStream resourceAsStream = getClass().getResourceAsStream(name)) {
             bos = new ByteArrayOutputStream();
             IOUtils.copy(resourceAsStream, bos);
@@ -294,7 +294,7 @@ public class TarArchiveOutputStreamTest extends AbstractTest {
                 blockSize = 512;
                 tos = new TarArchiveOutputStream(fos);
             }
-            TarArchiveEntry sEntry;
+            final TarArchiveEntry sEntry;
             sEntry = new TarArchiveEntry(fileName);
             sEntry.setSize(contents.length);
             tos.putArchiveEntry(sEntry);

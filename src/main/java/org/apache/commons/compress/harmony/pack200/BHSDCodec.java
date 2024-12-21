@@ -165,7 +165,7 @@ public final class BHSDCodec extends Codec {
     }
 
     private long calculateLargest() {
-        long result;
+        final long result;
         // TODO This can probably be optimized into a better mathematical statement
         if (d == 1) {
             return new BHSDCodec(b, h).largest();
@@ -187,7 +187,7 @@ public final class BHSDCodec extends Codec {
     }
 
     private long calculateSmallest() {
-        long result;
+        final long result;
         if (d == 1 || !isSigned()) {
             if (cardinality >= 4294967296L) { // 2^32
                 result = Integer.MIN_VALUE;

@@ -84,10 +84,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         }
 
         // Check binary values
-        if (signature[0] == 0x71 && (signature[1] & 0xFF) == 0xc7) {
-            return true;
-        }
-        if (signature[1] == 0x71 && (signature[0] & 0xFF) == 0xc7) {
+        if ((signature[0] == 0x71 && (signature[1] & 0xFF) == 0xc7) || (signature[1] == 0x71 && (signature[0] & 0xFF) == 0xc7)) {
             return true;
         }
 

@@ -60,7 +60,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTest {
     }
 
     private void readDoubledBlaLz4(final StreamWrapper wrapper, final boolean expectDuplicateOutput) throws Exception {
-        byte[] singleInput;
+        final byte[] singleInput;
         try (InputStream i = newInputStream("bla.tar.lz4")) {
             singleInput = IOUtils.toByteArray(i);
         }

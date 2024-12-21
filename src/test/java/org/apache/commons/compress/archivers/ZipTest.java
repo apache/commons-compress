@@ -797,7 +797,7 @@ public final class ZipTest extends AbstractTest {
 
     @Test
     public void testZipArchiveEntryNewFromPath() throws Exception {
-        Path archivePath;
+        final Path archivePath;
         final File tmpFile = createTempFile();
         final Path tmpFilePath = tmpFile.toPath();
         final File archiveFile = createTempFile("test.", ".zip");

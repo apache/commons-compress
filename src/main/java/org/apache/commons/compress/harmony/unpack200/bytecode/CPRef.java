@@ -53,13 +53,7 @@ public abstract class CPRef extends ConstantPoolEntry {
         if (this == obj) {
             return true;
         }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        if (hashCode() != obj.hashCode()) {
+        if (obj == null || getClass() != obj.getClass() || hashCode() != obj.hashCode()) {
             return false;
         }
         final CPRef other = (CPRef) obj;
@@ -85,7 +79,7 @@ public abstract class CPRef extends ConstantPoolEntry {
     @Override
     public String toString() {
         if (cachedToString == null) {
-            String type;
+            final String type;
             if (getTag() == CP_Fieldref) {
                 type = "FieldRef"; //$NON-NLS-1$
             } else if (getTag() == CP_Methodref) {

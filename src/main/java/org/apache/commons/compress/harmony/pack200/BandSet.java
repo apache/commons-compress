@@ -548,7 +548,7 @@ public abstract class BandSet {
         int tdefL = 0;
         int l = 0;
         Codec tokenCodec = null;
-        byte[] tokensEncoded;
+        final byte[] tokensEncoded;
         final int k = favored.size() - 1;
         if (k < 256) {
             tdefL = 1;

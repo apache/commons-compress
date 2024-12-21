@@ -92,7 +92,7 @@ public class ZipFileTest extends AbstractTest {
 
         // big buffer at the beginning and then chunks by IOUtils read
         try (InputStream stream = zf.getInputStream(entry)) {
-            byte[] full;
+            final byte[] full;
             final byte[] bytes = new byte[0x40000];
             final int read = stream.read(bytes);
             if (read < 0) {
@@ -105,7 +105,7 @@ public class ZipFileTest extends AbstractTest {
 
         // small chunk / single byte and big buffer then
         try (InputStream stream = zf.getInputStream(entry)) {
-            byte[] full;
+            final byte[] full;
             final int single = stream.read();
             if (single < 0) {
                 full = ByteUtils.EMPTY_BYTE_ARRAY;
@@ -286,7 +286,7 @@ public class ZipFileTest extends AbstractTest {
     @Test
     public void testConcurrentReadSeekable() throws Exception {
         // mixed.zip contains both inflated and stored files
-        byte[] data;
+        final byte[] data;
         try (InputStream fis = newInputStream("mixed.zip")) {
             data = IOUtils.toByteArray(fis);
         }

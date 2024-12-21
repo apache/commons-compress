@@ -166,7 +166,7 @@ public class Zip64SupportIT {
         ZipFile zipFile = null;
         try {
             zipFile = ZipFile.builder().setFile(file).get();
-            AtomicInteger files = new AtomicInteger();
+            final AtomicInteger files = new AtomicInteger();
             zipFile.stream().filter(e -> !e.isDirectory()).forEach(e -> {
                 files.incrementAndGet();
                 assertEquals(0, e.getSize());

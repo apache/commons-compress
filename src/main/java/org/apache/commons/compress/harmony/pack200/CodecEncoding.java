@@ -131,7 +131,7 @@ public class CodecEncoding {
             }
             final int kb = kbflag ? in.read() : 3;
             final int k = (kb + 1) * (int) Math.pow(16, kx);
-            Codec aCodec, bCodec;
+            final Codec aCodec, bCodec;
             if (adef) {
                 aCodec = defaultCodec;
             } else {
@@ -190,8 +190,8 @@ public class CodecEncoding {
         if (codec instanceof RunCodec) {
             final RunCodec runCodec = (RunCodec) codec;
             final int k = runCodec.getK();
-            int kb;
-            int kx;
+            final int kb;
+            final int kx;
             if (k <= 256) {
                 kb = 0;
                 kx = k - 1;

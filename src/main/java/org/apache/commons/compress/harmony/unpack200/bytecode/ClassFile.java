@@ -43,7 +43,7 @@ public class ClassFile {
         dos.writeShort(major);
         dos.writeShort(pool.size() + 1);
         for (int i = 1; i <= pool.size(); i++) {
-            ConstantPoolEntry entry;
+            final ConstantPoolEntry entry;
             (entry = (ConstantPoolEntry) pool.get(i)).doWrite(dos);
             // Doubles and longs take up two spaces in the pool, but only one
             // gets written

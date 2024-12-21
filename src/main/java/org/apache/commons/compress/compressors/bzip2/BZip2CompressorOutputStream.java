@@ -535,6 +535,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream<OutputSt
         bsFinishedWithStream();
     }
 
+    @Override
     public void finish() throws IOException {
         if (!isClosed()) {
             try {

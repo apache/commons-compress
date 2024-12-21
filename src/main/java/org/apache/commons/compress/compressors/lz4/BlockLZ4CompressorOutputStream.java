@@ -345,6 +345,7 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream<Outpu
      *
      * @throws IOException if an error occurs
      */
+    @Override
     public void finish() throws IOException {
         if (!isFinished()) {
             compressor.finish();

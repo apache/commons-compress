@@ -167,6 +167,7 @@ public class SnappyCompressorOutputStream extends CompressorOutputStream<OutputS
      *
      * @throws IOException if an error occurs
      */
+    @Override
     public void finish() throws IOException {
         if (!isFinished()) {
             compressor.finish();

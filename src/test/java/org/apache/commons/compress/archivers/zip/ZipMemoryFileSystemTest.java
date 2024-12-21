@@ -438,7 +438,7 @@ public class ZipMemoryFileSystemTest {
                 outputStream.write(textFileInMemSys);
                 outputStream.closeArchiveEntry();
                 outputStream.finish();
-                List<Path> splitZips;
+                final List<Path> splitZips;
                 try (Stream<Path> paths = Files.walk(dir, 1)) {
                     splitZips = paths.filter(Files::isRegularFile).peek(path -> println("Found: " + path.toAbsolutePath())).collect(Collectors.toList());
                 }
@@ -529,7 +529,7 @@ public class ZipMemoryFileSystemTest {
                 zipOut.closeArchiveEntry();
                 zipOut.finish();
 
-                List<Path> splitZips;
+                final List<Path> splitZips;
                 try (Stream<Path> paths = Files.walk(fileSystem.getPath("."), 1)) {
                     splitZips = paths.filter(Files::isRegularFile).peek(path -> println("Found: " + path.toAbsolutePath())).collect(Collectors.toList());
                 }

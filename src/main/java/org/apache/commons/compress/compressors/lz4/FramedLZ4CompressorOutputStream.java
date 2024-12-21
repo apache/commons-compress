@@ -216,6 +216,7 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream<Outp
      *
      * @throws IOException if an error occurs
      */
+    @Override
     public void finish() throws IOException {
         if (!isFinished()) {
             flushBlock();

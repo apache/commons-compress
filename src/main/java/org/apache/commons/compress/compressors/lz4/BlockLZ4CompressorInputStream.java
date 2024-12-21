@@ -62,7 +62,7 @@ public class BlockLZ4CompressorInputStream extends AbstractLZ77CompressorInputSt
      * @return false if there is no more back-reference - this means this is the last block of the stream.
      */
     private boolean initializeBackReference() throws IOException {
-        int backReferenceOffset;
+        final int backReferenceOffset;
         try {
             backReferenceOffset = (int) ByteUtils.fromLittleEndian(supplier, 2);
         } catch (final IOException ex) {

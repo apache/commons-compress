@@ -342,7 +342,7 @@ public class NewAttributeBands extends BandSet {
 
         @Override
         public void pack(final OutputStream outputStream) throws IOException, Pack200Exception {
-            int[] ints;
+            final int[] ints;
             if (nullsAllowed) {
                 ints = cpEntryOrNullListToArray(band);
             } else {
