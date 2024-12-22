@@ -245,8 +245,8 @@ public class GzipCompressorOutputStreamTest {
         }
         final byte[] result = baos.toByteArray();
         final byte[] expected = Hex.decodeHex("1f8b" // id1 id2
-                + "08" //cm
-                + "1e" //flg(FEXTRA|FNAME|FCOMMENT|FHCRC)
+                + "08" // cm
+                + "1e" // flg(FEXTRA|FNAME|FCOMMENT|FHCRC)
                 + "33445566" // mtime little endian
                 + "00" + "03" // xfl os
                 + "0800" + "4242" + "0400" + "43434343" //xlen sfid sflen "CCCC"
@@ -260,7 +260,7 @@ public class GzipCompressorOutputStreamTest {
         assertArrayEquals(expected, result);
         assertDoesNotThrow(() -> {
             try (GZIPInputStream gis = new GZIPInputStream(new ByteArrayInputStream(result))) {
-                //if it does not fail, the hcrc is good.
+                // if it does not fail, the hcrc is good.
             }
         });
         try (GzipCompressorInputStream gis = new GzipCompressorInputStream(new ByteArrayInputStream(result))) {
@@ -268,18 +268,18 @@ public class GzipCompressorOutputStreamTest {
             assertTrue(metaData.hasHeaderCRC());
             assertEquals(0x66554433, metaData.getModificationTime());
             assertEquals(1, metaData.getExtraField().size());
-            final  SubField sf = metaData.getExtraField().iterator().next();
+            final SubField sf = metaData.getExtraField().iterator().next();
             assertEquals("BB", sf.getId());
             assertEquals("CCCC", new String(sf.getPayload(), StandardCharsets.ISO_8859_1));
             assertEquals("AAAA", metaData.getFileName());
             assertEquals("ZZZZ", metaData.getComment());
             assertEquals(OS.UNIX, metaData.getOS());
         }
-        //verify that the constructor normally fails on bad HCRC
+        // verify that the constructor normally fails on bad HCRC
         assertThrows(ZipException.class, () -> {
             result[30] = 0x77; //corrupt the low byte of header CRC
             try (GZIPInputStream gis = new GZIPInputStream(new ByteArrayInputStream(result))) {
-                //if it does not fail, the hcrc is good.
+                // if it does not fail, the hcrc is good.
             }
         }, "Header CRC verification is no longer feasible with JDK classes. The earlier assertion would have passed despite a bad header CRC.");
     }
