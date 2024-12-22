@@ -164,7 +164,7 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
      */
     private void writeC(final String value, final Charset charset) throws IOException {
         if (value != null) {
-            byte[] ba = value.getBytes(charset);
+            final byte[] ba = value.getBytes(charset);
             out.write(ba);
             out.write(0);
             crc.update(ba);
@@ -209,7 +209,7 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
         writeC(fileName, parameters.getFileNameCharset());
         writeC(comment, parameters.getFileNameCharset());
         if (parameters.hasHeaderCRC()) {
-            int v = (int) crc.getValue() & 0xffff;
+            final int v = (int) crc.getValue() & 0xffff;
             out.write(v & 0xff);
             out.write((v >>> 8) & 0xff);
         }
