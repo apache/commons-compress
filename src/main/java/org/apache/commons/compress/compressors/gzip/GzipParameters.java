@@ -298,6 +298,7 @@ public class GzipParameters {
     private OS operatingSystem = OS.UNKNOWN; // Unknown OS by default
     private int bufferSize = 512;
     private int deflateStrategy = Deflater.DEFAULT_STRATEGY;
+    private boolean headerCRC;
 
     /**
      * Gets size of the buffer used to retrieve compressed data.
@@ -432,6 +433,16 @@ public class GzipParameters {
         return operatingSystem;
     }
 
+    /**
+     * Returns if the header CRC is to be added (when writing) or was present (when reading).
+     *
+     * @return true is header CRC will be added (on write) or was found (after read).
+     * @since 1.28.0
+     */
+    public boolean hasHeaderCRC() {
+        return headerCRC;
+    }
+
     private String requireNonNulByte(final String text) {
         if (StringUtils.isNotEmpty(text) && ArrayUtils.contains(text.getBytes(fileNameCharset), (byte) 0)) {
             throw new IllegalArgumentException("String encoded in Charset '" + fileNameCharset + "' contains the nul byte 0 which is not supported in gzip.");
@@ -489,6 +500,7 @@ public class GzipParameters {
         this.deflateStrategy = deflateStrategy;
     }
 
+
     /**
      * Sets the extra subfields. Note that a non-null extra will appear in the gzip header regardless of the presence of subfields, while a null extra will not
      * appear at all.
@@ -537,6 +549,17 @@ public class GzipParameters {
      */
     public void setFileNameCharset(final Charset charset) {
         this.fileNameCharset = Charsets.toCharset(charset, GzipUtils.GZIP_ENCODING);
+    }
+
+    /**
+     * Establishes the presence of the header flag FLG.FHCRC and its headers CRC16 value.
+     *
+     * @param headerCRC when true, the header CRC16 (actually low 16 buts of a CRC32) is calculated and inserted
+     *         in the gzip header on write; on read it means the field was present.
+     * @since 1.28.0
+     */
+    public void setHeaderCRC(boolean headerCRC) {
+        this.headerCRC = headerCRC;
     }
 
     /**
@@ -598,6 +621,7 @@ public class GzipParameters {
     public void setOS(final OS os) {
         this.operatingSystem = os != null ? os : OS.UNKNOWN;
     }
+
 
     @Override
     public String toString() {

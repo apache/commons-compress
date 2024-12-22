@@ -266,6 +266,7 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
         // doesn't support this field, but zlib seems to be able to at least
         // skip over it.
         if ((flg & FHCRC) != 0) {
+            parameters.setHeaderCRC(true);
             inData.readShort();
         }
 
