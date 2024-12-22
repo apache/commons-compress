@@ -33,7 +33,26 @@ import org.apache.commons.compress.compressors.FileNameUtil;
  */
 public class GzipUtils {
 
+    /** Header flag indicating a comment follows the header. */
+    static final int FCOMMENT = 0x10;
+
+    /** Header flag indicating an EXTRA subfields collection follows the header. */
+    static final int FEXTRA = 0x04;
+
+    /** Header flag indicating a header CRC follows the header. */
+    static final int FHCRC = 0x02;
+
+    /** Header flag indicating a file name follows the header. */
+    static final int FNAME = 0x08;
+
+    static final int FRESERVED = 0xE0;
+
     private static final FileNameUtil fileNameUtil;
+
+    /**
+     * Charset for file name and comments per the <a href="https://tools.ietf.org/html/rfc1952">GZIP File Format Specification</a>.
+     */
+    static final Charset GZIP_ENCODING = StandardCharsets.ISO_8859_1;
 
     static {
         // using LinkedHashMap so .tgz is preferred over .taz as
@@ -53,11 +72,6 @@ public class GzipUtils {
         uncompressSuffix.put("_z", "");
         fileNameUtil = new FileNameUtil(uncompressSuffix, ".gz");
     }
-
-    /**
-     * Charset for file name and comments per the <a href="https://tools.ietf.org/html/rfc1952">GZIP File Format Specification</a>.
-     */
-    static final Charset GZIP_ENCODING = StandardCharsets.ISO_8859_1;
 
     /**
      * Maps the given file name to the name that the file should have after compression with gzip. Common file types with custom suffixes for compressed
@@ -85,7 +99,6 @@ public class GzipUtils {
     public static String getCompressedFileName(final String fileName) {
         return fileNameUtil.getCompressedFileName(fileName);
     }
-
     /**
      * Maps the given name of a gzip-compressed file to the name that the file should have after uncompression. Commonly used file type specific suffixes like
      * ".tgz" or ".svgz" are automatically detected and correctly mapped. For example the name "package.tgz" is mapped to "package.tar". And any file names with
@@ -100,7 +113,6 @@ public class GzipUtils {
     public static String getUncompressedFilename(final String fileName) {
         return fileNameUtil.getUncompressedFileName(fileName);
     }
-
     /**
      * Maps the given name of a gzip-compressed file to the name that the file should have after uncompression. Commonly used file type specific suffixes like
      * ".tgz" or ".svgz" are automatically detected and correctly mapped. For example the name "package.tgz" is mapped to "package.tar". And any file names with
@@ -114,7 +126,6 @@ public class GzipUtils {
     public static String getUncompressedFileName(final String fileName) {
         return fileNameUtil.getUncompressedFileName(fileName);
     }
-
     /**
      * Detects common gzip suffixes in the given file name.
      *
@@ -126,7 +137,6 @@ public class GzipUtils {
     public static boolean isCompressedFilename(final String fileName) {
         return fileNameUtil.isCompressedFileName(fileName);
     }
-
     /**
      * Detects common gzip suffixes in the given file name.
      *

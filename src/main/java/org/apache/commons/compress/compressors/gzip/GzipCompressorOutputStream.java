@@ -38,18 +38,6 @@ import org.apache.commons.compress.compressors.CompressorOutputStream;
  */
 public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStream> {
 
-    /** Header flag indicating an EXTRA subfields collection follows the header */
-    private static final int FEXTRA = 1 << 2;
-
-    /** Header flag indicating a file name follows the header */
-    private static final int FNAME = 1 << 3;
-
-    /** Header flag indicating a comment follows the header */
-    private static final int FCOMMENT = 1 << 4;
-
-    /** Header flag indicating a header CRC follows the header */
-    private static final int FHCRC = 1 << 1;
-
     /** Deflater used to compress the data */
     private final Deflater deflater;
 
@@ -180,10 +168,10 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
         buffer.order(ByteOrder.LITTLE_ENDIAN);
         buffer.putShort((short) GZIPInputStream.GZIP_MAGIC);
         buffer.put((byte) Deflater.DEFLATED); // compression method (8: deflate)
-        buffer.put((byte) ((extra != null ? FEXTRA : 0)
-                | (fileName != null ? FNAME : 0)
-                | (comment != null ? FCOMMENT : 0)
-                | (parameters.getHeaderCRC() ? FHCRC : 0)
+        buffer.put((byte) ((extra != null ? GzipUtils.FEXTRA : 0)
+                | (fileName != null ? GzipUtils.FNAME : 0)
+                | (comment != null ? GzipUtils.FCOMMENT : 0)
+                | (parameters.getHeaderCRC() ? GzipUtils.FHCRC : 0)
         )); // flags
         buffer.putInt((int) parameters.getModificationInstant().getEpochSecond());
         // extra flags

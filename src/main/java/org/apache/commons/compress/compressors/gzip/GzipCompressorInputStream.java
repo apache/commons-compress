@@ -66,14 +66,6 @@ import org.apache.commons.io.input.BoundedInputStream;
  */
 public class GzipCompressorInputStream extends CompressorInputStream implements InputStreamStatistics {
 
-    // Header flags
-    // private static final int FTEXT = 0x01; // Uninteresting for us
-    private static final int FHCRC = 0x02;
-    private static final int FEXTRA = 0x04;
-    private static final int FNAME = 0x08;
-    private static final int FCOMMENT = 0x10;
-    private static final int FRESERVED = 0xE0;
-
     /**
      * Checks if the signature matches what is expected for a .gz file.
      *
@@ -223,7 +215,7 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
         }
 
         final int flg = inData.readUnsignedByte();
-        if ((flg & FRESERVED) != 0) {
+        if ((flg & GzipUtils.FRESERVED) != 0) {
             throw new IOException("Reserved flags are set in the .gz header");
         }
 
@@ -242,7 +234,7 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
         parameters.setOperatingSystem(inData.readUnsignedByte());
 
         // Extra field
-        if ((flg & FEXTRA) != 0) {
+        if ((flg & GzipUtils.FEXTRA) != 0) {
             int xlen = inData.readUnsignedByte();
             xlen |= inData.readUnsignedByte() << 8;
             final byte[] extra = new byte[xlen];
@@ -251,12 +243,12 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
         }
 
         // Original file name
-        if ((flg & FNAME) != 0) {
+        if ((flg & GzipUtils.FNAME) != 0) {
             parameters.setFileName(new String(readToNull(inData), GzipUtils.GZIP_ENCODING));
         }
 
         // Comment
-        if ((flg & FCOMMENT) != 0) {
+        if ((flg & GzipUtils.FCOMMENT) != 0) {
             parameters.setComment(new String(readToNull(inData), GzipUtils.GZIP_ENCODING));
         }
 
@@ -265,7 +257,7 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
         // sets this, so it's not worth trying to verify it. GNU gzip 1.4
         // doesn't support this field, but zlib seems to be able to at least
         // skip over it.
-        if ((flg & FHCRC) != 0) {
+        if ((flg & GzipUtils.FHCRC) != 0) {
             parameters.setHeaderCRC(true);
             inData.readShort();
         }
