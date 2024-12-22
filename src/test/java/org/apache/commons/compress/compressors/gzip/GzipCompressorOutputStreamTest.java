@@ -229,7 +229,7 @@ public class GzipCompressorOutputStreamTest {
      * @throws IOException When the test has issues with the underlying file system or unexpected gzip operations.
      */
     @Test
-    public void testHcrc() throws IOException, DecoderException {
+    public void testHeaderCrc() throws IOException, DecoderException {
         final GzipParameters parameters = new GzipParameters();
         parameters.setHeaderCRC(true);
         parameters.setModificationTime(0x66554433); // avoid changing time
@@ -249,10 +249,10 @@ public class GzipCompressorOutputStreamTest {
                 + "1e" // flg(FEXTRA|FNAME|FCOMMENT|FHCRC)
                 + "33445566" // mtime little endian
                 + "00" + "03" // xfl os
-                + "0800" + "4242" + "0400" + "43434343" //xlen sfid sflen "CCCC"
+                + "0800" + "4242" + "0400" + "43434343" // xlen sfid sflen "CCCC"
                 + "4141414100" // "AAAA" with \0
                 + "5a5a5a5a00" // "ZZZZ" with \0
-                + "d842" //crc32 = 839242d8
+                + "d842" // crc32 = 839242d8
                 + "0300" // empty deflate stream
                 + "00000000" // crs32
                 + "00000000" // isize
@@ -265,7 +265,7 @@ public class GzipCompressorOutputStreamTest {
         });
         try (GzipCompressorInputStream gis = new GzipCompressorInputStream(new ByteArrayInputStream(result))) {
             final GzipParameters metaData = gis.getMetaData();
-            assertTrue(metaData.hasHeaderCRC());
+            assertTrue(metaData.getHeaderCRC());
             assertEquals(0x66554433, metaData.getModificationTime());
             assertEquals(1, metaData.getExtraField().size());
             final SubField sf = metaData.getExtraField().iterator().next();
@@ -277,7 +277,7 @@ public class GzipCompressorOutputStreamTest {
         }
         // verify that the constructor normally fails on bad HCRC
         assertThrows(ZipException.class, () -> {
-            result[30] = 0x77; //corrupt the low byte of header CRC
+            result[30] = 0x77; // corrupt the low byte of header CRC
             try (GZIPInputStream gis = new GZIPInputStream(new ByteArrayInputStream(result))) {
                 // if it does not fail, the hcrc is good.
             }

@@ -391,6 +391,16 @@ public class GzipParameters {
 
 
     /**
+     * Returns if the header CRC is to be added (when writing) or was present (when reading).
+     *
+     * @return true is header CRC will be added (on write) or was found (after read).
+     * @since 1.28.0
+     */
+    public boolean getHeaderCRC() {
+        return headerCRC;
+    }
+
+    /**
      * Gets the most recent modification time (MTIME) of the original file being compressed.
      *
      * @return the most recent modification time.
@@ -431,16 +441,6 @@ public class GzipParameters {
      */
     public OS getOS() {
         return operatingSystem;
-    }
-
-    /**
-     * Returns if the header CRC is to be added (when writing) or was present (when reading).
-     *
-     * @return true is header CRC will be added (on write) or was found (after read).
-     * @since 1.28.0
-     */
-    public boolean hasHeaderCRC() {
-        return headerCRC;
     }
 
     private String requireNonNulByte(final String text) {

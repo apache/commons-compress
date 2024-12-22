@@ -183,7 +183,7 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
         buffer.put((byte) ((extra != null ? FEXTRA : 0)
                 | (fileName != null ? FNAME : 0)
                 | (comment != null ? FCOMMENT : 0)
-                | (parameters.hasHeaderCRC() ? FHCRC : 0)
+                | (parameters.getHeaderCRC() ? FHCRC : 0)
         )); // flags
         buffer.putInt((int) parameters.getModificationInstant().getEpochSecond());
         // extra flags
@@ -208,7 +208,7 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
         }
         writeC(fileName, parameters.getFileNameCharset());
         writeC(comment, parameters.getFileNameCharset());
-        if (parameters.hasHeaderCRC()) {
+        if (parameters.getHeaderCRC()) {
             final int v = (int) crc.getValue() & 0xffff;
             out.write(v & 0xff);
             out.write((v >>> 8) & 0xff);
