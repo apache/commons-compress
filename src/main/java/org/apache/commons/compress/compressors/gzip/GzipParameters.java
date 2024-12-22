@@ -558,7 +558,7 @@ public class GzipParameters {
      *         in the gzip header on write; on read it means the field was present.
      * @since 1.28.0
      */
-    public void setHeaderCRC(boolean headerCRC) {
+    public void setHeaderCRC(final boolean headerCRC) {
         this.headerCRC = headerCRC;
     }
 

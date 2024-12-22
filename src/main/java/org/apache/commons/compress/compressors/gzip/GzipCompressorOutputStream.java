@@ -199,7 +199,7 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
         if (parameters.getHeaderCRC()) {
             final int v = (int) crc.getValue() & 0xffff;
             out.write(v & 0xff);
-            out.write((v >>> 8) & 0xff);
+            out.write(v >>> 8 & 0xff);
         }
         crc.reset();
     }
