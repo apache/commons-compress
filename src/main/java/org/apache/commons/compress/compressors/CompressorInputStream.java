@@ -20,6 +20,9 @@ package org.apache.commons.compress.compressors;
 
 import java.io.InputStream;
 
+/**
+ * Abstracts services for all compressor input streams.
+ */
 public abstract class CompressorInputStream extends InputStream {
 
     private long bytesRead;
