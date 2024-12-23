@@ -26,6 +26,9 @@ import org.apache.commons.compress.utils.ByteUtils;
  * @Immutable
  */
 public final class ZipShort implements Cloneable, Serializable {
+
+    private static final int SIZE = 2;
+
     /**
      * ZipShort with a value of 0.
      *
@@ -42,7 +45,7 @@ public final class ZipShort implements Cloneable, Serializable {
      * @return the converted int as a byte array in big-endian byte order
      */
     public static byte[] getBytes(final int value) {
-        final byte[] result = new byte[2];
+        final byte[] result = new byte[SIZE];
         putShort(value, result, 0);
         return result;
     }
@@ -65,7 +68,7 @@ public final class ZipShort implements Cloneable, Serializable {
      * @return the corresponding Java int value
      */
     public static int getValue(final byte[] bytes, final int offset) {
-        return (int) ByteUtils.fromLittleEndian(bytes, offset, 2);
+        return (int) ByteUtils.fromLittleEndian(bytes, offset, SIZE);
     }
 
     /**
@@ -76,7 +79,7 @@ public final class ZipShort implements Cloneable, Serializable {
      * @param offset The offset within the output buffer of the first byte to be written. must be non-negative and no larger than {@code buf.length-2}
      */
     public static void putShort(final int value, final byte[] buf, final int offset) {
-        ByteUtils.toLittleEndian(buf, value, offset, 2);
+        ByteUtils.toLittleEndian(buf, value, offset, SIZE);
     }
 
     private final int value;
@@ -139,8 +142,8 @@ public final class ZipShort implements Cloneable, Serializable {
      * @return the value as a two byte array in big-endian byte order
      */
     public byte[] getBytes() {
-        final byte[] result = new byte[2];
-        ByteUtils.toLittleEndian(result, value, 0, 2);
+        final byte[] result = new byte[SIZE];
+        ByteUtils.toLittleEndian(result, value, 0, SIZE);
         return result;
     }
 
