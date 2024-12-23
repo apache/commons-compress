@@ -185,10 +185,10 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
      *
      * @param os        the output stream to use
      * @param blockSize the block size to use. Must be a multiple of 512 bytes.
-     * @param encoding  name of the encoding to use for file names
+     * @param charset  name of the encoding to use for file names
      * @since 1.4
      */
-    public TarArchiveOutputStream(final OutputStream os, final int blockSize, final String encoding) {
+    public TarArchiveOutputStream(final OutputStream os, final int blockSize, final String charset) {
         super(os);
         final int realBlockSize;
         if (BLOCK_SIZE_UNSPECIFIED == blockSize) {
@@ -201,8 +201,8 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
             throw new IllegalArgumentException("Block size must be a multiple of 512 bytes. Attempt to use set size of " + blockSize);
         }
         this.out = new FixedLengthBlockOutputStream(countingOut = new CountingOutputStream(os), RECORD_SIZE);
-        this.charsetName = Charsets.toCharset(encoding).name();
-        this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
+        this.charsetName = Charsets.toCharset(charset).name();
+        this.zipEncoding = ZipEncodingHelper.getZipEncoding(charset);
 
         this.recordBuf = new byte[RECORD_SIZE];
         this.recordsPerBlock = realBlockSize / RECORD_SIZE;
@@ -216,11 +216,11 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
      * </p>
      *
      * @param os       the output stream to use
-     * @param encoding name of the encoding to use for file names
+     * @param charset name of the encoding to use for file names
      * @since 1.4
      */
-    public TarArchiveOutputStream(final OutputStream os, final String encoding) {
-        this(os, BLOCK_SIZE_UNSPECIFIED, encoding);
+    public TarArchiveOutputStream(final OutputStream os, final String charset) {
+        this(os, BLOCK_SIZE_UNSPECIFIED, charset);
     }
 
     private void addFileTimePaxHeader(final Map<String, String> paxHeaders, final String header, final FileTime value) {
