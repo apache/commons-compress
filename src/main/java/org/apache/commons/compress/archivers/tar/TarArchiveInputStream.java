@@ -519,6 +519,11 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
         return recordBuffer.length;
     }
 
+    /**
+     * Tests whether we are at the end-of-file.
+     *
+     * @return whether we are at the end-of-file.
+     */
     protected final boolean isAtEOF() {
         return atEof;
     }
@@ -752,12 +757,23 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      */
     @Override
     public synchronized void reset() {
+        // empty
     }
 
+    /**
+     * Sets whether we are at the end-of-file.
+     *
+     * @param atEof whether we are at the end-of-file.
+     */
     protected final void setAtEOF(final boolean atEof) {
         this.atEof = atEof;
     }
 
+    /**
+     * Sets the current entry.
+     *
+     * @param currEntry the current entry.
+     */
     protected final void setCurrentEntry(final TarArchiveEntry currEntry) {
         this.currEntry = currEntry;
     }
