@@ -34,6 +34,11 @@ public class JarArchiveOutputStream extends ZipArchiveOutputStream {
 
     private boolean jarMarkerAdded;
 
+    /**
+     * Constructs a new instance that wraps the output stream.
+     *
+     * @param out      the output stream to wrap.
+     */
     public JarArchiveOutputStream(final OutputStream out) {
         super(out);
     }
