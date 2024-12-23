@@ -29,6 +29,8 @@ import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
+import org.apache.commons.io.RandomAccessFileMode;
+
 /**
  * Tests COMPRESS-649.
  */
@@ -52,7 +54,7 @@ public class CompressionDegradationTest {
     }
 
     public static void main(final String[] args) throws Exception {
-        try (RandomAccessFile aFile = new RandomAccessFile("src/test/resources/org/apache/commons/compress/COMPRESS-649/some-900kb-text.txt", "r");
+        try (RandomAccessFile aFile = RandomAccessFileMode.READ_ONLY.create("src/test/resources/org/apache/commons/compress/COMPRESS-649/some-900kb-text.txt");
                 FileChannel inChannel = aFile.getChannel()) {
             final long fileSize = inChannel.size();
 
