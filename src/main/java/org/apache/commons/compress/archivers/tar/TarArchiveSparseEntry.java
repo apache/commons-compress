@@ -80,6 +80,11 @@ public class TarArchiveSparseEntry implements TarConstants {
         return sparseHeaders;
     }
 
+    /**
+     * Tests whether this entry is extended.
+     *
+     * @return whether this entry is extended.
+     */
     public boolean isExtended() {
         return isExtended;
     }
