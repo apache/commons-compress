@@ -151,7 +151,7 @@ public class ExtraField implements Iterable<SubField> {
     }
 
     /**
-     * Append a subfield by a 2-chars ISO-8859-1 string. The char at index 0 and 1 are respectiovely si1 and si2 (subfield id 1 and 2).
+     * Append a subfield by a 2-chars ISO-8859-1 string. The char at index 0 and 1 are respectively si1 and si2 (subfield id 1 and 2).
      *
      * @param id      The subfield ID.
      * @param payload The subfield payload.
