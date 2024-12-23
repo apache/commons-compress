@@ -509,7 +509,6 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
         if (out == null) {
             throw new IllegalArgumentException("OutputStream must not be null.");
         }
-
         if (AR.equalsIgnoreCase(archiverName)) {
             return (O) new ArArchiveOutputStream(out);
         }
@@ -541,12 +540,10 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
         if (SEVEN_Z.equalsIgnoreCase(archiverName)) {
             throw new StreamingNotSupportedException(SEVEN_Z);
         }
-
         final ArchiveStreamProvider archiveStreamProvider = getArchiveOutputStreamProviders().get(toKey(archiverName));
         if (archiveStreamProvider != null) {
             return archiveStreamProvider.createArchiveOutputStream(archiverName, out, actualEncoding);
         }
-
         throw new ArchiveException("Archiver: " + archiverName + " not found.");
     }
 
