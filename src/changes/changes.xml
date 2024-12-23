@@ -56,7 +56,8 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Glavo">Update outdated links in ZipMethod Javadoc #619.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Deprecate ZipUtil.signedByteToUnsignedInt(byte) in favor of Byte.toUnsignedInt(byte).</action> 
       <action type="fix" dev="ggregory" due-to="Gary Gregory">ZipArchiveOutputStream.close() does not close its underlying output stream.</action> 
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">ZipArchiveOutputStream.close() does not close its underlying output stream.</action> 
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">ZipArchiveOutputStream.close() does not close its underlying output stream.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">Don't use deprecated code in TarArchiveInputStream.</action>
       <!-- ADD -->
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add GzipParameters.getModificationInstant().</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add GzipParameters.setModificationInstant(Instant).</action>

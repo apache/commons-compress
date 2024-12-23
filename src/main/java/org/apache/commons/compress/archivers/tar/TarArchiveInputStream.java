@@ -37,8 +37,8 @@ import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.ArchiveUtils;
-import org.apache.commons.compress.utils.BoundedInputStream;
 import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.io.input.BoundedInputStream;
 
 /**
  * The TarInputStream reads a Unix tar archive as an InputStream. methods are provided to position at each successive entry in the archive, and the read each
@@ -262,20 +262,26 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
                 // sparse header says to move backwards inside the extracted entry
                 throw new IOException("Corrupted struct sparse detected");
             }
-
             // only store the zero block if it is not empty
             if (zeroBlockSize > 0) {
-                sparseInputStreams.add(new BoundedInputStream(zeroInputStream, sparseHeader.getOffset() - offset));
+                // @formatter:off
+                sparseInputStreams.add(BoundedInputStream.builder()
+                        .setInputStream(zeroInputStream)
+                        .setMaxCount(sparseHeader.getOffset() - offset)
+                        .get());
+                // @formatter:on
             }
-
             // only store the input streams with non-zero size
             if (sparseHeader.getNumbytes() > 0) {
-                sparseInputStreams.add(new BoundedInputStream(in, sparseHeader.getNumbytes()));
+                // @formatter:off
+                sparseInputStreams.add(BoundedInputStream.builder()
+                        .setInputStream(in)
+                        .setMaxCount(sparseHeader.getNumbytes())
+                        .get());
+                // @formatter:on
             }
-
             offset = sparseHeader.getOffset() + sparseHeader.getNumbytes();
         }
-
         if (!sparseInputStreams.isEmpty()) {
             currentSparseInputStreamIndex = 0;
         }
