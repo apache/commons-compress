@@ -36,9 +36,9 @@ import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.BoundedArchiveInputStream;
-import org.apache.commons.compress.utils.BoundedInputStream;
 import org.apache.commons.compress.utils.BoundedSeekableByteChannelInputStream;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
+import org.apache.commons.io.input.BoundedInputStream;
 
 /**
  * Provides random access to Unix archives.
@@ -334,9 +334,7 @@ public class TarFile implements Closeable {
      */
     private void buildSparseInputStreams() throws IOException {
         final List<InputStream> streams = new ArrayList<>();
-
         final List<TarArchiveStructSparse> sparseHeaders = currEntry.getOrderedSparseHeaders();
-
         // Stream doesn't need to be closed at all as it doesn't use any resources
         final InputStream zeroInputStream = new TarArchiveSparseZeroInputStream(); // NOSONAR
         // logical offset into the extracted entry
@@ -348,13 +346,11 @@ public class TarFile implements Closeable {
                 // sparse header says to move backwards inside the extracted entry
                 throw new IOException("Corrupted struct sparse detected");
             }
-
             // only store the zero block if it is not empty
             if (zeroBlockSize > 0) {
-                streams.add(new BoundedInputStream(zeroInputStream, zeroBlockSize));
+                streams.add(BoundedInputStream.builder().setInputStream(zeroInputStream).setMaxCount(zeroBlockSize).get());
                 numberOfZeroBytesInSparseEntry += zeroBlockSize;
             }
-
             // only store the input streams with non-zero size
             if (sparseHeader.getNumbytes() > 0) {
                 final long start = currEntry.getDataOffset() + sparseHeader.getOffset() - numberOfZeroBytesInSparseEntry;
@@ -364,10 +360,8 @@ public class TarFile implements Closeable {
                 }
                 streams.add(new BoundedSeekableByteChannelInputStream(start, sparseHeader.getNumbytes(), archive));
             }
-
             offset = sparseHeader.getOffset() + sparseHeader.getNumbytes();
         }
-
         sparseInputStreams.put(currEntry.getName(), streams);
     }
 
