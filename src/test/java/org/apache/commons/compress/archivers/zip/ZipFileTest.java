@@ -1000,5 +1000,4 @@ public class ZipFileTest extends AbstractTest {
         }
     }
 
-
 }

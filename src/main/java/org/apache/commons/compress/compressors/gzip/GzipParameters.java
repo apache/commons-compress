@@ -389,7 +389,6 @@ public class GzipParameters {
         return fileNameCharset;
     }
 
-
     /**
      * Returns if the header CRC is to be added (when writing) or was present (when reading).
      *
@@ -499,7 +498,6 @@ public class GzipParameters {
     public void setDeflateStrategy(final int deflateStrategy) {
         this.deflateStrategy = deflateStrategy;
     }
-
 
     /**
      * Sets the extra subfields. Note that a non-null extra will appear in the gzip header regardless of the presence of subfields, while a null extra will not
@@ -621,7 +619,6 @@ public class GzipParameters {
     public void setOS(final OS os) {
         this.operatingSystem = os != null ? os : OS.UNKNOWN;
     }
-
 
     @Override
     public String toString() {

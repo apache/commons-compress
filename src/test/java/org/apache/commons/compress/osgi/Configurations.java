@@ -29,7 +29,6 @@ import org.junit.jupiter.api.Assertions;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.options.MavenArtifactProvisionOption;
 
-
 final class Configurations {
 
     /**

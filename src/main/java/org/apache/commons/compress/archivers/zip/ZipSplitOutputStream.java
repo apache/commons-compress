@@ -141,7 +141,6 @@ final class ZipSplitOutputStream extends RandomAccessOutputStream {
         return newFile;
     }
 
-
     /**
      * The last ZIP split segment's suffix should be .zip
      *

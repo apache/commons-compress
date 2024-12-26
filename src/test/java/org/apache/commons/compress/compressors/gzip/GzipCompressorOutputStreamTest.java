@@ -222,7 +222,6 @@ public class GzipCompressorOutputStreamTest {
         testFileName("??????.xml", EXPECTED_FILE_NAME);
     }
 
-
     /**
      * Tests the gzip header CRC.
      *
