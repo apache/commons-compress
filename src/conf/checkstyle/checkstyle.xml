@@ -57,8 +57,8 @@ limitations under the License.
     <!-- <module name="EqualsHashCode" /> -->
     <module name="ExplicitInitializationCheck" />
     <module name="FinalLocalVariable" />
-    <module name="IllegalInstantiation" />
     <module name="IllegalImport" />
+    <module name="IllegalInstantiation" />
     <module name="ImportOrder">
       <property name="option" value="top" />
       <property name="groups" value="java,javax,org" />
@@ -67,6 +67,7 @@ limitations under the License.
     </module>
     <module name="LeftCurly" />
     <module name="MissingOverride" />
+    <module name="MultipleVariableDeclarations" />
     <module name="ModifierOrder" />
     <module name="NeedBraces" />
     <module name="RedundantImport" />
