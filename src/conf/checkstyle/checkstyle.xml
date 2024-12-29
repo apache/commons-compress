@@ -57,6 +57,7 @@ limitations under the License.
     <!-- <module name="EqualsHashCode" /> -->
     <module name="ExplicitInitializationCheck" />
     <module name="FinalLocalVariable" />
+    <module name="IllegalInstantiation" />
     <module name="IllegalImport" />
     <module name="ImportOrder">
       <property name="option" value="top" />
