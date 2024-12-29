@@ -254,7 +254,7 @@ public class BcBands extends BandSet {
                             break;
                         case 197: // multianewarray
                             bcByteCount++;
-                            // fallthrough intended
+                            // falls-through
                         case 233: // cldc
                         case 236: // cldc_w
                         case 187: // new
