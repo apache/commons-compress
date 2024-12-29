@@ -103,7 +103,7 @@ public class SevenZTest extends AbstractTest {
         final byte[] buf = new byte[1024];
         int x = 0;
         while (0 <= (x = archive.read(buf))) {
-
+            // do nothing
         }
     }
 

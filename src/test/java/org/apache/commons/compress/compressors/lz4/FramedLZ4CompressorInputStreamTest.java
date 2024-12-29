@@ -257,6 +257,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTest {
                 0, };
         final IOException ex = assertThrows(IOException.class, () -> {
             try (InputStream a = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(input))) {
+                // do nothing
             }
         }, "expected exception");
         assertTrue(ex.getMessage().contains("header checksum mismatch"));
@@ -270,6 +271,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTest {
         };
         final IOException ex = assertThrows(IOException.class, () -> {
             try (InputStream a = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(input))) {
+                // do nothing
             }
         }, "expected exception");
         assertTrue(ex.getMessage().contains("content size"));
@@ -282,6 +284,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTest {
         };
         final IOException ex = assertThrows(IOException.class, () -> {
             try (InputStream a = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(input))) {
+                // do nothing
             }
         }, "expected exception");
         assertTrue(ex.getMessage().contains("BD byte"));
@@ -293,6 +296,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTest {
         };
         final IOException ex = assertThrows(IOException.class, () -> {
             try (InputStream a = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(input))) {
+                // do nothing
             }
         }, "expected exception");
         assertTrue(ex.getMessage().contains("frame flags"));
@@ -306,6 +310,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTest {
         };
         final IOException ex = assertThrows(IOException.class, () -> {
             try (InputStream a = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(input))) {
+                // do nothing
             }
         }, "expected exception");
         assertTrue(ex.getMessage().contains("header checksum"));
@@ -318,6 +323,7 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTest {
         };
         final IOException ex = assertThrows(IOException.class, () -> {
             try (InputStream a = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(input))) {
+                // do nothing
             }
         }, "expected exception");
         assertTrue(ex.getMessage().contains("version"));

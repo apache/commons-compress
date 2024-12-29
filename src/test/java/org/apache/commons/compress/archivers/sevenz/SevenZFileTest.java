@@ -405,6 +405,7 @@ public class SevenZFileTest extends AbstractTest {
     public void testHandlesEmptyArchiveWithFilesInfo() throws Exception {
         final File file = newTempFile("empty.7z");
         try (SevenZOutputFile s = new SevenZOutputFile(file)) {
+            // do nothing
         }
         try (SevenZFile z = SevenZFile.builder().setFile(file).get()) {
             assertFalse(z.getEntries().iterator().hasNext());
@@ -475,13 +476,13 @@ public class SevenZFileTest extends AbstractTest {
         testFiles.add(getPath("COMPRESS-542-2.7z"));
         testFiles.add(getPath("COMPRESS-542-endheadercorrupted.7z"));
         testFiles.add(getPath("COMPRESS-542-endheadercorrupted2.7z"));
-
         for (final Path file : testFiles) {
             {
                 final IOException e = assertThrows(IOException.class, () -> {
                     try (@SuppressWarnings("deprecation")
                     SevenZFile sevenZFile = new SevenZFile(Files.newByteChannel(file),
                             SevenZFileOptions.builder().withTryToRecoverBrokenArchives(true).build())) {
+                        // do nothing
                     }
                 }, "Expected IOException: start header corrupt and unable to guess end header");
                 assertEquals("Start header corrupt and unable to guess end header", e.getMessage());
@@ -490,6 +491,7 @@ public class SevenZFileTest extends AbstractTest {
                 final IOException e = assertThrows(IOException.class, () -> {
                     try (SevenZFile sevenZFile = SevenZFile.builder().setSeekableByteChannel(Files.newByteChannel(file)).setTryToRecoverBrokenArchives(true)
                             .get()) {
+                        // do nothing
                     }
                 }, "Expected IOException: start header corrupt and unable to guess end header");
                 assertEquals("Start header corrupt and unable to guess end header", e.getMessage());
