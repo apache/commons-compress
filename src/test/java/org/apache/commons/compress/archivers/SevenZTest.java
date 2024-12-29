@@ -49,7 +49,8 @@ public class SevenZTest extends AbstractTest {
 
     private File output;
 
-    private final File file1, file2;
+    private final File file1;
+    private final File file2;
 
     public SevenZTest() throws IOException {
         file1 = getFile("test1.xml");

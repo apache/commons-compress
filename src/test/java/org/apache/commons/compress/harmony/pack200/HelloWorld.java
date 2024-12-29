@@ -27,8 +27,11 @@ public class HelloWorld {
         System.out.println("Hello world");
     }
 
-    int i = 97, j = 42, k = 12345;
-    float f = 3.142f, g = 2.718f;
+    int i = 97;
+    int j = 42;
+    int k = 12345;
+    float f = 3.142f;
+    float g = 2.718f;
     long l = 299792458;
 
     double d = 4.0d;

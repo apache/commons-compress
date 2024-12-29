@@ -82,7 +82,9 @@ public class LZ77Compressor {
      * Represents a back-reference.
      */
     public static final class BackReference extends Block {
-        private final int offset, length;
+
+        private final int offset;
+        private final int length;
 
         public BackReference(final int offset, final int length) {
             this.offset = offset;
@@ -170,8 +172,10 @@ public class LZ77Compressor {
      * </p>
      */
     public static final class LiteralBlock extends Block {
+
         private final byte[] data;
-        private final int offset, length;
+        private final int offset;
+        private final int length;
 
         public LiteralBlock(final byte[] data, final int offset, final int length) {
             this.data = data;

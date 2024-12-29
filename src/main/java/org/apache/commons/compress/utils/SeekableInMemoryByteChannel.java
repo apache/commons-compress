@@ -43,7 +43,8 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
 
     private byte[] data;
     private final AtomicBoolean closed = new AtomicBoolean();
-    private int position, size;
+    private int position;
+    private int size;
 
     /**
      * Constructs a new instance using a default empty buffer.

@@ -66,9 +66,11 @@ public class PopulationCodec extends Codec {
         // less
         final int[] result;
         // read table of favorites first
-        int smallest = Integer.MAX_VALUE, absoluteSmallest;
+        int smallest = Integer.MAX_VALUE;
+        int absoluteSmallest;
         int last = 0;
-        int value = 0, absoluteValue;
+        int value = 0;
+        int absoluteValue;
         int k = -1;
         while (true) {
             value = favouredCodec.decode(in, last);

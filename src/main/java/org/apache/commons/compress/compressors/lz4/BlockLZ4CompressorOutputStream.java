@@ -59,7 +59,9 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream<Outpu
 
         private int literalLength;
 
-        private int brOffset, brLength;
+        private int brOffset;
+
+        private int brLength;
 
         private boolean written;
 

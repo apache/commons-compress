@@ -78,8 +78,10 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     private boolean hasWindowsAttributes;
     private int windowsAttributes;
     private boolean hasCrc;
-    private long crc, compressedCrc;
-    private long size, compressedSize;
+    private long crc;
+    private long compressedCrc;
+    private long size;
+    private long compressedSize;
     private Iterable<? extends SevenZMethodConfiguration> contentMethods;
 
     /**

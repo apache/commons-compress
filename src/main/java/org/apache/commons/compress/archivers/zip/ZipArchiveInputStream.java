@@ -703,7 +703,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
         current.entry.setTime(time);
         off += WORD;
 
-        ZipLong size = null, cSize = null;
+        ZipLong size = null;
+        ZipLong cSize = null;
         if (!current.hasDataDescriptor) {
             current.entry.setCrc(ZipLong.getValue(lfhBuf, off));
             off += WORD;

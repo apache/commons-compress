@@ -133,7 +133,8 @@ public class CodecEncoding {
             }
             final int kb = kbflag ? in.read() : 3;
             final int k = (kb + 1) * (int) Math.pow(16, kx);
-            final Codec aCodec, bCodec;
+            final Codec aCodec;
+            final Codec bCodec;
             if (adef) {
                 aCodec = defaultCodec;
             } else {

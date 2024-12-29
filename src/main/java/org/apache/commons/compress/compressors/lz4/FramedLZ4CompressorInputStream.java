@@ -105,7 +105,8 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream implem
 
     private InputStream currentBlock;
 
-    private boolean endReached, inUncompressed;
+    private boolean endReached;
+    private boolean inUncompressed;
 
     /** Used for frame header checksum and content checksum, if present. */
     private final org.apache.commons.codec.digest.XXHash32 contentHash = new org.apache.commons.codec.digest.XXHash32();

@@ -228,7 +228,8 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     private BitInputStream bin;
     private final boolean decompressConcatenated;
     private int currentState = START_BLOCK_STATE;
-    private int storedBlockCRC, storedCombinedCRC;
+    private int storedBlockCRC;
+    private int storedCombinedCRC;
     private int computedCombinedCRC;
     private int su_count;
     private int su_ch2;

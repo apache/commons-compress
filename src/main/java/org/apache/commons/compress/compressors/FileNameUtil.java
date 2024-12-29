@@ -80,8 +80,10 @@ public class FileNameUtil {
      */
     public FileNameUtil(final Map<String, String> uncompressSuffix, final String defaultExtension) {
         this.uncompressSuffix = Collections.unmodifiableMap(uncompressSuffix);
-        int lc = Integer.MIN_VALUE, sc = Integer.MAX_VALUE;
-        int lu = Integer.MIN_VALUE, su = Integer.MAX_VALUE;
+        int lc = Integer.MIN_VALUE;
+        int sc = Integer.MAX_VALUE;
+        int lu = Integer.MIN_VALUE;
+        int su = Integer.MAX_VALUE;
         for (final Map.Entry<String, String> ent : uncompressSuffix.entrySet()) {
             final int cl = ent.getKey().length();
             if (cl > lc) {

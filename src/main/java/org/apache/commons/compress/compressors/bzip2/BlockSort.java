@@ -248,8 +248,13 @@ final class BlockSort {
      * @param hiSt   upper boundary of the fmap-interval to be sorted
      */
     private void fallbackQSort3(final int[] fmap, final int[] eclass, final int loSt, final int hiSt) {
-        int lo, unLo, ltLo, hi, unHi, gtHi, n;
-
+        int lo;
+        int unLo;
+        int ltLo;
+        int hi;
+        int unHi;
+        int gtHi;
+        int n;
         long r = 0;
         int sp = 0;
         fpush(sp++, loSt, hiSt);
@@ -416,7 +421,14 @@ final class BlockSort {
      */
     void fallbackSort(final int[] fmap, final byte[] block, final int nblock) {
         final int[] ftab = new int[257];
-        int H, i, j, k, l, r, cc, cc1;
+        int H;
+        int i;
+        int j;
+        int k;
+        int l;
+        int r;
+        int cc;
+        int cc1;
         int nNotDone;
         final int nBhtab;
         final int[] eclass = getEclass();

@@ -29,8 +29,13 @@ public final class Parameters {
     public static class Builder {
 
         private final int windowSize;
-        private int minBackReferenceLength, maxBackReferenceLength, maxOffset, maxLiteralLength;
-        private Integer niceBackReferenceLength, maxCandidates, lazyThreshold;
+        private int minBackReferenceLength;
+        private int maxBackReferenceLength;
+        private int maxOffset;
+        private int maxLiteralLength;
+        private Integer niceBackReferenceLength;
+        private Integer maxCandidates;
+        private Integer lazyThreshold;
         private Boolean lazyMatches;
 
         private Builder(final int windowSize) {
@@ -259,8 +264,14 @@ public final class Parameters {
         return (x & x - 1) == 0;
     }
 
-    private final int windowSize, minBackReferenceLength, maxBackReferenceLength, maxOffset, maxLiteralLength, niceBackReferenceLength, maxCandidates,
-            lazyThreshold;
+    private final int windowSize;
+    private final int minBackReferenceLength;
+    private final int maxBackReferenceLength;
+    private final int maxOffset;
+    private final int maxLiteralLength;
+    private final int niceBackReferenceLength;
+    private final int maxCandidates;
+    private final int lazyThreshold;
 
     private final boolean lazyMatching;
 

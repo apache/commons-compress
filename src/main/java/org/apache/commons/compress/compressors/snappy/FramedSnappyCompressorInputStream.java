@@ -108,7 +108,8 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream imp
 
     // used in no-arg read method
     private final byte[] oneByte = new byte[1];
-    private boolean endReached, inUncompressedChunk;
+    private boolean endReached;
+    private boolean inUncompressedChunk;
     private int uncompressedBytesRemaining;
     private long expectedChecksum = -1;
 

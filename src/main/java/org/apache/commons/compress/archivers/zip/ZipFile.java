@@ -719,7 +719,9 @@ public class ZipFile implements Closeable {
 
     private final ByteBuffer shortBbuf = ByteBuffer.wrap(shortBuf);
 
-    private long centralDirectoryStartDiskNumber, centralDirectoryStartRelativeOffset;
+    private long centralDirectoryStartDiskNumber;
+
+    private long centralDirectoryStartRelativeOffset;
 
     private long centralDirectoryStartOffset;
 

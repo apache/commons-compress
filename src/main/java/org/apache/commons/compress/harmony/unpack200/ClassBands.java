@@ -923,7 +923,15 @@ public class ClassBands extends BandSet {
                 pairCount = RxACount[i];
             }
             mbg[i].T = decodeBandInt(contextName + "_" + rxa + "_T", in, Codec.BYTE1, pairCount + backwardsCallCounts[i]);
-            int ICount = 0, DCount = 0, FCount = 0, JCount = 0, cCount = 0, eCount = 0, sCount = 0, arrayCount = 0, atCount = 0;
+            int ICount = 0;
+            int DCount = 0;
+            int FCount = 0;
+            int JCount = 0;
+            int cCount = 0;
+            int eCount = 0;
+            int sCount = 0;
+            int arrayCount = 0;
+            int atCount = 0;
             for (final int element : mbg[i].T) {
                 final char c = (char) element;
                 switch (c) {

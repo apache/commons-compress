@@ -42,16 +42,21 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream<Outp
      * The block sizes supported by the format.
      */
     public enum BlockSize {
+
         /** Block size of 64K */
         K64(64 * 1024, 4),
+
         /** Block size of 256K */
         K256(256 * 1024, 5),
+
         /** Block size of 1M */
         M1(1024 * 1024, 6),
+
         /** Block size of 4M */
         M4(4096 * 1024, 7);
 
-        private final int size, index;
+        private final int size;
+        private final int index;
 
         BlockSize(final int size, final int index) {
             this.size = size;
@@ -71,6 +76,7 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream<Outp
      * Parameters of the LZ4 frame format.
      */
     public static class Parameters {
+
         /**
          * The default parameters of 4M block size, enabled content checksum, disabled block checksums and independent blocks.
          *
@@ -80,7 +86,9 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream<Outp
          */
         public static final Parameters DEFAULT = new Parameters(BlockSize.M4, true, false, false);
         private final BlockSize blockSize;
-        private final boolean withContentChecksum, withBlockChecksum, withBlockDependency;
+        private final boolean withContentChecksum;
+        private final boolean withBlockChecksum;
+        private final boolean withBlockDependency;
 
         private final org.apache.commons.compress.compressors.lz77support.Parameters lz77params;
 
