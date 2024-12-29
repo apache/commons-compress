@@ -222,9 +222,7 @@ public class FixedLengthBlockOutputStream extends OutputStream implements Writab
             throw new ClosedChannelException();
         }
         final int srcRemaining = src.remaining();
-
-        if (srcRemaining < buffer.remaining()) {
-        } else {
+        if (srcRemaining >= buffer.remaining()) {
             int srcLeft = srcRemaining;
             final int savedLimit = src.limit();
             // If we're not at the start of buffer, we have some bytes already buffered
