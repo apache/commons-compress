@@ -82,12 +82,10 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         if (length < 6) {
             return false;
         }
-
         // Check binary values
-        if ((signature[0] == 0x71 && (signature[1] & 0xFF) == 0xc7) || (signature[1] == 0x71 && (signature[0] & 0xFF) == 0xc7)) {
+        if (signature[0] == 0x71 && (signature[1] & 0xFF) == 0xc7 || signature[1] == 0x71 && (signature[0] & 0xFF) == 0xc7) {
             return true;
         }
-
         // Check Ascii (String) values
         // 3037 3037 30nn
         if (signature[0] != 0x30) {
@@ -115,7 +113,6 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         if (signature[5] == 0x37) {
             return true;
         }
-
         return false;
     }
 
