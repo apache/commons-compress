@@ -41,10 +41,11 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 public final class Lister {
 
     private static final class CommandLine {
+
         String archive;
-        boolean useStream = false;
+        boolean useStream;
         String encoding;
-        boolean allowStoredEntriesWithDataDescriptor = false;
+        boolean allowStoredEntriesWithDataDescriptor;
         Path dir;
     }
 

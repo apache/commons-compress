@@ -142,7 +142,7 @@ public class ExtraField implements Iterable<SubField> {
 
     private final List<SubField> subFields = new ArrayList<>();
 
-    private int totalSize = 0;
+    private int totalSize;
 
     /**
      * Constructs a new instance.
