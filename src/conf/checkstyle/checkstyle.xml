@@ -20,9 +20,7 @@ limitations under the License.
     "https://checkstyle.org/dtds/configuration_1_3.dtd">
 <module name="Checker">
   <property name="localeLanguage" value="en" />
-  <module name="FileTabCharacter">
-    <property name="fileExtensions" value="java,xml" />
-  </module>
+  <module name="FileTabCharacter" />
   <module name="Header">
     <property name="headerFile" value="${checkstyle.header.file}" />
     <property name="fileExtensions" value="java"/>
