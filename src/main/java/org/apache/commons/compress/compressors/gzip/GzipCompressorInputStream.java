@@ -137,8 +137,9 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
      * {@code mark} isn't supported, the input position will be undefined.
      * <p>
      * If {@code decompressConcatenated} is {@code true}: decompress until the end of the input. The getMetadata()'s GzipParameters instance
-     * is updated but not cleared by each successive gzip member encountered. Details presented like fileName, comment, header CRC and extra fields
-     * may linger if not present on subsequent members. Extra fields replaced as a whole when seen (no union of subfields).
+     * is updated thus new gzip paramaters are integrated by each successive gzip member encountered.
+     * Details previously presented like file name, comment, header CRC and extra fields will remain set even when not presented on subsequent members.
+     * Extra fields are replaced as a whole when observed (no union of subfields).
      *
      * @param inputStream            the InputStream from which this object should be created of
      * @param decompressConcatenated if true, decompress until the end of the input; if false, stop after the first .gz member
