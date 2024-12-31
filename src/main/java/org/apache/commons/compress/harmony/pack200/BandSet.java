@@ -57,8 +57,8 @@ public abstract class BandSet {
     }
 
     /**
-     * BandData represents information about a band, e.g. largest value etc and is used in the heuristics that calculate whether an alternative Codec could make
-     * the encoded band smaller.
+     * BandData represents information about a band, for example largest value etc and is used in the heuristics that calculate whether an alternative Codec
+     * could make the encoded band smaller.
      */
     public class BandData {
 
@@ -714,7 +714,7 @@ public abstract class BandSet {
             return results.numCodecsTried >= effort * 2;
         }
         return results.numCodecsTried >= effort;
-        // May want to also check how much we've saved if performance needs improving, e.g. saved more than effort*2 %
+        // May want to also check how much we've saved if performance needs improving, for example saved more than effort*2 %
         // || (float) results.saved/(float) results.encodedBand.length > (float) effort * 2/100;
     }
 

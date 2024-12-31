@@ -74,7 +74,7 @@ public class DumpArchiveSummary {
     }
 
     /**
-     * Gets the device name, e.g., /dev/sda3 or /dev/mapper/vg0-home.
+     * Gets the device name, for example, /dev/sda3 or /dev/mapper/vg0-home.
      *
      * @return device name
      */
@@ -92,7 +92,7 @@ public class DumpArchiveSummary {
     }
 
     /**
-     * Gets the last mountpoint, e.g., /home.
+     * Gets the last mountpoint, for example, /home.
      *
      * @return last mountpoint
      */

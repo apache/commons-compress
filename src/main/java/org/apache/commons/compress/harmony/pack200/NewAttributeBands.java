@@ -34,8 +34,8 @@ import org.apache.commons.compress.utils.ParsingUtils;
 import org.objectweb.asm.Label;
 
 /**
- * Sets of bands relating to a non-predefined attribute that has had a layout definition given to pack200 (e.g. via one of the -C, -M, -F or -D command line
- * options)
+ * Sets of bands relating to a non-predefined attribute that has had a layout definition given to pack200 (for example via one of the -C, -M, -F or -D command
+ * line options)
  */
 public class NewAttributeBands extends BandSet {
 

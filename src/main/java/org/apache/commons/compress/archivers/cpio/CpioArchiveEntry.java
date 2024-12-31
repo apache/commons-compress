@@ -593,7 +593,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Gets the mode of this entry (e.g. directory, regular file).
+     * Gets the mode of this entry (for example directory, regular file).
      *
      * @return the mode.
      */
@@ -829,7 +829,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Sets the mode of this entry (e.g. directory, regular file).
+     * Sets the mode of this entry (for example directory, regular file).
      *
      * @param mode The mode to set.
      */
