@@ -51,7 +51,7 @@ import org.apache.commons.compress.compressors.gzip.ExtraField.SubField;
  * @see <a href="https://datatracker.ietf.org/doc/html/rfc1952">RFC 1952 GZIP File Format Specification</a>
  * @since 1.28.0
  */
-public class ExtraField implements Iterable<SubField> {
+public final class ExtraField implements Iterable<SubField> {
 
     /**
      * If the {@code FLG.FEXTRA} bit is set, an "extra field" is present in the header, with total length XLEN bytes. It consists of a series of subfields, each
@@ -80,7 +80,7 @@ public class ExtraField implements Iterable<SubField> {
      *
      * @see <a href="https://datatracker.ietf.org/doc/html/rfc1952">RFC 1952 GZIP File Format Specification</a>
      */
-    public static class SubField {
+    public static final class SubField {
 
         private final byte si1;
         private final byte si2;
