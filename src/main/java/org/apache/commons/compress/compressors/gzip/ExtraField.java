@@ -21,6 +21,7 @@ package org.apache.commons.compress.compressors.gzip;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -92,6 +93,21 @@ public final class ExtraField implements Iterable<SubField> {
             this.payload = payload;
         }
 
+        @Override
+        public boolean equals(final Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            final SubField other = (SubField) obj;
+            return Arrays.equals(payload, other.payload) && si1 == other.si1 && si2 == other.si2;
+        }
+
         /**
          * The 2 character ISO-8859-1 string made from the si1 and si2 bytes of the sub field id.
          *
@@ -108,6 +124,15 @@ public final class ExtraField implements Iterable<SubField> {
          */
         public byte[] getPayload() {
             return payload;
+        }
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + Arrays.hashCode(payload);
+            result = prime * result + Objects.hash(si1, si2);
+            return result;
         }
     }
 
