@@ -80,7 +80,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
     public static final int LONGFILE_POSIX = 3;
 
     /**
-     * Fail if a big number (e.g. size &gt; 8GiB) is required in the archive.
+     * Fail if a big number (for example size &gt; 8GiB) is required in the archive.
      */
     public static final int BIGNUMBER_ERROR = 0;
 

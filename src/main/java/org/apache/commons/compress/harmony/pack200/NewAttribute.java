@@ -23,17 +23,15 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Label;
 
 /**
- * NewAttribute extends {@code Attribute} and manages unknown attributes encountered by ASM that have had a layout definition given to pack200 (e.g. via one of
- * the -C, -M, -F or -D command line options)
+ * NewAttribute extends {@code Attribute} and manages unknown attributes encountered by ASM that have had a layout definition given to pack200 (for example via
+ * one of the -C, -M, -F or -D command line options)
  */
 public class NewAttribute extends Attribute {
-
     /**
-     * ErrorAttribute extends {@code NewAttribute} and manages attributes encountered by ASM that have had an error action specified to pack200 (e.g. via one of
-     * the -C, -M, -F or -D command line options such as -Cattribute-name=error)
+     * ErrorAttribute extends {@code NewAttribute} and manages attributes encountered by ASM that have had an error action specified to pack200 (for example via
+     * one of the -C, -M, -F or -D command line options such as -Cattribute-name=error)
      */
     public static class ErrorAttribute extends NewAttribute {
-
         public ErrorAttribute(final String type, final int context) {
             super(type, "", context);
         }
@@ -42,15 +40,13 @@ public class NewAttribute extends Attribute {
         protected Attribute read(final ClassReader cr, final int off, final int len, final char[] buf, final int codeOff, final Label[] labels) {
             throw new Error("Attribute " + type + " was found");
         }
-
     }
 
     /**
-     * PassAttribute extends {@code NewAttribute} and manages attributes encountered by ASM that have had a pass action specified to pack200 (e.g. via one of
-     * the -C, -M, -F or -D command line options such as -Cattribute-name=pass)
+     * PassAttribute extends {@code NewAttribute} and manages attributes encountered by ASM that have had a pass action specified to pack200 (for example via
+     * one of the -C, -M, -F or -D command line options such as -Cattribute-name=pass)
      */
     public static class PassAttribute extends NewAttribute {
-
         public PassAttribute(final String type, final int context) {
             super(type, "", context);
         }
@@ -59,15 +55,13 @@ public class NewAttribute extends Attribute {
         protected Attribute read(final ClassReader cr, final int off, final int len, final char[] buf, final int codeOff, final Label[] labels) {
             throw new Segment.PassException();
         }
-
     }
 
     /**
-     * StripAttribute extends {@code NewAttribute} and manages attributes encountered by ASM that have had a strip action specified to pack200 (e.g. via one of
-     * the -C, -M, -F or -D command line options such as -Cattribute-name=strip)
+     * StripAttribute extends {@code NewAttribute} and manages attributes encountered by ASM that have had a strip action specified to pack200 (for example via
+     * one of the -C, -M, -F or -D command line options such as -Cattribute-name=strip)
      */
     public static class StripAttribute extends NewAttribute {
-
         public StripAttribute(final String type, final int context) {
             super(type, "", context);
         }
@@ -80,18 +74,14 @@ public class NewAttribute extends Attribute {
     }
 
     private boolean contextClass;
-
     private boolean contextMethod;
     private boolean contextField;
     private boolean contextCode;
     private final String layout;
     private byte[] contents;
     private int codeOff;
-
     private Label[] labels;
-
     private ClassReader classReader;
-
     private char[] buf;
 
     public NewAttribute(final ClassReader classReader, final String type, final String layout, final byte[] contents, final char[] buf, final int codeOff,

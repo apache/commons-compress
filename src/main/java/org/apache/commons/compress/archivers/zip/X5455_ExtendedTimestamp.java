@@ -41,10 +41,11 @@ import org.apache.commons.io.file.attribute.FileTimes;
  * <ul>
  * <li><strong>modifyTime:</strong> most recent time of file/directory modification (or file/dir creation if the entry has not been modified since it was
  * created).</li>
- * <li><strong>accessTime:</strong> most recent time file/directory was opened (e.g., read from disk). Many people disable their operating systems from updating
- * this value using the NOATIME mount option to optimize disk behavior, and thus it's not always reliable. In those cases it's always equal to modifyTime.</li>
- * <li><strong>*createTime:</strong> modern Linux file systems (e.g., ext2 and newer) do not appear to store a value like this, and so it's usually omitted
- * altogether in the ZIP extra field. Perhaps other Unix systems track this.</li>
+ * <li><strong>accessTime:</strong> most recent time file/directory was opened (for example, read from disk). Many people disable their operating systems from
+ * updating this value using the NOATIME mount option to optimize disk behavior, and thus it's not always reliable. In those cases it's always equal to
+ * modifyTime.</li>
+ * <li><strong>*createTime:</strong> modern Linux file systems (for example, ext2 and newer) do not appear to store a value like this, and so it's usually
+ * omitted altogether in the ZIP extra field. Perhaps other Unix systems track this.</li>
  * </ul>
  * <p>
  * We're using the field definition given in Info-Zip's source archive: zip-3.0.tar.gz/proginfo/extrafld.txt
@@ -74,14 +75,12 @@ import org.apache.commons.io.file.attribute.FileTimes;
  */
 public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serializable {
     private static final long serialVersionUID = 1L;
-
     /**
      * The header ID for this extra field.
      *
      * @since 1.23
      */
     public static final ZipShort HEADER_ID = new ZipShort(0x5455);
-
     /**
      * The bit set inside the flags by when the last modification time is present in this extra field.
      */
@@ -146,13 +145,9 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
     // != null and length checks.
     private boolean bit0_modifyTimePresent;
     private boolean bit1_accessTimePresent;
-
     private boolean bit2_createTimePresent;
-
     private ZipLong modifyTime;
-
     private ZipLong accessTime;
-
     private ZipLong createTime;
 
     /**
@@ -170,7 +165,6 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
     public boolean equals(final Object o) {
         if (o instanceof X5455_ExtendedTimestamp) {
             final X5455_ExtendedTimestamp xf = (X5455_ExtendedTimestamp) o;
-
             // The ZipLong==ZipLong clauses handle the cases where both are null.
             // and only last 3 bits of flags matter.
             return (flags & 0x07) == (xf.flags & 0x07) && Objects.equals(modifyTime, xf.modifyTime) && Objects.equals(accessTime, xf.accessTime)
@@ -252,8 +246,8 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      * since the underlying data offers only per-second precision.
      * </p>
      * <p>
-     * Note: modern Linux file systems (e.g., ext2) do not appear to store a "create time" value, and so it's usually omitted altogether in the ZIP extra field.
-     * Perhaps other Unix systems track this.
+     * Note: modern Linux file systems (for example, ext2) do not appear to store a "create time" value, and so it's usually omitted altogether in the ZIP extra
+     * field. Perhaps other Unix systems track this.
      * </p>
      *
      * @return create time as java.util.Date or null.
@@ -267,8 +261,8 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      * Gets the create time (seconds since epoch) of this ZIP entry as a ZipLong object, or null if no such timestamp exists in the ZIP entry.
      * </p>
      * <p>
-     * Note: modern Linux file systems (e.g., ext2) do not appear to store a "create time" value, and so it's usually omitted altogether in the ZIP extra field.
-     * Perhaps other Unix systems track this.
+     * Note: modern Linux file systems (for example, ext2) do not appear to store a "create time" value, and so it's usually omitted altogether in the ZIP extra
+     * field. Perhaps other Unix systems track this.
      * </p>
      *
      * @return create time (seconds since epoch) or null.
@@ -663,5 +657,4 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
         }
         return buf.toString();
     }
-
 }

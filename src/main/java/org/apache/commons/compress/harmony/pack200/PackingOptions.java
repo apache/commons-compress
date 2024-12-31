@@ -202,7 +202,7 @@ public class PackingOptions {
             if (!pass.endsWith(".class")) { // a whole directory is
                 // passed
                 if (!pass.endsWith("/")) {
-                    // Make sure we don't get any false positives (e.g.
+                    // Make sure we don't get any false positives (for example
                     // exclude "org/apache/harmony/pack" should not match
                     // files under "org/apache/harmony/pack200/")
                     pass += "/";

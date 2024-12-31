@@ -1041,7 +1041,7 @@ public class ClassBands extends BandSet {
                     final int colon = desc.indexOf(':');
                     String type = desc.substring(colon + 1);
                     // TODO Got to get better at this ... in any case, it should
-                    // be e.g. KIB or KIH
+                    // be for example KIB or KIH
                     if (type.equals("B") || type.equals("H")) {
                         type = "I";
                     }

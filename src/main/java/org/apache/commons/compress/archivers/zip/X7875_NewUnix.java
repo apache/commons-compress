@@ -82,7 +82,6 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
         }
 
         /*
-         *
          * I agonized over my choice of MIN_LENGTH=1. Here's the situation: InfoZip (the tool I am using to test interop) always sets these to length=4. And so
          * a UID of 0 (typically root) for example is encoded as {4,0,0,0,0} (len=4, 32 bits of zero), when it could just as easily be encoded as {1,0} (len=1,
          * 8 bits of zero) according to the spec.
@@ -93,8 +92,8 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
          *
          * 2.) Fundamentally, ZIP files are about shrinking things, so let's save a few bytes per entry while we can.
          *
-         * 3.) Of all the people creating ZIP files using commons- compress, how many care about Unix UID/GID attributes of the files they store? (e.g., I am
-         * probably thinking way too hard about this and no one cares!)
+         * 3.) Of all the people creating ZIP files using commons- compress, how many care about Unix UID/GID attributes of the files they store? (for example,
+         * I am probably thinking way too hard about this and no one cares!)
          *
          * 4.) InfoZip's tool, even though it carefully stores every UID/GID for every file zipped on a Unix machine (by default) currently appears unable to
          * ever restore UID/GID. unzip -X has no effect on my machine, even when run as root!!!!
@@ -197,7 +196,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
         byte[] gidBytes = gid.toByteArray();
 
         // BigInteger might prepend a leading-zero to force a positive representation
-        // (e.g., so that the sign-bit is set to zero). We need to remove that
+        // (for example, so that the sign-bit is set to zero). We need to remove that
         // before sending the number over the wire.
         uidBytes = trimLeadingZeroesForceMinLength(uidBytes);
         final int uidBytesLen = uidBytes != null ? uidBytes.length : 0;

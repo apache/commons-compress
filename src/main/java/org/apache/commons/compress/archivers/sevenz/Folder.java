@@ -29,7 +29,7 @@ final class Folder {
 
     static final Folder[] EMPTY_FOLDER_ARRAY = {};
 
-    /** List of coders used in this folder, e.g. one for compression, one for encryption. */
+    /** List of coders used in this folder, for example one for compression, one for encryption. */
     Coder[] coders;
 
     /**

@@ -513,7 +513,7 @@ public class Segment {
     /**
      * Writes the segment to an output stream. The output stream should be pre-buffered for efficiency. Also takes the same input stream for reading, since the
      * file bits may not be loaded and thus just copied from one stream to another. Doesn't close the output stream when finished, in case there are more
-     * entries (e.g. further segments) to be written.
+     * entries (for example further segments) to be written.
      *
      * @param out the JarOutputStream to write data to
      * @throws IOException if an error occurs while reading or writing to the streams

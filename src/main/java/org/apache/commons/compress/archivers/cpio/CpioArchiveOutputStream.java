@@ -48,7 +48,7 @@ import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
  * String contents = &quot;12345&quot;;
  * entry.setFileSize(contents.length());
  * entry.setMode(CpioConstants.C_ISREG); // regular file
- * ... set other attributes, e.g. time, number of links
+ * ... set other attributes, for example time, number of links
  * out.putArchiveEntry(entry);
  * out.write(testContents.getBytes());
  * out.close();

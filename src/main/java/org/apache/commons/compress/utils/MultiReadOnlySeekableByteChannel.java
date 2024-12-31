@@ -69,7 +69,7 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
      * Concatenates the given file paths.
      *
      * @param paths the file paths to concatenate, note that the LAST FILE of files should be the LAST SEGMENT(.zip) and these files should be added in correct
-     *              order (e.g.: .z01, .z02... .z99, .zip)
+     *              order (for example: .z01, .z02... .z99, .zip)
      * @return SeekableByteChannel that concatenates all provided files
      * @throws NullPointerException if files is null
      * @throws IOException          if opening a channel for one of the files fails
