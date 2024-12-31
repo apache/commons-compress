@@ -215,6 +215,21 @@ public final class ExtraField implements Iterable<SubField> {
         totalSize = 0;
     }
 
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final ExtraField other = (ExtraField) obj;
+        return Objects.equals(subFields, other.subFields) && totalSize == other.totalSize;
+    }
+
     /**
      * Finds the first subfield that matched the id if found, null otherwise.
      *
@@ -244,6 +259,11 @@ public final class ExtraField implements Iterable<SubField> {
      */
     public SubField getSubField(final int index) {
         return subFields.get(index);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(subFields, totalSize);
     }
 
     /**
