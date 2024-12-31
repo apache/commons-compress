@@ -22,6 +22,7 @@ package org.apache.commons.compress.compressors.gzip;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.time.Instant;
+import java.util.Objects;
 import java.util.zip.Deflater;
 
 import org.apache.commons.io.Charsets;
@@ -300,6 +301,21 @@ public class GzipParameters {
     private int deflateStrategy = Deflater.DEFAULT_STRATEGY;
     private boolean headerCRC;
 
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof GzipParameters)) {
+            return false;
+        }
+        final GzipParameters other = (GzipParameters) obj;
+        return bufferSize == other.bufferSize && Objects.equals(comment, other.comment) && compressionLevel == other.compressionLevel
+                && deflateStrategy == other.deflateStrategy && Objects.equals(extraField, other.extraField) && Objects.equals(fileName, other.fileName)
+                && Objects.equals(fileNameCharset, other.fileNameCharset) && headerCRC == other.headerCRC
+                && Objects.equals(modificationInstant, other.modificationInstant) && operatingSystem == other.operatingSystem;
+    }
+
     /**
      * Gets size of the buffer used to retrieve compressed data.
      *
@@ -440,6 +456,12 @@ public class GzipParameters {
      */
     public OS getOS() {
         return operatingSystem;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(bufferSize, comment, compressionLevel, deflateStrategy, extraField, fileName, fileNameCharset, headerCRC, modificationInstant,
+                operatingSystem);
     }
 
     private String requireNonNulByte(final String text) {

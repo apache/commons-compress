@@ -16,15 +16,17 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.commons.compress.compressors.gzip;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.zip.Deflater;
 
 import org.junit.jupiter.api.Test;
@@ -44,15 +46,45 @@ public class GzipParametersTest {
         assertEquals(Deflater.HUFFMAN_ONLY, gzipParameters.getDeflateStrategy());
     }
 
+    @Test
+    public void testEquals() throws IOException {
+        final GzipParameters gzipParameters1 = new GzipParameters();
+        final GzipParameters gzipParameters2 = new GzipParameters();
+        assertEquals(gzipParameters1, gzipParameters2);
+        gzipParameters1.setExtraField(new ExtraField().addSubField("AA", "XXXX".getBytes(StandardCharsets.ISO_8859_1)));
+        gzipParameters2.setExtraField(new ExtraField().addSubField("AA", "XXXX".getBytes(StandardCharsets.ISO_8859_1)));
+        assertEquals(gzipParameters1, gzipParameters1);
+        assertEquals(gzipParameters1, gzipParameters2);
+        assertEquals(gzipParameters2, gzipParameters1);
+        // not equals
+        gzipParameters2.setExtraField(new ExtraField().addSubField("BB", "XXXX".getBytes(StandardCharsets.ISO_8859_1)));
+        assertNotEquals(gzipParameters1, gzipParameters2);
+    }
+
+    @Test
+    public void testHashCode() throws IOException {
+        final GzipParameters gzipParameters1 = new GzipParameters();
+        final GzipParameters gzipParameters2 = new GzipParameters();
+        assertEquals(gzipParameters1.hashCode(), gzipParameters2.hashCode());
+        gzipParameters1.setExtraField(new ExtraField().addSubField("AA", "XXXX".getBytes(StandardCharsets.ISO_8859_1)));
+        gzipParameters2.setExtraField(new ExtraField().addSubField("AA", "XXXX".getBytes(StandardCharsets.ISO_8859_1)));
+        assertEquals(gzipParameters1.hashCode(), gzipParameters1.hashCode());
+        assertEquals(gzipParameters1.hashCode(), gzipParameters2.hashCode());
+        assertEquals(gzipParameters2.hashCode(), gzipParameters1.hashCode());
+        // not equals
+        gzipParameters2.setExtraField(new ExtraField().addSubField("BB", "XXXX".getBytes(StandardCharsets.ISO_8859_1)));
+        assertNotEquals(gzipParameters1.hashCode(), gzipParameters2.hashCode());
+    }
+
     @ParameterizedTest
-    //@formatter:off
+    // @formatter:off
     @CsvSource({
         "          , hello\0world, false",
         "ISO-8859-1, hello\0world, false",
         "UTF-8     , hello\0world, false",
         "UTF-16BE  , helloworld, false"
     })
-    //@formatter:on
+    // @formatter:on
     public void testIllegalCommentOrFileName(final Charset charset, final String text) {
         final GzipParameters gzipParameters = new GzipParameters();
         // null resets to default value
@@ -66,7 +98,7 @@ public class GzipParametersTest {
     }
 
     @ParameterizedTest
-    //@formatter:off
+    // @formatter:off
     @CsvSource({
         "          , helloworld",
         "          , helloéworld",
@@ -75,7 +107,7 @@ public class GzipParametersTest {
         "UTF-8     , helloworld",
         "UTF-8     , helloéworld"
     })
-    //@formatter:on
+    // @formatter:on
     public void testLegalCommentOrFileName(final Charset charset, final String text) {
         final GzipParameters gzipParameters = new GzipParameters();
         // null resets to default value
