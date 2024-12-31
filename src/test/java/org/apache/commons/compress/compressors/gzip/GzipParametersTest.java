@@ -95,6 +95,7 @@ public class GzipParametersTest {
         assertNull(gzipParameters.getFileName());
         assertThrows(IllegalArgumentException.class, () -> gzipParameters.setFileName(text));
         assertNull(gzipParameters.getFileName());
+        assertEquals(gzipParameters, gzipParameters);
     }
 
     @ParameterizedTest
@@ -118,6 +119,7 @@ public class GzipParametersTest {
         assertEquals(text, gzipParameters.getFileName());
         gzipParameters.setFileName(text);
         assertEquals(text, gzipParameters.getFileName());
+        assertEquals(gzipParameters, gzipParameters);
     }
 
     @Test
@@ -126,5 +128,6 @@ public class GzipParametersTest {
         assertTrue(gzipParameters.toString().contains("UNKNOWN"));
         gzipParameters.setOS(GzipParameters.OS.Z_SYSTEM);
         assertTrue(gzipParameters.toString().contains("Z_SYSTEM"));
+        assertEquals(gzipParameters, gzipParameters);
     }
 }
