@@ -251,7 +251,7 @@ public final class GZipTest extends AbstractTest {
     public void testOverWrite() throws Exception {
         final GzipCompressorOutputStream out = new GzipCompressorOutputStream(new ByteArrayOutputStream());
         out.close();
-        assertThrows(IOException.class, () -> out.write(0), "IOException expected");
+        assertThrows(IOException.class, () -> out.write(0));
     }
 
     @Test
