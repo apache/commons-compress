@@ -280,7 +280,7 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
         }
 
         if (magic0 != 31 || in.read() != 139) {
-            throw new IOException(isFirstMember ? "Input is not in the .gz format" : "Garbage after a valid .gz stream");
+            throw new IOException(isFirstMember ? "Input is not in the .gz format" : "Unexpected data after a valid .gz stream");
         }
 
         // Parsing the rest of the header may throw EOFException.
