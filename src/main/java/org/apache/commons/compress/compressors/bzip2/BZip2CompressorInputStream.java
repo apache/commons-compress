@@ -527,7 +527,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         final int magic2 = readNextByte(this.bin);
 
         if (magic0 != 'B' || magic1 != 'Z' || magic2 != 'h') {
-            throw new IOException(isFirstStream ? "Stream is not in the BZip2 format" : "Garbage after a valid BZip2 stream");
+            throw new IOException(isFirstStream ? "Stream is not in the BZip2 format" : "Unexpected data after a valid BZip2 stream");
         }
 
         final int blockSize = readNextByte(this.bin);
