@@ -71,6 +71,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="add" dev="ggregory" due-to="Danny Deschenes, Gary Gregory">GzipCompressorInputStream reads the modification time (MTIME) and stores its value incorrectly multiplied by 1,000.</action>
       <action type="add" dev="ggregory" due-to="Danny Deschenes, Gary Gregory">GzipCompressorInputStream writes the modification time (MTIME) the value incorrectly divided by 1,000.</action>
       <action type="add" dev="ggregory" due-to="Danny Deschenes, Gary Gregory">Add optional FHCRC to GZIP header #627.</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Add GzipCompressorInputStream.Builder allowing to customize the file name and comment Charsets.</action>
       <!-- UPDATE -->
       <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump org.apache.commons:commons-parent from 72 to 78 #563, #567, #574, #582, #587, #595.</action>
       <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump com.github.luben:zstd-jni from 1.5.6-4 to 1.5.6-8 #565, #578, #601, #616.</action>

@@ -66,21 +66,31 @@ public class GzipCompressorOutputStreamTest {
         Files.write(tempSourceFile, bytes);
         final Path targetFile = Files.createTempFile(EXPECTED_BASE_NAME, ".gz");
         final GzipParameters parameters = new GzipParameters();
-        // If your system is Windows with Chinese, and your file name is Chinese, you need set the fileNameCharset to GBK
-        // otherwise your file name is different with use GzipCompressorOutputStream without set GzipParameters
-        // and the same situation in Linux, need set the fileNameCharset to UTF-8
+        // If your system is Windows with Chinese, and your file name is Chinese, you need set the fileNameCharset to "GBK"
+        // otherwise your file name is different using GzipCompressorOutputStream without a GzipParameters.
+        // On Linux, set the fileNameCharset to UTF-8.
         parameters.setFileNameCharset(fileNameCharset);
         assertEquals(fileNameCharset, parameters.getFileNameCharset());
         parameters.setFileName(EXPECTED_FILE_NAME);
+        parameters.setComment("Comment on " + EXPECTED_FILE_NAME);
         try (OutputStream fos = Files.newOutputStream(targetFile);
                 GzipCompressorOutputStream gos = new GzipCompressorOutputStream(fos, parameters)) {
             gos.write(tempSourceFile);
         }
+        // Old construction doesn't allow configuration of reading the file name and comment Charset.
         try (GzipCompressorInputStream gis = new GzipCompressorInputStream(Files.newInputStream(targetFile))) {
             final byte[] fileNameBytes = gis.getMetaData().getFileName().getBytes(StandardCharsets.ISO_8859_1);
             final String unicodeFileName = new String(fileNameBytes, fileNameCharset);
             assertEquals(expected, unicodeFileName);
             assertArrayEquals(bytes, IOUtils.toByteArray(gis));
+        }
+        // Construction allows configuration of reading the file name and comment Charset.
+        try (GzipCompressorInputStream gis = GzipCompressorInputStream.builder().setPath(targetFile).setFileNameCharset(fileNameCharset).get()) {
+            final byte[] fileNameBytes = gis.getMetaData().getFileName().getBytes(fileNameCharset);
+            final String unicodeFileName = new String(fileNameBytes, fileNameCharset);
+            assertEquals(expected, unicodeFileName);
+            assertArrayEquals(bytes, IOUtils.toByteArray(gis));
+            assertEquals(parameters, gis.getMetaData());
         }
     }
 
@@ -160,6 +170,7 @@ public class GzipCompressorOutputStreamTest {
         }
         try (GzipCompressorInputStream gis = new GzipCompressorInputStream(Files.newInputStream(targetFile))) {
             final ExtraField extra2 = gis.getMetaData().getExtraField();
+            assertEquals(parameters, gis.getMetaData());
             assertEquals(subFieldCount == 0, extra2.isEmpty());
             assertEquals(subFieldCount, extra2.size());
             assertEquals(4 * subFieldCount + subFieldCount * payloadSize, extra2.getEncodedSize());
@@ -183,9 +194,7 @@ public class GzipCompressorOutputStreamTest {
         final ExtraField extra = new ExtraField();
         assertEquals(0, extra.toByteArray().length);
         assertFalse(extra.iterator().hasNext());
-        extra.forEach(e -> {
-            fail("Not emprt");
-        });
+        extra.forEach(e -> fail("Not empty."));
         assertThrows(IndexOutOfBoundsException.class, () -> extra.getSubField(0));
     }
 
@@ -279,6 +288,7 @@ public class GzipCompressorOutputStreamTest {
             assertEquals("AAAA", metaData.getFileName());
             assertEquals("ZZZZ", metaData.getComment());
             assertEquals(OS.UNIX, metaData.getOS());
+            assertEquals(parameters, metaData);
         }
         // verify that the constructor normally fails on bad HCRC
         assertThrows(ZipException.class, () -> {
