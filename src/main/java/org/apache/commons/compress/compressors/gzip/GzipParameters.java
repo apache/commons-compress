@@ -322,8 +322,8 @@ public class GzipParameters {
      * Gets size of the buffer used to retrieve compressed data.
      *
      * @return The size of the buffer used to retrieve compressed data.
-     * @since 1.21
      * @see #setBufferSize(int)
+     * @since 1.21
      */
     public int getBufferSize() {
         return this.bufferSize;
