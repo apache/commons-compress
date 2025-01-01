@@ -50,6 +50,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
+import shaded.org.apache.commons.io.IOUtils;
+
 /**
  * Tests {@link GzipCompressorOutputStream}.
  */
@@ -60,7 +62,8 @@ public class GzipCompressorOutputStreamTest {
 
     private void testChineseFileName(final String expected, final String sourceFile, final Charset fileNameCharset) throws IOException {
         final Path tempSourceFile = Files.createTempFile(sourceFile, sourceFile);
-        Files.write(tempSourceFile, "<text>Hello World!</text>".getBytes(StandardCharsets.ISO_8859_1));
+        final byte[] bytes = "<text>Hello World!</text>".getBytes(StandardCharsets.ISO_8859_1);
+        Files.write(tempSourceFile, bytes);
         final Path targetFile = Files.createTempFile(EXPECTED_BASE_NAME, ".gz");
         final GzipParameters parameters = new GzipParameters();
         // If your system is Windows with Chinese, and your file name is Chinese, you need set the fileNameCharset to GBK
@@ -77,6 +80,7 @@ public class GzipCompressorOutputStreamTest {
             final byte[] fileNameBytes = gis.getMetaData().getFileName().getBytes(StandardCharsets.ISO_8859_1);
             final String unicodeFileName = new String(fileNameBytes, fileNameCharset);
             assertEquals(expected, unicodeFileName);
+            assertArrayEquals(bytes, IOUtils.toByteArray(gis));
         }
     }
 
@@ -187,7 +191,8 @@ public class GzipCompressorOutputStreamTest {
 
     private void testFileName(final String expected, final String sourceFile) throws IOException {
         final Path tempSourceFile = Files.createTempFile(sourceFile, sourceFile);
-        Files.write(tempSourceFile, "<text>Hello World!</text>".getBytes(StandardCharsets.ISO_8859_1));
+        final byte[] bytes = "<text>Hello World!</text>".getBytes(StandardCharsets.ISO_8859_1);
+        Files.write(tempSourceFile, bytes);
         final Path targetFile = Files.createTempFile("test", ".gz");
         final GzipParameters parameters = new GzipParameters();
         parameters.setFilename(sourceFile);
@@ -201,6 +206,7 @@ public class GzipCompressorOutputStreamTest {
         try (GzipCompressorInputStream gis = new GzipCompressorInputStream(Files.newInputStream(targetFile))) {
             assertEquals(expected, gis.getMetaData().getFileName());
             assertEquals(expected, gis.getMetaData().getFilename());
+            assertArrayEquals(bytes, IOUtils.toByteArray(gis));
         }
     }
 
