@@ -206,6 +206,8 @@ public class GzipParameters {
 
     }
 
+    private static final int BUFFER_SIZE = 512;
+
     /**
      * 0: FAT.
      */
@@ -297,7 +299,7 @@ public class GzipParameters {
     private Charset fileNameCharset = GzipUtils.GZIP_ENCODING;
     private String comment;
     private OS operatingSystem = OS.UNKNOWN; // Unknown OS by default
-    private int bufferSize = 512;
+    private int bufferSize = BUFFER_SIZE;
     private int deflateStrategy = Deflater.DEFAULT_STRATEGY;
     private boolean headerCRC;
 
