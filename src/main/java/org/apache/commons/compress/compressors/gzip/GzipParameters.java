@@ -647,9 +647,10 @@ public class GzipParameters {
     @Override
     public String toString() {
         final StringBuilder builder = new StringBuilder();
-        builder.append("GzipParameters [compressionLevel=").append(compressionLevel).append(", modificationTime=").append(modificationInstant)
-                .append(", fileName=").append(fileName).append(", comment=").append(comment).append(", operatingSystem=").append(operatingSystem)
-                .append(", bufferSize=").append(bufferSize).append(", deflateStrategy=").append(deflateStrategy).append("]");
+        builder.append("GzipParameters [compressionLevel=").append(compressionLevel).append(", modificationInstant=").append(modificationInstant)
+                .append(", extraField=").append(extraField).append(", fileName=").append(fileName).append(", fileNameCharset=").append(fileNameCharset)
+                .append(", comment=").append(comment).append(", operatingSystem=").append(operatingSystem).append(", bufferSize=").append(bufferSize)
+                .append(", deflateStrategy=").append(deflateStrategy).append(", headerCRC=").append(headerCRC).append("]");
         return builder.toString();
     }
 }
