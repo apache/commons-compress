@@ -25,7 +25,6 @@ import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 import java.util.zip.CRC32;
 import java.util.zip.Deflater;
-import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.compress.compressors.CompressorOutputStream;
@@ -70,7 +69,7 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
         this.deflater = new Deflater(parameters.getCompressionLevel(), true);
         this.deflater.setStrategy(parameters.getDeflateStrategy());
         this.deflateBuffer = new byte[parameters.getBufferSize()];
-        writeHeader(parameters);
+        writeMemberHeader(parameters);
     }
 
     @Override
@@ -105,7 +104,7 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
             while (!deflater.finished()) {
                 deflate();
             }
-            writeTrailer();
+            writeMemberTrailer();
         }
     }
 
@@ -127,7 +126,7 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
     @Override
     public void write(final byte[] buffer, final int offset, final int length) throws IOException {
         if (deflater.finished()) {
-            throw new IOException("Cannot write more data, the end of the compressed data stream has been reached");
+            throw new IOException("Cannot write more data, the end of the compressed data stream has been reached.");
         }
         if (length > 0) {
             deflater.setInput(buffer, offset, length);
@@ -144,7 +143,7 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
     }
 
     /**
-     * Writes a NUL-terminated String encoded with the {@code charset}.
+     * Writes a C-style string, a NUL-terminated string, encoded with the {@code charset}.
      *
      * @param value The String to write.
      * @param charset Specifies the Charset to use.
@@ -160,13 +159,14 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
         }
     }
 
-    private void writeHeader(final GzipParameters parameters) throws IOException {
+    private void writeMemberHeader(final GzipParameters parameters) throws IOException {
         final String fileName = parameters.getFileName();
         final String comment = parameters.getComment();
         final byte[] extra = parameters.getExtraField() != null ? parameters.getExtraField().toByteArray() : null;
         final ByteBuffer buffer = ByteBuffer.allocate(10);
         buffer.order(ByteOrder.LITTLE_ENDIAN);
-        buffer.putShort((short) GZIPInputStream.GZIP_MAGIC);
+        buffer.put((byte) GzipUtils.ID1);
+        buffer.put((byte) GzipUtils.ID2);
         buffer.put((byte) Deflater.DEFLATED); // compression method (8: deflate)
         buffer.put((byte) ((extra != null ? GzipUtils.FEXTRA : 0)
                 | (fileName != null ? GzipUtils.FNAME : 0)
@@ -177,11 +177,11 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
         // extra flags
         final int compressionLevel = parameters.getCompressionLevel();
         if (compressionLevel == Deflater.BEST_COMPRESSION) {
-            buffer.put((byte) 2);
+            buffer.put(GzipUtils.XFL_MAX_COMPRESSION);
         } else if (compressionLevel == Deflater.BEST_SPEED) {
-            buffer.put((byte) 4);
+            buffer.put(GzipUtils.XFL_MAX_SPEED);
         } else {
-            buffer.put((byte) 0);
+            buffer.put(GzipUtils.XFL_UNKNOWN);
         }
         buffer.put((byte) parameters.getOperatingSystem());
         out.write(buffer.array());
@@ -204,7 +204,18 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
         crc.reset();
     }
 
-    private void writeTrailer() throws IOException {
+    /**
+     * Writes the member trailer.
+     * <pre>
+     *      0   1   2   3   4   5   6   7
+     *   +---+---+---+---+---+---+---+---+
+     *   |     CRC32     |     ISIZE     |
+     *   +---+---+---+---+---+---+---+---+
+     * </pre>
+     *
+     * @throws IOException if an I/O error occurs.
+     */
+    private void writeMemberTrailer() throws IOException {
         final ByteBuffer buffer = ByteBuffer.allocate(8);
         buffer.order(ByteOrder.LITTLE_ENDIAN);
         buffer.putInt((int) crc.getValue());

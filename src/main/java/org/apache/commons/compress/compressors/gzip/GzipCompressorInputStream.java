@@ -267,7 +267,7 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
 
     private boolean init(final boolean isFirstMember) throws IOException {
         if (!isFirstMember && !decompressConcatenated) { // at least one must be true
-            throw new IllegalStateException("Unexpected: isFirstMember and decompressConcatenated are both false!");
+            throw new IllegalStateException("Unexpected: isFirstMember and decompressConcatenated are both false.");
         }
         parameters.setFileNameCharset(fileNameCharset);
         // Check the magic bytes without a possibility of EOFException.
@@ -279,8 +279,8 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
             return false;
         }
 
-        if (magic0 != 31 || in.read() != 139) {
-            throw new IOException(isFirstMember ? "Input is not in the .gz format" : "Unexpected data after a valid .gz stream");
+        if (magic0 != GzipUtils.ID1 || in.read() != GzipUtils.ID2) {
+            throw new IOException(isFirstMember ? "Input is not in the .gz format." : "Unexpected data after a valid .gz stream.");
         }
 
         // Parsing the rest of the header may throw EOFException.
@@ -292,15 +292,15 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
 
         final int flg = inData.readUnsignedByte();
         if ((flg & GzipUtils.FRESERVED) != 0) {
-            throw new IOException("Reserved flags are set in the .gz header");
+            throw new IOException("Reserved flags are set in the .gz header.");
         }
 
         parameters.setModificationTime(ByteUtils.fromLittleEndian(inData, 4));
         switch (inData.readUnsignedByte()) { // extra flags
-        case 2:
+        case GzipUtils.XFL_MAX_COMPRESSION:
             parameters.setCompressionLevel(Deflater.BEST_COMPRESSION);
             break;
-        case 4:
+        case GzipUtils.XFL_MAX_SPEED:
             parameters.setCompressionLevel(Deflater.BEST_SPEED);
             break;
         default:
@@ -384,7 +384,7 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
             try {
                 ret = inflater.inflate(b, off, len);
             } catch (final DataFormatException e) { // NOSONAR
-                throw new IOException("Gzip-compressed data is corrupt", e);
+                throw new IOException("Gzip-compressed data is corrupt.", e);
             }
 
             crc.update(b, off, ret);
@@ -411,14 +411,14 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
                 final long crcStored = ByteUtils.fromLittleEndian(inData, 4);
 
                 if (crcStored != crc.getValue()) {
-                    throw new IOException("Gzip-compressed data is corrupt " + "(CRC32 error)");
+                    throw new IOException("Gzip-compressed data is corrupt (CRC32 error).");
                 }
 
                 // Uncompressed size modulo 2^32 (ISIZE in the spec)
                 final long isize = ByteUtils.fromLittleEndian(inData, 4);
 
                 if (isize != (inflater.getBytesWritten() & 0xffffffffL)) {
-                    throw new IOException("Gzip-compressed data is corrupt" + "(uncompressed size mismatch)");
+                    throw new IOException("Gzip-compressed data is corrupt (uncompressed size mismatch).");
                 }
 
                 // See if this is the end of the file.

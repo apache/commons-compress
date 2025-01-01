@@ -42,17 +42,48 @@ public class GzipUtils {
     /** Header flag indicating a header CRC follows the header. */
     static final int FHCRC = 0x02;
 
+    private static final FileNameUtil fileNameUtil;
+
     /** Header flag indicating a file name follows the header. */
     static final int FNAME = 0x08;
 
     static final int FRESERVED = 0xE0;
 
-    private static final FileNameUtil fileNameUtil;
-
     /**
      * Charset for file name and comments per the <a href="https://tools.ietf.org/html/rfc1952">GZIP File Format Specification</a>.
      */
     static final Charset GZIP_ENCODING = StandardCharsets.ISO_8859_1;
+
+    /**
+     * Member header ID1 (IDentification 1).
+     *
+     * See <a href="https://datatracker.ietf.org/doc/html/rfc1952#page-5">RFC1952</a> 2.3.1. Member header and trailer.
+     */
+    static final int ID1 = 31;
+
+    /**
+     * Member header ID2 (IDentification 2).
+     *
+     * See <a href="https://datatracker.ietf.org/doc/html/rfc1952#page-5">RFC1952</a> 2.3.1. Member header and trailer.
+     */
+    static final int ID2 = 139;
+
+    /**
+     * Member header XFL (eXtra FLags) when the "deflate" method (CM = 8) is set, then XFL = 2 means the compressor used maximum compression (slowest
+     * algorithm).
+     *
+     * See <a href="https://datatracker.ietf.org/doc/html/rfc1952#page-5">RFC1952</a> 2.3.1. Member header and trailer.
+     */
+    static final byte XFL_MAX_COMPRESSION = 2;
+
+    /**
+     * Member header XFL (eXtra FLags) when the "deflate" method (CM = 8) is set, then XFL = 4 means the compressor used the fastest algorithm.
+     *
+     * See <a href="https://datatracker.ietf.org/doc/html/rfc1952#page-5">RFC1952</a> 2.3.1. Member header and trailer.
+     */
+    static final byte XFL_MAX_SPEED = 4;
+
+    static final byte XFL_UNKNOWN = 0;
 
     static {
         // using LinkedHashMap so .tgz is preferred over .taz as
@@ -72,7 +103,6 @@ public class GzipUtils {
         uncompressSuffix.put("_z", "");
         fileNameUtil = new FileNameUtil(uncompressSuffix, ".gz");
     }
-
     /**
      * Maps the given file name to the name that the file should have after compression with gzip. Common file types with custom suffixes for compressed
      * versions are automatically detected and correctly mapped. For example the name "package.tar" is mapped to "package.tgz". If no custom mapping is
@@ -99,6 +129,7 @@ public class GzipUtils {
     public static String getCompressedFileName(final String fileName) {
         return fileNameUtil.getCompressedFileName(fileName);
     }
+
     /**
      * Maps the given name of a gzip-compressed file to the name that the file should have after uncompression. Commonly used file type specific suffixes like
      * ".tgz" or ".svgz" are automatically detected and correctly mapped. For example the name "package.tgz" is mapped to "package.tar". And any file names with
@@ -113,6 +144,7 @@ public class GzipUtils {
     public static String getUncompressedFilename(final String fileName) {
         return fileNameUtil.getUncompressedFileName(fileName);
     }
+
     /**
      * Maps the given name of a gzip-compressed file to the name that the file should have after uncompression. Commonly used file type specific suffixes like
      * ".tgz" or ".svgz" are automatically detected and correctly mapped. For example the name "package.tgz" is mapped to "package.tar". And any file names with
@@ -126,6 +158,7 @@ public class GzipUtils {
     public static String getUncompressedFileName(final String fileName) {
         return fileNameUtil.getUncompressedFileName(fileName);
     }
+
     /**
      * Detects common gzip suffixes in the given file name.
      *
@@ -137,6 +170,7 @@ public class GzipUtils {
     public static boolean isCompressedFilename(final String fileName) {
         return fileNameUtil.isCompressedFileName(fileName);
     }
+
     /**
      * Detects common gzip suffixes in the given file name.
      *
