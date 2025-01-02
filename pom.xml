@@ -73,7 +73,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
          this doesn't work for us -->
     <commons.scmPubUrl>https://svn.apache.org/repos/infra/websites/production/commons/content/proper/${project.artifactId}</commons.scmPubUrl>
     <japicmp.skip>false</japicmp.skip>
-    <pax.exam.version>4.13.5</pax.exam.version>
+    <pax.exam.version>4.14.0</pax.exam.version>
     <slf4j.version>2.0.16</slf4j.version>
     <asm.version>9.7.1</asm.version>
     <project.build.outputTimestamp>2024-08-20T11:00:46Z</project.build.outputTimestamp>
