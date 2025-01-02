@@ -124,17 +124,17 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
 
     private boolean entryEOF;
 
-    private final byte[] tmpbuf = new byte[4096];
+    private final byte[] tmpBuf = new byte[4096];
 
     private long crc;
 
     /** Cached buffer - must only be used locally in the class (COMPRESS-172 - reduce garbage collection). */
-    private final byte[] twoBytesBuf = new byte[2];
+    private final byte[] buffer2 = new byte[2];
 
     /** Cached buffer - must only be used locally in the class (COMPRESS-172 - reduce garbage collection). */
-    private final byte[] fourBytesBuf = new byte[4];
+    private final byte[] buffer4 = new byte[4];
 
-    private final byte[] sixBytesBuf = new byte[6];
+    private final byte[] buffer6 = new byte[6];
 
     private final int blockSize;
 
@@ -261,15 +261,15 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         if (this.entry != null) {
             closeEntry();
         }
-        readFully(twoBytesBuf, 0, twoBytesBuf.length);
-        if (CpioUtil.byteArray2long(twoBytesBuf, false) == MAGIC_OLD_BINARY) {
+        readFully(buffer2, 0, buffer2.length);
+        if (CpioUtil.byteArray2long(buffer2, false) == MAGIC_OLD_BINARY) {
             this.entry = readOldBinaryEntry(false);
-        } else if (CpioUtil.byteArray2long(twoBytesBuf, true) == MAGIC_OLD_BINARY) {
+        } else if (CpioUtil.byteArray2long(buffer2, true) == MAGIC_OLD_BINARY) {
             this.entry = readOldBinaryEntry(true);
         } else {
-            System.arraycopy(twoBytesBuf, 0, sixBytesBuf, 0, twoBytesBuf.length);
-            readFully(sixBytesBuf, twoBytesBuf.length, fourBytesBuf.length);
-            final String magicString = ArchiveUtils.toAsciiString(sixBytesBuf);
+            System.arraycopy(buffer2, 0, buffer6, 0, buffer2.length);
+            readFully(buffer6, buffer2.length, buffer4.length);
+            final String magicString = ArchiveUtils.toAsciiString(buffer6);
             switch (magicString) {
             case MAGIC_NEW:
                 this.entry = readNewEntry(false);
@@ -497,7 +497,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
 
     private int skip(final int length) throws IOException {
         // bytes cannot be more than 3 bytes
-        return length > 0 ? readFully(fourBytesBuf, 0, length) : 0;
+        return length > 0 ? readFully(buffer4, 0, length) : 0;
     }
 
     /**
@@ -519,10 +519,10 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
 
         while (total < max) {
             int len = max - total;
-            if (len > this.tmpbuf.length) {
-                len = this.tmpbuf.length;
+            if (len > this.tmpBuf.length) {
+                len = this.tmpBuf.length;
             }
-            len = read(this.tmpbuf, 0, len);
+            len = read(this.tmpBuf, 0, len);
             if (len == -1) {
                 this.entryEOF = true;
                 break;
