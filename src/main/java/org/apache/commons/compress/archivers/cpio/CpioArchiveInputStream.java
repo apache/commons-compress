@@ -457,7 +457,6 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
 
     private CpioArchiveEntry readOldBinaryEntry(final boolean swapHalfWord) throws IOException {
         final CpioArchiveEntry oldEntry = new CpioArchiveEntry(FORMAT_OLD_BINARY);
-
         oldEntry.setDevice(readBinaryLong(2, swapHalfWord));
         oldEntry.setInode(readBinaryLong(2, swapHalfWord));
         final long mode = readBinaryLong(2, swapHalfWord);
@@ -482,8 +481,10 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         if (CpioUtil.fileType(mode) == 0 && !name.equals(CPIO_TRAILER)) {
             throw new IOException("Mode 0 only allowed in the trailer. Found entry: " + ArchiveUtils.sanitize(name) + "Occurred at byte: " + getBytesRead());
         }
-        skip(oldEntry.getHeaderPadCount(namesize - 1));
-
+        final int headerPadCount = oldEntry.getHeaderPadCount(namesize - 1);
+        if (skip(headerPadCount) != headerPadCount) {
+            throw new IOException("Header pad count mismatch.");
+        }
         return oldEntry;
     }
 
