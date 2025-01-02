@@ -85,11 +85,19 @@ public class GzipCompressorOutputStreamTest {
             assertArrayEquals(bytes, IOUtils.toByteArray(gis));
         }
         // Construction allows configuration of reading the file name and comment Charset.
-        try (GzipCompressorInputStream gis = GzipCompressorInputStream.builder().setPath(targetFile).setFileNameCharset(fileNameCharset).get()) {
+        // @formatter:off
+        try (GzipCompressorInputStream gis = GzipCompressorInputStream.builder()
+                .setPath(targetFile)
+                .setFileNameCharset(fileNameCharset)
+                .get()) {
+            // @formatter:on
             final byte[] fileNameBytes = gis.getMetaData().getFileName().getBytes(fileNameCharset);
             final String unicodeFileName = new String(fileNameBytes, fileNameCharset);
             assertEquals(expected, unicodeFileName);
             assertArrayEquals(bytes, IOUtils.toByteArray(gis));
+            // reset trailer values for a simple assertion.
+            gis.getMetaData().setTrailerCrc(0);
+            gis.getMetaData().setTrailerISize(0);
             assertEquals(parameters, gis.getMetaData());
         }
     }

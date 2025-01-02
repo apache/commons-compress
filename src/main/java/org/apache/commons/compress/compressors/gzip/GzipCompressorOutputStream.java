@@ -105,6 +105,7 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
                 deflate();
             }
             writeMemberTrailer();
+            deflater.reset();
         }
     }
 
@@ -125,6 +126,7 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
      */
     @Override
     public void write(final byte[] buffer, final int offset, final int length) throws IOException {
+        checkOpen();
         if (deflater.finished()) {
             throw new IOException("Cannot write more data, the end of the compressed data stream has been reached.");
         }
