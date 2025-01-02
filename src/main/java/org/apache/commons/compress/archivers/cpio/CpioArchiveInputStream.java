@@ -325,7 +325,10 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
             return -1;
         }
         if (this.entryBytesRead == this.entry.getSize()) {
-            skip(entry.getDataPadCount());
+            final int dataPadCount = entry.getDataPadCount();
+            if (skip(dataPadCount) != dataPadCount) {
+                throw new IOException("Data pad count missmatch.");
+            }
             this.entryEOF = true;
             if (this.entry.getFormat() == FORMAT_NEW_CRC && this.crc != this.entry.getChksum()) {
                 throw new IOException("CRC Error. Occurred at byte: " + getBytesRead());
@@ -492,11 +495,9 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         return b;
     }
 
-    private void skip(final int bytes) throws IOException {
+    private int skip(final int length) throws IOException {
         // bytes cannot be more than 3 bytes
-        if (bytes > 0) {
-            readFully(fourBytesBuf, 0, bytes);
-        }
+        return length > 0 ? readFully(fourBytesBuf, 0, length) : 0;
     }
 
     /**
