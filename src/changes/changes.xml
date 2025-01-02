@@ -60,6 +60,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Don't use deprecated code in TarArchiveInputStream.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Don't use deprecated code in TarFile.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">CpioArchiveInputStream.read(byte[], int, int) now throws an IOException on a data pad count mismatch.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">CpioArchiveInputStream.readNewEntry(boolean) now throws an IOException on a header pad count mismatch.</action>
       <!-- ADD -->
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add GzipParameters.getModificationInstant().</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add GzipParameters.setModificationInstant(Instant).</action>
