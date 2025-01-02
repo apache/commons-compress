@@ -47,8 +47,6 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <commons.bc.version>1.27.1</commons.bc.version>
     <commons.rc.version>RC1</commons.rc.version>
     <mockito.version>4.11.0</mockito.version>
-    <!-- See https://github.com/pmd/pmd/issues/5207 -->
-    <commons.pmd-impl.version>7.2.0</commons.pmd-impl.version>
     <commons.release.isDistModule>true</commons.release.isDistModule>
     <commons.distSvnStagingUrl>scm:svn:https://dist.apache.org/repos/dist/dev/commons/${commons.componentid}</commons.distSvnStagingUrl>
     <commons.manifestlocation>${project.build.outputDirectory}/META-INF</commons.manifestlocation>
