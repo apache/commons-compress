@@ -35,46 +35,63 @@ import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.build.AbstractOrigin;
 import org.apache.commons.io.build.AbstractStreamBuilder;
 import org.apache.commons.io.function.IOConsumer;
 import org.apache.commons.io.input.BoundedInputStream;
 
 /**
- * Input stream that decompresses .gz files.
+ * Input stream that decompresses GZIP (.gz) files.
  *
  * <p>
- * This supports decompressing concatenated .gz files which is important when decompressing standalone .gz files.
+ * This supports decompressing concatenated GZIP files which is important when decompressing standalone GZIP files.
  * </p>
- *
  * <p>
- * Instead of using {@code java.util.zip.GZIPInputStream}, this class has its own GZIP member decoder. The actual decompression is done with
+ * Instead of using {@code java.util.zip.GZIPInputStream}, this class has its own GZIP member decoder. Internally, decompression is done using
  * {@link java.util.zip.Inflater}.
  * </p>
- *
  * <p>
- * If you use the constructor {@code GzipCompressorInputStream(in)} or {@code GzipCompressorInputStream(in, false)}, then {@link #read} will return -1 as soon
- * as the first encoded GZIP member has been completely read. In this case, if the underlying input stream supports {@link InputStream#mark mark()} and
- * {@link InputStream#reset reset()}, then it will be left positioned just after the end of the encoded GZIP member; otherwise, some indeterminate number of
- * extra bytes following the encoded GZIP member will have been consumed and discarded.
+ * If you use the constructor {@code GzipCompressorInputStream(in)}, {@code Builder.setDecompressConcatenated(false)}, or
+ * {@code GzipCompressorInputStream(in, false)}, then {@link #read} will return -1 as soon as the first encoded GZIP member has been completely read. In this
+ * case, if the underlying input stream supports {@link InputStream#mark mark()} and {@link InputStream#reset reset()}, then it will be left positioned just
+ * after the end of the encoded GZIP member; otherwise, some indeterminate number of extra bytes following the encoded GZIP member will have been consumed and
+ * discarded.
+ * </p>
+ * <p>
+ * If you use the {@code Builder.setDecompressConcatenated(true)} or {@code GzipCompressorInputStream(in, true)} then {@link #read} will return -1 only after
+ * the entire input stream has been exhausted; any bytes that follow an encoded GZIP member must constitute a new encoded GZIP member, otherwise an
+ * {@link IOException} is thrown. The data read from a stream constructed this way will consist of the concatenated data of all of the encoded GZIP members in
+ * order.
+ * </p>
+ * <p>
+ * To build an instance, use {@link Builder}.
  * </p>
  *
- * <p>
- * If you use the constructor {@code GzipCompressorInputStream(in, true)} then {@link #read} will return -1 only after the entire input stream has been
- * exhausted; any bytes that follow an encoded GZIP member must constitute a new encoded GZIP member, otherwise an {@link IOException} is thrown. The data read
- * from a stream constructed this way will consist of the concatenated data of all of the encoded GZIP members in order.
- * </p>
- *
+ * @see Builder
  * @see <a href="https://datatracker.ietf.org/doc/html/rfc1952">RFC 1952 GZIP File Format Specification</a>
  */
 public class GzipCompressorInputStream extends CompressorInputStream implements InputStreamStatistics {
 
     private static final IOConsumer<GzipCompressorInputStream> NOOP = IOConsumer.noop();
 
+    // @formatter:off
     /**
-     * Constructs a new builder of {@link GzipCompressorInputStream}.
+     * Builds a new {@link GzipCompressorInputStream}.
      *
+     * <p>
+     * For example:
+     * </p>
+     * <pre>{@code
+     * GzipCompressorInputStream s = GzipCompressorInputStream.builder()
+     *   .setPath(path)
+     *   .setFileNameCharset(StandardCharsets.ISO_8859_1)
+     *   .get();}
+     * </pre>
+     *
+     * @see #get()
      * @since 1.28.0
      */
+    // @formatter:on
     public static class Builder extends AbstractStreamBuilder<GzipCompressorInputStream, Builder> {
 
         /** True if decompressing multi-member streams. */
@@ -93,6 +110,17 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
             // empty
         }
 
+        /**
+         * Builds a new {@link GzipCompressorInputStream}.
+         * <p>
+         * You must set input that supports {@link InputStream}, otherwise, this method throws an exception.
+         * </p>
+         *
+         * @return a new instance.
+         * @throws IllegalStateException         if the {@code origin} is {@code null}.
+         * @throws UnsupportedOperationException if the origin cannot be converted to an {@link InputStream}.
+         * @see AbstractOrigin#getInputStream(java.nio.file.OpenOption...)
+         */
         @Override
         public GzipCompressorInputStream get() throws IOException {
             return new GzipCompressorInputStream(this);
@@ -128,8 +156,13 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
         }
 
         /**
-         * Sets the consumer called when a member header is parsed. Note that the member size is unknown at call time, it is stored in a member
-         * <em>trailer</em> and used for validation.
+         * Sets the consumer called when a member <em>trailer</em> is parsed.
+         * <p>
+         * When a member <em>header</em> is parsed, all {@link GzipParameters} values are initialized except {@code trailerCrc} and {@code trailerISize}.
+         * </p>
+         * <p>
+         * When a member <em>trailer</em> is parsed, the {@link GzipParameters} values {@code trailerCrc} and {@code trailerISize} are set.
+         * </p>
          *
          * @param onMemberEnd The consumer.
          * @return this instance.
@@ -141,9 +174,12 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
         }
 
         /**
-         * Sets the consumer called when a member trailer is parsed.
+         * Sets the consumer called when a member <em>header</em> is parsed.
          * <p>
-         * There are two values set from the trailer in the current {@link GzipParameters}: {@code trailerCrc} and {@code trailerISize}.
+         * When a member <em>header</em> is parsed, all {@link GzipParameters} values are initialized except {@code trailerCrc} and {@code trailerISize}.
+         * </p>
+         * <p>
+         * When a member <em>trailer</em> is parsed, the {@link GzipParameters} values {@code trailerCrc} and {@code trailerISize} are set.
          * </p>
          *
          * @param onMemberStart The consumer.
