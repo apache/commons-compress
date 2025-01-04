@@ -119,16 +119,31 @@ public class SevenZFile implements Closeable {
             return 16;
         }
 
+        /**
+         * Gets a size estimate in bytes.
+         *
+         * @return a size estimate in bytes.
+         */
         private long coderSize() {
             return 2 /* methodId is between 1 and four bytes currently, COPY and LZMA2 are the most common with 1 */
                     + 16 + 4 /* properties, guess */
             ;
         }
 
+        /**
+         * Gets a size estimate in bytes.
+         *
+         * @return a size estimate in bytes.
+         */
         private long entrySize() {
             return 100; /* real size depends on name length, everything without name is about 70 bytes */
         }
 
+        /**
+         * Gets a size estimate in bytes.
+         *
+         * @return a size estimate in bytes.
+         */
         long estimateSize() {
             final long lowerBound = 16L * numberOfPackedStreams /* packSizes, packCrcs in Archive */
                     + numberOfPackedStreams / 8 /* packCrcsDefined in Archive */
@@ -155,7 +170,7 @@ public class SevenZFile implements Closeable {
 
         @Override
         public String toString() {
-            return "Archive with " + numberOfEntries + " entries in " + numberOfFolders + " folders. Estimated size " + estimateSize() / 1024L + " kB.";
+            return String.format("Archive with %,d entries in %,d folders, estimated size %,d KiB.", numberOfEntries, numberOfFolders, estimateSize() / 1024L);
         }
     }
 
