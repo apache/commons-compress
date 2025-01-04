@@ -31,6 +31,7 @@ import org.apache.commons.compress.compressors.lzw.LZWInputStream;
  * @since 1.7
  */
 public class ZCompressorInputStream extends LZWInputStream {
+
     private static final int MAGIC_1 = 0x1f;
     private static final int MAGIC_2 = 0x9d;
     private static final int BLOCK_MODE_MASK = 0x80;
@@ -50,14 +51,26 @@ public class ZCompressorInputStream extends LZWInputStream {
 
     private final boolean blockMode;
     private final int maxCodeSize;
-
     private long totalCodesRead;
 
+    /**
+     * Constructs a new instance.
+     *
+     * @param inputStream The underlying input stream.
+     * @throws IOException if an I/O error occurs.
+     */
     public ZCompressorInputStream(final InputStream inputStream) throws IOException {
         this(inputStream, -1);
     }
 
-    public ZCompressorInputStream(final InputStream inputStream, final int memoryLimitInKb) throws IOException {
+    /**
+     * Constructs a new instance.
+     *
+     * @param inputStream The underlying input stream.
+     * @param memoryLimitInKiB maximum allowed estimated memory usage in kibibytes.
+     * @throws IOException if an I/O error occurs.
+     */
+    public ZCompressorInputStream(final InputStream inputStream, final int memoryLimitInKiB) throws IOException {
         super(inputStream, ByteOrder.LITTLE_ENDIAN);
         final int firstByte = (int) in.readBits(8);
         final int secondByte = (int) in.readBits(8);
@@ -70,7 +83,7 @@ public class ZCompressorInputStream extends LZWInputStream {
         if (blockMode) {
             setClearCode(DEFAULT_CODE_SIZE);
         }
-        initializeTables(maxCodeSize, memoryLimitInKb);
+        initializeTables(maxCodeSize, memoryLimitInKiB);
         clearEntries();
     }
 

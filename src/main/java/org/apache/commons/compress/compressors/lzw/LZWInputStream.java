@@ -53,6 +53,12 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
     private byte[] outputStack;
     private int outputStackLocation;
 
+    /**
+     * Constructs a new instance.
+     *
+     * @param inputStream The underlying input stream.
+     * @param byteOrder the input byte order.
+     */
     protected LZWInputStream(final InputStream inputStream, final ByteOrder byteOrder) {
         this.in = new BitInputStream(inputStream, byteOrder);
     }
@@ -192,23 +198,23 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
      * Initializes the arrays based on the maximum code size. First checks that the estimated memory usage is below memoryLimitInKb
      *
      * @param maxCodeSize     maximum code size
-     * @param memoryLimitInKb maximum allowed estimated memory usage in Kb
-     * @throws MemoryLimitException     if estimated memory usage is greater than memoryLimitInKb
+     * @param memoryLimitInKiB maximum allowed estimated memory usage in kibibytes.
+     * @throws MemoryLimitException     if estimated memory usage is greater than memoryLimitInKiB
      * @throws IllegalArgumentException if {@code maxCodeSize} is not bigger than 0
      */
-    protected void initializeTables(final int maxCodeSize, final int memoryLimitInKb) throws MemoryLimitException {
+    protected void initializeTables(final int maxCodeSize, final int memoryLimitInKiB) throws MemoryLimitException {
         if (maxCodeSize <= 0) {
             throw new IllegalArgumentException("maxCodeSize is " + maxCodeSize + ", must be bigger than 0");
         }
 
-        if (memoryLimitInKb > -1) {
+        if (memoryLimitInKiB > -1) {
             final int maxTableSize = 1 << maxCodeSize;
             // account for potential overflow
-            final long memoryUsageInBytes = (long) maxTableSize * 6; // (4 (prefixes) + 1 (characters) +1 (outputStack))
-            final long memoryUsageInKb = memoryUsageInBytes >> 10;
+            final long memoryUsageBytes = (long) maxTableSize * 6; // (4 (prefixes) + 1 (characters) +1 (outputStack))
+            final long memoryUsageKiB = memoryUsageBytes >> 10;
 
-            if (memoryUsageInKb > memoryLimitInKb) {
-                throw new MemoryLimitException(memoryUsageInKb, memoryLimitInKb);
+            if (memoryUsageKiB > memoryLimitInKiB) {
+                throw new MemoryLimitException(memoryUsageKiB, memoryLimitInKiB);
             }
         }
         initializeTables(maxCodeSize);
