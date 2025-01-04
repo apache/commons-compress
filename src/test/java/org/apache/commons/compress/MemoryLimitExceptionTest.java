@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
  * Tests {@link MemoryLimitException}.
  */
 public class MemoryLimitExceptionTest {
-    
+
     @Test
     public void testAccessorsCause() {
         final IOException ioe = new IOException();
