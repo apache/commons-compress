@@ -65,15 +65,15 @@ public class LZMACompressorInputStream extends CompressorInputStream implements 
      * Creates a new input stream that decompresses LZMA-compressed data from the specified input stream.
      *
      * @param inputStream     where to read the compressed data
-     * @param memoryLimitInKb calculated memory use threshold. Throws MemoryLimitException if calculate memory use is above this threshold
+     * @param memoryLimitKiB calculated memory use threshold in kibibytes (KiB). Throws MemoryLimitException if calculate memory use is above this threshold
      * @throws IOException if the input is not in the .lzma format, the input is corrupt or truncated, the .lzma headers specify sizes that are not supported by
      *                     this implementation, or the underlying {@code inputStream} throws an exception
      *
      * @since 1.14
      */
-    public LZMACompressorInputStream(final InputStream inputStream, final int memoryLimitInKb) throws IOException {
+    public LZMACompressorInputStream(final InputStream inputStream, final int memoryLimitKiB) throws IOException {
         try {
-            in = new LZMAInputStream(countingStream = BoundedInputStream.builder().setInputStream(inputStream).get(), memoryLimitInKb);
+            in = new LZMAInputStream(countingStream = BoundedInputStream.builder().setInputStream(inputStream).get(), memoryLimitKiB);
         } catch (final org.tukaani.xz.MemoryLimitException e) {
             // convert to commons-compress exception
             throw new MemoryLimitException(e.getMemoryNeeded(), e.getMemoryLimit(), e);

@@ -198,23 +198,23 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
      * Initializes the arrays based on the maximum code size. First checks that the estimated memory usage is below memoryLimitInKb
      *
      * @param maxCodeSize     maximum code size
-     * @param memoryLimitInKiB maximum allowed estimated memory usage in kibibytes.
-     * @throws MemoryLimitException     if estimated memory usage is greater than memoryLimitInKiB
+     * @param memoryLimiKiB maximum allowed estimated memory usage in kibibytes (KiB).
+     * @throws MemoryLimitException     if estimated memory usage is greater than memoryLimitKiB
      * @throws IllegalArgumentException if {@code maxCodeSize} is not bigger than 0
      */
-    protected void initializeTables(final int maxCodeSize, final int memoryLimitInKiB) throws MemoryLimitException {
+    protected void initializeTables(final int maxCodeSize, final int memoryLimiKiB) throws MemoryLimitException {
         if (maxCodeSize <= 0) {
             throw new IllegalArgumentException("maxCodeSize is " + maxCodeSize + ", must be bigger than 0");
         }
 
-        if (memoryLimitInKiB > -1) {
+        if (memoryLimiKiB > -1) {
             final int maxTableSize = 1 << maxCodeSize;
             // account for potential overflow
             final long memoryUsageBytes = (long) maxTableSize * 6; // (4 (prefixes) + 1 (characters) +1 (outputStack))
             final long memoryUsageKiB = memoryUsageBytes >> 10;
 
-            if (memoryUsageKiB > memoryLimitInKiB) {
-                throw new MemoryLimitException(memoryUsageKiB, memoryLimitInKiB);
+            if (memoryUsageKiB > memoryLimiKiB) {
+                throw new MemoryLimitException(memoryUsageKiB, memoryLimiKiB);
             }
         }
         initializeTables(maxCodeSize);

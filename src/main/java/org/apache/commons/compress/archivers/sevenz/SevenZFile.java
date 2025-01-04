@@ -98,7 +98,7 @@ public class SevenZFile implements Closeable {
         /**
          * Asserts the validity of the given input.
          *
-         * @param maxMemoryLimitKiB kibibytes to test.
+         * @param maxMemoryLimitKiB kibibytes (KiB) to test.
          * @throws IOException Thrown on basic assertion failure.
          */
         void assertValidity(final int maxMemoryLimitKiB) throws IOException {
