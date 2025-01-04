@@ -86,13 +86,19 @@ public class LZ77Compressor {
         private final int offset;
         private final int length;
 
+        /**
+         * Constructs a new instance.
+         *
+         * @param offset the offset of the back-reference.
+         * @param length the offset of the back-reference.
+         */
         public BackReference(final int offset, final int length) {
             this.offset = offset;
             this.length = length;
         }
 
         /**
-         * Provides the length of the back-reference.
+         * Gets the offset of the back-reference.
          *
          * @return the length
          */
@@ -101,7 +107,7 @@ public class LZ77Compressor {
         }
 
         /**
-         * Provides the offset of the back-reference.
+         * Gets the offset of the back-reference.
          *
          * @return the offset
          */
@@ -129,11 +135,31 @@ public class LZ77Compressor {
      * </p>
      */
     public abstract static class Block {
+
         /** Enumeration of the block types the compressor may emit. */
         public enum BlockType {
-            LITERAL, BACK_REFERENCE, EOD
+
+            /**
+             * The literal block type.
+             */
+            LITERAL,
+
+            /**
+             * The back-reference block type.
+             */
+            BACK_REFERENCE,
+
+            /**
+             * The end-of-data block type.
+             */
+            EOD
         }
 
+        /**
+         * Gets the the block type.
+         *
+         * @return the the block type.
+         */
         public abstract BlockType getType();
     }
 
@@ -177,6 +203,13 @@ public class LZ77Compressor {
         private final int offset;
         private final int length;
 
+        /**
+         * Constructs a new instance.
+         *
+         * @param data the literal data.
+         * @param offset the length of literal block.
+         * @param length the length of literal block.
+         */
         public LiteralBlock(final byte[] data, final int offset, final int length) {
             this.data = data;
             this.offset = offset;
@@ -184,10 +217,10 @@ public class LZ77Compressor {
         }
 
         /**
-         * The literal data.
+         * Gets the literal data.
          *
          * <p>
-         * This returns a life view of the actual data in order to avoid copying, modify the array at your own risk.
+         * This returns a live view of the actual data in order to avoid copying, modify the array at your own risk.
          * </p>
          *
          * @return the data
@@ -197,7 +230,7 @@ public class LZ77Compressor {
         }
 
         /**
-         * Length of literal block.
+         * Gets the length of literal block.
          *
          * @return the length
          */
@@ -206,7 +239,7 @@ public class LZ77Compressor {
         }
 
         /**
-         * Offset into data where the literal block starts.
+         * Gets the length of literal block.
          *
          * @return the offset
          */
