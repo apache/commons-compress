@@ -82,6 +82,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add GzipCompressorInputStream.Builder.setOnMemberEnd(IOConsumer) to monitor member parsing.</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add PMD check to default Maven goal.</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add SevenZFile.Builder.setMaxMemoryLimitKiB(int).</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Add MemoryLimitException.MemoryLimitException(long, int, Throwable) and deprecate MemoryLimitException.MemoryLimitException(long, int, Exception).</action>
       <!-- UPDATE -->
       <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump org.apache.commons:commons-parent from 72 to 78 #563, #567, #574, #582, #587, #595.</action>
       <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump com.github.luben:zstd-jni from 1.5.6-4 to 1.5.6-9 #565, #578, #601, #616, #630.</action>

@@ -58,8 +58,24 @@ public class MemoryLimitException extends IOException {
      * @param memoryLimitKiB  The memory limit in kibibytes (KiB).
      * @param cause            The cause (which is saved for later retrieval by the {@link #getCause()} method). (A null value is permitted, and indicates that
      *                         the cause is nonexistent or unknown.)
+     * @deprecated Use {@link #MemoryLimitException(long, int, Throwable)}.
      */
+    @Deprecated
     public MemoryLimitException(final long memoryNeededKiB, final int memoryLimitKiB, final Exception cause) {
+        super(buildMessage(memoryNeededKiB, memoryLimitKiB), cause);
+        this.memoryNeededKiB = memoryNeededKiB;
+        this.memoryLimitKiB = memoryLimitKiB;
+    }
+
+    /**
+     * Constructs a new instance.
+     *
+     * @param memoryNeededKiB The memory needed in kibibytes (KiB).
+     * @param memoryLimitKiB  The memory limit in kibibytes (KiB).
+     * @param cause            The cause (which is saved for later retrieval by the {@link #getCause()} method). (A null value is permitted, and indicates that
+     *                         the cause is nonexistent or unknown.)
+     */
+    public MemoryLimitException(final long memoryNeededKiB, final int memoryLimitKiB, final Throwable cause) {
         super(buildMessage(memoryNeededKiB, memoryLimitKiB), cause);
         this.memoryNeededKiB = memoryNeededKiB;
         this.memoryLimitKiB = memoryLimitKiB;

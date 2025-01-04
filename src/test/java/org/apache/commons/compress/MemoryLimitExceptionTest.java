@@ -34,6 +34,16 @@ public class MemoryLimitExceptionTest {
     @Test
     public void testAccessorsCause() {
         final IOException ioe = new IOException();
+        final MemoryLimitException e = new MemoryLimitException(1, 2, (Throwable) ioe);
+        assertEquals(1, e.getMemoryNeededInKb());
+        assertEquals(2, e.getMemoryLimitInKb());
+        assertSame(ioe, e.getCause());
+    }
+
+    @Test
+    public void testAccessorsCauseDepreacted() {
+        final IOException ioe = new IOException();
+        @SuppressWarnings("deprecation")
         final MemoryLimitException e = new MemoryLimitException(1, 2, ioe);
         assertEquals(1, e.getMemoryNeededInKb());
         assertEquals(2, e.getMemoryLimitInKb());
