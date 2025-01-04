@@ -31,7 +31,7 @@ public class MemoryLimitException extends IOException {
     private static final long serialVersionUID = 1L;
 
     private static String buildMessage(final long memoryNeededInKb, final int memoryLimitInKb) {
-        return String.format("%,d Kb of memory would be needed; limit was %,d Kb. If the file is not corrupt, consider increasing the memory limit.",
+        return String.format("%,d KiB of memory would be needed; limit was %,d KiB. If the file is not corrupt, consider increasing the memory limit.",
                 memoryNeededInKb, memoryLimitInKb);
     }
 
