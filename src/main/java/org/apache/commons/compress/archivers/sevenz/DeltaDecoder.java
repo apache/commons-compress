@@ -33,7 +33,7 @@ final class DeltaDecoder extends AbstractCoder {
 
     @Override
     InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength, final Coder coder, final byte[] password,
-            final int maxMemoryLimitInKb) throws IOException {
+            final int maxMemoryLimitKiB) throws IOException {
         return new DeltaOptions(getOptionsFromCoder(coder)).getInputStream(in);
     }
 

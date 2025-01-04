@@ -238,7 +238,7 @@ final class AES256SHA256Decoder extends AbstractCoder {
 
     @Override
     InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength, final Coder coder, final byte[] passwordBytes,
-            final int maxMemoryLimitInKb) {
+            final int maxMemoryLimitKiB) {
         return new AES256SHA256DecoderInputStream(in, coder, archiveName, passwordBytes);
     }
 

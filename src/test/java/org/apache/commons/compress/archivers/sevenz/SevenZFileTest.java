@@ -441,6 +441,11 @@ public class SevenZFileTest extends AbstractTest {
                 // Do nothing. Exception should be thrown
             }
         });
+        assertThrows(MemoryLimitException.class, () -> {
+            try (SevenZFile sevenZFile = SevenZFile.builder().setFile(getFile("bla.7z")).setMaxMemoryLimitKiB(1).get()) {
+                // Do nothing. Exception should be thrown
+            }
+        });
     }
 
     @Test

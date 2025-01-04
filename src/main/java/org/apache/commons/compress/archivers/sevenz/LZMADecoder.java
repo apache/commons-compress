@@ -37,7 +37,7 @@ final class LZMADecoder extends AbstractCoder {
 
     @Override
     InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength, final Coder coder, final byte[] password,
-            final int maxMemoryLimitInKb) throws IOException {
+            final int maxMemoryLimitKiB) throws IOException {
         if (coder.properties == null) {
             throw new IOException("Missing LZMA properties");
         }
@@ -49,9 +49,9 @@ final class LZMADecoder extends AbstractCoder {
         if (dictSize > LZMAInputStream.DICT_SIZE_MAX) {
             throw new IOException("Dictionary larger than 4GiB maximum size used in " + archiveName);
         }
-        final int memoryUsageInKb = LZMAInputStream.getMemoryUsage(dictSize, propsByte);
-        if (memoryUsageInKb > maxMemoryLimitInKb) {
-            throw new MemoryLimitException(memoryUsageInKb, maxMemoryLimitInKb);
+        final int memoryUsageInKiB = LZMAInputStream.getMemoryUsage(dictSize, propsByte);
+        if (memoryUsageInKiB > maxMemoryLimitKiB) {
+            throw new MemoryLimitException(memoryUsageInKiB, maxMemoryLimitKiB);
         }
         final LZMAInputStream lzmaIn = new LZMAInputStream(in, uncompressedLength, propsByte, dictSize);
         lzmaIn.enableRelaxedEndCondition();

@@ -54,11 +54,11 @@ public class SevenZFileOptions {
          * Not all codecs will honor this setting. Currently only LZMA and LZMA2 are supported.
          * </p>
          *
-         * @param maxMemoryLimitKb limit of the maximum amount of memory to use
+         * @param maxMemoryLimitKiB limit of the maximum amount of memory to use in kibibytes.
          * @return the reconfigured builder
          */
-        public Builder withMaxMemoryLimitInKb(final int maxMemoryLimitKb) {
-            this.maxMemoryLimitKb = maxMemoryLimitKb;
+        public Builder withMaxMemoryLimitInKb(final int maxMemoryLimitKiB) {
+            this.maxMemoryLimitKb = maxMemoryLimitKiB;
             return this;
         }
 
@@ -110,12 +110,12 @@ public class SevenZFileOptions {
         return new Builder();
     }
 
-    private final int maxMemoryLimitKb;
+    private final int maxMemoryLimitKiB;
     private final boolean useDefaultNameForUnnamedEntries;
     private final boolean tryToRecoverBrokenArchives;
 
     private SevenZFileOptions(final int maxMemoryLimitKb, final boolean useDefaultNameForUnnamedEntries, final boolean tryToRecoverBrokenArchives) {
-        this.maxMemoryLimitKb = maxMemoryLimitKb;
+        this.maxMemoryLimitKiB = maxMemoryLimitKb;
         this.useDefaultNameForUnnamedEntries = useDefaultNameForUnnamedEntries;
         this.tryToRecoverBrokenArchives = tryToRecoverBrokenArchives;
     }
@@ -126,10 +126,10 @@ public class SevenZFileOptions {
      * Not all codecs will honor this setting. Currently only LZMA and LZMA2 are supported.
      * </p>
      *
-     * @return the maximum amount of memory to use for extraction
+     * @return the maximum amount of memory to use for extraction in kibibytes.
      */
     public int getMaxMemoryLimitInKb() {
-        return maxMemoryLimitKb;
+        return maxMemoryLimitKiB;
     }
 
     /**

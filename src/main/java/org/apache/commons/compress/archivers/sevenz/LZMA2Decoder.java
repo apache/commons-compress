@@ -35,12 +35,12 @@ final class LZMA2Decoder extends AbstractCoder {
 
     @Override
     InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength, final Coder coder, final byte[] password,
-            final int maxMemoryLimitInKb) throws IOException {
+            final int maxMemoryLimitKiB) throws IOException {
         try {
             final int dictionarySize = getDictionarySize(coder);
             final int memoryUsageInKb = LZMA2InputStream.getMemoryUsage(dictionarySize);
-            if (memoryUsageInKb > maxMemoryLimitInKb) {
-                throw new MemoryLimitException(memoryUsageInKb, maxMemoryLimitInKb);
+            if (memoryUsageInKb > maxMemoryLimitKiB) {
+                throw new MemoryLimitException(memoryUsageInKb, maxMemoryLimitKiB);
             }
             return new LZMA2InputStream(in, dictionarySize);
         } catch (final IllegalArgumentException ex) { // NOSONAR

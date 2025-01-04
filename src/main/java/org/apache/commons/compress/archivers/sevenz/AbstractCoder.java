@@ -58,7 +58,7 @@ abstract class AbstractCoder {
      *
      * @return a stream that reads from in using the configured coder and password.
      */
-    abstract InputStream decode(String archiveName, InputStream in, long uncompressedLength, Coder coder, byte[] password, int maxMemoryLimitInKb)
+    abstract InputStream decode(String archiveName, InputStream in, long uncompressedLength, Coder coder, byte[] password, int maxMemoryLimitKiB)
             throws IOException;
 
     /**
