@@ -38,6 +38,12 @@ public class BrotliCompressorInputStream extends CompressorInputStream implement
     private final BoundedInputStream countingInputStream;
     private final BrotliInputStream brotliInputStream;
 
+    /**
+     * Construct a new instance.
+     *
+     * @param inputStream underlying data source.
+     * @throws IOException in case of corrupted data or source stream problems.
+     */
     public BrotliCompressorInputStream(final InputStream inputStream) throws IOException {
         brotliInputStream = new BrotliInputStream(countingInputStream = BoundedInputStream.builder().setInputStream(inputStream).get());
     }
