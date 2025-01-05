@@ -210,7 +210,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
 
     private static final BigInteger LONG_MAX = BigInteger.valueOf(Long.MAX_VALUE);
 
-    private static boolean checksig(final byte[] expected, final byte[] signature) {
+    private static boolean checkSig(final byte[] expected, final byte[] signature) {
         for (int i = 0; i < expected.length; i++) {
             if (signature[i] != expected[i]) {
                 return false;
@@ -231,10 +231,10 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
             return false;
         }
 
-        return checksig(ZipArchiveOutputStream.LFH_SIG, signature) // normal file
-                || checksig(ZipArchiveOutputStream.EOCD_SIG, signature) // empty zip
-                || checksig(ZipArchiveOutputStream.DD_SIG, signature) // split zip
-                || checksig(ZipLong.SINGLE_SEGMENT_SPLIT_MARKER.getBytes(), signature);
+        return checkSig(ZipArchiveOutputStream.LFH_SIG, signature) // normal file
+                || checkSig(ZipArchiveOutputStream.EOCD_SIG, signature) // empty zip
+                || checkSig(ZipArchiveOutputStream.DD_SIG, signature) // split zip
+                || checkSig(ZipLong.SINGLE_SEGMENT_SPLIT_MARKER.getBytes(), signature);
     }
 
     /** The ZIP encoding to use for file names and the file comment. */
