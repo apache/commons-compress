@@ -81,7 +81,7 @@ public class LZ77Compressor {
     /**
      * Represents a back-reference.
      */
-    public static final class BackReference extends Block {
+    public abstract static class AbstractReference extends Block {
 
         private final int offset;
         private final int length;
@@ -89,16 +89,18 @@ public class LZ77Compressor {
         /**
          * Constructs a new instance.
          *
-         * @param offset the offset of the back-reference.
-         * @param length the offset of the back-reference.
+         * @param blockType The block type.
+         * @param offset the offset of the reference.
+         * @param length the offset of the reference.
          */
-        public BackReference(final int offset, final int length) {
+        public AbstractReference(final BlockType blockType, final int offset, final int length) {
+            super(blockType);
             this.offset = offset;
             this.length = length;
         }
 
         /**
-         * Gets the offset of the back-reference.
+         * Gets the offset of the reference.
          *
          * @return the length
          */
@@ -107,7 +109,7 @@ public class LZ77Compressor {
         }
 
         /**
-         * Gets the offset of the back-reference.
+         * Gets the offset of the reference.
          *
          * @return the offset
          */
@@ -116,14 +118,26 @@ public class LZ77Compressor {
         }
 
         @Override
-        public BlockType getType() {
-            return BlockType.BACK_REFERENCE;
+        public String toString() {
+            return super.toString() + " with offset " + offset + " and length " + length;
+        }
+    }
+
+    /**
+     * Represents a back-reference.
+     */
+    public static final class BackReference extends AbstractReference {
+
+        /**
+         * Constructs a new instance.
+         *
+         * @param offset the offset of the back-reference.
+         * @param length the offset of the back-reference.
+         */
+        public BackReference(final int offset, final int length) {
+            super(BlockType.BACK_REFERENCE, offset, length);
         }
 
-        @Override
-        public String toString() {
-            return "BackReference with offset " + offset + " and length " + length;
-        }
     }
 
     /**
@@ -136,7 +150,9 @@ public class LZ77Compressor {
      */
     public abstract static class Block {
 
-        /** Enumeration of the block types the compressor may emit. */
+        /**
+         * Enumerates the block types the compressor emits.
+         */
         public enum BlockType {
 
             /**
@@ -155,12 +171,40 @@ public class LZ77Compressor {
             EOD
         }
 
+        private final BlockType type;
+
+        /**
+         * Constructs a new typeless instance.
+         *
+         * @deprecated Use {@link #Block()}.
+         */
+        @Deprecated
+        public Block() {
+            this.type = null;
+        }
+
+        /**
+         * Constructs a new instance.
+         *
+         * @param type
+         */
+        protected Block(final BlockType type) {
+            this.type = Objects.requireNonNull(type);
+        }
+
         /**
          * Gets the the block type.
          *
          * @return the the block type.
          */
-        public abstract BlockType getType();
+        public BlockType getType() {
+            return type;
+        }
+
+        @Override
+        public String toString() {
+            return getClass().getSimpleName() + " " + getType();
+        }
     }
 
     /**
@@ -172,6 +216,7 @@ public class LZ77Compressor {
      * </p>
      */
     public interface Callback {
+
         /**
          * Consumes a block.
          *
@@ -183,10 +228,19 @@ public class LZ77Compressor {
 
     /** A simple "we are done" marker. */
     public static final class EOD extends Block {
-        @Override
-        public BlockType getType() {
-            return BlockType.EOD;
+
+        /**
+         * Singleton instance.
+         */
+        private static final EOD INSTANCE = new EOD();
+
+        /**
+         * Constructs a new instance.
+         */
+        public EOD() {
+            super(BlockType.EOD);
         }
+
     }
 
     /**
@@ -197,11 +251,9 @@ public class LZ77Compressor {
      * immediately as it will get overwritten sooner or later.
      * </p>
      */
-    public static final class LiteralBlock extends Block {
+    public static final class LiteralBlock extends AbstractReference {
 
         private final byte[] data;
-        private final int offset;
-        private final int length;
 
         /**
          * Constructs a new instance.
@@ -211,9 +263,8 @@ public class LZ77Compressor {
          * @param length the length of literal block.
          */
         public LiteralBlock(final byte[] data, final int offset, final int length) {
+            super(BlockType.LITERAL, offset, length);
             this.data = data;
-            this.offset = offset;
-            this.length = length;
         }
 
         /**
@@ -229,36 +280,7 @@ public class LZ77Compressor {
             return data;
         }
 
-        /**
-         * Gets the length of literal block.
-         *
-         * @return the length
-         */
-        public int getLength() {
-            return length;
-        }
-
-        /**
-         * Gets the length of literal block.
-         *
-         * @return the offset
-         */
-        public int getOffset() {
-            return offset;
-        }
-
-        @Override
-        public BlockType getType() {
-            return BlockType.LITERAL;
-        }
-
-        @Override
-        public String toString() {
-            return "LiteralBlock starting at " + offset + " with length " + length;
-        }
     }
-
-    private static final Block THE_EOD = new EOD();
 
     static final int NUMBER_OF_BYTES_IN_HASH = 3;
     private static final int NO_MATCH = -1;
@@ -434,7 +456,7 @@ public class LZ77Compressor {
             currentPosition += lookahead;
             flushLiteralBlock();
         }
-        callback.accept(THE_EOD);
+        callback.accept(EOD.INSTANCE);
     }
 
     private void flushBackReference(final int matchLength) throws IOException {
