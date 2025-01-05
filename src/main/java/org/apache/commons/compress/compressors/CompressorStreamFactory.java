@@ -520,7 +520,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
         }
         try {
             if (GZIP.equalsIgnoreCase(name)) {
-                return new GzipCompressorInputStream(in, actualDecompressConcatenated);
+                return GzipCompressorInputStream.builder().setInputStream(in).setDecompressConcatenated(actualDecompressConcatenated).get();
             }
             if (BZIP2.equalsIgnoreCase(name)) {
                 return new BZip2CompressorInputStream(in, actualDecompressConcatenated);
