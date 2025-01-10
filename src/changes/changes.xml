@@ -35,9 +35,9 @@ mvn changes:announcement-generate -Prelease-notes [-Dchanges.version=m.n]
 
 The <action> type attribute can be add,update,fix,remove.
 -->
-<document xmlns="http://maven.apache.org/changes/1.0.0"
+<document xmlns="http://maven.apache.org/changes/2.0.0"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xsi:schemaLocation="http://maven.apache.org/changes/1.0.0 http://maven.apache.org/xsd/changes-1.0.0.xsd">
+          xsi:schemaLocation="http://maven.apache.org/changes/2.0.0 https://maven.apache.org/xsd/changes-2.0.0.xsd">
   <properties>
     <title>Apache Commons Compress Release Notes</title>
   </properties>
@@ -85,7 +85,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add SevenZFile.Builder.setMaxMemoryLimitKiB(int).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add MemoryLimitException.MemoryLimitException(long, int, Throwable) and deprecate MemoryLimitException.MemoryLimitException(long, int, Exception).</action>
       <!-- UPDATE -->
-      <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump org.apache.commons:commons-parent from 72 to 78 #563, #567, #574, #582, #587, #595.</action>
+      <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump org.apache.commons:commons-parent from 72 to 79 #563, #567, #574, #582, #587, #595.</action>
       <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump com.github.luben:zstd-jni from 1.5.6-4 to 1.5.6-9 #565, #578, #601, #616, #630.</action>
       <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump org.apache.commons:commons-lang3 from 3.16.0 to 3.17.0 #568.</action>
       <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump commons-io:commons-io from 2.16.1 to 2.18.0 #575, #610.</action>

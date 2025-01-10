@@ -276,7 +276,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
         addPaxHeaderForBigNumber(paxHeaders, "uid", entry.getLongUserId(), TarConstants.MAXID);
         // libarchive extensions
         addFileTimePaxHeader(paxHeaders, "LIBARCHIVE.creationtime", entry.getCreationTime());
-        // star extensions by Jörg Schilling
+        // star extensions by Jorg Schilling
         addPaxHeaderForBigNumber(paxHeaders, "SCHILY.devmajor", entry.getDevMajor(), TarConstants.MAXID);
         addPaxHeaderForBigNumber(paxHeaders, "SCHILY.devminor", entry.getDevMinor(), TarConstants.MAXID);
         // there is no PAX header for file mode
