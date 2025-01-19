@@ -46,7 +46,6 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <commons.release.next>1.28.1</commons.release.next>
     <commons.bc.version>1.27.1</commons.bc.version>
     <commons.rc.version>RC1</commons.rc.version>
-    <mockito.version>4.11.0</mockito.version>
     <commons.release.isDistModule>true</commons.release.isDistModule>
     <commons.distSvnStagingUrl>scm:svn:https://dist.apache.org/repos/dist/dev/commons/${commons.componentid}</commons.distSvnStagingUrl>
     <commons.manifestlocation>${project.build.outputDirectory}/META-INF</commons.manifestlocation>
@@ -148,13 +147,13 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
-      <version>${mockito.version}</version>
+      <version>${commons.mockito.version}</version>
       <scope>test</scope>
     </dependency>
 	<dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-junit-jupiter</artifactId>
-      <version>${mockito.version}</version>
+      <version>${commons.mockito.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
