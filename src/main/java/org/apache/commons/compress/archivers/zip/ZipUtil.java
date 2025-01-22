@@ -333,7 +333,8 @@ public abstract class ZipUtil {
     private static boolean supportsMethodOf(final ZipArchiveEntry entry) {
         return entry.getMethod() == ZipEntry.STORED || entry.getMethod() == ZipMethod.UNSHRINKING.getCode()
                 || entry.getMethod() == ZipMethod.IMPLODING.getCode() || entry.getMethod() == ZipEntry.DEFLATED
-                || entry.getMethod() == ZipMethod.ENHANCED_DEFLATED.getCode() || entry.getMethod() == ZipMethod.BZIP2.getCode();
+                || entry.getMethod() == ZipMethod.ENHANCED_DEFLATED.getCode() || entry.getMethod() == ZipMethod.BZIP2.getCode()
+                || entry.getMethod() == ZipMethod.ZSTD.getCode() || entry.getMethod() == ZipMethod.ZSTD_DEPRECATED.getCode();
     }
 
     /**

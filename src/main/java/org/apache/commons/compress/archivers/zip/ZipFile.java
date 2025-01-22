@@ -54,6 +54,7 @@ import java.util.zip.ZipException;
 import org.apache.commons.compress.archivers.EntryStreamOffsets;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.deflate64.Deflate64CompressorInputStream;
+import org.apache.commons.compress.compressors.zstandard.ZstdCompressorInputStream;
 import org.apache.commons.compress.utils.BoundedArchiveInputStream;
 import org.apache.commons.compress.utils.BoundedSeekableByteChannelInputStream;
 import org.apache.commons.compress.utils.IOUtils;
@@ -1230,6 +1231,9 @@ public class ZipFile implements Closeable {
             return new BZip2CompressorInputStream(is);
         case ENHANCED_DEFLATED:
             return new Deflate64CompressorInputStream(is);
+        case ZSTD:
+        case ZSTD_DEPRECATED:
+            return new ZstdCompressorInputStream(is);
         case AES_ENCRYPTED:
         case EXPANDING_LEVEL_1:
         case EXPANDING_LEVEL_2:

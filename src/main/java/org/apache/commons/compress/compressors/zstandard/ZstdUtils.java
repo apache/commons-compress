@@ -18,7 +18,13 @@
  */
 package org.apache.commons.compress.compressors.zstandard;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 import org.apache.commons.compress.utils.OsgiUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.CountingOutputStream;
 
 /**
  * Utility code for the Zstandard compression format.
@@ -27,6 +33,23 @@ import org.apache.commons.compress.utils.OsgiUtils;
  * @since 1.16
  */
 public class ZstdUtils {
+
+    private static final class InnerNotClosingOutputStream extends CountingOutputStream {
+
+        /**
+         * The close of this class wont close its delegated output stream.
+         *
+         * @param delegate the output stream to which the output will be delegated
+         */
+        private InnerNotClosingOutputStream(OutputStream delegate) {
+            super(delegate);
+        }
+
+        @Override
+        public void close() throws IOException {
+            // Don't close the inner output stream.
+        }
+    }
 
     enum CachedAvailability {
         DONT_CACHE, CACHED_AVAILABLE, CACHED_UNAVAILABLE
@@ -133,5 +156,22 @@ public class ZstdUtils {
 
     /** Private constructor to prevent instantiation of this utility class. */
     private ZstdUtils() {
+    }
+
+    /**
+     * Reads uncompressed data stream and writes it compressed to the output
+     *
+     * @param input the data stream with uncompressed data
+     * @param output the data stream for compressed output
+     * @return the compressed size
+     * @throws IOException throws the exception which could be got from from IOUtils.copyLarge()
+     *         or ZstdCompressorOutputStream constructor
+     */
+    public static long readAndCompressWrite(InputStream input, OutputStream output) throws IOException {
+        final InnerNotClosingOutputStream outStream = new InnerNotClosingOutputStream(output);
+        final ZstdCompressorOutputStream outputStream = new ZstdCompressorOutputStream(outStream, 3, true);
+        IOUtils.copyLarge(input, outputStream);
+        outputStream.flush();
+        return outStream.getByteCount();
     }
 }

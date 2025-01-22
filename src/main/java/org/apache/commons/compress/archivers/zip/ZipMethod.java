@@ -125,6 +125,24 @@ public enum ZipMethod {
     LZMA(14),
 
     /**
+     * Compression Method 20 for Zstd.
+     *
+     * @see <a href="https://github.com/facebook/zstd">https://github.com/facebook/zstd</a>
+     * @see <a href="https://pkwaredownloads.blob.core.windows.net/pkware-general/Documentation/APPNOTE-6.3.7.TXT">deprecated zstd compression method id</a>
+     * @see <a href="https://www.pkware.com/documents/casestudies/APPNOTE.TXT">Explanation of fields: compression method: (2 bytes)</a>
+     */
+    ZSTD_DEPRECATED(20),
+
+    /**
+     * Compression Method 93 for Zstd.
+     *
+     * @see <a href="https://github.com/facebook/zstd">https://github.com/facebook/zstd</a>
+     * @see <a href="https://pkwaredownloads.blob.core.windows.net/pkware-general/Documentation/APPNOTE-6.3.8.TXT">changed zstd compression method id</a>
+     * @see <a href="https://www.pkware.com/documents/casestudies/APPNOTE.TXT">Explanation of fields: compression method: (2 bytes)</a>
+     */
+    ZSTD(93),
+
+    /**
      * Compression Method 95 for XZ.
      *
      * @see <a href="https://www.pkware.com/documents/casestudies/APPNOTE.TXT">Explanation of fields: compression method: (2 bytes)</a>

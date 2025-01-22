@@ -45,6 +45,8 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.deflate64.Deflate64CompressorInputStream;
+import org.apache.commons.compress.compressors.zstandard.ZstdCompressorInputStream;
+import org.apache.commons.compress.compressors.zstandard.ZstdUtils;
 import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
@@ -293,6 +295,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
 
     private int entriesRead;
 
+    private ZstdCompressorInputStream zstdInputStream;
+
     /**
      * The factory for extra fields or null.
      */
@@ -444,6 +448,9 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
             closed = true;
             try {
                 in.close();
+                if (zstdInputStream != null) {
+                    zstdInputStream.close();
+                }
             } finally {
                 inf.end();
             }
@@ -772,6 +779,10 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
                 case ENHANCED_DEFLATED:
                     current.inputStream = new Deflate64CompressorInputStream(bis);
                     break;
+                case ZSTD:
+                case ZSTD_DEPRECATED:
+                    current.inputStream = new ZstdCompressorInputStream(bis);
+                    break;
                 default:
                     // we should never get here as all supported methods have been covered
                     // will cause an error when read is invoked, don't throw an exception here so people can
@@ -931,6 +942,19 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
         } else if (current.entry.getMethod() == ZipMethod.UNSHRINKING.getCode() || current.entry.getMethod() == ZipMethod.IMPLODING.getCode()
                 || current.entry.getMethod() == ZipMethod.ENHANCED_DEFLATED.getCode() || current.entry.getMethod() == ZipMethod.BZIP2.getCode()) {
             read = current.inputStream.read(buffer, offset, length);
+        } else if (current.entry.getMethod() == ZipMethod.ZSTD.getCode() || current.entry.getMethod() == ZipMethod.ZSTD_DEPRECATED.getCode()) {
+            if (zstdInputStream == null) {
+                if (ZstdUtils.isZstdCompressionAvailable()) {
+                    try {
+                        this.zstdInputStream = new ZstdCompressorInputStream(in);
+                    } catch (IOException e) {
+                        throw new UnsupportedZipFeatureException(ZipMethod.getMethodByCode(current.entry.getMethod()), current.entry);
+                    }
+                } else {
+                    throw new UnsupportedZipFeatureException(ZipMethod.getMethodByCode(current.entry.getMethod()), current.entry);
+                }
+            }
+            read = zstdInputStream.read(buffer, offset, length);
         } else {
             throw new UnsupportedZipFeatureException(ZipMethod.getMethodByCode(current.entry.getMethod()), current.entry);
         }
@@ -1324,7 +1348,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     private boolean supportsCompressedSizeFor(final ZipArchiveEntry entry) {
         return entry.getCompressedSize() != ArchiveEntry.SIZE_UNKNOWN || entry.getMethod() == ZipEntry.DEFLATED
                 || entry.getMethod() == ZipMethod.ENHANCED_DEFLATED.getCode()
-                || entry.getGeneralPurposeBit().usesDataDescriptor() && allowStoredEntriesWithDataDescriptor && entry.getMethod() == ZipEntry.STORED;
+                || entry.getGeneralPurposeBit().usesDataDescriptor() && allowStoredEntriesWithDataDescriptor && entry.getMethod() == ZipEntry.STORED
+                || entry.getMethod() == ZipMethod.ZSTD.getCode() || entry.getMethod() == ZipMethod.ZSTD_DEPRECATED.getCode();
     }
 
     /**
@@ -1335,6 +1360,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
      */
     private boolean supportsDataDescriptorFor(final ZipArchiveEntry entry) {
         return !entry.getGeneralPurposeBit().usesDataDescriptor() || allowStoredEntriesWithDataDescriptor && entry.getMethod() == ZipEntry.STORED
-                || entry.getMethod() == ZipEntry.DEFLATED || entry.getMethod() == ZipMethod.ENHANCED_DEFLATED.getCode();
+                || entry.getMethod() == ZipEntry.DEFLATED || entry.getMethod() == ZipMethod.ENHANCED_DEFLATED.getCode()
+                || entry.getMethod() == ZipMethod.ZSTD.getCode() || entry.getMethod() == ZipMethod.ZSTD_DEPRECATED.getCode();
     }
 }
