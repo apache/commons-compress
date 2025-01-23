@@ -15,17 +15,20 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 -->
-<document>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 https://maven.apache.org/xsd/xdoc-2.0.xsd">
    <properties>
       <title>Known Limitations and Problems</title>
    </properties>
 
    <body>
-     <p>This page lists the known limitations and problems of Apache
-     Commons Compress&#x2122; grouped by the archiving/compression
-     format they apply to.</p>
-
      <section name="General">
+       <p>
+         This page lists the known limitations and problems of Apache
+         Commons Compress&#x2122; grouped by the archiving/compression
+         format they apply to.
+       </p>
        <ul>
          <li>Several implementations of decompressors and unarchivers will
          invoke <a

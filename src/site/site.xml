@@ -17,29 +17,54 @@
    limitations under the License.
 
 -->
-<project name="Commons Compress">
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
 
-  <bannerRight>
-    <name>Commons Compress</name>
-    <src>/images/compress-logo-white.png</src>
-    <href>/index.html</href>
+    https://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied.  See the License for the
+  specific language governing permissions and limitations
+  under the License.
+-->
+<site xmlns="http://maven.apache.org/SITE/2.0.0" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/SITE/2.0.0 https://maven.apache.org/xsd/site-2.0.0.xsd"
+  name="Apache Commons BCEL">
+  <bannerRight name="Commons BCEL" href="/index.html">
+    <image src="/images/logo.png"/>
   </bannerRight>
-
   <body>
-    <menu name="Compress">
-      <item name="Overview"    href="/index.html"/>
+    <menu name="Commons BCEL">
+      <!-- Start: For all components. -->
+      <item name="About" href="index.html" />
+      <item name="Asking Questions" href="/mail-lists.html" />
+      <item name="Release History" href="/changes.html" />
+      <item name="Issue Tracking" href="/issue-management.html" />
+      <item name="Dependency Management" href="/dependency-info.html" />
+      <item name="Sources" href="/scm.html" />
+      <item name="Security" href="security.html" />
+      <item name="License" href="https://www.apache.org/licenses/LICENSE-2.0" />
+      <item name="Code of Conduct" href="https://www.apache.org/foundation/policies/conduct.html" />
+      <item name="Download" href="https://commons.apache.org/proper/commons-bcel/download_compress.cgi" />
+      <item name="Javadoc">
+        <item name="Javadoc Current" href="apidocs/index.html" />
+        <item name="Javadoc Archive" href="https://javadoc.io/doc/org.apache.commons/commons-compress/" />
+      </item>
+      <!-- End: For all components. -->
+      <!-- Specific to this component: -->
       <item name="User Guide"  href="/examples.html"/>
       <item name="Known Limitations" href="/limitations.html"/>
       <item name="Conventions"    href="/conventions.html"/>
-      <item name="Issue Tracking" href="/issue-tracking.html"/>
-      <item name="Download"    href="/download_compress.cgi"/>
-      <item name="Security"    href="/security.html"/>
       <item name="Wiki" href="https://wiki.apache.org/commons/Compress"/>
     </menu>
-    <menu name="API Docs">
-      <item name="Javadoc" href="apidocs/index.html"/>
-      <item name="Javadoc Archive" href="https://javadoc.io/doc/org.apache.commons/commons-compress/"/>
-    </menu>
   </body>
-  
-</project>
+</site>

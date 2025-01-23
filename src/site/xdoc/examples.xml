@@ -17,7 +17,9 @@
    limitations under the License.
 
 -->
-<document>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 https://maven.apache.org/xsd/xdoc-2.0.xsd">
   <properties>
     <title>Commons Compress User Guide</title>
     <author email="dev@commons.apache.org">Commons Documentation Team</author>
@@ -381,7 +383,7 @@ SevenZArchiveEntry entry = sevenZFile.getNextEntry();
 sevenZFile.read();  // read current entry's data
 ]]></source>
 
-          <h4><a name="Encrypted 7z Archives"></a>Encrypted 7z Archives</h4>
+          <h4><a name="Encrypted-7z-Archives"></a>Encrypted 7z Archives</h4>
 
           <p>Currently Compress supports reading but not writing of
           encrypted archives. When reading an encrypted archive a
@@ -421,7 +423,7 @@ LOOP UNTIL entry.getSize() HAS BEEN READ {
 }
 ]]></source>
 
-        <h4><a name="Random-Access to 7z Archives"></a>Random-Access to 7z Archives</h4>
+        <h4><a name="Random-Access-to-7z-Archives"></a>Random-Access to 7z Archives</h4>
 
         <p>Prior to Compress 1.20 7z archives could only be read
         sequentially. The
@@ -431,7 +433,7 @@ LOOP UNTIL entry.getSize() HAS BEEN READ {
         will likely be significantly slower than sequential
         access.</p>
 
-        <h4><a name="Recovering from Certain Broken 7z Archives"></a>Recovering from Certain Broken 7z Archives</h4>
+        <h4><a name="Recovering-from-Certain-Broken-7z-Archives"></a>Recovering from Certain Broken 7z Archives</h4>
 
         <p><code>SevenZFile</code> tries
         to recover archives that look as if they were part of a
@@ -724,8 +726,9 @@ inputStream.read() // read data from the input stream
 ]]></source>
 
           <p>Creating a zip file with multiple threads:</p>
-
-          A simple implementation to create a zip file might look like this:
+          <p>
+            A simple implementation to create a zip file might look like this:
+          </p>
 
 <source><![CDATA[
 public class ScatterSample {

@@ -15,7 +15,9 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 -->
-<document>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 https://maven.apache.org/xsd/xdoc-2.0.xsd">
    <properties>
       <title>Conventions</title>
    </properties>
@@ -36,14 +38,14 @@
             We use some of the annotations from 
             <a href="http://jcip.net/annotations/doc/net/jcip/annotations/package-summary.html">JCIP</a>
             as Javadoc tags. The used tags are: 
-    
+            </p>
             <ul>
                 <li>@GuardedBy (field or method)</li>
                 <li>@Immutable (class)</li>
                 <li>@NotThreadSafe (class)</li>
                 <li>@ThreadSafe (class)</li>
             </ul>
-
+            <p>
             For example:
             <source>
 /**
