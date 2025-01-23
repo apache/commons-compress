@@ -64,10 +64,11 @@ abstract class AbstractOsgiITest {
 
     @Test
     public void testProperlyDetectsRunningInsideOsgiEnv() throws Exception {
-        final Class<?> osgiUtils = loadBundle().loadClass("org.apache.commons.compress.utils.OsgiUtils");
-        assertNotNull("Can load OsgiUtils via bundle", osgiUtils);
+        final String className = "org.apache.commons.compress.utils.OsgiUtils";
+        final Class<?> osgiUtils = loadBundle().loadClass(className);
+        assertNotNull("Can't load " + className + " via bundle", osgiUtils);
         final Method method = osgiUtils.getMethod("isRunningInOsgiEnvironment");
-        assertNotNull("Can access isRunningInOsgiEnvironment method", method);
-        assertTrue("Compress detects OSGi environment", (Boolean) method.invoke(null));
+        assertNotNull("Can't access isRunningInOsgiEnvironment method", method);
+        assertTrue("Compress can't detect OSGi environment", (Boolean) method.invoke(null));
     }
 }
