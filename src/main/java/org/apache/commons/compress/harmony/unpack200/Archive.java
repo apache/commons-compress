@@ -100,7 +100,7 @@ public class Archive {
     public Archive(final String inputFileName, final String outputFileName) throws FileNotFoundException, IOException {
         this.inputPath = Paths.get(inputFileName);
         this.inputSize = Files.size(this.inputPath);
-        this.inputStream = new BoundedInputStream(Files.newInputStream(inputPath), inputSize);
+        this.inputStream = BoundedInputStream.builder().setPath(inputPath).setMaxCount(inputSize).get();
         this.outputStream = new JarOutputStream(new BufferedOutputStream(new FileOutputStream(outputFileName)));
         this.outputFileName = outputFileName;
         this.closeStreams = true;
@@ -220,12 +220,7 @@ public class Archive {
                 JarEntry jarEntry;
                 while ((jarEntry = jarInputStream.getNextJarEntry()) != null) {
                     outputStream.putNextEntry(jarEntry);
-                    final byte[] bytes = new byte[16_384];
-                    int bytesRead = jarInputStream.read(bytes);
-                    while (bytesRead != -1) {
-                        outputStream.write(bytes, 0, bytesRead);
-                        bytesRead = jarInputStream.read(bytes);
-                    }
+                    IOUtils.copy(jarInputStream, outputStream, 16_384);
                     outputStream.closeEntry();
                 }
             } else {
@@ -236,7 +231,6 @@ public class Archive {
                     segment.setLogLevel(logLevel);
                     segment.setLogStream(logFile != null ? logFile : System.out);
                     segment.setPreRead(false);
-
                     if (i == 1) {
                         segment.log(Segment.LOG_LEVEL_VERBOSE, "Unpacking from " + inputPath + " to " + outputFileName);
                     }
