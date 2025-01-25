@@ -51,11 +51,21 @@ public class AttrDefinitionBands extends BandSet {
 
     private final String[] cpUTF8;
 
+    /**
+     * Constructs a new instance.
+     *
+     * @param segment the segment.
+     */
     public AttrDefinitionBands(final Segment segment) {
         super(segment);
         this.cpUTF8 = segment.getCpBands().getCpUTF8();
     }
 
+    /**
+     * Gets the attribute layout map.
+     *
+     * @return the attribute layout map.
+     */
     public AttributeLayoutMap getAttributeDefinitionMap() {
         return attributeDefinitionMap;
     }
