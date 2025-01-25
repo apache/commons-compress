@@ -21,9 +21,10 @@ package org.apache.commons.compress.harmony.unpack200;
 import org.apache.commons.compress.harmony.pack200.Codec;
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.harmony.unpack200.bytecode.ClassFileEntry;
+import org.apache.commons.lang3.StringUtils;
 
 /**
- * AttributeLayout defines a layout that describes how an attribute will be transmitted.
+ * Defines a layout that describes how an attribute will be transmitted.
  */
 public class AttributeLayout implements IMatcher {
 
@@ -130,10 +131,6 @@ public class AttributeLayout implements IMatcher {
     /**
      * {@value}
      */
-
-    /**
-     * {@value}
-     */
     public static final String ATTRIBUTE_ENCLOSING_METHOD = "EnclosingMethod"; //$NON-NLS-1$
 
     /**
@@ -217,32 +214,32 @@ public class AttributeLayout implements IMatcher {
     public static final String[] contextNames = { "Class", "Field", "Method", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             "Code", }; //$NON-NLS-1$
 
-    private static ClassFileEntry getValue(final String layout, long value, final SegmentConstantPool pool) throws Pack200Exception {
+    private static ClassFileEntry getValue(final String layout, long longIndex, final SegmentConstantPool pool) throws Pack200Exception {
         if (layout.startsWith("R")) { //$NON-NLS-1$
             // references
             if (layout.indexOf('N') != -1) {
-                value--;
+                longIndex--;
             }
             if (layout.startsWith("RU")) { //$NON-NLS-1$
-                return pool.getValue(SegmentConstantPool.UTF_8, value);
+                return pool.getValue(SegmentConstantPool.UTF_8, longIndex);
             }
             if (layout.startsWith("RS")) { //$NON-NLS-1$
-                return pool.getValue(SegmentConstantPool.SIGNATURE, value);
+                return pool.getValue(SegmentConstantPool.SIGNATURE, longIndex);
             }
         } else if (layout.startsWith("K")) { //$NON-NLS-1$
             final char type = layout.charAt(1);
             switch (type) {
             case 'S': // String
-                return pool.getValue(SegmentConstantPool.CP_STRING, value);
+                return pool.getValue(SegmentConstantPool.CP_STRING, longIndex);
             case 'I': // Int (or byte or short)
             case 'C': // Char
-                return pool.getValue(SegmentConstantPool.CP_INT, value);
+                return pool.getValue(SegmentConstantPool.CP_INT, longIndex);
             case 'F': // Float
-                return pool.getValue(SegmentConstantPool.CP_FLOAT, value);
+                return pool.getValue(SegmentConstantPool.CP_FLOAT, longIndex);
             case 'J': // Long
-                return pool.getValue(SegmentConstantPool.CP_LONG, value);
+                return pool.getValue(SegmentConstantPool.CP_LONG, longIndex);
             case 'D': // Double
-                return pool.getValue(SegmentConstantPool.CP_DOUBLE, value);
+                return pool.getValue(SegmentConstantPool.CP_DOUBLE, longIndex);
             }
         }
         throw new Pack200Exception("Unknown layout encoding: " + layout);
@@ -263,10 +260,10 @@ public class AttributeLayout implements IMatcher {
     /**
      * Constructs a default AttributeLayout (equivalent to {@code new AttributeLayout(name, context, layout, index, true);})
      *
-     * @param name    TODO
-     * @param context TODO
-     * @param layout  TODO
-     * @param index   TODO
+     * @param name    The layout name.
+     * @param context One of {@link #CONTEXT_CLASS}, {@link #CONTEXT_CODE}, {@link #CONTEXT_FIELD}, {@link #CONTEXT_METHOD}.
+     * @param layout  The layout.
+     * @param index   The index, currently used as part of computing the hash code.
      * @throws Pack200Exception Attribute context out of range.
      * @throws Pack200Exception Cannot have a null layout.
      * @throws Pack200Exception Cannot have an unnamed layout.
@@ -275,6 +272,18 @@ public class AttributeLayout implements IMatcher {
         this(name, context, layout, index, true);
     }
 
+    /**
+     * Constructs a default AttributeLayout (equivalent to {@code new AttributeLayout(name, context, layout, index, true);})
+     *
+     * @param name    The layout name.
+     * @param context One of {@link #CONTEXT_CLASS}, {@link #CONTEXT_CODE}, {@link #CONTEXT_FIELD}, {@link #CONTEXT_METHOD}.
+     * @param layout  The layout.
+     * @param index   The index, currently used as part of computing the hash code.
+     * @param isDefault Whether this is the default layout.
+     * @throws Pack200Exception Attribute context out of range.
+     * @throws Pack200Exception Cannot have a null layout.
+     * @throws Pack200Exception Cannot have an unnamed layout.
+     */
     public AttributeLayout(final String name, final int context, final String layout, final int index, final boolean isDefault) throws Pack200Exception {
         this.index = index;
         this.context = context;
@@ -289,7 +298,7 @@ public class AttributeLayout implements IMatcher {
         if (layout == null) {
             throw new Pack200Exception("Cannot have a null layout");
         }
-        if (name == null || name.length() == 0) {
+        if (StringUtils.isEmpty(name)) {
             throw new Pack200Exception("Cannot have an unnamed layout");
         }
         this.name = name;
@@ -297,6 +306,11 @@ public class AttributeLayout implements IMatcher {
         this.isDefault = isDefault;
     }
 
+    /**
+     * Gets the Codec based on the layout.
+     *
+     * @return the Codec.
+     */
     public Codec getCodec() {
         if (layout.indexOf('O') >= 0) {
             return Codec.BRANCH5;
@@ -314,55 +328,97 @@ public class AttributeLayout implements IMatcher {
         return Codec.UNSIGNED5;
     }
 
+    /**
+     * Gets the context.
+     *
+     * @return the context.
+     */
     public int getContext() {
         return context;
     }
 
+    /**
+     * Gets the index.
+     *
+     * @return the index.
+     */
     public int getIndex() {
         return index;
     }
 
+    /**
+     * Gets the layout.
+     *
+     * @return the layout.
+     */
     public String getLayout() {
         return layout;
     }
 
+    /**
+     * Gets the name.
+     *
+     * @return the name.
+     */
     public String getName() {
         return name;
     }
 
-    public ClassFileEntry getValue(final long value, final SegmentConstantPool pool) throws Pack200Exception {
-        return getValue(layout, value, pool);
+    /**
+     * Gets the ClassFileEntry for the given input.
+     *
+     * @param longIndex An index into the segment constant pool.
+     * @param pool the segment constant pool.
+     * @return the matching ClassFileEntry.
+     * @throws Pack200Exception if the input is invalid.
+     */
+    public ClassFileEntry getValue(final long longIndex, final SegmentConstantPool pool) throws Pack200Exception {
+        return getValue(layout, longIndex, pool);
     }
 
-    public ClassFileEntry getValue(final long value, final String type, final SegmentConstantPool pool) throws Pack200Exception {
+    /**
+     * Gets the ClassFileEntry for the given input.
+     *
+     * @param longIndex An index into the segment constant pool.
+     * @param type the Java type signature.
+     * @param pool the segment constant pool.
+     * @return the matching ClassFileEntry.
+     * @throws Pack200Exception if the input is invalid.
+     */
+    public ClassFileEntry getValue(final long longIndex, final String type, final SegmentConstantPool pool) throws Pack200Exception {
         // TODO This really needs to be better tested, esp. the different types
         // TODO This should have the ability to deal with RUN stuff too, and
         // unions
         if (!layout.startsWith("KQ")) {
-            return getValue(layout, value, pool);
+            return getValue(layout, longIndex, pool);
         }
         if (type.equals("Ljava/lang/String;")) { //$NON-NLS-1$
-            return getValue("KS", value, pool);
+            return getValue("KS", longIndex, pool);
         }
-        return getValue("K" + type + layout.substring(2), value, //$NON-NLS-1$
+        return getValue("K" + type + layout.substring(2), longIndex, //$NON-NLS-1$
                 pool);
     }
 
     @Override
     public int hashCode() {
-        final int PRIME = 31;
+        final int prime = 31;
         int r = 1;
         if (name != null) {
-            r = r * PRIME + name.hashCode();
+            r = r * prime + name.hashCode();
         }
         if (layout != null) {
-            r = r * PRIME + layout.hashCode();
+            r = r * prime + layout.hashCode();
         }
-        r = r * PRIME + index;
-        r = r * PRIME + context;
+        r = r * prime + index;
+        r = r * prime + context;
         return r;
     }
 
+    /**
+     * Tests whether this is the default layout.
+     *
+     * @return whether this is the default layout.
+     */
     public boolean isDefaultLayout() {
         return isDefault;
     }
@@ -377,6 +433,11 @@ public class AttributeLayout implements IMatcher {
         return (value & mask) != 0;
     }
 
+    /**
+     * Gets the backward call count.
+     *
+     * @return the backward call count.
+     */
     public int numBackwardsCallables() {
         if ("*".equals(layout)) {
             return 1;
@@ -384,6 +445,11 @@ public class AttributeLayout implements IMatcher {
         return backwardsCallCount;
     }
 
+    /**
+     * Sets the backward call count.
+     *
+     * @param backwardsCallCount the backward call count.
+     */
     public void setBackwardsCallCount(final int backwardsCallCount) {
         this.backwardsCallCount = backwardsCallCount;
     }

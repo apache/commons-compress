@@ -25,29 +25,90 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.ClassFileEntry;
 import org.apache.commons.compress.harmony.unpack200.bytecode.ConstantPoolEntry;
 
 /**
- * SegmentConstantPool manages the constant pool used for re-creating class files.
+ * Manages the constant pool used for re-creating class files.
  */
 public class SegmentConstantPool {
 
+    /**
+     * Value {@value}.
+     */
     public static final int ALL = 0;
+
+    /**
+     * Value {@value}.
+     */
     public static final int UTF_8 = 1;
 
+    /**
+     * Value {@value}.
+     */
     public static final int CP_INT = 2;
 
     // define in archive order
 
+    /**
+     * Value {@value}.
+     */
     public static final int CP_FLOAT = 3;
+
+    /**
+     * Value {@value}.
+     */
     public static final int CP_LONG = 4;
+
+    /**
+     * Value {@value}.
+     */
     public static final int CP_DOUBLE = 5;
+
+    /**
+     * Value {@value}.
+     */
     public static final int CP_STRING = 6;
+
+    /**
+     * Value {@value}.
+     */
     public static final int CP_CLASS = 7;
+
+    /**
+     * Value {@value}.
+     */
     public static final int SIGNATURE = 8; // TODO and more to come --
+
+    /**
+     * Value {@value}.
+     */
     public static final int CP_DESCR = 9;
+
+    /**
+     * Value {@value}.
+     */
     public static final int CP_FIELD = 10;
+
+    /**
+     * Value {@value}.
+     */
     public static final int CP_METHOD = 11;
+
+    /**
+     * Value {@value}.
+     */
     public static final int CP_IMETHOD = 12;
+
+    /**
+     * Value {@value}.
+     */
     protected static final String REGEX_MATCH_ALL = ".*";
+
+    /**
+     * Value {@value}.
+     */
     protected static final String INITSTRING = "<init>";
+
+    /**
+     * Value {@value}.
+     */
     protected static final String REGEX_MATCH_INIT = "^" + INITSTRING + ".*";
 
     /**
@@ -194,8 +255,8 @@ public class SegmentConstantPool {
         return getConstantPoolEntry(cp, realIndex);
     }
 
-    public ClassFileEntry getValue(final int cp, final long value) throws Pack200Exception {
-        final int index = (int) value;
+    public ClassFileEntry getValue(final int cp, final long longIndex) throws Pack200Exception {
+        final int index = (int) longIndex;
         if (index == -1) {
             return null;
         }
