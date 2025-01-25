@@ -113,19 +113,44 @@ public class Archive {
         return check != -1;
     }
 
+    /**
+     * Sets the default hint.
+     *
+     * @param deflateHint the hint value.
+     */
     public void setDeflateHint(final boolean deflateHint) {
         overrideDeflateHint = true;
         this.deflateHint = deflateHint;
     }
 
+    /**
+     * Sets the lgg file.
+     *
+     * @param logFileName the log file name.
+     * @throws FileNotFoundException if the file exists but is a directory rather than a regular file, does not exist but cannot be created, or cannot be opened
+     *                               for any other reason
+     */
     public void setLogFile(final String logFileName) throws FileNotFoundException {
-        this.logFile = new FileOutputStream(logFileName);
+        logFile = new FileOutputStream(logFileName);
     }
 
+    /**
+     * Sets the lgg file.
+     *
+     * @param logFileName the log file name.
+     * @param append      if {@code true}, then bytes will be written to the end of the file rather than the beginning
+     * @throws FileNotFoundException if the file exists but is a directory rather than a regular file, does not exist but cannot be created, or cannot be opened
+     *                               for any other reason
+     */
     public void setLogFile(final String logFileName, final boolean append) throws FileNotFoundException {
         logFile = new FileOutputStream(logFileName, append);
     }
 
+    /**
+     * Sets whether to set the log level to quiet.
+     *
+     * @param quiet whether to set the log level to quiet.
+     */
     public void setQuiet(final boolean quiet) {
         if (quiet || logLevel == Segment.LOG_LEVEL_QUIET) {
             logLevel = Segment.LOG_LEVEL_QUIET;
@@ -141,6 +166,11 @@ public class Archive {
         this.removePackFile = removePackFile;
     }
 
+    /**
+     * Sets whether to set the log level to verbose.
+     *
+     * @param verbose whether to set the log level to verbose.
+     */
     public void setVerbose(final boolean verbose) {
         if (verbose) {
             logLevel = Segment.LOG_LEVEL_VERBOSE;
@@ -150,10 +180,10 @@ public class Archive {
     }
 
     /**
-     * Unpacks the Archive from the input file to the output file
+     * Unpacks the Archive from the input file to the output file.
      *
-     * @throws Pack200Exception TODO
-     * @throws IOException      TODO
+     * @throws Pack200Exception Never thrown.
+     * @throws IOException if an I/O error has occurred.
      */
     public void unpack() throws Pack200Exception, IOException {
         outputStream.setComment("PACK200");
@@ -185,8 +215,7 @@ public class Archive {
                 }
             }
             inputStream.reset();
-            if (compressedWithE0) { // The original Jar was not packed, so just
-                // copy it across
+            if (compressedWithE0) { // The original Jar was not packed, so just copy it across.
                 final JarInputStream jarInputStream = new JarInputStream(inputStream);
                 JarEntry jarEntry;
                 while ((jarEntry = jarInputStream.getNextJarEntry()) != null) {
