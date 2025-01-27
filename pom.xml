@@ -80,10 +80,10 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <!-- JaCoCo: Don't make code coverage worse than: -->
     <commons.jacoco.haltOnFailure>true</commons.jacoco.haltOnFailure>
     <commons.jacoco.classRatio>0.95</commons.jacoco.classRatio>
-    <commons.jacoco.instructionRatio>0.84</commons.jacoco.instructionRatio>
-    <commons.jacoco.methodRatio>0.87</commons.jacoco.methodRatio>
-    <commons.jacoco.branchRatio>0.74</commons.jacoco.branchRatio>
-    <commons.jacoco.lineRatio>0.86</commons.jacoco.lineRatio>
+    <commons.jacoco.instructionRatio>0.85</commons.jacoco.instructionRatio>
+    <commons.jacoco.methodRatio>0.88</commons.jacoco.methodRatio>
+    <commons.jacoco.branchRatio>0.75</commons.jacoco.branchRatio>
+    <commons.jacoco.lineRatio>0.87</commons.jacoco.lineRatio>
     <commons.jacoco.complexityRatio>0.72</commons.jacoco.complexityRatio>
     <!-- Checkstyle -->
     <checkstyle.header.file>${basedir}/src/conf/checkstyle/checkstyle-header.txt</checkstyle.header.file>
