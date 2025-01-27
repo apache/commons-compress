@@ -186,7 +186,7 @@ public class LZ77Compressor {
         /**
          * Constructs a new instance.
          *
-         * @param type
+         * @param type the block type, may not be {@code null}.
          */
         protected Block(final BlockType type) {
             this.type = Objects.requireNonNull(type);
