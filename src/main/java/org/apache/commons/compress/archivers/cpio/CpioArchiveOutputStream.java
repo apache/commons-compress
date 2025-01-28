@@ -68,6 +68,11 @@ import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
  */
 public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntry> implements CpioConstants {
 
+    /**
+     * The NUL character.
+     */
+    private static final char NUL = '\0';
+
     private CpioArchiveEntry entry;
 
     /**
@@ -379,7 +384,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
      */
     private void writeCString(final byte[] str) throws IOException {
         out.write(str);
-        out.write('\0');
+        out.write(NUL);
         count(str.length + 1);
     }
 
