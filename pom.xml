@@ -48,8 +48,6 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <commons.rc.version>RC1</commons.rc.version>
     <commons.release.isDistModule>true</commons.release.isDistModule>
     <commons.distSvnStagingUrl>scm:svn:https://dist.apache.org/repos/dist/dev/commons/${commons.componentid}</commons.distSvnStagingUrl>
-    <commons.manifestlocation>${project.build.outputDirectory}/META-INF</commons.manifestlocation>
-    <commons.manifestfile>${commons.manifestlocation}/MANIFEST.MF</commons.manifestfile>
     <commons.osgi.import>
       org.tukaani.xz;resolution:=optional,
       org.brotli.dec;resolution:=optional,
@@ -338,13 +336,6 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
               <Automatic-Module-Name>${commons.module.name}</Automatic-Module-Name>
             </manifestEntries>
           </archive>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <configuration>
-          <manifestLocation>${commons.manifestlocation}</manifestLocation>
         </configuration>
       </plugin>
       <plugin>
