@@ -870,7 +870,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
         } else if (zipMethod == DEFLATED || out instanceof RandomAccessOutputStream) {
             System.arraycopy(LZERO, 0, buf, LFH_COMPRESSED_SIZE_OFFSET, ZipConstants.WORD);
             System.arraycopy(LZERO, 0, buf, LFH_ORIGINAL_SIZE_OFFSET, ZipConstants.WORD);
-        } else if (zipMethod == ZipMethod.ZSTD.getCode() || zipMethod == ZipMethod.ZSTD_DEPRECATED.getCode()) {
+        } else if (ZipMethod.isZstd(zipMethod)) {
             ZipLong.putLong(ze.getCompressedSize(), buf, LFH_COMPRESSED_SIZE_OFFSET);
             ZipLong.putLong(ze.getSize(), buf, LFH_ORIGINAL_SIZE_OFFSET);
         } else { // Stored
@@ -1070,12 +1070,13 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * whether the entry would require a Zip64 extra field.
      */
     private boolean handleSizesAndCrc(final long bytesWritten, final long crc, final Zip64Mode effectiveMode) throws ZipException {
-        if (entry.entry.getMethod() == DEFLATED) {
+        final int zipMethod = entry.entry.getMethod();
+        if (zipMethod == DEFLATED) {
             // It turns out def.getBytesRead() returns wrong values if the size exceeds 4 GB on Java < Java7 entry.entry.setSize(def.getBytesRead());
             entry.entry.setSize(entry.bytesRead);
             entry.entry.setCompressedSize(bytesWritten);
             entry.entry.setCrc(crc);
-        } else if (entry.entry.getMethod() == ZipMethod.ZSTD.getCode() || entry.entry.getMethod() == ZipMethod.ZSTD_DEPRECATED.getCode()) {
+        } else if (ZipMethod.isZstd(zipMethod)) {
             entry.entry.setCompressedSize(bytesWritten);
             entry.entry.setCrc(crc);
         } else if (!(out instanceof RandomAccessOutputStream)) {

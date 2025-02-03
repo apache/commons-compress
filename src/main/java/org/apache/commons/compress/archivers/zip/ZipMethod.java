@@ -19,8 +19,10 @@
 package org.apache.commons.compress.archivers.zip;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 
 /**
@@ -190,15 +192,8 @@ public enum ZipMethod {
 
     static final int UNKNOWN_CODE = -1;
 
-    private static final Map<Integer, ZipMethod> codeToEnum;
-
-    static {
-        final Map<Integer, ZipMethod> cte = new HashMap<>();
-        for (final ZipMethod method : values()) {
-            cte.put(method.getCode(), method);
-        }
-        codeToEnum = Collections.unmodifiableMap(cte);
-    }
+    private static final Map<Integer, ZipMethod> codeToEnum = Collections
+            .unmodifiableMap(Stream.of(values()).collect(Collectors.toMap(ZipMethod::getCode, Function.identity())));
 
     /**
      * returns the {@link ZipMethod} for the given code or null if the method is not known.
@@ -208,6 +203,16 @@ public enum ZipMethod {
      */
     public static ZipMethod getMethodByCode(final int code) {
         return codeToEnum.get(code);
+    }
+
+    /**
+     * Tests whether the given ZIP method is a ZStandard method.
+     *
+     * @param method The method to test.
+     * @return Whether the given ZIP method is a ZStandard method.
+     */
+    static boolean isZstd(final int method) {
+        return method == ZSTD.getCode() || method == ZSTD_DEPRECATED.getCode();
     }
 
     private final int code;
