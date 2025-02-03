@@ -1071,31 +1071,27 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      */
     private boolean handleSizesAndCrc(final long bytesWritten, final long crc, final Zip64Mode effectiveMode) throws ZipException {
         if (entry.entry.getMethod() == DEFLATED) {
-            /*
-             * It turns out def.getBytesRead() returns wrong values if the size exceeds 4 GB on Java < Java7 entry.entry.setSize(def.getBytesRead());
-             */
+            // It turns out def.getBytesRead() returns wrong values if the size exceeds 4 GB on Java < Java7 entry.entry.setSize(def.getBytesRead());
             entry.entry.setSize(entry.bytesRead);
             entry.entry.setCompressedSize(bytesWritten);
             entry.entry.setCrc(crc);
-
         } else if (entry.entry.getMethod() == ZipMethod.ZSTD.getCode() || entry.entry.getMethod() == ZipMethod.ZSTD_DEPRECATED.getCode()) {
             entry.entry.setCompressedSize(bytesWritten);
             entry.entry.setCrc(crc);
         } else if (!(out instanceof RandomAccessOutputStream)) {
             if (entry.entry.getCrc() != crc) {
-                throw new ZipException("Bad CRC checksum for entry " + entry.entry.getName() + ": " + Long.toHexString(entry.entry.getCrc()) + " instead of "
-                        + Long.toHexString(crc));
+                throw new ZipException("Bad CRC checksum for entry " + entry.entry.getName() + ": " + Long.toHexString(entry.entry.getCrc()) + " instead of " +
+                        Long.toHexString(crc));
             }
-
             if (entry.entry.getSize() != bytesWritten) {
                 throw new ZipException("Bad size for entry " + entry.entry.getName() + ": " + entry.entry.getSize() + " instead of " + bytesWritten);
             }
-        } else { /* method is STORED and we used SeekableByteChannel */
+        } else {
+            // method is STORED and we used SeekableByteChannel
             entry.entry.setSize(bytesWritten);
             entry.entry.setCompressedSize(bytesWritten);
             entry.entry.setCrc(crc);
         }
-
         return checkIfNeedsZip64(effectiveMode);
     }
 
