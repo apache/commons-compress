@@ -42,7 +42,7 @@ public class ZstdCompressorTest extends AbstractTest {
     /**
      * Reads uncompressed data stream and writes it compressed to the output
      *
-     * @param input  the data stream with uncompressed data
+     * @param input  the data stream with uncompressced data
      * @param output the data stream for compressed output
      * @throws IOException throws the exception which could be got from from IOUtils.copyLarge() or ZstdCompressorOutputStream constructor
      */
@@ -79,7 +79,7 @@ public class ZstdCompressorTest extends AbstractTest {
 
     @Test
     public void testZstdInputStream() throws IOException {
-        final Path file = getPath("COMPRESS-692/compress-962.zip");
+        final Path file = getPath("COMPRESS-692/compress-692.zip");
         try (ZipFile zip = ZipFile.builder().setFile(file.toFile()).get()) {
             final ZipArchiveEntry entry = zip.getEntries().nextElement();
             assertEquals("Unexpected first entry", "dolor.txt", entry.getName());
