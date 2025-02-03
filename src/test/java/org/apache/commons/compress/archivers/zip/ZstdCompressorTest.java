@@ -36,8 +36,12 @@ import org.apache.commons.compress.compressors.zstandard.ZstdCompressorOutputStr
 import org.apache.commons.compress.compressors.zstandard.ZstdUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 public class ZstdCompressorTest extends AbstractTest {
+
+    private static final int DEFAULT_LEVEL = 3;
 
     /**
      * Reads uncompressed data stream and writes it compressed to the output
@@ -47,20 +51,22 @@ public class ZstdCompressorTest extends AbstractTest {
      * @throws IOException throws the exception which could be got from from IOUtils.copyLarge() or ZstdCompressorOutputStream constructor
      */
     private static void compress(final InputStream input, final OutputStream output) throws IOException {
-        final ZstdCompressorOutputStream outputStream = new ZstdCompressorOutputStream(output, 3, true);
+        @SuppressWarnings("resource")
+        final ZstdCompressorOutputStream outputStream = new ZstdCompressorOutputStream(output, DEFAULT_LEVEL, true);
         IOUtils.copyLarge(input, outputStream);
         outputStream.flush();
     }
 
-    @Test
-    public void testZstdDeprecatedMethod() throws IOException {
+    @ParameterizedTest
+    @EnumSource(names = { "ZSTD", "ZSTD_DEPRECATED" })
+    public void testZstdMethod(final ZipMethod zipMethod) throws IOException {
         final String zipContentFile = "Name.txt";
         final byte[] simpleText = "This is a Simple Test File.".getBytes();
         final File file = Files.createTempFile("", ".zip").toFile();
         // Create the Zip File
         try (ZipArchiveOutputStream zipOutputStream = new ZipArchiveOutputStream(file)) {
             final ZipArchiveEntry archiveEntry = new ZipArchiveEntry(zipContentFile);
-            archiveEntry.setMethod(ZipMethod.ZSTD_DEPRECATED.getCode());
+            archiveEntry.setMethod(zipMethod.getCode());
             archiveEntry.setSize(simpleText.length);
             zipOutputStream.putArchiveEntry(archiveEntry);
             ZstdCompressorTest.compress(new ByteArrayInputStream(simpleText), zipOutputStream);
@@ -71,7 +77,7 @@ public class ZstdCompressorTest extends AbstractTest {
             // Find the entry
             final ZipArchiveEntry entry = zipFile.getEntry(zipContentFile);
             // Check the Zstd compression method
-            assertEquals(entry.getMethod(), ZipMethod.ZSTD_DEPRECATED.getCode());
+            assertEquals(entry.getMethod(), zipMethod.getCode());
             final InputStream inputStream = zipFile.getInputStream(entry);
             assertTrue("Input stream must be a ZstdInputStream", inputStream instanceof ZstdCompressorInputStream);
         }
@@ -97,15 +103,16 @@ public class ZstdCompressorTest extends AbstractTest {
         }
     }
 
-    @Test
-    public void testZstdMethodInZipFile() throws IOException {
+    @ParameterizedTest
+    @EnumSource(names = { "ZSTD", "ZSTD_DEPRECATED" })
+    public void testZstdMethodInZipFile(final ZipMethod zipMethod) throws IOException {
         final String zipContentFile = "Name.txt";
         final byte[] simpleText = "This is a Simple Test File.".getBytes();
         final File file = Files.createTempFile("", ".zip").toFile();
         // Create the Zip File
         try (ZipArchiveOutputStream zipOutputStream = new ZipArchiveOutputStream(file)) {
             final ZipArchiveEntry archiveEntry = new ZipArchiveEntry(zipContentFile);
-            archiveEntry.setMethod(ZipMethod.ZSTD.getCode());
+            archiveEntry.setMethod(zipMethod.getCode());
             archiveEntry.setSize(simpleText.length);
             zipOutputStream.putArchiveEntry(archiveEntry);
             ZstdCompressorTest.compress(new ByteArrayInputStream(simpleText), zipOutputStream);
@@ -116,7 +123,7 @@ public class ZstdCompressorTest extends AbstractTest {
             // Find the entry
             final ZipArchiveEntry entry = zipFile.getEntry(zipContentFile);
             // Check the Zstd compression method
-            assertEquals(entry.getMethod(), ZipMethod.ZSTD.getCode());
+            assertEquals(entry.getMethod(), zipMethod.getCode());
             final InputStream inputStream = zipFile.getInputStream(entry);
             assertTrue(inputStream instanceof ZstdCompressorInputStream);
             final long dataOffset = entry.getDataOffset();
