@@ -870,6 +870,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
         } else if (zipMethod == DEFLATED || out instanceof RandomAccessOutputStream) {
             System.arraycopy(LZERO, 0, buf, LFH_COMPRESSED_SIZE_OFFSET, ZipConstants.WORD);
             System.arraycopy(LZERO, 0, buf, LFH_ORIGINAL_SIZE_OFFSET, ZipConstants.WORD);
+        } else if (zipMethod == ZipMethod.ZSTD.getCode() || zipMethod == ZipMethod.ZSTD_DEPRECATED.getCode()) {
+            ZipLong.putLong(ze.getCompressedSize(), buf, LFH_COMPRESSED_SIZE_OFFSET);
+            ZipLong.putLong(ze.getSize(), buf, LFH_ORIGINAL_SIZE_OFFSET);
         } else { // Stored
             ZipLong.putLong(ze.getSize(), buf, LFH_COMPRESSED_SIZE_OFFSET);
             ZipLong.putLong(ze.getSize(), buf, LFH_ORIGINAL_SIZE_OFFSET);
@@ -1075,6 +1078,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
             entry.entry.setCompressedSize(bytesWritten);
             entry.entry.setCrc(crc);
 
+        } else if (entry.entry.getMethod() == ZipMethod.ZSTD.getCode() || entry.entry.getMethod() == ZipMethod.ZSTD_DEPRECATED.getCode()) {
+            entry.entry.setCompressedSize(bytesWritten);
+            entry.entry.setCrc(crc);
         } else if (!(out instanceof RandomAccessOutputStream)) {
             if (entry.entry.getCrc() != crc) {
                 throw new ZipException("Bad CRC checksum for entry " + entry.entry.getName() + ": " + Long.toHexString(entry.entry.getCrc()) + " instead of "

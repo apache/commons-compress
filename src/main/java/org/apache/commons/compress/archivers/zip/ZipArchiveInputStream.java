@@ -45,6 +45,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.deflate64.Deflate64CompressorInputStream;
+import org.apache.commons.compress.compressors.zstandard.ZstdCompressorInputStream;
 import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
@@ -772,6 +773,10 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
                 case ENHANCED_DEFLATED:
                     current.inputStream = new Deflate64CompressorInputStream(bis);
                     break;
+                case ZSTD:
+                case ZSTD_DEPRECATED:
+                    current.inputStream = new ZstdCompressorInputStream(bis);
+                    break;
                 default:
                     // we should never get here as all supported methods have been covered
                     // will cause an error when read is invoked, don't throw an exception here so people can
@@ -924,15 +929,17 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
         }
 
         final int read;
-        if (current.entry.getMethod() == ZipArchiveOutputStream.STORED) {
+        final int method = current.entry.getMethod();
+        if (method == ZipArchiveOutputStream.STORED) {
             read = readStored(buffer, offset, length);
-        } else if (current.entry.getMethod() == ZipArchiveOutputStream.DEFLATED) {
+        } else if (method == ZipArchiveOutputStream.DEFLATED) {
             read = readDeflated(buffer, offset, length);
-        } else if (current.entry.getMethod() == ZipMethod.UNSHRINKING.getCode() || current.entry.getMethod() == ZipMethod.IMPLODING.getCode()
-                || current.entry.getMethod() == ZipMethod.ENHANCED_DEFLATED.getCode() || current.entry.getMethod() == ZipMethod.BZIP2.getCode()) {
+        } else if (method == ZipMethod.UNSHRINKING.getCode() || method == ZipMethod.IMPLODING.getCode()
+                || method == ZipMethod.ENHANCED_DEFLATED.getCode() || method == ZipMethod.BZIP2.getCode()
+                || method == ZipMethod.ZSTD.getCode() || method == ZipMethod.ZSTD_DEPRECATED.getCode()) {
             read = current.inputStream.read(buffer, offset, length);
         } else {
-            throw new UnsupportedZipFeatureException(ZipMethod.getMethodByCode(current.entry.getMethod()), current.entry);
+            throw new UnsupportedZipFeatureException(ZipMethod.getMethodByCode(method), current.entry);
         }
 
         if (read >= 0) {
@@ -1319,22 +1326,26 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     }
 
     /**
-     * Whether the compressed size for the entry is either known or not required by the compression method being used.
+     * Tests whether the compressed size for the entry is either known or not required by the compression method being used.
      */
     private boolean supportsCompressedSizeFor(final ZipArchiveEntry entry) {
-        return entry.getCompressedSize() != ArchiveEntry.SIZE_UNKNOWN || entry.getMethod() == ZipEntry.DEFLATED
-                || entry.getMethod() == ZipMethod.ENHANCED_DEFLATED.getCode()
-                || entry.getGeneralPurposeBit().usesDataDescriptor() && allowStoredEntriesWithDataDescriptor && entry.getMethod() == ZipEntry.STORED;
+        final int method = entry.getMethod();
+        return entry.getCompressedSize() != ArchiveEntry.SIZE_UNKNOWN || method == ZipEntry.DEFLATED
+                || method == ZipMethod.ENHANCED_DEFLATED.getCode()
+                || entry.getGeneralPurposeBit().usesDataDescriptor() && allowStoredEntriesWithDataDescriptor && method == ZipEntry.STORED
+                || method == ZipMethod.ZSTD.getCode() || method == ZipMethod.ZSTD_DEPRECATED.getCode();
     }
 
     /**
-     * Whether this entry requires a data descriptor this library can work with.
+     * Tests whether this entry requires a data descriptor this library can work with.
      *
      * @return true if allowStoredEntriesWithDataDescriptor is true, the entry doesn't require any data descriptor or the method is DEFLATED or
      *         ENHANCED_DEFLATED.
      */
     private boolean supportsDataDescriptorFor(final ZipArchiveEntry entry) {
-        return !entry.getGeneralPurposeBit().usesDataDescriptor() || allowStoredEntriesWithDataDescriptor && entry.getMethod() == ZipEntry.STORED
-                || entry.getMethod() == ZipEntry.DEFLATED || entry.getMethod() == ZipMethod.ENHANCED_DEFLATED.getCode();
+        final int method = entry.getMethod();
+        return !entry.getGeneralPurposeBit().usesDataDescriptor() || allowStoredEntriesWithDataDescriptor && method == ZipEntry.STORED
+                || method == ZipEntry.DEFLATED || method == ZipMethod.ENHANCED_DEFLATED.getCode()
+                || method == ZipMethod.ZSTD.getCode() || method == ZipMethod.ZSTD_DEPRECATED.getCode();
     }
 }

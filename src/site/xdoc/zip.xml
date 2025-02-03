@@ -634,7 +634,12 @@
             See the examples section for a code sample demonstrating how to make a zip file.
           </p>
       </subsection>
-
+      <subsection name="Zstandard Support" id="zstd">
+        <p>
+          Starting with Compress 1.28.0, <code>org.apache.commons.compress.archivers.zip</code> supports reading and writing using the Zstandard method.
+          Zstandard method <code>93</code> and the deprecated <code>20</code>  are supported.
+        </p>
+      </subsection>
     </section>
   </body>
 </document>
