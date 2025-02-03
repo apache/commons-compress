@@ -331,10 +331,11 @@ public abstract class ZipUtil {
      * @return true if the compression method is supported
      */
     private static boolean supportsMethodOf(final ZipArchiveEntry entry) {
-        return entry.getMethod() == ZipEntry.STORED || entry.getMethod() == ZipMethod.UNSHRINKING.getCode()
-                || entry.getMethod() == ZipMethod.IMPLODING.getCode() || entry.getMethod() == ZipEntry.DEFLATED
-                || entry.getMethod() == ZipMethod.ENHANCED_DEFLATED.getCode() || entry.getMethod() == ZipMethod.BZIP2.getCode()
-                || entry.getMethod() == ZipMethod.ZSTD.getCode() || entry.getMethod() == ZipMethod.ZSTD_DEPRECATED.getCode();
+        final int method = entry.getMethod();
+        return method == ZipEntry.STORED || method == ZipMethod.UNSHRINKING.getCode()
+                || method == ZipMethod.IMPLODING.getCode() || method == ZipEntry.DEFLATED
+                || method == ZipMethod.ENHANCED_DEFLATED.getCode() || method == ZipMethod.BZIP2.getCode()
+                || method == ZipMethod.ZSTD.getCode() || method == ZipMethod.ZSTD_DEPRECATED.getCode();
     }
 
     /**
