@@ -125,21 +125,25 @@ public enum ZipMethod {
     LZMA(14),
 
     /**
-     * Compression Method 20 for Zstd.
+     * Compression Method 20 for Zstandard (deprecated).
      *
-     * @see <a href="https://github.com/facebook/zstd">https://github.com/facebook/zstd</a>
-     * @see <a href="https://pkwaredownloads.blob.core.windows.net/pkware-general/Documentation/APPNOTE-6.3.7.TXT">deprecated zstd compression method id</a>
-     * @see <a href="https://www.pkware.com/documents/casestudies/APPNOTE.TXT">Explanation of fields: compression method: (2 bytes)</a>
+     * @see <a href="https://github.com/facebook/zstd">Facebook Zstandard source code</a>
+     * @see <a href="https://pkwaredownloads.blob.core.windows.net/pkware-general/Documentation/APPNOTE-6.3.7.TXT">.ZIP File Format Specification 6.3.7:
+     *      Deprecated zstd compression method id</a>
+     * @see <a href="https://www.pkware.com/documents/casestudies/APPNOTE.TXT">.ZIP File Format Specification: Explanation of fields: compression method: (2
+     *      bytes)</a>
      * @since 1.28.0
      */
     ZSTD_DEPRECATED(20),
 
     /**
-     * Compression Method 93 for Zstd.
+     * Compression Method 93 for Zstandard.
      *
-     * @see <a href="https://github.com/facebook/zstd">https://github.com/facebook/zstd</a>
-     * @see <a href="https://pkwaredownloads.blob.core.windows.net/pkware-general/Documentation/APPNOTE-6.3.8.TXT">changed zstd compression method id</a>
-     * @see <a href="https://www.pkware.com/documents/casestudies/APPNOTE.TXT">Explanation of fields: compression method: (2 bytes)</a>
+     * @see <a href="https://github.com/facebook/zstd">Facebook Zstandard source code</a>
+     * @see <a href="https://pkwaredownloads.blob.core.windows.net/pkware-general/Documentation/APPNOTE-6.3.8.TXT">.ZIP File Format Specification 6.3.8: Changed
+     *      zstd compression method id</a>
+     * @see <a href="https://www.pkware.com/documents/casestudies/APPNOTE.TXT">.ZIP File Format Specification: Explanation of fields: compression method: (2
+     *      bytes)</a>
      * @since 1.28.0
      */
     ZSTD(93),
