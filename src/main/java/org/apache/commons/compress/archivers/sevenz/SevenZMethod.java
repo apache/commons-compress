@@ -21,7 +21,7 @@ package org.apache.commons.compress.archivers.sevenz;
 import java.util.Arrays;
 
 /**
- * The (partially) supported compression/encryption methods used in 7z archives.
+ * Enumerates the (partially) supported compression/encryption methods used in 7z archives.
  * <p>
  * All methods with a {@code _FILTER} suffix are used as preprocessors with the goal of creating a better compression ratio with the compressor that comes next
  * in the chain of methods. 7z will in general only allow them to be used together with a "real" compression method but Commons Compress doesn't enforce this.

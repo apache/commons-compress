@@ -38,72 +38,78 @@ public class ArjArchiveEntry implements ArchiveEntry {
     public static class HostOs {
 
         /**
-         * {@value}
+         * Constant value {@value}.
          */
         public static final int DOS = 0;
 
         /**
-         * {@value}
+         * Constant value {@value}.
          */
         public static final int PRIMOS = 1;
 
         /**
-         * {@value}
+         * Constant value {@value}.
          */
         public static final int UNIX = 2;
 
         /**
-         * {@value}
+         * Constant value {@value}.
          */
         public static final int AMIGA = 3;
 
         /**
-         * {@value}
+         * Constant value {@value}.
          */
         public static final int MAC_OS = 4;
 
         /**
-         * {@value}
+         * Constant value {@value}.
          */
         public static final int OS_2 = 5;
 
         /**
-         * {@value}
+         * Constant value {@value}.
          */
         public static final int APPLE_GS = 6;
 
         /**
-         * {@value}
+         * Constant value {@value}.
          */
         public static final int ATARI_ST = 7;
 
         /**
-         * {@value}
+         * Constant value {@value}.
          */
         public static final int NEXT = 8;
 
         /**
-         * {@value}
+         * Constant value {@value}.
          */
         public static final int VAX_VMS = 9;
 
         /**
-         * {@value}
+         * Constant value {@value}.
          */
         public static final int WIN95 = 10;
 
         /**
-         * {@value}
+         * Constant value {@value}.
          */
         public static final int WIN32 = 11;
     }
 
     private final LocalFileHeader localFileHeader;
 
+    /**
+     * Constructs a new instance.
+     */
     public ArjArchiveEntry() {
         localFileHeader = new LocalFileHeader();
     }
 
+    /**
+     * Constructs a new instance.
+     */
     ArjArchiveEntry(final LocalFileHeader localFileHeader) {
         this.localFileHeader = localFileHeader;
     }

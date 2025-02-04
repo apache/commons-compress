@@ -40,7 +40,7 @@ import org.apache.commons.lang3.StringUtils;
 public class GzipParameters {
 
     /**
-     * The OS type.
+     * Enumerates OS types.
      * <ul>
      * <li>0 - FAT filesystem (MS-DOS, OS/2, NT/Win32)</li>
      * <li>1 - Amiga</li>

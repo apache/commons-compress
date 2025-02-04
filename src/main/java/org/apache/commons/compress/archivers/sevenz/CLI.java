@@ -27,6 +27,9 @@ import java.util.Locale;
  */
 public class CLI {
 
+    /**
+     * Enumerates modes.
+     */
     private enum Mode {
         LIST("Analysing") {
             private String getContentMethods(final SevenZArchiveEntry entry) {

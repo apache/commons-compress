@@ -173,22 +173,71 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  */
 public class DumpArchiveEntry implements ArchiveEntry {
 
+    /**
+     * Enumerates permissions with values.
+     */
     public enum PERMISSION {
         // Note: The arguments are octal values
-        // @formatter:off
+
+        /**
+         * Permission SETUID (octal value 04000).
+         */
         SETUID(04000),
+
+        /**
+         * Permission SETGUI (octal value 02000).
+         */
         SETGUI(02000),
+
+        /**
+         * Permission STICKY (octal value 01000).
+         */
         STICKY(01000),
+
+        /**
+         * Permission USER_READ (octal value 00400).
+         */
         USER_READ(00400),
+
+        /**
+         * Permission USER_WRITE (octal value 00200).
+         */
         USER_WRITE(00200),
+
+        /**
+         * Permission USER_EXEC (octal value 00100).
+         */
         USER_EXEC(00100),
+
+        /**
+         * Permission GROUP_READ (octal value 00040).
+         */
         GROUP_READ(00040),
+
+        /**
+         * Permission GROUP_WRITE (octal value 00020).
+         */
         GROUP_WRITE(00020),
+
+        /**
+         * Permission 00020 (octal value 00010).
+         */
         GROUP_EXEC(00010),
+
+        /**
+         * Permission WORLD_READ (octal value 00004).
+         */
         WORLD_READ(00004),
+
+        /**
+         * Permission WORLD_WRITE (octal value 00002).
+         */
         WORLD_WRITE(00002),
+
+        /**
+         * Permission WORLD_EXEC (octal value 00001).
+         */
         WORLD_EXEC(00001);
-        // @formatter:on
 
         public static Set<PERMISSION> find(final int code) {
             final Set<PERMISSION> set = new HashSet<>();
@@ -253,8 +302,55 @@ public class DumpArchiveEntry implements ArchiveEntry {
         }
     }
 
+    /**
+     * Enumerates types.
+     */
     public enum TYPE {
-        WHITEOUT(14), SOCKET(12), LINK(10), FILE(8), BLKDEV(6), DIRECTORY(4), CHRDEV(2), FIFO(1), UNKNOWN(15);
+
+        /**
+         * WHITEOUT with code 14.
+         */
+        WHITEOUT(14),
+
+        /**
+         * SOCKET with code 12.
+         */
+        SOCKET(12),
+
+        /**
+         * LINK with code 10.
+         */
+        LINK(10),
+
+        /**
+         * FILE with code 8.
+         */
+        FILE(8),
+
+        /**
+         * BLKDEV with code 6.
+         */
+        BLKDEV(6),
+
+        /**
+         * DIRECTORY with code 4.
+         */
+        DIRECTORY(4),
+
+        /**
+         * CHRDEV with code 2.
+         */
+        CHRDEV(2),
+
+        /**
+         * CHRDEV with code 1.
+         */
+        FIFO(1),
+
+        /**
+         * UNKNOWN with code 15.
+         */
+        UNKNOWN(15);
 
         public static TYPE find(final int code) {
             TYPE type = UNKNOWN;
@@ -636,16 +732,16 @@ public class DumpArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Is this a block device?
+     * Tests whether this is a block device.
      *
-     * @return whether this is a block device
+     * @return whether this is a block device.
      */
     public boolean isBlkDev() {
         return type == TYPE.BLKDEV;
     }
 
     /**
-     * Is this a character device?
+     * Tests whether this is a character device.
      *
      * @return whether this is a character device
      */
@@ -654,16 +750,17 @@ public class DumpArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Has this file been deleted? (On valid on incremental dumps.)
+     * Tests whether this file been deleted.
+     * For valid on incremental dumps.
      *
-     * @return whether the file has been deleted
+     * @return whether the file has been deleted.
      */
     public boolean isDeleted() {
         return isDeleted;
     }
 
     /**
-     * Is this a directory?
+     * Tests whether this is a directory.
      *
      * @return whether this is a directory
      */
@@ -673,37 +770,37 @@ public class DumpArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Is this a fifo/pipe?
+     * Tests whether whether this is a fifo/pipe.
      *
-     * @return whether this is a fifo
+     * @return whether this is a fifo/pipe.
      */
     public boolean isFifo() {
         return type == TYPE.FIFO;
     }
 
     /**
-     * Is this a regular file?
+     * Tests whether this is a regular file.
      *
-     * @return whether this is a regular file
+     * @return whether this is a regular file.
      */
     public boolean isFile() {
         return type == TYPE.FILE;
     }
 
     /**
-     * Is this a network device?
+     * Tests whether this is a socket.
      *
-     * @return whether this is a socket
+     * @return whether this is a socket.
      */
     public boolean isSocket() {
         return type == TYPE.SOCKET;
     }
 
     /**
-     * Is this a sparse record?
+     * Tests whether this is a sparse record.
      *
-     * @param idx index of the record to check
-     * @return whether this is a sparse record
+     * @param idx index of the record to check.
+     * @return whether this is a sparse record.
      */
     public boolean isSparseRecord(final int idx) {
         return (header.getCdata(idx) & 0x01) == 0;

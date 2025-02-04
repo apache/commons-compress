@@ -26,9 +26,9 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 
 /**
- * List of known compression methods
+ * Enumerates known compression methods.
  *
- * Many of these methods are currently not supported by commons compress
+ * Some of these methods are currently not supported by commons compress.
  *
  * @since 1.5
  */

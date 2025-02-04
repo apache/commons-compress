@@ -22,11 +22,31 @@ package org.apache.commons.compress.archivers.dump;
  * Various constants associated with dump archives.
  */
 public final class DumpArchiveConstants {
+
     /**
-     * The type of compression.
+     * Enumerates compression types.
      */
     public enum COMPRESSION_TYPE {
-        UNKNOWN(-1), ZLIB(0), BZLIB(1), LZO(2);
+
+        /**
+         * Compression code is -1.
+         */
+        UNKNOWN(-1),
+
+        /**
+         * Compression code is 0.
+         */
+        ZLIB(0),
+
+        /**
+         * Compression code is 1.
+         */
+        BZLIB(1),
+
+        /**
+         * Compression code is 2.
+         */
+        LZO(2);
 
         public static COMPRESSION_TYPE find(final int code) {
             for (final COMPRESSION_TYPE t : values()) {
@@ -46,10 +66,39 @@ public final class DumpArchiveConstants {
     }
 
     /**
-     * The type of tape segment.
+     * Enumerates the types of tape segment.
      */
     public enum SEGMENT_TYPE {
-        TAPE(1), INODE(2), BITS(3), ADDR(4), END(5), CLRI(6);
+
+        /**
+         * TAPE with code 1.
+         */
+        TAPE(1),
+
+        /**
+         * INODE with code 2.
+         */
+        INODE(2),
+
+        /**
+         * BITS with code 3.
+         */
+        BITS(3),
+
+        /**
+         * ADDR with code 4.
+         */
+        ADDR(4),
+
+        /**
+         * END with code 5.
+         */
+        END(5),
+
+        /**
+         * CLRI with code 6.
+         */
+        CLRI(6);
 
         public static SEGMENT_TYPE find(final int code) {
             for (final SEGMENT_TYPE t : values()) {

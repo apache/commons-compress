@@ -19,7 +19,7 @@
 package org.apache.commons.compress.compressors.snappy;
 
 /**
- * Dialects of the framing format that {@link FramedSnappyCompressorInputStream} can deal with.
+ * Enumerates dialects of the framing format that {@link FramedSnappyCompressorInputStream} can deal with.
  *
  * @since 1.12
  */
