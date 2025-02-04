@@ -347,12 +347,12 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     /**
      * whether to use the general purpose bit flag when writing UTF-8 file names or not.
      */
-    private boolean useUTF8Flag = true;
+    private boolean useUtf8Flag = true;
 
     /**
      * Whether to encode non-encodable file names as UTF-8.
      */
-    private boolean fallbackToUTF8;
+    private boolean fallbackToUtf8;
 
     /**
      * whether to create UnicodePathExtraField-s for each entry.
@@ -742,7 +742,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
         final int zipMethod = ze.getMethod();
         final boolean encodable = zipEncoding.canEncode(ze.getName());
         ZipShort.putShort(versionNeededToExtract(zipMethod, needsZip64Extra, entryMetaData.usesDataDescriptor), buf, CFH_VERSION_NEEDED_OFFSET);
-        getGeneralPurposeBits(!encodable && fallbackToUTF8, entryMetaData.usesDataDescriptor).encode(buf, CFH_GPB_OFFSET);
+        getGeneralPurposeBits(!encodable && fallbackToUtf8, entryMetaData.usesDataDescriptor).encode(buf, CFH_GPB_OFFSET);
 
         // compression method
         ZipShort.putShort(zipMethod, buf, CFH_METHOD_OFFSET);
@@ -841,7 +841,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
 
         ZipShort.putShort(versionNeededToExtract(zipMethod, hasZip64Extra(ze), dataDescriptor), buf, LFH_VERSION_NEEDED_OFFSET);
 
-        final GeneralPurposeBit generalPurposeBit = getGeneralPurposeBits(!encodable && fallbackToUTF8, dataDescriptor);
+        final GeneralPurposeBit generalPurposeBit = getGeneralPurposeBits(!encodable && fallbackToUtf8, dataDescriptor);
         generalPurposeBit.encode(buf, LFH_GPB_OFFSET);
 
         // compression method
@@ -1023,12 +1023,12 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
 
     private ZipEncoding getEntryEncoding(final ZipArchiveEntry ze) {
         final boolean encodable = zipEncoding.canEncode(ze.getName());
-        return !encodable && fallbackToUTF8 ? ZipEncodingHelper.ZIP_ENCODING_UTF_8 : zipEncoding;
+        return !encodable && fallbackToUtf8 ? ZipEncodingHelper.ZIP_ENCODING_UTF_8 : zipEncoding;
     }
 
     private GeneralPurposeBit getGeneralPurposeBits(final boolean utfFallback, final boolean usesDataDescriptor) {
         final GeneralPurposeBit b = new GeneralPurposeBit();
-        b.useUTF8ForNames(useUTF8Flag || utfFallback);
+        b.useUTF8ForNames(useUtf8Flag || utfFallback);
         if (usesDataDescriptor) {
             b.useDataDescriptor(true);
         }
@@ -1328,8 +1328,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     private void setEncoding(final Charset encoding) {
         this.charset = encoding;
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
-        if (useUTF8Flag && !ZipEncodingHelper.isUTF8(encoding)) {
-            useUTF8Flag = false;
+        if (useUtf8Flag && !ZipEncodingHelper.isUTF8(encoding)) {
+            useUtf8Flag = false;
         }
     }
 
@@ -1355,7 +1355,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * @param fallbackToUTF8 whether to fall back to UTF and the language encoding flag if the file name cannot be encoded using the specified encoding.
      */
     public void setFallbackToUTF8(final boolean fallbackToUTF8) {
-        this.fallbackToUTF8 = fallbackToUTF8;
+        this.fallbackToUtf8 = fallbackToUTF8;
     }
 
     /**
@@ -1399,7 +1399,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * @param b whether to set the language encoding flag if the file name encoding is UTF-8
      */
     public void setUseLanguageEncodingFlag(final boolean b) {
-        useUTF8Flag = b && ZipEncodingHelper.isUTF8(charset);
+        useUtf8Flag = b && ZipEncodingHelper.isUTF8(charset);
     }
 
     /**
