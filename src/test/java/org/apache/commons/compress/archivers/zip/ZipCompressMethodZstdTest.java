@@ -46,7 +46,7 @@ public class ZipCompressMethodZstdTest extends AbstractTest {
     /**
      * Reads uncompressed data stream and writes it compressed to the output
      *
-     * @param input  the data stream with uncompressced data
+     * @param input  the data stream with uncompressed data
      * @param output the data stream for compressed output
      * @throws IOException throws the exception which could be got from from IOUtils.copyLarge() or ZstdCompressorOutputStream constructor
      */
