@@ -39,7 +39,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
-public class ZstdCompressorTest extends AbstractTest {
+public class ZipCompressMethodZstdTest extends AbstractTest {
 
     private static final int DEFAULT_LEVEL = 3;
 
@@ -69,7 +69,7 @@ public class ZstdCompressorTest extends AbstractTest {
             archiveEntry.setMethod(zipMethod.getCode());
             archiveEntry.setSize(simpleText.length);
             zipOutputStream.putArchiveEntry(archiveEntry);
-            ZstdCompressorTest.compress(new ByteArrayInputStream(simpleText), zipOutputStream);
+            ZipCompressMethodZstdTest.compress(new ByteArrayInputStream(simpleText), zipOutputStream);
             zipOutputStream.closeArchiveEntry();
         }
         // Read the Zip File
@@ -115,7 +115,7 @@ public class ZstdCompressorTest extends AbstractTest {
             archiveEntry.setMethod(zipMethod.getCode());
             archiveEntry.setSize(simpleText.length);
             zipOutputStream.putArchiveEntry(archiveEntry);
-            ZstdCompressorTest.compress(new ByteArrayInputStream(simpleText), zipOutputStream);
+            ZipCompressMethodZstdTest.compress(new ByteArrayInputStream(simpleText), zipOutputStream);
             zipOutputStream.closeArchiveEntry();
         }
         // Read the Zip File
