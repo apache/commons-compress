@@ -133,7 +133,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
      *
      * @param n the number of bits to read, must not exceed 32?
      * @return the requested bits combined into an int
-     * @throws IOException
+     * @throws IOException if an I/O error occurs.
      */
     private static int bsR(final BitInputStream bin, final int n) throws IOException {
         final long thech = bin.readBits(n);

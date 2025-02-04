@@ -272,7 +272,7 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
      * </p>
      *
      * @param channels channels to be validated
-     * @throws IOException
+     * @throws IOException if an I/O error occurs.
      */
     private void assertSplitSignature(final List<SeekableByteChannel> channels) throws IOException {
         final SeekableByteChannel channel = channels.get(0);

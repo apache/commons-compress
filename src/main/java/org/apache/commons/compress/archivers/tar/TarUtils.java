@@ -761,7 +761,7 @@ public class TarUtils {
      *
      * @param inputStream the input stream of the tar file
      * @return the decimal number delimited by '\n', and the bytes read from input stream
-     * @throws IOException
+     * @throws IOException if an I/O error occurs.
      */
     private static long[] readLineOfNumberForPax1X(final InputStream inputStream) throws IOException {
         int number;

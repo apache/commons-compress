@@ -256,7 +256,7 @@ public class BcBandsTest extends AbstractBandsTest {
      * Test with codes that should require entries in the bc_byte band
      *
      * @throws Pack200Exception
-     * @throws IOException
+     * @throws IOException if an I/O error occurs.
      */
     @Test
     public void testBcByteBand() throws IOException, Pack200Exception {
@@ -279,7 +279,7 @@ public class BcBandsTest extends AbstractBandsTest {
      * Test with codes that require entries in the bc_case_count and bc_case_value bands
      *
      * @throws Pack200Exception
-     * @throws IOException
+     * @throws IOException if an I/O error occurs.
      */
     @Test
     public void testBcCaseBands() throws IOException, Pack200Exception {
@@ -303,7 +303,7 @@ public class BcBandsTest extends AbstractBandsTest {
      * Test with codes that should require entries in the bc_classref band
      *
      * @throws Pack200Exception
-     * @throws IOException
+     * @throws IOException if an I/O error occurs.
      */
     @Test
     public void testBcClassRefBand() throws IOException, Pack200Exception {
@@ -320,7 +320,7 @@ public class BcBandsTest extends AbstractBandsTest {
      * Test with codes that should require entries in the bc_doubleref band
      *
      * @throws Pack200Exception
-     * @throws IOException
+     * @throws IOException if an I/O error occurs.
      */
     @Test
     public void testBcDoubleRefBand() throws IOException, Pack200Exception {
@@ -349,7 +349,7 @@ public class BcBandsTest extends AbstractBandsTest {
      * Test with codes that should require entries in the bc_fieldref band
      *
      * @throws Pack200Exception
-     * @throws IOException
+     * @throws IOException if an I/O error occurs.
      */
     @Test
     public void testBcFieldRefBand() throws IOException, Pack200Exception {
@@ -365,7 +365,7 @@ public class BcBandsTest extends AbstractBandsTest {
      * Test with codes that should require entries in the bc_floatref band
      *
      * @throws Pack200Exception
-     * @throws IOException
+     * @throws IOException if an I/O error occurs.
      */
     @Test
     public void testBcFloatRefBand() throws IOException, Pack200Exception {
@@ -382,7 +382,7 @@ public class BcBandsTest extends AbstractBandsTest {
      * Test with codes that should require entries in the bc_imethodref band
      *
      * @throws Pack200Exception
-     * @throws IOException
+     * @throws IOException if an I/O error occurs.
      */
     @Test
     public void testBcIMethodRefBand() throws IOException, Pack200Exception {
@@ -399,7 +399,7 @@ public class BcBandsTest extends AbstractBandsTest {
      * Test with codes that should require entries in the bc_initrefref band
      *
      * @throws Pack200Exception
-     * @throws IOException
+     * @throws IOException if an I/O error occurs.
      */
     @Test
     @Disabled("TODO: Need to fix this test so it has enough data to pass.")
@@ -416,7 +416,7 @@ public class BcBandsTest extends AbstractBandsTest {
      * Test with codes that should require entries in the bc_intref band
      *
      * @throws Pack200Exception
-     * @throws IOException
+     * @throws IOException if an I/O error occurs.
      */
     @Test
     public void testBcIntRefBand() throws IOException, Pack200Exception {
@@ -433,7 +433,7 @@ public class BcBandsTest extends AbstractBandsTest {
      * Test with codes that should require entries in the bc_label band
      *
      * @throws Pack200Exception
-     * @throws IOException
+     * @throws IOException if an I/O error occurs.
      */
     @Test
     public void testBcLabelBand() throws IOException, Pack200Exception {
@@ -463,7 +463,7 @@ public class BcBandsTest extends AbstractBandsTest {
      * Test with codes that should require entries in the bc_local band
      *
      * @throws Pack200Exception
-     * @throws IOException
+     * @throws IOException if an I/O error occurs.
      */
     @Test
     public void testBcLocalBand() throws IOException, Pack200Exception {
@@ -479,7 +479,7 @@ public class BcBandsTest extends AbstractBandsTest {
      * Test with codes that should require entries in the bc_longref band
      *
      * @throws Pack200Exception
-     * @throws IOException
+     * @throws IOException if an I/O error occurs.
      */
     @Test
     public void testBcLongRefBand() throws IOException, Pack200Exception {
@@ -495,7 +495,7 @@ public class BcBandsTest extends AbstractBandsTest {
      * Test with codes that should require entries in the bc_methodref band
      *
      * @throws Pack200Exception
-     * @throws IOException
+     * @throws IOException if an I/O error occurs.
      */
     @Test
     public void testBcMethodRefBand() throws IOException, Pack200Exception {
@@ -511,7 +511,7 @@ public class BcBandsTest extends AbstractBandsTest {
      * Test with codes that should require entries in the bc_short band
      *
      * @throws Pack200Exception
-     * @throws IOException
+     * @throws IOException if an I/O error occurs.
      */
     @Test
     public void testBcShortBand() throws IOException, Pack200Exception {
@@ -529,7 +529,7 @@ public class BcBandsTest extends AbstractBandsTest {
      * Test with codes that should require entries in the bc_stringref band
      *
      * @throws Pack200Exception
-     * @throws IOException
+     * @throws IOException if an I/O error occurs.
      */
     @Test
     public void testBcStringRefBand() throws IOException, Pack200Exception {
@@ -546,7 +546,7 @@ public class BcBandsTest extends AbstractBandsTest {
      * Test with codes that should require entries in the bc_superfield band
      *
      * @throws Pack200Exception
-     * @throws IOException
+     * @throws IOException if an I/O error occurs.
      */
     @Test
     public void testBcSuperFieldBand() throws IOException, Pack200Exception {
@@ -563,7 +563,7 @@ public class BcBandsTest extends AbstractBandsTest {
      * Test with codes that should require entries in the bc_supermethod band
      *
      * @throws Pack200Exception
-     * @throws IOException
+     * @throws IOException if an I/O error occurs.
      */
     @Test
     @Disabled("TODO: Need to fix this test so it has enough data to pass.")
@@ -580,7 +580,7 @@ public class BcBandsTest extends AbstractBandsTest {
      * Test with codes that should require entries in the bc_thisfieldref band
      *
      * @throws Pack200Exception
-     * @throws IOException
+     * @throws IOException if an I/O error occurs.
      */
     @Test
     public void testBcThisFieldBand() throws IOException, Pack200Exception {
@@ -597,7 +597,7 @@ public class BcBandsTest extends AbstractBandsTest {
      * Test with codes that should require entries in the bc_thismethod band
      *
      * @throws Pack200Exception
-     * @throws IOException
+     * @throws IOException if an I/O error occurs.
      */
     @Test
     public void testBcThisMethodBand() throws IOException, Pack200Exception {
@@ -612,7 +612,7 @@ public class BcBandsTest extends AbstractBandsTest {
     /**
      * Test with multiple classes but single byte instructions
      *
-     * @throws IOException
+     * @throws IOException if an I/O error occurs.
      * @throws Pack200Exception
      */
     @Test
@@ -632,7 +632,7 @@ public class BcBandsTest extends AbstractBandsTest {
     /**
      * Test with multiple classes and multiple methods but single byte instructions
      *
-     * @throws IOException
+     * @throws IOException if an I/O error occurs.
      * @throws Pack200Exception
      */
     @Test
@@ -652,7 +652,7 @@ public class BcBandsTest extends AbstractBandsTest {
     /**
      * Test with single byte instructions that mean all other bands apart from bc_codes will be empty.
      *
-     * @throws IOException
+     * @throws IOException if an I/O error occurs.
      * @throws Pack200Exception
      */
     @Test

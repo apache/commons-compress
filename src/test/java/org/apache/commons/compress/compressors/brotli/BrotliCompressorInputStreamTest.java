@@ -48,7 +48,7 @@ public class BrotliCompressorInputStreamTest extends AbstractTest {
     /**
      * Tests bridge.
      *
-     * @throws IOException
+     * @throws IOException if an I/O error occurs.
      */
     @Test
     public void testBrotliDecode() throws IOException {

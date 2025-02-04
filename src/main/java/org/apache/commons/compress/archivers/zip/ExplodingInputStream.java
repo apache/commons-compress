@@ -169,7 +169,7 @@ final class ExplodingInputStream extends InputStream implements InputStreamStati
     /**
      * Reads the encoded binary trees and prepares the bit stream.
      *
-     * @throws IOException
+     * @throws IOException if an I/O error occurs.
      */
     private void init() throws IOException {
         if (bits == null) {

@@ -118,7 +118,7 @@ public abstract class AbstractTest extends AbstractTempDirTest {
      * @param outputStream
      * @param fileName
      * @param inputFile
-     * @throws IOException
+     * @throws IOException if an I/O error occurs.
      * @throws FileNotFoundException
      */
     private <O extends ArchiveOutputStream<E>, E extends ArchiveEntry> void addArchiveEntry(final O outputStream, final String fileName, final File inputFile)

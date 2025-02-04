@@ -135,7 +135,7 @@ public class ZstdCompressorInputStreamTest extends AbstractTest {
     /**
      * Test bridge works fine.
      *
-     * @throws IOException
+     * @throws IOException if an I/O error occurs.
      */
     @Test
     public void testZstdDecode() throws IOException {

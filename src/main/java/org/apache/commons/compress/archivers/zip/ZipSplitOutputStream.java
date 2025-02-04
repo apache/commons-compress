@@ -132,7 +132,7 @@ final class ZipSplitOutputStream extends RandomAccessOutputStream {
      *
      * @param zipSplitSegmentSuffixIndex
      * @return
-     * @throws IOException
+     * @throws IOException if an I/O error occurs.
      */
     private Path createNewSplitSegmentFile(final Integer zipSplitSegmentSuffixIndex) throws IOException {
         final Path newFile = getSplitSegmentFileName(zipSplitSegmentSuffixIndex);
@@ -146,7 +146,7 @@ final class ZipSplitOutputStream extends RandomAccessOutputStream {
     /**
      * The last ZIP split segment's suffix should be .zip
      *
-     * @throws IOException
+     * @throws IOException if an I/O error occurs.
      */
     private void finish() throws IOException {
         if (finished) {
@@ -185,7 +185,7 @@ final class ZipSplitOutputStream extends RandomAccessOutputStream {
     /**
      * Creates a new ZIP split segment and prepare to write to the new segment
      *
-     * @throws IOException
+     * @throws IOException if an I/O error occurs.
      */
     private void openNewSplitSegment() throws IOException {
         Path newFile;
@@ -221,8 +221,8 @@ final class ZipSplitOutputStream extends RandomAccessOutputStream {
      * </p>
      *
      * @param unsplittableContentSize
-     * @throws IllegalArgumentException
-     * @throws IOException
+     * @throws IllegalArgumentException if unsplittable content size is bigger than the split segment size.
+     * @throws IOException if an I/O error occurs.
      */
     public void prepareToWriteUnsplittableContent(final long unsplittableContentSize) throws IllegalArgumentException, IOException {
         if (unsplittableContentSize > this.splitSize) {
@@ -246,7 +246,7 @@ final class ZipSplitOutputStream extends RandomAccessOutputStream {
      * @param b   data to write
      * @param off offset of the start of data in param b
      * @param len the length of data to write
-     * @throws IOException
+     * @throws IOException if an I/O error occurs.
      */
     @Override
     public void write(final byte[] b, final int off, final int len) throws IOException {
@@ -316,7 +316,7 @@ final class ZipSplitOutputStream extends RandomAccessOutputStream {
     /**
      * Writes the ZIP split signature (0x08074B50) to the head of the first ZIP split segment
      *
-     * @throws IOException
+     * @throws IOException if an I/O error occurs.
      */
     private void writeZipSplitSignature() throws IOException {
         outputStream.write(ZipArchiveOutputStream.DD_SIG);

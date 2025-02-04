@@ -580,7 +580,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      * map entries, each one consisting of two numbers giving the offset and size of the data block it describes.
      * </p>
      *
-     * @throws IOException
+     * @throws IOException if an I/O error occurs.
      */
     private void paxHeaders() throws IOException {
         List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
@@ -838,7 +838,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      *
      * @param n bytes of data to skip
      * @return actual bytes of data skipped
-     * @throws IOException
+     * @throws IOException if an I/O error occurs.
      */
     private long skipSparse(final long n) throws IOException {
         if (sparseInputStreams == null || sparseInputStreams.isEmpty()) {

@@ -420,7 +420,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
      * Gets the record size being used by this stream's TarBuffer.
      *
      * @return The TarBuffer record size.
-     * @deprecated
+     * @deprecated TODO Add a comment.
      */
     @Deprecated
     public int getRecordSize() {

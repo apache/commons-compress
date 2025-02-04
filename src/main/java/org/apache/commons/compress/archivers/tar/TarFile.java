@@ -585,7 +585,7 @@ public class TarFile implements Closeable {
      * The map is padded with nulls to the nearest block boundary. The first number gives the number of entries in the map. Following are map entries, each one
      * consisting of two numbers giving the offset and size of the data block it describes.
      *
-     * @throws IOException
+     * @throws IOException if an I/O error occurs.
      */
     private void paxHeaders() throws IOException {
         List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();

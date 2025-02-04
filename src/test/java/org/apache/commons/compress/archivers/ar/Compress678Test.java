@@ -48,7 +48,7 @@ public class Compress678Test {
 
     /**
      * @param fileName
-     * @throws IOException
+     * @throws IOException if an I/O error occurs.
      * @throws FileNotFoundException
      */
     private void test_LONGFILE_BSD(final String fileName) throws IOException, FileNotFoundException {
