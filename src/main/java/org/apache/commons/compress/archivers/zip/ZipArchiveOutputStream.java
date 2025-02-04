@@ -141,8 +141,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
 
         private final String name;
 
-        private UnicodeExtraFieldPolicy(final String n) {
-            name = n;
+        private UnicodeExtraFieldPolicy(final String name) {
+            this.name = name;
         }
 
         @Override
