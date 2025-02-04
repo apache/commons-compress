@@ -32,6 +32,7 @@ import java.nio.file.Path;
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.compressors.xz.XZCompressorInputStream;
 import org.apache.commons.compress.compressors.xz.XZCompressorOutputStream;
+import org.apache.commons.compress.compressors.xz.XZUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -112,9 +113,9 @@ public class ZipCompressMethodXzTest extends AbstractTest {
             assertEquals(new String(text), new String(uncompressedData));
             try (InputStream fileInputStream = Files.newInputStream(file)) {
                 fileInputStream.skip(dataOffset);
-                final byte[] compressedData = new byte[4];
+                final byte[] compressedData = new byte[6];
                 fileInputStream.read(compressedData);
-                //assertTrue(ZstdUtils.matches(compressedData, 4));
+                assertTrue(XZUtils.matches(compressedData, 6));
             }
         }
     }
