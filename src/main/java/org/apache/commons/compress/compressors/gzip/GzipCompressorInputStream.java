@@ -72,8 +72,6 @@ import org.apache.commons.io.input.BoundedInputStream;
  */
 public class GzipCompressorInputStream extends CompressorInputStream implements InputStreamStatistics {
 
-    private static final IOConsumer<GzipCompressorInputStream> NOOP = IOConsumer.noop();
-
     // @formatter:off
     /**
      * Builds a new {@link GzipCompressorInputStream}.
@@ -192,6 +190,8 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
         }
     }
 
+    private static final IOConsumer<GzipCompressorInputStream> NOOP = IOConsumer.noop();
+
     /**
      * Constructs a new builder of {@link GzipCompressorInputStream}.
      *
@@ -260,6 +260,19 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
 
     private final IOConsumer<GzipCompressorInputStream> onMemberEnd;
 
+    @SuppressWarnings("resource") // caller closes
+    private GzipCompressorInputStream(final Builder builder) throws IOException {
+        countingStream = BoundedInputStream.builder().setInputStream(builder.getInputStream()).get();
+        // Mark support is strictly needed for concatenated files only,
+        // but it's simpler if it is always available.
+        in = countingStream.markSupported() ? countingStream : new BufferedInputStream(countingStream);
+        this.decompressConcatenated = builder.decompressConcatenated;
+        this.fileNameCharset = builder.fileNameCharset;
+        this.onMemberStart = builder.onMemberStart != null ? builder.onMemberStart : NOOP;
+        this.onMemberEnd = builder.onMemberEnd != null ? builder.onMemberEnd : NOOP;
+        init(true);
+    }
+
     /**
      * Constructs a new input stream that decompresses gzip-compressed data from the specified input stream.
      * <p>
@@ -289,19 +302,6 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
     @Deprecated
     public GzipCompressorInputStream(final InputStream inputStream, final boolean decompressConcatenated) throws IOException {
         this(builder().setInputStream(inputStream).setDecompressConcatenated(decompressConcatenated));
-    }
-
-    @SuppressWarnings("resource") // caller closes
-    private GzipCompressorInputStream(final Builder builder) throws IOException {
-        countingStream = BoundedInputStream.builder().setInputStream(builder.getInputStream()).get();
-        // Mark support is strictly needed for concatenated files only,
-        // but it's simpler if it is always available.
-        in = countingStream.markSupported() ? countingStream : new BufferedInputStream(countingStream);
-        this.decompressConcatenated = builder.decompressConcatenated;
-        this.fileNameCharset = builder.fileNameCharset;
-        this.onMemberStart = builder.onMemberStart != null ? builder.onMemberStart : NOOP;
-        this.onMemberEnd = builder.onMemberEnd != null ? builder.onMemberEnd : NOOP;
-        init(true);
     }
 
     /**
