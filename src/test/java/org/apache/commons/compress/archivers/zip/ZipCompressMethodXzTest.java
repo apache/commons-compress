@@ -60,7 +60,7 @@ public class ZipCompressMethodXzTest extends AbstractTest {
 
     @Test
     public void testXzInputStream() throws IOException {
-        // test-method-xz.zip was created with:
+        // The file test-method-xz.zip was created with:
         // "\Program Files\7-Zip\7z.exe" a test-method-xz.zip -mm=xz LICENSE.txt
         // The "mm" option specifies the compress method
         final Path file = getPath("org/apache/commons/compress/zip/test-method-xz.zip");
