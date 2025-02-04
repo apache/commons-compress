@@ -335,7 +335,8 @@ public abstract class ZipUtil {
         return method == ZipEntry.STORED || method == ZipMethod.UNSHRINKING.getCode()
                 || method == ZipMethod.IMPLODING.getCode() || method == ZipEntry.DEFLATED
                 || method == ZipMethod.ENHANCED_DEFLATED.getCode() || method == ZipMethod.BZIP2.getCode()
-                || ZipMethod.isZstd(method);
+                || ZipMethod.isZstd(method)
+                || method == ZipMethod.XZ.getCode();
     }
 
     /**

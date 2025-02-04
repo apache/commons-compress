@@ -57,6 +57,26 @@ public class ZipCompressMethodZstdTest extends AbstractTest {
         outputStream.flush();
     }
 
+    @Test
+    public void testZstdInputStream() throws IOException {
+        final Path file = getPath("COMPRESS-692/compress-692.zip");
+        try (ZipFile zip = ZipFile.builder().setFile(file.toFile()).get()) {
+            final ZipArchiveEntry entry = zip.getEntries().nextElement();
+            assertEquals("Unexpected first entry", "dolor.txt", entry.getName());
+            assertTrue("entry can't be read", zip.canReadEntryData(entry));
+            assertEquals("Unexpected method", ZipMethod.ZSTD.getCode(), entry.getMethod());
+            try (InputStream inputStream = zip.getInputStream(entry)) {
+                final long uncompSize = entry.getSize();
+                final byte[] buf = new byte[(int) uncompSize];
+                inputStream.read(buf);
+                final String uncompData = new String(buf);
+                assertTrue(uncompData.startsWith("dolor sit amet"));
+                assertTrue(uncompData.endsWith("ex ea commodo"));
+                assertEquals(6066, uncompData.length());
+            }
+        }
+    }
+
     @ParameterizedTest
     @EnumSource(names = { "ZSTD", "ZSTD_DEPRECATED" })
     public void testZstdMethod(final ZipMethod zipMethod) throws IOException {
@@ -80,26 +100,6 @@ public class ZipCompressMethodZstdTest extends AbstractTest {
             assertEquals(entry.getMethod(), zipMethod.getCode());
             final InputStream inputStream = zipFile.getInputStream(entry);
             assertTrue("Input stream must be a ZstdInputStream", inputStream instanceof ZstdCompressorInputStream);
-        }
-    }
-
-    @Test
-    public void testZstdInputStream() throws IOException {
-        final Path file = getPath("COMPRESS-692/compress-692.zip");
-        try (ZipFile zip = ZipFile.builder().setFile(file.toFile()).get()) {
-            final ZipArchiveEntry entry = zip.getEntries().nextElement();
-            assertEquals("Unexpected first entry", "dolor.txt", entry.getName());
-            assertTrue("entry can't be read", zip.canReadEntryData(entry));
-            assertEquals("Unexpected method", ZipMethod.ZSTD.getCode(), entry.getMethod());
-            try (InputStream inputStream = zip.getInputStream(entry)) {
-                final long uncompSize = entry.getSize();
-                final byte[] buf = new byte[(int) uncompSize];
-                inputStream.read(buf);
-                final String uncompData = new String(buf);
-                assertTrue(uncompData.startsWith("dolor sit amet"));
-                assertTrue(uncompData.endsWith("ex ea commodo"));
-                assertEquals(6066, uncompData.length());
-            }
         }
     }
 
