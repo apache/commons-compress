@@ -53,8 +53,6 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
 
     /**
      * An iterator over a collection of a specific {@link ArchiveEntry} type.
-     *
-     * @since 1.27.0
      */
     class ArchiveEntryIOIterator implements IOIterator<E> {
 
