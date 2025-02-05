@@ -33,7 +33,7 @@ import java.util.TreeSet;
  */
 public class IcBands extends BandSet {
 
-    static class IcTuple implements Comparable<IcTuple> {
+    static final class IcTuple implements Comparable<IcTuple> {
 
         protected CPClass C; // this class
         protected int F; // flags

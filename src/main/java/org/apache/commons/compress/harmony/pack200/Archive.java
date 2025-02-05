@@ -35,7 +35,7 @@ import java.util.zip.ZipEntry;
  */
 public class Archive {
 
-    static class PackingFile {
+    static final class PackingFile {
 
         private final String name;
         private byte[] contents;
@@ -89,7 +89,7 @@ public class Archive {
         }
     }
 
-    static class SegmentUnit {
+    static final class SegmentUnit {
 
         private final List<Pack200ClassReader> classList;
 

@@ -96,7 +96,7 @@ public class ZipFile implements Closeable {
      * Lock-free implementation of BoundedInputStream. The implementation uses positioned reads on the underlying archive file channel and therefore performs
      * significantly faster in concurrent environment.
      */
-    private static class BoundedFileChannelInputStream extends BoundedArchiveInputStream {
+    private static final class BoundedFileChannelInputStream extends BoundedArchiveInputStream {
         private final FileChannel archive;
 
         BoundedFileChannelInputStream(final long start, final long remaining, final FileChannel archive) {

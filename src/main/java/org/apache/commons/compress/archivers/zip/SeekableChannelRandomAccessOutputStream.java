@@ -26,7 +26,7 @@ import java.nio.channels.SeekableByteChannel;
  * {@link RandomAccessOutputStream} implementation for SeekableByteChannel.
  */
 // Keep package-private; consider for Apache Commons IO.
-class SeekableChannelRandomAccessOutputStream extends RandomAccessOutputStream {
+final class SeekableChannelRandomAccessOutputStream extends RandomAccessOutputStream {
 
     private final SeekableByteChannel channel;
 

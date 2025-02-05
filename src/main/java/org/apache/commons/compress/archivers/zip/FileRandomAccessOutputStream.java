@@ -30,7 +30,7 @@ import java.util.Objects;
  * {@link RandomAccessOutputStream} implementation based on a file.
  */
 // Keep package-private; consider for Apache Commons IO.
-class FileRandomAccessOutputStream extends RandomAccessOutputStream {
+final class FileRandomAccessOutputStream extends RandomAccessOutputStream {
 
     private final FileChannel channel;
 

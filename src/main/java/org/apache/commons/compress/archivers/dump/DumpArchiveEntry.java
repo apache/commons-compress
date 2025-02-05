@@ -268,7 +268,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     /**
      * Archive entry as stored on tape. There is one TSH for (at most) every 512k in the file.
      */
-    static class TapeSegmentHeader {
+    static final class TapeSegmentHeader {
         private DumpArchiveConstants.SEGMENT_TYPE type;
         private int volume;
         private int ino;

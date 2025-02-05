@@ -27,7 +27,7 @@ import java.nio.channels.SeekableByteChannel;
  * IO utilities for Zip operations.
  */
 // Keep package-private; consider for Apache Commons IO.
-class ZipIoUtil {
+final class ZipIoUtil {
 
     /**
      * Writes full buffer to channel.
