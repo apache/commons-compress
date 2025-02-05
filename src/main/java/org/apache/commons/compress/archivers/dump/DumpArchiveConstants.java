@@ -48,13 +48,18 @@ public final class DumpArchiveConstants {
          */
         LZO(2);
 
+        /**
+         * Finds the matching enumeration value for the given code.
+         *
+         * @param code a code.
+         * @return a value, never null.
+         */
         public static COMPRESSION_TYPE find(final int code) {
-            for (final COMPRESSION_TYPE t : values()) {
-                if (t.code == code) {
-                    return t;
+            for (final COMPRESSION_TYPE e : values()) {
+                if (e.code == code) {
+                    return e;
                 }
             }
-
             return UNKNOWN;
         }
 
@@ -100,13 +105,18 @@ public final class DumpArchiveConstants {
          */
         CLRI(6);
 
+        /**
+         * Finds the matching enumeration value for the given code.
+         *
+         * @param code a code.
+         * @return a value, or null if not found.
+         */
         public static SEGMENT_TYPE find(final int code) {
-            for (final SEGMENT_TYPE t : values()) {
-                if (t.code == code) {
-                    return t;
+            for (final SEGMENT_TYPE e : values()) {
+                if (e.code == code) {
+                    return e;
                 }
             }
-
             return null;
         }
 
@@ -117,19 +127,52 @@ public final class DumpArchiveConstants {
         }
     }
 
+    /**
+     * TP_SIZE value {@value}.
+     */
     public static final int TP_SIZE = 1024;
+
+    /**
+     * NTREC value {@value}.
+     */
     public static final int NTREC = 10;
+
+    /**
+     * HIGH_DENSITY_NTREC value {@value}.
+     */
     public static final int HIGH_DENSITY_NTREC = 32;
+
+    /**
+     * OFS_MAGIC value {@value}.
+     */
     public static final int OFS_MAGIC = 60011;
+
+    /**
+     * NFS_MAGIC value {@value}.
+     */
     public static final int NFS_MAGIC = 60012;
+
+    /**
+     * FS_UFS2_MAGIC value {@value}.
+     */
     public static final int FS_UFS2_MAGIC = 0x19540119;
+
+    /**
+     * CHECKSUM value {@value}.
+     */
     public static final int CHECKSUM = 84446;
 
+    /**
+     * LBLSIZE value {@value}.
+     */
     public static final int LBLSIZE = 16;
 
+    /**
+     * NAMELEN value {@value}.
+     */
     public static final int NAMELEN = 64;
 
-    /* do not instantiate */
+    /** Do not instantiate. */
     private DumpArchiveConstants() {
     }
 }

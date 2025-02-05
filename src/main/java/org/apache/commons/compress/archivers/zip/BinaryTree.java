@@ -171,7 +171,7 @@ final class BinaryTree {
     /**
      * Reads a value from the specified bit stream.
      *
-     * @param stream
+     * @param stream The data source.
      * @return the value decoded, or -1 if the end of the stream is reached
      * @throws IOException on error.
      */

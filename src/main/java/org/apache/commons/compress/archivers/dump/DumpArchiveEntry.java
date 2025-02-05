@@ -239,19 +239,22 @@ public class DumpArchiveEntry implements ArchiveEntry {
          */
         WORLD_EXEC(00001);
 
+        /**
+         * Finds a matching set of enumeration values for the given code.
+         *
+         * @param code a code.
+         * @return a Set of values, never null.
+         */
         public static Set<PERMISSION> find(final int code) {
             final Set<PERMISSION> set = new HashSet<>();
-
             for (final PERMISSION p : values()) {
                 if ((code & p.code) == p.code) {
                     set.add(p);
                 }
             }
-
             if (set.isEmpty()) {
                 return Collections.emptySet();
             }
-
             return EnumSet.copyOf(set);
         }
 
@@ -352,15 +355,19 @@ public class DumpArchiveEntry implements ArchiveEntry {
          */
         UNKNOWN(15);
 
+        /**
+         * Finds a matching enumeration value for the given code.
+         *
+         * @param code a code.
+         * @return a value, never null.
+         */
         public static TYPE find(final int code) {
             TYPE type = UNKNOWN;
-
             for (final TYPE t : values()) {
                 if (code == t.code) {
                     type = t;
                 }
             }
-
             return type;
         }
 

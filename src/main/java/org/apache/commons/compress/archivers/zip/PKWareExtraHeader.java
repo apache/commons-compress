@@ -146,14 +146,14 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
         private final int code;
 
         /**
-         * private constructor for enum style class.
+         * Constructs a new instance.
          */
         EncryptionAlgorithm(final int code) {
             this.code = code;
         }
 
         /**
-         * the algorithm id.
+         * Gets the algorithm ID.
          *
          * @return the PKWare AlgorithmId
          */
@@ -232,14 +232,14 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
         private final int code;
 
         /**
-         * private constructor for enum style class.
+         * Constructs a new instance.
          */
         HashAlgorithm(final int code) {
             this.code = code;
         }
 
         /**
-         * the hash algorithm ID.
+         * Gets the hash algorithm ID.
          *
          * @return the PKWare hashAlg
          */
