@@ -39,6 +39,23 @@ import org.objectweb.asm.Type;
 
 /**
  * A Pack200 archive consists of one or more Segments.
+ * <p>
+ * Format:
+ * </p>
+ * <pre>
+ *   pack200_archive:
+ *      (pack200_segment)+
+ *      
+ *   pack200_segment:
+ *      segment_header
+ *      *band_headers :BYTE1
+ *      cp_bands
+ *      attr_definition_bands
+ *      ic_bands
+ *      class_bands
+ *      bc_bands
+ *      file_bands
+ * </pre>
  */
 public class Segment extends ClassVisitor {
 

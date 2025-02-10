@@ -37,12 +37,11 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.NewAttribute;
 import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
 
 /**
- * Bytecode bands
+ * Bytecode bands.
  */
 public class BcBands extends BandSet {
 
-    // The bytecodes for each method in each class as they come (i.e. in their
-    // packed format)
+    /** The bytecodes for each method in each class as they come (i.e. in their packed format). */
     private byte[][][] methodByteCodePacked;
 
     // The bands
@@ -75,7 +74,9 @@ public class BcBands extends BandSet {
     private List<Integer> wideByteCodes;
 
     /**
-     * @param segment TODO
+     * Constructs a new instance for the given segment.
+     *
+     * @param segment The segment.
      */
     public BcBands(final Segment segment) {
         super(segment);
