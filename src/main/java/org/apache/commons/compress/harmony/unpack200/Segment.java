@@ -73,7 +73,7 @@ import org.apache.commons.io.input.BoundedInputStream;
  * <pre>
  *   pack200_archive:
  *      (pack200_segment)+
- *      
+ *
  *   pack200_segment:
  *      segment_header
  *      *band_headers :BYTE1
