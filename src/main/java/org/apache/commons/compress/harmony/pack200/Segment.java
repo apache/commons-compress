@@ -45,7 +45,7 @@ import org.objectweb.asm.Type;
  * <pre>
  *   pack200_archive:
  *      (pack200_segment)+
- *      
+ *
  *   pack200_segment:
  *      segment_header
  *      *band_headers :BYTE1
