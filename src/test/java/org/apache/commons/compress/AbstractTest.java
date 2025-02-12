@@ -147,7 +147,7 @@ public abstract class AbstractTest extends AbstractTempDirTest {
      * @param inputStream
      * @param expected    list of expected entries or {@code null} if no check of names desired
      * @param cleanUp     Cleans up resources if true
-     * @return returns the created result file if cleanUp = false, or null otherwise
+     * @return the created result file if cleanUp = false, or null otherwise
      * @throws Exception
      */
     protected File checkArchiveContent(final ArchiveInputStream<?> inputStream, final List<String> expected, final boolean cleanUp) throws Exception {
@@ -312,7 +312,7 @@ public abstract class AbstractTest extends AbstractTempDirTest {
      * Override this method to change what is to be compared in the List. For example, size + name instead of just name.
      *
      * @param entry
-     * @return returns the entry name
+     * @return the entry name
      */
     protected String getExpectedString(final ArchiveEntry entry) {
         return entry.getName();
