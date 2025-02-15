@@ -203,7 +203,7 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
     /**
      * Gets the current number of bytes read from this stream.
      *
-     * @return the number of read .
+     * @return the number of read.
      * @deprecated this method may yield wrong results for large archives, use {@link #getBytesRead()} instead.
      */
     @Deprecated

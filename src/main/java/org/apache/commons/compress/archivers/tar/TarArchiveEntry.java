@@ -1570,7 +1570,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
          *
          * star files use additional members of which we use SCHILY.filetype in order to detect star sparse files.
          *
-         * If called from addExtraPaxHeader, these additional headers must be already present .
+         * If called from addExtraPaxHeader, these additional headers must be already present.
          */
         switch (key) {
         case "path":
