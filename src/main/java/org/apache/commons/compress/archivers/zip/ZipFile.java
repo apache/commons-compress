@@ -1533,9 +1533,7 @@ public class ZipFile implements Closeable {
         try {
             ze.setCentralDirectoryExtra(cdExtraData);
         } catch (final RuntimeException e) {
-            final ZipException z = new ZipException("Invalid extra data in entry " + ze.getName());
-            z.initCause(e);
-            throw z;
+            throw ZipUtil.newZipException("Invalid extra data in entry " + ze.getName(), e);
         }
 
         setSizesAndOffsetFromZip64Extra(ze);
@@ -1575,11 +1573,8 @@ public class ZipFile implements Closeable {
             try {
                 ze.setExtra(localExtraData);
             } catch (final RuntimeException e) {
-                final ZipException z = new ZipException("Invalid extra data in entry " + ze.getName());
-                z.initCause(e);
-                throw z;
+                throw ZipUtil.newZipException("Invalid extra data in entry " + ze.getName(), e);
             }
-
             if (entriesWithoutUTF8Flag.containsKey(ze)) {
                 final NameAndComment nc = entriesWithoutUTF8Flag.get(ze);
                 ZipUtil.setNameAndCommentFromExtraFields(ze, nc.name, nc.comment);

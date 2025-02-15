@@ -193,8 +193,7 @@ public class ExtraFieldUtils {
             }
             return ze;
         } catch (final ArrayIndexOutOfBoundsException e) {
-            throw (ZipException) new ZipException("Failed to parse corrupt ZIP extra field of type " + Integer.toHexString(ze.getHeaderId().getValue()))
-                    .initCause(e);
+            throw ZipUtil.newZipException("Failed to parse corrupt ZIP extra field of type " + Integer.toHexString(ze.getHeaderId().getValue()), e);
         }
     }
 
@@ -326,7 +325,7 @@ public class ExtraFieldUtils {
                 v.add(Objects.requireNonNull(parsingBehavior.fill(ze, data, start + WORD, length, local), "fill must not return null"));
                 start += length + WORD;
             } catch (final InstantiationException | IllegalAccessException e) {
-                throw (ZipException) new ZipException(e.getMessage()).initCause(e);
+                throw ZipUtil.newZipException(e.getMessage(), e);
             }
         }
 

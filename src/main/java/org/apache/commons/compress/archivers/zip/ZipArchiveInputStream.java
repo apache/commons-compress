@@ -736,9 +736,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
         try {
             current.entry.setExtra(extraData);
         } catch (final RuntimeException ex) {
-            final ZipException z = new ZipException("Invalid extra data in entry " + current.entry.getName());
-            z.initCause(ex);
-            throw z;
+            throw ZipUtil.newZipException("Invalid extra data in entry " + current.entry.getName(), ex);
         }
 
         if (!hasUTF8Flag && useUnicodeExtraFields) {
@@ -1089,7 +1087,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
             try {
                 read = inf.inflate(buffer, offset, length);
             } catch (final DataFormatException e) {
-                throw (IOException) new ZipException(e.getMessage()).initCause(e);
+                throw (IOException) ZipUtil.newZipException(e.getMessage(), e);
             }
         } while (read == 0 && inf.needsInput());
         return read;

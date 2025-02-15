@@ -28,6 +28,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
 
 /**
  * Utility class for handling DOS and Java time conversions.
@@ -260,6 +261,17 @@ public abstract class ZipUtil {
             l = adjustToLong((int) l);
         }
         return BigInteger.valueOf(l);
+    }
+
+    /**
+     * Constructs a new ZipException.
+     *
+     * @param message the detail message.
+     * @param cause   throwable The cause of this Throwable.
+     * @return a new ZipException.
+     */
+    static ZipException newZipException(final String message, final Throwable cause) {
+        return (ZipException) new ZipException(message).initCause(cause);
     }
 
     /**
