@@ -158,10 +158,8 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream implem
     @Override
     public void close() throws IOException {
         try {
-            if (currentBlock != null) {
-                currentBlock.close();
-                currentBlock = null;
-            }
+            org.apache.commons.io.IOUtils.close(currentBlock);
+            currentBlock = null;
         } finally {
             inputStream.close();
         }
