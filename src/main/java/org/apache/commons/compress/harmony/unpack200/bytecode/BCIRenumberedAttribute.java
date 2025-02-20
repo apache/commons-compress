@@ -32,6 +32,11 @@ public abstract class BCIRenumberedAttribute extends Attribute {
 
     protected boolean renumbered;
 
+    /**
+     * Constructs a new instance for an attribute name.
+     *
+     * @param attributeName an attribute name.
+     */
     public BCIRenumberedAttribute(final CPUTF8 attributeName) {
         super(attributeName);
     }

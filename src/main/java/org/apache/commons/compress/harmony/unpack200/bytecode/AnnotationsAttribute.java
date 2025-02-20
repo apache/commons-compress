@@ -89,6 +89,9 @@ public abstract class AnnotationsAttribute extends Attribute {
         }
     }
 
+    /**
+     * Pairs a tag and value.
+     */
     public static class ElementValue {
 
         private final Object value;
@@ -97,6 +100,12 @@ public abstract class AnnotationsAttribute extends Attribute {
         // resolved value index if it's a constant
         private int constantValueIndex = -1;
 
+        /**
+         * Constructs a new instance.
+         *
+         * @param tag a tag.
+         * @param value a value.
+         */
         public ElementValue(final int tag, final Object value) {
             this.tag = tag;
             this.value = value;
@@ -122,6 +131,11 @@ public abstract class AnnotationsAttribute extends Attribute {
             return entries;
         }
 
+        /**
+         * Gets the length.
+         *
+         * @return the length.
+         */
         public int getLength() {
             switch (tag) {
             case 'B':
@@ -192,6 +206,11 @@ public abstract class AnnotationsAttribute extends Attribute {
         }
     }
 
+    /**
+     * Constructs a new instance for an attribute name.
+     *
+     * @param attributeName an attribute name.
+     */
     public AnnotationsAttribute(final CPUTF8 attributeName) {
         super(attributeName);
     }

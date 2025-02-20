@@ -37,6 +37,11 @@ public class ConstantValueAttribute extends Attribute {
 
     private final ClassFileEntry entry;
 
+    /**
+     * Constructs a new instance.
+     *
+     * @param entry an entry.
+     */
     public ConstantValueAttribute(final ClassFileEntry entry) {
         super(attributeName);
         this.entry = Objects.requireNonNull(entry, "entry");

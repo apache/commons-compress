@@ -31,6 +31,11 @@ public abstract class Attribute extends ClassFileEntry {
 
     private int attributeNameIndex;
 
+    /**
+     * Constructs a new instance for an attribute name.
+     *
+     * @param attributeName an attribute name.
+     */
     public Attribute(final CPUTF8 attributeName) {
         this.attributeName = attributeName;
     }
@@ -58,6 +63,11 @@ public abstract class Attribute extends ClassFileEntry {
         return attributeName;
     }
 
+    /**
+     * Gets the length.
+     *
+     * @return the length.
+     */
     protected abstract int getLength();
 
     /**

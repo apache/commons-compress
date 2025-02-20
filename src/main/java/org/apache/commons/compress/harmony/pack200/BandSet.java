@@ -54,6 +54,13 @@ public abstract class BandSet {
         // best so far
         private Codec betterCodec;
 
+        /**
+         * Constructs a new instance.
+         */
+        public BandAnalysisResults() {
+            // empty
+        }
+
     }
 
     /**

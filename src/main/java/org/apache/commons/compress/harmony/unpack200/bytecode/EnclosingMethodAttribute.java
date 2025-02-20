@@ -38,6 +38,12 @@ public class EnclosingMethodAttribute extends Attribute {
 
     private final CPNameAndType method;
 
+    /**
+     * Constructs a new instance.
+     *
+     * @param cpClass a constant pool class.
+     * @param method a constant pool name and type.
+     */
     public EnclosingMethodAttribute(final CPClass cpClass, final CPNameAndType method) {
         super(attributeName);
         this.cpClass = cpClass;

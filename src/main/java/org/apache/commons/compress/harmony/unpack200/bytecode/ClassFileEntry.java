@@ -34,6 +34,11 @@ public abstract class ClassFileEntry {
     @Override
     public abstract boolean equals(Object arg0);
 
+    /**
+     * Returns an empty array.
+     *
+     * @return an empty array.
+     */
     protected ClassFileEntry[] getNestedClassFileEntries() {
         return NONE;
     }

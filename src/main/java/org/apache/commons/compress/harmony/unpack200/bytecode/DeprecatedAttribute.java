@@ -32,6 +32,9 @@ public class DeprecatedAttribute extends Attribute {
         attributeName = cpUTF8Value;
     }
 
+    /**
+     * Constructs a new instance.
+     */
     public DeprecatedAttribute() {
         super(attributeName);
     }

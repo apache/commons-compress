@@ -96,7 +96,7 @@ public class ArjArchiveEntry implements ArchiveEntry {
          * Constant value {@value}.
          */
         public static final int WIN32 = 11;
-        
+
         /**
          * Constructs a new instance.
          *
