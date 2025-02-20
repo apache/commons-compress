@@ -67,6 +67,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Fix Javadoc and names in the org.apache.commons.compress.compressors.z package to specify kibibyte scale in memory limits.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Refactor LZ77Compressor block classes to reduce duplication.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Package-private and private classes can be final.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">Deprecate ArjArchiveEntry.HostOs.HostOs().</action>
       <!-- ADD -->
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add GzipParameters.getModificationInstant().</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add GzipParameters.setModificationInstant(Instant).</action>
