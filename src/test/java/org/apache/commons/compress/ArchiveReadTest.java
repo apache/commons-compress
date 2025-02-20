@@ -45,37 +45,37 @@ import org.junit.jupiter.params.provider.MethodSource;
  */
 public class ArchiveReadTest extends AbstractTest {
 
-    private static final ClassLoader CLASSLOADER = ArchiveReadTest.class.getClassLoader();
-    private static final File ARCDIR;
-    private static final ArrayList<String> FILELIST = new ArrayList<>();
+    private static final ClassLoader CLASS_LOADER = ArchiveReadTest.class.getClassLoader();
+    private static final File ARC_DIR;
+    private static final ArrayList<String> FILE_LIST = new ArrayList<>();
 
     static {
         try {
-            ARCDIR = new File(CLASSLOADER.getResource("archives").toURI());
+            ARC_DIR = new File(CLASS_LOADER.getResource("archives").toURI());
         } catch (final URISyntaxException e) {
             throw new AssertionError(e);
         }
     }
 
     public static Stream<Arguments> data() {
-        assertTrue(ARCDIR.exists());
+        assertTrue(ARC_DIR.exists());
         final Collection<Arguments> params = new ArrayList<>();
-        for (final String fileName : ARCDIR.list((dir, name) -> !name.endsWith(".txt"))) {
-            params.add(Arguments.of(new File(ARCDIR, fileName)));
+        for (final String fileName : ARC_DIR.list((dir, name) -> !name.endsWith(".txt"))) {
+            params.add(Arguments.of(new File(ARC_DIR, fileName)));
         }
         return params.stream();
     }
 
     @BeforeAll
     public static void setUpFileList() throws Exception {
-        assertTrue(ARCDIR.exists());
-        final File listing = new File(ARCDIR, "files.txt");
+        assertTrue(ARC_DIR.exists());
+        final File listing = new File(ARC_DIR, "files.txt");
         assertTrue(listing.canRead(), "files.txt is readable");
         try (BufferedReader br = new BufferedReader(Files.newBufferedReader(listing.toPath()))) {
             String line;
             while ((line = br.readLine()) != null) {
                 if (!line.startsWith("#")) {
-                    FILELIST.add(line);
+                    FILE_LIST.add(line);
                 }
             }
         }
@@ -91,7 +91,7 @@ public class ArchiveReadTest extends AbstractTest {
     @MethodSource("data")
     public void testArchive(final File file) throws Exception {
         @SuppressWarnings("unchecked") // fileList is correct type already
-        final ArrayList<String> expected = (ArrayList<String>) FILELIST.clone();
+        final ArrayList<String> expected = (ArrayList<String>) FILE_LIST.clone();
         assertDoesNotThrow(() -> checkArchiveContent(file, expected), "Problem checking " + file);
     }
 }
