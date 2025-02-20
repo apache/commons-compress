@@ -50,13 +50,13 @@ import org.junit.jupiter.params.provider.MethodSource;
  */
 public class LongSymLinkTest extends AbstractTest {
 
-    private static final ClassLoader CLASSLOADER = LongSymLinkTest.class.getClassLoader();
-    private static final File ARCDIR;
-    private static final ArrayList<String> FILELIST = new ArrayList<>();
+    private static final ClassLoader CLASS_LOADER = LongSymLinkTest.class.getClassLoader();
+    private static final File ARC_DIR;
+    private static final ArrayList<String> FILE_LIST = new ArrayList<>();
 
     static {
         try {
-            ARCDIR = new File(CLASSLOADER.getResource("longsymlink").toURI());
+            ARC_DIR = new File(CLASS_LOADER.getResource("longsymlink").toURI());
         } catch (final URISyntaxException e) {
             throw new AssertionError(e);
         }
@@ -64,22 +64,22 @@ public class LongSymLinkTest extends AbstractTest {
 
     public static Stream<Arguments> data() {
         final Collection<Arguments> params = new ArrayList<>();
-        for (final String fileName : ARCDIR.list((dir, name) -> !name.endsWith(".txt"))) {
-            params.add(Arguments.of(new File(ARCDIR, fileName)));
+        for (final String fileName : ARC_DIR.list((dir, name) -> !name.endsWith(".txt"))) {
+            params.add(Arguments.of(new File(ARC_DIR, fileName)));
         }
         return params.stream();
     }
 
     @BeforeAll
     public static void setUpFileList() throws Exception {
-        assertTrue(ARCDIR.exists());
-        final File listing = new File(ARCDIR, "files.txt");
+        assertTrue(ARC_DIR.exists());
+        final File listing = new File(ARC_DIR, "files.txt");
         assertTrue(listing.canRead(), "files.txt is readable");
         try (BufferedReader br = new BufferedReader(Files.newBufferedReader(listing.toPath()))) {
             String line;
             while ((line = br.readLine()) != null) {
                 if (!line.startsWith("#")) {
-                    FILELIST.add(line);
+                    FILE_LIST.add(line);
                 }
             }
         }
@@ -100,7 +100,7 @@ public class LongSymLinkTest extends AbstractTest {
     @MethodSource("data")
     public void testArchive(final File file) throws Exception {
         @SuppressWarnings("unchecked") // fileList is of correct type
-        final ArrayList<String> expected = (ArrayList<String>) FILELIST.clone();
+        final ArrayList<String> expected = (ArrayList<String>) FILE_LIST.clone();
         final String name = file.getName();
         if ("minotaur.jar".equals(name) || "minotaur-0.jar".equals(name)) {
             expected.add("META-INF/");
@@ -125,7 +125,7 @@ public class LongSymLinkTest extends AbstractTest {
                 assertInstanceOf(ArArchiveInputStream.class, ais);
                 // CPIO does not store directories or directory names
                 expected.clear();
-                for (final String ent : FILELIST) {
+                for (final String ent : FILE_LIST) {
                     if (!ent.endsWith("/")) {
                         // not a directory
                         final int lastSlash = ent.lastIndexOf('/');
