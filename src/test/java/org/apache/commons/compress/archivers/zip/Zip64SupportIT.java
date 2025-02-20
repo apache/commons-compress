@@ -45,6 +45,8 @@ import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.io.RandomAccessFileMode;
 import org.junit.jupiter.api.Test;
 
+import shaded.org.apache.commons.io.IOUtils;
+
 /**
  * Tests {@link ZipFile} Zip64 support.
  */
@@ -271,9 +273,7 @@ public class Zip64SupportIT {
                 zos.destroy();
             } finally {
                 try {
-                    if (os != null) {
-                        os.close();
-                    }
+                    IOUtils.close(os);
                     AbstractTest.forceDelete(f);
                 } finally {
                     if (dir != null) {
@@ -2049,9 +2049,7 @@ public class Zip64SupportIT {
             f = write5GBZerosFile("writeAndRead5GBOfZerosUsingZipFile");
             read5GBOfZerosUsingZipFileImpl(f, "5GB_of_Zeros");
         } finally {
-            if (f != null) {
-                AbstractTest.forceDelete(f);
-            }
+            AbstractTest.forceDelete(f);
         }
     }
 
