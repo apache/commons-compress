@@ -28,6 +28,7 @@ import java.util.jar.JarOutputStream;
 
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.java.util.jar.Pack200;
+import org.apache.commons.io.IOUtils;
 
 /**
  * An input stream that decompresses from the Pack200 format to be read as any other stream.
@@ -201,9 +202,7 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
         try {
             abstractStreamBridge.stop();
         } finally {
-            if (originalInputStream != null) {
-                originalInputStream.close();
-            }
+            IOUtils.close(originalInputStream);
         }
     }
 
@@ -258,6 +257,6 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
     @SuppressWarnings("resource") // Does not allocate
     @Override
     public long skip(final long count) throws IOException {
-        return org.apache.commons.io.IOUtils.skip(getInputStream(), count);
+        return IOUtils.skip(getInputStream(), count);
     }
 }
