@@ -97,6 +97,13 @@ public class Archiver {
     public static final EnumSet<FileVisitOption> EMPTY_FileVisitOption = EnumSet.noneOf(FileVisitOption.class);
 
     /**
+     * Constructs a new instance.
+     */
+    public Archiver() {
+        // empty
+    }
+
+    /**
      * Creates an archive {@code target} by recursively including all files and directories in {@code directory}.
      *
      * @param target    the stream to write the new archive to.
