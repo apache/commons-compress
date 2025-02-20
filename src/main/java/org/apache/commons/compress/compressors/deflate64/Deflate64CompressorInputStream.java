@@ -24,6 +24,7 @@ import java.io.InputStream;
 
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.utils.InputStreamStatistics;
+import org.apache.commons.io.IOUtils;
 
 /**
  * Deflate64 decompressor.
@@ -61,16 +62,14 @@ public class Deflate64CompressorInputStream extends CompressorInputStream implem
         try {
             closeDecoder();
         } finally {
-            if (originalStream != null) {
-                originalStream.close();
-                originalStream = null;
-            }
+            IOUtils.close(originalStream);
+            originalStream = null;
         }
     }
 
     private void closeDecoder() {
         final Closeable c = decoder;
-        org.apache.commons.io.IOUtils.closeQuietly(c);
+        IOUtils.closeQuietly(c);
         decoder = null;
     }
 
