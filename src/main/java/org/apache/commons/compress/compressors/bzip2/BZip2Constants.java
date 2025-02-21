@@ -24,15 +24,54 @@ package org.apache.commons.compress.compressors.bzip2;
  */
 interface BZip2Constants {
 
+    /**
+     * Constant {@value}.
+     */
     int BASEBLOCKSIZE = 100_000;
+
+    /**
+     * Constant {@value}.
+     */
     int MAX_ALPHA_SIZE = 258;
+
+    /**
+     * Constant {@value}.
+     */
     int MAX_CODE_LEN = 23;
+
+    /**
+     * Constant {@value}.
+     */
     int RUNA = 0;
+
+    /**
+     * Constant {@value}.
+     */
     int RUNB = 1;
+
+    /**
+     * Constant {@value}.
+     */
     int N_GROUPS = 6;
+
+    /**
+     * Constant {@value}.
+     */
     int G_SIZE = 50;
+
+    /**
+     * Constant {@value}.
+     */
     int N_ITERS = 4;
+
+    /**
+     * Constant {@value}.
+     */
     int MAX_SELECTORS = 2 + 900_000 / G_SIZE;
+
+    /**
+     * Constant {@value}.
+     */
     int NUM_OVERSHOOT_BYTES = 20;
 
 }

@@ -26,6 +26,12 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
  */
 public class WideForm extends VariableInstructionForm {
 
+    /**
+     * Constructs a new instance with the specified opcode, name, operandType and rewrite.
+     *
+     * @param opcode  index corresponding to the opcode's value.
+     * @param name    String printable name of the opcode.
+     */
     public WideForm(final int opcode, final String name) {
         super(opcode, name);
     }

@@ -24,6 +24,12 @@ package org.apache.commons.compress.harmony.unpack200.bytecode.forms;
  */
 public abstract class VariableInstructionForm extends ByteCodeForm {
 
+    /**
+     * Constructs a new instance with the specified opcode, name, operandType and rewrite.
+     *
+     * @param opcode  index corresponding to the opcode's value.
+     * @param name    String printable name of the opcode.
+     */
     public VariableInstructionForm(final int opcode, final String name) {
         super(opcode, name);
     }

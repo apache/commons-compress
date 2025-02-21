@@ -27,10 +27,25 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
  */
 public class NarrowClassRefForm extends ClassRefForm {
 
+    /**
+     * Constructs a new instance with the specified opcode, name, operandType and rewrite.
+     *
+     * @param opcode  index corresponding to the opcode's value.
+     * @param name    String printable name of the opcode.
+     * @param rewrite Operand positions (which will later be rewritten in ByteCodes) are indicated by -1.
+     */
     public NarrowClassRefForm(final int opcode, final String name, final int[] rewrite) {
         super(opcode, name, rewrite);
     }
 
+    /**
+     * Constructs a new instance with the specified opcode, name, operandType and rewrite.
+     *
+     * @param opcode  index corresponding to the opcode's value.
+     * @param name    String printable name of the opcode.
+     * @param rewrite Operand positions (which will later be rewritten in ByteCodes) are indicated by -1.
+     * @param widened TODO.
+     */
     public NarrowClassRefForm(final int opcode, final String name, final int[] rewrite, final boolean widened) {
         super(opcode, name, rewrite, widened);
     }

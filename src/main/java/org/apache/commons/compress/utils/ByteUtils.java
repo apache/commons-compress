@@ -72,6 +72,11 @@ public final class ByteUtils {
     public static class InputStreamByteSupplier implements ByteSupplier {
         private final InputStream is;
 
+        /**
+         * Constructs a new instance.
+         *
+         * @param is an input stream.
+         */
         public InputStreamByteSupplier(final InputStream is) {
             this.is = is;
         }
@@ -90,6 +95,11 @@ public final class ByteUtils {
     public static class OutputStreamByteConsumer implements ByteConsumer {
         private final OutputStream os;
 
+        /**
+         * Constructs a new instance.
+         *
+         * @param os an output stream.
+         */
         public OutputStreamByteConsumer(final OutputStream os) {
             this.os = os;
         }

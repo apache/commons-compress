@@ -316,8 +316,8 @@ public abstract class ByteCodeForm {
     /**
      * Constructs a new instance with the specified opcode and name. Assume no rewrite.
      *
-     * @param opcode int corresponding to the opcode's value.
-     * @param name   String printable name of the opcode.
+     * @param opcode index corresponding to the opcode's value.
+     * @param name   printable name of the opcode.
      */
     public ByteCodeForm(final int opcode, final String name) {
         this(opcode, name, new int[] { opcode });
@@ -326,9 +326,9 @@ public abstract class ByteCodeForm {
     /**
      * Constructs a new instance with the specified opcode, name, operandType and rewrite.
      *
-     * @param opcode  int corresponding to the opcode's value.
+     * @param opcode  index corresponding to the opcode's value.
      * @param name    String printable name of the opcode.
-     * @param rewrite int[] Array of ints. Operand positions (which will later be rewritten in ByteCodes) are indicated by -1.
+     * @param rewrite Operand positions (which will later be rewritten in ByteCodes) are indicated by -1.
      */
     public ByteCodeForm(final int opcode, final String name, final int[] rewrite) {
         this.opcode = opcode;

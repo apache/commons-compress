@@ -26,10 +26,25 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
  */
 public class FloatRefForm extends SingleByteReferenceForm {
 
+    /**
+     * Constructs a new instance with the specified opcode, name, operandType and rewrite.
+     *
+     * @param opcode  index corresponding to the opcode's value.
+     * @param name    String printable name of the opcode.
+     * @param rewrite Operand positions (which will later be rewritten in ByteCodes) are indicated by -1.
+     */
     public FloatRefForm(final int opcode, final String name, final int[] rewrite) {
         super(opcode, name, rewrite);
     }
 
+    /**
+     * Constructs a new instance with the specified opcode, name, operandType and rewrite.
+     *
+     * @param opcode  index corresponding to the opcode's value.
+     * @param name    String printable name of the opcode.
+     * @param rewrite Operand positions (which will later be rewritten in ByteCodes) are indicated by -1.
+     * @param widened TODO.
+     */
     public FloatRefForm(final int opcode, final String name, final int[] rewrite, final boolean widened) {
         this(opcode, name, rewrite);
         this.widened = widened;

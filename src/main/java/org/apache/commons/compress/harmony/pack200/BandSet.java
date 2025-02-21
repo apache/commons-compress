@@ -84,7 +84,7 @@ public abstract class BandSet {
         private Map<Integer, Integer> distinctValues;
 
         /**
-         * Constructs a new instance of BandData. The band is then analysed.
+         * Constructs a new instance of BandData. The band is then analyzed.
          *
          * @param band the band of integers
          */
