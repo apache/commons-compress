@@ -454,7 +454,7 @@ public class TarFile implements Closeable {
 
         if (currEntry != null) {
             // Skip to the end of the entry
-            repositionForwardTo(currEntry.getDataOffset() + currEntry.getSize());
+            repositionForwardTo(currEntry.getDataOffset() + (currEntry.isDirectory() ? 0 : currEntry.getSize()));
             throwExceptionIfPositionIsNotInArchive();
             skipRecordPadding();
         }
