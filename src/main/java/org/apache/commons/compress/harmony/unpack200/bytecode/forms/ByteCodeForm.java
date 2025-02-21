@@ -26,6 +26,9 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.ByteCode;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CodeAttribute;
 import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
 
+/**
+ * Abstract byte code form.
+ */
 public abstract class ByteCodeForm {
 
     protected static final boolean WIDENED = true;
@@ -293,6 +296,12 @@ public abstract class ByteCodeForm {
         }
     }
 
+    /**
+     * Gets a ByteCodeForm.
+     *
+     * @param opcode opcode index.
+     * @return the matching ByteCodeForm at the given opcode.
+     */
     public static ByteCodeForm get(final int opcode) {
         return byteCodeArray[opcode];
     }
@@ -305,20 +314,20 @@ public abstract class ByteCodeForm {
     private int operandLength;
 
     /**
-     * Answer a new instance of this class with the specified opcode and name. Assume no rewrite.
+     * Constructs a new instance with the specified opcode and name. Assume no rewrite.
      *
-     * @param opcode int corresponding to the opcode's value
-     * @param name   String printable name of the opcode
+     * @param opcode int corresponding to the opcode's value.
+     * @param name   String printable name of the opcode.
      */
     public ByteCodeForm(final int opcode, final String name) {
         this(opcode, name, new int[] { opcode });
     }
 
     /**
-     * Answer a new instance of this class with the specified opcode, name, operandType and rewrite
+     * Constructs a new instance with the specified opcode, name, operandType and rewrite.
      *
-     * @param opcode  int corresponding to the opcode's value
-     * @param name    String printable name of the opcode
+     * @param opcode  int corresponding to the opcode's value.
+     * @param name    String printable name of the opcode.
      * @param rewrite int[] Array of ints. Operand positions (which will later be rewritten in ByteCodes) are indicated by -1.
      */
     public ByteCodeForm(final int opcode, final String name, final int[] rewrite) {
@@ -383,18 +392,38 @@ public abstract class ByteCodeForm {
         // Most ByteCodeForms don't have any fixing up to do.
     }
 
+    /**
+     * Gets the name.
+     *
+     * @return the name.
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Gets the opcode.
+     *
+     * @return the opcode.
+     */
     public int getOpcode() {
         return opcode;
     }
 
+    /**
+     * Gets the rewrite array.
+     *
+     * @return the rewrite array.
+     */
     public int[] getRewrite() {
         return rewrite;
     }
 
+    /**
+     * Gets a copy of the rewrite array.
+     *
+     * @return a copy of the rewrite array.
+     */
     public int[] getRewriteCopy() {
         return Arrays.copyOf(rewrite, rewrite.length);
     }
@@ -416,6 +445,11 @@ public abstract class ByteCodeForm {
         return false;
     }
 
+    /**
+     * Tests whether this instance has an operand.
+     *
+     * @return whether this instance has an operand.
+     */
     public boolean hasNoOperand() {
         return false;
     }
@@ -424,6 +458,11 @@ public abstract class ByteCodeForm {
         return false;
     }
 
+    /**
+     * Gets the operand length.
+     *
+     * @return the operand length.
+     */
     public int operandLength() {
         return operandLength;
     }
