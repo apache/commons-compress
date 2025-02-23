@@ -27,6 +27,8 @@ import java.nio.channels.ClosedChannelException;
 import java.nio.channels.WritableByteChannel;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.commons.io.IOUtils;
+
 /**
  * This class supports writing to an OutputStream or WritableByteChannel in fixed length blocks.
  * <p>
@@ -94,10 +96,7 @@ public class FixedLengthBlockOutputStream extends OutputStream implements Writab
                 buffer.position(buffer.limit());
                 return len;
             } catch (final IOException e) {
-                try {
-                    close();
-                } catch (final IOException ignored) { // NOSONAR
-                }
+                IOUtils.closeQuietly(this);
                 throw e;
             }
         }

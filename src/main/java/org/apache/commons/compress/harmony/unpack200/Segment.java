@@ -51,6 +51,7 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.ClassFile;
 import org.apache.commons.compress.harmony.unpack200.bytecode.ClassFileEntry;
 import org.apache.commons.compress.harmony.unpack200.bytecode.InnerClassesAttribute;
 import org.apache.commons.compress.harmony.unpack200.bytecode.SourceFileAttribute;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
 
 /**
@@ -571,9 +572,7 @@ public class Segment {
 
     void unpackWrite(final JarOutputStream out) throws IOException {
         writeJar(out);
-        if (logPrintWriter != null) {
-            logPrintWriter.close();
-        }
+        IOUtils.close(logPrintWriter);
     }
 
     /**

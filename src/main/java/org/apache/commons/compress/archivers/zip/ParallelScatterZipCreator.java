@@ -35,6 +35,7 @@ import java.util.zip.Deflater;
 import org.apache.commons.compress.parallel.InputStreamSupplier;
 import org.apache.commons.compress.parallel.ScatterGatherBackingStore;
 import org.apache.commons.compress.parallel.ScatterGatherBackingStoreSupplier;
+import org.apache.commons.io.IOUtils;
 
 /**
  * Creates a ZIP in parallel by using multiple threadlocal {@link ScatterZipOutputStream} instances.
@@ -152,11 +153,7 @@ public class ParallelScatterZipCreator {
 
     private void closeAll() {
         for (final ScatterZipOutputStream scatterStream : streams) {
-            try {
-                scatterStream.close();
-            } catch (final IOException ignored) {
-                // no way to properly log this
-            }
+            IOUtils.closeQuietly(scatterStream);
         }
     }
 

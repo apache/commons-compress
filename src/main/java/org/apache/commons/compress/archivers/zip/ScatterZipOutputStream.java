@@ -32,6 +32,7 @@ import java.util.zip.Deflater;
 
 import org.apache.commons.compress.parallel.FileBasedScatterGatherBackingStore;
 import org.apache.commons.compress.parallel.ScatterGatherBackingStore;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
 
 /**
@@ -92,9 +93,7 @@ public class ScatterZipOutputStream implements Closeable {
 
         @Override
         public void close() throws IOException {
-            if (itemsIteratorData != null) {
-                itemsIteratorData.close();
-            }
+            IOUtils.close(itemsIteratorData);
         }
 
         public void writeNextZipEntry(final ZipArchiveOutputStream target) throws IOException {
@@ -202,9 +201,7 @@ public class ScatterZipOutputStream implements Closeable {
             return;
         }
         try {
-            if (zipEntryWriter != null) {
-                zipEntryWriter.close();
-            }
+            IOUtils.close(zipEntryWriter);
             backingStore.close();
         } finally {
             streamCompressor.close();
