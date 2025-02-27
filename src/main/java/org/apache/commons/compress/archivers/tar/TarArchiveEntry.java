@@ -1150,7 +1150,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Tests whether the given entry is a descendant of this entry. Descendancy is determined by the name of the descendant starting with this entry's name.
      *
-     * @param desc Entry to be checked as a descendent of this.
+     * @param desc Entry to be checked as a descendant of this.
      * @return True if entry is a descendant of this.
      */
     public boolean isDescendent(final TarArchiveEntry desc) {
