@@ -37,31 +37,24 @@ public class ZipSplitOutputStreamTest extends AbstractTest {
         final File testOutputFile = newTempFile("testCreateSplittedFiles.zip");
         final int splitSize = 100 * 1024; /* 100 KB */
         final File fileToTest = getFile("COMPRESS-477/split_zip_created_by_zip/zip_to_compare_created_by_zip.zip");
-        try (ZipSplitOutputStream zipSplitOutputStream = new ZipSplitOutputStream(testOutputFile, splitSize)) {
-            try (InputStream inputStream = Files.newInputStream(fileToTest.toPath())) {
-                final byte[] buffer = new byte[4096];
-                int readLen;
-                while ((readLen = inputStream.read(buffer)) > 0) {
-                    zipSplitOutputStream.write(buffer, 0, readLen);
-                }
+        try (ZipSplitOutputStream zipSplitOutputStream = new ZipSplitOutputStream(testOutputFile, splitSize);
+                InputStream inputStream = Files.newInputStream(fileToTest.toPath())) {
+            final byte[] buffer = new byte[4096];
+            int readLen;
+            while ((readLen = inputStream.read(buffer)) > 0) {
+                zipSplitOutputStream.write(buffer, 0, readLen);
             }
         }
-
         File zipFile = new File(getTempDirFile().getPath(), "testCreateSplittedFiles.z01");
         assertEquals(zipFile.length(), splitSize);
-
         zipFile = new File(getTempDirFile().getPath(), "testCreateSplittedFiles.z02");
         assertEquals(zipFile.length(), splitSize);
-
         zipFile = new File(getTempDirFile().getPath(), "testCreateSplittedFiles.z03");
         assertEquals(zipFile.length(), splitSize);
-
         zipFile = new File(getTempDirFile().getPath(), "testCreateSplittedFiles.z04");
         assertEquals(zipFile.length(), splitSize);
-
         zipFile = new File(getTempDirFile().getPath(), "testCreateSplittedFiles.z05");
         assertEquals(zipFile.length(), splitSize);
-
         zipFile = new File(getTempDirFile().getPath(), "testCreateSplittedFiles.zip");
         assertEquals(zipFile.length(), fileToTest.length() + 4 - splitSize * 5);
     }
