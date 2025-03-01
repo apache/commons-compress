@@ -245,17 +245,17 @@ public final class IOUtils {
      */
     public static byte[] readRange(final ReadableByteChannel input, final int length) throws IOException {
         final ByteArrayOutputStream output = new ByteArrayOutputStream();
-        final ByteBuffer b = ByteBuffer.allocate(Math.min(length, org.apache.commons.io.IOUtils.DEFAULT_BUFFER_SIZE));
+        final ByteBuffer byteBuffer = ByteBuffer.allocate(Math.min(length, org.apache.commons.io.IOUtils.DEFAULT_BUFFER_SIZE));
         int read = 0;
         while (read < length) {
             // Make sure we never read more than len bytes
-            b.limit(Math.min(length - read, b.capacity()));
-            final int readCount = input.read(b);
+            byteBuffer.limit(Math.min(length - read, byteBuffer.capacity()));
+            final int readCount = input.read(byteBuffer);
             if (readCount <= 0) {
                 break;
             }
-            output.write(b.array(), 0, readCount);
-            b.rewind();
+            output.write(byteBuffer.array(), 0, readCount);
+            byteBuffer.rewind();
             read += readCount;
         }
         return output.toByteArray();
