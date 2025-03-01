@@ -33,7 +33,7 @@ abstract class RandomAccessOutputStream extends OutputStream {
      * @return current position.
      * @throws IOException if an I/O error occurs
      */
-    public abstract long position() throws IOException;
+    abstract long position() throws IOException;
 
     @Override
     public void write(final int b) throws IOException {
@@ -58,7 +58,7 @@ abstract class RandomAccessOutputStream extends OutputStream {
      * @param b        data to write
      * @throws IOException if an I/O error occurs.
      */
-    public void writeFully(final byte[] b, final long position) throws IOException {
+    void writeFully(final byte[] b, final long position) throws IOException {
         writeFully(b, 0, b.length, position);
     }
 }
