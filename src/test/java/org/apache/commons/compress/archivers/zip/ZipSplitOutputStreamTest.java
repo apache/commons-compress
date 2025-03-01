@@ -28,6 +28,7 @@ import java.nio.ByteBuffer;
 import java.nio.file.Files;
 
 import org.apache.commons.compress.AbstractTest;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
 public class ZipSplitOutputStreamTest extends AbstractTest {
@@ -39,11 +40,7 @@ public class ZipSplitOutputStreamTest extends AbstractTest {
         final File fileToTest = getFile("COMPRESS-477/split_zip_created_by_zip/zip_to_compare_created_by_zip.zip");
         try (ZipSplitOutputStream zipSplitOutputStream = new ZipSplitOutputStream(testOutputFile, splitSize);
                 InputStream inputStream = Files.newInputStream(fileToTest.toPath())) {
-            final byte[] buffer = new byte[4096];
-            int readLen;
-            while ((readLen = inputStream.read(buffer)) > 0) {
-                zipSplitOutputStream.write(buffer, 0, readLen);
-            }
+            IOUtils.copy(inputStream, zipSplitOutputStream);
         }
         File zipFile = new File(getTempDirFile().getPath(), "testCreateSplittedFiles.z01");
         assertEquals(zipFile.length(), splitSize);
