@@ -89,8 +89,8 @@ public class FileRandomAccessOutputStreamTest extends AbstractTempDirTest {
             ((ByteBuffer) answer.getArgument(0)).position(6);
             return 6;
         });
-        stream.writeFully("hello".getBytes(StandardCharsets.UTF_8), 20);
-        stream.writeFully("world\n".getBytes(StandardCharsets.UTF_8), 30);
+        stream.writeAll("hello".getBytes(StandardCharsets.UTF_8), 20);
+        stream.writeAll("world\n".getBytes(StandardCharsets.UTF_8), 30);
 
         verify(channel, times(1)).write((ByteBuffer) any(), eq(20L));
         verify(channel, times(1)).write((ByteBuffer) any(), eq(30L));
@@ -114,8 +114,8 @@ public class FileRandomAccessOutputStreamTest extends AbstractTempDirTest {
             ((ByteBuffer) answer.getArgument(0)).position(6);
             return 6;
         });
-        stream.writeFully("hello".getBytes(StandardCharsets.UTF_8), 20);
-        stream.writeFully("world\n".getBytes(StandardCharsets.UTF_8), 30);
+        stream.writeAll("hello".getBytes(StandardCharsets.UTF_8), 20);
+        stream.writeAll("world\n".getBytes(StandardCharsets.UTF_8), 30);
 
         verify(channel, times(1)).write((ByteBuffer) any(), eq(20L));
         verify(channel, times(1)).write((ByteBuffer) any(), eq(23L));
@@ -133,7 +133,7 @@ public class FileRandomAccessOutputStreamTest extends AbstractTempDirTest {
             return 3;
         });
         when(channel.write((ByteBuffer) any(), eq(23L))).thenAnswer(answer -> 0);
-        assertThrows(IOException.class, () -> stream.writeFully("hello".getBytes(StandardCharsets.UTF_8), 20));
+        assertThrows(IOException.class, () -> stream.writeAll("hello".getBytes(StandardCharsets.UTF_8), 20));
 
         verify(channel, times(1)).write((ByteBuffer) any(), eq(20L));
         verify(channel, times(1)).write((ByteBuffer) any(), eq(23L));

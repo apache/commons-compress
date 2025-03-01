@@ -50,8 +50,8 @@ public class RandomAccessOutputStreamTest extends AbstractTempDirTest {
             }
 
             @Override
-            void writeFully(final byte[] b, final int off, final int len, final long position) throws IOException {
-                delegate.writeFully(b, off, len, position);
+            void writeAll(final byte[] b, final int off, final int len, final long position) throws IOException {
+                delegate.writeAll(b, off, len, position);
             }
         };
         stream.write('\n');
