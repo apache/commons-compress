@@ -1243,20 +1243,20 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * sizes.
      */
     private void rewriteSizesAndCrc(final boolean actuallyNeedsZip64) throws IOException {
-        final RandomAccessOutputStream randomStream = (RandomAccessOutputStream) out;
+        final RandomAccessOutputStream outputStream = (RandomAccessOutputStream) out;
         long dataStart = entry.localDataStart;
-        if (randomStream instanceof ZipSplitOutputStream) {
-            dataStart = ((ZipSplitOutputStream) randomStream).calculateDiskPosition(entry.entry.getDiskNumberStart(), dataStart);
+        if (outputStream instanceof ZipSplitOutputStream) {
+            dataStart = ((ZipSplitOutputStream) outputStream).calculateDiskPosition(entry.entry.getDiskNumberStart(), dataStart);
         }
 
         long position = dataStart;
-        randomStream.writeAll(ZipLong.getBytes(entry.entry.getCrc()), position); position += ZipConstants.WORD;
+        outputStream.writeAll(ZipLong.getBytes(entry.entry.getCrc()), position); position += ZipConstants.WORD;
         if (!hasZip64Extra(entry.entry) || !actuallyNeedsZip64) {
-            randomStream.writeAll(ZipLong.getBytes(entry.entry.getCompressedSize()), position); position += ZipConstants.WORD;
-            randomStream.writeAll(ZipLong.getBytes(entry.entry.getSize()), position);
+            outputStream.writeAll(ZipLong.getBytes(entry.entry.getCompressedSize()), position); position += ZipConstants.WORD;
+            outputStream.writeAll(ZipLong.getBytes(entry.entry.getSize()), position);
         } else {
-            randomStream.writeAll(ZipLong.ZIP64_MAGIC.getBytes(), position); position += ZipConstants.WORD;
-            randomStream.writeAll(ZipLong.ZIP64_MAGIC.getBytes(), position);
+            outputStream.writeAll(ZipLong.ZIP64_MAGIC.getBytes(), position); position += ZipConstants.WORD;
+            outputStream.writeAll(ZipLong.ZIP64_MAGIC.getBytes(), position);
         }
         position += ZipConstants.WORD;
 
@@ -1267,14 +1267,14 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
             position = dataStart + 3 * ZipConstants.WORD + 2 * ZipConstants.SHORT + nameLen + 2 * ZipConstants.SHORT;
             // inside the ZIP64 extra uncompressed size comes
             // first, unlike the LFH, CD or data descriptor
-            randomStream.writeAll(ZipEightByteInteger.getBytes(entry.entry.getSize()), position); position += ZipConstants.DWORD;
-            randomStream.writeAll(ZipEightByteInteger.getBytes(entry.entry.getCompressedSize()), position); position += ZipConstants.DWORD;
+            outputStream.writeAll(ZipEightByteInteger.getBytes(entry.entry.getSize()), position); position += ZipConstants.DWORD;
+            outputStream.writeAll(ZipEightByteInteger.getBytes(entry.entry.getCompressedSize()), position); position += ZipConstants.DWORD;
 
             if (!actuallyNeedsZip64) {
                 // do some cleanup:
                 // * rewrite version needed to extract
                 position = dataStart - 5 * ZipConstants.SHORT;
-                randomStream.writeAll(ZipShort.getBytes(versionNeededToExtract(entry.entry.getMethod(), false, false)), position);
+                outputStream.writeAll(ZipShort.getBytes(versionNeededToExtract(entry.entry.getMethod(), false, false)), position);
                 position += ZipConstants.SHORT;
 
                 // * remove ZIP64 extra, so it doesn't get written

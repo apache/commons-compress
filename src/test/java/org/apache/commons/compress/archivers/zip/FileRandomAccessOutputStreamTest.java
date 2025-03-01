@@ -95,7 +95,7 @@ public class FileRandomAccessOutputStreamTest extends AbstractTempDirTest {
         verify(channel, times(1)).write((ByteBuffer) any(), eq(20L));
         verify(channel, times(1)).write((ByteBuffer) any(), eq(30L));
 
-        assertEquals(0, stream.position());
+        assertEquals(11, stream.position());
     }
 
     @Test
@@ -121,7 +121,7 @@ public class FileRandomAccessOutputStreamTest extends AbstractTempDirTest {
         verify(channel, times(1)).write((ByteBuffer) any(), eq(23L));
         verify(channel, times(1)).write((ByteBuffer) any(), eq(30L));
 
-        assertEquals(0, stream.position());
+        assertEquals(11, stream.position());
     }
 
     @Test

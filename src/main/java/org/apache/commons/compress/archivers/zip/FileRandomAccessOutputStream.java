@@ -80,5 +80,6 @@ final class FileRandomAccessOutputStream extends RandomAccessOutputStream {
             }
             currentPos += written;
         }
+        position += len;
     }
 }
