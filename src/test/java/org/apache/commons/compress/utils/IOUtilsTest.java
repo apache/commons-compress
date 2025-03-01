@@ -108,9 +108,12 @@ public class IOUtilsTest {
     }
 
     @Test
-    public void testCopyRangeThrowsOnZeroBufferSize() {
+    public void testCopyRangeThrowsOnZeroBufferSize() throws IOException {
         assertThrows(IllegalArgumentException.class,
                 () -> IOUtils.copyRange(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY), 5, new ByteArrayOutputStream(), 0));
+        assertEquals(0, IOUtils.copyRange(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY), 5, new ByteArrayOutputStream(), 1));
+        assertEquals(0, IOUtils.copyRange(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY), 5, null, 1));
+        assertEquals(1, IOUtils.copyRange(new ByteArrayInputStream(new byte[1]), 5, null, 1));
     }
 
     @Test

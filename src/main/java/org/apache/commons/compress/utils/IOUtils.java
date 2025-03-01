@@ -31,6 +31,7 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.output.NullOutputStream;
 
 /**
  * Utility functions.
@@ -138,15 +139,7 @@ public final class IOUtils {
             throw new IllegalArgumentException("bufferSize must be bigger than 0");
         }
         final byte[] buffer = new byte[(int) Math.min(bufferSize, Math.max(0, length))];
-        int n = 0;
-        long count = 0;
-        while (count < length && -1 != (n = input.read(buffer, 0, (int) Math.min(length - count, buffer.length)))) {
-            if (output != null) {
-                output.write(buffer, 0, n);
-            }
-            count += n;
-        }
-        return count;
+        return org.apache.commons.io.IOUtils.copyLarge(input, output != null ? output : NullOutputStream.INSTANCE, 0, length, buffer);
     }
 
     /**
