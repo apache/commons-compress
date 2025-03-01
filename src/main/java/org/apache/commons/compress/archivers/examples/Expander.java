@@ -225,15 +225,7 @@ public class Expander {
      * @since 1.22
      */
     public void expand(final SevenZFile archive, final Path targetDirectory) throws IOException {
-        expand(archive::getNextEntry, (entry, out) -> {
-            final byte[] buffer = new byte[8192];
-            int n;
-            while (-1 != (n = archive.read(buffer))) {
-                if (out != null) {
-                    out.write(buffer, 0, n);
-                }
-            }
-        }, targetDirectory);
+        expand(archive::getNextEntry, (entry, out) -> IOUtils.copyLarge(archive.getInputStream(entry), out), targetDirectory);
     }
 
     /**
