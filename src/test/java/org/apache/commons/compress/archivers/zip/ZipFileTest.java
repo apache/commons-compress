@@ -143,14 +143,10 @@ public class ZipFileTest extends AbstractTest {
     }
 
     private void assertFileEqualsToEntry(final File fileToCompare, final ZipArchiveEntry entry, final ZipFile zipFile) throws IOException {
-        final byte[] buffer = new byte[10240];
         final File tempFile = createTempFile("temp", "txt");
         try (OutputStream outputStream = Files.newOutputStream(tempFile.toPath());
                 InputStream inputStream = zipFile.getInputStream(entry)) {
-            int readLen;
-            while ((readLen = inputStream.read(buffer)) > 0) {
-                outputStream.write(buffer, 0, readLen);
-            }
+            IOUtils.copyLarge(inputStream, outputStream, new byte[10240]);
         }
         assertFileEqualIgnoreEndOfLine(fileToCompare, tempFile);
     }
