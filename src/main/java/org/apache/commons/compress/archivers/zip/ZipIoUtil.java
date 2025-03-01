@@ -31,31 +31,14 @@ import java.nio.channels.WritableByteChannel;
 final class ZipIoUtil {
 
     /**
-     * Writes full buffer to channel.
+     * Writes all bytes in a buffer to a channel at specified position.
      *
-     * @param channel channel to write to
-     * @param buffer  buffer to write
-     * @throws IOException when writing fails or fails to write fully
+     * @param channel  The target channel.
+     * @param buffer   The source bytes.
+     * @param position The file position at which the transfer is to begin; must be non-negative
+     * @throws IOException If some I/O error occurs or fails or fails to write all bytes.
      */
-    static void writeFully(final WritableByteChannel channel, final ByteBuffer buffer) throws IOException {
-        while (buffer.hasRemaining()) {
-            final int remaining = buffer.remaining();
-            final int written = channel.write(buffer);
-            if (written <= 0) {
-                throw new IOException("Failed to write all bytes in the buffer for channel=" + channel + ", length=" + remaining + ", written=" + written);
-            }
-        }
-    }
-
-    /**
-     * Writes full buffer to channel at specified position.
-     *
-     * @param channel  channel to write to
-     * @param buffer   buffer to write
-     * @param position position to write at
-     * @throws IOException when writing fails or fails to write fully
-     */
-    static void writeFullyAt(final FileChannel channel, final ByteBuffer buffer, final long position) throws IOException {
+    static void writeAll(final FileChannel channel, final ByteBuffer buffer, final long position) throws IOException {
         for (long currentPosition = position; buffer.hasRemaining();) {
             final int remaining = buffer.remaining();
             final int written = channel.write(buffer, currentPosition);
@@ -63,6 +46,23 @@ final class ZipIoUtil {
                 throw new IOException("Failed to write all bytes in the buffer for channel=" + channel + ", length=" + remaining + ", written=" + written);
             }
             currentPosition += written;
+        }
+    }
+
+    /**
+     * Writes all bytes in a buffer to a channel.
+     *
+     * @param channel  The target channel.
+     * @param buffer   The source bytes.
+     * @throws IOException If some I/O error occurs or fails or fails to write all bytes.
+     */
+    static void writeAll(final WritableByteChannel channel, final ByteBuffer buffer) throws IOException {
+        while (buffer.hasRemaining()) {
+            final int remaining = buffer.remaining();
+            final int written = channel.write(buffer);
+            if (written <= 0) {
+                throw new IOException("Failed to write all bytes in the buffer for channel=" + channel + ", length=" + remaining + ", written=" + written);
+            }
         }
     }
 

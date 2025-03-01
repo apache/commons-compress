@@ -66,7 +66,7 @@ final class FileRandomAccessOutputStream extends RandomAccessOutputStream {
 
     @Override
     public synchronized void write(final byte[] b, final int off, final int len) throws IOException {
-        ZipIoUtil.writeFully(this.channel, ByteBuffer.wrap(b, off, len));
+        ZipIoUtil.writeAll(this.channel, ByteBuffer.wrap(b, off, len));
         position += len;
     }
 

@@ -282,7 +282,7 @@ final class ZipSplitOutputStream extends RandomAccessOutputStream {
             final Map.Entry<Long, Path> segment = positionToFiles.floorEntry(remainingPosition);
             final Long segmentEnd = positionToFiles.higherKey(remainingPosition);
             if (segmentEnd == null) {
-                ZipIoUtil.writeFullyAt(this.currentChannel, ByteBuffer.wrap(b, remainingOff, remainingLen), remainingPosition - segment.getKey());
+                ZipIoUtil.writeAll(this.currentChannel, ByteBuffer.wrap(b, remainingOff, remainingLen), remainingPosition - segment.getKey());
                 remainingPosition += remainingLen;
                 remainingOff += remainingLen;
                 remainingLen = 0;
@@ -309,7 +309,7 @@ final class ZipSplitOutputStream extends RandomAccessOutputStream {
             final int len
     ) throws IOException {
         try (FileChannel channel = FileChannel.open(segment, StandardOpenOption.WRITE)) {
-            ZipIoUtil.writeFullyAt(channel, ByteBuffer.wrap(b, off, len), position);
+            ZipIoUtil.writeAll(channel, ByteBuffer.wrap(b, off, len), position);
         }
     }
 

@@ -62,8 +62,8 @@ public class ZipIoUtilTest extends AbstractTempDirTest {
                 ((ByteBuffer) answer.getArgument(0)).position(6);
                 return 6;
             });
-            ZipIoUtil.writeFully(channel, ByteBuffer.wrap("hello".getBytes(StandardCharsets.UTF_8)));
-            ZipIoUtil.writeFully(channel, ByteBuffer.wrap("world\n".getBytes(StandardCharsets.UTF_8)));
+            ZipIoUtil.writeAll(channel, ByteBuffer.wrap("hello".getBytes(StandardCharsets.UTF_8)));
+            ZipIoUtil.writeAll(channel, ByteBuffer.wrap("world\n".getBytes(StandardCharsets.UTF_8)));
             verify(channel, times(2)).write((ByteBuffer) any());
         }
     }
@@ -81,8 +81,8 @@ public class ZipIoUtilTest extends AbstractTempDirTest {
                 ((ByteBuffer) answer.getArgument(0)).position(6);
                 return 6;
             });
-            ZipIoUtil.writeFully(channel, ByteBuffer.wrap("hello".getBytes(StandardCharsets.UTF_8)));
-            ZipIoUtil.writeFully(channel, ByteBuffer.wrap("world\n".getBytes(StandardCharsets.UTF_8)));
+            ZipIoUtil.writeAll(channel, ByteBuffer.wrap("hello".getBytes(StandardCharsets.UTF_8)));
+            ZipIoUtil.writeAll(channel, ByteBuffer.wrap("world\n".getBytes(StandardCharsets.UTF_8)));
             verify(channel, times(3)).write((ByteBuffer) any());
         }
     }
@@ -94,7 +94,7 @@ public class ZipIoUtilTest extends AbstractTempDirTest {
                 ((ByteBuffer) answer.getArgument(0)).position(3);
                 return 3;
             }).thenAnswer(answer -> 0);
-            assertThrows(IOException.class, () -> ZipIoUtil.writeFully(channel, ByteBuffer.wrap("hello".getBytes(StandardCharsets.UTF_8))));
+            assertThrows(IOException.class, () -> ZipIoUtil.writeAll(channel, ByteBuffer.wrap("hello".getBytes(StandardCharsets.UTF_8))));
             verify(channel, times(2)).write((ByteBuffer) any());
         }
     }
@@ -110,8 +110,8 @@ public class ZipIoUtilTest extends AbstractTempDirTest {
                 ((ByteBuffer) answer.getArgument(0)).position(6);
                 return 6;
             });
-            ZipIoUtil.writeFullyAt(channel, ByteBuffer.wrap("hello".getBytes(StandardCharsets.UTF_8)), 20);
-            ZipIoUtil.writeFullyAt(channel, ByteBuffer.wrap("world\n".getBytes(StandardCharsets.UTF_8)), 30);
+            ZipIoUtil.writeAll(channel, ByteBuffer.wrap("hello".getBytes(StandardCharsets.UTF_8)), 20);
+            ZipIoUtil.writeAll(channel, ByteBuffer.wrap("world\n".getBytes(StandardCharsets.UTF_8)), 30);
             verify(channel, times(1)).write((ByteBuffer) any(), eq(20L));
             verify(channel, times(1)).write((ByteBuffer) any(), eq(30L));
         }
@@ -132,8 +132,8 @@ public class ZipIoUtilTest extends AbstractTempDirTest {
                 ((ByteBuffer) answer.getArgument(0)).position(6);
                 return 6;
             });
-            ZipIoUtil.writeFullyAt(channel, ByteBuffer.wrap("hello".getBytes(StandardCharsets.UTF_8)), 20);
-            ZipIoUtil.writeFullyAt(channel, ByteBuffer.wrap("world\n".getBytes(StandardCharsets.UTF_8)), 30);
+            ZipIoUtil.writeAll(channel, ByteBuffer.wrap("hello".getBytes(StandardCharsets.UTF_8)), 20);
+            ZipIoUtil.writeAll(channel, ByteBuffer.wrap("world\n".getBytes(StandardCharsets.UTF_8)), 30);
             verify(channel, times(1)).write((ByteBuffer) any(), eq(20L));
             verify(channel, times(1)).write((ByteBuffer) any(), eq(23L));
             verify(channel, times(1)).write((ByteBuffer) any(), eq(30L));
@@ -148,7 +148,7 @@ public class ZipIoUtilTest extends AbstractTempDirTest {
                 return 3;
             });
             when(channel.write((ByteBuffer) any(), eq(23L))).thenAnswer(answer -> 0);
-            assertThrows(IOException.class, () -> ZipIoUtil.writeFullyAt(channel, ByteBuffer.wrap("hello".getBytes(StandardCharsets.UTF_8)), 20));
+            assertThrows(IOException.class, () -> ZipIoUtil.writeAll(channel, ByteBuffer.wrap("hello".getBytes(StandardCharsets.UTF_8)), 20));
             verify(channel, times(1)).write((ByteBuffer) any(), eq(20L));
             verify(channel, times(1)).write((ByteBuffer) any(), eq(23L));
             verify(channel, times(0)).write((ByteBuffer) any(), eq(25L));
