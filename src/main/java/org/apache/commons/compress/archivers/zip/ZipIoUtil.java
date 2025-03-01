@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.commons.compress.archivers.zip;
 
 import java.io.IOException;
@@ -33,15 +34,15 @@ final class ZipIoUtil {
      * Writes full buffer to channel.
      *
      * @param channel channel to write to
-     * @param buf     buffer to write
+     * @param buffer  buffer to write
      * @throws IOException when writing fails or fails to write fully
      */
-    static void writeFully(final WritableByteChannel channel, final ByteBuffer buf) throws IOException {
-        while (buf.hasRemaining()) {
-            final int remaining = buf.remaining();
-            final int written = channel.write(buf);
+    static void writeFully(final WritableByteChannel channel, final ByteBuffer buffer) throws IOException {
+        while (buffer.hasRemaining()) {
+            final int remaining = buffer.remaining();
+            final int written = channel.write(buffer);
             if (written <= 0) {
-                throw new IOException("Failed to fully write: channel=" + channel + " length=" + remaining + " written=" + written);
+                throw new IOException("Failed to write all bytes in the buffer for channel=" + channel + ", length=" + remaining + ", written=" + written);
             }
         }
     }
@@ -50,16 +51,16 @@ final class ZipIoUtil {
      * Writes full buffer to channel at specified position.
      *
      * @param channel  channel to write to
-     * @param buf      buffer to write
+     * @param buffer   buffer to write
      * @param position position to write at
      * @throws IOException when writing fails or fails to write fully
      */
-    static void writeFullyAt(final FileChannel channel, final ByteBuffer buf, final long position) throws IOException {
-        for (long currentPosition = position; buf.hasRemaining();) {
-            final int remaining = buf.remaining();
-            final int written = channel.write(buf, currentPosition);
+    static void writeFullyAt(final FileChannel channel, final ByteBuffer buffer, final long position) throws IOException {
+        for (long currentPosition = position; buffer.hasRemaining();) {
+            final int remaining = buffer.remaining();
+            final int written = channel.write(buffer, currentPosition);
             if (written <= 0) {
-                throw new IOException("Failed to fully write: channel=" + channel + " length=" + remaining + " written=" + written);
+                throw new IOException("Failed to write all bytes in the buffer for channel=" + channel + ", length=" + remaining + ", written=" + written);
             }
             currentPosition += written;
         }
