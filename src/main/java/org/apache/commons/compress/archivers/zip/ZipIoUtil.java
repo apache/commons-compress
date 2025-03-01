@@ -21,7 +21,7 @@ package org.apache.commons.compress.archivers.zip;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.nio.channels.SeekableByteChannel;
+import java.nio.channels.WritableByteChannel;
 
 /**
  * IO utilities for Zip operations.
@@ -36,7 +36,7 @@ final class ZipIoUtil {
      * @param buf     buffer to write
      * @throws IOException when writing fails or fails to write fully
      */
-    static void writeFully(final SeekableByteChannel channel, final ByteBuffer buf) throws IOException {
+    static void writeFully(final WritableByteChannel channel, final ByteBuffer buf) throws IOException {
         while (buf.hasRemaining()) {
             final int remaining = buf.remaining();
             final int written = channel.write(buf);
