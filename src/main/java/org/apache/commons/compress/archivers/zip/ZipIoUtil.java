@@ -39,13 +39,13 @@ final class ZipIoUtil {
      * @throws IOException If some I/O error occurs or fails or fails to write all bytes.
      */
     static void writeAll(final FileChannel channel, final ByteBuffer buffer, final long position) throws IOException {
-        for (long currentPosition = position; buffer.hasRemaining();) {
+        for (long currentPos = position; buffer.hasRemaining();) {
             final int remaining = buffer.remaining();
-            final int written = channel.write(buffer, currentPosition);
+            final int written = channel.write(buffer, currentPos);
             if (written <= 0) {
                 throw new IOException("Failed to write all bytes in the buffer for channel=" + channel + ", length=" + remaining + ", written=" + written);
             }
-            currentPosition += written;
+            currentPos += written;
         }
     }
 
