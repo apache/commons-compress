@@ -28,7 +28,7 @@ import java.io.OutputStream;
 abstract class RandomAccessOutputStream extends OutputStream {
 
     /**
-     * Provides current position in output.
+     * Gets the current position in this stream.
      *
      * @return current position.
      * @throws IOException if an I/O error occurs
@@ -41,7 +41,7 @@ abstract class RandomAccessOutputStream extends OutputStream {
     }
 
     /**
-     * Writes given data to specific position.
+     * Writes the given data to specific position.
      *
      * @param position position in the stream
      * @param b        data to write
@@ -52,7 +52,7 @@ abstract class RandomAccessOutputStream extends OutputStream {
     abstract void writeFully(byte[] b, int off, int len, long position) throws IOException;
 
     /**
-     * Writes given data to specific position.
+     * Writes the given data to specific position.
      *
      * @param position position in the stream
      * @param b        data to write
