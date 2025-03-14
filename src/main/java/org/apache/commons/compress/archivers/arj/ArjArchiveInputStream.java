@@ -303,46 +303,46 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
 
         final DataInputStream firstHeader = new DataInputStream(new ByteArrayInputStream(firstHeaderBytes));
 
-        final MainHeader hdr = new MainHeader();
-        hdr.archiverVersionNumber = firstHeader.readUnsignedByte();
-        hdr.minVersionToExtract = firstHeader.readUnsignedByte();
-        hdr.hostOS = firstHeader.readUnsignedByte();
-        hdr.arjFlags = firstHeader.readUnsignedByte();
-        hdr.securityVersion = firstHeader.readUnsignedByte();
-        hdr.fileType = firstHeader.readUnsignedByte();
-        hdr.reserved = firstHeader.readUnsignedByte();
-        hdr.dateTimeCreated = read32(firstHeader);
-        hdr.dateTimeModified = read32(firstHeader);
-        hdr.archiveSize = 0xffffFFFFL & read32(firstHeader);
-        hdr.securityEnvelopeFilePosition = read32(firstHeader);
-        hdr.fileSpecPosition = read16(firstHeader);
-        hdr.securityEnvelopeLength = read16(firstHeader);
+        final MainHeader header = new MainHeader();
+        header.archiverVersionNumber = firstHeader.readUnsignedByte();
+        header.minVersionToExtract = firstHeader.readUnsignedByte();
+        header.hostOS = firstHeader.readUnsignedByte();
+        header.arjFlags = firstHeader.readUnsignedByte();
+        header.securityVersion = firstHeader.readUnsignedByte();
+        header.fileType = firstHeader.readUnsignedByte();
+        header.reserved = firstHeader.readUnsignedByte();
+        header.dateTimeCreated = read32(firstHeader);
+        header.dateTimeModified = read32(firstHeader);
+        header.archiveSize = 0xffffFFFFL & read32(firstHeader);
+        header.securityEnvelopeFilePosition = read32(firstHeader);
+        header.fileSpecPosition = read16(firstHeader);
+        header.securityEnvelopeLength = read16(firstHeader);
         pushedBackBytes(20); // count has already counted them via readRange
-        hdr.encryptionVersion = firstHeader.readUnsignedByte();
-        hdr.lastChapter = firstHeader.readUnsignedByte();
+        header.encryptionVersion = firstHeader.readUnsignedByte();
+        header.lastChapter = firstHeader.readUnsignedByte();
 
         if (firstHeaderSize >= 33) {
-            hdr.arjProtectionFactor = firstHeader.readUnsignedByte();
-            hdr.arjFlags2 = firstHeader.readUnsignedByte();
+            header.arjProtectionFactor = firstHeader.readUnsignedByte();
+            header.arjFlags2 = firstHeader.readUnsignedByte();
             firstHeader.readUnsignedByte();
             firstHeader.readUnsignedByte();
         }
 
-        hdr.name = readString(basicHeader);
-        hdr.comment = readString(basicHeader);
+        header.name = readString(basicHeader);
+        header.comment = readString(basicHeader);
 
         final int extendedHeaderSize = read16(dis);
         if (extendedHeaderSize > 0) {
-            hdr.extendedHeaderBytes = readRange(dis, extendedHeaderSize);
+            header.extendedHeaderBytes = readRange(dis, extendedHeaderSize);
             final long extendedHeaderCrc32 = 0xffffFFFFL & read32(dis);
             final CRC32 crc32 = new CRC32();
-            crc32.update(hdr.extendedHeaderBytes);
+            crc32.update(header.extendedHeaderBytes);
             if (extendedHeaderCrc32 != crc32.getValue()) {
                 throw new IOException("Extended header CRC32 verification failure");
             }
         }
 
-        return hdr;
+        return header;
     }
 
     private byte[] readRange(final InputStream in, final int len) throws IOException {
