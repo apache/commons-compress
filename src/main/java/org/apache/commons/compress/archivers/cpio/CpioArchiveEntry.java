@@ -155,7 +155,7 @@ import org.apache.commons.compress.utils.TimeUtils;
  * </p>
  *
  * <p>
- * N.B. does not handle the cpio "tar" format
+ * Does not handle the cpio "tar" format
  * </p>
  *
  * @NotThreadSafe
