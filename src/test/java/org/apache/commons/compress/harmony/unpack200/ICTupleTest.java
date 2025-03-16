@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.commons.compress.harmony.unpack200;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.stream.Stream;
@@ -46,13 +46,15 @@ public class ICTupleTest {
     public void testExplicitClassTupleParsing(final String c, final String c2, final String n, final String expectedSimpleClassName,
             final String expectedOuterClass) {
         final IcTuple tuple = new IcTuple(c, IcTuple.NESTED_CLASS_FLAG, c2, n, -1, -1, -1, -1);
-        assertAll(() -> assertEquals(expectedSimpleClassName, tuple.simpleClassName()), () -> assertEquals(expectedOuterClass, tuple.outerClassString()));
+        assertEquals(expectedSimpleClassName, tuple.simpleClassName());
+        assertEquals(expectedOuterClass, tuple.outerClassString());
     }
 
     @ParameterizedTest
     @MethodSource("predicted")
     public void testPredictedClassTupleParsing(final String c, final String expectedSimpleClass, final String expectedOuterClass) {
         final IcTuple tuple = new IcTuple(c, 0, null, null, -1, -1, -1, -1);
-        assertAll(() -> assertEquals(expectedSimpleClass, tuple.simpleClassName()), () -> assertEquals(expectedOuterClass, tuple.outerClassString()));
+        assertEquals(expectedSimpleClass, tuple.simpleClassName());
+        assertEquals(expectedOuterClass, tuple.outerClassString());
     }
 }
