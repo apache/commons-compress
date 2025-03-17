@@ -27,6 +27,9 @@ import java.util.Objects;
  */
 public abstract class Attribute extends ClassFileEntry {
 
+    /**
+     * The attribute name.
+     */
     protected final CPUTF8 attributeName;
 
     private int attributeNameIndex;
@@ -59,6 +62,11 @@ public abstract class Attribute extends ClassFileEntry {
         return Objects.equals(attributeName, other.attributeName);
     }
 
+    /**
+     * Gets the attribute name.
+     *
+     * @return the attribute name.
+     */
     protected CPUTF8 getAttributeName() {
         return attributeName;
     }
@@ -114,6 +122,12 @@ public abstract class Attribute extends ClassFileEntry {
         attributeNameIndex = pool.indexOf(attributeName);
     }
 
-    protected abstract void writeBody(DataOutputStream dos) throws IOException;
+    /**
+     * Writes this body to the given output stream.
+     *
+     * @param out the output.
+     * @throws IOException
+     */
+    protected abstract void writeBody(DataOutputStream out) throws IOException;
 
 }

@@ -76,6 +76,12 @@ public class ClassBands extends BandSet {
 
     private static final long[] EMPTY_LONG_ARRAY = {};
 
+    /**
+     * Counts arguments in a descriptor.
+     *
+     * @param descriptor the descriptor to parse.
+     * @return the argument count.
+     */
     protected static int countArgs(final String descriptor) {
         final int bra = descriptor.indexOf('(');
         final int ket = descriptor.indexOf(')');
