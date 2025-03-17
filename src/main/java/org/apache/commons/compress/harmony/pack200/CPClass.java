@@ -24,12 +24,17 @@ package org.apache.commons.compress.harmony.pack200;
 public class CPClass extends CPConstant<CPClass> {
 
     private final String className;
-    private final CPUTF8 utf8;
+    private final CPUTF8 value;
     private final boolean isInnerClass;
 
-    public CPClass(final CPUTF8 utf8) {
-        this.utf8 = utf8;
-        this.className = utf8.getUnderlyingString();
+    /**
+     * Constructs a new instance.
+     *
+     * @param value The value.
+     */
+    public CPClass(final CPUTF8 value) {
+        this.value = value;
+        this.className = value.getUnderlyingString();
         final char[] chars = className.toCharArray();
         for (final char element : chars) {
             if (element <= 0x2D) {
@@ -46,7 +51,7 @@ public class CPClass extends CPConstant<CPClass> {
     }
 
     public int getIndexInCpUtf8() {
-        return utf8.getIndex();
+        return value.getIndex();
     }
 
     public boolean isInnerClass() {

@@ -23,18 +23,23 @@ package org.apache.commons.compress.harmony.pack200;
  */
 public class CPInt extends CPConstant<CPInt> {
 
-    private final int theInt;
+    private final int value;
 
-    public CPInt(final int theInt) {
-        this.theInt = theInt;
+    /**
+     * Constructs a new instance.
+     *
+     * @param value The value.
+     */
+    public CPInt(final int value) {
+        this.value = value;
     }
 
     @Override
     public int compareTo(final CPInt obj) {
-        return Integer.compare(theInt, obj.theInt);
+        return Integer.compare(value, obj.value);
     }
 
     public int getInt() {
-        return theInt;
+        return value;
     }
 }

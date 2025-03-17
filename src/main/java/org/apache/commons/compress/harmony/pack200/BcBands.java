@@ -53,7 +53,7 @@ public class BcBands extends BandSet {
     private final IntList bcShort = new IntList();
     private final IntList bcLocal = new IntList();
 
-    // Integers and Labels
+    // This List holds Integers and Labels
     private final List bcLabel = new ArrayList();
     private final List<CPInt> bcIntref = new ArrayList<>();
     private final List<CPFloat> bcFloatRef = new ArrayList<>();
@@ -66,7 +66,7 @@ public class BcBands extends BandSet {
     private final List<CPMethodOrField> bcMethodRef = new ArrayList<>();
     private final List<CPMethodOrField> bcIMethodRef = new ArrayList<>();
 
-    // Integers and CPMethodOrField
+    // This List holds Integers and CPMethodOrField
     private List bcThisField = new ArrayList<>();
 
     private final List bcSuperField = new ArrayList<>();

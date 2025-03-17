@@ -24,11 +24,16 @@ package org.apache.commons.compress.harmony.pack200;
 public class CPString extends CPConstant<CPString> {
 
     private final String string;
-    private final CPUTF8 utf8;
+    private final CPUTF8 value;
 
-    public CPString(final CPUTF8 utf8) {
-        this.utf8 = utf8;
-        this.string = utf8.getUnderlyingString();
+    /**
+     * Constructs a new instance.
+     *
+     * @param value The value.
+     */
+    public CPString(final CPUTF8 value) {
+        this.value = value;
+        this.string = value.getUnderlyingString();
     }
 
     @Override
@@ -37,7 +42,7 @@ public class CPString extends CPConstant<CPString> {
     }
 
     public int getIndexInCpUtf8() {
-        return utf8.getIndex();
+        return value.getIndex();
     }
 
     @Override

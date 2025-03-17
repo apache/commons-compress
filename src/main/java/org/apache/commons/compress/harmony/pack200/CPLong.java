@@ -23,24 +23,29 @@ package org.apache.commons.compress.harmony.pack200;
  */
 public class CPLong extends CPConstant<CPLong> {
 
-    private final long theLong;
+    private final long value;
 
-    public CPLong(final long theLong) {
-        this.theLong = theLong;
+    /**
+     * Constructs a new instance.
+     *
+     * @param value The value.
+     */
+    public CPLong(final long value) {
+        this.value = value;
     }
 
     @Override
     public int compareTo(final CPLong obj) {
-        return Long.compare(theLong, obj.theLong);
+        return Long.compare(value, obj.value);
     }
 
     public long getLong() {
-        return theLong;
+        return value;
     }
 
     @Override
     public String toString() {
-        return "" + theLong;
+        return "" + value;
     }
 
 }

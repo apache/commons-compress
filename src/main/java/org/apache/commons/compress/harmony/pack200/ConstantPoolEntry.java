@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.commons.compress.harmony.pack200;
 
 /**
@@ -25,12 +26,21 @@ public abstract class ConstantPoolEntry {
 
     private int index = -1;
 
+    /**
+     * Gets the index.
+     *
+     * @return the index.
+     */
     public int getIndex() {
         return index;
     }
 
+    /**
+     * Sets the index.
+     *
+     * @param index the index.
+     */
     public void setIndex(final int index) {
         this.index = index;
     }
-
 }

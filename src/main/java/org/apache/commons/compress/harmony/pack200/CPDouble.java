@@ -23,18 +23,23 @@ package org.apache.commons.compress.harmony.pack200;
  */
 public class CPDouble extends CPConstant<CPDouble> {
 
-    private final double theDouble;
+    private final double value;
 
-    public CPDouble(final double theDouble) {
-        this.theDouble = theDouble;
+    /**
+     * Constructs a new instance.
+     *
+     * @param value The value.
+     */
+    public CPDouble(final double value) {
+        this.value = value;
     }
 
     @Override
     public int compareTo(final CPDouble obj) {
-        return Double.compare(theDouble, obj.theDouble);
+        return Double.compare(value, obj.value);
     }
 
     public double getDouble() {
-        return theDouble;
+        return value;
     }
 }
