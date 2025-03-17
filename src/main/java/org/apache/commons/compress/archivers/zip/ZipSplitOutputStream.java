@@ -301,13 +301,7 @@ final class ZipSplitOutputStream extends RandomAccessOutputStream {
         }
     }
 
-    private void writeToSegment(
-            final Path segment,
-            final long position,
-            final byte[] b,
-            final int off,
-            final int len
-    ) throws IOException {
+    private void writeToSegment(final Path segment, final long position, final byte[] b, final int off, final int len) throws IOException {
         try (FileChannel channel = FileChannel.open(segment, StandardOpenOption.WRITE)) {
             ZipIoUtil.writeAll(channel, ByteBuffer.wrap(b, off, len), position);
         }
