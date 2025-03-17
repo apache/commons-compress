@@ -135,11 +135,11 @@ public class SeekableChannelRandomAccessOutputStreamTest extends AbstractTempDir
         when(channel.write((ByteBuffer) any())).thenAnswer(answer -> {
             ((ByteBuffer) answer.getArgument(0)).position(3);
             return 3;
-        }).thenAnswer(answer -> 0);
+        }).thenAnswer(answer -> 0).thenAnswer(answer -> -1);
 
         assertThrows(IOException.class, () -> stream.writeAll("hello".getBytes(StandardCharsets.UTF_8), 20));
 
-        verify(channel, times(2)).write((ByteBuffer) any());
+        verify(channel, times(3)).write((ByteBuffer) any());
 
         assertEquals(50L, stream.position());
     }

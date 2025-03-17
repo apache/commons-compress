@@ -42,7 +42,11 @@ final class ZipIoUtil {
         for (long currentPos = position; buffer.hasRemaining();) {
             final int remaining = buffer.remaining();
             final int written = channel.write(buffer, currentPos);
-            if (written <= 0) {
+            if (written == 0) {
+                // A non-blocking channel
+                Thread.yield();
+                continue;
+            } else if (written < 0) {
                 throw new IOException("Failed to write all bytes in the buffer for channel=" + channel + ", length=" + remaining + ", written=" + written);
             }
             currentPos += written;
@@ -52,15 +56,19 @@ final class ZipIoUtil {
     /**
      * Writes all bytes in a buffer to a channel.
      *
-     * @param channel  The target channel.
-     * @param buffer   The source bytes.
+     * @param channel The target channel.
+     * @param buffer  The source bytes.
      * @throws IOException If some I/O error occurs or fails or fails to write all bytes.
      */
     static void writeAll(final WritableByteChannel channel, final ByteBuffer buffer) throws IOException {
         while (buffer.hasRemaining()) {
             final int remaining = buffer.remaining();
             final int written = channel.write(buffer);
-            if (written <= 0) {
+            if (written == 0) {
+                // A non-blocking channel
+                Thread.yield();
+                continue;
+            } else if (written < 0) {
                 throw new IOException("Failed to write all bytes in the buffer for channel=" + channel + ", length=" + remaining + ", written=" + written);
             }
         }

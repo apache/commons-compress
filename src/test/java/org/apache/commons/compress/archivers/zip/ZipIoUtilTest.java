@@ -93,9 +93,9 @@ public class ZipIoUtilTest extends AbstractTempDirTest {
             when(channel.write((ByteBuffer) any())).thenAnswer(answer -> {
                 ((ByteBuffer) answer.getArgument(0)).position(3);
                 return 3;
-            }).thenAnswer(answer -> 0);
+            }).thenAnswer(answer -> 0).thenAnswer(answer -> -1);
             assertThrows(IOException.class, () -> ZipIoUtil.writeAll(channel, ByteBuffer.wrap("hello".getBytes(StandardCharsets.UTF_8))));
-            verify(channel, times(2)).write((ByteBuffer) any());
+            verify(channel, times(3)).write((ByteBuffer) any());
         }
     }
 
@@ -147,10 +147,10 @@ public class ZipIoUtilTest extends AbstractTempDirTest {
                 ((ByteBuffer) answer.getArgument(0)).position(3);
                 return 3;
             });
-            when(channel.write((ByteBuffer) any(), eq(23L))).thenAnswer(answer -> 0);
+            when(channel.write((ByteBuffer) any(), eq(23L))).thenAnswer(answer -> 0).thenAnswer(answer -> -1);
             assertThrows(IOException.class, () -> ZipIoUtil.writeAll(channel, ByteBuffer.wrap("hello".getBytes(StandardCharsets.UTF_8)), 20));
             verify(channel, times(1)).write((ByteBuffer) any(), eq(20L));
-            verify(channel, times(1)).write((ByteBuffer) any(), eq(23L));
+            verify(channel, times(2)).write((ByteBuffer) any(), eq(23L));
             verify(channel, times(0)).write((ByteBuffer) any(), eq(25L));
         }
     }
