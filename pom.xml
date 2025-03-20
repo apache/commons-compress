@@ -108,6 +108,12 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
       <artifactId>junit-vintage-engine</artifactId>
       <scope>test</scope>
     </dependency>
+	<dependency>
+	    <groupId>io.airlift</groupId>
+	    <artifactId>aircompressor</artifactId>
+	    <version>0.26</version>
+	    <scope>test</scope>
+	</dependency>
     <dependency>
       <groupId>com.github.luben</groupId>
       <artifactId>zstd-jni</artifactId>

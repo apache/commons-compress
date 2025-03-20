@@ -58,7 +58,33 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import io.airlift.compress.zstd.ZstdInputStream;
+
 public class ZipArchiveInputStreamTest extends AbstractTest {
+
+    private final class ZipArchiveInputStreamAltZstd extends ZipArchiveInputStream {
+
+        boolean used;
+
+        private ZipArchiveInputStreamAltZstd(InputStream inputStream) {
+            super(inputStream);
+        }
+
+        @Override
+        protected InputStream createZstdInputStream(InputStream bis) throws IOException {
+            return new ZstdInputStream(bis) {
+                @Override
+                public int read(byte[] outputBuffer, int outputOffset, int outputLength) throws IOException {
+                    used = true;
+                    return super.read(outputBuffer, outputOffset, outputLength);
+                }
+            };
+        }
+
+        public boolean isUsed() {
+            return used;
+        }
+    }
 
     private static void nameSource(final String archive, final String entry, int entryNo, final ZipArchiveEntry.NameSource expected) throws Exception {
         try (ZipArchiveInputStream zis = new ZipArchiveInputStream(Files.newInputStream(getFile(archive).toPath()))) {
@@ -314,6 +340,32 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
             data = IOUtils.toByteArray(archive);
             assertEquals(82, data.length);
             assertNull(archive.getNextEntry());
+        }
+    }
+
+    @Test
+    public void testAlternativeZstdImplementation() throws IOException {
+        try (InputStream fs = newInputStream("COMPRESS-692/compress-692.zip");
+                ZipArchiveInputStreamAltZstd archive = new ZipArchiveInputStreamAltZstd(fs)) {
+            assertFalse(archive.isUsed());
+            ZipArchiveEntry e = archive.getNextEntry();
+            assertNotNull(e);
+            assertEquals(ZipMethod.ZSTD.getCode(), e.getMethod());
+            assertEquals("dolor.txt", e.getName());
+            assertEquals(635, e.getCompressedSize());
+            assertEquals(6066, e.getSize());
+            byte[] data = IOUtils.toByteArray(archive);
+            assertEquals(6066, data.length);
+            assertTrue(archive.isUsed());
+            e = archive.getNextEntry();
+            assertNotNull(e);
+            assertEquals(ZipMethod.ZSTD.getCode(), e.getMethod());
+            assertEquals("ipsum.txt", e.getName());
+            assertEquals(636, e.getCompressedSize());
+            assertEquals(6072, e.getSize());
+            data = IOUtils.toByteArray(archive);
+            assertEquals(6072, data.length);
+            assertNotNull(archive.getNextEntry());
         }
     }
 

@@ -51,6 +51,8 @@ import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
 import org.apache.commons.io.input.BoundedInputStream;
 
+import com.github.luben.zstd.ZstdInputStream;
+
 /**
  * Implements an input stream that can read Zip archives.
  * <p>
@@ -773,7 +775,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
                     break;
                 case ZSTD:
                 case ZSTD_DEPRECATED:
-                    current.inputStream = new ZstdCompressorInputStream(bis);
+                    current.inputStream = createZstdInputStream(bis);
                     break;
                 default:
                     // we should never get here as all supported methods have been covered
@@ -788,6 +790,18 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
 
         entriesRead++;
         return current.entry;
+    }
+
+    /**
+     * Creates the appropriate InputStream for the ZSTD compression method.
+     * @param bis the input stream which should be used for compression
+     * @return the {@link InputStream} for handling the Zstd compression
+     * @throws IOException can be thrown by the Inner {@link ZstdInputStream}.
+     *
+     * @since 1.28.0
+     */
+    protected InputStream createZstdInputStream(final InputStream bis) throws IOException {
+        return new ZstdCompressorInputStream(bis);
     }
 
     /**
