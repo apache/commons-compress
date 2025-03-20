@@ -794,14 +794,14 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
 
     /**
      * Creates the appropriate InputStream for the ZSTD compression method.
-     * @param bis the input stream which should be used for compression
-     * @return the {@link InputStream} for handling the Zstd compression
-     * @throws IOException can be thrown by the Inner {@link ZstdInputStream}.
      *
+     * @param in the input stream which should be used for compression.
+     * @return the {@link InputStream} for handling the Zstd compression.
+     * @throws IOException if an I/O error occurs.
      * @since 1.28.0
      */
-    protected InputStream createZstdInputStream(final InputStream bis) throws IOException {
-        return new ZstdCompressorInputStream(bis);
+    protected InputStream createZstdInputStream(final InputStream in) throws IOException {
+        return new ZstdCompressorInputStream(in);
     }
 
     /**
