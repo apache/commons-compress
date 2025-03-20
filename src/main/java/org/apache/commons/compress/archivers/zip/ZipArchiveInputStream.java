@@ -51,8 +51,6 @@ import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
 import org.apache.commons.io.input.BoundedInputStream;
 
-import com.github.luben.zstd.ZstdInputStream;
-
 /**
  * Implements an input stream that can read Zip archives.
  * <p>
