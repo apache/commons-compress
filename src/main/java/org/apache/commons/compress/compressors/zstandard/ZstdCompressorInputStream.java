@@ -40,14 +40,20 @@ public class ZstdCompressorInputStream extends CompressorInputStream implements 
     private final BoundedInputStream countingStream;
     private final ZstdInputStream decIS;
 
+    /**
+     * Constructs a new input stream that decompresses zstd-compressed data from the specific input stream.
+     *
+     * @param in         the input stream of compressed data.
+     * @throws IOException if an I/O error occurs.
+     */
     public ZstdCompressorInputStream(final InputStream in) throws IOException {
         this.decIS = new ZstdInputStream(countingStream = BoundedInputStream.builder().setInputStream(in).get());
     }
 
     /**
-     * Creates a new input stream that decompresses zstd-compressed data from the specific input stream
+     * Constructs a new input stream that decompresses zstd-compressed data from the specific input stream.
      *
-     * @param in         the input stream of compressed data
+     * @param in         the input stream of compressed data.
      * @param bufferPool a configuration of zstd-jni that allows users to customize how buffers are recycled. Either a {@link com.github.luben.zstd.NoPool} or a
      *                   {@link com.github.luben.zstd.RecyclingBufferPool} is allowed here.
      * @throws IOException if an I/O error occurs.
