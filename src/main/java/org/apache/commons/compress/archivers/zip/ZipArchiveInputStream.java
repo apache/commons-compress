@@ -773,7 +773,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
                     break;
                 case ZSTD:
                 case ZSTD_DEPRECATED:
-                    current.inputStream = new ZstdCompressorInputStream(bis);
+                    current.inputStream = createZstdInputStream(bis);
                     break;
                 default:
                     // we should never get here as all supported methods have been covered
@@ -788,6 +788,18 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
 
         entriesRead++;
         return current.entry;
+    }
+
+    /**
+     * Creates the appropriate InputStream for the ZSTD compression method.
+     *
+     * @param in the input stream which should be used for compression.
+     * @return the {@link InputStream} for handling the Zstd compression.
+     * @throws IOException if an I/O error occurs.
+     * @since 1.28.0
+     */
+    protected InputStream createZstdInputStream(final InputStream in) throws IOException {
+        return new ZstdCompressorInputStream(in);
     }
 
     /**
