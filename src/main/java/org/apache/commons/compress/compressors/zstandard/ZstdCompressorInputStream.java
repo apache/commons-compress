@@ -73,6 +73,9 @@ public class ZstdCompressorInputStream extends CompressorInputStream implements 
     }
 
     /**
+     * 
+     * {@inheritDoc}
+     *
      * @since 1.17
      */
     @Override
