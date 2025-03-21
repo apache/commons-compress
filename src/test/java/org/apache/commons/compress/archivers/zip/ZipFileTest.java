@@ -66,7 +66,35 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 
+import io.airlift.compress.zstd.ZstdInputStream;
+
 public class ZipFileTest extends AbstractTest {
+
+    /**
+     * This Class simulates the case where the Zip File uses the aircompressors {@link ZstdInputStream}
+     */
+    private final class AirliftZstdZipFile extends ZipFile {
+        private boolean used;
+
+        private AirliftZstdZipFile(final File file) throws IOException {
+            super(file);
+        }
+
+        protected InputStream createZstdInputStream(final InputStream is) throws IOException {
+            return new ZstdInputStream(is) {
+
+                @Override
+                public int read(final byte[] outputBuffer, final int outputOffset, final int outputLength) throws IOException {
+                    used = true;
+                    return super.read(outputBuffer, outputOffset, outputLength);
+                }
+            };
+        }
+
+        public boolean isUsed() {
+            return used;
+        }
+    }
 
     private static final int OUT_OF_MEMORY = 137;
 
@@ -379,6 +407,35 @@ public class ZipFileTest extends AbstractTest {
                 }
             }
             assertEquals(2, numberOfEntries);
+        }
+    }
+
+    @Test
+    public void testAlternativeZstdInputStream() throws Exception {
+        final File archive = getFile("COMPRESS-692/compress-692.zip");
+        try (AirliftZstdZipFile zf = new AirliftZstdZipFile(archive)) {
+            final byte[] buffer = new byte[7000];
+            final ZipArchiveEntry ze = zf.getEntry("dolor.txt");
+            assertNotNull(ze);
+            try (InputStream inputStream = zf.getInputStream(ze)) {
+                assertNotNull(inputStream);
+                assertFalse(zf.isUsed());
+                final int bytesRead = org.apache.commons.compress.utils.IOUtils.readFully(inputStream, buffer);
+                assertEquals(6066, bytesRead);
+                assertTrue(zf.isUsed());
+            }
+        }
+
+        try (ZipFile builtZipFile = ZipFile.builder().setPath(archive.getAbsolutePath()).setZstdInputStreamFactory(ZstdInputStream::new).get()) {
+            final byte[] buffer = new byte[7000];
+            final ZipArchiveEntry ze = builtZipFile.getEntry("dolor.txt");
+            assertNotNull(ze);
+            try (InputStream inputStream = builtZipFile.getInputStream(ze)) {
+                assertTrue(inputStream instanceof ZstdInputStream);
+                assertNotNull(inputStream);
+                final int bytesRead = org.apache.commons.compress.utils.IOUtils.readFully(inputStream, buffer);
+                assertEquals(6066, bytesRead);
+            }
         }
     }
 

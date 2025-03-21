@@ -126,7 +126,7 @@ public abstract class Attribute extends ClassFileEntry {
      * Writes this body to the given output stream.
      *
      * @param out the output.
-     * @throws IOException
+     * @throws IOException if an I/O error occurs.
      */
     protected abstract void writeBody(DataOutputStream out) throws IOException;
 
