@@ -511,6 +511,18 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     }
 
     /**
+     * Creates the appropriate InputStream for the Zstd compression method.
+     *
+     * @param in the input stream which should be used for compression.
+     * @return the {@link InputStream} for handling the Zstd compression.
+     * @throws IOException if an I/O error occurs.
+     * @since 1.28.0
+     */
+    protected InputStream createZstdInputStream(final InputStream in) throws IOException {
+        return new ZstdCompressorInputStream(in);
+    }
+
+    /**
      * If the compressed size of the current entry is included in the entry header and there are any outstanding bytes in the underlying stream, then this
      * returns true.
      *
@@ -788,18 +800,6 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
 
         entriesRead++;
         return current.entry;
-    }
-
-    /**
-     * Creates the appropriate InputStream for the ZSTD compression method.
-     *
-     * @param in the input stream which should be used for compression.
-     * @return the {@link InputStream} for handling the Zstd compression.
-     * @throws IOException if an I/O error occurs.
-     * @since 1.28.0
-     */
-    protected InputStream createZstdInputStream(final InputStream in) throws IOException {
-        return new ZstdCompressorInputStream(in);
     }
 
     /**

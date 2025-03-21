@@ -62,19 +62,19 @@ import io.airlift.compress.zstd.ZstdInputStream;
 
 public class ZipArchiveInputStreamTest extends AbstractTest {
 
-    private final class ZipArchiveInputStreamAltZstd extends ZipArchiveInputStream {
+    private static final class AirliftZipArchiveInputStream extends ZipArchiveInputStream {
 
-        boolean used;
+        private boolean used;
 
-        private ZipArchiveInputStreamAltZstd(InputStream inputStream) {
+        private AirliftZipArchiveInputStream(final InputStream inputStream) {
             super(inputStream);
         }
 
         @Override
-        protected InputStream createZstdInputStream(InputStream bis) throws IOException {
+        protected InputStream createZstdInputStream(final InputStream bis) throws IOException {
             return new ZstdInputStream(bis) {
                 @Override
-                public int read(byte[] outputBuffer, int outputOffset, int outputLength) throws IOException {
+                public int read(final byte[] outputBuffer, final int outputOffset, final int outputLength) throws IOException {
                     used = true;
                     return super.read(outputBuffer, outputOffset, outputLength);
                 }
@@ -340,32 +340,6 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
             data = IOUtils.toByteArray(archive);
             assertEquals(82, data.length);
             assertNull(archive.getNextEntry());
-        }
-    }
-
-    @Test
-    public void testAlternativeZstdImplementation() throws IOException {
-        try (InputStream fs = newInputStream("COMPRESS-692/compress-692.zip");
-                ZipArchiveInputStreamAltZstd archive = new ZipArchiveInputStreamAltZstd(fs)) {
-            assertFalse(archive.isUsed());
-            ZipArchiveEntry e = archive.getNextEntry();
-            assertNotNull(e);
-            assertEquals(ZipMethod.ZSTD.getCode(), e.getMethod());
-            assertEquals("dolor.txt", e.getName());
-            assertEquals(635, e.getCompressedSize());
-            assertEquals(6066, e.getSize());
-            byte[] data = IOUtils.toByteArray(archive);
-            assertEquals(6066, data.length);
-            assertTrue(archive.isUsed());
-            e = archive.getNextEntry();
-            assertNotNull(e);
-            assertEquals(ZipMethod.ZSTD.getCode(), e.getMethod());
-            assertEquals("ipsum.txt", e.getName());
-            assertEquals(636, e.getCompressedSize());
-            assertEquals(6072, e.getSize());
-            data = IOUtils.toByteArray(archive);
-            assertEquals(6072, data.length);
-            assertNotNull(archive.getNextEntry());
         }
     }
 
@@ -796,6 +770,32 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
                 entriesCount++;
             }
             assertEquals(2, entriesCount);
+        }
+    }
+
+    @Test
+    public void testZipArchiveInputStreamSubclassReplacement() throws IOException {
+        try (InputStream fs = newInputStream("COMPRESS-692/compress-692.zip");
+                AirliftZipArchiveInputStream archive = new AirliftZipArchiveInputStream(fs)) {
+            assertFalse(archive.isUsed());
+            ZipArchiveEntry e = archive.getNextEntry();
+            assertNotNull(e);
+            assertEquals(ZipMethod.ZSTD.getCode(), e.getMethod());
+            assertEquals("dolor.txt", e.getName());
+            assertEquals(635, e.getCompressedSize());
+            assertEquals(6066, e.getSize());
+            byte[] data = IOUtils.toByteArray(archive);
+            assertEquals(6066, data.length);
+            assertTrue(archive.isUsed());
+            e = archive.getNextEntry();
+            assertNotNull(e);
+            assertEquals(ZipMethod.ZSTD.getCode(), e.getMethod());
+            assertEquals("ipsum.txt", e.getName());
+            assertEquals(636, e.getCompressedSize());
+            assertEquals(6072, e.getSize());
+            data = IOUtils.toByteArray(archive);
+            assertEquals(6072, data.length);
+            assertNotNull(archive.getNextEntry());
         }
     }
 

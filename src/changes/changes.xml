@@ -90,6 +90,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add MemoryLimitException.MemoryLimitException(long, int, Throwable) and deprecate MemoryLimitException.MemoryLimitException(long, int, Exception).</action>
       <action type="add" issue="COMPRESS-692" dev="ggregory" due-to="Mehmet Karaman, Andrey Loskutov, Gary Gregory">Add support for zstd compression in zip archives.</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add support for XZ compression in ZIP archives.</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory" issue="COMPRESS-695">Add ZipArchiveInputStream.createZstdInputStream(InputStream) to provide a different InputStream implementation for Zstandard (Zstd) #649.</action>
       <!-- UPDATE -->
       <action type="update" dev="sebb">Bump Commons Parent from 79 to 81</action>
       <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump org.apache.commons:commons-parent from 72 to 79 #563, #567, #574, #582, #587, #595.</action>

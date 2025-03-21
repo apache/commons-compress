@@ -50,7 +50,7 @@ public class ZstdCompressorInputStream extends CompressorInputStream implements 
      * @param in         the input stream of compressed data
      * @param bufferPool a configuration of zstd-jni that allows users to customize how buffers are recycled. Either a {@link com.github.luben.zstd.NoPool} or a
      *                   {@link com.github.luben.zstd.RecyclingBufferPool} is allowed here.
-     * @throws IOException if an IO error occurs.
+     * @throws IOException if an I/O error occurs.
      */
     public ZstdCompressorInputStream(final InputStream in, final BufferPool bufferPool) throws IOException {
         this.decIS = new ZstdInputStream(countingStream = BoundedInputStream.builder().setInputStream(in).get(), bufferPool);
