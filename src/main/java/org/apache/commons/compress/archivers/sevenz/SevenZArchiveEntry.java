@@ -162,8 +162,8 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     /**
      * Gets the compressed CRC.
      *
-     * @since 1.7
      * @return the CRC
+     * @since 1.7
      */
     long getCompressedCrcValue() {
         return compressedCrc;
@@ -190,8 +190,8 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      * The methods will be consulted in iteration order to create the final output.
      * </p>
      *
-     * @since 1.8
      * @return the methods to use for the content
+     * @since 1.8
      */
     public Iterable<? extends SevenZMethodConfiguration> getContentMethods() {
         return contentMethods;
@@ -211,8 +211,8 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     /**
      * Gets the CRC.
      *
-     * @since 1.7
      * @return the CRC
+     * @since 1.7
      */
     public long getCrcValue() {
         return crc;
@@ -440,8 +440,8 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     /**
      * Sets the compressed CRC.
      *
-     * @since 1.7
      * @param crc the CRC
+     * @since 1.7
      */
     void setCompressedCrcValue(final long crc) {
         this.compressedCrc = crc;
@@ -514,8 +514,8 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     /**
      * Sets the CRC.
      *
-     * @since 1.7
      * @param crc the CRC
+     * @since 1.7
      */
     public void setCrcValue(final long crc) {
         this.crc = crc;

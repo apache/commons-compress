@@ -1059,8 +1059,8 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     /**
      * Tests whether this entry represents a Unix symlink, in which case the entry's content contains the target path for the symlink.
      *
-     * @since 1.5
      * @return true if the entry represents a Unix symlink, false otherwise.
+     * @since 1.5
      */
     public boolean isUnixSymlink() {
         return (getUnixMode() & UnixStat.FILE_TYPE_FLAG) == UnixStat.LINK_FLAG;

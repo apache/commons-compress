@@ -247,9 +247,9 @@ public class TarUtils {
      * @param offset   The starting offset into the buffer
      * @param length   The maximum number of header bytes to copy.
      * @param encoding name of the encoding to use for file names
-     * @since 1.4
      * @return The updated offset, i.e. offset + length
      * @throws IOException on error
+     * @since 1.4
      */
     public static int formatNameBytes(final String name, final byte[] buf, final int offset, final int length, final ZipEncoding encoding) throws IOException {
         int len = name.length();
@@ -417,9 +417,9 @@ public class TarUtils {
      * @param offset   The offset into the buffer from which to parse.
      * @param length   The maximum number of bytes to parse.
      * @param encoding name of the encoding to use for file names
-     * @since 1.4
      * @return The entry name.
      * @throws IOException on error
+     * @since 1.4
      */
     public static String parseName(final byte[] buffer, final int offset, final int length, final ZipEncoding encoding) throws IOException {
         int len = 0;
@@ -744,10 +744,10 @@ public class TarUtils {
     /**
      * Parses the content of a PAX 1.0 sparse block.
      *
-     * @since 1.20
      * @param buffer The buffer from which to parse.
      * @param offset The offset into the buffer from which to parse.
      * @return a parsed sparse struct
+     * @since 1.20
      */
     public static TarArchiveStructSparse parseSparse(final byte[] buffer, final int offset) {
         final long sparseOffset = parseOctalOrBinary(buffer, offset, TarConstants.SPARSE_OFFSET_LEN);

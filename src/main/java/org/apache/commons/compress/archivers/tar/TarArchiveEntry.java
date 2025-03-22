@@ -766,8 +766,8 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Gets this entry's creation time.
      *
-     * @since 1.22
      * @return This entry's computed creation time.
+     * @since 1.22
      */
     public FileTime getCreationTime() {
         return birthTime;
@@ -887,8 +887,8 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Gets this entry's last access time.
      *
-     * @since 1.22
      * @return This entry's last access time.
+     * @since 1.22
      */
     public FileTime getLastAccessTime() {
         return aTime;
@@ -908,8 +908,8 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Gets this entry's modification time.
      *
-     * @since 1.22
      * @return This entry's modification time.
+     * @since 1.22
      */
     public FileTime getLastModifiedTime() {
         return mTime;
@@ -937,8 +937,8 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Gets this entry's group id.
      *
-     * @since 1.10
      * @return This entry's group id.
+     * @since 1.10
      */
     public long getLongGroupId() {
         return groupId;
@@ -1079,8 +1079,8 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Gets this entry's status change time.
      *
-     * @since 1.22
      * @return This entry's status change time.
+     * @since 1.22
      */
     public FileTime getStatusChangeTime() {
         return cTime;
@@ -1119,8 +1119,8 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Tests whether this is a block device entry.
      *
-     * @since 1.2
      * @return whether this is a block device
+     * @since 1.2
      */
     public boolean isBlockDevice() {
         return linkFlag == LF_BLK;
@@ -1129,8 +1129,8 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Tests whether this is a character device entry.
      *
-     * @since 1.2
      * @return whether this is a character device
+     * @since 1.2
      */
     public boolean isCharacterDevice() {
         return linkFlag == LF_CHR;
@@ -1185,8 +1185,8 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Tests whether this is a FIFO (pipe) entry.
      *
-     * @since 1.2
      * @return whether this is a FIFO entry
+     * @since 1.2
      */
     public boolean isFIFO() {
         return linkFlag == LF_FIFO;
@@ -1195,8 +1195,8 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Tests whether this is a "normal file"
      *
-     * @since 1.2
      * @return whether this is a "normal file"
+     * @since 1.2
      */
     public boolean isFile() {
         if (file != null) {
@@ -1284,8 +1284,8 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Tests whether this is a link entry.
      *
-     * @since 1.2
      * @return whether this is a link entry
+     * @since 1.2
      */
     public boolean isLink() {
         return linkFlag == LF_LINK;
@@ -1364,8 +1364,8 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Tests whether this is a symbolic link entry.
      *
-     * @since 1.2
      * @return whether this is a symbolic link
+     * @since 1.2
      */
     public boolean isSymbolicLink() {
         return linkFlag == LF_SYMLINK;
@@ -1756,8 +1756,8 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Sets this entry's group id.
      *
-     * @since 1.10
      * @param groupId This entry's new group id.
+     * @since 1.10
      */
     public void setGroupId(final long groupId) {
         this.groupId = groupId;

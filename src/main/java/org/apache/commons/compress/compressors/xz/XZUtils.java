@@ -155,8 +155,8 @@ public class XZUtils {
     /**
      * Are the classes required to support XZ compression available?
      *
-     * @since 1.5
      * @return true if the classes required to support XZ compression are available
+     * @since 1.5
      */
     public static boolean isXZCompressionAvailable() {
         final CachedAvailability cachedResult = cachedXZAvailability;

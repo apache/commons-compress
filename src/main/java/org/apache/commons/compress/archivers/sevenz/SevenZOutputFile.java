@@ -408,8 +408,8 @@ public class SevenZOutputFile implements Closeable {
      * The methods will be consulted in iteration order to create the final output.
      * </p>
      *
-     * @since 1.8
      * @param methods the default (compression) methods
+     * @since 1.8
      */
     public void setContentMethods(final Iterable<? extends SevenZMethodConfiguration> methods) {
         this.contentMethods = reverse(methods);

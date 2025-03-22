@@ -1430,8 +1430,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * non-seekable stream - in this case the default is {@link Zip64Mode#Never Never}.
      * </p>
      *
-     * @since 1.3
      * @param mode Whether Zip64 extensions will be used.
+     * @since 1.3
      */
     public void setUseZip64(final Zip64Mode mode) {
         zip64Mode = mode;

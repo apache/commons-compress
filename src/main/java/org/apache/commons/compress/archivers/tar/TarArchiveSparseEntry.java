@@ -73,8 +73,8 @@ public class TarArchiveSparseEntry implements TarConstants {
     /**
      * Gets information about the configuration for the sparse entry.
      *
-     * @since 1.20
      * @return information about the configuration for the sparse entry.
+     * @since 1.20
      */
     public List<TarArchiveStructSparse> getSparseHeaders() {
         return sparseHeaders;

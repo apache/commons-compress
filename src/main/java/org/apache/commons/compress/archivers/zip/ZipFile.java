@@ -1000,9 +1000,9 @@ public class ZipFile implements Closeable {
      * May return false if it is set up to use encryption or a compression method that hasn't been implemented yet.
      * </p>
      *
-     * @since 1.1
      * @param entry the entry
      * @return whether this class is able to read the given entry.
+     * @since 1.1
      */
     public boolean canReadEntryData(final ZipArchiveEntry entry) {
         return ZipUtil.canHandleEntryData(entry);
