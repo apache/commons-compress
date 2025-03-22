@@ -116,8 +116,8 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
      *
      * @param is       stream to read from
      * @param encoding the encoding to use for file names, use null for the platform's default encoding
-     * @since 1.6
      * @throws ArchiveException on error
+     * @since 1.6
      */
     public DumpArchiveInputStream(final InputStream is, final String encoding) throws ArchiveException {
         super(is, encoding);

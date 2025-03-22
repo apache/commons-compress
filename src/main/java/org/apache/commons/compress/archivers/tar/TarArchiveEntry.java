@@ -415,9 +415,9 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      *
      * @param headerBuf The header bytes from a tar archive entry.
      * @param encoding  encoding to use for file names
-     * @since 1.4
      * @throws IllegalArgumentException if any of the numeric fields have an invalid format
      * @throws IOException              on error
+     * @since 1.4
      */
     public TarArchiveEntry(final byte[] headerBuf, final ZipEncoding encoding) throws IOException {
         this(headerBuf, encoding, false);
@@ -430,9 +430,9 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * @param encoding  encoding to use for file names
      * @param lenient   when set to true illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
      *                  {@link #UNKNOWN}. When set to false such illegal fields cause an exception instead.
-     * @since 1.19
      * @throws IllegalArgumentException if any of the numeric fields have an invalid format
      * @throws IOException              on error
+     * @since 1.19
      */
     public TarArchiveEntry(final byte[] headerBuf, final ZipEncoding encoding, final boolean lenient) throws IOException {
         this(Collections.emptyMap(), headerBuf, encoding, lenient);
@@ -446,9 +446,9 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * @param lenient    when set to true illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
      *                   {@link #UNKNOWN}. When set to false such illegal fields cause an exception instead.
      * @param dataOffset position of the entry data in the random access file.
-     * @since 1.21
      * @throws IllegalArgumentException if any of the numeric fields have an invalid format.
      * @throws IOException              on error.
+     * @since 1.21
      */
     public TarArchiveEntry(final byte[] headerBuf, final ZipEncoding encoding, final boolean lenient, final long dataOffset) throws IOException {
         this(headerBuf, encoding, lenient);
@@ -519,9 +519,9 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * @param encoding         encoding to use for file names
      * @param lenient          when set to true illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
      *                         {@link #UNKNOWN}. When set to false such illegal fields cause an exception instead.
-     * @since 1.22
      * @throws IllegalArgumentException if any of the numeric fields have an invalid format
      * @throws IOException              on error
+     * @since 1.22
      */
     public TarArchiveEntry(final Map<String, String> globalPaxHeaders, final byte[] headerBuf, final ZipEncoding encoding, final boolean lenient)
             throws IOException {
@@ -538,9 +538,9 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * @param lenient          when set to true illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
      *                         {@link #UNKNOWN}. When set to false such illegal fields cause an exception instead.
      * @param dataOffset       position of the entry data in the random access file.
-     * @since 1.22
      * @throws IllegalArgumentException if any of the numeric fields have an invalid format.
      * @throws IOException              on error.
+     * @since 1.22
      */
     public TarArchiveEntry(final Map<String, String> globalPaxHeaders, final byte[] headerBuf, final ZipEncoding encoding, final boolean lenient,
             final long dataOffset) throws IOException {
@@ -991,8 +991,8 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * Gets this entry's sparse headers ordered by offset with all empty sparse sections at the start filtered out.
      *
      * @return immutable list of this entry's sparse headers, never null
-     * @since 1.21
      * @throws IOException if the list of sparse headers contains blocks that overlap
+     * @since 1.21
      */
     public List<TarArchiveStructSparse> getOrderedSparseHeaders() throws IOException {
         if (sparseHeaders == null || sparseHeaders.isEmpty()) {
@@ -1434,9 +1434,9 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      *
      * @param header   The tar entry header buffer to get information from.
      * @param encoding encoding to use for file names
-     * @since 1.4
      * @throws IllegalArgumentException if any of the numeric fields have an invalid format
      * @throws IOException              on error
+     * @since 1.4
      */
     public void parseTarHeader(final byte[] header, final ZipEncoding encoding) throws IOException {
         parseTarHeader(header, encoding, false, false);
@@ -1974,8 +1974,8 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * @param encoding encoding to use when writing the file name.
      * @param starMode whether to use the star/GNU tar/BSD tar extension for numeric fields if their value doesn't fit in the maximum size of standard tar
      *                 archives
-     * @since 1.4
      * @throws IOException on error
+     * @since 1.4
      */
     public void writeEntryHeader(final byte[] outbuf, final ZipEncoding encoding, final boolean starMode) throws IOException {
         int offset = 0;

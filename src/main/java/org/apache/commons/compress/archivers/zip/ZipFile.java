@@ -1266,8 +1266,8 @@ public class ZipFile implements Closeable {
      *
      * @param entry The entry to get the stream for
      * @return The raw input stream containing (possibly) compressed data.
-     * @since 1.11
      * @throws IOException if there is a problem reading data offset (added in version 1.22).
+     * @since 1.11
      */
     public InputStream getRawInputStream(final ZipArchiveEntry entry) throws IOException {
         if (!(entry instanceof Entry)) {

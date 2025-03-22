@@ -94,8 +94,8 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
     /**
      * Finishes writing compressed data to the underlying stream without closing it.
      *
-     * @since 1.7
      * @throws IOException on error
+     * @since 1.7
      */
     @Override
     public void finish() throws IOException {
