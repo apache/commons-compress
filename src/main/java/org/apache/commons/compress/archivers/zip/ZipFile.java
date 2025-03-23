@@ -65,6 +65,7 @@ import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.build.AbstractOrigin.ByteArrayOrigin;
 import org.apache.commons.io.build.AbstractStreamBuilder;
+import org.apache.commons.io.function.IOFunction;
 import org.apache.commons.io.function.IOStream;
 import org.apache.commons.io.input.BoundedInputStream;
 
@@ -138,6 +139,7 @@ public class ZipFile implements Closeable {
         private boolean useUnicodeExtraFields = true;
         private boolean ignoreLocalFileHeader;
         private long maxNumberOfDisks = 1;
+        private IOFunction<InputStream, InputStream> zstdInputStream = ZstdCompressorInputStream::new;
 
         /**
          * Constructs a new instance.
@@ -167,7 +169,24 @@ public class ZipFile implements Closeable {
                 actualDescription = path.toString();
             }
             final boolean closeOnError = seekableByteChannel != null;
-            return new ZipFile(actualChannel, actualDescription, getCharset(), useUnicodeExtraFields, closeOnError, ignoreLocalFileHeader);
+            return new ZipFile(actualChannel, actualDescription, getCharset(), useUnicodeExtraFields, closeOnError, ignoreLocalFileHeader, zstdInputStream);
+        }
+
+        /**
+         * This method sets the {@link IOFunction} which will be used the create an
+         * {@link InputStream}, which could be used to replace the officially supported
+         * ZSTD compression library.
+         *
+         * @param zstdInpStreamFactory the IOFunction which gives the ability to return
+         *                             a different InputStream for Zstd compression, if
+         *                             parameter is null than it will be set to default.
+         * @return {@code this} instance
+         * @since 1.28.0
+         */
+        public Builder setZstdInputStreamFactory(IOFunction<InputStream, InputStream> zstdInpStreamFactory) {
+            this.zstdInputStream = zstdInpStreamFactory == null ? ZstdCompressorInputStream::new : zstdInpStreamFactory;
+
+            return this;
         }
 
         /**
@@ -721,6 +740,8 @@ public class ZipFile implements Closeable {
 
     private final ByteBuffer shortBbuf = ByteBuffer.wrap(shortBuf);
 
+    private final IOFunction<InputStream, InputStream> zstdInputStream;
+
     private long centralDirectoryStartDiskNumber;
 
     private long centralDirectoryStartRelativeOffset;
@@ -892,12 +913,13 @@ public class ZipFile implements Closeable {
     }
 
     private ZipFile(final SeekableByteChannel channel, final String channelDescription, final Charset encoding, final boolean useUnicodeExtraFields,
-            final boolean closeOnError, final boolean ignoreLocalFileHeader) throws IOException {
+            final boolean closeOnError, final boolean ignoreLocalFileHeader, IOFunction<InputStream, InputStream> zstdInputStream) throws IOException {
         this.isSplitZipArchive = channel instanceof ZipSplitReadOnlySeekableByteChannel;
         this.encoding = Charsets.toCharset(encoding, Builder.DEFAULT_CHARSET);
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
         this.useUnicodeExtraFields = useUnicodeExtraFields;
         this.archive = channel;
+        this.zstdInputStream = zstdInputStream;
         boolean success = false;
         try {
             final Map<ZipArchiveEntry, NameAndComment> entriesWithoutUTF8Flag = populateFromCentralDirectory();
@@ -966,7 +988,8 @@ public class ZipFile implements Closeable {
 
     private ZipFile(final SeekableByteChannel channel, final String channelDescription, final String encoding, final boolean useUnicodeExtraFields,
             final boolean closeOnError, final boolean ignoreLocalFileHeader) throws IOException {
-        this(channel, channelDescription, Charsets.toCharset(encoding), useUnicodeExtraFields, closeOnError, ignoreLocalFileHeader);
+        this(channel, channelDescription, Charsets.toCharset(encoding), useUnicodeExtraFields, closeOnError,
+                ignoreLocalFileHeader, ZstdCompressorInputStream::new);
     }
 
     /**
@@ -1234,7 +1257,7 @@ public class ZipFile implements Closeable {
             return new Deflate64CompressorInputStream(is);
         case ZSTD:
         case ZSTD_DEPRECATED:
-            return new ZstdCompressorInputStream(is);
+            return createZstdInputStream(is);
         case XZ:
             return new XZCompressorInputStream(is);
         case AES_ENCRYPTED:
@@ -1252,6 +1275,18 @@ public class ZipFile implements Closeable {
         default:
             throw new UnsupportedZipFeatureException(ZipMethod.getMethodByCode(entry.getMethod()), entry);
         }
+    }
+
+    /**
+     * Creates the appropriate InputStream for the ZSTD compression method.
+     *
+     * @param is the input stream which should be used for compression.
+     * @return the {@link InputStream} for handling the Zstd compression.
+     * @throws IOException if an I/O error occurs.
+     * @since 1.28.0
+     */
+    protected InputStream createZstdInputStream(final InputStream is) throws IOException {
+        return zstdInputStream.apply(is);
     }
 
     /**
