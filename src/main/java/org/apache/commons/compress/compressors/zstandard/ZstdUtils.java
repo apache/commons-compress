@@ -114,7 +114,7 @@ public class ZstdUtils {
     }
 
     /**
-     * Whether to cache the result of the Zstandard for Java check.
+     * Sets whether to cache the result of the Zstandard for Java check.
      *
      * <p>
      * This defaults to {@code false} in an OSGi environment and {@code true} otherwise.

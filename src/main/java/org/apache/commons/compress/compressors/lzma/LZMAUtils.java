@@ -174,7 +174,7 @@ public class LZMAUtils {
     }
 
     /**
-     * Whether to cache the result of the LZMA check.
+     * Sets whether to cache the result of the LZMA check.
      *
      * <p>
      * This defaults to {@code false} in an OSGi environment and {@code true} otherwise.

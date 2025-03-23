@@ -1301,7 +1301,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     }
 
     /**
-     * Whether to create Unicode Extra Fields.
+     * Sets whether to create Unicode Extra Fields.
      * <p>
      * Defaults to NEVER.
      * </p>
@@ -1347,7 +1347,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     }
 
     /**
-     * Whether to fall back to UTF and the language encoding flag if the file name cannot be encoded using the specified encoding.
+     * Sets whether to fall back to UTF and the language encoding flag if the file name cannot be encoded using the specified encoding.
      * <p>
      * Defaults to false.
      * </p>
@@ -1391,7 +1391,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     }
 
     /**
-     * Whether to set the language encoding flag if the file name encoding is UTF-8.
+     * Sets whether to set the language encoding flag if the file name encoding is UTF-8.
      * <p>
      * Defaults to true.
      * </p>
@@ -1403,7 +1403,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     }
 
     /**
-     * Whether Zip64 extensions will be used.
+     * Sets whether Zip64 extensions will be used.
      * <p>
      * When setting the mode to {@link Zip64Mode#Never Never}, {@link #putArchiveEntry}, {@link #closeArchiveEntry}, {@link #finish} or {@link #close} may throw
      * a {@link Zip64RequiredException} if the entry's size or the total size of the archive exceeds 4GB or there are more than 65,536 entries inside the
@@ -1438,7 +1438,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     }
 
     /**
-     * Whether to add a Zip64 extended information extra field to the local file header.
+     * Tests whether to add a Zip64 extended information extra field to the local file header.
      * <p>
      * Returns true if
      * </p>
@@ -1455,10 +1455,13 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     }
 
     /**
+     * Tests if zip64 End Of Central Directory is needed.
+     * <p>
      * 4.4.1.4 If one of the fields in the end of central directory record is too small to hold required data, the field SHOULD be set to -1 (0xFFFF or
      * 0xFFFFFFFF) and the ZIP64 format record SHOULD be created.
+     * </p>
      *
-     * @return true if zip64 End Of Central Directory is needed
+     * @return true if zip64 End Of Central Directory is needed.
      */
     private boolean shouldUseZip64EOCD() {
         int numberOfThisDisk = 0;

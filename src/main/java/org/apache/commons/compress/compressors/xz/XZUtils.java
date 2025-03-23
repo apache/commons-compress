@@ -193,7 +193,7 @@ public class XZUtils {
     }
 
     /**
-     * Whether to cache the result of the XZ for Java check.
+     * Sets whether to cache the result of the XZ for Java check.
      *
      * <p>
      * This defaults to {@code false} in an OSGi environment and {@code true} otherwise.

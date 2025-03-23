@@ -74,7 +74,7 @@ public class DeflateParameters {
     }
 
     /**
-     * Whether or not the zlib header shall be written (when compressing) or expected (when decompressing).
+     * Tests whether or not the zlib header shall be written (when compressing) or expected (when decompressing).
      *
      * @return true if zlib header shall be written
      */

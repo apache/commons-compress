@@ -133,7 +133,7 @@ public class SevenZFileOptions {
     }
 
     /**
-     * Whether {@link SevenZFile} shall try to recover from a certain type of broken archive.
+     * Gets whether {@link SevenZFile} shall try to recover from a certain type of broken archive.
      *
      * @return whether SevenZFile shall try to recover from a certain type of broken archive.
      * @since 1.21
