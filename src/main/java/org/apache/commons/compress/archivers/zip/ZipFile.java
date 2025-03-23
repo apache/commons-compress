@@ -93,6 +93,8 @@ import org.apache.commons.io.input.BoundedInputStream;
  */
 public class ZipFile implements Closeable {
 
+    private static final IOFunction<InputStream, InputStream> DEFAULT_ZSTD_INPUT_STREAM_FACTORY = ZstdCompressorInputStream::new;
+
     /**
      * Lock-free implementation of BoundedInputStream. The implementation uses positioned reads on the underlying archive file channel and therefore performs
      * significantly faster in concurrent environment.
@@ -139,7 +141,7 @@ public class ZipFile implements Closeable {
         private boolean useUnicodeExtraFields = true;
         private boolean ignoreLocalFileHeader;
         private long maxNumberOfDisks = 1;
-        private IOFunction<InputStream, InputStream> zstdInputStream = ZstdCompressorInputStream::new;
+        private IOFunction<InputStream, InputStream> zstdInputStream = DEFAULT_ZSTD_INPUT_STREAM_FACTORY;
 
         /**
          * Constructs a new instance.
@@ -173,19 +175,18 @@ public class ZipFile implements Closeable {
         }
 
         /**
-         * This method sets the {@link IOFunction} which will be used the create an
-         * {@link InputStream}, which could be used to replace the officially supported
-         * ZSTD compression library.
+         * Sets the factory {@link IOFunction} to create a Zstd {@link InputStream}. Defaults to
+         * {@link ZstdCompressorInputStream#ZstdCompressorInputStream(InputStream)}.
+         * <p>
+         * Call this method to plugin an alternate Zstd input stream implementation.
+         * </p>
          *
-         * @param zstdInpStreamFactory the IOFunction which gives the ability to return
-         *                             a different InputStream for Zstd compression, if
-         *                             parameter is null than it will be set to default.
-         * @return {@code this} instance
+         * @param zstdInpStreamFactory the factory {@link IOFunction} to create a Zstd {@link InputStream}; {@code null} resets to the default.
+         * @return {@code this} instance.
          * @since 1.28.0
          */
-        public Builder setZstdInputStreamFactory(IOFunction<InputStream, InputStream> zstdInpStreamFactory) {
-            this.zstdInputStream = zstdInpStreamFactory == null ? ZstdCompressorInputStream::new : zstdInpStreamFactory;
-
+        public Builder setZstdInputStreamFactory(final IOFunction<InputStream, InputStream> zstdInpStreamFactory) {
+            this.zstdInputStream = zstdInpStreamFactory == null ? DEFAULT_ZSTD_INPUT_STREAM_FACTORY : zstdInpStreamFactory;
             return this;
         }
 
@@ -913,7 +914,7 @@ public class ZipFile implements Closeable {
     }
 
     private ZipFile(final SeekableByteChannel channel, final String channelDescription, final Charset encoding, final boolean useUnicodeExtraFields,
-            final boolean closeOnError, final boolean ignoreLocalFileHeader, IOFunction<InputStream, InputStream> zstdInputStream) throws IOException {
+            final boolean closeOnError, final boolean ignoreLocalFileHeader, final IOFunction<InputStream, InputStream> zstdInputStream) throws IOException {
         this.isSplitZipArchive = channel instanceof ZipSplitReadOnlySeekableByteChannel;
         this.encoding = Charsets.toCharset(encoding, Builder.DEFAULT_CHARSET);
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
@@ -988,8 +989,8 @@ public class ZipFile implements Closeable {
 
     private ZipFile(final SeekableByteChannel channel, final String channelDescription, final String encoding, final boolean useUnicodeExtraFields,
             final boolean closeOnError, final boolean ignoreLocalFileHeader) throws IOException {
-        this(channel, channelDescription, Charsets.toCharset(encoding), useUnicodeExtraFields, closeOnError,
-                ignoreLocalFileHeader, ZstdCompressorInputStream::new);
+        this(channel, channelDescription, Charsets.toCharset(encoding), useUnicodeExtraFields, closeOnError, ignoreLocalFileHeader,
+                DEFAULT_ZSTD_INPUT_STREAM_FACTORY);
     }
 
     /**
