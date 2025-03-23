@@ -290,7 +290,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
     }
 
     /**
-     * Whether this class is able to read the given entry.
+     * Tests whether this class is able to read the given entry.
      *
      * @return The implementation will return true if the {@link ArchiveEntry} is an instance of {@link TarArchiveEntry}
      */

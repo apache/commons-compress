@@ -1019,7 +1019,7 @@ public class ZipFile implements Closeable {
     }
 
     /**
-     * Whether this class is able to read the given entry.
+     * Tests whether this class is able to read the given entry.
      * <p>
      * May return false if it is set up to use encryption or a compression method that hasn't been implemented yet.
      * </p>

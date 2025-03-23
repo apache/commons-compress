@@ -82,7 +82,7 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Compre
     }
 
     /**
-     * Whether this stream is able to write the given entry.
+     * Tests whether this stream is able to write the given entry.
      *
      * <p>
      * Some archive formats support variants or details that are not supported (yet).

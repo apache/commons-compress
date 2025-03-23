@@ -130,7 +130,7 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
     }
 
     /**
-     * Whether this stream is able to read the given entry.
+     * Tests whether this stream is able to read the given entry.
      * <p>
      * Some archive formats support variants or details that are not supported (yet).
      * </p>

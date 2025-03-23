@@ -531,7 +531,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     }
 
     /**
-     * Whether this stream is able to write the given entry.
+     * Tests whether this stream is able to write the given entry.
      * <p>
      * May return false if it is set up to use encryption or a compression method that hasn't been implemented yet.
      * </p>
