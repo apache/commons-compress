@@ -93,7 +93,9 @@ import org.apache.commons.io.input.BoundedInputStream;
  */
 public class ZipFile implements Closeable {
 
-    private static final IOFunction<InputStream, InputStream> DEFAULT_ZSTD_INPUT_STREAM_FACTORY = ZstdCompressorInputStream::new;
+    private static final IOFunction<InputStream, InputStream> DEFAULT_ZSTD_INPUT_STREAM_FACTORY = i -> {
+        return new ZstdCompressorInputStream(i);
+    };
 
     /**
      * Lock-free implementation of BoundedInputStream. The implementation uses positioned reads on the underlying archive file channel and therefore performs
