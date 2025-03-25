@@ -180,6 +180,7 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
         final byte[] buf = new byte[2];
         try (InputStream in = newInputStream("bla.zip");
                 ZipArchiveInputStream archive = new ZipArchiveInputStream(in)) {
+            assertEquals(-1, archive.getCompressedCount());
             assertNotNull(archive.getNextEntry());
             IOUtils.toByteArray(archive);
             assertEquals(-1, archive.read(buf));
@@ -198,10 +199,24 @@ public class ZipArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
+    public void testGetCompressedCountEmptyZip() throws IOException {
+        try (ZipArchiveInputStream zin = new ZipArchiveInputStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY))) {
+            assertEquals(-1, zin.getCompressedCount());
+        }
+    }
+
+    @Test
     public void testGetFirstEntryEmptyZip() throws IOException {
         try (ZipArchiveInputStream zin = new ZipArchiveInputStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY))) {
             final ZipArchiveEntry entry = zin.getNextEntry();
             assertNull(entry);
+        }
+    }
+
+    @Test
+    public void testGetUncompressedCountEmptyZip() throws IOException {
+        try (ZipArchiveInputStream zin = new ZipArchiveInputStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY))) {
+            assertEquals(0, zin.getUncompressedCount());
         }
     }
 

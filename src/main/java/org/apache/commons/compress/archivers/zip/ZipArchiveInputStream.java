@@ -626,6 +626,9 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     @SuppressWarnings("resource") // checkInputStream() does not allocate.
     @Override
     public long getCompressedCount() {
+        if (current == null) {
+            return -1;
+        }
         final int method = current.entry.getMethod();
         if (method == ZipArchiveOutputStream.STORED) {
             return current.bytesRead;
