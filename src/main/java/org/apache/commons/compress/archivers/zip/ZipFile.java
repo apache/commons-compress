@@ -93,8 +93,6 @@ import org.apache.commons.io.input.BoundedInputStream;
  */
 public class ZipFile implements Closeable {
 
-    private static final IOFunction<InputStream, InputStream> DEFAULT_ZSTD_INPUT_STREAM_FACTORY = ZstdCompressorInputStream::new;
-
     /**
      * Lock-free implementation of BoundedInputStream. The implementation uses positioned reads on the underlying archive file channel and therefore performs
      * significantly faster in concurrent environment.
@@ -136,12 +134,11 @@ public class ZipFile implements Closeable {
     public static class Builder extends AbstractStreamBuilder<ZipFile, Builder> {
 
         static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
-
         private SeekableByteChannel seekableByteChannel;
         private boolean useUnicodeExtraFields = true;
         private boolean ignoreLocalFileHeader;
         private long maxNumberOfDisks = 1;
-        private IOFunction<InputStream, InputStream> zstdInputStream = DEFAULT_ZSTD_INPUT_STREAM_FACTORY;
+        private IOFunction<InputStream, InputStream> zstdInputStreamFactory;
 
         /**
          * Constructs a new instance.
@@ -171,7 +168,8 @@ public class ZipFile implements Closeable {
                 actualDescription = path.toString();
             }
             final boolean closeOnError = seekableByteChannel != null;
-            return new ZipFile(actualChannel, actualDescription, getCharset(), useUnicodeExtraFields, closeOnError, ignoreLocalFileHeader, zstdInputStream);
+            return new ZipFile(actualChannel, actualDescription, getCharset(), useUnicodeExtraFields, closeOnError, ignoreLocalFileHeader,
+                    zstdInputStreamFactory);
         }
 
         /**
@@ -186,7 +184,7 @@ public class ZipFile implements Closeable {
          * @since 1.28.0
          */
         public Builder setZstdInputStreamFactory(final IOFunction<InputStream, InputStream> zstdInpStreamFactory) {
-            this.zstdInputStream = zstdInpStreamFactory == null ? DEFAULT_ZSTD_INPUT_STREAM_FACTORY : zstdInpStreamFactory;
+            this.zstdInputStreamFactory = zstdInpStreamFactory;
             return this;
         }
 
@@ -741,7 +739,7 @@ public class ZipFile implements Closeable {
 
     private final ByteBuffer shortBbuf = ByteBuffer.wrap(shortBuf);
 
-    private final IOFunction<InputStream, InputStream> zstdInputStream;
+    private final IOFunction<InputStream, InputStream> zstdInputStreamFactory;
 
     private long centralDirectoryStartDiskNumber;
 
@@ -920,7 +918,7 @@ public class ZipFile implements Closeable {
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
         this.useUnicodeExtraFields = useUnicodeExtraFields;
         this.archive = channel;
-        this.zstdInputStream = zstdInputStream;
+        this.zstdInputStreamFactory = zstdInputStream;
         boolean success = false;
         try {
             final Map<ZipArchiveEntry, NameAndComment> entriesWithoutUTF8Flag = populateFromCentralDirectory();
@@ -989,8 +987,7 @@ public class ZipFile implements Closeable {
 
     private ZipFile(final SeekableByteChannel channel, final String channelDescription, final String encoding, final boolean useUnicodeExtraFields,
             final boolean closeOnError, final boolean ignoreLocalFileHeader) throws IOException {
-        this(channel, channelDescription, Charsets.toCharset(encoding), useUnicodeExtraFields, closeOnError, ignoreLocalFileHeader,
-                DEFAULT_ZSTD_INPUT_STREAM_FACTORY);
+        this(channel, channelDescription, Charsets.toCharset(encoding), useUnicodeExtraFields, closeOnError, ignoreLocalFileHeader, null);
     }
 
     /**
@@ -1279,15 +1276,16 @@ public class ZipFile implements Closeable {
     }
 
     /**
-     * Creates the appropriate InputStream for the ZSTD compression method.
+     * Creates an InputStream for the Zstd compression method.
      *
-     * @param is the input stream which should be used for compression.
+     * @param in the input stream which should be used for compression.
      * @return the {@link InputStream} for handling the Zstd compression.
      * @throws IOException if an I/O error occurs.
-     * @since 1.28.0
      */
-    protected InputStream createZstdInputStream(final InputStream is) throws IOException {
-        return zstdInputStream.apply(is);
+    @SuppressWarnings("resource")
+    InputStream createZstdInputStream(final InputStream in) throws IOException {
+        // This method is the only location that references ZstdCompressorInputStream directly to avoid requiring the JAR for all use cases.
+        return zstdInputStreamFactory != null ? zstdInputStreamFactory.apply(in) : new ZstdCompressorInputStream(in);
     }
 
     /**
