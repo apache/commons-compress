@@ -50,3 +50,4 @@ jobs:
     - name: Build with Maven
       # TEMP -Ddoclint=none
       run: mvn -V --file pom.xml --no-transfer-progress -Ddoclint=none
+      
