@@ -22,6 +22,8 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
+
 
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -53,6 +55,25 @@ public class DumpArchiveInputStreamTest extends AbstractTestCase {
         } catch (final ArchiveException ex) {
             // expected
             assertTrue(ex.getCause() instanceof UnrecognizedFormatException);
+        }
+    }
+
+    @Test
+    public void testDirectoryNullBytes() throws Exception {
+        try (InputStream is = Files.newInputStream(getFile("org/apache/commons/compress/dump/directory_null_bytes.dump").toPath());
+             DumpArchiveInputStream archive = new DumpArchiveInputStream(is)) {
+            assertThrows(InvalidFormatException.class, archive::getNextEntry);
+        }
+    }
+
+    @Test
+    public void testInvalidCompressType() throws Exception {
+        try (InputStream is = Files.newInputStream(getFile("org/apache/commons/compress/dump/invalid_compression_type.dump").toPath())) {
+            new DumpArchiveInputStream(is).close();
+            fail("expected an exception");
+        } catch (final ArchiveException ex) {
+            // expected
+            assertTrue(ex.getCause() instanceof UnsupportedCompressionAlgorithmException);
         }
     }
 

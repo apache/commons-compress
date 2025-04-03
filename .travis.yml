@@ -19,6 +19,9 @@ cache:
   directories:
     - $HOME/.m2
 
+before_install:
+  - rm -f .github/workflows/empty.yml || true
+  
 # https://docs.travis-ci.com/user/reference/linux/
 # Must use a fixed distribution (and remember to occassionally upgrade..)
 # Try to force to use the latest Java 11 instead of 11.0.2 to fix 

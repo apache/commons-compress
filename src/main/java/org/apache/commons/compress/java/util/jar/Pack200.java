@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.Objects;
 import java.util.SortedMap;
 import java.util.jar.JarFile;
 import java.util.jar.JarInputStream;
@@ -66,8 +67,11 @@ public abstract class Pack200 {
                         try {
                             // TODO Not sure if this will cause problems with
                             // loading the packer
-                            return ClassLoader.getSystemClassLoader()
-                                    .loadClass(className).newInstance();
+                            ClassLoader classLoader = Pack200.class.getClassLoader();
+                            if (classLoader == null) {
+                                classLoader = Objects.requireNonNull(ClassLoader.getSystemClassLoader(), "ClassLoader.getSystemClassLoader()");
+                            }
+                            return classLoader.loadClass(className).getConstructor().newInstance();
                         } catch (Exception e) {
                             throw new Error(Messages.getString("archive.3E",className), e); //$NON-NLS-1$
                         }
@@ -75,7 +79,6 @@ public abstract class Pack200 {
                 });
 
     }
-
     /**
      * Returns a new instance of a unpacker engine.
      * <p>
@@ -94,8 +97,11 @@ public abstract class Pack200 {
                                 .getProperty(SYSTEM_PROPERTY_UNPACKER,
                                         "org.apache.commons.compress.harmony.unpack200.Pack200UnpackerAdapter");//$NON-NLS-1$
                         try {
-                            return ClassLoader.getSystemClassLoader()
-                                    .loadClass(className).newInstance();
+                            ClassLoader classLoader = Pack200.class.getClassLoader();
+                            if (classLoader == null) {
+                                classLoader = Objects.requireNonNull(ClassLoader.getSystemClassLoader(), "ClassLoader.getSystemClassLoader()");
+                            }
+                            return classLoader.loadClass(className).getConstructor().newInstance();
                         } catch (Exception e) {
                             throw new Error(Messages.getString("archive.3E",className), e); //$NON-NLS-1$
                         }

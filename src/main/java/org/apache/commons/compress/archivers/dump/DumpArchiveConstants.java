@@ -68,6 +68,7 @@ public final class DumpArchiveConstants {
      * The type of compression.
      */
     public enum COMPRESSION_TYPE {
+        UNKNOWN(-1),
         ZLIB(0),
         BZLIB(1),
         LZO(2);
@@ -85,7 +86,7 @@ public final class DumpArchiveConstants {
                 }
             }
 
-            return null;
+            return UNKNOWN;
         }
     }
 }
