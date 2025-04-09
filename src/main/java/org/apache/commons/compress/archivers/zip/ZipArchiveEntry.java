@@ -234,8 +234,19 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     static final ZipArchiveEntry[] EMPTY_ARRAY = {};
     static LinkedList<ZipArchiveEntry> EMPTY_LINKED_LIST = new LinkedList<>();
 
+    /**
+     * Platform is UNIX.
+     */
     public static final int PLATFORM_UNIX = 3;
+
+    /**
+     * Platform is FAT.
+     */
     public static final int PLATFORM_FAT = 0;
+
+    /**
+     * Platform is unknown.
+     */
     public static final int CRC_UNKNOWN = -1;
 
     private static final int SHORT_MASK = 0xFFFF;
@@ -1361,6 +1372,11 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
         return this;
     }
 
+    /**
+     * Sets the local header offset.
+     *
+     * @param localHeaderOffset the local header offset.
+     */
     protected void setLocalHeaderOffset(final long localHeaderOffset) {
         this.localHeaderOffset = localHeaderOffset;
     }
@@ -1446,6 +1462,11 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
         this.size = size;
     }
 
+    /**
+     * Sets whether the stream is contiguous, that is, not split among several archive parts, interspersed with control blocks, and so on.
+     *
+     * @param isStreamContiguous whether the stream is contiguous
+     */
     protected void setStreamContiguous(final boolean isStreamContiguous) {
         this.isStreamContiguous = isStreamContiguous;
     }
