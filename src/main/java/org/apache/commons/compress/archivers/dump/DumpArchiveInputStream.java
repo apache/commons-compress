@@ -85,6 +85,9 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
     private int recordOffset;
     private long filepos;
 
+    /**
+     * TapeInputStream is the raw input.
+     */
     protected TapeInputStream raw;
 
     /** Map of ino -> dirent entry. We can use this to reconstruct full paths. */
