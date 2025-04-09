@@ -38,15 +38,21 @@ public final class TarArchiveStructSparse {
     private final long offset;
     private final long numbytes;
 
-    public TarArchiveStructSparse(final long offset, final long numbytes) {
+    /**
+     * Constructs a new instance.
+     *
+     * @param offset An offset greater or equal to zero.
+     * @param numBytes An count greater or equal to zero.
+     */
+    public TarArchiveStructSparse(final long offset, final long numBytes) {
         if (offset < 0) {
             throw new IllegalArgumentException("offset must not be negative");
         }
-        if (numbytes < 0) {
+        if (numBytes < 0) {
             throw new IllegalArgumentException("numbytes must not be negative");
         }
         this.offset = offset;
-        this.numbytes = numbytes;
+        this.numbytes = numBytes;
     }
 
     @Override
@@ -61,10 +67,20 @@ public final class TarArchiveStructSparse {
         return offset == that.offset && numbytes == that.numbytes;
     }
 
+    /**
+     * Gets the byte count.
+     *
+     * @return the byte count.
+     */
     public long getNumbytes() {
         return numbytes;
     }
 
+    /**
+     * Gets the offset.
+     *
+     * @return the offset.
+     */
     public long getOffset() {
         return offset;
     }
