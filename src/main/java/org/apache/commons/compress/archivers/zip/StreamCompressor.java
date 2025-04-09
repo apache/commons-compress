@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.commons.compress.archivers.zip;
 
 import java.io.Closeable;
@@ -40,6 +41,7 @@ import org.apache.commons.compress.parallel.ScatterGatherBackingStore;
 public abstract class StreamCompressor implements Closeable {
 
     private static final class DataOutputCompressor extends StreamCompressor {
+
         private final DataOutput raf;
 
         DataOutputCompressor(final Deflater deflater, final DataOutput raf) {
@@ -54,6 +56,7 @@ public abstract class StreamCompressor implements Closeable {
     }
 
     private static final class OutputStreamCompressor extends StreamCompressor {
+
         private final OutputStream os;
 
         OutputStreamCompressor(final Deflater deflater, final OutputStream os) {
@@ -68,6 +71,7 @@ public abstract class StreamCompressor implements Closeable {
     }
 
     private static final class ScatterGatherBackingStoreCompressor extends StreamCompressor {
+
         private final ScatterGatherBackingStore bs;
 
         ScatterGatherBackingStoreCompressor(final Deflater deflater, final ScatterGatherBackingStore bs) {
@@ -82,6 +86,7 @@ public abstract class StreamCompressor implements Closeable {
     }
 
     private static final class SeekableByteChannelCompressor extends StreamCompressor {
+
         private final SeekableByteChannel channel;
 
         SeekableByteChannelCompressor(final Deflater deflater, final SeekableByteChannel channel) {
@@ -171,17 +176,11 @@ public abstract class StreamCompressor implements Closeable {
     }
 
     private final Deflater deflater;
-
     private final CRC32 crc = new CRC32();
-
     private long writtenToOutputStreamForLastEntry;
-
     private long sourcePayloadLength;
-
     private long totalWrittenToOutputStream;
-
     private final byte[] outputBuffer = new byte[BUFFER_SIZE];
-
     private final byte[] readerBuf = new byte[BUFFER_SIZE];
 
     StreamCompressor(final Deflater deflater) {
@@ -207,11 +206,9 @@ public abstract class StreamCompressor implements Closeable {
      * @param method The #ZipArchiveEntry compression method
      * @throws IOException When failures happen
      */
-
     public void deflate(final InputStream source, final int method) throws IOException {
         reset();
         int length;
-
         while ((length = source.read(readerBuf, 0, readerBuf.length)) >= 0) {
             write(readerBuf, 0, length, method);
         }
@@ -256,7 +253,6 @@ public abstract class StreamCompressor implements Closeable {
      *
      * @return the CRC-32
      */
-
     public long getCrc32() {
         return crc.getValue();
     }
@@ -299,10 +295,24 @@ public abstract class StreamCompressor implements Closeable {
         return writtenToOutputStreamForLastEntry - current;
     }
 
+    /**
+     * Writes the specified byte array to the output stream.
+     *
+     * @param data   the data.
+     * @exception IOException if an I/O error occurs.
+     */
     public void writeCounted(final byte[] data) throws IOException {
         writeCounted(data, 0, data.length);
     }
 
+    /**
+     * Writes {@code len} bytes from the specified byte array starting at offset {@code off} to the output stream.
+     *
+     * @param data   the data.
+     * @param offset the start offset in the data.
+     * @param length the number of bytes to write.
+     * @exception IOException if an I/O error occurs.
+     */
     public void writeCounted(final byte[] data, final int offset, final int length) throws IOException {
         writeOut(data, offset, length);
         writtenToOutputStreamForLastEntry += length;
@@ -329,5 +339,13 @@ public abstract class StreamCompressor implements Closeable {
         }
     }
 
+    /**
+     * Writes {@code len} bytes from the specified byte array starting at offset {@code off} to the output stream.
+     *
+     * @param data   the data.
+     * @param offset the start offset in the data.
+     * @param length the number of bytes to write.
+     * @exception IOException if an I/O error occurs.
+     */
     protected abstract void writeOut(byte[] data, int offset, int length) throws IOException;
 }
