@@ -546,6 +546,11 @@ public class TarFile implements Closeable {
         return headerBuf;
     }
 
+    /**
+     * Tests whether or not we are at the end-of-file.
+     *
+     * @return whether or not we are at the end-of-file.
+     */
     protected final boolean isAtEOF() {
         return eof;
     }
@@ -681,8 +686,8 @@ public class TarFile implements Closeable {
         archive.position(newPosition);
     }
 
-    protected final void setAtEOF(final boolean b) {
-        eof = b;
+    protected final void setAtEOF(final boolean eof) {
+        this.eof = eof;
     }
 
     /**
