@@ -686,6 +686,11 @@ public class TarFile implements Closeable {
         archive.position(newPosition);
     }
 
+    /**
+     * Sets whether we are at end-of-file.
+     *
+     * @param eof whether we are at end-of-file.
+     */
     protected final void setAtEOF(final boolean eof) {
         this.eof = eof;
     }
