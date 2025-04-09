@@ -37,12 +37,27 @@ import org.apache.commons.compress.utils.InputStreamStatistics;
  * @since 1.10
  */
 public abstract class LZWInputStream extends CompressorInputStream implements InputStreamStatistics {
+
+    /**
+     * Maximum code size in bits.
+     */
     private static final int MAX_CODE_SIZE = 31;
+
+    /**
+     * Default code size in bits.
+     */
     protected static final int DEFAULT_CODE_SIZE = 9;
+
+    /**
+     * Unused marker.
+     */
     protected static final int UNUSED_PREFIX = -1;
 
     private final byte[] oneByte = new byte[1];
 
+    /**
+     * Input.
+     */
     protected final BitInputStream in;
     private int clearCode = -1;
     private int codeSize = DEFAULT_CODE_SIZE;
@@ -119,12 +134,12 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
     protected abstract int decompressNextSymbol() throws IOException;
 
     /**
-     * Expands the entry with index code to the output stack and may create a new entry
+     * Expands the entry with index code to the output stack and may create a new entry.
      *
-     * @param code                 the code
-     * @param addedUnfinishedEntry whether unfinished entries have been added
-     * @return the new location of the output stack
-     * @throws IOException on error
+     * @param code                 the code.
+     * @param addedUnfinishedEntry whether unfinished entries have been added.
+     * @return the new location of the output stack.
+     * @throws IOException if an I/O error occurs.
      */
     protected int expandCodeToOutputStack(final int code, final boolean addedUnfinishedEntry) throws IOException {
         for (int entry = code; entry >= 0; entry = prefixes[entry]) {
@@ -138,10 +153,20 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
         return outputStackLocation;
     }
 
+    /**
+     * Gets the clear code.
+     *
+     * @return the clear code.
+     */
     protected int getClearCode() {
         return clearCode;
     }
 
+    /**
+     * Gets the code size in bits.
+     *
+     * @return the code size in bits.
+     */
     protected int getCodeSize() {
         return codeSize;
     }
@@ -154,18 +179,37 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
         return in.getBytesRead();
     }
 
+    /**
+     * Gets the prefix at the given offset.
+     *
+     * @param offset offset to query.
+     * @return the prefix at the given offset.
+     */
     protected int getPrefix(final int offset) {
         return prefixes[offset];
     }
 
+    /**
+     * Gets the prefixes length.
+     *
+     * @return the prefixes length.
+     */
     protected int getPrefixesLength() {
         return prefixes.length;
     }
 
+    /**
+     * Gets the table size.
+     *
+     * @return the table size.
+     */
     protected int getTableSize() {
         return tableSize;
     }
 
+    /**
+     * Increments the code size by one.
+     */
     protected void incrementCodeSize() {
         codeSize++;
     }
@@ -275,10 +319,16 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
         return (int) in.readBits(codeSize);
     }
 
+    /**
+     * Resets the code size to its default value.
+     */
     protected void resetCodeSize() {
         setCodeSize(DEFAULT_CODE_SIZE);
     }
 
+    /**
+     * Resets the previous code to its default value.
+     */
     protected void resetPreviousCode() {
         this.previousCode = -1;
     }
@@ -292,16 +342,32 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
         clearCode = 1 << codeSize - 1;
     }
 
-    protected void setCodeSize(final int cs) {
-        this.codeSize = cs;
+    /**
+     * Sets the code size in bits.
+     *
+     * @param codeSize the code size in bits.
+     */
+    protected void setCodeSize(final int codeSize) {
+        this.codeSize = codeSize;
     }
 
+    /**
+     * Sets the prefix at the given offset.
+     *
+     * @param offset the target offset.
+     * @param value the new value.
+     */
     protected void setPrefix(final int offset, final int value) {
         prefixes[offset] = value;
     }
 
-    protected void setTableSize(final int newSize) {
-        tableSize = newSize;
+    /**
+     * Sets the table size.
+     *
+     * @param tableSize the new table size.
+     */
+    protected void setTableSize(final int tableSize) {
+        this.tableSize = tableSize;
     }
 
 }
