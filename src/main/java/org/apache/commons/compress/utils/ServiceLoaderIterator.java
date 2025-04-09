@@ -38,10 +38,22 @@ public class ServiceLoaderIterator<E> implements Iterator<E> {
     private final Class<E> service;
     private final Iterator<E> serviceLoaderIterator;
 
+    /**
+     * Constructs a new instance.
+     *
+     * @param service The interface or abstract class representing the service.
+     */
     public ServiceLoaderIterator(final Class<E> service) {
         this(service, ClassLoader.getSystemClassLoader());
     }
 
+    /**
+     * Constructs a new instance.
+     *
+     * @param service     The interface or abstract class representing the service.
+     * @param classLoader The class loader to be used to load provider-configuration files and provider classes, or {@code null} if the system class loader (or,
+     *                    failing that, the bootstrap class loader) is to be used
+     */
     public ServiceLoaderIterator(final Class<E> service, final ClassLoader classLoader) {
         this.service = service;
         this.serviceLoaderIterator = ServiceLoader.load(service, classLoader).iterator();

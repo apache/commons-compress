@@ -37,10 +37,17 @@ import java.io.InputStream;
  */
 @Deprecated
 public class SkipShieldingInputStream extends FilterInputStream {
+
     private static final int SKIP_BUFFER_SIZE = 8192;
-    // we can use a shared buffer as the content is discarded anyway
+
+    /** We can use a shared buffer as the content is discarded anyway. */
     private static final byte[] SKIP_BUFFER = new byte[SKIP_BUFFER_SIZE];
 
+    /**
+     * Creates a {@code SkipShieldingInputStream} by assigning the argument {@code in} to the field {@code this.in} so as to remember it for later use.
+     *
+     * @param in the underlying input stream, or {@code null} if this instance is to be created without an underlying stream.
+     */
     public SkipShieldingInputStream(final InputStream in) {
         super(in);
     }

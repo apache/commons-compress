@@ -33,6 +33,12 @@ import java.io.OutputStream;
 public class CountingOutputStream extends FilterOutputStream {
     private long bytesWritten;
 
+    /**
+     * Creates a {@code CountingOutputStream} filter built on top of the specified underlying output stream.
+     *
+     * @param out the underlying output stream to be assigned to the field {@code this.out} for later use, or {@code null} if this instance is to be created
+     *            without an underlying stream.
+     */
     public CountingOutputStream(final OutputStream out) {
         super(out);
     }
