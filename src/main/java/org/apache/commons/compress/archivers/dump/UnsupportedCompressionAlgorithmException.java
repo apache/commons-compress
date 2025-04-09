@@ -16,19 +16,29 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.commons.compress.archivers.dump;
 
 /**
  * Unsupported compression algorithm. The dump archive uses an unsupported compression algorithm (BZLIB2 or LZO).
  */
 public class UnsupportedCompressionAlgorithmException extends DumpArchiveException {
+
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Constructs a {@code UnsupportedCompressionAlgorithmException}.
+     */
     public UnsupportedCompressionAlgorithmException() {
         super("this file uses an unsupported compression algorithm.");
     }
 
-    public UnsupportedCompressionAlgorithmException(final String alg) {
-        super("this file uses an unsupported compression algorithm: " + alg + ".");
+    /**
+     * Constructs a {@code UnsupportedCompressionAlgorithmException} with the specified algorithm name.
+     *
+     * @param algorithm The algorithm name to use in the detailed message.
+     */
+    public UnsupportedCompressionAlgorithmException(final String algorithm) {
+        super("this file uses an unsupported compression algorithm: " + algorithm + ".");
     }
 }
