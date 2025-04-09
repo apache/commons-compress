@@ -179,6 +179,9 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
         }
     }
 
+    /**
+     * Maximum size of data in the first local file header.
+     */
     public static final int PREAMBLE_GARBAGE_MAX_SIZE = 4096;
 
     private static final int LFH_LEN = 30;
