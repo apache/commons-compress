@@ -169,7 +169,7 @@ public class TarFile implements Closeable {
     // the global sparse headers, this is only used in PAX Format 0.X
     private final List<TarArchiveStructSparse> globalSparseHeaders = new ArrayList<>();
 
-    private boolean hasHitEOF;
+    private boolean eof;
 
     /**
      * The meta-data about the current entry
@@ -547,7 +547,7 @@ public class TarFile implements Closeable {
     }
 
     protected final boolean isAtEOF() {
-        return hasHitEOF;
+        return eof;
     }
 
     private boolean isDirectory() {
@@ -682,7 +682,7 @@ public class TarFile implements Closeable {
     }
 
     protected final void setAtEOF(final boolean b) {
-        hasHitEOF = b;
+        eof = b;
     }
 
     /**
