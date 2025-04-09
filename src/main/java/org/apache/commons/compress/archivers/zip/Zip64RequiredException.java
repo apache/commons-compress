@@ -50,7 +50,12 @@ public class Zip64RequiredException extends ZipException {
         return ze.getName() + "'s size exceeds the limit of 4GByte.";
     }
 
-    public Zip64RequiredException(final String reason) {
-        super(reason);
+    /**
+     * Constructs a {@link Zip64RequiredException} with the specified detail message.
+     *
+     * @param message the detail message.
+     */
+    public Zip64RequiredException(final String message) {
+        super(message);
     }
 }

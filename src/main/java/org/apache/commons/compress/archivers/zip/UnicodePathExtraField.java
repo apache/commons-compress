@@ -31,8 +31,14 @@ package org.apache.commons.compress.archivers.zip;
  */
 public class UnicodePathExtraField extends AbstractUnicodeExtraField {
 
+    /**
+     * Field ID.
+     */
     public static final ZipShort UPATH_ID = new ZipShort(0x7075);
 
+    /**
+     * Constructs a new instance.
+     */
     public UnicodePathExtraField() {
     }
 

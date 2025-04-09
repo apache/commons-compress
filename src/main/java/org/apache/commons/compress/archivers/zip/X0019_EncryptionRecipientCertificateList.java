@@ -52,6 +52,9 @@ public class X0019_EncryptionRecipientCertificateList extends PKWareExtraHeader 
 
     static final ZipShort HEADER_ID = new ZipShort(0x0019);
 
+    /**
+     * Constructs a new instance.
+     */
     public X0019_EncryptionRecipientCertificateList() {
         super(HEADER_ID);
     }

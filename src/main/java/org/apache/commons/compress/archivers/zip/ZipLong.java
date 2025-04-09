@@ -109,13 +109,12 @@ public final class ZipLong implements Cloneable, Serializable {
     }
 
     /**
-     * put the value as four bytes in big-endian byte order.
+     * Puts a long value in a buffer as four bytes in little-endian byte order.
      *
      * @param value  the Java long to convert to bytes
      * @param buf    the output buffer
      * @param offset The offset within the output buffer of the first byte to be written. must be non-negative and no larger than {@code buf.length-4}
      */
-
     public static void putLong(final long value, final byte[] buf, final int offset) {
         ByteUtils.toLittleEndian(buf, value, offset, 4);
     }
@@ -222,6 +221,12 @@ public final class ZipLong implements Cloneable, Serializable {
         return (int) value;
     }
 
+    /**
+     * Puts this long value in a buffer as four bytes in little-endian byte order.
+     *
+     * @param buf    the output buffer
+     * @param offset The offset within the output buffer of the first byte to be written. must be non-negative and no larger than {@code buf.length-4}
+     */
     public void putLong(final byte[] buf, final int offset) {
         putLong(value, buf, offset);
     }

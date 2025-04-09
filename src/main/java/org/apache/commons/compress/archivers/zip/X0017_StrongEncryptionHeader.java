@@ -283,6 +283,9 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
 
     private byte[] vCRC32;
 
+    /**
+     * Constructs a new instance.
+     */
     public X0017_StrongEncryptionHeader() {
         super(HEADER_ID);
     }

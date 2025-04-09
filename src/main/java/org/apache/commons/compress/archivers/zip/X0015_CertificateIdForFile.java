@@ -53,6 +53,9 @@ public class X0015_CertificateIdForFile extends PKWareExtraHeader {
 
     private HashAlgorithm hashAlg;
 
+    /**
+     * Constructs a new instance.
+     */
     public X0015_CertificateIdForFile() {
         super(HEADER_ID);
     }

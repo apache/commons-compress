@@ -54,6 +54,9 @@ public class X0016_CertificateIdForCentralDirectory extends PKWareExtraHeader {
 
     private HashAlgorithm hashAlg;
 
+    /**
+     * Constructs a new instance.
+     */
     public X0016_CertificateIdForCentralDirectory() {
         super(HEADER_ID);
     }
