@@ -37,6 +37,12 @@ public class FileBasedScatterGatherBackingStore implements ScatterGatherBackingS
     private final OutputStream outputStream;
     private boolean closed;
 
+    /**
+     * Constructs a new instance.
+     *
+     * @param target The path to offload compressed data into.
+     * @throws FileNotFoundException if the file doesn't exist.
+     */
     public FileBasedScatterGatherBackingStore(final File target) throws FileNotFoundException {
         this(target.toPath());
     }
@@ -45,7 +51,7 @@ public class FileBasedScatterGatherBackingStore implements ScatterGatherBackingS
      * Constructs a new instance for the given path.
      *
      * @param target The path to offload compressed data into.
-     * @throws FileNotFoundException if the file doesn't exist
+     * @throws FileNotFoundException if the file doesn't exist.
      * @since 1.22
      */
     public FileBasedScatterGatherBackingStore(final Path target) throws FileNotFoundException {
