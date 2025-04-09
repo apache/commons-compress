@@ -37,6 +37,7 @@ import org.apache.commons.compress.utils.InputStreamStatistics;
  * @since 1.10
  */
 public abstract class LZWInputStream extends CompressorInputStream implements InputStreamStatistics {
+    private static final int MAX_CODE_SIZE = 31;
     protected static final int DEFAULT_CODE_SIZE = 9;
     protected static final int UNUSED_PREFIX = -1;
 
@@ -268,7 +269,7 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
      * @throws IOException on error
      */
     protected int readNextCode() throws IOException {
-        if (codeSize > 31) {
+        if (codeSize > MAX_CODE_SIZE) {
             throw new IllegalArgumentException("Code size must not be bigger than 31");
         }
         return (int) in.readBits(codeSize);
