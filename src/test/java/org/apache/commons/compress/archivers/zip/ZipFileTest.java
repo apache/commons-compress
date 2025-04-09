@@ -237,6 +237,35 @@ public class ZipFileTest extends AbstractTest {
     }
 
     @Test
+    public void testAlternativeZstdInputStream() throws Exception {
+        final File archive = getFile("COMPRESS-692/compress-692.zip");
+        try (AirliftZstdZipFile zf = new AirliftZstdZipFile(archive)) {
+            final byte[] buffer = new byte[7000];
+            final ZipArchiveEntry ze = zf.getEntry("dolor.txt");
+            assertNotNull(ze);
+            try (InputStream inputStream = zf.getInputStream(ze)) {
+                assertNotNull(inputStream);
+                assertFalse(zf.isUsed());
+                final int bytesRead = org.apache.commons.compress.utils.IOUtils.readFully(inputStream, buffer);
+                assertEquals(6066, bytesRead);
+                assertTrue(zf.isUsed());
+            }
+        }
+
+        try (ZipFile builtZipFile = ZipFile.builder().setPath(archive.getAbsolutePath()).setZstdInputStreamFactory(ZstdInputStream::new).get()) {
+            final byte[] buffer = new byte[7000];
+            final ZipArchiveEntry ze = builtZipFile.getEntry("dolor.txt");
+            assertNotNull(ze);
+            try (InputStream inputStream = builtZipFile.getInputStream(ze)) {
+                assertTrue(inputStream instanceof ZstdInputStream);
+                assertNotNull(inputStream);
+                final int bytesRead = org.apache.commons.compress.utils.IOUtils.readFully(inputStream, buffer);
+                assertEquals(6066, bytesRead);
+            }
+        }
+    }
+
+    @Test
     public void testCDOrder() throws Exception {
         readOrderTest();
         testCDOrderInMemory();
@@ -407,35 +436,6 @@ public class ZipFileTest extends AbstractTest {
                 }
             }
             assertEquals(2, numberOfEntries);
-        }
-    }
-
-    @Test
-    public void testAlternativeZstdInputStream() throws Exception {
-        final File archive = getFile("COMPRESS-692/compress-692.zip");
-        try (AirliftZstdZipFile zf = new AirliftZstdZipFile(archive)) {
-            final byte[] buffer = new byte[7000];
-            final ZipArchiveEntry ze = zf.getEntry("dolor.txt");
-            assertNotNull(ze);
-            try (InputStream inputStream = zf.getInputStream(ze)) {
-                assertNotNull(inputStream);
-                assertFalse(zf.isUsed());
-                final int bytesRead = org.apache.commons.compress.utils.IOUtils.readFully(inputStream, buffer);
-                assertEquals(6066, bytesRead);
-                assertTrue(zf.isUsed());
-            }
-        }
-
-        try (ZipFile builtZipFile = ZipFile.builder().setPath(archive.getAbsolutePath()).setZstdInputStreamFactory(ZstdInputStream::new).get()) {
-            final byte[] buffer = new byte[7000];
-            final ZipArchiveEntry ze = builtZipFile.getEntry("dolor.txt");
-            assertNotNull(ze);
-            try (InputStream inputStream = builtZipFile.getInputStream(ze)) {
-                assertTrue(inputStream instanceof ZstdInputStream);
-                assertNotNull(inputStream);
-                final int bytesRead = org.apache.commons.compress.utils.IOUtils.readFully(inputStream, buffer);
-                assertEquals(6066, bytesRead);
-            }
         }
     }
 

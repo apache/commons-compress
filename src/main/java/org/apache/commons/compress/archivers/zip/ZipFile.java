@@ -173,22 +173,6 @@ public class ZipFile implements Closeable {
         }
 
         /**
-         * Sets the factory {@link IOFunction} to create a Zstd {@link InputStream}. Defaults to
-         * {@link ZstdCompressorInputStream#ZstdCompressorInputStream(InputStream)}.
-         * <p>
-         * Call this method to plugin an alternate Zstd input stream implementation.
-         * </p>
-         *
-         * @param zstdInpStreamFactory the factory {@link IOFunction} to create a Zstd {@link InputStream}; {@code null} resets to the default.
-         * @return {@code this} instance.
-         * @since 1.28.0
-         */
-        public Builder setZstdInputStreamFactory(final IOFunction<InputStream, InputStream> zstdInpStreamFactory) {
-            this.zstdInputStreamFactory = zstdInpStreamFactory;
-            return this;
-        }
-
-        /**
          * Sets whether to ignore information stored inside the local file header.
          *
          * @param ignoreLocalFileHeader whether to ignore information stored inside.
@@ -229,6 +213,22 @@ public class ZipFile implements Closeable {
          */
         public Builder setUseUnicodeExtraFields(final boolean useUnicodeExtraFields) {
             this.useUnicodeExtraFields = useUnicodeExtraFields;
+            return this;
+        }
+
+        /**
+         * Sets the factory {@link IOFunction} to create a Zstd {@link InputStream}. Defaults to
+         * {@link ZstdCompressorInputStream#ZstdCompressorInputStream(InputStream)}.
+         * <p>
+         * Call this method to plugin an alternate Zstd input stream implementation.
+         * </p>
+         *
+         * @param zstdInpStreamFactory the factory {@link IOFunction} to create a Zstd {@link InputStream}; {@code null} resets to the default.
+         * @return {@code this} instance.
+         * @since 1.28.0
+         */
+        public Builder setZstdInputStreamFactory(final IOFunction<InputStream, InputStream> zstdInpStreamFactory) {
+            this.zstdInputStreamFactory = zstdInpStreamFactory;
             return this;
         }
 
@@ -1074,6 +1074,19 @@ public class ZipFile implements Closeable {
                 : new BoundedSeekableByteChannelInputStream(start, remaining, archive);
     }
 
+    /**
+     * Creates an InputStream for the Zstd compression method.
+     *
+     * @param in the input stream which should be used for compression.
+     * @return the {@link InputStream} for handling the Zstd compression.
+     * @throws IOException if an I/O error occurs.
+     */
+    @SuppressWarnings("resource")
+    InputStream createZstdInputStream(final InputStream in) throws IOException {
+        // This method is the only location that references ZstdCompressorInputStream directly to avoid requiring the JAR for all use cases.
+        return zstdInputStreamFactory != null ? zstdInputStreamFactory.apply(in) : new ZstdCompressorInputStream(in);
+    }
+
     private void fillNameMap() {
         entries.forEach(ze -> {
             // entries are filled in populateFromCentralDirectory and
@@ -1273,19 +1286,6 @@ public class ZipFile implements Closeable {
         default:
             throw new UnsupportedZipFeatureException(ZipMethod.getMethodByCode(entry.getMethod()), entry);
         }
-    }
-
-    /**
-     * Creates an InputStream for the Zstd compression method.
-     *
-     * @param in the input stream which should be used for compression.
-     * @return the {@link InputStream} for handling the Zstd compression.
-     * @throws IOException if an I/O error occurs.
-     */
-    @SuppressWarnings("resource")
-    InputStream createZstdInputStream(final InputStream in) throws IOException {
-        // This method is the only location that references ZstdCompressorInputStream directly to avoid requiring the JAR for all use cases.
-        return zstdInputStreamFactory != null ? zstdInputStreamFactory.apply(in) : new ZstdCompressorInputStream(in);
     }
 
     /**
