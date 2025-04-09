@@ -260,10 +260,22 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
      */
     private byte[] centralData;
 
+    /**
+     * Constructs a new instance.
+     *
+     * @param headerId The header ID.
+     */
     protected PKWareExtraHeader(final ZipShort headerId) {
         this.headerId = headerId;
     }
 
+    /**
+     * Asserts the given length is greater or equal to the given minimum.
+     *
+     * @param minimum the minimum.
+     * @param length the length.
+     * @throws ZipException Thrown if the length is less than the minimum.
+     */
     protected final void assertMinimalLength(final int minimum, final int length) throws ZipException {
         if (length < minimum) {
             throw new ZipException(getClass().getName() + " is too short, only " + length + " bytes, expected at least " + minimum);
