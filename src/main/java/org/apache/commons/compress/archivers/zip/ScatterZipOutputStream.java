@@ -80,14 +80,23 @@ public class ScatterZipOutputStream implements Closeable {
         }
     }
 
+    /**
+     * Writes ZIP entries to a ZIP archive.
+     */
     public static class ZipEntryWriter implements Closeable {
         private final Iterator<CompressedEntry> itemsIterator;
         private final InputStream inputStream;
 
-        public ZipEntryWriter(final ScatterZipOutputStream scatter) throws IOException {
-            scatter.backingStore.closeForWriting();
-            itemsIterator = scatter.items.iterator();
-            inputStream = scatter.backingStore.getInputStream();
+        /**
+         * Constructs a new instance.
+         *
+         * @param out a ScatterZipOutputStream.
+         * @throws IOException if an I/O error occurs.
+         */
+        public ZipEntryWriter(final ScatterZipOutputStream out) throws IOException {
+            out.backingStore.closeForWriting();
+            itemsIterator = out.items.iterator();
+            inputStream = out.backingStore.getInputStream();
         }
 
         @Override
@@ -95,6 +104,12 @@ public class ScatterZipOutputStream implements Closeable {
             IOUtils.close(inputStream);
         }
 
+        /**
+         * Writes the next ZIP entry to the given target.
+         *
+         * @param target Where to write.
+         * @throws IOException if an I/O error occurs.
+         */
         public void writeNextZipEntry(final ZipArchiveOutputStream target) throws IOException {
             final CompressedEntry compressedEntry = itemsIterator.next();
             // @formatter:off
@@ -170,6 +185,12 @@ public class ScatterZipOutputStream implements Closeable {
 
     private ZipEntryWriter zipEntryWriter;
 
+    /**
+     * Constructs a new instance.
+     *
+     * @param backingStore the backing store.
+     * @param streamCompressor Deflates ZIP entries.
+     */
     public ScatterZipOutputStream(final ScatterGatherBackingStore backingStore, final StreamCompressor streamCompressor) {
         this.backingStore = backingStore;
         this.streamCompressor = streamCompressor;
