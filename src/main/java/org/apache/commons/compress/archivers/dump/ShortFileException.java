@@ -24,6 +24,9 @@ package org.apache.commons.compress.archivers.dump;
 public class ShortFileException extends DumpArchiveException {
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Constructs a {@code ShortFileException}.
+     */
     public ShortFileException() {
         super("unexpected EOF");
     }
