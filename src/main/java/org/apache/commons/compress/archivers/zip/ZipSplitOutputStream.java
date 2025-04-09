@@ -82,10 +82,10 @@ final class ZipSplitOutputStream extends RandomAccessOutputStream {
      * Creates a split ZIP. If the ZIP file is smaller than the split size, then there will only be one split ZIP, and its suffix is .zip, otherwise the split
      * segments should be like .z01, .z02, ... .z(N-1), .zip
      *
-     * @param zipFile   the path to ZIP file to write to
-     * @param splitSize the split size
+     * @param zipFile   the path to ZIP file to write to.
+     * @param splitSize the split size.
      * @throws IllegalArgumentException if arguments are illegal: Zip split segment size should between 64K and 4,294,967,295.
-     * @throws IOException              if an I/O error occurs
+     * @throws IOException              if an I/O error occurs.
      * @since 1.22
      */
     ZipSplitOutputStream(final Path zipFile, final long splitSize) throws IllegalArgumentException, IOException {
@@ -214,13 +214,16 @@ final class ZipSplitOutputStream extends RandomAccessOutputStream {
     }
 
     /**
+     * Prepares to write unsplittable content.
+     * <p>
      * Some data cannot be written to different split segments, for example:
+     * </p>
      * <p>
      * 4.4.1.5 The end of central directory record and the Zip64 end of central directory locator record MUST reside on the same disk when splitting or spanning
      * an archive.
      * </p>
      *
-     * @param unsplittableContentSize
+     * @param unsplittableContentSize the split size request must be less than or equal to the the split size.
      * @throws IllegalArgumentException if unsplittable content size is bigger than the split segment size.
      * @throws IOException if an I/O error occurs.
      */
