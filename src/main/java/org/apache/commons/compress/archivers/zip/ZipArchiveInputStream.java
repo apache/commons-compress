@@ -1105,7 +1105,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
             try {
                 read = inf.inflate(buffer, offset, length);
             } catch (final DataFormatException e) {
-                throw (IOException) ZipUtil.newZipException(e.getMessage(), e);
+                throw ZipUtil.newZipException(e.getMessage(), e);
             }
         } while (read == 0 && inf.needsInput());
         return read;
