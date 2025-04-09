@@ -332,66 +332,138 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
         });
     }
 
+    /**
+     * Gets the string used to identify the {@link #BROTLI} compression algorithm.
+     *
+     * @return the string used to identify the {@link #BROTLI} compression algorithm.
+     */
     public static String getBrotli() {
         return BROTLI;
     }
 
+    /**
+     * Gets the string used to identify the {@link #BZIP2} compression algorithm.
+     *
+     * @return the string used to identify the {@link #BZIP2} compression algorithm.
+     */
     public static String getBzip2() {
         return BZIP2;
     }
 
+    /**
+     * Gets the string used to identify the {@link #DEFLATE} compression algorithm.
+     *
+     * @return the string used to identify the {@link #DEFLATE} compression algorithm.
+     */
     public static String getDeflate() {
         return DEFLATE;
     }
 
     /**
-     * @return the constant {@link #DEFLATE64}
+     * Gets the string used to identify the {@link #DEFLATE64} compression algorithm.
+     *
+     * @return the string used to identify the {@link #DEFLATE64} compression algorithm.
      * @since 1.16
      */
     public static String getDeflate64() {
         return DEFLATE64;
     }
 
+    /**
+     * Gets the string used to identify the {@link #GZIP} compression algorithm.
+     *
+     * @return the string used to identify the {@link #GZIP} compression algorithm.
+     */
     public static String getGzip() {
         return GZIP;
     }
 
+    /**
+     * Gets the string used to identify the {@link #LZ4_BLOCK} compression algorithm.
+     *
+     * @return the string used to identify the {@link #LZ4_BLOCK} compression algorithm.
+     */
     public static String getLZ4Block() {
         return LZ4_BLOCK;
     }
 
+    /**
+     * Gets the string used to identify the {@link #GZIP} compression algorithm.
+     *
+     * @return the string used to identify the {@link #GZIP} compression algorithm.
+     */
     public static String getLZ4Framed() {
         return LZ4_FRAMED;
     }
 
+    /**
+     * Gets the string used to identify the {@link #LZMA} compression algorithm.
+     *
+     * @return the string used to identify the {@link #LZMA} compression algorithm.
+     */
     public static String getLzma() {
         return LZMA;
     }
 
+    /**
+     * Gets the string used to identify the {@link #PACK200} compression algorithm.
+     *
+     * @return the string used to identify the {@link #PACK200} compression algorithm.
+     */
     public static String getPack200() {
         return PACK200;
     }
 
+    /**
+     * Gets singleton instance.
+     *
+     * @return the singleton instance.
+     */
     public static CompressorStreamFactory getSingleton() {
         return SINGLETON;
     }
 
+    /**
+     * Gets the string used to identify the {@link #SNAPPY_FRAMED} compression algorithm.
+     *
+     * @return the string used to identify the {@link #SNAPPY_FRAMED} compression algorithm.
+     */
     public static String getSnappyFramed() {
         return SNAPPY_FRAMED;
     }
 
+    /**
+     * Gets the string used to identify the {@link #SNAPPY_RAW} compression algorithm.
+     *
+     * @return the string used to identify the {@link #SNAPPY_RAW} compression algorithm.
+     */
     public static String getSnappyRaw() {
         return SNAPPY_RAW;
     }
 
+    /**
+     * Gets the string used to identify the {@link #XZ} compression algorithm.
+     *
+     * @return the string used to identify the {@link #XZ} compression algorithm.
+     */
     public static String getXz() {
         return XZ;
     }
 
+    /**
+     * Gets the string used to identify the {@link #Z} compression algorithm.
+     *
+     * @return the string used to identify the {@link #Z} compression algorithm.
+     */
     public static String getZ() {
         return Z;
     }
 
+    /**
+     * Gets the string used to identify the {@link #ZSTANDARD} compression algorithm.
+     *
+     * @return the string used to identify the {@link #ZSTANDARD} compression algorithm.
+     */
     public static String getZstandard() {
         return ZSTANDARD;
     }
@@ -640,6 +712,11 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
         throw new CompressorException("Compressor: " + name + " not found.");
     }
 
+    /**
+     * Gets a sorted map of compression input stream providers.
+     *
+     * @return a sorted map of compression input stream providers.
+     */
     public SortedMap<String, CompressorStreamProvider> getCompressorInputStreamProviders() {
         if (compressorInputStreamProviders == null) {
             compressorInputStreamProviders = Collections.unmodifiableSortedMap(findAvailableCompressorInputStreamProviders());
@@ -647,6 +724,11 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
         return compressorInputStreamProviders;
     }
 
+    /**
+     * Gets a sorted map of compression output stream providers.
+     *
+     * @return a sorted map of compression output stream providers.
+     */
     public SortedMap<String, CompressorStreamProvider> getCompressorOutputStreamProviders() {
         if (compressorOutputStreamProviders == null) {
             compressorOutputStreamProviders = Collections.unmodifiableSortedMap(findAvailableCompressorOutputStreamProviders());
@@ -659,6 +741,12 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
         return decompressConcatenated;
     }
 
+    /**
+     * Tests whether we decompress until the end of the input. If false, stop after the first stream and leave the input position to point to the next byte
+     * after the stream.
+     *
+     * @return whether we decompress until the end of the input.
+     */
     public Boolean getDecompressUntilEOF() {
         return decompressUntilEof;
     }
