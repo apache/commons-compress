@@ -70,7 +70,6 @@ public class ScatterZipOutputStream implements Closeable {
          *
          * @return the zipArchiveEntry that is the basis for this request.
          */
-
         public ZipArchiveEntry transferToArchiveEntry() {
             final ZipArchiveEntry entry = zipArchiveEntryRequest.getZipArchiveEntry();
             entry.setCompressedSize(compressedSize);
@@ -83,24 +82,24 @@ public class ScatterZipOutputStream implements Closeable {
 
     public static class ZipEntryWriter implements Closeable {
         private final Iterator<CompressedEntry> itemsIterator;
-        private final InputStream itemsIteratorData;
+        private final InputStream inputStream;
 
         public ZipEntryWriter(final ScatterZipOutputStream scatter) throws IOException {
             scatter.backingStore.closeForWriting();
             itemsIterator = scatter.items.iterator();
-            itemsIteratorData = scatter.backingStore.getInputStream();
+            inputStream = scatter.backingStore.getInputStream();
         }
 
         @Override
         public void close() throws IOException {
-            IOUtils.close(itemsIteratorData);
+            IOUtils.close(inputStream);
         }
 
         public void writeNextZipEntry(final ZipArchiveOutputStream target) throws IOException {
             final CompressedEntry compressedEntry = itemsIterator.next();
             // @formatter:off
             try (BoundedInputStream rawStream = BoundedInputStream.builder()
-                    .setInputStream(itemsIteratorData)
+                    .setInputStream(inputStream)
                     .setMaxCount(compressedEntry.compressedSize)
                     .setPropagateClose(false)
                     .get()) {
