@@ -37,6 +37,8 @@ import java.util.zip.ZipException;
  */
 public class ResourceAlignmentExtraField implements ZipExtraField {
 
+    private static final int MAX_ALIGNMENT = Short.MAX_VALUE;
+
     /**
      * Extra field id used for storing alignment and padding.
      */
@@ -64,7 +66,7 @@ public class ResourceAlignmentExtraField implements ZipExtraField {
     }
 
     public ResourceAlignmentExtraField(final int alignment, final boolean allowMethodChange, final int padding) {
-        if (alignment < 0 || alignment > 0x7fff) {
+        if (alignment < 0 || alignment > MAX_ALIGNMENT) {
             throw new IllegalArgumentException("Alignment must be between 0 and 0x7fff, was: " + alignment);
         }
         if (padding < 0) {
