@@ -96,6 +96,9 @@ public final class GeneralPurposeBit implements Cloneable {
 
     private int numberOfShannonFanoTrees;
 
+    /**
+     * Constructs a new instance.
+     */
     public GeneralPurposeBit() {
     }
 
