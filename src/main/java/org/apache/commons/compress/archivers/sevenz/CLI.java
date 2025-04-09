@@ -89,7 +89,13 @@ public class CLI {
         return Enum.valueOf(Mode.class, args[1].toUpperCase(Locale.ROOT));
     }
 
-    public static void main(final String[] args) throws Exception {
+    /**
+     * Command line entry point.
+     *
+     * @param args Command line arguments.
+     * @throws IOException if an I/O problem occurs.
+     */
+    public static void main(final String[] args) throws IOException {
         if (args.length == 0) {
             usage();
             return;
