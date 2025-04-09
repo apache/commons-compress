@@ -320,6 +320,10 @@ public interface TarConstants {
      * </p>
      */
     String MAGIC_POSIX = "ustar\0";
+
+    /**
+     * Default version.
+     */
     String VERSION_POSIX = "00";
 
     /**
