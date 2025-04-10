@@ -259,7 +259,7 @@ public class SegmentConstantPool {
     /**
      * Gets the {@code init} method for the specified class.
      *
-     * @param cp               constant pool to search (must be CP_METHOD).
+     * @param cp               constant pool to search, must be {@link #CP_METHOD}.
      * @param value            index of {@code init} method.
      * @param desiredClassName String class name of the {@code init} method.
      * @return CPMethod {@code init} method.
@@ -267,8 +267,7 @@ public class SegmentConstantPool {
      */
     public ConstantPoolEntry getInitMethodPoolEntry(final int cp, final long value, final String desiredClassName) throws Pack200Exception {
         if (cp != CP_METHOD) {
-            // TODO really an error?
-            throw new Error("Nothing but CP_METHOD can be an <init>");
+            throw new Pack200Exception("Nothing but CP_METHOD can be an <init>");
         }
         final int realIndex = matchSpecificPoolEntryIndex(bands.getCpMethodClass(), bands.getCpMethodDescriptor(), desiredClassName, REGEX_MATCH_INIT,
                 toIndex(value));
