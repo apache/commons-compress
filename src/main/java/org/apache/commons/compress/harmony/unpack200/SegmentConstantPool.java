@@ -166,18 +166,11 @@ public class SegmentConstantPool {
      *
      * @param name Class name to look for (form: java/lang/Object)
      * @return CPClass for that class name, or null if not found.
+     * @throws Pack200Exception if a type is not supported or an index not in the range [0, {@link Integer#MAX_VALUE}].
      */
-    public ConstantPoolEntry getClassPoolEntry(final String name) {
-        final String[] classes = bands.getCpClass();
-        final int index = matchSpecificPoolEntryIndex(classes, name, 0);
-        if (index == -1) {
-            return null;
-        }
-        try {
-            return getConstantPoolEntry(CP_CLASS, index);
-        } catch (final Pack200Exception ex) {
-            throw new Error("Error getting class pool entry");
-        }
+    public ConstantPoolEntry getClassPoolEntry(final String name) throws Pack200Exception {
+        final int index = matchSpecificPoolEntryIndex(bands.getCpClass(), name, 0);
+        return index == -1 ? null : getConstantPoolEntry(CP_CLASS, index);
     }
 
     /**
@@ -188,7 +181,7 @@ public class SegmentConstantPool {
      * @param desiredIndex     index of the constant pool.
      * @param desiredClassName class to use to generate a subset of the pool.
      * @return ConstantPoolEntry
-     * @throws Pack200Exception if support for a type is not supported or the index not in the range [0, {@link Integer#MAX_VALUE}].
+     * @throws Pack200Exception if a type is not supported or an index not in the range [0, {@link Integer#MAX_VALUE}].
      */
     public ConstantPoolEntry getClassSpecificPoolEntry(final int cp, final long desiredIndex, final String desiredClassName) throws Pack200Exception {
         final String[] array;
@@ -214,7 +207,7 @@ public class SegmentConstantPool {
      * @param type Constant pool type.
      * @param index Index into a specific constant pool.
      * @return a constant pool entry.
-     * @throws Pack200Exception if support for a type is not supported or the index not in the range [0, {@link Integer#MAX_VALUE}].
+     * @throws Pack200Exception if a type is not supported or the index not in the range [0, {@link Integer#MAX_VALUE}].
      */
     public ConstantPoolEntry getConstantPoolEntry(final int type, final long index) throws Pack200Exception {
         if (index == -1) {
@@ -263,7 +256,7 @@ public class SegmentConstantPool {
      * @param value            index of {@code init} method.
      * @param desiredClassName String class name of the {@code init} method.
      * @return CPMethod {@code init} method.
-     * @throws Pack200Exception if support for a type is not supported or the index not in the range [0, {@link Integer#MAX_VALUE}].
+     * @throws Pack200Exception if a type is not supported or an index not in the range [0, {@link Integer#MAX_VALUE}].
      */
     public ConstantPoolEntry getInitMethodPoolEntry(final int cp, final long value, final String desiredClassName) throws Pack200Exception {
         if (cp != CP_METHOD) {

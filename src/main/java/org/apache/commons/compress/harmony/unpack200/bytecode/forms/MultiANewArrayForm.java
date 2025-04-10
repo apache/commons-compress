@@ -18,6 +18,7 @@
  */
 package org.apache.commons.compress.harmony.unpack200.bytecode.forms;
 
+import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.harmony.unpack200.bytecode.ByteCode;
 import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
 
@@ -47,11 +48,10 @@ public class MultiANewArrayForm extends ClassRefForm {
      * org.apache.commons.compress.harmony.unpack200.SegmentConstantPool)
      */
     @Override
-    public void setByteCodeOperands(final ByteCode byteCode, final OperandManager operandManager, final int codeLength) {
+    public void setByteCodeOperands(final ByteCode byteCode, final OperandManager operandManager, final int codeLength) throws Pack200Exception {
         // multianewarray has a class ref and a dimension.
         // The superclass handles the class ref.
         super.setByteCodeOperands(byteCode, operandManager, codeLength);
-
         // We have to handle the dimension.
         final int dimension = operandManager.nextByte();
         byteCode.setOperandByte(dimension, 2);

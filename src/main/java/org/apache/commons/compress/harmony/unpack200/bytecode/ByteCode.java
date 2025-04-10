@@ -21,6 +21,7 @@ package org.apache.commons.compress.harmony.unpack200.bytecode;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.harmony.unpack200.Segment;
 import org.apache.commons.compress.harmony.unpack200.bytecode.forms.ByteCodeForm;
 
@@ -83,13 +84,12 @@ public class ByteCode extends ClassFileEntry {
         return this == obj;
     }
 
-    public void extractOperands(final OperandManager operandManager, final Segment segment, final int codeLength) {
+    public void extractOperands(final OperandManager operandManager, final Segment segment, final int codeLength) throws Pack200Exception {
         // Given an OperandTable, figure out which operands
         // the receiver needs and stuff them in operands.
         // Later on the operands can be rewritten (But that's
         // later, not now).
-        final ByteCodeForm currentByteCodeForm = getByteCodeForm();
-        currentByteCodeForm.setByteCodeOperands(this, operandManager, codeLength);
+        getByteCodeForm().setByteCodeOperands(this, operandManager, codeLength);
     }
 
     protected ByteCodeForm getByteCodeForm() {

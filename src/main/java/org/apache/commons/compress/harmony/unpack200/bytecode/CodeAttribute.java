@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.harmony.unpack200.Segment;
 
 public class CodeAttribute extends BCIRenumberedAttribute {
@@ -44,7 +45,7 @@ public class CodeAttribute extends BCIRenumberedAttribute {
     public int maxStack;
 
     public CodeAttribute(final int maxStack, final int maxLocals, final byte[] codePacked, final Segment segment, final OperandManager operandManager,
-            final List<ExceptionTableEntry> exceptionTable) {
+            final List<ExceptionTableEntry> exceptionTable) throws Pack200Exception {
         super(attributeName);
         this.maxLocals = maxLocals;
         this.maxStack = maxStack;

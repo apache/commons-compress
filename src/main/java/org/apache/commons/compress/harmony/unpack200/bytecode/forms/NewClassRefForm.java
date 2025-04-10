@@ -49,7 +49,7 @@ public class NewClassRefForm extends ClassRefForm {
      * .compress.harmony.unpack200.bytecode.ByteCode, org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager)
      */
     @Override
-    public void setByteCodeOperands(final ByteCode byteCode, final OperandManager operandManager, final int codeLength) {
+    public void setByteCodeOperands(final ByteCode byteCode, final OperandManager operandManager, final int codeLength) throws Pack200Exception {
         final int offset = getOffset(operandManager);
         if (offset == 0) {
             // Use current class

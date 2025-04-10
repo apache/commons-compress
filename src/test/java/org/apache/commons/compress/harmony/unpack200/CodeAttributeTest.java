@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPFieldRef;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPMethodRef;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPString;
@@ -41,7 +42,7 @@ public class CodeAttributeTest {
     public class MockCodeAttribute extends CodeAttribute {
 
         public MockCodeAttribute(final int maxStack, final int maxLocals, final byte[] codePacked, final Segment segment, final OperandManager operandManager,
-                final List<ExceptionTableEntry> exceptionTable) {
+                final List<ExceptionTableEntry> exceptionTable) throws Pack200Exception {
             super(maxStack, maxLocals, codePacked, segment, operandManager, exceptionTable);
         }
 
@@ -140,7 +141,7 @@ public class CodeAttributeTest {
     };
 
     @Test
-    public void testLength() {
+    public void testLength() throws Pack200Exception {
         final OperandManager operandManager = new MockOperandManager();
         operandManager.setSegment(segment);
         operandManager.setCurrentClass("java/lang/Foo");
@@ -158,7 +159,7 @@ public class CodeAttributeTest {
     }
 
     @Test
-    public void testMixedByteCodes() {
+    public void testMixedByteCodes() throws Pack200Exception {
         final OperandManager operandManager = new MockOperandManager();
         operandManager.setSegment(segment);
         operandManager.setCurrentClass("java/lang/Foo");
@@ -180,7 +181,7 @@ public class CodeAttributeTest {
     }
 
     @Test
-    public void testSingleByteCodes() {
+    public void testSingleByteCodes() throws Pack200Exception {
         final OperandManager operandManager = new MockOperandManager();
         operandManager.setSegment(segment);
         operandManager.setCurrentClass("java/lang/Foo");

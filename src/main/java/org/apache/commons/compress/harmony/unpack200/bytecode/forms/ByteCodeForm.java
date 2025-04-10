@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.harmony.unpack200.bytecode.ByteCode;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CodeAttribute;
 import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
@@ -468,14 +469,15 @@ public abstract class ByteCodeForm {
     }
 
     /**
-     * When passed a byteCode, an OperandTable and a SegmentConstantPool, this method will set the rewrite of the byteCode appropriately.
+     * Sets the rewrite of the byteCode.
      *
      * @param byteCode       ByteCode to be updated (!)
      * @param operandManager OperandTable from which to draw info
      * @param codeLength     Length of bytes (excluding this bytecode) from the beginning of the method. Used in calculating padding for some variable-length
      *                       bytecodes (such as lookupswitch, tableswitch).
+     * @throws Pack200Exception if a type is not supported or an index not in the range [0, {@link Integer#MAX_VALUE}].
      */
-    public abstract void setByteCodeOperands(ByteCode byteCode, OperandManager operandManager, int codeLength);
+    public abstract void setByteCodeOperands(ByteCode byteCode, OperandManager operandManager, int codeLength) throws Pack200Exception;
 
     @Override
     public String toString() {

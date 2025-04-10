@@ -18,6 +18,7 @@
  */
 package org.apache.commons.compress.harmony.unpack200.bytecode.forms;
 
+import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.harmony.unpack200.SegmentConstantPool;
 import org.apache.commons.compress.harmony.unpack200.bytecode.ByteCode;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPInterfaceMethodRef;
@@ -57,7 +58,7 @@ public class IMethodRefForm extends ReferenceForm {
      * org.apache.commons.compress.harmony.unpack200.Segment)
      */
     @Override
-    public void setByteCodeOperands(final ByteCode byteCode, final OperandManager operandManager, final int codeLength) {
+    public void setByteCodeOperands(final ByteCode byteCode, final OperandManager operandManager, final int codeLength) throws Pack200Exception {
         super.setByteCodeOperands(byteCode, operandManager, codeLength);
         final int count = ((CPInterfaceMethodRef) byteCode.getNestedClassFileEntries()[0]).invokeInterfaceCount();
         byteCode.getRewrite()[3] = count;
