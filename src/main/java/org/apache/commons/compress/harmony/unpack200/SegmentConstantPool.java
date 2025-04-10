@@ -153,14 +153,16 @@ public class SegmentConstantPool {
     private final SegmentConstantPoolArrayCache arrayCache = new SegmentConstantPoolArrayCache();
 
     /**
-     * @param bands TODO
+     * Constructs a new instance.
+     *
+     * @param bands Constant pool bands.
      */
     public SegmentConstantPool(final CpBands bands) {
         this.bands = bands;
     }
 
     /**
-     * Given the name of a class, answer the CPClass associated with that class. Answer null if the class doesn't exist.
+     * Gets the CPClass associated with a class name. Returns null if the class doesn't exist.
      *
      * @param name Class name to look for (form: java/lang/Object)
      * @return CPClass for that class name, or null if not found.
@@ -311,13 +313,15 @@ public class SegmentConstantPool {
      * A number of things make use of subsets of structures. In one particular example, _super bytecodes will use a subset of method or field classes which have
      * just those methods / fields defined in the superclass. Similarly, _this bytecodes use just those methods/fields defined in this class, and _init
      * bytecodes use just those methods that start with {@code <init>}.
-     *
+     * <p>
      * This method takes an array of names, a String to match for, an index and a boolean as parameters, and answers the array position in the array of the
      * indexth element which matches (or equals) the String (depending on the state of the boolean)
-     *
+     * </p>
+     * <p>
      * In other words, if the class array consists of: Object [position 0, 0th instance of Object] String [position 1, 0th instance of String] String [position
      * 2, 1st instance of String] Object [position 3, 1st instance of Object] Object [position 4, 2nd instance of Object] then matchSpecificPoolEntryIndex(...,
      * "Object", 2, false) will answer 4. matchSpecificPoolEntryIndex(..., "String", 0, false) will answer 1.
+     * </p>
      *
      * @param nameArray     Array of Strings against which the compareString is tested
      * @param compareString String for which to search

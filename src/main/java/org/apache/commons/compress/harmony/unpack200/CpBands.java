@@ -39,7 +39,7 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.CPString;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPUTF8;
 
 /**
- * Constant Pool bands
+ * Constant Pool bands.
  */
 public class CpBands extends BandSet {
 
