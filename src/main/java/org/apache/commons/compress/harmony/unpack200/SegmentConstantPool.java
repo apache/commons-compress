@@ -203,11 +203,9 @@ public class SegmentConstantPool {
             array = bands.getCpIMethodClass();
             break;
         default:
-            throw new Error("Don't know how to handle " + cp);
+            throw new Pack200Exception("Type is not supported yet: " + cp);
         }
-        final int index = toIndex(desiredIndex);
-        final int realIndex = matchSpecificPoolEntryIndex(array, desiredClassName, index);
-        return getConstantPoolEntry(cp, realIndex);
+        return getConstantPoolEntry(cp, matchSpecificPoolEntryIndex(array, desiredClassName, toIndex(desiredIndex)));
     }
 
     /**

@@ -74,6 +74,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.harmony.unpack200.SegmentConstantPool.getConstantPoolEntry(int, long) now throws Pack200Exception instead of Error and does better range checking of the index argument.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.harmony.unpack200.SegmentConstantPool.getInitMethodPoolEntry(int, long, String) now throws Pack200Exception instead of Error and does better range checking of the index argument.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.harmony.unpack200.SegmentConstantPool.getInitMethodPoolEntry(int, long, String) now throws Pack200Exception instead of Error on bad constant pool type input.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.harmony.unpack200.SegmentConstantPool.getClassSpecificPoolEntry(int, long, String) now throws Pack200Exception instead of Error on bad constant pool type input.</action>
       <!-- ADD -->
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add GzipParameters.getModificationInstant().</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add GzipParameters.setModificationInstant(Instant).</action>
