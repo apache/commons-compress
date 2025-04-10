@@ -133,7 +133,23 @@ public class SegmentConstantPool {
         throw new Error("regex trying to match a pattern I don't know: " + regexString);
     }
 
+    static int toIndex(final long index) throws Pack200Exception {
+        if (index < 0) {
+            throw new Pack200Exception("Cannot have a negative index.");
+        }
+        return toIntExact(index);
+    }
+
+    static int toIntExact(final long index) throws Pack200Exception {
+        try {
+            return Math.toIntExact(index);
+        } catch (final ArithmeticException e) {
+            throw new Pack200Exception("index", e);
+        }
+    }
+
     private final CpBands bands;
+
     private final SegmentConstantPoolArrayCache arrayCache = new SegmentConstantPoolArrayCache();
 
     /**
@@ -163,18 +179,16 @@ public class SegmentConstantPool {
     }
 
     /**
-     * Subset the constant pool of the specified type to be just that which has the specified class name. Answer the ConstantPoolEntry at the desiredIndex of
-     * the subsetted pool.
+     * Gets the subset constant pool of the specified type to be just that which has the specified class name. Answer the ConstantPoolEntry at the desiredIndex
+     * of the subset pool.
      *
-     * @param cp               type of constant pool array to search
-     * @param desiredIndex     index of the constant pool
-     * @param desiredClassName class to use to generate a subset of the pool
+     * @param cp               type of constant pool array to search.
+     * @param desiredIndex     index of the constant pool.
+     * @param desiredClassName class to use to generate a subset of the pool.
      * @return ConstantPoolEntry
-     * @throws Pack200Exception TODO
+     * @throws Pack200Exception if support for a type is not supported or the index not in the range [0, {@link Integer#MAX_VALUE}].
      */
     public ConstantPoolEntry getClassSpecificPoolEntry(final int cp, final long desiredIndex, final String desiredClassName) throws Pack200Exception {
-        final int index = (int) desiredIndex;
-        int realIndex = -1;
         final String[] array;
         switch (cp) {
         case CP_FIELD:
@@ -189,69 +203,75 @@ public class SegmentConstantPool {
         default:
             throw new Error("Don't know how to handle " + cp);
         }
-        realIndex = matchSpecificPoolEntryIndex(array, desiredClassName, index);
+        final int index = toIndex(desiredIndex);
+        final int realIndex = matchSpecificPoolEntryIndex(array, desiredClassName, index);
         return getConstantPoolEntry(cp, realIndex);
     }
 
-    public ConstantPoolEntry getConstantPoolEntry(final int cp, final long value) throws Pack200Exception {
-        final int index = (int) value;
+    /**
+     * Gets the constant pool entry of the given type and index.
+     *
+     * @param type Constant pool type.
+     * @param index Index into a specific constant pool.
+     * @return a constant pool entry.
+     * @throws Pack200Exception if support for a type is not supported or the index not in the range [0, {@link Integer#MAX_VALUE}].
+     */
+    public ConstantPoolEntry getConstantPoolEntry(final int type, final long index) throws Pack200Exception {
         if (index == -1) {
             return null;
         }
-        if (index < 0) {
-            throw new Pack200Exception("Cannot have a negative range");
-        }
-        switch (cp) {
+        final int actualIndex = toIndex(index);
+        switch (type) {
         case UTF_8:
-            return bands.cpUTF8Value(index);
+            return bands.cpUTF8Value(actualIndex);
         case CP_INT:
-            return bands.cpIntegerValue(index);
+            return bands.cpIntegerValue(actualIndex);
         case CP_FLOAT:
-            return bands.cpFloatValue(index);
+            return bands.cpFloatValue(actualIndex);
         case CP_LONG:
-            return bands.cpLongValue(index);
+            return bands.cpLongValue(actualIndex);
         case CP_DOUBLE:
-            return bands.cpDoubleValue(index);
+            return bands.cpDoubleValue(actualIndex);
         case CP_STRING:
-            return bands.cpStringValue(index);
+            return bands.cpStringValue(actualIndex);
         case CP_CLASS:
-            return bands.cpClassValue(index);
+            return bands.cpClassValue(actualIndex);
         case SIGNATURE:
-            throw new Error("I don't know what to do with signatures yet");
+            throw new Pack200Exception("Type SIGNATURE is not supported yet: " + SIGNATURE);
         // return null /* new CPSignature(bands.getCpSignature()[index]) */;
         case CP_DESCR:
-            throw new Error("I don't know what to do with descriptors yet");
+            throw new Pack200Exception("Type CP_DESCR is not supported yet: " + CP_DESCR);
         // return null /* new CPDescriptor(bands.getCpDescriptor()[index])
         // */;
         case CP_FIELD:
-            return bands.cpFieldValue(index);
+            return bands.cpFieldValue(actualIndex);
         case CP_METHOD:
-            return bands.cpMethodValue(index);
+            return bands.cpMethodValue(actualIndex);
         case CP_IMETHOD:
-            return bands.cpIMethodValue(index);
+            return bands.cpIMethodValue(actualIndex);
         default:
             break;
         }
         // etc
-        throw new Error("Get value incomplete");
+        throw new Pack200Exception("Type is not supported yet: " + type);
     }
 
     /**
-     * Answer the init method for the specified class.
+     * Gets the {@code init} method for the specified class.
      *
-     * @param cp               constant pool to search (must be CP_METHOD)
-     * @param value            index of init method
-     * @param desiredClassName String class name of the init method
-     * @return CPMethod init method
-     * @throws Pack200Exception TODO
+     * @param cp               constant pool to search (must be CP_METHOD).
+     * @param value            index of {@code init} method.
+     * @param desiredClassName String class name of the {@code init} method.
+     * @return CPMethod {@code init} method.
+     * @throws Pack200Exception if support for a type is not supported or the index not in the range [0, {@link Integer#MAX_VALUE}].
      */
     public ConstantPoolEntry getInitMethodPoolEntry(final int cp, final long value, final String desiredClassName) throws Pack200Exception {
-        int realIndex = -1;
         if (cp != CP_METHOD) {
             // TODO really an error?
             throw new Error("Nothing but CP_METHOD can be an <init>");
         }
-        realIndex = matchSpecificPoolEntryIndex(bands.getCpMethodClass(), bands.getCpMethodDescriptor(), desiredClassName, REGEX_MATCH_INIT, (int) value);
+        final int realIndex = matchSpecificPoolEntryIndex(bands.getCpMethodClass(), bands.getCpMethodDescriptor(), desiredClassName, REGEX_MATCH_INIT,
+                toIndex(value));
         return getConstantPoolEntry(cp, realIndex);
     }
 

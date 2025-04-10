@@ -63,6 +63,14 @@ public abstract class ReferenceForm extends ByteCodeForm {
         }
     }
 
+    /**
+     * Sets the nested entries.
+     *
+     * @param byteCode byte codes.
+     * @param operandManager Operand manager.
+     * @param offset offset.
+     * @throws Pack200Exception if support for a type is not supported or the offset not in the range [0, {@link Integer#MAX_VALUE}].
+     */
     protected void setNestedEntries(final ByteCode byteCode, final OperandManager operandManager, final int offset) throws Pack200Exception {
         final SegmentConstantPool globalPool = operandManager.globalConstantPool();
         final ClassFileEntry[] nested = { globalPool.getConstantPoolEntry(getPoolID(), offset) };
