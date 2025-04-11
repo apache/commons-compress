@@ -247,4 +247,14 @@ public class CanonicalCodecFamilies {
             CodecEncoding.getCanonicalCodec(31) // (5,128,2)
     };
 
+
+    /**
+     * Constructs a new instance.
+     *
+     * @deprecated Will be private in the next major release.
+     */
+    @Deprecated
+    public CanonicalCodecFamilies() {
+        // empty
+    }
 }
