@@ -22,6 +22,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Locale;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 /**
  * Usage: archive-name [list]
  */
@@ -96,7 +98,7 @@ public class CLI {
      * @throws IOException if an I/O problem occurs.
      */
     public static void main(final String[] args) throws IOException {
-        if (args.length == 0) {
+        if (ArrayUtils.isEmpty(args)) {
             usage();
             return;
         }
