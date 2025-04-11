@@ -34,10 +34,8 @@ public class RuntimeVisibleorInvisibleParameterAnnotationsAttribute extends Anno
     public static class ParameterAnnotation {
 
         private final Annotation[] annotations;
-        private final int numAnnotations;
 
         public ParameterAnnotation(final Annotation[] annotations) {
-            this.numAnnotations = annotations.length;
             this.annotations = annotations;
         }
 
@@ -64,7 +62,7 @@ public class RuntimeVisibleorInvisibleParameterAnnotationsAttribute extends Anno
         }
 
         public void writeBody(final DataOutputStream dos) throws IOException {
-            dos.writeShort(numAnnotations);
+            dos.writeShort(annotations.length);
             for (final Annotation annotation : annotations) {
                 annotation.writeBody(dos);
             }
