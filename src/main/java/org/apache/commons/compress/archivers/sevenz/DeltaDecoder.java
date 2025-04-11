@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.tukaani.xz.DeltaOptions;
 import org.tukaani.xz.FinishableWrapperOutputStream;
 import org.tukaani.xz.UnsupportedOptionsException;
@@ -54,7 +55,7 @@ final class DeltaDecoder extends AbstractCoder {
     }
 
     private int getOptionsFromCoder(final Coder coder) {
-        if (coder.properties == null || coder.properties.length == 0) {
+        if (coder == null || ArrayUtils.isEmpty(coder.properties)) {
             return 1;
         }
         return (0xff & coder.properties[0]) + 1;
