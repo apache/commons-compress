@@ -70,8 +70,6 @@ public class RuntimeVisibleorInvisibleParameterAnnotationsAttribute extends Anno
 
     }
 
-    private final int numParameters;
-
     private final ParameterAnnotation[] parameterAnnotations;
 
     /**
@@ -82,15 +80,14 @@ public class RuntimeVisibleorInvisibleParameterAnnotationsAttribute extends Anno
      */
     public RuntimeVisibleorInvisibleParameterAnnotationsAttribute(final CPUTF8 name, final ParameterAnnotation[] parameterAnnotations) {
         super(name);
-        this.numParameters = parameterAnnotations.length;
         this.parameterAnnotations = parameterAnnotations;
     }
 
     @Override
     protected int getLength() {
         int length = 1;
-        for (int i = 0; i < numParameters; i++) {
-            length += parameterAnnotations[i].getLength();
+        for (final ParameterAnnotation parameterAnnotation : parameterAnnotations) {
+            length += parameterAnnotation.getLength();
         }
         return length;
     }
@@ -115,14 +112,14 @@ public class RuntimeVisibleorInvisibleParameterAnnotationsAttribute extends Anno
 
     @Override
     public String toString() {
-        return attributeName.underlyingString() + ": " + numParameters + " parameter annotations";
+        return attributeName.underlyingString() + ": " + parameterAnnotations.length + " parameter annotations";
     }
 
     @Override
     protected void writeBody(final DataOutputStream dos) throws IOException {
-        dos.writeByte(numParameters);
-        for (int i = 0; i < numParameters; i++) {
-            parameterAnnotations[i].writeBody(dos);
+        dos.writeByte(parameterAnnotations.length);
+        for (final ParameterAnnotation parameterAnnotation : parameterAnnotations) {
+            parameterAnnotation.writeBody(dos);
         }
     }
 
