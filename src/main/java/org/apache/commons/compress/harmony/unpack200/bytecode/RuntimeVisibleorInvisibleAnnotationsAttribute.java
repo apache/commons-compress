@@ -30,6 +30,12 @@ public class RuntimeVisibleorInvisibleAnnotationsAttribute extends AnnotationsAt
 
     private final Annotation[] annotations;
 
+    /**
+     * Constructs a new instance for an attribute name.
+     *
+     * @param name an attribute name.
+     * @param annotations Annotations.
+     */
     public RuntimeVisibleorInvisibleAnnotationsAttribute(final CPUTF8 name, final Annotation[] annotations) {
         super(name);
         this.annotations = annotations;
