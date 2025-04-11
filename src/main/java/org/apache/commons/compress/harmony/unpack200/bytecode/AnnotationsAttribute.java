@@ -42,6 +42,14 @@ public abstract class AnnotationsAttribute extends Attribute {
         private int typeIndex;
         private int[] nameIndexes;
 
+        /**
+         * Constructs a new instance.
+         *
+         * @param numPairs      Number of pairs, matches the lengths of {@code elementNames} and {@code elementValues}.
+         * @param type          Type.
+         * @param elementNames  Element names.
+         * @param elementValues Element values.
+         */
         public Annotation(final int numPairs, final CPUTF8 type, final CPUTF8[] elementNames, final ElementValue[] elementValues) {
             this.numPairs = numPairs;
             this.type = type;
