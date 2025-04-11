@@ -76,6 +76,12 @@ public class RuntimeVisibleorInvisibleParameterAnnotationsAttribute extends Anno
 
     private final ParameterAnnotation[] parameterAnnotations;
 
+    /**
+     * Constructs a new instance for an attribute name.
+     *
+     * @param name an attribute name.
+     * @param parameterAnnotations Annotations.
+     */
     public RuntimeVisibleorInvisibleParameterAnnotationsAttribute(final CPUTF8 name, final ParameterAnnotation[] parameterAnnotations) {
         super(name);
         this.numParameters = parameterAnnotations.length;
