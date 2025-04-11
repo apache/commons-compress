@@ -38,6 +38,13 @@ public final class ChangeSet<E extends ArchiveEntry> {
     private final Set<Change<E>> changes = new LinkedHashSet<>();
 
     /**
+     * Constructs a new instance.
+     */
+    public ChangeSet() {
+        // empty
+    }
+
+    /**
      * Adds a new archive entry to the archive.
      *
      * @param entry the entry to add

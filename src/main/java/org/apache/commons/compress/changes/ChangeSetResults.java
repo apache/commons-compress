@@ -31,6 +31,13 @@ public class ChangeSetResults {
     private final List<String> deleted = new ArrayList<>();
 
     /**
+     * Constructs a new instance.
+     */
+    public ChangeSetResults() {
+        // empty
+    }
+
+    /**
      * Adds the name of a file to the result list which has been copied from the {@link ChangeSet} to the target stream
      *
      * @param fileName the name of the file

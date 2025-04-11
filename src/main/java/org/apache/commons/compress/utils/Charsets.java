@@ -170,4 +170,11 @@ public class Charsets {
     public static Charset toCharset(final String charset) {
         return charset == null ? Charset.defaultCharset() : Charset.forName(charset);
     }
+
+    /**
+     * Constructs a new instance.
+     */
+    public Charsets() {
+        // empty
+    }
 }
