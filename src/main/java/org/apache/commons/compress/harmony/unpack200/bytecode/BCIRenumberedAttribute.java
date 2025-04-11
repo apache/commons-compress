@@ -26,10 +26,13 @@ import java.util.List;
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 
 /**
- * Abstract superclass for attributes that have some part encoded with a BCI renumbering
+ * Abstract superclass for attributes that have some part encoded with Byte Code Injection (BCI) renumbering.
  */
 public abstract class BCIRenumberedAttribute extends Attribute {
 
+    /**
+     * Whether renumbering has occurred.
+     */
     protected boolean renumbered;
 
     /**
@@ -44,6 +47,11 @@ public abstract class BCIRenumberedAttribute extends Attribute {
     @Override
     protected abstract int getLength();
 
+    /**
+     * Gets the array of indices for the start of line numbers.
+     *
+     * @return the array of indices for the start of line numbers.
+     */
     protected abstract int[] getStartPCs();
 
     /*
@@ -60,7 +68,7 @@ public abstract class BCIRenumberedAttribute extends Attribute {
      * In Pack200, line number tables are BCI renumbered. This method takes the byteCodeOffsets (which is a List of Integers specifying the offset in the byte
      * code array of each instruction) and updates the start_pcs so that it points to the instruction index itself, not the BCI renumbering of the instruction.
      *
-     * @param byteCodeOffsets List of Integer offsets of the byte code array
+     * @param byteCodeOffsets List of Integer offsets of the byte code array.
      * @throws Pack200Exception Thrown from a subclass.
      */
     public void renumber(final List<Integer> byteCodeOffsets) throws Pack200Exception {
