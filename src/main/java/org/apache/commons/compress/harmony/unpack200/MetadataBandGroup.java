@@ -123,6 +123,13 @@ public class MetadataBandGroup {
         this.cpBands = cpBands;
     }
 
+    /**
+     * Gets a new Annotation.
+     *
+     * @param numPairs      Number of pairs, matches the lengths of {@code elementNames} and {@code elementValues} in the new Annotation.
+     * @param type          Type.
+     * @param namesIterator Iterates names to create pairs.
+     */
     private Annotation getAnnotation(final CPUTF8 type, final int pairCount, final Iterator<CPUTF8> namesIterator) {
         final CPUTF8[] elementNames = new CPUTF8[pairCount];
         final ElementValue[] elementValues = new ElementValue[pairCount];
