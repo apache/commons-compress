@@ -25,6 +25,8 @@ import java.util.Arrays;
 import java.util.zip.CRC32;
 import java.util.zip.ZipException;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 /**
  * A common base class for Unicode extra information extra fields.
  *
@@ -96,7 +98,7 @@ public abstract class AbstractUnicodeExtraField implements ZipExtraField {
         if (data == null) {
             assembleData();
         }
-        return new ZipShort(data != null ? data.length : 0);
+        return new ZipShort(ArrayUtils.getLength(data));
     }
 
     @Override
