@@ -40,6 +40,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.EntryStreamOffsets;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.io.file.attribute.FileTimes;
+import org.apache.commons.lang3.ArrayUtils;
 
 /**
  * Extension that adds better handling of extra fields and provides access to the internal and external file attributes.
@@ -509,7 +510,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
                 internalRemoveExtraField(ze.getHeaderId());
             }
             final ZipExtraField[] copy = extraFields;
-            final int newLen = extraFields != null ? extraFields.length + 1 : 1;
+            final int newLen = ArrayUtils.getLength(extraFields) + 1;
             extraFields = new ZipExtraField[newLen];
             extraFields[0] = ze;
             if (copy != null) {
@@ -767,7 +768,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
             }
             if (c != null) {
                 final byte[] cd = c.getCentralDirectoryData();
-                if (cd != null && cd.length > 0) {
+                if (!ArrayUtils.isEmpty(cd)) {
                     l.parseFromCentralDirectoryData(cd, 0, cd.length);
                 }
                 centralFields.remove(c);

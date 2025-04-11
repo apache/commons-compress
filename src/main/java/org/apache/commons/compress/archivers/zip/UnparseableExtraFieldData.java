@@ -20,6 +20,8 @@ package org.apache.commons.compress.archivers.zip;
 
 import java.util.Arrays;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 /**
  * Wrapper for extra field data that doesn't conform to the recommended format of header-tag + size + data.
  *
@@ -84,7 +86,7 @@ public final class UnparseableExtraFieldData implements ZipExtraField {
      */
     @Override
     public ZipShort getLocalFileDataLength() {
-        return new ZipShort(localFileData == null ? 0 : localFileData.length);
+        return new ZipShort(ArrayUtils.getLength(localFileData));
     }
 
     /**

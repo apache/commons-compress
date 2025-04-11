@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedList;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 /**
  * The unit of solid compression.
  */
@@ -90,7 +92,7 @@ final class Folder {
      * </p>
      */
     Iterable<Coder> getOrderedCoders() throws IOException {
-        if (packedStreams == null || coders == null || packedStreams.length == 0 || coders.length == 0) {
+        if (ArrayUtils.isEmpty(packedStreams) || ArrayUtils.isEmpty(coders)) {
             return Collections.emptyList();
         }
         final LinkedList<Coder> list = new LinkedList<>();

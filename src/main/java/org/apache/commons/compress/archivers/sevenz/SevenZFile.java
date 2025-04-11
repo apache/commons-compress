@@ -58,6 +58,7 @@ import org.apache.commons.io.build.AbstractOrigin.ByteArrayOrigin;
 import org.apache.commons.io.build.AbstractStreamBuilder;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.io.input.ChecksumInputStream;
+import org.apache.commons.lang3.ArrayUtils;
 
 /**
  * Reads a 7z file, using SeekableByteChannel under the covers.
@@ -205,7 +206,7 @@ public class SevenZFile implements Closeable {
                 actualDescription = defaultName;
             } else {
                 OpenOption[] openOptions = getOpenOptions();
-                if (openOptions.length == 0) {
+                if (ArrayUtils.isEmpty(openOptions)) {
                     openOptions = new OpenOption[] { StandardOpenOption.READ };
                 }
                 final Path path = getPath();
@@ -881,7 +882,7 @@ public class SevenZFile implements Closeable {
 
     private void calculateStreamMap(final Archive archive) throws IOException {
         int nextFolderPackStreamIndex = 0;
-        final int numFolders = archive.folders != null ? archive.folders.length : 0;
+        final int numFolders = ArrayUtils.getLength(archive.folders);
         final int[] folderFirstPackStreamIndex = new int[numFolders];
         for (int i = 0; i < numFolders; i++) {
             folderFirstPackStreamIndex[i] = nextFolderPackStreamIndex;
@@ -1231,10 +1232,10 @@ public class SevenZFile implements Closeable {
 
         readStreamsInfo(header, archive);
 
-        if (archive.folders == null || archive.folders.length == 0) {
+        if (ArrayUtils.isEmpty(archive.folders)) {
             throw new IOException("no folders, can't read encoded header");
         }
-        if (archive.packSizes == null || archive.packSizes.length == 0) {
+        if (ArrayUtils.isEmpty(archive.packSizes)) {
             throw new IOException("no packed streams, can't read encoded header");
         }
 

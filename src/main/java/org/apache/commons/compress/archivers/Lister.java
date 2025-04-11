@@ -31,6 +31,7 @@ import java.util.Objects;
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
 import org.apache.commons.compress.archivers.tar.TarFile;
 import org.apache.commons.compress.archivers.zip.ZipFile;
+import org.apache.commons.lang3.ArrayUtils;
 
 /**
  * Simple command line application that lists the contents of an archive.
@@ -76,7 +77,7 @@ public final class Lister {
      * @throws IOException      an I/O exception.
      */
     public static void main(final String... args) throws ArchiveException, IOException {
-        if (args == null || args.length == 0) {
+        if (ArrayUtils.isEmpty(args)) {
             usage();
             return;
         }
