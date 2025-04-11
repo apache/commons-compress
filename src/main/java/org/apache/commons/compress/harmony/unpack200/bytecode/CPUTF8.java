@@ -34,20 +34,25 @@ public class CPUTF8 extends ConstantPoolEntry {
 
     private int cachedHashCode;
 
+    /**
+     * Constructs a new instance.
+     *
+     * @param string a constant pool string.
+     */
     public CPUTF8(final String string) {
         this(string, -1);
     }
 
     /**
-     * Creates a new CPUTF8 instance
+     * Creates a new instance
      *
-     * @param utf8        TODO
+     * @param string      a constant pool string.
      * @param globalIndex index in CpBands
-     * @throws NullPointerException if utf8 is null
+     * @throws NullPointerException if utf8 is null.
      */
-    public CPUTF8(final String utf8, final int globalIndex) {
+    public CPUTF8(final String string, final int globalIndex) {
         super(CP_UTF8, globalIndex);
-        this.utf8 = Objects.requireNonNull(utf8, "utf8");
+        this.utf8 = Objects.requireNonNull(string, "utf8");
     }
 
     @Override
@@ -76,6 +81,11 @@ public class CPUTF8 extends ConstantPoolEntry {
         return cachedHashCode;
     }
 
+    /**
+     * Sets the global index.
+     *
+     * @param index the global index.
+     */
     public void setGlobalIndex(final int index) {
         globalIndex = index;
     }
@@ -85,6 +95,11 @@ public class CPUTF8 extends ConstantPoolEntry {
         return StandardCharsets.UTF_8.name() + ":" + utf8;
     }
 
+    /**
+     * Gets the underlying string.
+     *
+     * @return the underlying string.
+     */
     public String underlyingString() {
         return utf8;
     }
