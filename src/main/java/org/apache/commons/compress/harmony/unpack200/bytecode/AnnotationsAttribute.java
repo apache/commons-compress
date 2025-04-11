@@ -57,6 +57,11 @@ public abstract class AnnotationsAttribute extends Attribute {
             this.elementValues = elementValues;
         }
 
+        /**
+         * Gets a list of class file entries.
+         *
+         * @return a list of class file entries.
+         */
         public List<Object> getClassFileEntries() {
             final List<Object> entries = new ArrayList<>();
             for (int i = 0; i < elementNames.length; i++) {
@@ -67,6 +72,11 @@ public abstract class AnnotationsAttribute extends Attribute {
             return entries;
         }
 
+        /**
+         * Gets the cumulative length of all element values.
+         *
+         * @return the cumulative length of all element values.
+         */
         public int getLength() {
             int length = 4;
             for (int i = 0; i < numPairs; i++) {
@@ -76,6 +86,11 @@ public abstract class AnnotationsAttribute extends Attribute {
             return length;
         }
 
+        /**
+         * Resolves this instance against a given pool.
+         *
+         * @param pool a class constant pool.
+         */
         public void resolve(final ClassConstantPool pool) {
             type.resolve(pool);
             typeIndex = pool.indexOf(type);
@@ -125,6 +140,11 @@ public abstract class AnnotationsAttribute extends Attribute {
             this.value = value;
         }
 
+        /**
+         * Gets a list of class file entries.
+         *
+         * @return a list of class file entries.
+         */
         public List<Object> getClassFileEntries() {
             final List<Object> entries = new ArrayList<>(1);
             if (value instanceof CPNameAndType) {
@@ -178,6 +198,11 @@ public abstract class AnnotationsAttribute extends Attribute {
             return 0;
         }
 
+        /**
+         * Resolves this instance against a given pool.
+         *
+         * @param pool a class constant pool.
+         */
         public void resolve(final ClassConstantPool pool) {
             if (value instanceof CPConstant) {
                 ((CPConstant) value).resolve(pool);
@@ -200,6 +225,12 @@ public abstract class AnnotationsAttribute extends Attribute {
             }
         }
 
+        /**
+         * Writes this instance to the given output stream.
+         *
+         * @param dos the output stream.
+         * @throws IOException if an I/O error occurs.
+         */
         public void writeBody(final DataOutputStream dos) throws IOException {
             dos.writeByte(tag);
             if (constantValueIndex != -1) {
