@@ -24,12 +24,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Abstract superclass for Annotations attributes
+ * Abstracts Annotations attributes.
  */
 public abstract class AnnotationsAttribute extends Attribute {
 
     /**
-     * Class to represent the annotation structure for class file attributes
+     * Represents the annotation structure for class file attributes.
      */
     public static class Annotation {
 
@@ -79,6 +79,12 @@ public abstract class AnnotationsAttribute extends Attribute {
             }
         }
 
+        /**
+         * Writes this instance to the given output stream.
+         *
+         * @param dos the output stream.
+         * @throws IOException if an I/O error occurs.
+         */
         public void writeBody(final DataOutputStream dos) throws IOException {
             dos.writeShort(typeIndex);
             dos.writeShort(numPairs);
