@@ -20,8 +20,6 @@ package org.apache.commons.compress.archivers.zip;
 
 import java.util.Arrays;
 
-import org.apache.commons.lang3.ArrayUtils;
-
 /**
  * Simple placeholder for all those extra fields we don't want to deal with.
  *
@@ -101,7 +99,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
      */
     @Override
     public ZipShort getLocalFileDataLength() {
-        return new ZipShort(ArrayUtils.getLength(localData));
+        return ZipShort.lengthOf(localData);
     }
 
     /**

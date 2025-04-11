@@ -21,6 +21,7 @@ package org.apache.commons.compress.archivers.zip;
 import java.io.Serializable;
 
 import org.apache.commons.compress.utils.ByteUtils;
+import org.apache.commons.lang3.ArrayUtils;
 
 /**
  * Utility class that represents a two byte integer with conversion rules for the little-endian byte order of ZIP files.
@@ -71,6 +72,10 @@ public final class ZipShort implements Cloneable, Serializable {
      */
     public static int getValue(final byte[] bytes, final int offset) {
         return (int) ByteUtils.fromLittleEndian(bytes, offset, SIZE);
+    }
+
+    static ZipShort lengthOf(final byte[] array) {
+        return new ZipShort(ArrayUtils.getLength(array));
     }
 
     /**

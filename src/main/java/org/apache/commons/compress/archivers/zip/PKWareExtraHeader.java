@@ -24,8 +24,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.ZipException;
 
-import org.apache.commons.lang3.ArrayUtils;
-
 /**
  * Base class for all PKWare strong crypto extra headers.
  *
@@ -333,11 +331,11 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
     /**
      * Gets the length of the local data.
      *
-     * @return the length of the local data
+     * @return the length of the local data.
      */
     @Override
     public ZipShort getLocalFileDataLength() {
-        return new ZipShort(ArrayUtils.getLength(localData));
+        return ZipShort.lengthOf(localData);
     }
 
     /**
