@@ -15,9 +15,8 @@
 ## specific language governing permissions and limitations
 ## under the License.
 
-Apache Commons Compress 
-Version ${version}
-Release Notes
+${project.name} ${version} Release Notes
+------------------------------------------------
 
 $introduction.replaceAll("(?<!\015)\012", "
 ")
