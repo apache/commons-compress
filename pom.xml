@@ -90,12 +90,10 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <checkstyle.suppress.file>${basedir}/src/conf/checkstyle/checkstyle-suppressions.xml</checkstyle.suppress.file>
     <checkstyle.resourceExcludes>LICENSE.txt, NOTICE.txt, **/maven-archiver/pom.properties</checkstyle.resourceExcludes>
   </properties>
-
   <issueManagement>
     <system>jira</system>
     <url>https://issues.apache.org/jira/browse/COMPRESS</url>
   </issueManagement>
-
   <dependencies>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
@@ -139,7 +137,6 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
       <artifactId>commons-codec</artifactId>
       <version>1.18.0</version>
     </dependency>
-
     <!-- Pack200 -->
     <dependency>
       <groupId>org.ow2.asm</groupId>
@@ -147,7 +144,6 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
       <version>${commons.asm.version}</version>
       <optional>true</optional>
     </dependency>
-
     <!--  Test -->
     <dependency>
       <groupId>org.mockito</groupId>
@@ -167,7 +163,6 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
       <version>2.8.1</version>
       <scope>test</scope>
     </dependency>
-
     <!-- integration test verifying OSGi bundle works -->
     <dependency>
       <groupId>org.ops4j.pax.exam</groupId>
@@ -216,14 +211,12 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
       <version>3.17.0</version>
     </dependency>    
   </dependencies>
-
   <scm>
     <connection>scm:git:https://gitbox.apache.org/repos/asf/commons-compress.git</connection>
     <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/commons-compress.git</developerConnection>
     <url>https://gitbox.apache.org/repos/asf?p=commons-compress.git</url>
     <tag>HEAD</tag>
   </scm>
-
   <build>
     <defaultGoal>clean artifact:check-buildplan verify apache-rat:check checkstyle:check pmd:check japicmp:cmp javadoc:javadoc</defaultGoal>
     <pluginManagement>
@@ -412,7 +405,6 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
       </plugin>
     </plugins>
   </build>
-
   <reporting>
     <plugins>
       <plugin>
@@ -438,7 +430,6 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
       </plugin>
     </plugins>
   </reporting>
-
   <profiles>
     <!-- Add long running tests as **/*IT.java -->
     <profile>
@@ -535,7 +526,6 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
       </build>
     </profile>
   </profiles>
-
   <developers>
     <developer>
       <name>Torsten Curdt</name>
@@ -598,7 +588,6 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
       <email>peterlee at apache.org</email>
     </developer>
   </developers>
-
   <contributors>
     <contributor>
       <name>Wolfgang Glas</name>
@@ -639,5 +628,4 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
       <email>arturobernalg@yahoo.com</email>
     </contributor>
   </contributors>
-
 </project>
