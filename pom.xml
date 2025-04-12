@@ -497,6 +497,55 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
       </build>
     </profile>
     <profile>
+      <id>java8</id>
+      <activation>
+        <jdk>8</jdk>
+      </activation>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-javadoc-plugin</artifactId>
+              <version>${commons.javadoc.version}</version>
+              <configuration> 
+                <source>${maven.compiler.source}</source>
+                <quiet>true</quiet>
+                <encoding>${commons.encoding}</encoding>
+                <docencoding>${commons.docEncoding}</docencoding>
+                <linksource>true</linksource>
+                <links>
+                  <link>${commons.javadoc.javaee.link}</link>
+                  <!-- 
+                  WARNING: Javadoc8 expects to find package-list, but this is now called element-list
+                  -->
+                  <link>https://commons.apache.org/proper/commons-codec/apidocs</link>
+                  <link>https://commons.apache.org/proper/commons-lang/apidocs</link>
+                </links>
+                <tags>
+                  <tag>
+                    <name>Immutable</name>
+                    <placement>a</placement>
+                    <head>This class is immutable</head>
+                  </tag>
+                  <tag>
+                    <name>NotThreadSafe</name>
+                    <placement>a</placement>
+                    <head>This class is not thread-safe</head>
+                  </tag>
+                  <tag>
+                    <name>ThreadSafe</name>
+                    <placement>a</placement>
+                    <head>This class is thread-safe</head>
+                  </tag>
+                </tags>
+              </configuration> 
+            </plugin>
+          </plugins>
+        </pluginManagement>
+      </build>
+    </profile>
+    <profile>
       <id>java9+</id>
       <activation>
         <jdk>[9,)</jdk>
