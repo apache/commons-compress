@@ -37,16 +37,6 @@ final class BitStream extends BitInputStream {
     }
 
     /**
-     * Returns the next bit.
-     *
-     * @return The next bit (0 or 1) or -1 if the end of the stream has been reached
-     * @throws IOException on error.
-     */
-    int nextBit() throws IOException {
-        return (int) readBits(1);
-    }
-
-    /**
      * Returns the integer value formed by the n next bits (up to 8 bits).
      *
      * @param n the number of bits read (up to 8)
