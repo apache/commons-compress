@@ -106,6 +106,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add support for XZ compression in ZIP archives.</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory" issue="COMPRESS-695">Add ZipArchiveInputStream.createZstdInputStream(InputStream) to provide a different InputStream implementation for Zstandard (Zstd) #649.</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.harmony.pack200.Pack200Exception.Pack200Exception(String, Throwable).</action>
+      <action type="add" issue="COMPRESS-697" dev="ggregory" due-to="Fredrik Kjellberg, Gary Gregory">Move BitStream.nextBit() method to BitInputStream #663.</action>
       <!-- UPDATE -->
       <action type="update" dev="sebb">Bump Commons Parent from 79 to 81</action>
       <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump org.apache.commons:commons-parent from 72 to 79 #563, #567, #574, #582, #587, #595.</action>
