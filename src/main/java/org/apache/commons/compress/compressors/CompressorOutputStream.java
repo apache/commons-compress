@@ -36,7 +36,7 @@ public abstract class CompressorOutputStream<T extends OutputStream> extends Com
      * </p>
      */
     public CompressorOutputStream() {
-        super();
+        // empty
     }
 
     /**
