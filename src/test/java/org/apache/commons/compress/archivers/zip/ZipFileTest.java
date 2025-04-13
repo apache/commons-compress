@@ -80,6 +80,7 @@ public class ZipFileTest extends AbstractTest {
             super(file);
         }
 
+        @Override
         protected InputStream createZstdInputStream(final InputStream is) throws IOException {
             return new ZstdInputStream(is) {
 
