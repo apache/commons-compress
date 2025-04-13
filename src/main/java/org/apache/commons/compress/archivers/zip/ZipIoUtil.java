@@ -46,7 +46,8 @@ final class ZipIoUtil {
                 // A non-blocking channel
                 Thread.yield();
                 continue;
-            } else if (written < 0) {
+            }
+            if (written < 0) {
                 throw new IOException("Failed to write all bytes in the buffer for channel=" + channel + ", length=" + remaining + ", written=" + written);
             }
             currentPos += written;
@@ -68,7 +69,8 @@ final class ZipIoUtil {
                 // A non-blocking channel
                 Thread.yield();
                 continue;
-            } else if (written < 0) {
+            }
+            if (written < 0) {
                 throw new IOException("Failed to write all bytes in the buffer for channel=" + channel + ", length=" + remaining + ", written=" + written);
             }
         }
