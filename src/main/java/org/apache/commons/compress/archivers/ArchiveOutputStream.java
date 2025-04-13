@@ -67,7 +67,6 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Compre
      * </p>
      */
     public ArchiveOutputStream() {
-        super();
     }
 
     /**
