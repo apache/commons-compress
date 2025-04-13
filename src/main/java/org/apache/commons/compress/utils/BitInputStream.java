@@ -168,6 +168,17 @@ public class BitInputStream implements Closeable {
     }
 
     /**
+     * Returns the next bit read from the underlying stream.
+     *
+     * @return the next bit (0 or 1) or -1 if the end of the stream has been reached
+     * @throws IOException if an I/O error occurs.
+     * @since 1.28
+     */
+    public int readBit() throws IOException {
+        return (int) readBits(1);
+    }
+
+    /**
      * Returns at most 63 bits read from the underlying stream.
      *
      * @param count the number of bits to read, must be a positive number not bigger than 63.

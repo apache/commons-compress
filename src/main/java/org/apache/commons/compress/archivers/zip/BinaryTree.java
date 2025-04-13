@@ -179,7 +179,7 @@ final class BinaryTree {
         int currentIndex = 0;
 
         while (true) {
-            final int bit = stream.nextBit();
+            final int bit = stream.readBit();
             if (bit == -1) {
                 return -1;
             }

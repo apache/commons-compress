@@ -103,7 +103,7 @@ final class ExplodingInputStream extends InputStream implements InputStreamStati
     private void fillBuffer() throws IOException {
         init();
 
-        final int bit = bits.nextBit();
+        final int bit = bits.readBit();
         if (bit == -1) {
             // EOF
             return;
