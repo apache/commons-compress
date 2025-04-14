@@ -32,7 +32,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
 
-import org.apache.commons.compress.utils.FileNameUtils;
+import org.apache.commons.io.file.PathUtils;
 
 /**
  * Used internally by {@link ZipArchiveOutputStream} when creating a split archive.
@@ -152,8 +152,9 @@ final class ZipSplitOutputStream extends RandomAccessOutputStream {
         if (finished) {
             throw new IOException("This archive has already been finished");
         }
+        final Path path = zipFile;
 
-        final String zipFileBaseName = FileNameUtils.getBaseName(zipFile);
+        final String zipFileBaseName = PathUtils.getBaseName(path);
         outputStream.close();
         Files.move(zipFile, zipFile.resolveSibling(zipFileBaseName + ".zip"), StandardCopyOption.ATOMIC_MOVE);
         finished = true;
@@ -169,7 +170,8 @@ final class ZipSplitOutputStream extends RandomAccessOutputStream {
 
     private Path getSplitSegmentFileName(final Integer zipSplitSegmentSuffixIndex) {
         final int newZipSplitSegmentSuffixIndex = zipSplitSegmentSuffixIndex == null ? currentSplitSegmentIndex + 2 : zipSplitSegmentSuffixIndex;
-        final String baseName = FileNameUtils.getBaseName(zipFile);
+        final Path path = zipFile;
+        final String baseName = PathUtils.getBaseName(path);
         final StringBuilder extension = new StringBuilder(".z");
         if (newZipSplitSegmentSuffixIndex <= 9) {
             extension.append("0").append(newZipSplitSegmentSuffixIndex);

@@ -39,6 +39,7 @@ import java.util.stream.Stream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.utils.FileNameUtils;
 import org.apache.commons.compress.utils.MultiReadOnlySeekableByteChannel;
+import org.apache.commons.io.file.PathUtils;
 
 /**
  * {@link MultiReadOnlySeekableByteChannel} that knows what a split ZIP archive should look like.
@@ -98,7 +99,7 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
             throw new IllegalArgumentException("The extension of last ZIP split segment should be .zip");
         }
         final Path parent = Objects.nonNull(lastSegmentPath.getParent()) ? lastSegmentPath.getParent() : lastSegmentPath.getFileSystem().getPath(".");
-        final String fileBaseName = FileNameUtils.getBaseName(lastSegmentPath);
+        final String fileBaseName = PathUtils.getBaseName(lastSegmentPath);
         final ArrayList<Path> splitZipSegments;
         // ZIP split segments should be like z01,z02....z(n-1) based on the ZIP specification
         final Pattern pattern = Pattern.compile(Pattern.quote(fileBaseName) + ".[zZ][0-9]+");

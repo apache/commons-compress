@@ -84,6 +84,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.harmony.unpack200.bytecode.forms.NewClassRefForm.setByteCodeOperands(ByteCode, OperandManager, int) now throws Pack200Exception instead of Error on some bad inputs and states.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.harmony.unpack200.bytecode.forms.ReferenceForm.setByteCodeOperands(ByteCode, OperandManager, int) now throws Pack200Exception instead of Error on some bad inputs and states.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Deprecate org.apache.commons.compress.harmony.pack200.CanonicalCodecFamilies.CanonicalCodecFamilies().</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">Deprecate FileNameUtils#getBaseName(Path).</action>
       <!-- ADD -->
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add GzipParameters.getModificationInstant().</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add GzipParameters.setModificationInstant(Instant).</action>

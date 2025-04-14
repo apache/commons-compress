@@ -23,6 +23,7 @@ import java.io.File;
 import java.nio.file.Path;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.file.PathUtils;
 
 /**
  * Generic file name utilities.
@@ -40,14 +41,11 @@ public class FileNameUtils {
      * @return the base name of file name
      * @param path the path of the file to obtain the base name of.
      * @since 1.22
+     * @deprecated Use {@link PathUtils#getBaseName(Path)}.
      */
+    @Deprecated
     public static String getBaseName(final Path path) {
-        // TODO Use Commons IO 2.16.0
-        if (path == null) {
-            return null;
-        }
-        final Path fileName = path.getFileName();
-        return fileName != null ? FilenameUtils.removeExtension(fileName.toString()) : null;
+        return PathUtils.getBaseName(path);
     }
 
     /**
