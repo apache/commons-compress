@@ -81,10 +81,7 @@ public class GzipCompressorInputStreamTest {
                 final Path member = tempDir.resolve(e.getFileName());
                 resolved.add(member);
                 try (OutputStream os = Files.newOutputStream(member, StandardOpenOption.CREATE_NEW, StandardOpenOption.TRUNCATE_EXISTING)) {
-                    // TODO Commons IO 2.19.0 RandomAccessFileInputStream.copy()
-                    rafIs.getRandomAccessFile().seek(startPos.get());
-                    IOUtils.copyLarge(rafIs, os, 0, e.getTrailerISize());
-                    startPos.addAndGet(e.getTrailerISize());
+                    startPos.addAndGet(rafIs.copy(startPos.get(), e.getTrailerISize(), os));
                 }
             });
         }
