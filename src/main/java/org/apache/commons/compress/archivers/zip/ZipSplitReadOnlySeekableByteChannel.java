@@ -37,7 +37,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
-import org.apache.commons.compress.utils.FileNameUtils;
 import org.apache.commons.compress.utils.MultiReadOnlySeekableByteChannel;
 import org.apache.commons.io.file.PathUtils;
 
@@ -55,8 +54,8 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
 
         @Override
         public int compare(final Path file1, final Path file2) {
-            final String extension1 = FileNameUtils.getExtension(file1);
-            final String extension2 = FileNameUtils.getExtension(file2);
+            final String extension1 = PathUtils.getExtension(file1);
+            final String extension2 = PathUtils.getExtension(file2);
             if (!extension1.startsWith("z")) {
                 return -1;
             }
@@ -94,7 +93,7 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
      * @since 1.22
      */
     public static SeekableByteChannel buildFromLastSplitSegment(final Path lastSegmentPath) throws IOException {
-        final String extension = FileNameUtils.getExtension(lastSegmentPath);
+        final String extension = PathUtils.getExtension(lastSegmentPath);
         if (!extension.equalsIgnoreCase(ArchiveStreamFactory.ZIP)) {
             throw new IllegalArgumentException("The extension of last ZIP split segment should be .zip");
         }

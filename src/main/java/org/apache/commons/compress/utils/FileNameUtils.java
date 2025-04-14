@@ -76,14 +76,11 @@ public class FileNameUtils {
      * @return the extension of file name
      * @param path the path of the file to obtain the extension of.
      * @since 1.22
+     * @deprecated Use {@link PathUtils#getExtension(Path)}.
      */
+    @Deprecated
     public static String getExtension(final Path path) {
-        // TODO Use Commons IO 2.17.0
-        if (path == null) {
-            return null;
-        }
-        final Path fileName = path.getFileName();
-        return fileName != null ? FilenameUtils.getExtension(fileName.toString()) : null;
+        return PathUtils.getExtension(path);
     }
 
     /**
