@@ -619,7 +619,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
                 if (!LZMAUtils.isLZMACompressionAvailable()) {
                     throw new CompressorException("LZMA compression is not available" + YOU_NEED_XZ_JAVA);
                 }
-                return new LZMACompressorInputStream(in, memoryLimitInKb);
+                return LZMACompressorInputStream.builder().setInputStream(in).setMemoryLimitKiB(memoryLimitInKb).get();
             }
             if (PACK200.equalsIgnoreCase(name)) {
                 return new Pack200CompressorInputStream(in);

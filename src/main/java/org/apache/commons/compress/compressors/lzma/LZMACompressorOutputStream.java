@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import org.apache.commons.compress.compressors.CompressorOutputStream;
+import org.apache.commons.io.build.AbstractStreamBuilder;
 import org.tukaani.xz.LZMA2Options;
 import org.tukaani.xz.LZMAOutputStream;
 
@@ -32,15 +33,81 @@ import org.tukaani.xz.LZMAOutputStream;
  */
 public class LZMACompressorOutputStream extends CompressorOutputStream<LZMAOutputStream> {
 
+    // @formatter:off
+    /**
+     * Builds a new {@link LZMACompressorOutputStream}.
+     *
+     * <p>
+     * For example:
+     * </p>
+     * <pre>{@code
+     * LZMACompressorOutputStream s = LZMACompressorOutputStream.builder()
+     *   .setPath(path)
+     *   .setLzma2Options(new LZMA2Options(...))
+     *   .get();
+     * }
+     * </pre>
+     *
+     * @see #get()
+     * @see LZMA2Options
+     * @since 1.28.0
+     */
+    // @formatter:on
+    public static class Builder extends AbstractStreamBuilder<LZMACompressorOutputStream, Builder> {
+
+        private LZMA2Options lzma2Options = new LZMA2Options();
+
+        /**
+         * Constructs a new builder of {@link LZMACompressorOutputStream}.
+         */
+        public Builder() {
+            // empty
+        }
+
+        @Override
+        public LZMACompressorOutputStream get() throws IOException {
+            return new LZMACompressorOutputStream(this);
+        }
+
+        /**
+         * Sets LZMA options.
+         * <p>
+         * Passing {@code null} resets to the default value {@link LZMA2Options#LZMA2Options()}.
+         * </p>
+         *
+         * @param lzma2Options LZMA options.
+         * @return this instance.
+         */
+        public Builder setLzma2Options(final LZMA2Options lzma2Options) {
+            this.lzma2Options = lzma2Options != null ? lzma2Options : new LZMA2Options();
+            return this;
+        }
+
+    }
+
+    /**
+     * Constructs a new builder of {@link LZMACompressorOutputStream}.
+     *
+     * @return a new builder of {@link LZMACompressorOutputStream}.
+     * @since 1.28.0
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    @SuppressWarnings("resource") // Caller closes
+    private LZMACompressorOutputStream(final Builder builder) throws IOException {
+        super(new LZMAOutputStream(builder.getOutputStream(), builder.lzma2Options, -1));
+    }
+
     /**
      * Creates a LZMA compressor.
      *
      * @param outputStream the stream to wrap
      * @throws IOException on error
      */
-    @SuppressWarnings("resource") // Caller closes
     public LZMACompressorOutputStream(final OutputStream outputStream) throws IOException {
-        super(new LZMAOutputStream(outputStream, new LZMA2Options(), -1));
+        this(builder().setOutputStream(outputStream));
     }
 
     /**

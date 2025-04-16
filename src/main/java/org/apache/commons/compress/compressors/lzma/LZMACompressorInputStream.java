@@ -24,7 +24,9 @@ import java.io.InputStream;
 import org.apache.commons.compress.MemoryLimitException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.utils.InputStreamStatistics;
+import org.apache.commons.io.build.AbstractStreamBuilder;
 import org.apache.commons.io.input.BoundedInputStream;
+import org.tukaani.xz.LZMA2Options;
 import org.tukaani.xz.LZMAInputStream;
 
 /**
@@ -33,6 +35,57 @@ import org.tukaani.xz.LZMAInputStream;
  * @since 1.6
  */
 public class LZMACompressorInputStream extends CompressorInputStream implements InputStreamStatistics {
+
+    // @formatter:off
+    /**
+     * Builds a new {@link LZMACompressorInputStream}.
+     *
+     * <p>
+     * For example:
+     * </p>
+     * <pre>{@code
+     * LZMACompressorOutputStream s = LZMACompressorInputStream.builder()
+     *   .setPath(path)
+     *   .get();
+     * }
+     * </pre>
+     *
+     * @see #get()
+     * @see LZMA2Options
+     * @since 1.28.0
+     */
+    // @formatter:on
+    public static class Builder extends AbstractStreamBuilder<LZMACompressorInputStream, Builder> {
+
+        private int memoryLimitKiB = -1;
+
+        @Override
+        public LZMACompressorInputStream get() throws IOException {
+            return new LZMACompressorInputStream(this);
+        }
+
+        /**
+         * Sets a working memory threshold in kibibytes (KiB).
+         *
+         * @param memoryLimitKiB Sets a working memory threshold in kibibytes (KiB). Processing throws MemoryLimitException if memory use is above this
+         *                       threshold.
+         * @return this instance.
+         */
+        public Builder setMemoryLimitKiB(int memoryLimitKiB) {
+            this.memoryLimitKiB = memoryLimitKiB;
+            return this;
+        }
+    }
+
+    /**
+     * Constructs a new builder of {@link LZMACompressorOutputStream}.
+     *
+     * @return a new builder of {@link LZMACompressorOutputStream}.
+     * @since 1.28.0
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
 
     /**
      * Checks if the signature matches what is expected for an LZMA file.
@@ -50,6 +103,16 @@ public class LZMACompressorInputStream extends CompressorInputStream implements 
 
     private final InputStream in;
 
+    @SuppressWarnings("resource") // Caller closes
+    private LZMACompressorInputStream(final Builder builder) throws IOException {
+        try {
+            in = new LZMAInputStream(countingStream = BoundedInputStream.builder().setInputStream(builder.getInputStream()).get(), builder.memoryLimitKiB);
+        } catch (final org.tukaani.xz.MemoryLimitException e) {
+            // convert to Commons Compress exception
+            throw new MemoryLimitException(e.getMemoryNeeded(), e.getMemoryLimit(), (Throwable) e);
+        }
+    }
+
     /**
      * Creates a new input stream that decompresses LZMA-compressed data from the specified input stream.
      *
@@ -58,26 +121,23 @@ public class LZMACompressorInputStream extends CompressorInputStream implements 
      *                     this implementation, or the underlying {@code inputStream} throws an exception
      */
     public LZMACompressorInputStream(final InputStream inputStream) throws IOException {
-        in = new LZMAInputStream(countingStream = BoundedInputStream.builder().setInputStream(inputStream).get(), -1);
+        this(builder().setInputStream(inputStream));
     }
 
     /**
      * Creates a new input stream that decompresses LZMA-compressed data from the specified input stream.
      *
      * @param inputStream     where to read the compressed data
-     * @param memoryLimitKiB calculated memory use threshold in kibibytes (KiB). Throws MemoryLimitException if calculate memory use is above this threshold
+     * @param memoryLimitKiB Sets a working memory threshold in kibibytes (KiB). Processing throws MemoryLimitException if memory use is above this threshold.
      * @throws IOException if the input is not in the .lzma format, the input is corrupt or truncated, the .lzma headers specify sizes that are not supported by
      *                     this implementation, or the underlying {@code inputStream} throws an exception
      *
      * @since 1.14
+     * @deprecated Use {@link #builder()}.
      */
+    @Deprecated
     public LZMACompressorInputStream(final InputStream inputStream, final int memoryLimitKiB) throws IOException {
-        try {
-            in = new LZMAInputStream(countingStream = BoundedInputStream.builder().setInputStream(inputStream).get(), memoryLimitKiB);
-        } catch (final org.tukaani.xz.MemoryLimitException e) {
-            // convert to commons-compress exception
-            throw new MemoryLimitException(e.getMemoryNeeded(), e.getMemoryLimit(), (Throwable) e);
-        }
+        this(builder().setInputStream(inputStream).setMemoryLimitKiB(memoryLimitKiB));
     }
 
     /** {@inheritDoc} */
