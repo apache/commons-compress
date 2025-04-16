@@ -40,9 +40,14 @@ public class LZMACompressorOutputStreamTest {
 
     private void roundtrip(final Path outPath, final LZMA2Options options) throws IOException {
         final String data = "Hello World!";
-        try (LZMACompressorOutputStream out = LZMACompressorOutputStream.builder().setPath(outPath).setLzma2Options(options).get()) {
+        // @formatter:off
+        try (LZMACompressorOutputStream out = LZMACompressorOutputStream.builder()
+                .setPath(outPath)
+                .setLzma2Options(options)
+                .get()) {
             out.writeUtf8(data);
         }
+        // @formatter:on
         try (LZMACompressorInputStream out = LZMACompressorInputStream.builder().setPath(outPath).setMemoryLimitKiB(-1).get()) {
             assertEquals(data, IOUtils.toString(out, StandardCharsets.UTF_8));
         }
