@@ -55,12 +55,12 @@ public class LZMACompressorOutputStreamTest {
 
     @Test
     public void testBuilderOptionsAll() throws IOException {
-        final int dictSize = LZMA2Options.DICT_SIZE_MAX;
+        final int dictSize = LZMA2Options.DICT_SIZE_MIN;
         final int lc = LZMA2Options.LC_LP_MAX - 4;
         final int lp = LZMA2Options.LC_LP_MAX - 4;
         final int pb = LZMA2Options.PB_MAX;
         final int mode = LZMA2Options.MODE_NORMAL;
-        final int niceLen = LZMA2Options.NICE_LEN_MAX;
+        final int niceLen = LZMA2Options.NICE_LEN_MIN;
         final int mf = LZMA2Options.MF_BT4;
         final int depthLimit = 50;
         roundtrip(tempDir.resolve("out.lzma"), new LZMA2Options(dictSize, lc, lp, pb, mode, niceLen, mf, depthLimit));
