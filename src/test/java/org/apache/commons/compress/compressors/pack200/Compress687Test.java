@@ -27,6 +27,9 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.NullOutputStream;
 import org.junit.jupiter.api.Test;
 
+/**
+ * Tests <a href="https://issues.apache.org/jira/browse/COMPRESS-687">COMPRESS-687</a>.
+ */
 public class Compress687Test {
 
     private static final String FIXTURE = "org/apache/commons/compress/COMPRESS-687/test-issue.7z";
@@ -42,7 +45,9 @@ public class Compress687Test {
                 Pack200CompressorInputStream compressInputStream = new Pack200CompressorInputStream(inputStream)) {
             IOUtils.copy(compressInputStream, NullOutputStream.INSTANCE);
         }
-        // System.out.println("Done.");
+        if (Boolean.getBoolean("Compress687Test.sysout")) {
+            System.out.println("Done.");
+        }
     }
 
     private long transferTo(final InputStream in, final OutputStream out) throws IOException {
