@@ -88,9 +88,11 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream<ZstdOutpu
     public ZstdCompressorOutputStream(final OutputStream outStream, final int level, final boolean closeFrameOnFlush, final boolean useChecksum)
             throws IOException {
         super(new ZstdOutputStream(outStream, level));
+        // @formatter:off
         out()
             .setCloseFrameOnFlush(closeFrameOnFlush)
             .setChecksum(useChecksum);
+        // @formatter:on
     }
 
     @Override
