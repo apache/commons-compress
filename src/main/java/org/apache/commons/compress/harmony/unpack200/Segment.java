@@ -404,7 +404,7 @@ public class Segment {
      * @param message the message.
      */
     public void log(final int messageLevel, final String message) {
-        if (logLevel >= messageLevel) {
+        if (logLevel >= messageLevel && logPrintWriter != null) {
             logPrintWriter.println(message);
         }
     }
@@ -500,7 +500,6 @@ public class Segment {
         bcBands.read(in);
         fileBands = new FileBands(this);
         fileBands.read(in);
-
         fileBands.processFileBits();
     }
 
@@ -514,12 +513,12 @@ public class Segment {
     }
 
     /**
-     * Sets the log output.
+     * Sets the log output stream.
      *
-     * @param logStream log output.
+     * @param logStream log output stream.
      */
     public void setLogStream(final OutputStream logStream) {
-        this.logPrintWriter = new PrintWriter(new OutputStreamWriter(logStream, Charset.defaultCharset()), false);
+        this.logPrintWriter = logStream != null ? new PrintWriter(new OutputStreamWriter(logStream, Charset.defaultCharset()), false) : null;
     }
 
     /**

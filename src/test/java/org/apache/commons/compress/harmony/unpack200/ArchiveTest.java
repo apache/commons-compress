@@ -30,7 +30,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -108,9 +107,7 @@ public class ArchiveTest extends AbstractTempDirTest {
             archive.unpack();
         }
         // log file should be empty
-        try (FileReader reader = new FileReader(logFile)) {
-            assertFalse(reader.ready());
-        }
+        assertEquals(0, logFile.length());
         // test verbose
         file = createTempFile("logtest", ".jar");
         try (InputStream in = Archive.class.getResourceAsStream("/pack200/sql.pack.gz");
@@ -122,9 +119,7 @@ public class ArchiveTest extends AbstractTempDirTest {
             archive.unpack();
         }
         // log file should not be empty
-        try (FileReader reader = new FileReader(logFile)) {
-            assertTrue(reader.ready());
-        }
+        assertTrue(logFile.length() > 0);
         // test append option
         final long length = logFile.length();
         file = createTempFile("logtest", ".jar");
@@ -156,9 +151,7 @@ public class ArchiveTest extends AbstractTempDirTest {
             archive.unpack();
         }
         // log file should be empty
-        try (FileReader reader = new FileReader(logFile)) {
-            assertFalse(reader.ready());
-        }
+        assertEquals(0, logFile.length());
     }
 
     @ParameterizedTest
