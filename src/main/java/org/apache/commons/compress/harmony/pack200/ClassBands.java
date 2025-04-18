@@ -31,6 +31,7 @@ import java.util.Set;
 
 import org.apache.commons.compress.harmony.pack200.AttributeDefinitionBands.AttributeDefinition;
 import org.apache.commons.compress.harmony.pack200.IcBands.IcTuple;
+import org.apache.commons.compress.harmony.pack200.Segment.SegmentMethodVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 
@@ -351,6 +352,11 @@ public class ClassBands extends BandSet {
         }
     }
 
+    /**
+     * Adds a new class attribute.
+     *
+     * @param attribute the new class attribute.
+     */
     public void addClassAttribute(final NewAttribute attribute) {
         // TODO: backwards calls
         final String attributeName = attribute.type;
@@ -373,6 +379,11 @@ public class ClassBands extends BandSet {
         }
     }
 
+    /**
+     * Adds a new code attribute.
+     *
+     * @param attribute the new code attribute.
+     */
     public void addCodeAttribute(final NewAttribute attribute) {
         final String attributeName = attribute.type;
         for (final NewAttributeBands bands : codeAttributeBands) {
@@ -387,10 +398,17 @@ public class ClassBands extends BandSet {
         throw new IllegalArgumentException("No suitable definition for " + attributeName);
     }
 
-    public void addEnclosingMethod(final String owner, final String name, final String desc) {
+    /**
+     * Adds an enclosing method.
+     *
+     * @param ownerClassName a fully-qualifed class name.
+     * @param name a method name.
+     * @param signature a signature in the constant pool.
+     */
+    public void addEnclosingMethod(final String ownerClassName, final String name, final String signature) {
         class_flags[index] |= 1 << 18;
-        classEnclosingMethodClass.add(cpBands.getCPClass(owner));
-        classEnclosingMethodDesc.add(name == null ? null : cpBands.getCPNameAndType(name, desc));
+        classEnclosingMethodClass.add(cpBands.getCPClass(ownerClassName));
+        classEnclosingMethodDesc.add(name == null ? null : cpBands.getCPNameAndType(name, signature));
     }
 
     public void addField(int flags, final String name, final String desc, final String signature, final Object value) {
@@ -415,6 +433,11 @@ public class ClassBands extends BandSet {
         tempFieldFlags.add(Long.valueOf(flags));
     }
 
+    /**
+     * Adds a new field attribute.
+     *
+     * @param attribute the new field attribute.
+     */
     public void addFieldAttribute(final NewAttribute attribute) {
         final String attributeName = attribute.type;
         for (final NewAttributeBands bands : fieldAttributeBands) {
@@ -514,6 +537,11 @@ public class ClassBands extends BandSet {
         }
     }
 
+    /**
+     * Adds a new method attribute.
+     *
+     * @param attribute the new method attribute.
+     */
     public void addMethodAttribute(final NewAttribute attribute) {
         final String attributeName = attribute.type;
         for (final NewAttributeBands bands : methodAttributeBands) {
@@ -548,6 +576,11 @@ public class ClassBands extends BandSet {
         }
     }
 
+    /**
+     * Adds a source file path.
+     *
+     * @param source a source file path.
+     */
     public void addSourceFile(final String source) {
         String implicitSourceFileName = class_this[index].toString();
         if (implicitSourceFileName.indexOf('$') != -1) {
@@ -610,8 +643,12 @@ public class ClassBands extends BandSet {
         }
     }
 
-    public void endOfClass() { // All the data for the current class has been
-                               // read
+    /**
+     * Called when all the data for the current class has been.
+     *
+     * @see Segment#visitEnd()
+     */
+    public void endOfClass() {
         final int numFields = tempFieldDesc.size();
         class_field_count[index] = numFields;
         field_descr[index] = new CPNameAndType[numFields];
@@ -635,6 +672,11 @@ public class ClassBands extends BandSet {
         index++;
     }
 
+    /**
+     * Called when all the data for the current method has been.
+     *
+     * @see SegmentMethodVisitor#visitEnd()
+     */
     public void endOfMethod() {
         if (tempMethodRVPA != null) {
             method_RVPA_bands.addParameterAnnotation(tempMethodRVPA.numParams, tempMethodRVPA.annoN, tempMethodRVPA.pairN, tempMethodRVPA.typeRS,
@@ -851,14 +893,29 @@ public class ClassBands extends BandSet {
         return ints;
     }
 
+    /**
+     * Tests whether there are any synthetic classes.
+     *
+     * @return whether there are any synthetic classes.
+     */
     public boolean isAnySyntheticClasses() {
         return anySyntheticClasses;
     }
 
+    /**
+     * Tests whether there are any synthetic fields.
+     *
+     * @return whether there are any synthetic fields.
+     */
     public boolean isAnySyntheticFields() {
         return anySyntheticFields;
     }
 
+    /**
+     * Tests whether there are any synthetic methods.
+     *
+     * @return whether there are any synthetic methods.
+     */
     public boolean isAnySyntheticMethods() {
         return anySyntheticMethods;
     }
@@ -878,6 +935,11 @@ public class ClassBands extends BandSet {
         return false;
     }
 
+    /**
+     * Gets the number of classes processed.
+     *
+     * @return the number of classes processed.
+     */
     public int numClassesProcessed() {
         return index;
     }
