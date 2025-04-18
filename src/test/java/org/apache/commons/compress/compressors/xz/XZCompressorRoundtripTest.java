@@ -71,6 +71,13 @@ public class XZCompressorRoundtripTest {
         }
     }
 
+    @CartesianTest
+    public void testBuilderOptions(@Values(ints = { LZMA2Options.PRESET_MAX, LZMA2Options.PRESET_MIN, LZMA2Options.PRESET_DEFAULT }) final int preset,
+            @Values(booleans = { false, true }) final boolean decompressConcatenated, @Values(ints = { -1, 100_000 }) final int memoryLimitKiB)
+            throws IOException {
+        roundtrip(tempDir.resolve("out.xz"), new LZMA2Options(preset), false, -1);
+    }
+
     @Test
     public void testBuilderOptionsAll() throws IOException {
         final int dictSize = LZMA2Options.DICT_SIZE_MIN;
@@ -82,13 +89,6 @@ public class XZCompressorRoundtripTest {
         final int mf = LZMA2Options.MF_BT4;
         final int depthLimit = 50;
         roundtrip(tempDir.resolve("out.xz"), new LZMA2Options(dictSize, lc, lp, pb, mode, niceLen, mf, depthLimit), false, -1);
-    }
-
-    @CartesianTest
-    public void testBuilderOptions(@Values(ints = { LZMA2Options.PRESET_MAX, LZMA2Options.PRESET_MIN, LZMA2Options.PRESET_DEFAULT }) final int preset,
-            @Values(booleans = { false, true }) final boolean decompressConcatenated, @Values(ints = { -1, 100_000 }) final int memoryLimitKiB)
-            throws IOException {
-        roundtrip(tempDir.resolve("out.xz"), new LZMA2Options(preset), false, -1);
     }
 
     @CartesianTest
