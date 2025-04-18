@@ -210,6 +210,11 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
       <artifactId>commons-lang3</artifactId>
       <version>3.17.0</version>
     </dependency>    
+    <dependency>
+      <groupId>org.junit-pioneer</groupId>
+      <artifactId>junit-pioneer</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <scm>
     <connection>scm:git:https://gitbox.apache.org/repos/asf/commons-compress.git</connection>

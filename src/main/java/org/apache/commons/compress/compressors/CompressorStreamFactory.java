@@ -592,7 +592,12 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
         }
         try {
             if (GZIP.equalsIgnoreCase(name)) {
-                return GzipCompressorInputStream.builder().setInputStream(in).setDecompressConcatenated(actualDecompressConcatenated).get();
+                // @formatter:off
+                return GzipCompressorInputStream.builder()
+                        .setInputStream(in)
+                        .setDecompressConcatenated(actualDecompressConcatenated)
+                        .get();
+                // @formatter:on
             }
             if (BZIP2.equalsIgnoreCase(name)) {
                 return new BZip2CompressorInputStream(in, actualDecompressConcatenated);
@@ -607,7 +612,13 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
                 if (!XZUtils.isXZCompressionAvailable()) {
                     throw new CompressorException("XZ compression is not available." + YOU_NEED_XZ_JAVA);
                 }
-                return new XZCompressorInputStream(in, actualDecompressConcatenated, memoryLimitInKb);
+                // @formatter:off
+                return XZCompressorInputStream.builder()
+                        .setInputStream(in)
+                        .setDecompressConcatenated(actualDecompressConcatenated)
+                        .setMemoryLimitKiB(memoryLimitInKb)
+                        .get();
+                // @formatter:on
             }
             if (ZSTANDARD.equalsIgnoreCase(name)) {
                 if (!ZstdUtils.isZstdCompressionAvailable()) {
