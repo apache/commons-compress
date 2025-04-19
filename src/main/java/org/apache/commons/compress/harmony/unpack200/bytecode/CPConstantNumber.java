@@ -23,10 +23,22 @@ package org.apache.commons.compress.harmony.unpack200.bytecode;
  */
 public abstract class CPConstantNumber extends CPConstant {
 
+    /**
+     * Constructs a new instance.
+     *
+     * @param tag One-byte tag indicates the kind of constant.
+     * @param value The value.
+     * @param globalIndex Global index.
+     */
     public CPConstantNumber(final byte tag, final Object value, final int globalIndex) {
         super(tag, value, globalIndex);
     }
 
+    /**
+     * The value as a Number.
+     *
+     * @return The value as a Number.
+     */
     protected Number getNumber() {
         return (Number) getValue();
     }

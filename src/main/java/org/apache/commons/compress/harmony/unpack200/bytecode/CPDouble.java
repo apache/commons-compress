@@ -26,6 +26,12 @@ import java.io.IOException;
  */
 public class CPDouble extends CPConstantNumber {
 
+    /**
+     * Constructs a new instance.
+     *
+     * @param value The value.
+     * @param globalIndex Global index.
+     */
     public CPDouble(final Double value, final int globalIndex) {
         super(CP_Double, value, globalIndex);
     }

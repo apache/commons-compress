@@ -86,6 +86,9 @@ public abstract class ConstantPoolEntry extends ClassFileEntry {
      */
     public static final byte CP_UTF8 = 1;
 
+    /**
+     * One-byte tag indicates the kind of constant.
+     */
     byte tag;
 
     /**
@@ -93,6 +96,12 @@ public abstract class ConstantPoolEntry extends ClassFileEntry {
      */
     protected int globalIndex;
 
+    /**
+     * Constructs a new instance.
+     *
+     * @param tag One-byte tag indicates the kind of constant.
+     * @param globalIndex Global index.
+     */
     ConstantPoolEntry(final byte tag, final int globalIndex) {
         this.tag = tag;
         this.globalIndex = globalIndex;

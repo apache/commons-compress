@@ -26,9 +26,18 @@ import java.io.IOException;
  */
 public abstract class ClassFileEntry {
 
+    /**
+     * An empty ClassFileEntry array.
+     */
     protected static final ClassFileEntry[] NONE = {};
     private boolean resolved;
 
+    /**
+     * Writes this instance to the output stream.
+     *
+     * @param dos the output stream.
+     * @throws IOException if an I/O error occurs.
+     */
     protected abstract void doWrite(DataOutputStream dos) throws IOException;
 
     @Override
@@ -46,6 +55,11 @@ public abstract class ClassFileEntry {
     @Override
     public abstract int hashCode();
 
+    /**
+     * Delegates to super {@link #hashCode}.
+     *
+     * @return super {@link #hashCode}.
+     */
     protected int objectHashCode() {
         return super.hashCode();
     }
@@ -53,7 +67,7 @@ public abstract class ClassFileEntry {
     /**
      * Allows the constant pool entries to resolve their nested entries.
      *
-     * @param pool TODO
+     * @param pool The class constant pool.
      */
     protected void resolve(final ClassConstantPool pool) {
         resolved = true;
@@ -62,6 +76,12 @@ public abstract class ClassFileEntry {
     @Override
     public abstract String toString();
 
+    /**
+     * Writes this instance to the output stream.
+     *
+     * @param dos the output stream.
+     * @throws IOException if an I/O error occurs.
+     */
     public final void write(final DataOutputStream dos) throws IOException {
         if (!resolved) {
             throw new IllegalStateException("Entry has not been resolved");

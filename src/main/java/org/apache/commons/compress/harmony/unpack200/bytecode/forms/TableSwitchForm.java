@@ -23,6 +23,9 @@ import java.util.Arrays;
 import org.apache.commons.compress.harmony.unpack200.bytecode.ByteCode;
 import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
 
+/**
+ * Table switch instruction form.
+ */
 public class TableSwitchForm extends SwitchForm {
 
     /**
