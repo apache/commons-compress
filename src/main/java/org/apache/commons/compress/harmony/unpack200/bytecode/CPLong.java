@@ -26,6 +26,12 @@ import java.io.IOException;
  */
 public class CPLong extends CPConstantNumber {
 
+    /**
+     * Constructs a new instance.
+     *
+     * @param value The value.
+     * @param globalIndex Global index.
+     */
     public CPLong(final Long value, final int globalIndex) {
         super(CP_Long, value, globalIndex);
     }

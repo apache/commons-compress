@@ -33,6 +33,12 @@ public class CPString extends CPConstant {
 
     private int cachedHashCode;
 
+    /**
+     * Constructs a new instance.
+     *
+     * @param value The value.
+     * @param globalIndex Global index.
+     */
     public CPString(final CPUTF8 value, final int globalIndex) {
         super(CP_String, value, globalIndex);
         this.name = value;

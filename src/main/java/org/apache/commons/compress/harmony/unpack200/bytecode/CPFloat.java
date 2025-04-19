@@ -26,6 +26,12 @@ import java.io.IOException;
  */
 public class CPFloat extends CPConstantNumber {
 
+    /**
+     * Constructs a new instance.
+     *
+     * @param value The value.
+     * @param globalIndex Global index.
+     */
     public CPFloat(final Float value, final int globalIndex) {
         super(CP_Float, value, globalIndex);
     }

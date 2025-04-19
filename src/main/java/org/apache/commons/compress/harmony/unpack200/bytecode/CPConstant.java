@@ -52,6 +52,11 @@ public abstract class CPConstant extends ConstantPoolEntry {
         return Objects.equals(value, other.value);
     }
 
+    /**
+     * Gets the value.
+     *
+     * @return the value.
+     */
     protected Object getValue() {
         return value;
     }

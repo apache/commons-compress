@@ -21,6 +21,9 @@ package org.apache.commons.compress.harmony.unpack200.bytecode.forms;
 import org.apache.commons.compress.harmony.unpack200.bytecode.ByteCode;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CodeAttribute;
 
+/**
+ * Switch instruction form.
+ */
 public abstract class SwitchForm extends VariableInstructionForm {
 
     /**
