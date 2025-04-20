@@ -23,7 +23,14 @@ import org.apache.commons.compress.utils.OsgiUtils;
 /**
  * Utility code for the Zstandard compression format.
  *
+ * <p>
+ * This class avoids making the underlying {@code zstd} classes part of the public or protected API. The underlying implementation is provided through the
+ * <a href="https://github.com/luben/zstd-jni/">Zstandard JNI</a> library which is based on <a href="https://github.com/facebook/zstd/">zstd</a>.
+ * </p>
+ *
  * @ThreadSafe
+ * @see <a href="https://github.com/luben/zstd-jni/">Zstandard JNI</a>
+ * @see <a href="https://github.com/facebook/zstd/">zstd</a>
  * @since 1.16
  */
 public class ZstdUtils {
@@ -87,7 +94,6 @@ public class ZstdUtils {
         if (length < ZSTANDARD_FRAME_MAGIC.length) {
             return false;
         }
-
         boolean isZstandard = true;
         for (int i = 0; i < ZSTANDARD_FRAME_MAGIC.length; ++i) {
             if (signature[i] != ZSTANDARD_FRAME_MAGIC[i]) {
@@ -98,7 +104,6 @@ public class ZstdUtils {
         if (isZstandard) {
             return true;
         }
-
         if (0x50 == (signature[0] & 0xF0)) {
             // skippable frame
             for (int i = 0; i < SKIPPABLE_FRAME_MAGIC.length; ++i) {
@@ -106,10 +111,8 @@ public class ZstdUtils {
                     return false;
                 }
             }
-
             return true;
         }
-
         return false;
     }
 
