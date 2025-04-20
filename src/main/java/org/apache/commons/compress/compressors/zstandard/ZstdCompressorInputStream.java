@@ -30,9 +30,15 @@ import com.github.luben.zstd.BufferPool;
 import com.github.luben.zstd.ZstdInputStream;
 
 /**
- * {@link CompressorInputStream} implementation to decode Zstandard encoded stream. Library relies on <a href="https://github.com/luben/zstd-jni/">Zstandard
- * JNI</a>
+ * {@link CompressorInputStream} implementation to decode Zstandard encoded stream.
  *
+ * <p>
+ * This class avoids making the underlying {@code zstd} classes part of the public or protected API. The underlying implementation is provided through the
+ * <a href="https://github.com/luben/zstd-jni/">Zstandard JNI</a> library which is based on <a href="https://github.com/facebook/zstd/">zstd</a>.
+ * </p>
+ *
+ * @see <a href="https://github.com/luben/zstd-jni/">Zstandard JNI</a>
+ * @see <a href="https://github.com/facebook/zstd/">zstd</a>
  * @since 1.16
  */
 public class ZstdCompressorInputStream extends CompressorInputStream implements InputStreamStatistics {
