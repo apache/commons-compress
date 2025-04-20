@@ -48,7 +48,7 @@
 
       <subsection name="ZipArchiveInputStream vs ZipFile">
 
-        <p>ZIP archives store a archive entries in sequence and
+        <p>ZIP archives store archive entries in sequence and
           contain a registry of all entries at the very end of the
           archive.  It is acceptable for an archive to contain several
           entries of the same name and have the registry (called the
