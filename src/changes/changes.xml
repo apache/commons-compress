@@ -115,6 +115,8 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.compressors.lzma.LZMACompressorOutputStream.builder/Builder().</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.compressors.xz.XZCompressorInputStream.builder/Builder().</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.compressors.xz.XZCompressorOutputStream.builder/Builder().</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory, David Walluck, Piotr P. Karwasz">Add org.apache.commons.compress.compressors.xz.ZstdCompressorOutputStream.builder/Builder() #666.</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory, David Walluck, Piotr P. Karwasz">Add org.apache.commons.compress.compressors.xz.ZstdConstants #666.</action>
       <!-- UPDATE -->
       <action type="update" dev="sebb">Bump Commons Parent from 79 to 81</action>
       <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump org.apache.commons:commons-parent from 72 to 79 #563, #567, #574, #582, #587, #595.</action>
