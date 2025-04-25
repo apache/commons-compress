@@ -262,8 +262,7 @@ public class FixedLengthBlockOutputStream extends OutputStream implements Writab
         final int i = out.write(buffer);
         final boolean hasRemaining = buffer.hasRemaining();
         if (i != blockSize || hasRemaining) {
-            final String msg = String.format("Failed to write %,d bytes atomically. Only wrote  %,d", blockSize, i);
-            throw new IOException(msg);
+            throw new IOException(String.format("Failed to write %,d bytes atomically. Only wrote  %,d", blockSize, i));
         }
         buffer.clear();
     }
