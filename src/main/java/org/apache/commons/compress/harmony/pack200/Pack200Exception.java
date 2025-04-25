@@ -19,12 +19,12 @@
 
 package org.apache.commons.compress.harmony.pack200;
 
-import java.io.IOException;
+import org.apache.commons.compress.CompressException;
 
 /**
  * Signals a problem with a Pack200 coding or decoding issue.
  */
-public class Pack200Exception extends IOException {
+public class Pack200Exception extends CompressException {
 
     private static final long serialVersionUID = 5168177401552611803L;
 
