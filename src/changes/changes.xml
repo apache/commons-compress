@@ -89,7 +89,8 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Alexis Jehan, Gary Gregory">org.apache.commons.compress.harmony.unpack200.Archive.unpack() should not log to system out (the console).</action>
       <action type="fix" dev="Sebb" due-to="aSemy">[site] Fix minor zip docs type: remove extraneous 'a' #665.</action>
       <action type="fix" dev="ggregory" due-to="Zaki, Gary Gregory">Throw a better exception in org.apache.commons.compress.archivers.sevenz.SevenZFile.readFilesInfo(ByteBuffer, Archive).</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">DumpArchiveException now extends ArchiveException instead of IOException (ArchiveException extends IOException).</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">MemoryLimitException now extends CompressException instead of IOException (CompressException extends IOException).</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">DumpArchiveException now extends ArchiveException instead of IOException (ArchiveException extends CompressException).</action>
       <!-- ADD -->
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add GzipParameters.getModificationInstant().</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add GzipParameters.setModificationInstant(Instant).</action>

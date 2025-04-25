@@ -18,15 +18,13 @@
  */
 package org.apache.commons.compress;
 
-import java.io.IOException;
-
 /**
  * If a stream checks for estimated memory allocation, and the estimate goes above the memory limit, this is thrown. This can also be thrown if a stream tries
  * to allocate a byte array that is larger than the allowable limit.
  *
  * @since 1.14
  */
-public class MemoryLimitException extends IOException {
+public class MemoryLimitException extends CompressException {
 
     private static final long serialVersionUID = 1L;
 
