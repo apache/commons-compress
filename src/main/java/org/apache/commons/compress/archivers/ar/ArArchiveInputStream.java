@@ -205,7 +205,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
         final int read = name.length;
         trackReadBytes(read);
         if (read != nameLen) {
-            throw new EOFException();
+            throw new EOFException(bsdLongName);
         }
         return ArchiveUtils.toAsciiString(name);
     }
