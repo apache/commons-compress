@@ -16,32 +16,44 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.commons.compress.archivers;
 
+package org.apache.commons.compress;
+
+import java.io.IOException;
 import java.util.function.Supplier;
 
-import org.apache.commons.compress.CompressException;
+import org.apache.commons.lang3.function.Suppliers;
 
 /**
- * Signals that an Archive exception of some sort has occurred.
+ * Signals that an Compress exception of some sort has occurred.
+ *
+ * @since 1.28.0
  */
-public class ArchiveException extends CompressException {
+public class CompressException extends IOException {
 
     /** Serial. */
-    private static final long serialVersionUID = 2772690708123267100L;
+    private static final long serialVersionUID = 1;
 
     /**
-     * Checks that the specified object reference is not {@code null} and throws a customized {@link ArchiveException} if it is. *
+     * Checks that the specified object reference is not {@code null} and throws a customized {@link CompressException} if it is. *
      *
-     * @param obj             the object reference to check for nullity.
+     * @param <T>             The type of the reference.
+     * @param <E>             The type of the exception.
+     * @param cls             The exception class.
+     * @param obj             The object reference to check for nullity.
      * @param messageSupplier supplier of the detail message to be used in the event that a {@code ArchiveException} is thrown
-     * @param <T>             the type of the reference.
-     * @return {@code obj} if not {@code null}
-     * @throws ArchiveException if {@code obj} is {@code null}
-     * @since 1.28.0
+     * @return {@code obj} if not {@code null}.
+     * @throws E if {@code obj} is {@code null}.
      */
-    public static <T> T requireNonNull(final T obj, final Supplier<String> messageSupplier) throws ArchiveException {
-        return CompressException.requireNonNull(ArchiveException.class, obj, messageSupplier);
+    protected static <T, E extends Throwable> T requireNonNull(final Class<? super E> cls, final T obj, final Supplier<String> messageSupplier) throws E {
+        if (obj == null) {
+            try {
+                cls.getConstructor(String.class).newInstance(Suppliers.get(messageSupplier));
+            } catch (ReflectiveOperationException | SecurityException e) {
+                new CompressException(Suppliers.get(messageSupplier), e);
+            }
+        }
+        return obj;
     }
 
     /**
@@ -49,7 +61,7 @@ public class ArchiveException extends CompressException {
      *
      * @param message The message (which is saved for later retrieval by the {@link #getMessage()} method).
      */
-    public ArchiveException(final String message) {
+    public CompressException(final String message) {
         super(message);
     }
 
@@ -60,7 +72,7 @@ public class ArchiveException extends CompressException {
      * @param cause   The cause (which is saved for later retrieval by the {@link #getCause()} method). A null value indicates that the cause is nonexistent or
      *                unknown.
      */
-    public ArchiveException(final String message, final Exception cause) {
+    public CompressException(final String message, final Throwable cause) {
         super(message, cause);
     }
 }

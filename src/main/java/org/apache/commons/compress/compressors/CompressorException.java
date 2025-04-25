@@ -18,12 +18,12 @@
  */
 package org.apache.commons.compress.compressors;
 
-import java.io.IOException;
+import org.apache.commons.compress.CompressException;
 
 /**
  * Signals that an Compressor exception of some sort has occurred.
  */
-public class CompressorException extends IOException {
+public class CompressorException extends CompressException {
 
     /** Serial. */
     private static final long serialVersionUID = -2932901310255908814L;
