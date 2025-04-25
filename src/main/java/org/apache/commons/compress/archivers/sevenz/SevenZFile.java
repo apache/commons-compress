@@ -50,6 +50,7 @@ import java.util.zip.CRC32;
 import java.util.zip.CheckedInputStream;
 
 import org.apache.commons.compress.MemoryLimitException;
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
@@ -1290,11 +1291,11 @@ public class SevenZFile implements Closeable {
                 break;
             }
             case NID.kEmptyFile: {
-                isEmptyFile = readBits(header, isEmptyStream.cardinality());
+                isEmptyFile = readBits(header, ArchiveException.requireNonNull(isEmptyStream, () -> "isEmptyStream for " + archive).cardinality());
                 break;
             }
             case NID.kAnti: {
-                isAnti = readBits(header, isEmptyStream.cardinality());
+                isAnti = readBits(header, ArchiveException.requireNonNull(isEmptyStream, () -> "isEmptyStream for " + archive).cardinality());
                 break;
             }
             case NID.kName: {
@@ -1372,11 +1373,9 @@ public class SevenZFile implements Closeable {
             case NID.kDummy: {
                 // 7z 9.20 asserts the content is all zeros and ignores the property
                 // Compress up to 1.8.1 would throw an exception, now we ignore it (see COMPRESS-287
-
                 skipBytesFully(header, size);
                 break;
             }
-
             default: {
                 // Compress up to 1.8.1 would throw an exception, now we ignore it (see COMPRESS-287
                 skipBytesFully(header, size);
