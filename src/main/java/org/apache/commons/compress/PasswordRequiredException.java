@@ -18,14 +18,12 @@
  */
 package org.apache.commons.compress;
 
-import java.io.IOException;
-
 /**
  * Exception thrown when trying to read an encrypted entry or file without configuring a password.
  *
  * @since 1.10
  */
-public class PasswordRequiredException extends IOException {
+public class PasswordRequiredException extends CompressException {
 
     private static final long serialVersionUID = 1391070005491684483L;
 
