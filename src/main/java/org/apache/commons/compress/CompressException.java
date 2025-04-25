@@ -25,7 +25,7 @@ import java.util.function.Supplier;
 import org.apache.commons.lang3.function.Suppliers;
 
 /**
- * Signals that an Compress exception of some sort has occurred.
+ * Signals that a Pack200 Compress exception of some sort has occurred.
  *
  * @since 1.28.0
  */
