@@ -19,12 +19,12 @@
 
 package org.apache.commons.compress.archivers.dump;
 
-import java.io.IOException;
+import org.apache.commons.compress.archivers.ArchiveException;
 
 /**
  * Signals that an dump archive exception of some sort has occurred.
  */
-public class DumpArchiveException extends IOException {
+public class DumpArchiveException extends ArchiveException {
 
     private static final long serialVersionUID = 1L;
 

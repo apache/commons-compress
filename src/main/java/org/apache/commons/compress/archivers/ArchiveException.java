@@ -45,6 +45,15 @@ public class ArchiveException extends CompressException {
     }
 
     /**
+     * Constructs an {@code ArchiveException} with {@code null} as its error detail message.
+     *
+     * @since 1.28.0
+     */
+    public ArchiveException() {
+        // empty
+    }
+
+    /**
      * Constructs a new exception with the specified detail message. The cause is not initialized.
      *
      * @param message The message (which is saved for later retrieval by the {@link #getMessage()} method).
@@ -59,8 +68,33 @@ public class ArchiveException extends CompressException {
      * @param message The message (which is saved for later retrieval by the {@link #getMessage()} method).
      * @param cause   The cause (which is saved for later retrieval by the {@link #getCause()} method). A null value indicates that the cause is nonexistent or
      *                unknown.
+     * @deprecated Use {@link #ArchiveException(String, Throwable)}.
      */
+    @Deprecated
     public ArchiveException(final String message, final Exception cause) {
         super(message, cause);
+    }
+
+    /**
+     * Constructs a new exception with the specified detail message and cause.
+     *
+     * @param message The message (which is saved for later retrieval by the {@link #getMessage()} method).
+     * @param cause   The cause (which is saved for later retrieval by the {@link #getCause()} method). A null value indicates that the cause is nonexistent or
+     *                unknown.
+     * @since 1.28.0
+     */
+    public ArchiveException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
+
+    /**
+     * Constructs a {@code ArchiveException} with the specified cause and a detail message.
+     *
+     * @param cause The cause (which is saved for later retrieval by the {@link #getCause()} method). (A null value is permitted, and indicates that the cause
+     *              is nonexistent or unknown.)
+     * @since 1.28.0
+     */
+    public ArchiveException(final Throwable cause) {
+        super(cause);
     }
 }

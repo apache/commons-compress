@@ -57,6 +57,13 @@ public class CompressException extends IOException {
     }
 
     /**
+     * Constructs an {@code CompressException} with {@code null} as its error detail message.
+     */
+    public CompressException() {
+        // empty
+    }
+
+    /**
      * Constructs a new exception with the specified detail message. The cause is not initialized.
      *
      * @param message The message (which is saved for later retrieval by the {@link #getMessage()} method).
@@ -74,5 +81,15 @@ public class CompressException extends IOException {
      */
     public CompressException(final String message, final Throwable cause) {
         super(message, cause);
+    }
+
+    /**
+     * Constructs a {@code CompressException} with the specified cause and a detail message.
+     *
+     * @param cause The cause (which is saved for later retrieval by the {@link #getCause()} method). (A null value is permitted, and indicates that the cause
+     *              is nonexistent or unknown.)
+     */
+    public CompressException(final Throwable cause) {
+        super(cause);
     }
 }
