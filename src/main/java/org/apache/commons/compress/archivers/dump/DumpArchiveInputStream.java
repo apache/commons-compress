@@ -148,8 +148,8 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
             // skip past CLRI and BITS segments since we don't handle them yet.
             readCLRI();
             readBITS();
-        } catch (final IOException ex) {
-            throw new ArchiveException(ex.getMessage(), ex);
+        } catch (final IOException e) {
+            throw new ArchiveException(e.getMessage(), (Throwable) e);
         }
 
         // put in a dummy record for the root node.

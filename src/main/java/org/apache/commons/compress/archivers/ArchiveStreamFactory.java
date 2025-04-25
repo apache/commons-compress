@@ -224,7 +224,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
             signatureLength = IOUtils.readFully(in, signature);
             in.reset();
         } catch (final IOException e) {
-            throw new ArchiveException("Failure reading signature.", e);
+            throw new ArchiveException("Failure reading signature.", (Throwable) e);
         }
 
         // For now JAR files are detected as ZIP files.
@@ -255,7 +255,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
             signatureLength = IOUtils.readFully(in, dumpsig);
             in.reset();
         } catch (final IOException e) {
-            throw new ArchiveException("IOException while reading dump signature", e);
+            throw new ArchiveException("IOException while reading dump signature", (Throwable) e);
         }
         if (DumpArchiveInputStream.matches(dumpsig, signatureLength)) {
             return DUMP;
@@ -268,7 +268,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
             signatureLength = IOUtils.readFully(in, tarHeader);
             in.reset();
         } catch (final IOException e) {
-            throw new ArchiveException("IOException while reading tar signature", e);
+            throw new ArchiveException("IOException while reading tar signature", (Throwable) e);
         }
         if (TarArchiveInputStream.matches(tarHeader, signatureLength)) {
             return TAR;

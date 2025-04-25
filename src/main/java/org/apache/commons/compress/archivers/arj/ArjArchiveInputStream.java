@@ -94,8 +94,8 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
             if ((mainHeader.arjFlags & MainHeader.Flags.VOLUME) != 0) {
                 throw new ArchiveException("Multi-volume ARJ files are unsupported");
             }
-        } catch (final IOException ioException) {
-            throw new ArchiveException(ioException.getMessage(), ioException);
+        } catch (final IOException e) {
+            throw new ArchiveException(e.getMessage(), (Throwable) e);
         }
     }
 
