@@ -170,7 +170,7 @@ final class TapeInputStream extends FilterInputStream {
     }
 
     /**
-     * Read next block. All decompression is handled here.
+     * Reads next block. All decompression is handled here.
      *
      * @param decompress if false the buffer will not be decompressed. This is an optimization for longer seeks.
      */
@@ -242,7 +242,7 @@ final class TapeInputStream extends FilterInputStream {
     }
 
     /**
-     * Read buffer
+     * Reads buffer
      */
     private void readFully(final byte[] b, final int off, final int len) throws IOException {
         final int count = IOUtils.readFully(in, b, off, len);
@@ -260,7 +260,7 @@ final class TapeInputStream extends FilterInputStream {
     }
 
     /**
-     * Read a record from the input stream and return the data.
+     * Reads a record from the input stream and return the data.
      *
      * @return The record data.
      * @throws IOException on error

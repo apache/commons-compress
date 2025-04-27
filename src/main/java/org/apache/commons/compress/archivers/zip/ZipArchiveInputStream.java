@@ -536,7 +536,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     }
 
     /**
-     * Read all data of the current entry from the underlying stream that hasn't been read, yet.
+     * Reads all data of the current entry from the underlying stream that hasn't been read, yet.
      */
     private void drainCurrentEntryData() throws IOException {
         long remaining = current.entry.getCompressedSize() - current.bytesReadFromStream;

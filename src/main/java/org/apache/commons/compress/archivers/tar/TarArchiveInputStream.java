@@ -693,7 +693,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
     }
 
     /**
-     * Read a record from the input stream and return the data.
+     * Reads a record from the input stream and return the data.
      *
      * @return The record data or null if EOF has been hit.
      * @throws IOException on error

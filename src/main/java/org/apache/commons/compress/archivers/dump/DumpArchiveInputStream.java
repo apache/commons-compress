@@ -416,7 +416,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
     }
 
     /**
-     * Read BITS segment.
+     * Reads BITS segment.
      */
     private void readBITS() throws IOException {
         final byte[] buffer = raw.readRecord();
@@ -439,7 +439,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
     }
 
     /**
-     * Read CLRI (deleted inode) segment.
+     * Reads CLRI (deleted inode) segment.
      */
     private void readCLRI() throws IOException {
         final byte[] buffer = raw.readRecord();
@@ -462,7 +462,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
     }
 
     /**
-     * Read directory entry.
+     * Reads directory entry.
      */
     private void readDirectoryEntry(DumpArchiveEntry entry) throws IOException {
         long size = entry.getEntrySize();

@@ -63,7 +63,7 @@ public class NewAttributeBands extends BandSet {
         void addToAttribute(int index, NewAttribute attribute);
 
         /**
-         * Read the bands associated with this part of the layout.
+         * Reads the bands associated with this part of the layout.
          *
          * @param in    TODO
          * @param count TODO
@@ -728,7 +728,7 @@ public class NewAttributeBands extends BandSet {
     }
 
     /**
-     * Read a 'body' section of the layout from the given stream
+     * Reads a 'body' section of the layout from the given stream
      *
      * @param stream
      * @return List of LayoutElements
@@ -836,7 +836,7 @@ public class NewAttributeBands extends BandSet {
     }
 
     /**
-     * Read a UnionCase from the stream.
+     * Reads a UnionCase from the stream.
      *
      * @param stream source stream.
      * @return A UnionCase from the stream.
@@ -873,7 +873,7 @@ public class NewAttributeBands extends BandSet {
     }
 
     /**
-     * Read a number from the stream and return it
+     * Reads a number from the stream and return it
      *
      * @param stream
      * @return

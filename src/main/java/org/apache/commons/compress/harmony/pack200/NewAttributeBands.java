@@ -647,7 +647,7 @@ public class NewAttributeBands extends BandSet {
     }
 
     /**
-     * Read a 'body' section of the layout from the given stream
+     * Reads a 'body' section of the layout from the given stream
      *
      * @param reader
      * @return List of LayoutElements
@@ -777,7 +777,7 @@ public class NewAttributeBands extends BandSet {
     }
 
     /**
-     * Read a UnionCase from the stream
+     * Reads a UnionCase from the stream
      *
      * @param reader
      * @return
@@ -814,7 +814,7 @@ public class NewAttributeBands extends BandSet {
     }
 
     /**
-     * Read a number from the stream and return it
+     * Reads a number from the stream and return it
      *
      * @param stream
      * @return

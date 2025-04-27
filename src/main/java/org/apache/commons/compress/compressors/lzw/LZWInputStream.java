@@ -126,7 +126,7 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
     }
 
     /**
-     * Read the next code and expand it.
+     * Reads the next code and expand it.
      *
      * @return the expanded next code, negative on EOF
      * @throws IOException on error

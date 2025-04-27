@@ -280,7 +280,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream imp
     }
 
     /**
-     * Read from the current chunk into the given array.
+     * Reads from the current chunk into the given array.
      *
      * @return -1 if there is no current chunk or the number of bytes read from the current chunk (which may be -1 if the end of the chunk is reached).
      */

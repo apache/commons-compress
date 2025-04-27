@@ -67,7 +67,7 @@ public class ExtraFieldUtils {
         public static final UnparseableExtraField SKIP = new UnparseableExtraField(SKIP_KEY);
 
         /**
-         * Read the extra field data into an instance of {@link UnparseableExtraFieldData UnparseableExtraFieldData}.
+         * Reads the extra field data into an instance of {@link UnparseableExtraFieldData UnparseableExtraFieldData}.
          */
         public static final UnparseableExtraField READ = new UnparseableExtraField(READ_KEY);
 
