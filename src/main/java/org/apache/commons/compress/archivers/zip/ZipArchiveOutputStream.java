@@ -1656,7 +1656,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     }
 
     /**
-     * Write bytes to output or random access file.
+     * Writes bytes to output or random access file.
      *
      * @param data the byte array to write
      * @throws IOException on error
@@ -1721,7 +1721,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     }
 
     /**
-     * Write bytes to output or random access file.
+     * Writes bytes to output or random access file.
      *
      * @param data the byte array to write
      * @throws IOException on error
@@ -1731,7 +1731,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     }
 
     /**
-     * Write bytes to output or random access file.
+     * Writes bytes to output or random access file.
      *
      * @param data   the byte array to write
      * @param offset the start position to write from
@@ -1743,7 +1743,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     }
 
     /**
-     * Write preamble data. For most of the time, this is used to make self-extracting zips.
+     * Writes preamble data. For most of the time, this is used to make self-extracting zips.
      *
      * @param preamble data to write
      * @throws IOException if an entry already exists
@@ -1754,7 +1754,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     }
 
     /**
-     * Write preamble data. For most of the time, this is used to make self-extracting zips.
+     * Writes preamble data. For most of the time, this is used to make self-extracting zips.
      *
      * @param preamble data to write
      * @param offset   the start offset in the data

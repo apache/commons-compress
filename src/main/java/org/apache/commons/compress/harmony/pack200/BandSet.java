@@ -706,7 +706,7 @@ public abstract class BandSet {
     }
 
     /**
-     * Write the packed set of bands to the given output stream
+     * Writes the packed set of bands to the given output stream
      *
      * @param out TODO
      * @throws IOException      If an I/O error occurs.
