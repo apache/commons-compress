@@ -471,8 +471,6 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream<ZstdOutpu
             .setChainLog(builder.chainLog)
             .setChecksum(builder.checksum)
             .setCloseFrameOnFlush(builder.closeFrameOnFlush)
-            // Avoid JVM segmentation fault in zstd-jni 1.5.7-2
-            // TODO Remove ternary expression if/when https://github.com/luben/zstd-jni/pull/356 is fixed.
             .setDict(builder.dict != null ? builder.dict : ArrayUtils.EMPTY_BYTE_ARRAY)
             .setHashLog(builder.hashLog)
             .setJobSize(builder.jobSize)
