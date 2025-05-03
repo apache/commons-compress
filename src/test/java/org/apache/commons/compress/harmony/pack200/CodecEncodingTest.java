@@ -110,8 +110,8 @@ public class CodecEncodingTest {
 
     @Test
     public void testGetSpeciferForPopulationCodec() throws IOException, Pack200Exception {
-        final PopulationCodec pCodec = new PopulationCodec(Codec.BYTE1, Codec.CHAR3, Codec.UNSIGNED5);
-        final int[] specifiers = CodecEncoding.getSpecifier(pCodec, null);
+        final PopulationCodec populationCodec = new PopulationCodec(Codec.BYTE1, Codec.CHAR3, Codec.UNSIGNED5);
+        final int[] specifiers = CodecEncoding.getSpecifier(populationCodec, null);
         assertTrue(specifiers[0] > 140);
         assertTrue(specifiers[0] < 189);
         final byte[] bytes = new byte[specifiers.length - 1];
@@ -119,10 +119,10 @@ public class CodecEncodingTest {
             bytes[i] = (byte) specifiers[i + 1];
         }
         final InputStream in = new ByteArrayInputStream(bytes);
-        final PopulationCodec pCodec2 = (PopulationCodec) CodecEncoding.getCodec(specifiers[0], in, null);
-        assertEquals(pCodec.getFavouredCodec(), pCodec2.getFavouredCodec());
-        assertEquals(pCodec.getTokenCodec(), pCodec2.getTokenCodec());
-        assertEquals(pCodec.getUnfavouredCodec(), pCodec2.getUnfavouredCodec());
+        final PopulationCodec populationCodec2 = (PopulationCodec) CodecEncoding.getCodec(specifiers[0], in, null);
+        assertEquals(populationCodec.getFavouredCodec(), populationCodec2.getFavouredCodec());
+        assertEquals(populationCodec.getTokenCodec(), populationCodec2.getTokenCodec());
+        assertEquals(populationCodec.getUnfavouredCodec(), populationCodec2.getUnfavouredCodec());
     }
 
     @Test

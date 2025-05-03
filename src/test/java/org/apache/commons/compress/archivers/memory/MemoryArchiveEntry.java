@@ -26,8 +26,8 @@ public final class MemoryArchiveEntry implements ArchiveEntry {
 
     private final String name;
 
-    public MemoryArchiveEntry(final String pName) {
-        name = pName;
+    public MemoryArchiveEntry(final String name) {
+        this.name = name;
     }
 
     @Override

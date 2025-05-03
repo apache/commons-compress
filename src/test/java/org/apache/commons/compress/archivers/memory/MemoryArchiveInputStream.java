@@ -31,13 +31,13 @@ public final class MemoryArchiveInputStream extends ArchiveInputStream<MemoryArc
     private final String[] content;
     private int p;
 
-    public MemoryArchiveInputStream(final String[][] pFiles) {
-        final int pFilesLength = pFiles.length;
-        fileNames = new String[pFilesLength];
-        content = new String[pFilesLength];
+    public MemoryArchiveInputStream(final String[][] files) {
+        final int filesLength = files.length;
+        fileNames = new String[filesLength];
+        content = new String[filesLength];
 
-        for (int i = 0; i < pFilesLength; i++) {
-            final String[] nameAndContent = pFiles[i];
+        for (int i = 0; i < filesLength; i++) {
+            final String[] nameAndContent = files[i];
             fileNames[i] = nameAndContent[0];
             content[i] = nameAndContent[1];
         }
