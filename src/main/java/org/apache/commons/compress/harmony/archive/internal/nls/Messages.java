@@ -110,7 +110,7 @@ public class Messages {
     }
 
     /**
-     * Retrieves a message which has no arguments.
+     * Gets a message which has no arguments.
      *
      * @param msg String the key to look up.
      * @return String the message for that key in the system message bundle.
@@ -127,7 +127,7 @@ public class Messages {
     }
 
     /**
-     * Retrieves a message which takes 1 character argument.
+     * Gets a message which takes 1 character argument.
      *
      * @param msg String the key to look up.
      * @param arg char the character to insert in the formatted output.
@@ -138,7 +138,7 @@ public class Messages {
     }
 
     /**
-     * Retrieves a message which takes 1 integer argument.
+     * Gets a message which takes 1 integer argument.
      *
      * @param msg String the key to look up.
      * @param arg int the integer to insert in the formatted output.
@@ -149,7 +149,7 @@ public class Messages {
     }
 
     /**
-     * Retrieves a message which takes 1 argument.
+     * Gets a message which takes 1 argument.
      *
      * @param msg String the key to look up.
      * @param arg Object the object to insert in the formatted output.
@@ -160,7 +160,7 @@ public class Messages {
     }
 
     /**
-     * Retrieves a message which takes 2 arguments.
+     * Gets a message which takes 2 arguments.
      *
      * @param msg  String the key to look up.
      * @param arg1 Object an object to insert in the formatted output.
@@ -172,7 +172,7 @@ public class Messages {
     }
 
     /**
-     * Retrieves a message which takes several arguments.
+     * Gets a message which takes several arguments.
      *
      * @param msg  String the key to look up.
      * @param args Object[] the objects to insert in the formatted output.

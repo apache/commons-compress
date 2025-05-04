@@ -649,7 +649,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     }
 
     /**
-     * Retrieves the extra data for the central directory.
+     * Gets the extra data for the central directory.
      *
      * @return the central directory extra data
      */
@@ -658,7 +658,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     }
 
     /**
-     * The source of the comment field value.
+     * * Gets the source of the comment field value.
      *
      * @return source of the comment field value
      * @since 1.16
@@ -673,7 +673,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     }
 
     /**
-     * The number of the split segment this entry starts at.
+     * Gets the number of the split segment this entry starts at.
      *
      * @return the number of the split segment this entry starts at.
      * @since 1.20
@@ -683,7 +683,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     }
 
     /**
-     * Retrieves the external file attributes.
+     * Gets the external file attributes.
      *
      * <p>
      * <strong>Note</strong>: {@link ZipArchiveInputStream} is unable to fill this field, you must use {@link ZipFile} if you want to read entries using this
