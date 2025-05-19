@@ -85,10 +85,11 @@ public class GzipUtils {
 
     static final byte XFL_UNKNOWN = 0;
 
+    /**
+     * Using {@link LinkedHashMap} so {@code .tgz} is preferred over {@code .taz} as compressed extension of {@code .tar} as FileNameUtil will use the first one
+     * found.
+     */
     static {
-        // using LinkedHashMap so .tgz is preferred over .taz as
-        // compressed extension of .tar as FileNameUtil will use the
-        // first one found
         final Map<String, String> uncompressSuffix = new LinkedHashMap<>();
         uncompressSuffix.put(".tgz", ".tar");
         uncompressSuffix.put(".taz", ".tar");
