@@ -68,6 +68,9 @@ public class GzipUtilsTest {
         assertEquals("", GzipUtils.getUncompressedFileName(""));
         assertEquals(".gz", GzipUtils.getUncompressedFilename(".gz"));
         assertEquals(".gz", GzipUtils.getUncompressedFileName(".gz"));
+        assertEquals("tar", GzipUtils.getUncompressedFileName("tar.gz"));
+        assertEquals(".tar", GzipUtils.getUncompressedFileName(".tar.gz"));
+        assertEquals("x.tar", GzipUtils.getUncompressedFileName("x.tar.gz"));
 
         assertEquals("x.tar", GzipUtils.getUncompressedFilename("x.tgz"));
         assertEquals("x.tar", GzipUtils.getUncompressedFileName("x.tgz"));
