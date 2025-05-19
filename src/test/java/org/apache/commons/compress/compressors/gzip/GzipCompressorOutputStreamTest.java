@@ -38,7 +38,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipException;
 
@@ -46,6 +45,7 @@ import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.compress.compressors.gzip.ExtraField.SubField;
 import org.apache.commons.compress.compressors.gzip.GzipParameters.OS;
+import org.apache.commons.lang3.ArrayFill;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -152,8 +152,7 @@ public class GzipCompressorOutputStreamTest {
         final byte[][] payloads = new byte[subFieldCount][];
         for (int i = 0; i < subFieldCount; i++) {
             if (payloadSize != null) {
-                payloads[i] = new byte[payloadSize];
-                Arrays.fill(payloads[i], (byte) ('a' + i));
+                payloads[i] = ArrayFill.fill(new byte[payloadSize], (byte) ('a' + i));
             }
             try {
                 extra.addSubField("z" + i, payloads[i]);
