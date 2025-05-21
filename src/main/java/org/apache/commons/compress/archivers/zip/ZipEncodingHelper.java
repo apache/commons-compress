@@ -94,11 +94,11 @@ public abstract class ZipEncodingHelper {
     /**
      * Tests whether the given non-null charset name is a UTF-8 alias.
      *
-     * @param actual a non-null charset name.
+     * @param name a non-null charset name.
      * @return whether the given non-null charset name is a UTF-8 alias.
      */
-    private static boolean isUTF8Alias(final String actual) {
-        return UTF_8.name().equalsIgnoreCase(actual) || UTF_8.aliases().stream().anyMatch(actual::equalsIgnoreCase);
+    private static boolean isUTF8Alias(final String name) {
+        return UTF_8.name().equalsIgnoreCase(name) || UTF_8.aliases().stream().anyMatch(name::equalsIgnoreCase);
     }
 
     /**
