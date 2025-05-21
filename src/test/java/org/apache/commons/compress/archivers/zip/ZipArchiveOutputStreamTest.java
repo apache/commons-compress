@@ -26,6 +26,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.zip.Deflater;
+import java.util.zip.ZipEntry;
 
 import org.apache.commons.compress.AbstractTempDirTest;
 import org.junit.jupiter.api.Test;
@@ -41,6 +43,20 @@ public class ZipArchiveOutputStreamTest extends AbstractTempDirTest {
         try (ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(createTempFile())) {
             ref = outputStream;
             assertTrue(outputStream.isSeekable());
+        }
+        assertTrue(ref.isClosed());
+    }
+
+    @Test
+    public void testOptionDefaults() throws IOException {
+        final ZipArchiveOutputStream ref;
+        try (ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(createTempFile())) {
+            ref = outputStream;
+            assertTrue(outputStream.isSeekable());
+            outputStream.setComment("");
+            outputStream.setLevel(Deflater.DEFAULT_COMPRESSION);
+            outputStream.setMethod(ZipEntry.DEFLATED);
+            outputStream.setFallbackToUTF8(false);
         }
         assertTrue(ref.isClosed());
     }
