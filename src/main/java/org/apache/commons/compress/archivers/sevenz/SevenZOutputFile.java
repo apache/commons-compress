@@ -541,7 +541,7 @@ public class SevenZOutputFile implements Closeable {
         final BitSet antiItems = new BitSet(0);
         int antiItemCounter = 0;
         for (final SevenZArchiveEntry file1 : files) {
-            if (!file1.hasStream()) {
+            if (file1.isEmptyStream()) {
                 final boolean isAnti = file1.isAntiItem();
                 antiItems.set(antiItemCounter++, isAnti);
                 hasAntiItems |= isAnti;
@@ -636,7 +636,7 @@ public class SevenZOutputFile implements Closeable {
         int emptyStreamCounter = 0;
         final BitSet emptyFiles = new BitSet(0);
         for (final SevenZArchiveEntry file1 : files) {
-            if (!file1.hasStream()) {
+            if (file1.isEmptyStream()) {
                 final boolean isDir = file1.isDirectory();
                 emptyFiles.set(emptyStreamCounter++, !isDir);
                 hasEmptyFiles |= !isDir;
@@ -655,12 +655,12 @@ public class SevenZOutputFile implements Closeable {
     }
 
     private void writeFileEmptyStreams(final DataOutput header) throws IOException {
-        final boolean hasEmptyStreams = files.stream().anyMatch(entry -> !entry.hasStream());
+        final boolean hasEmptyStreams = files.stream().anyMatch(SevenZArchiveEntry::isEmptyStream);
         if (hasEmptyStreams) {
             header.write(NID.kEmptyStream);
             final BitSet emptyStreams = new BitSet(files.size());
             for (int i = 0; i < files.size(); i++) {
-                emptyStreams.set(i, !files.get(i).hasStream());
+                emptyStreams.set(i, files.get(i).isEmptyStream());
             }
             final ByteArrayOutputStream baos = new ByteArrayOutputStream();
             final DataOutputStream out = new DataOutputStream(baos);

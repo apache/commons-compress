@@ -127,6 +127,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.compressors.CompressorException as the root for all custom exceptions ArchiveException and CompressorException.</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add ArchiveException.ArchiveException(String, Throwable).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add ArchiveException.ArchiveException(Throwable).</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry.isEmptyStream().</action>
       <!-- UPDATE -->
       <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory, sebb">Bump org.apache.commons:commons-parent from 72 to 84 #563, #567, #574, #582, #587, #595, #668.</action>
       <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump com.github.luben:zstd-jni from 1.5.6-4 to 1.5.7-3 #565, #578, #601, #616, #630, #640, #642. Version 1.5.7-3 fixes https://github.com/luben/zstd-jni/pull/356</action>

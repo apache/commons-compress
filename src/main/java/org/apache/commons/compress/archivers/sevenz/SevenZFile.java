@@ -901,7 +901,7 @@ public class SevenZFile implements Closeable {
         int nextFolderIndex = 0;
         int nextFolderUnpackStreamIndex = 0;
         for (int i = 0; i < archive.files.length; i++) {
-            if (!archive.files[i].hasStream() && nextFolderUnpackStreamIndex == 0) {
+            if (archive.files[i].isEmptyStream() && nextFolderUnpackStreamIndex == 0) {
                 fileFolderIndex[i] = -1;
                 continue;
             }
@@ -917,7 +917,7 @@ public class SevenZFile implements Closeable {
                 }
             }
             fileFolderIndex[i] = nextFolderIndex;
-            if (!archive.files[i].hasStream()) {
+            if (archive.files[i].isEmptyStream()) {
                 continue;
             }
             ++nextFolderUnpackStreamIndex;

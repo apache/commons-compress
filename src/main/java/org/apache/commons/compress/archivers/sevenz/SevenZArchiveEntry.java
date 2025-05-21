@@ -359,6 +359,9 @@ public class SevenZArchiveEntry implements ArchiveEntry {
 
     /**
      * Tests whether there is any content associated with this entry.
+     * <p>
+     * Returns true if a content is present.
+     * </p>
      *
      * @return whether there is any content associated with this entry.
      */
@@ -383,6 +386,19 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     @Override
     public boolean isDirectory() {
         return isDirectory;
+    }
+
+    /**
+     * Tests whether there is any content associated with this entry.
+     * <p>
+     * Returns true if a content is absent.
+     * </p>
+     *
+     * @return whether there is any content associated with this entry.
+     * @since 1.28.0
+     */
+    public boolean isEmptyStream() {
+        return !hasStream;
     }
 
     /**
