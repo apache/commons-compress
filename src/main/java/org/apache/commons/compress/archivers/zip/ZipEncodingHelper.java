@@ -23,7 +23,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
-import java.nio.charset.UnsupportedCharsetException;
 
 import org.apache.commons.io.Charsets;
 
@@ -112,7 +111,7 @@ public abstract class ZipEncodingHelper {
     private static Charset toSafeCharset(final String name) {
         try {
             return Charsets.toCharset(name);
-        } catch (final UnsupportedCharsetException ignored) {
+        } catch (final IllegalArgumentException | NullPointerException ignored) {
             return Charset.defaultCharset();
         }
     }

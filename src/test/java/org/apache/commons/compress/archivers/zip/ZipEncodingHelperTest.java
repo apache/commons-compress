@@ -36,6 +36,17 @@ public class ZipEncodingHelperTest {
     }
 
     @Test
+    public void testGetZipEncodingForIllegalName() {
+        assertEquals(Charset.defaultCharset(), ((NioZipEncoding) ZipEncodingHelper.getZipEncoding("")).getCharset());
+    }
+
+    @Test
+    public void testGetZipEncodingForNull() {
+        assertEquals(Charset.defaultCharset(), ((NioZipEncoding) ZipEncodingHelper.getZipEncoding((Charset) null)).getCharset());
+        assertEquals(Charset.defaultCharset(), ((NioZipEncoding) ZipEncodingHelper.getZipEncoding((String) null)).getCharset());
+    }
+
+    @Test
     public void testGetZipEncodingForUnknown() {
         assertEquals(Charset.defaultCharset(), ((NioZipEncoding) ZipEncodingHelper.getZipEncoding("X")).getCharset());
     }
