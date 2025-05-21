@@ -102,13 +102,18 @@ public abstract class ZipEncodingHelper {
         return UTF_8.name().equalsIgnoreCase(actual) || UTF_8.aliases().stream().anyMatch(actual::equalsIgnoreCase);
     }
 
+    /**
+     * Returns a Charset for the named charset. If the name cannot find a charset, return {@link Charset#defaultCharset()}.
+     *
+     * @param name The name of the requested charset, may be null.
+     * @return a Charset for the named charset.
+     * @see Charset#defaultCharset()
+     */
     private static Charset toSafeCharset(final String name) {
-        Charset charset = Charset.defaultCharset();
         try {
-            charset = Charsets.toCharset(name);
+            return Charsets.toCharset(name);
         } catch (final UnsupportedCharsetException ignored) {
-            // Use the default encoding instead.
+            return Charset.defaultCharset();
         }
-        return charset;
     }
 }
