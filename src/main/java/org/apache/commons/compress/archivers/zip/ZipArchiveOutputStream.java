@@ -1361,7 +1361,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     /**
      * Sets the compression level for subsequent entries.
      * <p>
-     * Default is Deflater.DEFAULT_COMPRESSION.
+     * Default is {@code Deflater.DEFAULT_COMPRESSION}.
      * </p>
      *
      * @param level the compression level.

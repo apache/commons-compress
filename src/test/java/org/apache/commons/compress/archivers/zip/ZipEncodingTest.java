@@ -27,7 +27,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -45,18 +44,14 @@ public class ZipEncodingTest {
     private static final String BAD_STRING_ENC = "%U2016%U2015%U2016%U2015%U2016%U2015%U2016%U2015%U2016%U2015%U2016";
 
     private static void assertEquals(final byte[] expected, final ByteBuffer actual) {
-
         Assertions.assertEquals(expected.length, actual.limit());
-
         for (final byte anExpected : expected) {
             final byte a = actual.get();
             Assertions.assertEquals(anExpected, a);
         }
-
     }
 
     private void doSimpleEncodingsTest(final int n) throws IOException {
-
         doSimpleEncodingTest("Cp" + n, null);
         doSimpleEncodingTest("cp" + n, null);
         doSimpleEncodingTest("CP" + n, null);
@@ -65,25 +60,18 @@ public class ZipEncodingTest {
     }
 
     private void doSimpleEncodingTest(final String name, byte[] testBytes) throws IOException {
-
         final ZipEncoding enc = ZipEncodingHelper.getZipEncoding(name);
         assertInstanceOf(NioZipEncoding.class, enc);
         if (testBytes == null) {
-
             testBytes = new byte[256];
             for (int i = 0; i < 256; ++i) {
                 testBytes[i] = (byte) i;
             }
         }
-
         final String decoded = enc.decode(testBytes);
-
         assertTrue(enc.canEncode(decoded));
-
         final ByteBuffer encoded = enc.encode(decoded);
-
         assertEquals(testBytes, encoded);
-
         assertFalse(enc.canEncode(UNENC_STRING));
         assertEquals("%U2016".getBytes(name), enc.encode(UNENC_STRING));
         assertFalse(enc.canEncode(BAD_STRING));
@@ -92,7 +80,6 @@ public class ZipEncodingTest {
 
     @Test
     public void testEbcidic() throws IOException {
-
         doSimpleEncodingTest("IBM1047", null);
     }
 
@@ -104,14 +91,6 @@ public class ZipEncodingTest {
             final CharsetAccessor hasCharset = (CharsetAccessor) ze;
             Assertions.assertEquals(Charset.defaultCharset(), hasCharset.getCharset());
         }
-    }
-
-    @Test
-    public void testIsUTF8() {
-        assertTrue(ZipEncodingHelper.isUTF8(StandardCharsets.UTF_8.name()));
-        assertTrue(ZipEncodingHelper.isUTF8("UTF8"));
-        Assertions.assertEquals(Charset.defaultCharset().name().equals(StandardCharsets.UTF_8.name()), ZipEncodingHelper.isUTF8((Charset) null));
-        Assertions.assertEquals(Charset.defaultCharset().name().equals(StandardCharsets.UTF_8.name()), ZipEncodingHelper.isUTF8((String) null));
     }
 
     @Test
@@ -144,6 +123,7 @@ public class ZipEncodingTest {
     @Test
     public void testNothingToMakeCoverallsHappier() {
         final Object o = new ZipEncodingHelper() {
+            // empty
         };
         assertNotNull(o);
     }

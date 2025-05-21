@@ -104,11 +104,10 @@ final class NioZipEncoding implements ZipEncoding, CharsetAccessor {
      * Constructs an NioZipEncoding using the given charset.
      *
      * @param charset        The character set to use.
-     * @param useReplacement should invalid characters be replaced, or reported.
      */
-    NioZipEncoding(final Charset charset, final boolean useReplacement) {
+    NioZipEncoding(final Charset charset) {
         this.charset = charset;
-        this.useReplacement = useReplacement;
+        this.useReplacement = ZipEncodingHelper.isUTF8(charset);
     }
 
     /**
