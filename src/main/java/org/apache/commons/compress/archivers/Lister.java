@@ -122,13 +122,13 @@ public final class Lister {
         final String format = (args.length > 1 ? args[1] : detectFormat(file)).toLowerCase(Locale.ROOT);
         println("Detected format " + format);
         switch (format) {
-        case ArchiveStreamFactory.SEVEN_Z:
+        case ArchiveStreamConstants.SEVEN_Z:
             list7z(file);
             break;
-        case ArchiveStreamFactory.ZIP:
+        case ArchiveStreamConstants.ZIP:
             listZipUsingZipFile(file);
             break;
-        case ArchiveStreamFactory.TAR:
+        case ArchiveStreamConstants.TAR:
             listZipUsingTarFile(file);
             break;
         default:

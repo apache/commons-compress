@@ -56,7 +56,7 @@ import org.apache.commons.compress.utils.Sets;
  *
  * <pre>
  * final OutputStream out = Files.newOutputStream(output.toPath());
- * ArchiveOutputStream os = new ArchiveStreamFactory().createArchiveOutputStream(ArchiveStreamFactory.ZIP, out);
+ * ArchiveOutputStream os = new ArchiveStreamFactory().createArchiveOutputStream(ArchiveStreamConstants.ZIP, out);
  *
  * os.putArchiveEntry(new ZipArchiveEntry("testdata/test1.xml"));
  * IOUtils.copy(Files.newInputStream(file1.toPath()), os);
@@ -72,7 +72,7 @@ import org.apache.commons.compress.utils.Sets;
  *
  * <pre>
  * final InputStream is = Files.newInputStream(input.toPath());
- * ArchiveInputStream in = new ArchiveStreamFactory().createArchiveInputStream(ArchiveStreamFactory.ZIP, is);
+ * ArchiveInputStream in = new ArchiveStreamFactory().createArchiveInputStream(ArchiveStreamConstants.ZIP, is);
  * ZipArchiveEntry entry = (ZipArchiveEntry) in.getNextEntry();
  * OutputStream out = Files.newOutputStream(dir.toPath().resolve(entry.getName()));
  * IOUtils.copy(in, out);
@@ -93,108 +93,25 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
 
     private static final int SIGNATURE_SIZE = 12;
 
+    public static final String APK = ArchiveStreamConstants.APK;
+    public static final String XAPK = ArchiveStreamConstants.XAPK;
+    public static final String APKS = ArchiveStreamConstants.APKS;
+    public static final String APKM = ArchiveStreamConstants.APKM;
+    public static final String AR = ArchiveStreamConstants.AR;
+    public static final String ARJ = ArchiveStreamConstants.ARJ;
+    public static final String CPIO = ArchiveStreamConstants.CPIO;
+    public static final String DUMP = ArchiveStreamConstants.DUMP;
+    public static final String JAR = ArchiveStreamConstants.JAR;
+    public static final String TAR = ArchiveStreamConstants.TAR;
+    public static final String ZIP = ArchiveStreamConstants.ZIP;
+    public static final String SEVEN_Z = ArchiveStreamConstants.SEVEN_Z;
+
     /**
      * The singleton instance using the platform default encoding.
      *
      * @since 1.21
      */
     public static final ArchiveStreamFactory DEFAULT = new ArchiveStreamFactory();
-
-    /**
-     * Constant (value {@value}) used to identify the APK archive format.
-     * <p>
-     * APK file extensions are .apk, .xapk, .apks, .apkm
-     * </p>
-     *
-     * @since 1.22
-     */
-    public static final String APK = "apk";
-
-    /**
-     * Constant (value {@value}) used to identify the XAPK archive format.
-     * <p>
-     * APK file extensions are .apk, .xapk, .apks, .apkm
-     * </p>
-     *
-     * @since 1.22
-     */
-    public static final String XAPK = "xapk";
-
-    /**
-     * Constant (value {@value}) used to identify the APKS archive format.
-     * <p>
-     * APK file extensions are .apk, .xapk, .apks, .apkm
-     * </p>
-     *
-     * @since 1.22
-     */
-    public static final String APKS = "apks";
-
-    /**
-     * Constant (value {@value}) used to identify the APKM archive format.
-     * <p>
-     * APK file extensions are .apk, .xapk, .apks, .apkm
-     * </p>
-     *
-     * @since 1.22
-     */
-    public static final String APKM = "apkm";
-
-    /**
-     * Constant (value {@value}) used to identify the AR archive format.
-     *
-     * @since 1.1
-     */
-    public static final String AR = "ar";
-
-    /**
-     * Constant (value {@value}) used to identify the ARJ archive format. Not supported as an output stream type.
-     *
-     * @since 1.6
-     */
-    public static final String ARJ = "arj";
-
-    /**
-     * Constant (value {@value}) used to identify the CPIO archive format.
-     *
-     * @since 1.1
-     */
-    public static final String CPIO = "cpio";
-
-    /**
-     * Constant (value {@value}) used to identify the Unix DUMP archive format. Not supported as an output stream type.
-     *
-     * @since 1.3
-     */
-    public static final String DUMP = "dump";
-
-    /**
-     * Constant (value {@value}) used to identify the JAR archive format.
-     *
-     * @since 1.1
-     */
-    public static final String JAR = "jar";
-
-    /**
-     * Constant used to identify the TAR archive format.
-     *
-     * @since 1.1
-     */
-    public static final String TAR = "tar";
-
-    /**
-     * Constant (value {@value}) used to identify the ZIP archive format.
-     *
-     * @since 1.1
-     */
-    public static final String ZIP = "zip";
-
-    /**
-     * Constant (value {@value}) used to identify the 7z archive format.
-     *
-     * @since 1.8
-     */
-    public static final String SEVEN_Z = "7z";
 
     private static Iterable<ArchiveStreamProvider> archiveStreamProviderIterable() {
         return ServiceLoader.load(ArchiveStreamProvider.class, ClassLoader.getSystemClassLoader());

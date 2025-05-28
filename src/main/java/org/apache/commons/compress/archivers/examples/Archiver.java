@@ -38,6 +38,7 @@ import java.util.Objects;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
+import org.apache.commons.compress.archivers.ArchiveStreamConstants;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
 import org.apache.commons.compress.archivers.sevenz.SevenZOutputFile;
@@ -316,9 +317,9 @@ public class Archiver {
         try (CloseableConsumerAdapter c = new CloseableConsumerAdapter(closeableConsumer)) {
             if (!prefersSeekableByteChannel(format)) {
                 create(format, c.track(Channels.newOutputStream(target)), directory);
-            } else if (ArchiveStreamFactory.ZIP.equalsIgnoreCase(format)) {
+            } else if (ArchiveStreamConstants.ZIP.equalsIgnoreCase(format)) {
                 create(c.track(new ZipArchiveOutputStream(target)), directory);
-            } else if (ArchiveStreamFactory.SEVEN_Z.equalsIgnoreCase(format)) {
+            } else if (ArchiveStreamConstants.SEVEN_Z.equalsIgnoreCase(format)) {
                 create(c.track(new SevenZOutputFile(target)), directory);
             } else {
                 // never reached as prefersSeekableByteChannel only returns true for ZIP and 7z
@@ -338,11 +339,11 @@ public class Archiver {
      * @throws IllegalStateException if the format does not support {@code SeekableByteChannel}.
      */
     public void create(final String format, final SeekableByteChannel target, final Path directory) throws IOException {
-        if (ArchiveStreamFactory.SEVEN_Z.equalsIgnoreCase(format)) {
+        if (ArchiveStreamConstants.SEVEN_Z.equalsIgnoreCase(format)) {
             try (SevenZOutputFile sevenZFile = new SevenZOutputFile(target)) {
                 create(sevenZFile, directory);
             }
-        } else if (ArchiveStreamFactory.ZIP.equalsIgnoreCase(format)) {
+        } else if (ArchiveStreamConstants.ZIP.equalsIgnoreCase(format)) {
             try (ZipArchiveOutputStream archiveOutputStream = new ZipArchiveOutputStream(target)) {
                 create(archiveOutputStream, directory, EMPTY_FileVisitOption);
             }
@@ -352,6 +353,6 @@ public class Archiver {
     }
 
     private boolean prefersSeekableByteChannel(final String format) {
-        return ArchiveStreamFactory.ZIP.equalsIgnoreCase(format) || ArchiveStreamFactory.SEVEN_Z.equalsIgnoreCase(format);
+        return ArchiveStreamConstants.ZIP.equalsIgnoreCase(format) || ArchiveStreamConstants.SEVEN_Z.equalsIgnoreCase(format);
     }
 }

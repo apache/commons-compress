@@ -36,7 +36,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.compress.archivers.ArchiveStreamFactory;
+import org.apache.commons.compress.archivers.ArchiveStreamConstants;
 import org.apache.commons.compress.utils.MultiReadOnlySeekableByteChannel;
 import org.apache.commons.io.file.PathUtils;
 
@@ -94,7 +94,7 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
      */
     public static SeekableByteChannel buildFromLastSplitSegment(final Path lastSegmentPath) throws IOException {
         final String extension = PathUtils.getExtension(lastSegmentPath);
-        if (!extension.equalsIgnoreCase(ArchiveStreamFactory.ZIP)) {
+        if (!extension.equalsIgnoreCase(ArchiveStreamConstants.ZIP)) {
             throw new IllegalArgumentException("The extension of last ZIP split segment should be .zip");
         }
         final Path parent = Objects.nonNull(lastSegmentPath.getParent()) ? lastSegmentPath.getParent() : lastSegmentPath.getFileSystem().getPath(".");

@@ -35,6 +35,7 @@ import java.util.Iterator;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
+import org.apache.commons.compress.archivers.ArchiveStreamConstants;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
@@ -394,11 +395,11 @@ public class Expander {
         try (CloseableConsumerAdapter c = new CloseableConsumerAdapter(closeableConsumer)) {
             if (!prefersSeekableByteChannel(format)) {
                 expand(format, c.track(Channels.newInputStream(archive)), targetDirectory, CloseableConsumer.NULL_CONSUMER);
-            } else if (ArchiveStreamFactory.TAR.equalsIgnoreCase(format)) {
+            } else if (ArchiveStreamConstants.TAR.equalsIgnoreCase(format)) {
                 expand(c.track(new TarFile(archive)), targetDirectory);
-            } else if (ArchiveStreamFactory.ZIP.equalsIgnoreCase(format)) {
+            } else if (ArchiveStreamConstants.ZIP.equalsIgnoreCase(format)) {
                 expand(c.track(ZipFile.builder().setSeekableByteChannel(archive).get()), targetDirectory);
-            } else if (ArchiveStreamFactory.SEVEN_Z.equalsIgnoreCase(format)) {
+            } else if (ArchiveStreamConstants.SEVEN_Z.equalsIgnoreCase(format)) {
                 expand(c.track(SevenZFile.builder().setSeekableByteChannel(archive).get()), targetDirectory);
             } else {
                 // never reached as prefersSeekableByteChannel only returns true for TAR, ZIP and 7z
@@ -471,8 +472,8 @@ public class Expander {
     }
 
     private boolean prefersSeekableByteChannel(final String format) {
-        return ArchiveStreamFactory.TAR.equalsIgnoreCase(format) || ArchiveStreamFactory.ZIP.equalsIgnoreCase(format)
-                || ArchiveStreamFactory.SEVEN_Z.equalsIgnoreCase(format);
+        return ArchiveStreamConstants.TAR.equalsIgnoreCase(format) || ArchiveStreamConstants.ZIP.equalsIgnoreCase(format)
+                || ArchiveStreamConstants.SEVEN_Z.equalsIgnoreCase(format);
     }
 
     private Path toPath(final File targetDirectory) {
