@@ -28,10 +28,14 @@ package org.apache.commons.compress.archivers.tar;
 // CheckStyle:InterfaceIsTypeCheck OFF (bc)
 public interface TarConstants {
 
-    /** Default record size */
+    /**
+     * Default record size.
+     */
     int DEFAULT_RCDSIZE = 512;
 
-    /** Default block size */
+    /**
+     * Default block size.
+     */
     int DEFAULT_BLKSIZE = DEFAULT_RCDSIZE * 20;
 
     /**
@@ -98,13 +102,17 @@ public interface TarConstants {
 
     /** Offset of start of magic field within header record */
     int MAGIC_OFFSET = 257;
+
     /**
      * The length of the magic field in a header buffer.
      */
     int MAGICLEN = 6;
 
-    /** Offset of start of magic field within header record */
+    /**
+     * Offset of start of magic field within header record.
+     */
     int VERSION_OFFSET = 263;
+
     /**
      * Previously this was regarded as part of "magic" field, but it is separate.
      */
