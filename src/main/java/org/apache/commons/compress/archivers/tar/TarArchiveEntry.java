@@ -1529,8 +1529,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         default: {
             final String prefix = oldStyle ? TarUtils.parseName(header, offset, PREFIXLEN) : TarUtils.parseName(header, offset, PREFIXLEN, encoding);
             offset += PREFIXLEN; // NOSONAR - assignment as documentation
-            // SunOS tar -E does not add / to directory names, so fix
-            // up to be consistent
+            // SunOS tar -E does not add / to directory names, so fix up to be consistent
             if (isDirectory() && !name.endsWith("/")) {
                 name += "/";
             }
