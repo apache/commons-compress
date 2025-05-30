@@ -177,7 +177,7 @@ public final class DetectArchiverTest extends AbstractTest {
      * Tests COMPRESS-644.
      */
     @Test
-    public void testIgnoreZeroByteEntryInTarDetect() {
+    public void testIcoFile() {
         assertThrows(ArchiveException.class, () -> {
             try (InputStream in = createBufferedInputStream("org/apache/commons/compress/COMPRESS-644/ARW05UP.ICO")) {
                 assertNull(ArchiveStreamFactory.detect(in));

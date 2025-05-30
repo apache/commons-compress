@@ -96,6 +96,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory">ArArchiveInputStream.getBSDLongName(String) now throws its EOFException with a message.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">ZipEncodingHelper.getZipEncoding(*) can throw NullPointerException and IllegalArgumentException on bad input instead of returning a value using the default Charset.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Javadoc improvements throughout.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory" issue= "COMPRESS-699">ArchiveStreamFactory.detect(inputStream) ArchiveException for TAR regression.</action>
       <!-- ADD -->
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add GzipParameters.getModificationInstant().</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add GzipParameters.setModificationInstant(Instant).</action>

@@ -50,6 +50,11 @@ import org.apache.commons.io.input.BoundedInputStream;
  */
 public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
 
+    /**
+     * IBM AIX <a href=""https://www.ibm.com/docs/sv/aix/7.2.0?topic=files-tarh-file">tar.h</a>: "This field is terminated with a space only."
+     */
+    private static final String VERSION_AIX = "0 ";
+
     private static final int SMALL_BUFFER_SIZE = 256;
 
     /**
@@ -70,6 +75,11 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
         final int magicLen = TarConstants.MAGICLEN;
         if (ArchiveUtils.matchAsciiBuffer(TarConstants.MAGIC_POSIX, signature, magicOffset, magicLen)
                 && ArchiveUtils.matchAsciiBuffer(TarConstants.VERSION_POSIX, signature, versionOffset, versionLen)) {
+            return true;
+        }
+        // IBM AIX tar.h https://www.ibm.com/docs/sv/aix/7.2.0?topic=files-tarh-file : "This field is terminated with a space only."
+        if (ArchiveUtils.matchAsciiBuffer(TarConstants.MAGIC_POSIX, signature, magicOffset, magicLen)
+                && ArchiveUtils.matchAsciiBuffer(VERSION_AIX, signature, versionOffset, versionLen)) {
             return true;
         }
         if (ArchiveUtils.matchAsciiBuffer(TarConstants.MAGIC_GNU, signature, magicOffset, magicLen)
