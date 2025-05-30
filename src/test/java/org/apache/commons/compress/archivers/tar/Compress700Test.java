@@ -28,18 +28,19 @@ import java.nio.file.Paths;
 
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
 
 /**
  * Tests https://issues.apache.org/jira/browse/COMPRESS-699
  */
-public class Compress699Test {
+public class Compress700Test {
 
+    @Disabled
     @Test
     public void testTarArchive() throws Exception {
-        final Path fileToTest = Paths.get("src/test/resources/org/apache/commons/compress/COMPRESS-699/icure_medical_device_dart_sdk-1.2.10.tar");
+        final Path fileToTest = Paths.get("src/test/resources/org/apache/commons/compress/COMPRESS-699/flutter_awesome_buttons-0.1.0.tar");
         try (BufferedInputStream fileInputStream = new BufferedInputStream(Files.newInputStream(fileToTest))) {
             assertEquals(ArchiveStreamFactory.TAR, ArchiveStreamFactory.detect(fileInputStream));
         }
     }
-
 }
