@@ -27,6 +27,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.jupiter.api.Disabled;
 
@@ -36,9 +37,10 @@ import org.junit.jupiter.api.Disabled;
 public class Compress700Test {
 
     @Disabled
+    @Ignore
     @Test
     public void testTarArchive() throws Exception {
-        final Path fileToTest = Paths.get("src/test/resources/org/apache/commons/compress/COMPRESS-699/flutter_awesome_buttons-0.1.0.tar");
+        final Path fileToTest = Paths.get("src/test/resources/org/apache/commons/compress/COMPRESS-700/flutter_awesome_buttons-0.1.0.tar");
         try (BufferedInputStream fileInputStream = new BufferedInputStream(Files.newInputStream(fileToTest))) {
             assertEquals(ArchiveStreamFactory.TAR, ArchiveStreamFactory.detect(fileInputStream));
         }
