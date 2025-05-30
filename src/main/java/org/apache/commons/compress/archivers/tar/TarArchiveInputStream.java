@@ -60,9 +60,9 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
     /**
      * Checks if the signature matches what is expected for a tar file.
      *
-     * @param signature the bytes to check
-     * @param length    the number of bytes to check
-     * @return true, if this stream is a tar archive stream, false otherwise
+     * @param signature the bytes to check.
+     * @param length    the number of bytes to check.
+     * @return true, if this stream is a tar archive stream, false otherwise.
      */
     public static boolean matches(final byte[] signature, final int length) {
         final int versionOffset = TarConstants.VERSION_OFFSET;
@@ -70,7 +70,6 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
         if (length < versionOffset + versionLen) {
             return false;
         }
-
         final int magicOffset = TarConstants.MAGIC_OFFSET;
         final int magicLen = TarConstants.MAGICLEN;
         if (ArchiveUtils.matchAsciiBuffer(TarConstants.MAGIC_POSIX, signature, magicOffset, magicLen)
@@ -421,32 +420,25 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
         if (isAtEOF()) {
             return null;
         }
-
         if (currEntry != null) {
             /* Skip will only go to the end of the current entry */
             IOUtils.skip(this, Long.MAX_VALUE);
-
             /* skip to the end of the last record */
             skipRecordPadding();
         }
-
         final byte[] headerBuf = getRecord();
-
         if (headerBuf == null) {
             /* hit EOF */
             currEntry = null;
             return null;
         }
-
         try {
             currEntry = new TarArchiveEntry(globalPaxHeaders, headerBuf, zipEncoding, lenient);
         } catch (final IllegalArgumentException e) {
             throw new IOException("Error detected parsing the header", e);
         }
-
         entryOffset = 0;
         entrySize = currEntry.getSize();
-
         if (currEntry.isGNULongLinkEntry()) {
             final byte[] longLinkData = getLongNameData();
             if (longLinkData == null) {
@@ -456,7 +448,6 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
             }
             currEntry.setLinkName(zipEncoding.decode(longLinkData));
         }
-
         if (currEntry.isGNULongNameEntry()) {
             final byte[] longNameData = getLongNameData();
             if (longNameData == null) {
@@ -464,7 +455,6 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
                 // Malformed tar file - long entry name not followed by entry
                 return null;
             }
-
             // COMPRESS-509 : the name of directories should end with '/'
             final String name = zipEncoding.decode(longNameData);
             currEntry.setName(name);
@@ -472,11 +462,9 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
                 currEntry.setName(name + "/");
             }
         }
-
         if (currEntry.isGlobalPaxHeader()) { // Process Global Pax headers
             readGlobalPaxHeaders();
         }
-
         try {
             if (currEntry.isPaxHeader()) { // Process Pax headers
                 paxHeaders();
@@ -486,17 +474,14 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
         } catch (final NumberFormatException e) {
             throw new IOException("Error detected parsing the pax header", e);
         }
-
         if (currEntry.isOldGNUSparse()) { // Process sparse files
             readOldGNUSparse();
         }
-
         // If the size of the next element in the archive has changed
         // due to a new size being reported in the POSIX header
         // information, we update entrySize here so that it contains
         // the correct value.
         entrySize = currEntry.getSize();
-
         return currEntry;
     }
 
@@ -595,7 +580,6 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
     private void paxHeaders() throws IOException {
         List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
         final Map<String, String> headers = TarUtils.parsePaxHeaders(this, sparseHeaders, globalPaxHeaders, entrySize);
-
         // for 0.1 PAX Headers
         if (headers.containsKey(TarGnuSparseKeys.MAP)) {
             sparseHeaders = new ArrayList<>(TarUtils.parseFromPAX01SparseHeaders(headers.get(TarGnuSparseKeys.MAP)));
@@ -605,13 +589,11 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
             throw new IOException("premature end of tar archive. Didn't find any entry after PAX header.");
         }
         applyPaxHeadersToCurrentEntry(headers, sparseHeaders);
-
         // for 1.0 PAX Format, the sparse map is stored in the file data block
         if (currEntry.isPaxGNU1XSparse()) {
             sparseHeaders = TarUtils.parsePAX1XSparseHeaders(in, getRecordSize());
             currEntry.setSparseHeaders(sparseHeaders);
         }
-
         // sparse headers are all done reading, we need to build
         // sparse input streams using these sparse headers
         buildSparseInputStreams();
@@ -635,28 +617,22 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
             return 0;
         }
         int totalRead = 0;
-
         if (isAtEOF() || isDirectory()) {
             return -1;
         }
-
         if (currEntry == null) {
             throw new IllegalStateException("No current tar entry");
         }
-
         if (entryOffset >= currEntry.getRealSize()) {
             return -1;
         }
-
         numToRead = Math.min(numToRead, available());
-
         if (currEntry.isSparse()) {
             // for sparse entries, we need to read them in another way
             totalRead = readSparse(buf, offset, numToRead);
         } else {
             totalRead = in.read(buf, offset, numToRead);
         }
-
         if (totalRead == -1) {
             if (numToRead > 0) {
                 throw new IOException("Truncated TAR archive");
@@ -666,14 +642,12 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
             count(totalRead);
             entryOffset += totalRead;
         }
-
         return totalRead;
     }
 
     private void readGlobalPaxHeaders() throws IOException {
         globalPaxHeaders = TarUtils.parsePaxHeaders(this, globalSparseHeaders, globalPaxHeaders, entrySize);
         getNextEntry(); // Get the actual file entry
-
         if (currEntry == null) {
             throw new IOException("Error detected parsing the pax header");
         }
@@ -696,7 +670,6 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
                 currEntry.getSparseHeaders().addAll(entry.getSparseHeaders());
             } while (entry.isExtended());
         }
-
         // sparse headers are all done reading, we need to build
         // sparse input streams using these sparse headers
         buildSparseInputStreams();
@@ -714,7 +687,6 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
         if (readCount != getRecordSize()) {
             return null;
         }
-
         return recordBuffer;
     }
 
@@ -804,12 +776,10 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
         if (n <= 0 || isDirectory()) {
             return 0;
         }
-
         final long availableOfInputStream = in.available();
         final long available = currEntry.getRealSize() - entryOffset;
         final long numToSkip = Math.min(n, available);
         long skipped;
-
         if (!currEntry.isSparse()) {
             skipped = IOUtils.skip(in, numToSkip);
             // for non-sparse entry, we should get the bytes actually skipped bytes along with
@@ -818,7 +788,6 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
         } else {
             skipped = skipSparse(numToSkip);
         }
-
         count(skipped);
         entryOffset += skipped;
         return skipped;
@@ -835,9 +804,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
             final long numRecords = this.entrySize / getRecordSize() + 1;
             final long padding = numRecords * getRecordSize() - this.entrySize;
             long skipped = IOUtils.skip(in, padding);
-
             skipped = getActuallySkipped(available, skipped, padding);
-
             count(skipped);
         }
     }

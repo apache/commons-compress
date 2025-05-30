@@ -212,11 +212,9 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
         if (in == null) {
             throw new IllegalArgumentException("Stream must not be null.");
         }
-
         if (!in.markSupported()) {
             throw new IllegalArgumentException("Mark is not supported.");
         }
-
         final byte[] signature = new byte[SIGNATURE_SIZE];
         in.mark(signature.length);
         int signatureLength = -1;
@@ -226,7 +224,6 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
         } catch (final IOException e) {
             throw new ArchiveException("Failure reading signature.", (Throwable) e);
         }
-
         // For now JAR files are detected as ZIP files.
         if (ZipArchiveInputStream.matches(signature, signatureLength)) {
             return ZIP;
@@ -247,7 +244,6 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
         if (SevenZFile.matches(signature, signatureLength)) {
             return SEVEN_Z;
         }
-
         // Dump needs a bigger buffer to check the signature;
         final byte[] dumpsig = new byte[DUMP_SIGNATURE_SIZE];
         in.mark(dumpsig.length);
@@ -260,7 +256,6 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
         if (DumpArchiveInputStream.matches(dumpsig, signatureLength)) {
             return DUMP;
         }
-
         // Tar needs an even bigger buffer to check the signature; read the first block
         final byte[] tarHeader = new byte[TAR_HEADER_SIZE];
         in.mark(tarHeader.length);
@@ -273,7 +268,6 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
         if (TarArchiveInputStream.matches(tarHeader, signatureLength)) {
             return TAR;
         }
-
         // COMPRESS-117
         if (signatureLength >= TAR_HEADER_SIZE) {
             try (TarArchiveInputStream inputStream = new TarArchiveInputStream(new ByteArrayInputStream(tarHeader))) {
@@ -423,15 +417,12 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
     @Override
     public <I extends ArchiveInputStream<? extends ArchiveEntry>> I createArchiveInputStream(final String archiverName, final InputStream in,
             final String actualEncoding) throws ArchiveException {
-
         if (archiverName == null) {
             throw new IllegalArgumentException("Archiver name must not be null.");
         }
-
         if (in == null) {
             throw new IllegalArgumentException("InputStream must not be null.");
         }
-
         if (AR.equalsIgnoreCase(archiverName)) {
             return (I) new ArArchiveInputStream(in);
         }
@@ -474,12 +465,10 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
         if (SEVEN_Z.equalsIgnoreCase(archiverName)) {
             throw new StreamingNotSupportedException(SEVEN_Z);
         }
-
         final ArchiveStreamProvider archiveStreamProvider = getArchiveInputStreamProviders().get(toKey(archiverName));
         if (archiveStreamProvider != null) {
             return archiveStreamProvider.createArchiveInputStream(archiverName, in, actualEncoding);
         }
-
         throw new ArchiveException("Archiver: " + archiverName + " not found.");
     }
 
