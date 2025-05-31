@@ -46,6 +46,8 @@ import org.apache.commons.io.output.ByteArrayOutputStream;
 // CheckStyle:HideUtilityClassConstructorCheck OFF (bc)
 public class TarUtils {
 
+    private static final BigInteger NEG_1_BIG_INT = BigInteger.valueOf(-1);
+
     private static final int BYTE_MASK = 255;
 
     static final ZipEncoding DEFAULT_ENCODING = ZipEncodingHelper.getZipEncoding(Charset.defaultCharset());
@@ -315,7 +317,7 @@ public class TarUtils {
         BigInteger val = new BigInteger(remainder);
         if (negative) {
             // 2's complement
-            val = val.add(BigInteger.valueOf(-1)).not();
+            val = val.add(NEG_1_BIG_INT).not();
         }
         if (val.bitLength() > 63) {
             throw new IllegalArgumentException("At offset " + offset + ", " + length + " byte binary number exceeds maximum signed long value");
