@@ -26,6 +26,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -117,10 +118,7 @@ public class TarUtils {
         }
         final int off = offset + length - len;
         System.arraycopy(b, 0, buf, off, len);
-        final byte fill = (byte) (negative ? 0xff : 0);
-        for (int i = offset + 1; i < off; i++) {
-            buf[i] = fill;
-        }
+        Arrays.fill(buf, offset + 1, off, (byte) (negative ? 0xff : 0));
     }
 
     /**
