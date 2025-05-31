@@ -306,6 +306,7 @@ public class TarUtils {
         for (; remaining >= 0; --remaining) { // leading zeros
             buffer[offset + remaining] = (byte) '0';
         }
+        Arrays.fill(buffer, offset, offset + remaining + 1, (byte) '0');
     }
 
     private static long parseBinaryBigInteger(final byte[] buffer, final int offset, final int length, final boolean negative) {
