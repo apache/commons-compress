@@ -74,13 +74,7 @@ public class TarUtils {
 
         @Override
         public ByteBuffer encode(final String name) {
-            final int length = name.length();
-            final byte[] buf = new byte[length];
-            // copy until end of input or output is reached.
-            for (int i = 0; i < length; ++i) {
-                buf[i] = (byte) name.charAt(i);
-            }
-            return ByteBuffer.wrap(buf);
+            return ByteBuffer.wrap(name.getBytes(StandardCharsets.US_ASCII));
         }
     };
 
@@ -98,7 +92,9 @@ public class TarUtils {
         return sum;
     }
 
-    // Helper method to generate the exception message
+    /*
+     * Generates an exception message.
+     */
     private static String exceptionMessage(final byte[] buffer, final int offset, final int length, final int current, final byte currentByte) {
         // default charset is good enough for an exception message,
         //
