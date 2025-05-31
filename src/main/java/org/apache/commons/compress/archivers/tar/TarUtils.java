@@ -108,7 +108,6 @@ public class TarUtils {
         // course) and dealing with the fact that ZipEncoding#decode
         // can throw an IOException which parseOctal* doesn't declare
         String string = new String(buffer, offset, length, Charset.defaultCharset());
-
         string = string.replace("\0", "{NUL}"); // Replace NULs to allow string to be printed
         return "Invalid byte " + currentByte + " at offset " + (current - offset) + " in '" + string + "' len=" + length;
     }
@@ -312,7 +311,6 @@ public class TarUtils {
                 throw new IllegalArgumentException(value + "=" + Long.toOctalString(value) + " will not fit in octal number buffer of length " + length);
             }
         }
-
         for (; remaining >= 0; --remaining) { // leading zeros
             buffer[offset + remaining] = (byte) '0';
         }
@@ -554,7 +552,7 @@ public class TarUtils {
         // for 1.X PAX Headers
         final List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
         long bytesRead = 0;
-        long[] readResult = readLineOfNumberForPax1X(inputStream);
+        long[] readResult = readLineOfNumberForPax1x(inputStream);
         long sparseHeadersCount = readResult[0];
         if (sparseHeadersCount < 0) {
             // overflow while reading number?
@@ -562,14 +560,14 @@ public class TarUtils {
         }
         bytesRead += readResult[1];
         while (sparseHeadersCount-- > 0) {
-            readResult = readLineOfNumberForPax1X(inputStream);
+            readResult = readLineOfNumberForPax1x(inputStream);
             final long sparseOffset = readResult[0];
             if (sparseOffset < 0) {
                 throw new IOException("Corrupted TAR archive. Sparse header block offset contains negative value");
             }
             bytesRead += readResult[1];
 
-            readResult = readLineOfNumberForPax1X(inputStream);
+            readResult = readLineOfNumberForPax1x(inputStream);
             final long sparseNumbytes = readResult[0];
             if (sparseNumbytes < 0) {
                 throw new IOException("Corrupted TAR archive. Sparse header block numbytes contains negative value");
@@ -579,7 +577,7 @@ public class TarUtils {
         }
         // skip the rest of this record data
         final long bytesToSkip = recordSize - bytesRead % recordSize;
-        org.apache.commons.io.IOUtils.skip(inputStream, bytesToSkip);
+        IOUtils.skip(inputStream, bytesToSkip);
         return sparseHeaders;
     }
 
@@ -756,14 +754,14 @@ public class TarUtils {
     }
 
     /**
-     * For 1.X PAX Format, the sparse headers are stored in the file data block, preceding the actual file data. It consists of a series of decimal numbers
+     * For 1.x PAX Format, the sparse headers are stored in the file data block, preceding the actual file data. It consists of a series of decimal numbers
      * delimited by newlines.
      *
      * @param inputStream the input stream of the tar file
      * @return the decimal number delimited by '\n', and the bytes read from input stream
      * @throws IOException if an I/O error occurs.
      */
-    private static long[] readLineOfNumberForPax1X(final InputStream inputStream) throws IOException {
+    private static long[] readLineOfNumberForPax1x(final InputStream inputStream) throws IOException {
         int number;
         long result = 0;
         long bytesRead = 0;
