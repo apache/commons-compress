@@ -858,10 +858,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * @return this entry's file or null if the entry was not created from a file.
      */
     public File getFile() {
-        if (file == null) {
-            return null;
-        }
-        return file.toFile();
+        return file != null ? file.toFile() : null;
     }
 
     /**
@@ -922,7 +919,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * @since 1.23
      */
     public byte getLinkFlag() {
-        return this.linkFlag;
+        return linkFlag;
     }
 
     /**
@@ -970,8 +967,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * @see TarArchiveEntry#getLastModifiedTime()
      */
     public Date getModTime() {
-        final FileTime fileTime = mTime;
-        return FileTimes.toDate(fileTime);
+        return FileTimes.toDate(mTime);
     }
 
     /**
@@ -1449,15 +1445,14 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     private void parseTarHeader(final Map<String, String> globalPaxHeaders, final byte[] header, final ZipEncoding encoding, final boolean oldStyle,
             final boolean lenient) throws IOException {
         try {
-            parseTarHeaderUnwrapped(globalPaxHeaders, header, encoding, oldStyle, lenient);
+            parseUstarHeaderBlock(globalPaxHeaders, header, encoding, oldStyle, lenient);
         } catch (final IllegalArgumentException ex) {
             throw new IOException("Corrupted TAR archive.", ex);
         }
     }
 
-    private void parseTarHeaderUnwrapped(final Map<String, String> globalPaxHeaders, final byte[] header, final ZipEncoding encoding, final boolean oldStyle,
-            final boolean lenient) throws IOException {
-        int offset = 0;
+    private int parseTarHeaderBlock(final byte[] header, final ZipEncoding encoding, final boolean oldStyle, final boolean lenient, int offset)
+            throws IOException {
         name = oldStyle ? TarUtils.parseName(header, offset, NAMELEN) : TarUtils.parseName(header, offset, NAMELEN, encoding);
         offset += NAMELEN;
         mode = (int) parseOctalOrBinary(header, offset, MODELEN, lenient);
@@ -1477,6 +1472,13 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         offset += CHKSUMLEN;
         linkFlag = header[offset++];
         linkName = oldStyle ? TarUtils.parseName(header, offset, NAMELEN) : TarUtils.parseName(header, offset, NAMELEN, encoding);
+        return offset;
+    }
+
+    private void parseUstarHeaderBlock(final Map<String, String> globalPaxHeaders, final byte[] header, final ZipEncoding encoding, final boolean oldStyle,
+            final boolean lenient) throws IOException {
+        int offset = 0;
+        offset = parseTarHeaderBlock(header, encoding, oldStyle, lenient, offset);
         offset += NAMELEN;
         magic = TarUtils.parseName(header, offset, MAGICLEN);
         offset += MAGICLEN;
