@@ -253,9 +253,7 @@ public class TarUtils {
         final int limit = b.limit() - b.position();
         System.arraycopy(b.array(), b.arrayOffset(), buf, offset, limit);
         // Pad any remaining output bytes with NUL
-        for (int i = limit; i < length; ++i) {
-            buf[offset + i] = 0;
-        }
+        Arrays.fill(buf, offset + limit, offset + length, (byte) 0);
         return offset + length;
     }
 
