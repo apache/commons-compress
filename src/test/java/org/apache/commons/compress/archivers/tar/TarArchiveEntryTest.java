@@ -437,50 +437,54 @@ public class TarArchiveEntryTest implements TarConstants {
     @Test
     public void testTarFileWithFSRoot() throws IOException {
         final File f = File.createTempFile("taetest", ".tar");
-        TarArchiveEntry t = new TarArchiveEntry(new File(ROOT));
+        TarArchiveEntry entry = new TarArchiveEntry(new File(ROOT));
         try {
             try (TarArchiveOutputStream tout = new TarArchiveOutputStream(Files.newOutputStream(f.toPath()))) {
-                tout.putArchiveEntry(t);
+                tout.putArchiveEntry(entry);
                 tout.closeArchiveEntry();
-                t = new TarArchiveEntry(new File(new File(ROOT), "foo.txt"));
-                t.setSize(6);
-                tout.putArchiveEntry(t);
+                entry = new TarArchiveEntry(new File(new File(ROOT), "foo.txt"));
+                entry.setSize(6);
+                tout.putArchiveEntry(entry);
                 tout.write(new byte[] { 'h', 'e', 'l', 'l', 'o', ' ' });
                 tout.closeArchiveEntry();
-                t = new TarArchiveEntry(new File(new File(ROOT), "bar.txt").getAbsolutePath());
-                t.setSize(5);
-                tout.putArchiveEntry(t);
+                entry = new TarArchiveEntry(new File(new File(ROOT), "bar.txt").getAbsolutePath());
+                entry.setSize(5);
+                tout.putArchiveEntry(entry);
                 tout.write(new byte[] { 'w', 'o', 'r', 'l', 'd' });
                 tout.closeArchiveEntry();
-                t = new TarArchiveEntry("dummy");
-                t.setName(new File(new File(ROOT), "baz.txt").getAbsolutePath());
-                t.setSize(1);
-                tout.putArchiveEntry(t);
+                entry = new TarArchiveEntry("dummy");
+                entry.setName(new File(new File(ROOT), "baz.txt").getAbsolutePath());
+                entry.setSize(1);
+                tout.putArchiveEntry(entry);
                 tout.write(new byte[] { '!' });
                 tout.closeArchiveEntry();
             }
             try (TarArchiveInputStream tin = new TarArchiveInputStream(Files.newInputStream(f.toPath()))) {
                 // tin.setDebug(true);
-                t = tin.getNextTarEntry();
-                assertNotNull(t);
-                assertEquals("/", t.getName());
-                assertEquals(TarConstants.LF_DIR, t.getLinkFlag());
-                assertTrue(t.isCheckSumOK());
-                t = tin.getNextTarEntry();
-                assertNotNull(t);
-                assertEquals("foo.txt", t.getName());
-                assertEquals(TarConstants.LF_NORMAL, t.getLinkFlag());
-                assertTrue(t.isCheckSumOK());
-                t = tin.getNextTarEntry();
-                assertNotNull(t);
-                assertEquals("bar.txt", t.getName());
-                assertEquals(TarConstants.LF_NORMAL, t.getLinkFlag());
-                assertTrue(t.isCheckSumOK());
-                t = tin.getNextTarEntry();
-                assertNotNull(t);
-                assertEquals("baz.txt", t.getName());
-                assertEquals(TarConstants.LF_NORMAL, t.getLinkFlag());
-                assertTrue(t.isCheckSumOK());
+                entry = tin.getNextTarEntry();
+                assertNotNull(entry);
+                assertEquals("/", entry.getName());
+                assertEquals(TarConstants.LF_DIR, entry.getLinkFlag());
+                assertTrue(entry.isCheckSumOK());
+                assertTrue(entry.isTypeFlagUstar());
+                entry = tin.getNextTarEntry();
+                assertNotNull(entry);
+                assertEquals("foo.txt", entry.getName());
+                assertEquals(TarConstants.LF_NORMAL, entry.getLinkFlag());
+                assertTrue(entry.isCheckSumOK());
+                assertTrue(entry.isTypeFlagUstar());
+                entry = tin.getNextTarEntry();
+                assertNotNull(entry);
+                assertEquals("bar.txt", entry.getName());
+                assertEquals(TarConstants.LF_NORMAL, entry.getLinkFlag());
+                assertTrue(entry.isCheckSumOK());
+                assertTrue(entry.isTypeFlagUstar());
+                entry = tin.getNextTarEntry();
+                assertNotNull(entry);
+                assertEquals("baz.txt", entry.getName());
+                assertEquals(TarConstants.LF_NORMAL, entry.getLinkFlag());
+                assertTrue(entry.isCheckSumOK());
+                assertTrue(entry.isTypeFlagUstar());
             }
         } finally {
             AbstractTest.forceDelete(f);
@@ -492,6 +496,7 @@ public class TarArchiveEntryTest implements TarConstants {
     public void testWindowsFileInformationFromFile() throws IOException {
         final TarArchiveEntry entry = new TarArchiveEntry(getFile("test1.xml"));
         assertNotEquals("", entry.getUserName());
+        assertTrue(entry.isTypeFlagUstar());
     }
 
     @Test
@@ -499,6 +504,7 @@ public class TarArchiveEntryTest implements TarConstants {
     public void testWindowsFileInformationFromPath() throws IOException {
         final TarArchiveEntry entry = new TarArchiveEntry(getPath("test1.xml"));
         assertNotEquals("", entry.getUserName());
+        assertTrue(entry.isTypeFlagUstar());
     }
 
     private FileTime toFileTime(final String text) {

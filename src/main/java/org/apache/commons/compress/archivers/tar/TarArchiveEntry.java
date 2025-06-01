@@ -1368,6 +1368,28 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
+     * Tests whether the <a href="https://www.mkssoftware.com/docs/man4/tar.4.asp">type flag</a> contains a valid USTAR value.
+     *
+     * <pre>
+     * Type Flag    File Type
+     * 0 or null    Regular file
+     * 1            Link to another file already archived
+     * 2            Symbolic link
+     * 3            Character special device
+     * 4            Block special device
+     * 5            Directory
+     * 6            FIFO special file
+     * 7            Reserved
+     * A-Z          Available for custom usage
+     * </pre>
+     *
+     * @return whether the type flag contains a valid USTAR value.
+     */
+    boolean isTypeFlagUstar() {
+        return linkFlag == 0 || linkFlag >= '0' && linkFlag <= '7' || linkFlag >= 'A' && linkFlag <= 'Z';
+    }
+
+    /**
      * Tests whether the given header is in XSTAR / XUSTAR format.
      *
      * Use the same logic found in star version 1.6 in {@code header.c}, function {@code isxmagic(TCB *ptb)}.
@@ -1933,6 +1955,16 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      */
     public void setUserName(final String userName) {
         this.userName = userName;
+    }
+
+    /**
+     * Converts this instance to a String useful for debugging.
+     *
+     * @since 1.28.0
+     */
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "[" + name + "]";
     }
 
     /**

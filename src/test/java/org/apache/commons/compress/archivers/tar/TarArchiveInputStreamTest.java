@@ -92,7 +92,9 @@ public class TarArchiveInputStreamTest extends AbstractTest {
     public void testCompress197() throws IOException {
         try (TarArchiveInputStream tar = getTestStream("/COMPRESS-197.tar")) {
             TarArchiveEntry entry = tar.getNextTarEntry();
+            assertNotNull(entry);
             while (entry != null) {
+                assertTrue(entry.isTypeFlagUstar());
                 entry = tar.getNextTarEntry();
             }
         }
