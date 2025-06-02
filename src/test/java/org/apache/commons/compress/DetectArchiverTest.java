@@ -18,18 +18,23 @@
  */
 package org.apache.commons.compress;
 
-import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
+import java.time.Instant;
+import java.util.Collections;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
@@ -38,6 +43,7 @@ import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.ar.ArArchiveInputStream;
 import org.apache.commons.compress.archivers.arj.ArjArchiveInputStream;
 import org.apache.commons.compress.archivers.cpio.CpioArchiveInputStream;
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.junit.jupiter.api.Test;
@@ -73,6 +79,10 @@ public final class DetectArchiverTest extends AbstractTest {
 
     private BufferedInputStream createBufferedInputStream(final String resource) throws IOException {
         return new BufferedInputStream(newInputStream(resource));
+    }
+
+    private boolean isValidName(final String value) {
+       return value.isEmpty() || value.chars().allMatch(ch -> ch > 31 && ch < 128);
     }
 
     @Test
@@ -131,17 +141,17 @@ public final class DetectArchiverTest extends AbstractTest {
 
     }
 
-    @Test
-    public void testDetectionNotArchive() {
-        assertThrows(ArchiveException.class, () -> createArchiveInputStream("test.txt"));
-    }
-
     // Check that the empty archives created by the code are readable
 
     // Not possible to detect empty "ar" archive as it is completely empty
 //    public void testEmptyArArchive() throws Exception {
 //        emptyArchive("ar");
 //    }
+
+    @Test
+    public void testDetectionNotArchive() {
+        assertThrows(ArchiveException.class, () -> createArchiveInputStream("test.txt"));
+    }
 
     @Test
     public void testDetectOldTarFormatArchive() throws Exception {
@@ -183,5 +193,56 @@ public final class DetectArchiverTest extends AbstractTest {
                 assertNull(ArchiveStreamFactory.detect(in));
             }
         });
+    }
+
+    @Test
+    public void testIcoFileFirstTarArchiveEntry() throws Exception {
+        try (TarArchiveInputStream inputStream = new TarArchiveInputStream(createBufferedInputStream("org/apache/commons/compress/COMPRESS-644/ARW05UP.ICO"))) {
+            final TarArchiveEntry entry = inputStream.getNextEntry();
+            // Find hints that the file is not a TAR file.
+            assertNull(entry.getCreationTime());
+            assertEquals(-1, entry.getDataOffset());
+            assertEquals(0, entry.getDevMajor());
+            assertEquals(0, entry.getDevMinor());
+            assertEquals(Collections.emptyMap(), entry.getExtraPaxHeaders());
+            assertEquals(0, entry.getGroupId());
+            assertFalse(isValidName(entry.getGroupName()), entry::getGroupName); // hint
+            assertNull(entry.getLastAccessTime());
+            assertEquals(0, entry.getLastModifiedDate().getTime());  // hint
+            assertEquals(FileTime.from(Instant.EPOCH), entry.getLastModifiedTime()); // hint
+            assertEquals(0, entry.getLinkFlag()); // NUL (not really a hint)
+            assertEquals("", entry.getLinkName());
+            assertEquals(0, entry.getLongGroupId());
+            assertEquals(16777215, entry.getLongUserId()); // hint?
+            assertEquals(0, entry.getMode()); // hint?
+            assertEquals(0, entry.getModTime().getTime()); // hint?
+            assertFalse(isValidName(entry.getName()), entry::getName); // hint
+            assertNull(entry.getPath());
+            assertEquals(0, entry.getRealSize());
+            assertEquals(0, entry.getSize());
+            assertNull(entry.getStatusChangeTime());
+            assertEquals(16777215, entry.getUserId()); // hint?
+            assertFalse(isValidName(entry.getUserName()), entry::getUserName); // hint
+            assertTrue(entry.isFile());
+            assertFalse(entry.isBlockDevice());
+            assertFalse(entry.isCharacterDevice());
+            assertTrue(entry.isCheckSumOK());
+            assertFalse(entry.isDirectory());
+            assertFalse(entry.isExtended());
+            assertFalse(entry.isFIFO());
+            assertFalse(entry.isGlobalPaxHeader());
+            assertFalse(entry.isGNULongLinkEntry());
+            assertFalse(entry.isGNULongNameEntry());
+            assertFalse(entry.isGNUSparse());
+            assertFalse(entry.isLink());
+            assertFalse(entry.isOldGNUSparse());
+            assertFalse(entry.isPaxGNU1XSparse());
+            assertFalse(entry.isPaxGNUSparse());
+            assertFalse(entry.isPaxHeader());
+            assertFalse(entry.isSparse());
+            assertFalse(entry.isStarSparse());
+            assertTrue(entry.isStreamContiguous());
+            assertFalse(entry.isSymbolicLink());
+        }
     }
 }

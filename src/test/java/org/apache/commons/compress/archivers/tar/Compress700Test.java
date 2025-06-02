@@ -38,16 +38,14 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 /**
  * Tests https://issues.apache.org/jira/browse/COMPRESS-699
  */
 public class Compress700Test {
 
-    private static final Path PATH = Paths.get("src/test/resources/org/apache/commons/compress/COMPRESS-700/flutter_awesome_buttons-0.1.0-fail.tar");
+    private static final Path PATH = Paths.get("src/test/resources/org/apache/commons/compress/COMPRESS-700/flutter_awesome_buttons-0.1.0.tar");
 
     @Test
     public void testFirstTarArchiveEntry() throws Exception {
@@ -187,8 +185,8 @@ public class Compress700Test {
         }
     }
 
-    @Disabled
-    @Ignore
+    //@Disabled
+    //@Ignore
     @Test
     public void testTarArchive() throws Exception {
         try (BufferedInputStream fileInputStream = new BufferedInputStream(Files.newInputStream(PATH))) {

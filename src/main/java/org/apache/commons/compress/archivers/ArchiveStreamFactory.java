@@ -272,14 +272,14 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
         if (signatureLength >= TAR_HEADER_SIZE) {
             try (TarArchiveInputStream inputStream = new TarArchiveInputStream(new ByteArrayInputStream(tarHeader))) {
                 // COMPRESS-191 - verify the header checksum
-                // COMPRESS-644 - do not allow zero byte file entries
                 TarArchiveEntry entry = inputStream.getNextEntry();
                 // try to find the first non-directory entry within the first 10 entries.
                 int count = 0;
                 while (entry != null && entry.isDirectory() && entry.isCheckSumOK() && count++ < TAR_TEST_ENTRY_COUNT) {
                     entry = inputStream.getNextEntry();
                 }
-                if (entry != null && entry.isCheckSumOK() && !entry.isDirectory() && entry.getSize() > 0 || count > 0) {
+                if (entry != null && entry.isCheckSumOK() && !entry.isDirectory() && isName(entry.getGroupName()) && isName(entry.getName())
+                        && isName(entry.getUserName()) || count > 0) {
                     return TAR;
                 }
             } catch (final Exception ignored) {
@@ -345,6 +345,11 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
             archiveStreamProviderIterable().forEach(provider -> putAll(provider.getOutputStreamArchiveNames(), provider, map));
             return map;
         });
+    }
+
+    private static boolean isName(final String value) {
+        // Expect ASCII https://www.mkssoftware.com/docs/man4/tar.4.asp
+        return value.isEmpty() || value.chars().allMatch(ch -> ch > 31 && ch < 128);
     }
 
     static void putAll(final Set<String> names, final ArchiveStreamProvider provider, final TreeMap<String, ArchiveStreamProvider> map) {
