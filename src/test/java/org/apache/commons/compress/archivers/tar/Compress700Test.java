@@ -36,6 +36,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.junit.jupiter.api.Test;
@@ -100,87 +101,92 @@ public class Compress700Test {
 
     @Test
     public void testListEntries() throws IOException {
-        // @formatter:off
-        final List<String> names = Arrays.asList(
-                "build/app.dill",
-                "CHANGELOG.md",
-                "example/android/app/build.gradle",
-                "example/android/app/src/debug/AndroidManifest.xml",
-                "example/android/app/src/main/AndroidManifest.xml",
-                "example/android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java",
-                "example/android/app/src/main/kotlin/com/example/test_package/MainActivity.kt",
-                "example/android/app/src/main/res/drawable/launch_background.xml",
-                "example/android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
-                "example/android/app/src/main/res/mipmap-mdpi/ic_launcher.png",
-                "example/android/app/src/main/res/mipmap-xhdpi/ic_launcher.png",
-                "example/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png",
-                "example/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png",
-                "example/android/app/src/main/res/values/styles.xml",
-                "example/android/app/src/profile/AndroidManifest.xml",
-                "example/android/build.gradle",
-                "example/android/gradle.properties",
-                "example/android/gradlew",
-                "example/android/gradlew.bat",
-                "example/android/gradle/wrapper/gradle-wrapper.jar",
-                "example/android/gradle/wrapper/gradle-wrapper.properties",
-                "example/android/local.properties",
-                "example/android/settings.gradle",
-                "example/android/test_package_android.iml",
-                "example/ios/Flutter/AppFrameworkInfo.plist",
-                "example/ios/Flutter/Debug.xcconfig",
-                "example/ios/Flutter/flutter_export_environment.sh",
-                "example/ios/Flutter/Generated.xcconfig",
-                "example/ios/Flutter/Release.xcconfig",
-                "example/ios/Runner.xcodeproj/project.pbxproj",
-                "example/ios/Runner.xcodeproj/project.xcworkspace/contents.xcworkspacedata",
-                "example/ios/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme",
-                "example/ios/Runner.xcworkspace/contents.xcworkspacedata",
-                "example/ios/Runner/AppDelegate.swift",
-                "example/ios/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json",
-                "example/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png",
-                "example/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@1x.png",
-                "example/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@2x.png",
-                "example/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@3x.png",
-                "example/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@1x.png",
-                "example/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@2x.png",
-                "example/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@3x.png",
-                "example/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@1x.png",
-                "example/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@2x.png",
-                "example/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@3x.png",
-                "example/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@2x.png",
-                "example/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@3x.png",
-                "example/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@1x.png",
-                "example/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@2x.png",
-                "example/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-83.5x83.5@2x.png",
-                "example/ios/Runner/Assets.xcassets/LaunchImage.imageset/Contents.json",
-                "example/ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage.png",
-                "example/ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage@2x.png",
-                "example/ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage@3x.png",
-                "example/ios/Runner/Assets.xcassets/LaunchImage.imageset/README.md",
-                "example/ios/Runner/Base.lproj/LaunchScreen.storyboard",
-                "example/ios/Runner/Base.lproj/Main.storyboard",
-                "example/ios/Runner/GeneratedPluginRegistrant.h",
-                "example/ios/Runner/GeneratedPluginRegistrant.m",
-                "example/ios/Runner/Info.plist",
-                "example/ios/Runner/Runner-Bridging-Header.h",
-                "example/lib/main.dart",
-                "example/pubspec.yaml",
-                "example/README.md",
-                "example/test/widget_test.dart",
-                "example/test_package.iml",
-                "flutter_buttons.iml",
-                "lib/flutter_awesome_buttons.dart",
-                "LICENSE",
-                "pubspec.yaml",
-                "README.md",
-                "test/flutter_buttons_test.dart");
+        final List<Object[]> list = Arrays.asList(
+                new Object[] {0,     "build/app.dill"}, // 0
+                new Object[] {105,   "CHANGELOG.md"},
+                new Object[] {2119,  "example/android/app/build.gradle"},
+                new Object[] {339,   "example/android/app/src/debug/AndroidManifest.xml"},
+                new Object[] {1745,  "example/android/app/src/main/AndroidManifest.xml"},
+                new Object[] {559,   "example/android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java"},
+                new Object[] {353,   "example/android/app/src/main/kotlin/com/example/test_package/MainActivity.kt"},
+                new Object[] {446,   "example/android/app/src/main/res/drawable/launch_background.xml"},
+                new Object[] {544,   "example/android/app/src/main/res/mipmap-hdpi/ic_launcher.png"},
+                new Object[] {442,   "example/android/app/src/main/res/mipmap-mdpi/ic_launcher.png"},
+                new Object[] {721,   "example/android/app/src/main/res/mipmap-xhdpi/ic_launcher.png"}, // 10
+                new Object[] {1031,  "example/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png"},
+                new Object[] {1443,  "example/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png"},
+                new Object[] {369,   "example/android/app/src/main/res/values/styles.xml"},
+                new Object[] {339,   "example/android/app/src/profile/AndroidManifest.xml"},
+                new Object[] {613,   "example/android/build.gradle"},
+                new Object[] {32,    "example/android/gradle.properties"},
+                new Object[] {4971,  "example/android/gradlew"},
+                new Object[] {2404,  "example/android/gradlew.bat"},
+                new Object[] {53636, "example/android/gradle/wrapper/gradle-wrapper.jar"},
+                new Object[] {240,   "example/android/gradle/wrapper/gradle-wrapper.properties"}, // 20
+                new Object[] {150,   "example/android/local.properties"},
+                new Object[] {499,   "example/android/settings.gradle"},
+                new Object[] {1630,  "example/android/test_package_android.iml"},
+                new Object[] {820,   "example/ios/Flutter/AppFrameworkInfo.plist"},
+                new Object[] {31,    "example/ios/Flutter/Debug.xcconfig"},
+                new Object[] {461,   "example/ios/Flutter/flutter_export_environment.sh"},
+                new Object[] {380,   "example/ios/Flutter/Generated.xcconfig"},
+                new Object[] {31,    "example/ios/Flutter/Release.xcconfig"},
+                new Object[] {21606, "example/ios/Runner.xcodeproj/project.pbxproj"},
+                new Object[] {159,   "example/ios/Runner.xcodeproj/project.xcworkspace/contents.xcworkspacedata"}, // 30
+                new Object[] {3382,  "example/ios/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme"},
+                new Object[] {159,   "example/ios/Runner.xcworkspace/contents.xcworkspacedata"},
+                new Object[] {417,   "example/ios/Runner/AppDelegate.swift"},
+                new Object[] {2641,  "example/ios/Runner/Assets.xcassets/AppIcon.appiconset/Contents.json"},
+                new Object[] {10932, "example/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-1024x1024@1x.png"},
+                new Object[] {564,   "example/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@1x.png"},
+                new Object[] {1283,  "example/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@2x.png"},
+                new Object[] {1588,  "example/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-20x20@3x.png"},
+                new Object[] {1025,  "example/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@1x.png"},
+                new Object[] {1716,  "example/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@2x.png"},
+                new Object[] {1920,  "example/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-29x29@3x.png"},
+                new Object[] {1283,  "example/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@1x.png"},
+                new Object[] {1895,  "example/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@2x.png"},
+                new Object[] {2665,  "example/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-40x40@3x.png"},
+                new Object[] {2665,  "example/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@2x.png"},
+                new Object[] {3831,  "example/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-60x60@3x.png"},
+                new Object[] {1888,  "example/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@1x.png"},
+                new Object[] {3294,  "example/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-76x76@2x.png"},
+                new Object[] {3612,  "example/ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-83.5x83.5@2x.png"},
+                new Object[] {414,   "example/ios/Runner/Assets.xcassets/LaunchImage.imageset/Contents.json"},
+                new Object[] {68,    "example/ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage.png"},
+                new Object[] {68,    "example/ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage@2x.png"},
+                new Object[] {68,    "example/ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage@3x.png"},
+                new Object[] {340,   "example/ios/Runner/Assets.xcassets/LaunchImage.imageset/README.md"},
+                new Object[] {2414,  "example/ios/Runner/Base.lproj/LaunchScreen.storyboard"},
+                new Object[] {1631,  "example/ios/Runner/Base.lproj/Main.storyboard"},
+                new Object[] {310,   "example/ios/Runner/GeneratedPluginRegistrant.h"},
+                new Object[] {204,   "example/ios/Runner/GeneratedPluginRegistrant.m"},
+                new Object[] {1576,  "example/ios/Runner/Info.plist"},
+                new Object[] {37,    "example/ios/Runner/Runner-Bridging-Header.h"},
+                new Object[] {8996,  "example/lib/main.dart"},
+                new Object[] {2759,  "example/pubspec.yaml"},
+                new Object[] {9879,  "example/README.md"},
+                new Object[] {1081,  "example/test/widget_test.dart"},
+                new Object[] {913,   "example/test_package.iml"},
+                new Object[] {1000,  "flutter_buttons.iml"},
+                new Object[] {36861, "lib/flutter_awesome_buttons.dart"},
+                new Object[] {30,    "LICENSE"},
+                new Object[] {1751,  "pubspec.yaml"},
+                new Object[] {9879,  "README.md"},
+                new Object[] {433,   "test/flutter_buttons_test.dart"});
         // @formatter:on
         try (TarArchiveInputStream inputStream = new TarArchiveInputStream(new BufferedInputStream(Files.newInputStream(PATH)))) {
-            for (final String name : names) {
+            final AtomicInteger i = new AtomicInteger();
+            for (final Object[] pair : list) {
                 final TarArchiveEntry entry = inputStream.getNextEntry();
                 assertNotNull(entry, entry.getName());
                 // System.out.println(entry);
-                assertEquals(name, entry.getName());
+                final String name = (String) pair[1];
+                assertEquals(name, entry.getName(), () -> String.format("[%d] %s", i.get(), entry));
+                final int size = ((Integer) pair[0]).intValue();
+                assertEquals(size, entry.getSize(), () -> String.format("[%d] %s", i.get(), entry));
+                assertEquals(size, entry.getRealSize(), () -> String.format("[%d] %s", i.get(), entry));
+                i.incrementAndGet();
             }
         }
     }
