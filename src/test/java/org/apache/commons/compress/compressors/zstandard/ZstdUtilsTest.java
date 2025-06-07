@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 public class ZstdUtilsTest {
 
     @Test
-    public void testMatchesSkippableFrame() {
+    void testMatchesSkippableFrame() {
         final byte[] data = { 0, (byte) 0x2A, (byte) 0x4D, (byte) 0x18, };
         assertFalse(ZstdUtils.matches(data, 4));
         for (byte b = (byte) 0x50; b < 0x60; b++) {
@@ -39,7 +39,7 @@ public class ZstdUtilsTest {
     }
 
     @Test
-    public void testMatchesZstandardFrame() {
+    void testMatchesZstandardFrame() {
         final byte[] data = { (byte) 0x28, (byte) 0xB5, (byte) 0x2F, (byte) 0xFD, };
         assertFalse(ZstdUtils.matches(data, 3));
         assertTrue(ZstdUtils.matches(data, 4));

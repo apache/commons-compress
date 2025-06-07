@@ -166,7 +166,7 @@ public final class DetectCompressorTest {
     }
 
     @Test
-    public void testCreateLimitedByName() throws Exception {
+    void testCreateLimitedByName() throws Exception {
         try (CompressorInputStream bzip2 = createCompressorInputStream("bla.txt.bz2", Collections.singleton(CompressorStreamFactory.BZIP2))) {
             assertNotNull(bzip2);
             assertInstanceOf(BZip2CompressorInputStream.class, bzip2);
@@ -199,7 +199,7 @@ public final class DetectCompressorTest {
     }
 
     @Test
-    public void testCreateLimitedByNameNotFound() throws Exception {
+    void testCreateLimitedByNameNotFound() throws Exception {
         assertThrows(CompressorException.class, () -> createCompressorInputStream("bla.txt.bz2", Collections.singleton(CompressorStreamFactory.BROTLI)));
         assertThrows(CompressorException.class, () -> createCompressorInputStream("bla.tgz", Collections.singleton(CompressorStreamFactory.Z)));
         assertThrows(CompressorException.class, () -> createCompressorInputStream("bla.pack", Collections.singleton(CompressorStreamFactory.SNAPPY_FRAMED)));
@@ -209,7 +209,7 @@ public final class DetectCompressorTest {
     }
 
     @Test
-    public void testCreateWithAutoDetection() throws Exception {
+    void testCreateWithAutoDetection() throws Exception {
         try (CompressorInputStream bzip2 = createCompressorInputStream("bla.txt.bz2")) {
             assertNotNull(bzip2);
             assertInstanceOf(BZip2CompressorInputStream.class, bzip2);
@@ -244,7 +244,7 @@ public final class DetectCompressorTest {
     }
 
     @Test
-    public void testDetect() throws Exception {
+    void testDetect() throws Exception {
         assertEquals(CompressorStreamFactory.BZIP2, detect("bla.txt.bz2"));
         assertEquals(CompressorStreamFactory.GZIP, detect("bla.tgz"));
         assertEquals(CompressorStreamFactory.PACK200, detect("bla.pack"));
@@ -274,12 +274,12 @@ public final class DetectCompressorTest {
 
     @ParameterizedTest
     @MethodSource("getDetectLimitedByNameParams")
-    public void testDetectLimitedByName(final String filename, final String compressorName) throws Exception {
+    void testDetectLimitedByName(final String filename, final String compressorName) throws Exception {
         assertEquals(compressorName, detect(filename, Collections.singleton(compressorName)));
     }
 
     @Test
-    public void testDetectLimitedByNameNotFound() throws Exception {
+    void testDetectLimitedByNameNotFound() throws Exception {
         final Set<String> compressorNames = Collections.singleton(CompressorStreamFactory.DEFLATE);
 
         assertThrows(CompressorException.class, () -> detect("bla.txt.bz2", compressorNames));
@@ -295,18 +295,18 @@ public final class DetectCompressorTest {
     }
 
     @Test
-    public void testDetectNullOrEmptyCompressorNames() throws Exception {
+    void testDetectNullOrEmptyCompressorNames() throws Exception {
         assertThrows(IllegalArgumentException.class, () -> CompressorStreamFactory.detect(createCompressorInputStream("bla.txt.bz2"), (Set<String>) null));
         assertThrows(IllegalArgumentException.class, () -> CompressorStreamFactory.detect(createCompressorInputStream("bla.tgz"), new HashSet<>()));
     }
 
     @Test
-    public void testLZMAMemoryLimit() throws Exception {
+    void testLZMAMemoryLimit() throws Exception {
         assertThrows(MemoryLimitException.class, () -> createInputStream("COMPRESS-382", 100));
     }
 
     @Test
-    public void testMultiples() throws Exception {
+    void testMultiples() throws Exception {
         for (int i = 0; i < tests.length; i++) {
             final TestData test = tests[i];
             final CompressorStreamFactory fac = test.factory;
@@ -324,7 +324,7 @@ public final class DetectCompressorTest {
     }
 
     @Test
-    public void testOverride() {
+    void testOverride() {
         final CompressorStreamFactory fac1 = new CompressorStreamFactory();
         assertFalse(fac1.getDecompressConcatenated());
         fac1.setDecompressConcatenated(true);
@@ -340,7 +340,7 @@ public final class DetectCompressorTest {
     }
 
     @Test
-    public void testXZMemoryLimitOnRead() throws Exception {
+    void testXZMemoryLimitOnRead() throws Exception {
         // Even though the file is very small, the memory limit
         // has to be quite large (8296 KiB) because of the dictionary size
 
@@ -353,14 +353,14 @@ public final class DetectCompressorTest {
     }
 
     @Test
-    public void testXZMemoryLimitOnSkip() throws Exception {
+    void testXZMemoryLimitOnSkip() throws Exception {
         try (InputStream compressorIs = createInputStream("bla.tar.xz", 100)) {
             assertThrows(MemoryLimitException.class, () -> compressorIs.skip(10));
         }
     }
 
     @Test
-    public void testZMemoryLimit() throws Exception {
+    void testZMemoryLimit() throws Exception {
         assertThrows(MemoryLimitException.class, () -> createInputStream("COMPRESS-386", 100));
     }
 }

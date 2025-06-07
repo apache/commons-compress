@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 public class GeneralPurposeBitTest {
 
     @Test
-    public void testClone() {
+    void testClone() {
         final GeneralPurposeBit b = new GeneralPurposeBit();
         b.useStrongEncryption(true);
         b.useUTF8ForNames(true);
@@ -39,7 +39,7 @@ public class GeneralPurposeBitTest {
     }
 
     @Test
-    public void testDataDescriptor() {
+    void testDataDescriptor() {
         final byte[] flags = { (byte) 8, (byte) 0 };
         assertTrue(GeneralPurposeBit.parse(flags, 0).usesDataDescriptor());
         final GeneralPurposeBit b = new GeneralPurposeBit();
@@ -48,7 +48,7 @@ public class GeneralPurposeBitTest {
     }
 
     @Test
-    public void testDefaults() {
+    void testDefaults() {
         assertFalse(new GeneralPurposeBit().usesDataDescriptor());
         assertFalse(new GeneralPurposeBit().usesUTF8ForNames());
         assertFalse(new GeneralPurposeBit().usesEncryption());
@@ -58,7 +58,7 @@ public class GeneralPurposeBitTest {
     }
 
     @Test
-    public void testEncryption() {
+    void testEncryption() {
         final byte[] flags = { (byte) 1, (byte) 0 };
         assertTrue(GeneralPurposeBit.parse(flags, 0).usesEncryption());
         final GeneralPurposeBit b = new GeneralPurposeBit();
@@ -67,7 +67,7 @@ public class GeneralPurposeBitTest {
     }
 
     @Test
-    public void testLanguageEncodingFlag() {
+    void testLanguageEncodingFlag() {
         final byte[] flags = { (byte) 0, (byte) 8 };
         assertTrue(GeneralPurposeBit.parse(flags, 0).usesUTF8ForNames());
         final GeneralPurposeBit b = new GeneralPurposeBit();
@@ -76,7 +76,7 @@ public class GeneralPurposeBitTest {
     }
 
     @Test
-    public void testParseEdgeCases() {
+    void testParseEdgeCases() {
         assertFalse(GeneralPurposeBit.parse(new byte[2], 0).usesDataDescriptor());
         assertFalse(GeneralPurposeBit.parse(new byte[2], 0).usesUTF8ForNames());
         assertFalse(GeneralPurposeBit.parse(new byte[2], 0).usesEncryption());
@@ -88,7 +88,7 @@ public class GeneralPurposeBitTest {
     }
 
     @Test
-    public void testStrongEncryption() {
+    void testStrongEncryption() {
         byte[] flags = { (byte) 65, (byte) 0 };
         assertTrue(GeneralPurposeBit.parse(flags, 0).usesStrongEncryption());
         final GeneralPurposeBit b = new GeneralPurposeBit();

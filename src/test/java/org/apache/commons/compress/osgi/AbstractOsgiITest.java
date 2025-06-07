@@ -58,12 +58,12 @@ abstract class AbstractOsgiITest {
     }
 
     @Test
-    public void testCanLoadBundle() {
+    void testCanLoadBundle() {
         assertNotNull("Expected to find bundle " + EXPECTED_BUNDLE_NAME, loadBundle());
     }
 
     @Test
-    public void testProperlyDetectsRunningInsideOsgiEnv() throws Exception {
+    void testProperlyDetectsRunningInsideOsgiEnv() throws Exception {
         final String className = "org.apache.commons.compress.utils.OsgiUtils";
         final Class<?> osgiUtils = loadBundle().loadClass(className);
         assertNotNull("Can't load " + className + " via bundle", osgiUtils);

@@ -39,7 +39,7 @@ import org.junit.jupiter.api.Test;
 public class Compress679Test {
 
     @Test
-    public void testCompress679() {
+    void testCompress679() {
         final Path origin = Paths.get("src/test/resources/org/apache/commons/compress/COMPRESS-679/file.7z");
         assertTrue(Files.exists(origin));
         final Callable<Boolean> runnable = () -> {

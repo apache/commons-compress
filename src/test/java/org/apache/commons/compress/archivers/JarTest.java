@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
 public final class JarTest extends AbstractTest {
 
     @Test
-    public void testJarArchiveCreation() throws Exception {
+    void testJarArchiveCreation() throws Exception {
         final File output = newTempFile("bla.jar");
 
         final File file1 = getFile("test1.xml");
@@ -51,7 +51,7 @@ public final class JarTest extends AbstractTest {
     }
 
     @Test
-    public void testJarUnarchive() throws Exception {
+    void testJarUnarchive() throws Exception {
         final File input = getFile("bla.jar");
         try (InputStream is = Files.newInputStream(input.toPath());
                 ZipArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("jar", is)) {
@@ -74,7 +74,7 @@ public final class JarTest extends AbstractTest {
     }
 
     @Test
-    public void testJarUnarchiveAll() throws Exception {
+    void testJarUnarchiveAll() throws Exception {
         final File input = getFile("bla.jar");
         try (InputStream is = Files.newInputStream(input.toPath());
                 ArchiveInputStream<?> in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("jar", is)) {

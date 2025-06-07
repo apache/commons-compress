@@ -117,7 +117,7 @@ public class ExtraFieldUtilsTest implements UnixStat {
      * Test merge methods
      */
     @Test
-    public void testMerge() {
+    void testMerge() {
         final byte[] local = ExtraFieldUtils.mergeLocalFileDataData(new ZipExtraField[] { a, dummy });
         assertEquals(data.length, local.length, "local length");
         for (int i = 0; i < local.length; i++) {
@@ -139,7 +139,7 @@ public class ExtraFieldUtilsTest implements UnixStat {
     }
 
     @Test
-    public void testMergeWithUnparseableData() throws Exception {
+    void testMergeWithUnparseableData() throws Exception {
         final ZipExtraField d = new UnparseableExtraFieldData();
         final byte[] b = UNRECOGNIZED_HEADER.getBytes();
         d.parseFromLocalFileData(new byte[] { b[0], b[1], 1, 0 }, 0, 4);
@@ -166,7 +166,7 @@ public class ExtraFieldUtilsTest implements UnixStat {
      * test parser.
      */
     @Test
-    public void testParse() throws Exception {
+    void testParse() throws Exception {
         final ZipExtraField[] ze = ExtraFieldUtils.parse(data);
         assertEquals(2, ze.length, "number of fields");
         assertTrue(ze[0] instanceof AsiExtraField, "type field 1");
@@ -182,7 +182,7 @@ public class ExtraFieldUtilsTest implements UnixStat {
     }
 
     @Test
-    public void testParseCentral() throws Exception {
+    void testParseCentral() throws Exception {
         final ZipExtraField[] ze = ExtraFieldUtils.parse(data, false);
         assertEquals(2, ze.length, "number of fields");
         assertTrue(ze[0] instanceof AsiExtraField, "type field 1");
@@ -193,7 +193,7 @@ public class ExtraFieldUtilsTest implements UnixStat {
     }
 
     @Test
-    public void testParseTurnsArrayIndexOutOfBoundsIntoZipException() {
+    void testParseTurnsArrayIndexOutOfBoundsIntoZipException() {
         ExtraFieldUtils.register(AiobThrowingExtraField.class);
         final AiobThrowingExtraField f = new AiobThrowingExtraField();
         final byte[] d = new byte[4 + AiobThrowingExtraField.LENGTH];
@@ -205,7 +205,7 @@ public class ExtraFieldUtilsTest implements UnixStat {
     }
 
     @Test
-    public void testParseWithRead() throws Exception {
+    void testParseWithRead() throws Exception {
         ZipExtraField[] ze = ExtraFieldUtils.parse(data, true, ExtraFieldUtils.UnparseableExtraField.READ);
         assertEquals(2, ze.length, "number of fields");
         assertTrue(ze[0] instanceof AsiExtraField, "type field 1");
@@ -227,7 +227,7 @@ public class ExtraFieldUtilsTest implements UnixStat {
     }
 
     @Test
-    public void testParseWithSkip() throws Exception {
+    void testParseWithSkip() throws Exception {
         ZipExtraField[] ze = ExtraFieldUtils.parse(data, true, ExtraFieldUtils.UnparseableExtraField.SKIP);
         assertEquals(2, ze.length, "number of fields");
         assertTrue(ze[0] instanceof AsiExtraField, "type field 1");

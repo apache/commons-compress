@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 public class SetsTest {
 
     @Test
-    public void testNewHashSet() {
+    void testNewHashSet() {
         final HashSet<String> expected = new HashSet<>();
         assertEquals(expected, Sets.newHashSet());
         assertEquals(expected, Sets.newHashSet((String[]) null));

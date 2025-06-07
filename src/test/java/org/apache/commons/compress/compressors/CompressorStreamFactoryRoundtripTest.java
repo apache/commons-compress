@@ -50,7 +50,7 @@ public class CompressorStreamFactoryRoundtripTest {
 
     @ParameterizedTest
     @MethodSource("data")
-    public void testCompressorStreamFactoryRoundtrip(final String compressorName) throws Exception {
+    void testCompressorStreamFactoryRoundtrip(final String compressorName) throws Exception {
         final CompressorStreamProvider factory = new CompressorStreamFactory();
         final ByteArrayOutputStream compressedOs = new ByteArrayOutputStream();
         final String fixture = "The quick brown fox jumps over the lazy dog";

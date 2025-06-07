@@ -41,7 +41,7 @@ import org.junit.jupiter.api.Test;
 public final class ArTest extends AbstractTest {
 
     @Test
-    public void testArArchiveCreation() throws Exception {
+    void testArArchiveCreation() throws Exception {
         final File output = newTempFile("bla.ar");
 
         final File file1 = getFile("test1.xml");
@@ -61,7 +61,7 @@ public final class ArTest extends AbstractTest {
     }
 
     @Test
-    public void testArDelete() throws Exception {
+    void testArDelete() throws Exception {
         final File output = newTempFile("bla.ar");
 
         final File file1 = getFile("test1.xml");
@@ -140,7 +140,7 @@ public final class ArTest extends AbstractTest {
     }
 
     @Test
-    public void testArUnarchive() throws Exception {
+    void testArUnarchive() throws Exception {
         final File output = newTempFile("bla.ar");
         {
             final File file1 = getFile("test1.xml");
@@ -169,7 +169,7 @@ public final class ArTest extends AbstractTest {
     }
 
     @Test
-    public void testExplicitFileEntry() throws Exception {
+    void testExplicitFileEntry() throws Exception {
         final File file = createTempFile();
         final File archive = createTempFile("test.", ".ar");
         try (ArArchiveOutputStream aos = new ArArchiveOutputStream(Files.newOutputStream(archive.toPath()))) {
@@ -191,7 +191,7 @@ public final class ArTest extends AbstractTest {
     }
 
     @Test
-    public void testFileEntryFromFile() throws Exception {
+    void testFileEntryFromFile() throws Exception {
         final File file = createTempFile();
         final File archive = createTempFile("test.", ".ar");
         try (ArArchiveOutputStream aos = new ArArchiveOutputStream(Files.newOutputStream(archive.toPath()))) {
@@ -213,7 +213,7 @@ public final class ArTest extends AbstractTest {
     }
 
     @Test
-    public void testFileEntryFromPath() throws Exception {
+    void testFileEntryFromPath() throws Exception {
         final File file = createTempFile();
         final File archive = createTempFile("test.", ".ar");
         try (ArArchiveOutputStream aos = new ArArchiveOutputStream(Files.newOutputStream(archive.toPath()))) {
@@ -237,7 +237,7 @@ public final class ArTest extends AbstractTest {
     // TODO: revisit - does AR not support storing directories?
     @Disabled
     @Test
-    public void testXtestDirectoryEntryFromFile() throws Exception {
+    void testXtestDirectoryEntryFromFile() throws Exception {
         final File tmp = createTempFile();
         final File archive = createTempFile("test.", ".ar");
         final long beforeArchiveWrite;
@@ -262,7 +262,7 @@ public final class ArTest extends AbstractTest {
     // TODO: revisit - does AR not support storing directories?
     @Disabled
     @Test
-    public void testXtestExplicitDirectoryEntry() throws Exception {
+    void testXtestExplicitDirectoryEntry() throws Exception {
         final File tmp = createTempFile();
         final File archive = createTempFile("test.", ".ar");
         final long beforeArchiveWrite;

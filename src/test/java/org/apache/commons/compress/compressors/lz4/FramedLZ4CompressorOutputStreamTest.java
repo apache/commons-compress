@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 public class FramedLZ4CompressorOutputStreamTest {
 
     @Test
-    public void testFinishWithNoWrite() throws IOException {
+    void testFinishWithNoWrite() throws IOException {
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         try (FramedLZ4CompressorOutputStream compressor = new FramedLZ4CompressorOutputStream(buffer,
                 new FramedLZ4CompressorOutputStream.Parameters(FramedLZ4CompressorOutputStream.BlockSize.K64, true, false, false))) {
@@ -39,7 +39,7 @@ public class FramedLZ4CompressorOutputStreamTest {
     }
 
     @Test
-    public void testWriteByteArrayVsWriteByte() throws IOException {
+    void testWriteByteArrayVsWriteByte() throws IOException {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         final byte[] bytes = "abcdefghijklmnop".getBytes();
         try (FramedLZ4CompressorOutputStream compressor = new FramedLZ4CompressorOutputStream(buffer,

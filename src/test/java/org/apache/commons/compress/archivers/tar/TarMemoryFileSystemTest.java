@@ -45,7 +45,7 @@ import com.github.marschall.memoryfilesystem.MemoryFileSystemBuilder;
 public class TarMemoryFileSystemTest {
 
     @Test
-    public void testCheckUserInformationInTarEntry() throws IOException, ArchiveException {
+    void testCheckUserInformationInTarEntry() throws IOException, ArchiveException {
         final String user = "commons";
         final String group = "compress";
         try (FileSystem fileSystem = MemoryFileSystemBuilder.newLinux().addUser(user).addGroup(group).build()) {
@@ -74,7 +74,7 @@ public class TarMemoryFileSystemTest {
     }
 
     @Test
-    public void testTarFromMemoryFileSystem() throws IOException, ArchiveException {
+    void testTarFromMemoryFileSystem() throws IOException, ArchiveException {
         try (FileSystem fileSystem = MemoryFileSystemBuilder.newLinux().build()) {
             final Path p = fileSystem.getPath("test.txt");
             Files.write(p, "Test".getBytes(UTF_8));
@@ -93,7 +93,7 @@ public class TarMemoryFileSystemTest {
     }
 
     @Test
-    public void testTarToMemoryFileSystem() throws IOException, ArchiveException {
+    void testTarToMemoryFileSystem() throws IOException, ArchiveException {
         try (FileSystem fileSystem = MemoryFileSystemBuilder.newLinux().build()) {
             final Path p = fileSystem.getPath("target.tar");
 

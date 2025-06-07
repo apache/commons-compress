@@ -97,7 +97,7 @@ public class BlockSortTest {
     }
 
     @Test
-    public void testFallbackSort() {
+    void testFallbackSort() {
         final BZip2CompressorOutputStream.Data data = new BZip2CompressorOutputStream.Data(1);
         final BlockSort s = new BlockSort(data);
         final int[] fmap = new int[FIXTURE.length];
@@ -106,7 +106,7 @@ public class BlockSortTest {
     }
 
     @Test
-    public void testSortFixture() {
+    void testSortFixture() {
         final DS ds = setUpFixture();
         ds.s.blockSort(ds.data, FIXTURE.length - 1);
         assertFixtureSorted(ds.data);
@@ -114,7 +114,7 @@ public class BlockSortTest {
     }
 
     @Test
-    public void testSortFixture2() {
+    void testSortFixture2() {
         final DS ds = setUpFixture2();
         ds.s.blockSort(ds.data, FIXTURE2.length - 1);
         assertFixture2Sorted(ds.data);
@@ -122,28 +122,28 @@ public class BlockSortTest {
     }
 
     @Test
-    public void testSortFixture2FallbackSort() {
+    void testSortFixture2FallbackSort() {
         final DS ds = setUpFixture2();
         ds.s.fallbackSort(ds.data, FIXTURE2.length - 1);
         assertFixture2Sorted(ds.data);
     }
 
     @Test
-    public void testSortFixture2MainSort() {
+    void testSortFixture2MainSort() {
         final DS ds = setUpFixture2();
         ds.s.mainSort(ds.data, FIXTURE2.length - 1);
         assertFixture2Sorted(ds.data);
     }
 
     @Test
-    public void testSortFixtureFallbackSort() {
+    void testSortFixtureFallbackSort() {
         final DS ds = setUpFixture();
         ds.s.fallbackSort(ds.data, FIXTURE.length - 1);
         assertFixtureSorted(ds.data);
     }
 
     @Test
-    public void testSortFixtureMainSort() {
+    void testSortFixtureMainSort() {
         final DS ds = setUpFixture();
         ds.s.mainSort(ds.data, FIXTURE.length - 1);
         assertFixtureSorted(ds.data);

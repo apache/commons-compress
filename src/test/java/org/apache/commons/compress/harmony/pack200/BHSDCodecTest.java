@@ -42,7 +42,7 @@ public class BHSDCodecTest {
     }
 
     @Test
-    public void testDeltaEncodings() throws IOException, Pack200Exception {
+    void testDeltaEncodings() throws IOException, Pack200Exception {
         final Codec c = Codec.UDELTA5;
         final int[] sequence = { 0, 2, 4, 2, 2, 4 };
         final byte[] encoded = c.encode(sequence);
@@ -54,7 +54,7 @@ public class BHSDCodecTest {
 
     @ParameterizedTest
     @MethodSource("encodeDecodeRange")
-    public void testEncodeDecode(final int i) throws IOException, Pack200Exception {
+    void testEncodeDecode(final int i) throws IOException, Pack200Exception {
         final BHSDCodec codec = (BHSDCodec) CodecEncoding.getCodec(i, null, null);
 
         if (!codec.isDelta()) {

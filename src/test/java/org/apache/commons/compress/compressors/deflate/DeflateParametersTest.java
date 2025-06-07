@@ -26,20 +26,20 @@ import org.junit.jupiter.api.Test;
 public class DeflateParametersTest {
 
     @Test
-    public void testShouldBeAbleToSetCompressionLevel() {
+    void testShouldBeAbleToSetCompressionLevel() {
         final DeflateParameters p = new DeflateParameters();
         p.setCompressionLevel(5);
         assertEquals(5, p.getCompressionLevel());
     }
 
     @Test
-    public void testShouldNotBeAbleToSetCompressionLevelToADoubleDigitValue() {
+    void testShouldNotBeAbleToSetCompressionLevelToADoubleDigitValue() {
         final DeflateParameters p = new DeflateParameters();
         assertThrows(IllegalArgumentException.class, () -> p.setCompressionLevel(DeflateParameters.MAX_LEVEL + 1));
     }
 
     @Test
-    public void testShouldNotBeAbleToSetCompressionLevelToANegativeValue() {
+    void testShouldNotBeAbleToSetCompressionLevelToANegativeValue() {
         final DeflateParameters p = new DeflateParameters();
         assertThrows(IllegalArgumentException.class, () -> p.setCompressionLevel(DeflateParameters.MIN_LEVEL - 1));
     }

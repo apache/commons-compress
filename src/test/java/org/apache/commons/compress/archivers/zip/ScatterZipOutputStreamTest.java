@@ -39,7 +39,7 @@ public class ScatterZipOutputStreamTest extends AbstractTempDirTest {
     }
 
     @Test
-    public void testPutArchiveEntry() throws Exception {
+    void testPutArchiveEntry() throws Exception {
         final File scatterFile = createTempFile("scattertest", ".notzip");
         final File target = createTempFile("scattertest", ".zip");
         final byte[] B_PAYLOAD = "RBBBBBBS".getBytes();

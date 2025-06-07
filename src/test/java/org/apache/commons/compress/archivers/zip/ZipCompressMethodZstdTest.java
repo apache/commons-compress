@@ -58,7 +58,7 @@ public class ZipCompressMethodZstdTest extends AbstractTest {
     }
 
     @Test
-    public void testZstdInputStream() throws IOException {
+    void testZstdInputStream() throws IOException {
         final Path file = getPath("COMPRESS-692/compress-692.zip");
         try (ZipFile zip = ZipFile.builder().setFile(file.toFile()).get()) {
             final ZipArchiveEntry entry = zip.getEntries().nextElement();
@@ -79,7 +79,7 @@ public class ZipCompressMethodZstdTest extends AbstractTest {
 
     @ParameterizedTest
     @EnumSource(names = { "ZSTD", "ZSTD_DEPRECATED" })
-    public void testZstdMethod(final ZipMethod zipMethod) throws IOException {
+    void testZstdMethod(final ZipMethod zipMethod) throws IOException {
         final String zipContentFile = "Name.txt";
         final byte[] simpleText = "This is a Simple Test File.".getBytes();
         final File file = Files.createTempFile("", ".zip").toFile();
@@ -105,7 +105,7 @@ public class ZipCompressMethodZstdTest extends AbstractTest {
 
     @ParameterizedTest
     @EnumSource(names = { "ZSTD", "ZSTD_DEPRECATED" })
-    public void testZstdMethodInZipFile(final ZipMethod zipMethod) throws IOException {
+    void testZstdMethodInZipFile(final ZipMethod zipMethod) throws IOException {
         final String zipContentFile = "Name.txt";
         final byte[] simpleText = "This is a Simple Test File.".getBytes();
         final File file = Files.createTempFile("", ".zip").toFile();

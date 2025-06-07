@@ -238,7 +238,7 @@ public class ZipFileTest extends AbstractTest {
     }
 
     @Test
-    public void testAlternativeZstdInputStream() throws Exception {
+    void testAlternativeZstdInputStream() throws Exception {
         final File archive = getFile("COMPRESS-692/compress-692.zip");
         try (AirliftZstdZipFile zf = new AirliftZstdZipFile(archive)) {
             final byte[] buffer = new byte[7000];
@@ -267,13 +267,13 @@ public class ZipFileTest extends AbstractTest {
     }
 
     @Test
-    public void testCDOrder() throws Exception {
+    void testCDOrder() throws Exception {
         readOrderTest();
         testCDOrderInMemory();
     }
 
     @Test
-    public void testCDOrderInMemory() throws Exception {
+    void testCDOrderInMemory() throws Exception {
         final byte[] data = readAllBytes("ordertest.zip");
         zf = ZipFile.builder().setByteArray(data).setCharset(StandardCharsets.UTF_8).get();
         testCDOrderInMemory(zf);
@@ -315,7 +315,7 @@ public class ZipFileTest extends AbstractTest {
     }
 
     @Test
-    public void testConcurrentReadFile() throws Exception {
+    void testConcurrentReadFile() throws Exception {
         // mixed.zip contains both inflated and stored files
         final File archive = getFile("mixed.zip");
         zf = new ZipFile(archive);
@@ -340,7 +340,7 @@ public class ZipFileTest extends AbstractTest {
     }
 
     @Test
-    public void testConcurrentReadSeekable() throws Exception {
+    void testConcurrentReadSeekable() throws Exception {
         // mixed.zip contains both inflated and stored files
         final byte[] data;
         try (InputStream fis = newInputStream("mixed.zip")) {
@@ -373,7 +373,7 @@ public class ZipFileTest extends AbstractTest {
      * Test correct population of header and data offsets when they are written after stream.
      */
     @Test
-    public void testDelayedOffsetsAndSizes() throws Exception {
+    void testDelayedOffsetsAndSizes() throws Exception {
         final ByteArrayOutputStream zipContent = new ByteArrayOutputStream();
         try (ZipArchiveOutputStream zipOutput = new ZipArchiveOutputStream(zipContent)) {
             final ZipArchiveEntry inflatedEntry = new ZipArchiveEntry("inflated.txt");
@@ -410,7 +410,7 @@ public class ZipFileTest extends AbstractTest {
     }
 
     @Test
-    public void testDoubleClose() throws Exception {
+    void testDoubleClose() throws Exception {
         readOrderTest();
         zf.close();
         assertDoesNotThrow(zf::close, "Caught exception of second close");
@@ -420,7 +420,7 @@ public class ZipFileTest extends AbstractTest {
      * @see "https://issues.apache.org/jira/browse/COMPRESS-227"
      */
     @Test
-    public void testDuplicateEntry() throws Exception {
+    void testDuplicateEntry() throws Exception {
         final File archive = getFile("COMPRESS-227.zip");
         zf = new ZipFile(archive);
 
@@ -444,7 +444,7 @@ public class ZipFileTest extends AbstractTest {
      * Test entries alignment.
      */
     @Test
-    public void testEntryAlignment() throws Exception {
+    void testEntryAlignment() throws Exception {
         try (SeekableInMemoryByteChannel zipContent = new SeekableInMemoryByteChannel()) {
             try (ZipArchiveOutputStream zipOutput = new ZipArchiveOutputStream(zipContent)) {
                 final ZipArchiveEntry inflatedEntry = new ZipArchiveEntry("inflated.txt");
@@ -534,7 +534,7 @@ public class ZipFileTest extends AbstractTest {
      * Test too big alignment, resulting into exceeding extra field limit.
      */
     @Test
-    public void testEntryAlignmentExceed() throws Exception {
+    void testEntryAlignmentExceed() throws Exception {
         try (SeekableInMemoryByteChannel zipContent = new SeekableInMemoryByteChannel();
                 ZipArchiveOutputStream zipOutput = new ZipArchiveOutputStream(zipContent)) {
             final ZipArchiveEntry inflatedEntry = new ZipArchiveEntry("inflated.txt");
@@ -547,7 +547,7 @@ public class ZipFileTest extends AbstractTest {
      * @see "https://issues.apache.org/jira/browse/COMPRESS-228"
      */
     @Test
-    public void testExcessDataInZip64ExtraField() throws Exception {
+    void testExcessDataInZip64ExtraField() throws Exception {
         final File archive = getFile("COMPRESS-228.zip");
         zf = new ZipFile(archive);
         // actually, if we get here, the test already has passed
@@ -557,7 +557,7 @@ public class ZipFileTest extends AbstractTest {
     }
 
     @Test
-    public void testExtractFileLiesAcrossSplitZipSegmentsCreatedByWinrar() throws Exception {
+    void testExtractFileLiesAcrossSplitZipSegmentsCreatedByWinrar() throws Exception {
         final File lastFile = getFile("COMPRESS-477/split_zip_created_by_winrar/split_zip_created_by_winrar.zip");
         try (SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile)) {
             zf = ZipFile.builder().setSeekableByteChannel(channel).get();
@@ -570,7 +570,7 @@ public class ZipFileTest extends AbstractTest {
     }
 
     @Test
-    public void testExtractFileLiesAcrossSplitZipSegmentsCreatedByZip() throws Exception {
+    void testExtractFileLiesAcrossSplitZipSegmentsCreatedByZip() throws Exception {
         final File lastFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.zip");
         try (SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile)) {
             zf = new ZipFile(channel);
@@ -589,7 +589,7 @@ public class ZipFileTest extends AbstractTest {
     }
 
     @Test
-    public void testExtractFileLiesAcrossSplitZipSegmentsCreatedByZipOfZip64() throws Exception {
+    void testExtractFileLiesAcrossSplitZipSegmentsCreatedByZipOfZip64() throws Exception {
         final File lastFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip_zip64.zip");
         try (SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile)) {
             zf = new ZipFile(channel);
@@ -608,7 +608,7 @@ public class ZipFileTest extends AbstractTest {
     }
 
     @Test
-    public void testGetEntries() throws Exception {
+    void testGetEntries() throws Exception {
         // mixed.zip contains both inflated and stored files
         final File archive = getFile("mixed.zip");
         zf = new ZipFile(archive);
@@ -624,7 +624,7 @@ public class ZipFileTest extends AbstractTest {
     }
 
     @Test
-    public void testGetEntriesInPhysicalOrder() throws Exception {
+    void testGetEntriesInPhysicalOrder() throws Exception {
         // mixed.zip contains both inflated and stored files
         final File archive = getFile("mixed.zip");
         zf = new ZipFile(archive);
@@ -643,52 +643,52 @@ public class ZipFileTest extends AbstractTest {
      * Test non power of 2 alignment.
      */
     @Test
-    public void testInvalidAlignment() {
+    void testInvalidAlignment() {
         assertThrows(IllegalArgumentException.class, () -> new ZipArchiveEntry("dummy").setAlignment(3));
     }
 
     @Test
-    public void testMultiByteReadConsistentlyReturnsMinusOneAtEofUsingBzip2() throws Exception {
+    void testMultiByteReadConsistentlyReturnsMinusOneAtEofUsingBzip2() throws Exception {
         multiByteReadConsistentlyReturnsMinusOneAtEof(getFile("bzip2-zip.zip"));
     }
 
     @Test
-    public void testMultiByteReadConsistentlyReturnsMinusOneAtEofUsingDeflate() throws Exception {
+    void testMultiByteReadConsistentlyReturnsMinusOneAtEofUsingDeflate() throws Exception {
         multiByteReadConsistentlyReturnsMinusOneAtEof(getFile("bla.zip"));
     }
 
     @Test
-    public void testMultiByteReadConsistentlyReturnsMinusOneAtEofUsingDeflate64() throws Exception {
+    void testMultiByteReadConsistentlyReturnsMinusOneAtEofUsingDeflate64() throws Exception {
         multiByteReadConsistentlyReturnsMinusOneAtEof(getFile("COMPRESS-380/COMPRESS-380.zip"));
     }
 
     @Test
-    public void testMultiByteReadConsistentlyReturnsMinusOneAtEofUsingExplode() throws Exception {
+    void testMultiByteReadConsistentlyReturnsMinusOneAtEofUsingExplode() throws Exception {
         multiByteReadConsistentlyReturnsMinusOneAtEof(getFile("imploding-8Kdict-3trees.zip"));
     }
 
     @Test
-    public void testMultiByteReadConsistentlyReturnsMinusOneAtEofUsingStore() throws Exception {
+    void testMultiByteReadConsistentlyReturnsMinusOneAtEofUsingStore() throws Exception {
         multiByteReadConsistentlyReturnsMinusOneAtEof(getFile("COMPRESS-264.zip"));
     }
 
     @Test
-    public void testMultiByteReadConsistentlyReturnsMinusOneAtEofUsingUnshrink() throws Exception {
+    void testMultiByteReadConsistentlyReturnsMinusOneAtEofUsingUnshrink() throws Exception {
         multiByteReadConsistentlyReturnsMinusOneAtEof(getFile("SHRUNK.ZIP"));
     }
 
     @Test
-    public void testNameSourceDefaultsToName() throws Exception {
+    void testNameSourceDefaultsToName() throws Exception {
         nameSource("bla.zip", "test1.xml", ZipArchiveEntry.NameSource.NAME);
     }
 
     @Test
-    public void testNameSourceIsSetToEFS() throws Exception {
+    void testNameSourceIsSetToEFS() throws Exception {
         nameSource("utf8-7zip-test.zip", "\u20AC_for_Dollar.txt", ZipArchiveEntry.NameSource.NAME_WITH_EFS_FLAG);
     }
 
     @Test
-    public void testNameSourceIsSetToUnicodeExtraField() throws Exception {
+    void testNameSourceIsSetToUnicodeExtraField() throws Exception {
         nameSource("utf8-winzip-test.zip", "\u20AC_for_Dollar.txt", ZipArchiveEntry.NameSource.UNICODE_EXTRA_FIELD);
     }
 
@@ -696,7 +696,7 @@ public class ZipFileTest extends AbstractTest {
      * Test correct population of header and data offsets.
      */
     @Test
-    public void testOffsets() throws Exception {
+    void testOffsets() throws Exception {
         // mixed.zip contains both inflated and stored files
         final File archive = getFile("mixed.zip");
         try (ZipFile zf = new ZipFile(archive)) {
@@ -712,7 +712,7 @@ public class ZipFileTest extends AbstractTest {
     }
 
     @Test
-    public void testPhysicalOrder() throws Exception {
+    void testPhysicalOrder() throws Exception {
         readOrderTest();
         final ArrayList<ZipArchiveEntry> l = Collections.list(zf.getEntriesInPhysicalOrder());
         assertEntryName(l, 0, "AbstractUnicodeExtraField");
@@ -741,7 +741,7 @@ public class ZipFileTest extends AbstractTest {
     }
 
     @Test
-    public void testPhysicalOrderOfSpecificFile() throws Exception {
+    void testPhysicalOrderOfSpecificFile() throws Exception {
         readOrderTest();
         final String entryName = "src/main/java/org/apache/commons/compress/archivers/zip/ZipExtraField.java";
         final Iterable<ZipArchiveEntry> entries = zf.getEntriesInPhysicalOrder(entryName);
@@ -756,7 +756,7 @@ public class ZipFileTest extends AbstractTest {
      * @see "https://issues.apache.org/jira/browse/COMPRESS-380"
      */
     @Test
-    public void testReadDeflate64CompressedStream() throws Exception {
+    void testReadDeflate64CompressedStream() throws Exception {
         final File input = getFile("COMPRESS-380/COMPRESS-380-input");
         final File archive = getFile("COMPRESS-380/COMPRESS-380.zip");
         try (InputStream in = Files.newInputStream(input.toPath());
@@ -774,7 +774,7 @@ public class ZipFileTest extends AbstractTest {
      * Test case for <a href="https://issues.apache.org/jira/browse/COMPRESS-621">COMPRESS-621</a>.
      */
     @Test
-    public void testReadingOfExtraDataBeforeZip() throws IOException {
+    void testReadingOfExtraDataBeforeZip() throws IOException {
         final byte[] fileHeader = "Before Zip file".getBytes(UTF_8);
         final String entryName = "COMPRESS-621.txt";
         final byte[] entryContent = "https://issues.apache.org/jira/browse/COMPRESS-621".getBytes(UTF_8);
@@ -796,7 +796,7 @@ public class ZipFileTest extends AbstractTest {
      * Test case for <a href="https://issues.apache.org/jira/browse/COMPRESS-264">COMPRESS-264</a>.
      */
     @Test
-    public void testReadingOfFirstStoredEntry() throws Exception {
+    void testReadingOfFirstStoredEntry() throws Exception {
         final File archive = getFile("COMPRESS-264.zip");
         zf = new ZipFile(archive);
         final ZipArchiveEntry ze = zf.getEntry("test.txt");
@@ -807,7 +807,7 @@ public class ZipFileTest extends AbstractTest {
     }
 
     @Test
-    public void testReadingOfStoredEntry() throws Exception {
+    void testReadingOfStoredEntry() throws Exception {
         final File file = createTempFile("commons-compress-zipfiletest", ".zip");
         ZipArchiveEntry ze;
         try (OutputStream o = Files.newOutputStream(file.toPath());
@@ -832,7 +832,7 @@ public class ZipFileTest extends AbstractTest {
     }
 
     @Test
-    public void testSelfExtractingZipUsingUnzipsfx() throws IOException, InterruptedException {
+    void testSelfExtractingZipUsingUnzipsfx() throws IOException, InterruptedException {
         final File unzipsfx = new File("/usr/bin/unzipsfx");
         Assumptions.assumeTrue(unzipsfx.exists());
 
@@ -899,46 +899,46 @@ public class ZipFileTest extends AbstractTest {
     }
 
     @Test
-    public void testSetLevelTooBigForZipArchiveOutputStream() throws IOException {
+    void testSetLevelTooBigForZipArchiveOutputStream() throws IOException {
         try (ZipArchiveOutputStream fixture = new ZipArchiveOutputStream(new ByteArrayOutputStream())) {
             assertThrows(IllegalArgumentException.class, () -> fixture.setLevel(Deflater.BEST_COMPRESSION + 1));
         }
     }
 
     @Test
-    public void testSetLevelTooSmallForZipArchiveOutputStream() throws IOException {
+    void testSetLevelTooSmallForZipArchiveOutputStream() throws IOException {
         try (ZipArchiveOutputStream fixture = new ZipArchiveOutputStream(new ByteArrayOutputStream())) {
         assertThrows(IllegalArgumentException.class, () -> fixture.setLevel(Deflater.DEFAULT_COMPRESSION - 1));
         }
     }
 
     @Test
-    public void testSingleByteReadConsistentlyReturnsMinusOneAtEofUsingBzip2() throws Exception {
+    void testSingleByteReadConsistentlyReturnsMinusOneAtEofUsingBzip2() throws Exception {
         singleByteReadConsistentlyReturnsMinusOneAtEof(getFile("bzip2-zip.zip"));
     }
 
     @Test
-    public void testSingleByteReadConsistentlyReturnsMinusOneAtEofUsingDeflate() throws Exception {
+    void testSingleByteReadConsistentlyReturnsMinusOneAtEofUsingDeflate() throws Exception {
         singleByteReadConsistentlyReturnsMinusOneAtEof(getFile("bla.zip"));
     }
 
     @Test
-    public void testSingleByteReadConsistentlyReturnsMinusOneAtEofUsingDeflate64() throws Exception {
+    void testSingleByteReadConsistentlyReturnsMinusOneAtEofUsingDeflate64() throws Exception {
         singleByteReadConsistentlyReturnsMinusOneAtEof(getFile("COMPRESS-380/COMPRESS-380.zip"));
     }
 
     @Test
-    public void testSingleByteReadConsistentlyReturnsMinusOneAtEofUsingExplode() throws Exception {
+    void testSingleByteReadConsistentlyReturnsMinusOneAtEofUsingExplode() throws Exception {
         singleByteReadConsistentlyReturnsMinusOneAtEof(getFile("imploding-8Kdict-3trees.zip"));
     }
 
     @Test
-    public void testSingleByteReadConsistentlyReturnsMinusOneAtEofUsingStore() throws Exception {
+    void testSingleByteReadConsistentlyReturnsMinusOneAtEofUsingStore() throws Exception {
         singleByteReadConsistentlyReturnsMinusOneAtEof(getFile("COMPRESS-264.zip"));
     }
 
     @Test
-    public void testSingleByteReadConsistentlyReturnsMinusOneAtEofUsingUnshrink() throws Exception {
+    void testSingleByteReadConsistentlyReturnsMinusOneAtEofUsingUnshrink() throws Exception {
         singleByteReadConsistentlyReturnsMinusOneAtEof(getFile("SHRUNK.ZIP"));
     }
 
@@ -946,7 +946,7 @@ public class ZipFileTest extends AbstractTest {
      * Test case for <a href="https://issues.apache.org/jira/browse/COMPRESS-208">COMPRESS-208</a>.
      */
     @Test
-    public void testSkipsPK00Prefix() throws Exception {
+    void testSkipsPK00Prefix() throws Exception {
         final File archive = getFile("COMPRESS-208.zip");
         zf = new ZipFile(archive);
         assertNotNull(zf.getEntry("test1.xml"));
@@ -954,7 +954,7 @@ public class ZipFileTest extends AbstractTest {
     }
 
     @Test
-    public void testThrowsExceptionWhenWritingPreamble() throws IOException {
+    void testThrowsExceptionWhenWritingPreamble() throws IOException {
         try (ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(new ByteArrayOutputStream())) {
             outputStream.putArchiveEntry(new ZipArchiveEntry());
             assertThrows(IllegalStateException.class, () -> outputStream.writePreamble(ByteUtils.EMPTY_BYTE_ARRAY));
@@ -963,7 +963,7 @@ public class ZipFileTest extends AbstractTest {
     }
 
     @Test
-    public void testUnixSymlinkSampleFile() throws Exception {
+    void testUnixSymlinkSampleFile() throws Exception {
         final String entryPrefix = "COMPRESS-214_unix_symlinks/";
         final TreeMap<String, String> expectedVals = new TreeMap<>();
         // I threw in some Japanese characters to keep things interesting.
@@ -996,7 +996,7 @@ public class ZipFileTest extends AbstractTest {
     }
 
     @Test
-    public void testUnshrinking() throws Exception {
+    void testUnshrinking() throws Exception {
         zf = new ZipFile(getFile("SHRUNK.ZIP"));
         ZipArchiveEntry test = zf.getEntry("TEST1.XML");
         try (InputStream original = newInputStream("test1.xml");
@@ -1011,7 +1011,7 @@ public class ZipFileTest extends AbstractTest {
     }
 
     @Test
-    public void testUnzipBZip2CompressedEntry() throws Exception {
+    void testUnzipBZip2CompressedEntry() throws Exception {
         final File archive = getFile("bzip2-zip.zip");
         zf = new ZipFile(archive);
         final ZipArchiveEntry ze = zf.getEntry("lots-of-as");
@@ -1026,7 +1026,7 @@ public class ZipFileTest extends AbstractTest {
      * @see "https://issues.apache.org/jira/browse/COMPRESS-176"
      */
     @Test
-    public void testWinzipBackSlashWorkaround() throws Exception {
+    void testWinzipBackSlashWorkaround() throws Exception {
         final File archive = getFile("test-winzip.zip");
         zf = new ZipFile(archive);
         assertNull(zf.getEntry("\u00e4\\\u00fc.txt"));
@@ -1034,7 +1034,7 @@ public class ZipFileTest extends AbstractTest {
     }
 
     @Test
-    public void testZipWithShortBeginningGarbage() throws IOException {
+    void testZipWithShortBeginningGarbage() throws IOException {
         final Path path = createTempPath("preamble", ".zip");
         try (OutputStream fos = Files.newOutputStream(path)) {
             fos.write("#!/usr/bin/unzip\n".getBytes(StandardCharsets.UTF_8));

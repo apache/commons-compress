@@ -31,13 +31,13 @@ import org.junit.jupiter.api.Test;
 public class CompressorServiceLoaderTest {
 
     @Test
-    public void testInputStream() {
+    void testInputStream() {
         assertThrows(InvocationConfirmationException.class,
                 () -> new CompressorStreamFactory().createCompressorInputStream("TestInput1", new ByteArrayInputStream(ArrayUtils.EMPTY_BYTE_ARRAY)));
     }
 
     @Test
-    public void testOutputStream() {
+    void testOutputStream() {
         assertThrows(InvocationConfirmationException.class,
                 () -> new CompressorStreamFactory().createCompressorOutputStream("TestOutput1", new ByteArrayOutputStream()));
     }

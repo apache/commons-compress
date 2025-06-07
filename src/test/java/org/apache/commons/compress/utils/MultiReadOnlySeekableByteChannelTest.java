@@ -203,21 +203,21 @@ public class MultiReadOnlySeekableByteChannelTest {
     }
 
     @Test
-    public void testCantPositionToANegativePosition() throws IOException {
+    void testCantPositionToANegativePosition() throws IOException {
         try (SeekableByteChannel s = MultiReadOnlySeekableByteChannel.forSeekableByteChannels(makeEmpty(), makeEmpty())) {
             assertThrows(IllegalArgumentException.class, () -> s.position(-1));
         }
     }
 
     @Test
-    public void testCantTruncate() throws IOException {
+    void testCantTruncate() throws IOException {
         try (SeekableByteChannel s = MultiReadOnlySeekableByteChannel.forSeekableByteChannels(makeEmpty(), makeEmpty())) {
             assertThrows(NonWritableChannelException.class, () -> s.truncate(1));
         }
     }
 
     @Test
-    public void testCantWrite() throws IOException {
+    void testCantWrite() throws IOException {
         try (SeekableByteChannel s = MultiReadOnlySeekableByteChannel.forSeekableByteChannels(makeEmpty(), makeEmpty())) {
             assertThrows(NonWritableChannelException.class, () -> s.write(ByteBuffer.allocate(10)));
         }
@@ -228,12 +228,12 @@ public class MultiReadOnlySeekableByteChannelTest {
     }
 
     @Test
-    public void testCheckForSingleByte() throws IOException {
+    void testCheckForSingleByte() throws IOException {
         check(new byte[] { 0 });
     }
 
     @Test
-    public void testCheckForString() throws IOException {
+    void testCheckForString() throws IOException {
         check("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".getBytes(UTF_8));
     }
 
@@ -241,7 +241,7 @@ public class MultiReadOnlySeekableByteChannelTest {
      * <q>If the stream is already closed then invoking this method has no effect.</q>
      */
     @Test
-    public void testCloseIsIdempotent() throws Exception {
+    void testCloseIsIdempotent() throws Exception {
         try (SeekableByteChannel c = testChannel()) {
             c.close();
             assertFalse(c.isOpen());
@@ -251,7 +251,7 @@ public class MultiReadOnlySeekableByteChannelTest {
     }
 
     @Test
-    public void testClosesAllAndThrowsExceptionIfCloseThrows() {
+    void testClosesAllAndThrowsExceptionIfCloseThrows() {
         final SeekableByteChannel[] ts = new ThrowingSeekableByteChannel[] { new ThrowingSeekableByteChannel(), new ThrowingSeekableByteChannel() };
         final SeekableByteChannel s = MultiReadOnlySeekableByteChannel.forSeekableByteChannels(ts);
         assertThrows(IOException.class, s::close, "IOException expected");
@@ -260,17 +260,17 @@ public class MultiReadOnlySeekableByteChannelTest {
     }
 
     @Test
-    public void testConstructorThrowsOnNullArg() {
+    void testConstructorThrowsOnNullArg() {
         assertThrows(NullPointerException.class, () -> new MultiReadOnlySeekableByteChannel(null));
     }
 
     @Test
-    public void testForFilesThrowsOnNullArg() {
+    void testForFilesThrowsOnNullArg() {
         assertThrows(NullPointerException.class, () -> MultiReadOnlySeekableByteChannel.forFiles((File[]) null));
     }
 
     @Test
-    public void testForSeekableByteChannelsReturnsIdentityForSingleElement() throws IOException {
+    void testForSeekableByteChannelsReturnsIdentityForSingleElement() throws IOException {
         try (SeekableByteChannel e = makeEmpty();
                 SeekableByteChannel m = MultiReadOnlySeekableByteChannel.forSeekableByteChannels(e)) {
             assertSame(e, m);
@@ -278,7 +278,7 @@ public class MultiReadOnlySeekableByteChannelTest {
     }
 
     @Test
-    public void testForSeekableByteChannelsThrowsOnNullArg() {
+    void testForSeekableByteChannelsThrowsOnNullArg() {
         assertThrows(NullPointerException.class, () -> MultiReadOnlySeekableByteChannel.forSeekableByteChannels((SeekableByteChannel[]) null));
     }
 
@@ -287,7 +287,7 @@ public class MultiReadOnlySeekableByteChannelTest {
      * bytes at such a position will immediately return an end-of-file indication</q>
      */
     @Test
-    public void testReadingFromAPositionAfterEndReturnsEOF() throws Exception {
+    void testReadingFromAPositionAfterEndReturnsEOF() throws Exception {
         try (SeekableByteChannel c = testChannel()) {
             c.position(2);
             assertEquals(2, c.position());
@@ -299,7 +299,7 @@ public class MultiReadOnlySeekableByteChannelTest {
     // Contract Tests added in response to https://issues.apache.org/jira/browse/COMPRESS-499
 
     @Test
-    public void testReferenceBehaviorForEmptyChannel() throws IOException {
+    void testReferenceBehaviorForEmptyChannel() throws IOException {
         checkEmpty(makeEmpty());
     }
 
@@ -309,7 +309,7 @@ public class MultiReadOnlySeekableByteChannelTest {
      * <q>ClosedChannelException - If this channel is closed</q>
      */
     @Test
-    public void testThrowsClosedChannelExceptionWhenPositionIsSetOnClosedChannel() throws Exception {
+    void testThrowsClosedChannelExceptionWhenPositionIsSetOnClosedChannel() throws Exception {
         try (SeekableByteChannel c = testChannel()) {
             c.close();
             assertThrows(ClosedChannelException.class, () -> c.position(0));
@@ -322,7 +322,7 @@ public class MultiReadOnlySeekableByteChannelTest {
      * <q>ClosedChannelException - If this channel is closed</q>
      */
     @Test
-    public void testThrowsClosedChannelExceptionWhenSizeIsReadOnClosedChannel() throws Exception {
+    void testThrowsClosedChannelExceptionWhenSizeIsReadOnClosedChannel() throws Exception {
         try (SeekableByteChannel c = testChannel()) {
             c.close();
             assertThrows(ClosedChannelException.class, () -> c.size());
@@ -335,7 +335,7 @@ public class MultiReadOnlySeekableByteChannelTest {
      * <q>IOException - If the new position is negative</q>
      */
     @Test
-    public void testThrowsIOExceptionWhenPositionIsSetToANegativeValue() throws Exception {
+    void testThrowsIOExceptionWhenPositionIsSetToANegativeValue() throws Exception {
         try (SeekableByteChannel c = testChannel()) {
             assertThrows(IllegalArgumentException.class, () -> c.position(-1));
         }
@@ -344,14 +344,14 @@ public class MultiReadOnlySeekableByteChannelTest {
     // https://docs.oracle.com/javase/8/docs/api/java/nio/channels/SeekableByteChannel.html#position(long)
 
     @Test
-    public void testTwoEmptyChannelsConcatenateAsEmptyChannel() throws IOException {
+    void testTwoEmptyChannelsConcatenateAsEmptyChannel() throws IOException {
         try (SeekableByteChannel channel = MultiReadOnlySeekableByteChannel.forSeekableByteChannels(makeEmpty(), makeEmpty())) {
             checkEmpty(channel);
         }
     }
 
     @Test
-    public void testVerifyGrouped() {
+    void testVerifyGrouped() {
         assertArrayEquals(new byte[][] { new byte[] { 1, 2, 3, }, new byte[] { 4, 5, 6, }, new byte[] { 7, }, },
                 grouped(new byte[] { 1, 2, 3, 4, 5, 6, 7 }, 3));
         assertArrayEquals(new byte[][] { new byte[] { 1, 2, 3, }, new byte[] { 4, 5, 6, }, }, grouped(new byte[] { 1, 2, 3, 4, 5, 6 }, 3));

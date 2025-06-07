@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
 public class SubFieldTest {
 
     @Test
-    public void testEquals() {
+    void testEquals() {
         assertEquals(new SubField((byte) 0, (byte) 0, new byte[0]), new SubField((byte) 0, (byte) 0, new byte[0]));
         assertEquals(new SubField((byte) 9, (byte) 9, new byte[9]), new SubField((byte) 9, (byte) 9, new byte[9]));
         // not equals
@@ -42,7 +42,7 @@ public class SubFieldTest {
     }
 
     @Test
-    public void testHashCode() {
+    void testHashCode() {
         assertEquals(new SubField((byte) 0, (byte) 0, new byte[0]).hashCode(), new SubField((byte) 0, (byte) 0, new byte[0]).hashCode());
         assertEquals(new SubField((byte) 9, (byte) 9, new byte[9]).hashCode(), new SubField((byte) 9, (byte) 9, new byte[9]).hashCode());
         // not equals

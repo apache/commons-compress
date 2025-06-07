@@ -56,17 +56,17 @@ public class ExplodeSupportTest {
     }
 
     @Test
-    public void testArchiveWithImplodeCompression4K2Trees() throws IOException {
+    void testArchiveWithImplodeCompression4K2Trees() throws IOException {
         testArchiveWithImplodeCompression("target/test-classes/imploding-4Kdict-2trees.zip", "HEADER.TXT");
     }
 
     @Test
-    public void testArchiveWithImplodeCompression8K3Trees() throws IOException {
+    void testArchiveWithImplodeCompression8K3Trees() throws IOException {
         testArchiveWithImplodeCompression("target/test-classes/imploding-8Kdict-3trees.zip", "LICENSE.TXT");
     }
 
     @Test
-    public void testConstructorThrowsExceptions() {
+    void testConstructorThrowsExceptions() {
         assertThrows(IllegalArgumentException.class, () -> new ExplodingInputStream(4095, 2, new ByteArrayInputStream(new byte[] {})),
                 "should have failed with illegal argument exception");
 
@@ -75,12 +75,12 @@ public class ExplodeSupportTest {
     }
 
     @Test
-    public void testTikaTestArchive() throws IOException {
+    void testTikaTestArchive() throws IOException {
         testArchiveWithImplodeCompression("target/test-classes/moby-imploded.zip", "README");
     }
 
     @Test
-    public void testTikaTestStream() throws IOException {
+    void testTikaTestStream() throws IOException {
         testZipStreamWithImplodeCompression("target/test-classes/moby-imploded.zip", "README");
     }
 
@@ -101,12 +101,12 @@ public class ExplodeSupportTest {
     }
 
     @Test
-    public void testZipStreamWithImplodeCompression4K2Trees() throws IOException {
+    void testZipStreamWithImplodeCompression4K2Trees() throws IOException {
         testZipStreamWithImplodeCompression("target/test-classes/imploding-4Kdict-2trees.zip", "HEADER.TXT");
     }
 
     @Test
-    public void testZipStreamWithImplodeCompression8K3Trees() throws IOException {
+    void testZipStreamWithImplodeCompression8K3Trees() throws IOException {
         testZipStreamWithImplodeCompression("target/test-classes/imploding-8Kdict-3trees.zip", "LICENSE.TXT");
     }
 

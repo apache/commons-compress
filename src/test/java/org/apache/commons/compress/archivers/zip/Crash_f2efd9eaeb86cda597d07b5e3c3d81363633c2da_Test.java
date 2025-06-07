@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
 public class Crash_f2efd9eaeb86cda597d07b5e3c3d81363633c2da_Test {
 
     @Test
-    public void test() throws IOException {
+    void test() throws IOException {
         final byte[] input = FileUtils
                 .readFileToByteArray(new File("src/test/resources/org/apache/commons/compress/fuzz/crash-f2efd9eaeb86cda597d07b5e3c3d81363633c2da"));
         try (ZipArchiveInputStream zis = new ZipArchiveInputStream(new ByteArrayInputStream(input))) {

@@ -42,126 +42,126 @@ import org.junit.jupiter.api.Test;
 public class ByteUtilsTest {
 
     @Test
-    public void testFromLittleEndianFromArray() {
+    void testFromLittleEndianFromArray() {
         final byte[] b = { 1, 2, 3, 4, 5 };
         assertEquals(2 + 3 * 256 + 4 * 256 * 256, fromLittleEndian(b, 1, 3));
     }
 
     @Test
-    public void testFromLittleEndianFromArrayOneArg() {
+    void testFromLittleEndianFromArrayOneArg() {
         final byte[] b = { 2, 3, 4 };
         assertEquals(2 + 3 * 256 + 4 * 256 * 256, fromLittleEndian(b));
     }
 
     @Test
-    public void testFromLittleEndianFromArrayOneArgThrowsForLengthTooBig() {
+    void testFromLittleEndianFromArrayOneArgThrowsForLengthTooBig() {
         assertThrows(IllegalArgumentException.class, () -> fromLittleEndian(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 }));
     }
 
     @Test
-    public void testFromLittleEndianFromArrayOneArgUnsignedInt32() {
+    void testFromLittleEndianFromArrayOneArgUnsignedInt32() {
         final byte[] b = { 2, 3, 4, (byte) 128 };
         assertEquals(2 + 3 * 256 + 4 * 256 * 256 + 128L * 256 * 256 * 256, fromLittleEndian(b));
     }
 
     @Test
-    public void testFromLittleEndianFromArrayThrowsForLengthTooBig() {
+    void testFromLittleEndianFromArrayThrowsForLengthTooBig() {
         assertThrows(IllegalArgumentException.class, () -> fromLittleEndian(ByteUtils.EMPTY_BYTE_ARRAY, 0, 9));
     }
 
     @Test
-    public void testFromLittleEndianFromArrayUnsignedInt32() {
+    void testFromLittleEndianFromArrayUnsignedInt32() {
         final byte[] b = { 1, 2, 3, 4, (byte) 128 };
         assertEquals(2 + 3 * 256 + 4 * 256 * 256 + 128L * 256 * 256 * 256, fromLittleEndian(b, 1, 4));
     }
 
     @Test
-    public void testFromLittleEndianFromDataInput() throws IOException {
+    void testFromLittleEndianFromDataInput() throws IOException {
         final DataInput din = new DataInputStream(new ByteArrayInputStream(new byte[] { 2, 3, 4, 5 }));
         assertEquals(2 + 3 * 256 + 4 * 256 * 256, fromLittleEndian(din, 3));
     }
 
     @Test
-    public void testFromLittleEndianFromDataInputThrowsForLengthTooBig() {
+    void testFromLittleEndianFromDataInputThrowsForLengthTooBig() {
         final DataInput din = new DataInputStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY));
         assertThrows(IllegalArgumentException.class, () -> fromLittleEndian(din, 9));
     }
 
     @Test
-    public void testFromLittleEndianFromDataInputThrowsForPrematureEnd() {
+    void testFromLittleEndianFromDataInputThrowsForPrematureEnd() {
         final DataInput din = new DataInputStream(new ByteArrayInputStream(new byte[] { 2, 3 }));
         assertThrows(EOFException.class, () -> fromLittleEndian(din, 3));
     }
 
     @Test
-    public void testFromLittleEndianFromDataInputUnsignedInt32() throws IOException {
+    void testFromLittleEndianFromDataInputUnsignedInt32() throws IOException {
         final DataInput din = new DataInputStream(new ByteArrayInputStream(new byte[] { 2, 3, 4, (byte) 128 }));
         assertEquals(2 + 3 * 256 + 4 * 256 * 256 + 128L * 256 * 256 * 256, fromLittleEndian(din, 4));
     }
 
     @Test
-    public void testFromLittleEndianFromStream() throws IOException {
+    void testFromLittleEndianFromStream() throws IOException {
         final ByteArrayInputStream bin = new ByteArrayInputStream(new byte[] { 2, 3, 4, 5 });
         assertEquals(2 + 3 * 256 + 4 * 256 * 256, fromLittleEndian(bin, 3));
     }
 
     @Test
-    public void testFromLittleEndianFromStreamThrowsForLengthTooBig() {
+    void testFromLittleEndianFromStreamThrowsForLengthTooBig() {
         assertThrows(IllegalArgumentException.class, () -> fromLittleEndian(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY), 9));
     }
 
     @Test
-    public void testFromLittleEndianFromStreamThrowsForPrematureEnd() {
+    void testFromLittleEndianFromStreamThrowsForPrematureEnd() {
         final ByteArrayInputStream bin = new ByteArrayInputStream(new byte[] { 2, 3 });
         assertThrows(IOException.class, () -> fromLittleEndian(bin, 3));
     }
 
     @Test
-    public void testFromLittleEndianFromStreamUnsignedInt32() throws IOException {
+    void testFromLittleEndianFromStreamUnsignedInt32() throws IOException {
         final ByteArrayInputStream bin = new ByteArrayInputStream(new byte[] { 2, 3, 4, (byte) 128 });
         assertEquals(2 + 3 * 256 + 4 * 256 * 256 + 128L * 256 * 256 * 256, fromLittleEndian(bin, 4));
     }
 
     @Test
-    public void testFromLittleEndianFromSupplier() throws IOException {
+    void testFromLittleEndianFromSupplier() throws IOException {
         final ByteArrayInputStream bin = new ByteArrayInputStream(new byte[] { 2, 3, 4, 5 });
         assertEquals(2 + 3 * 256 + 4 * 256 * 256, fromLittleEndian(new InputStreamByteSupplier(bin), 3));
     }
 
     @Test
-    public void testFromLittleEndianFromSupplierThrowsForLengthTooBig() {
+    void testFromLittleEndianFromSupplierThrowsForLengthTooBig() {
         assertThrows(IllegalArgumentException.class,
                 () -> fromLittleEndian(new InputStreamByteSupplier(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY)), 9));
     }
 
     @Test
-    public void testFromLittleEndianFromSupplierThrowsForPrematureEnd() {
+    void testFromLittleEndianFromSupplierThrowsForPrematureEnd() {
         final ByteArrayInputStream bin = new ByteArrayInputStream(new byte[] { 2, 3 });
         assertThrows(IOException.class, () -> fromLittleEndian(new InputStreamByteSupplier(bin), 3));
     }
 
     @Test
-    public void testFromLittleEndianFromSupplierUnsignedInt32() throws IOException {
+    void testFromLittleEndianFromSupplierUnsignedInt32() throws IOException {
         final ByteArrayInputStream bin = new ByteArrayInputStream(new byte[] { 2, 3, 4, (byte) 128 });
         assertEquals(2 + 3 * 256 + 4 * 256 * 256 + 128L * 256 * 256 * 256, fromLittleEndian(new InputStreamByteSupplier(bin), 4));
     }
 
     @Test
-    public void testToLittleEndianToByteArray() {
+    void testToLittleEndianToByteArray() {
         final byte[] b = new byte[4];
         toLittleEndian(b, 2 + 3 * 256 + 4 * 256 * 256, 1, 3);
         assertArrayEquals(new byte[] { 2, 3, 4 }, Arrays.copyOfRange(b, 1, 4));
     }
 
     @Test
-    public void testToLittleEndianToByteArrayUnsignedInt32() {
+    void testToLittleEndianToByteArrayUnsignedInt32() {
         final byte[] b = new byte[4];
         toLittleEndian(b, 2 + 3 * 256 + 4 * 256 * 256 + 128L * 256 * 256 * 256, 0, 4);
         assertArrayEquals(new byte[] { 2, 3, 4, (byte) 128 }, b);
     }
 
     @Test
-    public void testToLittleEndianToConsumer() throws IOException {
+    void testToLittleEndianToConsumer() throws IOException {
         final byte[] byteArray;
         final byte[] expected = { 2, 3, 4 };
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
@@ -173,7 +173,7 @@ public class ByteUtilsTest {
     }
 
     @Test
-    public void testToLittleEndianToConsumerUnsignedInt32() throws IOException {
+    void testToLittleEndianToConsumerUnsignedInt32() throws IOException {
         final byte[] byteArray;
         final byte[] expected = { 2, 3, 4, (byte) 128 };
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
@@ -185,7 +185,7 @@ public class ByteUtilsTest {
     }
 
     @Test
-    public void testToLittleEndianToDataOutput() throws IOException {
+    void testToLittleEndianToDataOutput() throws IOException {
         final byte[] byteArray;
         final byte[] expected = { 2, 3, 4 };
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
@@ -198,7 +198,7 @@ public class ByteUtilsTest {
     }
 
     @Test
-    public void testToLittleEndianToDataOutputUnsignedInt32() throws IOException {
+    void testToLittleEndianToDataOutputUnsignedInt32() throws IOException {
         final byte[] byteArray;
         final byte[] expected = { 2, 3, 4, (byte) 128 };
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
@@ -211,7 +211,7 @@ public class ByteUtilsTest {
     }
 
     @Test
-    public void testToLittleEndianToStream() throws IOException {
+    void testToLittleEndianToStream() throws IOException {
         final byte[] byteArray;
         final byte[] expected = { 2, 3, 4 };
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
@@ -223,7 +223,7 @@ public class ByteUtilsTest {
     }
 
     @Test
-    public void testToLittleEndianToStreamUnsignedInt32() throws IOException {
+    void testToLittleEndianToStreamUnsignedInt32() throws IOException {
         final byte[] byteArray;
         final byte[] expected = { 2, 3, 4, (byte) 128 };
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {

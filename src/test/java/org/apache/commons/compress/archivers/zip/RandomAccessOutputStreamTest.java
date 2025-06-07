@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
 public class RandomAccessOutputStreamTest extends AbstractTempDirTest {
 
     @Test
-    public void testWrite() throws IOException {
+    void testWrite() throws IOException {
         final RandomAccessOutputStream delegate = mock(RandomAccessOutputStream.class);
         final RandomAccessOutputStream stream = new RandomAccessOutputStream() {
 

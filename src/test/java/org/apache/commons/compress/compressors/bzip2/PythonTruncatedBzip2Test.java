@@ -88,7 +88,7 @@ public class PythonTruncatedBzip2Test {
     }
 
     @Test
-    public void testPartialReadTruncatedData() throws IOException {
+    void testPartialReadTruncatedData() throws IOException {
         // with BZ2File(self.filename) as f:
         // self.assertEqual(f.read(len(self.TEXT)), self.TEXT)
         // self.assertRaises(EOFError, f.read, 1)
@@ -105,7 +105,7 @@ public class PythonTruncatedBzip2Test {
     }
 
     @Test
-    public void testTruncatedData() {
+    void testTruncatedData() {
         // with BZ2File(self.filename) as f:
         // self.assertRaises(EOFError, f.read)
         final ByteBuffer buffer = ByteBuffer.allocate(8192);

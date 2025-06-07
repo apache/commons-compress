@@ -72,14 +72,14 @@ public class XZCompressorRoundtripTest {
     }
 
     @CartesianTest
-    public void testBuilderOptions(@Values(ints = { LZMA2Options.PRESET_MAX, LZMA2Options.PRESET_MIN, LZMA2Options.PRESET_DEFAULT }) final int preset,
+    void testBuilderOptions(@Values(ints = { LZMA2Options.PRESET_MAX, LZMA2Options.PRESET_MIN, LZMA2Options.PRESET_DEFAULT }) final int preset,
             @Values(booleans = { false, true }) final boolean decompressConcatenated, @Values(ints = { -1, 100_000 }) final int memoryLimitKiB)
             throws IOException {
         roundtrip(tempDir.resolve("out.xz"), new LZMA2Options(preset), false, -1);
     }
 
     @Test
-    public void testBuilderOptionsAll() throws IOException {
+    void testBuilderOptionsAll() throws IOException {
         final int dictSize = LZMA2Options.DICT_SIZE_MIN;
         final int lc = LZMA2Options.LC_LP_MAX - 4;
         final int lp = LZMA2Options.LC_LP_MAX - 4;
@@ -92,13 +92,13 @@ public class XZCompressorRoundtripTest {
     }
 
     @CartesianTest
-    public void testBuilderOptionsDefgault(@Values(booleans = { false, true }) final boolean decompressConcatenated,
+    void testBuilderOptionsDefgault(@Values(booleans = { false, true }) final boolean decompressConcatenated,
             @Values(ints = { -1, 100_000 }) final int memoryLimitKiB) throws IOException {
         roundtrip(tempDir.resolve("out.xz"), new LZMA2Options(), decompressConcatenated, memoryLimitKiB);
     }
 
     @Test
-    public void testBuilderPath() throws IOException {
+    void testBuilderPath() throws IOException {
         // This test does not use LZMA2Options
         final String data = "Hello World!";
         final Path outPath = tempDir.resolve("out.xz");

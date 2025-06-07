@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test;
 public final class XZTest extends AbstractTest {
 
     @Test
-    public void testConcatenatedStreamsReadFirstOnly() throws Exception {
+    void testConcatenatedStreamsReadFirstOnly() throws Exception {
         final File input = getFile("multiple.xz");
         try (InputStream is = Files.newInputStream(input.toPath())) {
             try (CompressorInputStream in = new CompressorStreamFactory().createCompressorInputStream("xz", is)) {
@@ -44,7 +44,7 @@ public final class XZTest extends AbstractTest {
     }
 
     @Test
-    public void testConcatenatedStreamsReadFully() throws Exception {
+    void testConcatenatedStreamsReadFully() throws Exception {
         final File input = getFile("multiple.xz");
         try (InputStream is = Files.newInputStream(input.toPath())) {
             try (CompressorInputStream in = new XZCompressorInputStream(is, true)) {
@@ -57,7 +57,7 @@ public final class XZTest extends AbstractTest {
     }
 
     @Test
-    public void testXZCreation() throws Exception {
+    void testXZCreation() throws Exception {
         final long max = ManagementFactory.getMemoryMXBean().getHeapMemoryUsage().getMax();
         System.out.println("XZTestCase: HeapMax=" + max + " bytes " + (double) max / (1024 * 1024) + " MB");
         final File input = getFile("test1.xml");
@@ -70,7 +70,7 @@ public final class XZTest extends AbstractTest {
     }
 
     @Test
-    public void testXZUnarchive() throws Exception {
+    void testXZUnarchive() throws Exception {
         final File input = getFile("bla.tar.xz");
         final File output = newTempFile("bla.tar");
         try (InputStream is = Files.newInputStream(input.toPath())) {

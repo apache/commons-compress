@@ -43,7 +43,7 @@ public class ListerTest {
 
     @ParameterizedTest
     @MethodSource("getFixtures")
-    public void testMain(final Path path) throws ArchiveException, IOException {
+    void testMain(final Path path) throws ArchiveException, IOException {
         new Lister(true, path.toString()).go();
     }
 }

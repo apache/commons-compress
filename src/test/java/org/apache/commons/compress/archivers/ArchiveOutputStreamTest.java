@@ -78,32 +78,32 @@ public class ArchiveOutputStreamTest<O extends ArchiveOutputStream<E>, E extends
     }
 
     @Test
-    public void testCallSequenceAr() throws Exception {
+    void testCallSequenceAr() throws Exception {
         doCallSequence("Ar");
     }
 
     @Test
-    public void testCallSequenceCpio() throws Exception {
+    void testCallSequenceCpio() throws Exception {
         doCallSequence("Cpio");
     }
 
     @Test
-    public void testCallSequenceJar() throws Exception {
+    void testCallSequenceJar() throws Exception {
         doCallSequence("Jar");
     }
 
     @Test
-    public void testCallSequenceTar() throws Exception {
+    void testCallSequenceTar() throws Exception {
         doCallSequence("Tar");
     }
 
     @Test
-    public void testCallSequenceZip() throws Exception {
+    void testCallSequenceZip() throws Exception {
         doCallSequence("Zip");
     }
 
     @Test
-    public void testFinish() throws Exception {
+    void testFinish() throws Exception {
         final OutputStream out1 = new ByteArrayOutputStream();
 
         try (ArchiveOutputStream<? super ArchiveEntry> aios = factory.createArchiveOutputStream("zip", out1)) {
@@ -138,7 +138,7 @@ public class ArchiveOutputStreamTest<O extends ArchiveOutputStream<E>, E extends
     }
 
     @Test
-    public void testOptionalFinish() throws Exception {
+    void testOptionalFinish() throws Exception {
         final OutputStream out1 = new ByteArrayOutputStream();
 
         try (ArchiveOutputStream<ZipArchiveEntry> aos1 = factory.createArchiveOutputStream("zip", out1)) {

@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
 public class ZipSplitOutputStreamTest extends AbstractTest {
 
     @Test
-    public void testCreateSplittedFiles() throws IOException {
+    void testCreateSplittedFiles() throws IOException {
         final File testOutputFile = newTempFile("testCreateSplittedFiles.zip");
         final int splitSize = 100 * 1024; /* 100 KB */
         final File fileToTest = getFile("COMPRESS-477/split_zip_created_by_zip/zip_to_compare_created_by_zip.zip");
@@ -57,7 +57,7 @@ public class ZipSplitOutputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testSplitZipBeginsWithZipSplitSignature() throws IOException {
+    void testSplitZipBeginsWithZipSplitSignature() throws IOException {
         final File tempFile = createTempFile("temp", "zip");
         try (ZipSplitOutputStream is = new ZipSplitOutputStream(tempFile, 100 * 1024L);
                 InputStream inputStream = Files.newInputStream(tempFile.toPath())) {
@@ -68,17 +68,17 @@ public class ZipSplitOutputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testThrowsExceptionIfSplitSizeIsTooLarge() {
+    void testThrowsExceptionIfSplitSizeIsTooLarge() {
         assertThrows(IllegalArgumentException.class, () -> new ZipSplitOutputStream(createTempFile("temp", "zip"), 4 * 1024 * 1024 * 1024L));
     }
 
     @Test
-    public void testThrowsExceptionIfSplitSizeIsTooSmall() {
+    void testThrowsExceptionIfSplitSizeIsTooSmall() {
         assertThrows(IllegalArgumentException.class, () -> new ZipSplitOutputStream(createTempFile("temp", "zip"), 64 * 1024 - 1));
     }
 
     @Test
-    public void testThrowsIfUnsplittableSizeLargerThanSplitSize() throws IOException {
+    void testThrowsIfUnsplittableSizeLargerThanSplitSize() throws IOException {
         final long splitSize = 100 * 1024;
         final ZipSplitOutputStream output = new ZipSplitOutputStream(createTempFile("temp", "zip"), splitSize);
         assertThrows(IllegalArgumentException.class, () -> output.prepareToWriteUnsplittableContent(splitSize + 1));

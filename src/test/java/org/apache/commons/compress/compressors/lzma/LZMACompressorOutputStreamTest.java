@@ -54,7 +54,7 @@ public class LZMACompressorOutputStreamTest {
     }
 
     @Test
-    public void testBuilderOptionsAll() throws IOException {
+    void testBuilderOptionsAll() throws IOException {
         final int dictSize = LZMA2Options.DICT_SIZE_MIN;
         final int lc = LZMA2Options.LC_LP_MAX - 4;
         final int lp = LZMA2Options.LC_LP_MAX - 4;
@@ -67,17 +67,17 @@ public class LZMACompressorOutputStreamTest {
     }
 
     @Test
-    public void testBuilderOptionsDefault() throws IOException {
+    void testBuilderOptionsDefault() throws IOException {
         roundtrip(tempDir.resolve("out.lzma"), new LZMA2Options());
     }
 
     @Test
-    public void testBuilderOptionsPreset() throws IOException {
+    void testBuilderOptionsPreset() throws IOException {
         roundtrip(tempDir.resolve("out.lzma"), new LZMA2Options(LZMA2Options.PRESET_MAX));
     }
 
     @Test
-    public void testBuilderPath() throws IOException {
+    void testBuilderPath() throws IOException {
         // This test does not use LZMA2Options
         final Path outPath = tempDir.resolve("out.lzma");
         try (LZMACompressorOutputStream out = LZMACompressorOutputStream.builder().setPath(outPath).get()) {

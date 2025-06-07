@@ -54,7 +54,7 @@ public class ZipFileIgnoringLocalFileHeaderTest {
     private File dir;
 
     @Test
-    public void testDuplicateEntry() throws Exception {
+    void testDuplicateEntry() throws Exception {
         try (ZipFile zf = openZipWithoutLocalFileHeader("COMPRESS-227.zip")) {
             int numberOfEntries = 0;
             for (final ZipArchiveEntry entry : zf.getEntries("test1.txt")) {
@@ -68,7 +68,7 @@ public class ZipFileIgnoringLocalFileHeaderTest {
     }
 
     @Test
-    public void testGetEntryWorks() throws IOException {
+    void testGetEntryWorks() throws IOException {
         try (ZipFile zf = openZipWithoutLocalFileHeader("bla.zip")) {
             final ZipArchiveEntry ze = zf.getEntry("test1.xml");
             assertEquals(610, ze.getSize());
@@ -76,7 +76,7 @@ public class ZipFileIgnoringLocalFileHeaderTest {
     }
 
     @Test
-    public void testGetRawInputStreamReturnsNotNull() throws IOException {
+    void testGetRawInputStreamReturnsNotNull() throws IOException {
         try (ZipFile zf = openZipWithoutLocalFileHeader("bla.zip")) {
             final ZipArchiveEntry ze = zf.getEntry("test1.xml");
             try (InputStream rawInputStream = zf.getRawInputStream(ze)) {
@@ -86,7 +86,7 @@ public class ZipFileIgnoringLocalFileHeaderTest {
     }
 
     @Test
-    public void testPhysicalOrder() throws IOException {
+    void testPhysicalOrder() throws IOException {
         try (ZipFile zf = openZipWithoutLocalFileHeader("ordertest.zip")) {
             final Enumeration<ZipArchiveEntry> e = zf.getEntriesInPhysicalOrder();
             ZipArchiveEntry ze;
@@ -103,7 +103,7 @@ public class ZipFileIgnoringLocalFileHeaderTest {
      * @throws Exception
      */
     @Test
-    public void testZipUnarchive() throws Exception {
+    void testZipUnarchive() throws Exception {
         try (ZipFile zipFile = openZipWithoutLocalFileHeaderDeprecated("bla.zip")) {
             zipFile.stream().forEach(entry -> {
                 try (InputStream inputStream = zipFile.getInputStream(entry)) {

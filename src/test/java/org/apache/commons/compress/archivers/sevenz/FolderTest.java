@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 public class FolderTest {
 
     @Test
-    public void testFindBindPairForInStream() {
+    void testFindBindPairForInStream() {
 
         final Folder folder = new Folder();
         final BindPair[] bindPairArray = new BindPair[1];
@@ -43,7 +43,7 @@ public class FolderTest {
     }
 
     @Test
-    public void testGetUnpackSizeForCoderOne() {
+    void testGetUnpackSizeForCoderOne() {
 
         final Folder folder = new Folder();
         final Coder[] coderArray = new Coder[5];
@@ -55,7 +55,7 @@ public class FolderTest {
     }
 
     @Test
-    public void testGetUnpackSizeOne() {
+    void testGetUnpackSizeOne() {
 
         final Folder folder = new Folder();
         folder.totalOutputStreams = 266L;
@@ -70,7 +70,7 @@ public class FolderTest {
     }
 
     @Test
-    public void testGetUnpackSizeTwo() {
+    void testGetUnpackSizeTwo() {
 
         final Folder folder = new Folder();
 

@@ -27,13 +27,13 @@ import org.junit.jupiter.api.Test;
 public class XZUtilsTest {
 
     @Test
-    public void testCachingIsEnabledByDefaultAndXZIsPresent() {
+    void testCachingIsEnabledByDefaultAndXZIsPresent() {
         assertEquals(XZUtils.CachedAvailability.CACHED_AVAILABLE, XZUtils.getCachedXZAvailability());
         assertTrue(XZUtils.isXZCompressionAvailable());
     }
 
     @Test
-    public void testCanTurnOffCaching() {
+    void testCanTurnOffCaching() {
         try {
             XZUtils.setCacheXZAvailablity(false);
             assertEquals(XZUtils.CachedAvailability.DONT_CACHE, XZUtils.getCachedXZAvailability());
@@ -45,7 +45,7 @@ public class XZUtilsTest {
 
     @SuppressWarnings("deprecation")
     @Test
-    public void testGetCompressedFilename() {
+    void testGetCompressedFilename() {
         assertEquals(".xz", XZUtils.getCompressedFilename(""));
         assertEquals(".xz", XZUtils.getCompressedFileName(""));
         assertEquals("x.xz", XZUtils.getCompressedFilename("x"));
@@ -64,7 +64,7 @@ public class XZUtilsTest {
 
     @SuppressWarnings("deprecation")
     @Test
-    public void testGetUncompressedFilename() {
+    void testGetUncompressedFilename() {
         assertEquals("", XZUtils.getUncompressedFilename(""));
         assertEquals("", XZUtils.getUncompressedFileName(""));
         assertEquals(".xz", XZUtils.getUncompressedFilename(".xz"));
@@ -86,7 +86,7 @@ public class XZUtilsTest {
 
     @SuppressWarnings("deprecation")
     @Test
-    public void testIsCompressedFilename() {
+    void testIsCompressedFilename() {
         assertFalse(XZUtils.isCompressedFilename(""));
         assertFalse(XZUtils.isCompressedFileName(""));
         assertFalse(XZUtils.isCompressedFilename(".xz"));
@@ -115,7 +115,7 @@ public class XZUtilsTest {
     }
 
     @Test
-    public void testMatches() {
+    void testMatches() {
         final byte[] data = { (byte) 0xFD, '7', 'z', 'X', 'Z', '\0' };
         assertFalse(XZUtils.matches(data, 5));
         assertTrue(XZUtils.matches(data, 6));
@@ -125,7 +125,7 @@ public class XZUtilsTest {
     }
 
     @Test
-    public void testTurningOnCachingReEvaluatesAvailability() {
+    void testTurningOnCachingReEvaluatesAvailability() {
         try {
             XZUtils.setCacheXZAvailablity(false);
             assertEquals(XZUtils.CachedAvailability.DONT_CACHE, XZUtils.getCachedXZAvailability());

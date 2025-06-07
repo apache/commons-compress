@@ -33,28 +33,28 @@ public class ExceptionMessageTest {
     private static final String OUTPUTSTREAM_NULL_MESSAGE = "OutputStream must not be null.";
 
     @Test
-    public void testMessageWhenArchiverNameIsNull_1() {
+    void testMessageWhenArchiverNameIsNull_1() {
         final IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
                 () -> ArchiveStreamFactory.DEFAULT.createArchiveInputStream(null, System.in), "Should raise an IllegalArgumentException.");
         assertEquals(ARCHIVER_NULL_MESSAGE, e.getMessage());
     }
 
     @Test
-    public void testMessageWhenArchiverNameIsNull_2() {
+    void testMessageWhenArchiverNameIsNull_2() {
         final IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
                 () -> ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(null, System.out), "Should raise an IllegalArgumentException.");
         assertEquals(ARCHIVER_NULL_MESSAGE, e.getMessage());
     }
 
     @Test
-    public void testMessageWhenInputStreamIsNull() {
+    void testMessageWhenInputStreamIsNull() {
         final IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
                 () -> ArchiveStreamFactory.DEFAULT.createArchiveInputStream("zip", null), "Should raise an IllegalArgumentException.");
         assertEquals(INPUTSTREAM_NULL_MESSAGE, e.getMessage());
     }
 
     @Test
-    public void testMessageWhenOutputStreamIsNull() {
+    void testMessageWhenOutputStreamIsNull() {
         final IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
                 () -> ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("zip", null), "Should raise an IllegalArgumentException.");
         assertEquals(OUTPUTSTREAM_NULL_MESSAGE, e.getMessage());

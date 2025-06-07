@@ -28,47 +28,47 @@ import org.tukaani.xz.LZMA2Options;
 public class SevenZMethodConfigurationTest {
 
     @Test
-    public void testShouldAllowLZMA2OptionsForLZMA() {
+    void testShouldAllowLZMA2OptionsForLZMA() {
         assertNotNull(new SevenZMethodConfiguration(SevenZMethod.LZMA, new LZMA2Options()).getOptions());
     }
 
     @Test
-    public void testShouldAllowLZMA2OptionsForLZMA2() {
+    void testShouldAllowLZMA2OptionsForLZMA2() {
         assertNotNull(new SevenZMethodConfiguration(SevenZMethod.LZMA2, new LZMA2Options()).getOptions());
     }
 
     @Test
-    public void testShouldAllowNullOptions() {
+    void testShouldAllowNullOptions() {
         assertNull(new SevenZMethodConfiguration(SevenZMethod.LZMA2, null).getOptions());
     }
 
     @Test
-    public void testShouldAllowNumberForBzip2() {
+    void testShouldAllowNumberForBzip2() {
         assertNotNull(new SevenZMethodConfiguration(SevenZMethod.BZIP2, 42).getOptions());
     }
 
     @Test
-    public void testShouldAllowNumberForDeflate() {
+    void testShouldAllowNumberForDeflate() {
         assertNotNull(new SevenZMethodConfiguration(SevenZMethod.DEFLATE, 42).getOptions());
     }
 
     @Test
-    public void testShouldAllowNumberForLZMA() {
+    void testShouldAllowNumberForLZMA() {
         assertNotNull(new SevenZMethodConfiguration(SevenZMethod.LZMA, 42).getOptions());
     }
 
     @Test
-    public void testShouldAllowNumberForLZMA2() {
+    void testShouldAllowNumberForLZMA2() {
         assertNotNull(new SevenZMethodConfiguration(SevenZMethod.LZMA2, 42).getOptions());
     }
 
     @Test
-    public void testShouldNotAllowStringOptionsForLZMA() {
+    void testShouldNotAllowStringOptionsForLZMA() {
         assertThrows(IllegalArgumentException.class, () -> new SevenZMethodConfiguration(SevenZMethod.LZMA, ""));
     }
 
     @Test
-    public void testShouldNotAllowStringOptionsForLZMA2() {
+    void testShouldNotAllowStringOptionsForLZMA2() {
         assertThrows(IllegalArgumentException.class, () -> new SevenZMethodConfiguration(SevenZMethod.LZMA2, ""));
     }
 

@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
 public class ChainingTest extends AbstractTest {
 
     @Test
-    public void testTarBzip2() throws Exception {
+    void testTarBzip2() throws Exception {
         try (TarArchiveInputStream is = new TarArchiveInputStream(new BZip2CompressorInputStream(newInputStream("bla.tar.bz2")))) {
             final TarArchiveEntry entry = is.getNextEntry();
             assertNotNull(entry);
@@ -42,7 +42,7 @@ public class ChainingTest extends AbstractTest {
     }
 
     @Test
-    public void testTarGzip() throws Exception {
+    void testTarGzip() throws Exception {
         try (TarArchiveInputStream is = new TarArchiveInputStream(new GzipCompressorInputStream(newInputStream("bla.tgz")))) {
             final TarArchiveEntry entry = is.getNextEntry();
             assertNotNull(entry);

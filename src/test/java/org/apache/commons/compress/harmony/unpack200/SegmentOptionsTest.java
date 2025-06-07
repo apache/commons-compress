@@ -30,7 +30,7 @@ public class SegmentOptionsTest {
 
     @ParameterizedTest
     @ValueSource(ints = { 3, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31 })
-    public void testUnused(final int element) {
+    void testUnused(final int element) {
         assertThrows(Pack200Exception.class, () -> new SegmentOptions(1 << element));
     }
 }

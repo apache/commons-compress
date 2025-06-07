@@ -37,7 +37,7 @@ import org.junit.jupiter.api.Test;
 public final class LZMATest extends AbstractTest {
 
     @Test
-    public void testLzmaRoundtrip() throws Exception {
+    void testLzmaRoundtrip() throws Exception {
         final Path input = getPath("test1.xml");
         final File compressed = newTempFile("test1.xml.xz");
         try (OutputStream out = Files.newOutputStream(compressed.toPath())) {
@@ -55,7 +55,7 @@ public final class LZMATest extends AbstractTest {
     }
 
     @Test
-    public void testLZMAUnarchive() throws Exception {
+    void testLZMAUnarchive() throws Exception {
         final File input = getFile("bla.tar.lzma");
         final File output = newTempFile("bla.tar");
         try (InputStream is = Files.newInputStream(input.toPath())) {
@@ -66,7 +66,7 @@ public final class LZMATest extends AbstractTest {
     }
 
     @Test
-    public void testLZMAUnarchiveWithAutodetection() throws Exception {
+    void testLZMAUnarchiveWithAutodetection() throws Exception {
         final File input = getFile("bla.tar.lzma");
         final File output = newTempFile("bla.tar");
         try (InputStream is = new BufferedInputStream(Files.newInputStream(input.toPath()))) {
@@ -77,7 +77,7 @@ public final class LZMATest extends AbstractTest {
     }
 
     @Test
-    public void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+    void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.tar.lzma");
         final byte[] buf = new byte[2];
         try (InputStream is = Files.newInputStream(input.toPath())) {
@@ -90,7 +90,7 @@ public final class LZMATest extends AbstractTest {
     }
 
     @Test
-    public void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+    void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.tar.lzma");
         try (InputStream is = Files.newInputStream(input.toPath())) {
             try (LZMACompressorInputStream in = new LZMACompressorInputStream(is)) {

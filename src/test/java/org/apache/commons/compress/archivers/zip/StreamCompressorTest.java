@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
 public class StreamCompressorTest {
 
     @Test
-    public void testCreateDataOutputCompressor() throws IOException {
+    void testCreateDataOutputCompressor() throws IOException {
         final DataOutput dataOutputStream = new DataOutputStream(new ByteArrayOutputStream());
         try (StreamCompressor streamCompressor = StreamCompressor.create(dataOutputStream, new Deflater(9))) {
             assertNotNull(streamCompressor);
@@ -43,7 +43,7 @@ public class StreamCompressorTest {
     }
 
     @Test
-    public void testDeflatedEntries() throws Exception {
+    void testDeflatedEntries() throws Exception {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try (StreamCompressor sc = StreamCompressor.create(baos)) {
             sc.deflate(new ByteArrayInputStream("AAAAAABBBBBB".getBytes()), ZipEntry.DEFLATED);
@@ -59,7 +59,7 @@ public class StreamCompressorTest {
     }
 
     @Test
-    public void testStoredEntries() throws Exception {
+    void testStoredEntries() throws Exception {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try (StreamCompressor sc = StreamCompressor.create(baos)) {
             sc.deflate(new ByteArrayInputStream("A".getBytes()), ZipEntry.STORED);

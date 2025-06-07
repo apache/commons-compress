@@ -74,7 +74,7 @@ public class CodecTest {
 
     @ParameterizedTest
     @MethodSource("bCodings")
-    public void testBCodings(final int i) {
+    void testBCodings(final int i) {
         if (i == 5) {
             assertThrows(IllegalArgumentException.class, () -> new BHSDCodec(i, 256));
         } else {
@@ -83,14 +83,14 @@ public class CodecTest {
     }
 
     @Test
-    public void testByte1() throws Exception {
+    void testByte1() throws Exception {
         for (int i = 0; i < 255; i++) {
             decode(Codec.BYTE1, new byte[] { (byte) i }, i, 0);
         }
     }
 
     @Test
-    public void testByte1Delta() throws Exception {
+    void testByte1Delta() throws Exception {
         final Codec BYTE1D = new BHSDCodec(1, 256, 0, 1);
         long last = 0;
         for (int i = 1; i < 255; i++) {
@@ -99,14 +99,14 @@ public class CodecTest {
     }
 
     @Test
-    public void testByte1DeltaException() throws Exception {
+    void testByte1DeltaException() throws Exception {
         final Codec BYTE1D = new BHSDCodec(1, 256, 0, 1);
         assertThrows(Pack200Exception.class, () -> BYTE1D.decode(new ByteArrayInputStream(new byte[] { (byte) 1 })),
                 "Decoding with a delta stream and not passing a last value should throw an exception");
     }
 
     @Test
-    public void testByte1Signed() throws Exception {
+    void testByte1Signed() throws Exception {
         final Codec BYTE1S2 = new BHSDCodec(1, 256, 2);
         decode(BYTE1S2, new byte[] { 0 }, 0, 0);
         decode(BYTE1S2, new byte[] { 1 }, 1, 0);
@@ -123,7 +123,7 @@ public class CodecTest {
     }
 
     @Test
-    public void testCardinality() {
+    void testCardinality() {
         final BHSDCodec byte1 = Codec.BYTE1;
         assertEquals(256, byte1.cardinality());
         assertEquals(0, byte1.smallest());
@@ -182,7 +182,7 @@ public class CodecTest {
 
     @ParameterizedTest
     @MethodSource("codecFamily")
-    public void testCodecFamilies(final BHSDCodec[] family) {
+    void testCodecFamilies(final BHSDCodec[] family) {
         for (int i = 1; i < family.length; i++) {
             final BHSDCodec previous = family[i - 1];
             final BHSDCodec codec = family[i];
@@ -192,7 +192,7 @@ public class CodecTest {
     }
 
     @Test
-    public void testCodecToString() {
+    void testCodecToString() {
         assertEquals("(1,256)", Codec.BYTE1.toString());
         assertEquals("(3,128)", Codec.CHAR3.toString());
         assertEquals("(5,4)", Codec.BCI5.toString());
@@ -210,12 +210,12 @@ public class CodecTest {
 
     @ParameterizedTest
     @MethodSource("hCodings")
-    public void testInvalidHCodings(final int i) {
+    void testInvalidHCodings(final int i) {
         assertThrows(IllegalArgumentException.class, () -> new BHSDCodec(1, i), "b=1 -> h=256");
     }
 
     @Test
-    public void testUnsigned5() throws Exception {
+    void testUnsigned5() throws Exception {
         decode(Codec.UNSIGNED5, new byte[] { 1 }, 1, 0);
         decode(Codec.UNSIGNED5, new byte[] { (byte) 191 }, 191, 0);
         decode(Codec.UNSIGNED5, new byte[] { (byte) 192, 0 }, 192, 0);

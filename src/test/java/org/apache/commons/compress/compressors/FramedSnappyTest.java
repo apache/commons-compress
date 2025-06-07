@@ -36,22 +36,22 @@ import org.junit.jupiter.api.Test;
 public final class FramedSnappyTest extends AbstractTest {
 
     @Test
-    public void testDefaultExtraction() throws Exception {
+    void testDefaultExtraction() throws Exception {
         testUnarchive(FramedSnappyCompressorInputStream::new);
     }
 
     @Test
-    public void testDefaultExtractionViaFactory() throws Exception {
+    void testDefaultExtractionViaFactory() throws Exception {
         testUnarchive(is -> new CompressorStreamFactory().createCompressorInputStream(CompressorStreamFactory.SNAPPY_FRAMED, is));
     }
 
     @Test
-    public void testDefaultExtractionViaFactoryAutodetection() throws Exception {
+    void testDefaultExtractionViaFactoryAutodetection() throws Exception {
         testUnarchive(is -> new CompressorStreamFactory().createCompressorInputStream(is));
     }
 
     @Test
-    public void testRoundtrip() throws Exception {
+    void testRoundtrip() throws Exception {
         testRoundtrip(getFile("test.txt"));
         testRoundtrip(getFile("bla.tar"));
         testRoundtrip(getFile("COMPRESS-256.7z"));
@@ -73,7 +73,7 @@ public final class FramedSnappyTest extends AbstractTest {
     }
 
     @Test
-    public void testRoundtripWithOneBigWrite() throws Exception {
+    void testRoundtripWithOneBigWrite() throws Exception {
         final Random r = new Random();
         final File input = newTempFile("bigChunkTest");
         try (OutputStream fs = Files.newOutputStream(input.toPath())) {

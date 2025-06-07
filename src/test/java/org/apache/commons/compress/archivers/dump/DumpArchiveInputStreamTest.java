@@ -41,7 +41,7 @@ public class DumpArchiveInputStreamTest extends AbstractTest {
 
     @SuppressWarnings("deprecation")
     @Test
-    public void testConsumesArchiveCompletely() throws Exception {
+    void testConsumesArchiveCompletely() throws Exception {
         try (InputStream is = DumpArchiveInputStreamTest.class.getResourceAsStream("/archive_with_trailer.dump");
                 DumpArchiveInputStream dump = new DumpArchiveInputStream(is)) {
             while (dump.getNextDumpEntry() != null) {
@@ -55,7 +55,7 @@ public class DumpArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testDirectoryNullBytes() throws Exception {
+    void testDirectoryNullBytes() throws Exception {
         try (InputStream is = newInputStream("org/apache/commons/compress/dump/directory_null_bytes-fail.dump");
                 DumpArchiveInputStream archive = new DumpArchiveInputStream(is)) {
             assertThrows(InvalidFormatException.class, archive::getNextEntry);
@@ -63,7 +63,7 @@ public class DumpArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testInvalidCompressType() throws Exception {
+    void testInvalidCompressType() throws Exception {
         try (InputStream is = newInputStream("org/apache/commons/compress/dump/invalid_compression_type-fail.dump")) {
             final ArchiveException ex = assertThrows(ArchiveException.class, () -> new DumpArchiveInputStream(is).close());
             assertInstanceOf(UnsupportedCompressionAlgorithmException.class, ex.getCause());
@@ -72,7 +72,7 @@ public class DumpArchiveInputStreamTest extends AbstractTest {
 
     @Test
     @Timeout(value = 15, unit = TimeUnit.SECONDS, threadMode = ThreadMode.SEPARATE_THREAD)
-    public void testLoopingInodes() throws Exception {
+    void testLoopingInodes() throws Exception {
         try (InputStream is = newInputStream("org/apache/commons/compress/dump/looping_inodes-fail.dump");
                 DumpArchiveInputStream archive = new DumpArchiveInputStream(is)) {
             archive.getNextEntry();
@@ -81,7 +81,7 @@ public class DumpArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
+    void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         final byte[] buf = new byte[2];
         try (InputStream in = newInputStream("bla.dump");
                 DumpArchiveInputStream archive = new DumpArchiveInputStream(in)) {
@@ -93,7 +93,7 @@ public class DumpArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testNotADumpArchive() throws Exception {
+    void testNotADumpArchive() throws Exception {
         try (InputStream is = newInputStream("bla.zip")) {
             final ArchiveException ex = assertThrows(ArchiveException.class, () -> new DumpArchiveInputStream(is).close(), "expected an exception");
             assertTrue(ex.getCause() instanceof ShortFileException);
@@ -101,7 +101,7 @@ public class DumpArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testNotADumpArchiveButBigEnough() throws Exception {
+    void testNotADumpArchiveButBigEnough() throws Exception {
         try (InputStream is = newInputStream("zip64support.tar.bz2")) {
             final ArchiveException ex = assertThrows(ArchiveException.class, () -> new DumpArchiveInputStream(is).close(), "expected an exception");
             assertInstanceOf(UnrecognizedFormatException.class, ex.getCause());
@@ -109,7 +109,7 @@ public class DumpArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testRecLenZeroLongExecution() throws Exception {
+    void testRecLenZeroLongExecution() throws Exception {
         try (InputStream is = newInputStream("org/apache/commons/compress/dump/reclen_zero-fail.dump");
                 DumpArchiveInputStream archive = new DumpArchiveInputStream(is)) {
             assertTimeoutPreemptively(Duration.ofSeconds(20), () -> {
@@ -119,7 +119,7 @@ public class DumpArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
+    void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         try (InputStream in = newInputStream("bla.dump");
                 DumpArchiveInputStream archive = new DumpArchiveInputStream(in)) {
             assertNotNull(archive.getNextEntry());

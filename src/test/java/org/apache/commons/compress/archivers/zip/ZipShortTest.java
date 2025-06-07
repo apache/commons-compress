@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
 public class ZipShortTest {
 
     @Test
-    public void testClone() {
+    void testClone() {
         final ZipShort s1 = new ZipShort(42);
         final ZipShort s2 = (ZipShort) s1.clone();
         assertNotSame(s1, s2);
@@ -43,7 +43,7 @@ public class ZipShortTest {
      * Test the contract of the equals method.
      */
     @Test
-    public void testEquals() {
+    void testEquals() {
         final ZipShort zs = new ZipShort(0x1234);
         final ZipShort zs2 = new ZipShort(0x1234);
         final ZipShort zs3 = new ZipShort(0x5678);
@@ -63,7 +63,7 @@ public class ZipShortTest {
      * Test conversion from bytes.
      */
     @Test
-    public void testFromBytes() {
+    void testFromBytes() {
         final byte[] val = { 0x34, 0x12 };
         final ZipShort zs = new ZipShort(val);
         assertEquals(0x1234, zs.getValue(), "value from bytes");
@@ -73,7 +73,7 @@ public class ZipShortTest {
      * Test conversion to bytes.
      */
     @Test
-    public void testPut() {
+    void testPut() {
         final byte[] arr = new byte[3];
         ZipShort.putShort(0x1234, arr, 1);
         assertEquals(0x34, arr[1], "first byte getBytes");
@@ -84,7 +84,7 @@ public class ZipShortTest {
      * Test sign handling.
      */
     @Test
-    public void testSign() {
+    void testSign() {
         final ZipShort zs = new ZipShort(new byte[] { (byte) 0xFF, (byte) 0xFF });
         assertEquals(0x0000FFFF, zs.getValue());
     }
@@ -93,7 +93,7 @@ public class ZipShortTest {
      * Test conversion to bytes.
      */
     @Test
-    public void testToBytes() {
+    void testToBytes() {
         final ZipShort zs = new ZipShort(0x1234);
         final byte[] result = zs.getBytes();
         assertEquals(2, result.length, "length getBytes");

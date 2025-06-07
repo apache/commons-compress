@@ -34,20 +34,20 @@ import org.junit.jupiter.api.Test;
 public class ChangeTest {
 
     @Test
-    public void testFailsToCreateChangeTakingFourArgumentsThrowsNullPointerExceptionOne() {
+    void testFailsToCreateChangeTakingFourArgumentsThrowsNullPointerExceptionOne() {
         final MemoryArchiveEntry memoryArchiveEntry = new MemoryArchiveEntry("x");
         assertThrows(NullPointerException.class, () -> new Change<>(memoryArchiveEntry, null, false));
     }
 
     @Test
-    public void testFailsToCreateChangeTakingFourArgumentsThrowsNullPointerExceptionTwo() throws IOException {
+    void testFailsToCreateChangeTakingFourArgumentsThrowsNullPointerExceptionTwo() throws IOException {
         try (PipedInputStream pipedInputStream = new PipedInputStream(1)) {
             assertThrows(NullPointerException.class, () -> new Change<>(null, pipedInputStream, false));
         }
     }
 
     @Test
-    public void testFailsToCreateChangeTakingThreeArgumentsThrowsNullPointerException() {
+    void testFailsToCreateChangeTakingThreeArgumentsThrowsNullPointerException() {
         assertThrows(NullPointerException.class, () -> new Change<>(null, null));
     }
 

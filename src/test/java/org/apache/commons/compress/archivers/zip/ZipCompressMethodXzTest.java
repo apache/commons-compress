@@ -59,7 +59,7 @@ public class ZipCompressMethodXzTest extends AbstractTest {
     }
 
     @Test
-    public void testXzInputStream() throws IOException {
+    void testXzInputStream() throws IOException {
         // The file test-method-xz.zip was created with:
         // "\Program Files\7-Zip\7z.exe" a test-method-xz.zip -mm=xz LICENSE.txt
         // The "mm" option specifies the compress method
@@ -82,7 +82,7 @@ public class ZipCompressMethodXzTest extends AbstractTest {
     }
 
     @Test
-    public void testXzMethodInZipFile() throws IOException {
+    void testXzMethodInZipFile() throws IOException {
         final String zipContentFile = "testXzMethodInZipFile.txt";
         final byte[] text = "The quick brown fox jumps over the lazy dog".getBytes(StandardCharsets.UTF_8);
         final Path file = tempDir.resolve("testXzMethodInZipFile.zip");
@@ -121,7 +121,7 @@ public class ZipCompressMethodXzTest extends AbstractTest {
     }
 
     @Test
-    public void testXzMethodWriteRead() throws IOException {
+    void testXzMethodWriteRead() throws IOException {
         final String zipContentFile = "testXzMethodWriteRead.txt";
         final byte[] text = "The quick brown fox jumps over the lazy dog".getBytes(StandardCharsets.UTF_8);
         final Path file = tempDir.resolve("testXzMethodWriteRead.zip");

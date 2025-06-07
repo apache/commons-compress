@@ -29,13 +29,13 @@ import org.junit.jupiter.api.Test;
 public class ArchiveServiceLoaderTest {
 
     @Test
-    public void testInputStream() {
+    void testInputStream() {
         assertThrows(ArchiveException.class,
                 () -> ArchiveStreamFactory.DEFAULT.createArchiveInputStream("ArchiveTestInput1", new ByteArrayInputStream(new byte[] {})));
     }
 
     @Test
-    public void testOutputStream() {
+    void testOutputStream() {
         assertThrows(ArchiveException.class, () -> ArchiveStreamFactory.DEFAULT.createArchiveOutputStream("ArchiveTestOutput1", new ByteArrayOutputStream()));
     }
 

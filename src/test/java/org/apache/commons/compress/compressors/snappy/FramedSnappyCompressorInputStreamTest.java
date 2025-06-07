@@ -54,7 +54,7 @@ public final class FramedSnappyCompressorInputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testAvailable() throws Exception {
+    void testAvailable() throws Exception {
         try (InputStream isSz = newInputStream("mixed.txt.sz");
                 FramedSnappyCompressorInputStream in = new FramedSnappyCompressorInputStream(isSz)) {
             assertEquals(0, in.available()); // no chunk read so far
@@ -69,7 +69,7 @@ public final class FramedSnappyCompressorInputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testChecksumUnmasking() {
+    void testChecksumUnmasking() {
         testChecksumUnmasking(0xc757L);
         testChecksumUnmasking(0xffffc757L);
     }
@@ -79,7 +79,7 @@ public final class FramedSnappyCompressorInputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testFinishWithNoWrite() throws IOException {
+    void testFinishWithNoWrite() throws IOException {
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         try (FramedSnappyCompressorOutputStream compressor = new FramedSnappyCompressorOutputStream(buffer)) {
             // do nothing here. this will test that flush on close doesn't throw any exceptions if no data is written.
@@ -91,7 +91,7 @@ public final class FramedSnappyCompressorInputStreamTest extends AbstractTest {
      * Something big enough to make buffers slide.
      */
     @Test
-    public void testLoremIpsum() throws Exception {
+    void testLoremIpsum() throws Exception {
         final Path outputSz = newTempPath("lorem-ipsum.1");
         final Path outputGz = newTempPath("lorem-ipsum.2");
         try (InputStream isSz = newInputStream("lorem-ipsum.txt.sz")) {
@@ -108,7 +108,7 @@ public final class FramedSnappyCompressorInputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testMatches() throws IOException {
+    void testMatches() throws IOException {
         assertFalse(FramedSnappyCompressorInputStream.matches(new byte[10], 10));
         final byte[] expected = readAllBytes("bla.tar.sz");
         assertFalse(FramedSnappyCompressorInputStream.matches(expected, 9));
@@ -117,7 +117,7 @@ public final class FramedSnappyCompressorInputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+    void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.tar.sz");
         final byte[] buf = new byte[2];
         try (InputStream is = Files.newInputStream(input.toPath());
@@ -129,7 +129,7 @@ public final class FramedSnappyCompressorInputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testReadIWAFile() throws Exception {
+    void testReadIWAFile() throws Exception {
         try (ZipFile zip = ZipFile.builder().setFile(getFile("testNumbersNew.numbers")).get()) {
             try (InputStream is = zip.getInputStream(zip.getEntry("Index/Document.iwa"))) {
                 try (FramedSnappyCompressorInputStream in = new FramedSnappyCompressorInputStream(is, FramedSnappyDialect.IWORK_ARCHIVE)) {
@@ -143,7 +143,7 @@ public final class FramedSnappyCompressorInputStreamTest extends AbstractTest {
      * @see "https://issues.apache.org/jira/browse/COMPRESS-358"
      */
     @Test
-    public void testReadIWAFileWithBiggerOffset() throws Exception {
+    void testReadIWAFileWithBiggerOffset() throws Exception {
         final File o = newTempFile("COMPRESS-358.raw");
         try (InputStream is = newInputStream("COMPRESS-358.iwa");
                 FramedSnappyCompressorInputStream in = new FramedSnappyCompressorInputStream(is, 1 << 16, FramedSnappyDialect.IWORK_ARCHIVE);) {
@@ -158,7 +158,7 @@ public final class FramedSnappyCompressorInputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testRemainingChunkTypes() throws Exception {
+    void testRemainingChunkTypes() throws Exception {
         try (ByteArrayOutputStream out = new ByteArrayOutputStream();
                 InputStream isSz = newInputStream("mixed.txt.sz");
                 FramedSnappyCompressorInputStream in = new FramedSnappyCompressorInputStream(isSz);) {
@@ -169,7 +169,7 @@ public final class FramedSnappyCompressorInputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+    void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.tar.sz");
         try (InputStream is = Files.newInputStream(input.toPath());
                 FramedSnappyCompressorInputStream in = new FramedSnappyCompressorInputStream(is);) {
@@ -180,7 +180,7 @@ public final class FramedSnappyCompressorInputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testUnskippableChunk() {
+    void testUnskippableChunk() {
         final byte[] input = { (byte) 0xff, 6, 0, 0, 's', 'N', 'a', 'P', 'p', 'Y', 2, 2, 0, 0, 1, 1 };
         try (FramedSnappyCompressorInputStream in = new FramedSnappyCompressorInputStream(new ByteArrayInputStream(input))) {
             final IOException exception = assertThrows(IOException.class, () -> in.read());
@@ -190,7 +190,7 @@ public final class FramedSnappyCompressorInputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testWriteByteArrayVsWriteByte() throws IOException {
+    void testWriteByteArrayVsWriteByte() throws IOException {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         final byte[] bytes = "abcdefghijklmnop".getBytes();
         try (FramedSnappyCompressorOutputStream compressor = new FramedSnappyCompressorOutputStream(buffer)) {
@@ -213,7 +213,7 @@ public final class FramedSnappyCompressorInputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testWriteDataLargerThanBufferOneCall() throws IOException {
+    void testWriteDataLargerThanBufferOneCall() throws IOException {
         final int inputSize = 500_000;
         final byte[] data = generateTestData(inputSize);
         final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();

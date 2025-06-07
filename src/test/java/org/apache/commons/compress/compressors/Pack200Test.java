@@ -108,7 +108,7 @@ public final class Pack200Test extends AbstractTest {
     }
 
     @Test
-    public void testBadSignature() throws Exception {
+    void testBadSignature() throws Exception {
         try (InputStream is = newInputStream("bla.jar")) {
             final byte[] sig = new byte[4];
             is.read(sig);
@@ -117,7 +117,7 @@ public final class Pack200Test extends AbstractTest {
     }
 
     @Test
-    public void testGoodSignature() throws Exception {
+    void testGoodSignature() throws Exception {
         try (InputStream is = newInputStream("bla.pack")) {
             final byte[] sig = new byte[4];
             is.read(sig);
@@ -126,7 +126,7 @@ public final class Pack200Test extends AbstractTest {
     }
 
     @Test
-    public void testInputStreamMethods() throws Exception {
+    void testInputStreamMethods() throws Exception {
         final Map<String, String> m = new HashMap<>();
         m.put("foo", "bar");
         try (InputStream is = new Pack200CompressorInputStream(newInputStream("bla.jar"), m)) {
@@ -148,47 +148,47 @@ public final class Pack200Test extends AbstractTest {
     }
 
     @Test
-    public void testJarArchiveCreationInMemory() throws Exception {
+    void testJarArchiveCreationInMemory() throws Exception {
         jarArchiveCreation(Pack200Strategy.IN_MEMORY);
     }
 
     @Test
-    public void testJarArchiveCreationTempFile() throws Exception {
+    void testJarArchiveCreationTempFile() throws Exception {
         jarArchiveCreation(Pack200Strategy.TEMP_FILE);
     }
 
     @Test
-    public void testJarUnarchiveAllFileArgInMemory() throws Exception {
+    void testJarUnarchiveAllFileArgInMemory() throws Exception {
         jarUnarchiveAll(true, Pack200Strategy.IN_MEMORY);
     }
 
     @Test
-    public void testJarUnarchiveAllFileTempFile() throws Exception {
+    void testJarUnarchiveAllFileTempFile() throws Exception {
         jarUnarchiveAll(true, Pack200Strategy.TEMP_FILE);
     }
 
     @Test
-    public void testJarUnarchiveAllInMemory() throws Exception {
+    void testJarUnarchiveAllInMemory() throws Exception {
         jarUnarchiveAll(false, Pack200Strategy.IN_MEMORY);
     }
 
     @Test
-    public void testJarUnarchiveAllTempFile() throws Exception {
+    void testJarUnarchiveAllTempFile() throws Exception {
         jarUnarchiveAll(false, Pack200Strategy.TEMP_FILE);
     }
 
     @Test
-    public void testMultiByteReadFromMemoryConsistentlyReturnsMinusOneAtEof() throws Exception {
+    void testMultiByteReadFromMemoryConsistentlyReturnsMinusOneAtEof() throws Exception {
         multiByteReadConsistentlyReturnsMinusOneAtEof(Pack200Strategy.IN_MEMORY);
     }
 
     @Test
-    public void testMultiByteReadFromTempFileConsistentlyReturnsMinusOneAtEof() throws Exception {
+    void testMultiByteReadFromTempFileConsistentlyReturnsMinusOneAtEof() throws Exception {
         multiByteReadConsistentlyReturnsMinusOneAtEof(Pack200Strategy.TEMP_FILE);
     }
 
     @Test
-    public void testOutputStreamMethods() throws Exception {
+    void testOutputStreamMethods() throws Exception {
         final File output = newTempFile("bla.pack");
         final Map<String, String> m = new HashMap<>();
         m.put("foo", "bar");
@@ -202,7 +202,7 @@ public final class Pack200Test extends AbstractTest {
     }
 
     @Test
-    public void testShortSignature() throws Exception {
+    void testShortSignature() throws Exception {
         try (InputStream is = newInputStream("bla.pack")) {
             final byte[] sig = new byte[2];
             is.read(sig);
@@ -211,12 +211,12 @@ public final class Pack200Test extends AbstractTest {
     }
 
     @Test
-    public void testSingleByteReadFromMemoryConsistentlyReturnsMinusOneAtEof() throws Exception {
+    void testSingleByteReadFromMemoryConsistentlyReturnsMinusOneAtEof() throws Exception {
         singleByteReadConsistentlyReturnsMinusOneAtEof(Pack200Strategy.IN_MEMORY);
     }
 
     @Test
-    public void testSingleByteReadFromTempFileConsistentlyReturnsMinusOneAtEof() throws Exception {
+    void testSingleByteReadFromTempFileConsistentlyReturnsMinusOneAtEof() throws Exception {
         singleByteReadConsistentlyReturnsMinusOneAtEof(Pack200Strategy.TEMP_FILE);
     }
 

@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test;
 public final class ZTest extends AbstractTest {
 
     @Test
-    public void testMatches() {
+    void testMatches() {
         assertFalse(ZCompressorInputStream.matches(new byte[] { 1, 2, 3, 4 }, 4));
         assertFalse(ZCompressorInputStream.matches(new byte[] { 0x1f, 2, 3, 4 }, 4));
         assertFalse(ZCompressorInputStream.matches(new byte[] { 1, (byte) 0x9d, 3, 4 }, 4));
@@ -52,17 +52,17 @@ public final class ZTest extends AbstractTest {
     }
 
     @Test
-    public void testZUnarchive() throws Exception {
+    void testZUnarchive() throws Exception {
         testUnarchive(ZCompressorInputStream::new);
     }
 
     @Test
-    public void testZUnarchiveViaAutoDetection() throws Exception {
+    void testZUnarchiveViaAutoDetection() throws Exception {
         testUnarchive(is -> new CompressorStreamFactory().createCompressorInputStream(new BufferedInputStream(is)));
     }
 
     @Test
-    public void testZUnarchiveViaFactory() throws Exception {
+    void testZUnarchiveViaFactory() throws Exception {
         testUnarchive(is -> new CompressorStreamFactory().createCompressorInputStream(CompressorStreamFactory.Z, is));
     }
 

@@ -36,25 +36,25 @@ public class ParsingUtilsTest {
 
     @ParameterizedTest
     @ValueSource(strings = {Integer.MIN_VALUE + "1", "x.x", "9e999", "1.1", "one", Integer.MAX_VALUE + "1"})
-    public void testParseIntValueInvalidValues(final String value) {
+    void testParseIntValueInvalidValues(final String value) {
         assertThrows(IOException.class, () -> ParsingUtils.parseIntValue(value, 10));
     }
 
     @ParameterizedTest
     @ValueSource(strings = {Integer.MIN_VALUE + "", "-1", "1", "123456", Integer.MAX_VALUE + ""})
-    public void testParseIntValueValidValues(final String value) throws Exception {
+    void testParseIntValueValidValues(final String value) throws Exception {
         assertEquals(Long.parseLong(value), ParsingUtils.parseIntValue(value, 10));
     }
 
     @ParameterizedTest
     @ValueSource(strings = {Long.MIN_VALUE + "1", "x.x", "9e999", "1.1", "one", Long.MAX_VALUE + "1"})
-    public void testParseLongValueInvalidValues(final String value) {
+    void testParseLongValueInvalidValues(final String value) {
         assertThrows(IOException.class, () -> ParsingUtils.parseLongValue(value, 10));
     }
 
     @ParameterizedTest
     @ValueSource(strings = {Long.MIN_VALUE + "", "-1", "1", "12345678901234", Long.MAX_VALUE + ""})
-    public void testParseLongValueValidValues(final String value) throws Exception {
+    void testParseLongValueValidValues(final String value) throws Exception {
         assertEquals(Long.parseLong(value), ParsingUtils.parseLongValue(value, 10));
     }
 

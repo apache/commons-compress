@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 public class AttributeLayoutMapTest {
 
     @Test
-    public void testRepeatable() throws Pack200Exception {
+    void testRepeatable() throws Pack200Exception {
         // Check we can retrieve a default layout
         final AttributeLayoutMap a = new AttributeLayoutMap();
         AttributeLayout layout = a.getAttributeLayout("SourceFile", AttributeLayout.CONTEXT_CLASS);

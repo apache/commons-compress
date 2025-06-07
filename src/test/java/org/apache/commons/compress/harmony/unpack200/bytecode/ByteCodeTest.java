@@ -34,7 +34,7 @@ public class ByteCodeTest {
 
     @ParameterizedTest
     @MethodSource("byteCode")
-    public void testByteCode(final int opCode, final String expectedName) {
+    void testByteCode(final int opCode, final String expectedName) {
         assertEquals(expectedName, ByteCode.getByteCode(opCode).getName());
     }
 }

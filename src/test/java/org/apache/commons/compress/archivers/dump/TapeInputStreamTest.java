@@ -30,7 +30,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 public class TapeInputStreamTest extends AbstractTest {
     @ParameterizedTest
     @ValueSource(ints = {-1, 0, Integer.MAX_VALUE / 1000, Integer.MAX_VALUE})
-    public void testResetBlockSizeWithInvalidValues(final int recsPerBlock) throws Exception {
+    void testResetBlockSizeWithInvalidValues(final int recsPerBlock) throws Exception {
         try (TapeInputStream tapeInputStream = new TapeInputStream(new ByteArrayInputStream(new byte[1]))) {
             assertThrows(IOException.class, () -> tapeInputStream.resetBlockSize(recsPerBlock, true));
         }

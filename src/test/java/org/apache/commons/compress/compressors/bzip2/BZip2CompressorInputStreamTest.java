@@ -51,7 +51,7 @@ public class BZip2CompressorInputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+    void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.txt.bz2");
         final byte[] buf = new byte[2];
         try (InputStream is = Files.newInputStream(input.toPath());
@@ -66,7 +66,7 @@ public class BZip2CompressorInputStreamTest extends AbstractTest {
      * @see "https://issues.apache.org/jira/browse/COMPRESS-309"
      */
     @Test
-    public void testReadOfLength0ShouldReturn0() throws Exception {
+    void testReadOfLength0ShouldReturn0() throws Exception {
         // Create a big random piece of data
         final byte[] rawData = new byte[1048576];
         for (int i = 0; i < rawData.length; ++i) {
@@ -94,7 +94,7 @@ public class BZip2CompressorInputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testShouldThrowAnIOExceptionWhenAppliedToAZipFile() throws Exception {
+    void testShouldThrowAnIOExceptionWhenAppliedToAZipFile() throws Exception {
         try (InputStream in = newInputStream("bla.zip")) {
             assertThrows(IOException.class, () -> new BZip2CompressorInputStream(in));
         }
@@ -104,7 +104,7 @@ public class BZip2CompressorInputStreamTest extends AbstractTest {
      * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-516">COMPRESS-516</a>
      */
     @Test
-    public void testShouldThrowIOExceptionInsteadOfRuntimeExceptionCOMPRESS516() {
+    void testShouldThrowIOExceptionInsteadOfRuntimeExceptionCOMPRESS516() {
         assertThrows(IOException.class,
                 () -> fuzzingTest(new int[] { 0x50, 0x4b, 0x03, 0x04, 0x2e, 0x00, 0x00, 0x00, 0x0c, 0x00, 0x84, 0xb6, 0xba, 0x46, 0x72, 0xb6, 0xfe, 0x77, 0x63,
                         0x00, 0x00, 0x00, 0x6b, 0x00, 0x00, 0x00, 0x03, 0x00, 0x1c, 0x00, 0x62, 0x62, 0x62, 0x55, 0x54, 0x09, 0x00, 0x03, 0xe7, 0xce, 0x64,
@@ -119,7 +119,7 @@ public class BZip2CompressorInputStreamTest extends AbstractTest {
      * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-519">COMPRESS-519</a>
      */
     @Test
-    public void testShouldThrowIOExceptionInsteadOfRuntimeExceptionCOMPRESS519() {
+    void testShouldThrowIOExceptionInsteadOfRuntimeExceptionCOMPRESS519() {
         assertThrows(IOException.class,
                 () -> fuzzingTest(new int[] { 0x50, 0x4b, 0x03, 0x04, 0x2e, 0x00, 0x00, 0x00, 0x0c, 0x00, 0x84, 0xb6, 0xba, 0x46, 0x72, 0xb6, 0xfe, 0x77, 0x63,
                         0x00, 0x00, 0x00, 0x6b, 0x00, 0x00, 0x00, 0x03, 0x00, 0x1c, 0x00, 0x62, 0x62, 0x62, 0x55, 0x54, 0x09, 0x00, 0x03, 0xe7, 0xce, 0x64,
@@ -130,7 +130,7 @@ public class BZip2CompressorInputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+    void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.txt.bz2");
         try (InputStream is = Files.newInputStream(input.toPath());
                 BZip2CompressorInputStream in = new BZip2CompressorInputStream(is)) {

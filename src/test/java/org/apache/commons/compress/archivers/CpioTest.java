@@ -43,7 +43,7 @@ import org.junit.jupiter.api.Test;
 public final class CpioTest extends AbstractTest {
 
     @Test
-    public void testCpioArchiveCreation() throws Exception {
+    void testCpioArchiveCreation() throws Exception {
         final File output = newTempFile("bla.cpio");
 
         final File file1 = getFile("test1.xml");
@@ -63,7 +63,7 @@ public final class CpioTest extends AbstractTest {
     }
 
     @Test
-    public void testCpioUnarchive() throws Exception {
+    void testCpioUnarchive() throws Exception {
         final File output = newTempFile("bla.cpio");
         final File file1 = getFile("test1.xml");
         final File file2 = getFile("test2.xml");
@@ -110,7 +110,7 @@ public final class CpioTest extends AbstractTest {
     }
 
     @Test
-    public void testDirectoryEntryFromFile() throws Exception {
+    void testDirectoryEntryFromFile() throws Exception {
         final File archive = createTempFile("test.", ".cpio");
         final File dir = getTempDirFile();
         final long beforeArchiveWrite = dir.lastModified();
@@ -132,7 +132,7 @@ public final class CpioTest extends AbstractTest {
     }
 
     @Test
-    public void testExplicitDirectoryEntry() throws Exception {
+    void testExplicitDirectoryEntry() throws Exception {
         final File archive = createTempFile("test.", ".cpio");
         final long beforeArchiveWrite;
         try (CpioArchiveOutputStream tos = new CpioArchiveOutputStream(Files.newOutputStream(archive.toPath()))) {
@@ -155,7 +155,7 @@ public final class CpioTest extends AbstractTest {
     }
 
     @Test
-    public void testExplicitFileEntry() throws Exception {
+    void testExplicitFileEntry() throws Exception {
         final File tmp = createTempFile();
         final File archive = createTempFile("test.", ".cpio");
         try (CpioArchiveOutputStream tos = new CpioArchiveOutputStream(Files.newOutputStream(archive.toPath()))) {
@@ -179,7 +179,7 @@ public final class CpioTest extends AbstractTest {
     }
 
     @Test
-    public void testFileEntryFromFile() throws Exception {
+    void testFileEntryFromFile() throws Exception {
         final File tmp = createTempFile();
         final File archive = createTempFile("test.", ".cpio");
         try (CpioArchiveOutputStream tos = new CpioArchiveOutputStream(Files.newOutputStream(archive.toPath()))) {
@@ -203,7 +203,7 @@ public final class CpioTest extends AbstractTest {
      * Tests COMPRESS-690.
      */
     @Test
-    public void testSymbolicLinkFileEntry() throws Exception {
+    void testSymbolicLinkFileEntry() throws Exception {
         final File tmp = createTempFile();
         final File archive = createTempFile("test.", ".cpio");
         final String name = "EntryName";

@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 public final class MemoryArchiveTest {
 
     @Test
-    public void testReading() throws IOException {
+    void testReading() throws IOException {
 
         try (MemoryArchiveInputStream is = new MemoryArchiveInputStream(new String[][] { { "test1", "content1" }, { "test2", "content2" } })) {
 

@@ -63,12 +63,12 @@ public class Maven221MultiVolumeTest extends AbstractTest {
     private static final String LAST_ENTRY_NAME = "apache-maven-2.2.1/lib/maven-2.2.1-uber.jar";
 
     @Test
-    public void testRead7ZipMultiVolumeArchiveForFile() {
+    void testRead7ZipMultiVolumeArchiveForFile() {
         assertThrows(IOException.class, () -> ZipFile.builder().setFile(getFile("apache-maven-2.2.1.zip.001")).get());
     }
 
     @Test
-    public void testRead7ZipMultiVolumeArchiveForStream() throws IOException {
+    void testRead7ZipMultiVolumeArchiveForStream() throws IOException {
 
         try (InputStream archive = newInputStream("apache-maven-2.2.1.zip.001");
                 ZipArchiveInputStream zi = new ZipArchiveInputStream(archive, null, false)) {

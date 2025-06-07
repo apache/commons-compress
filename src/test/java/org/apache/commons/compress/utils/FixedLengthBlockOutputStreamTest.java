@@ -167,7 +167,7 @@ public class FixedLengthBlockOutputStreamTest {
     }
 
     @Test
-    public void testMultiWriteBuf() throws IOException {
+    void testMultiWriteBuf() throws IOException {
         final int blockSize = 13;
         try (MockWritableByteChannel mock = new MockWritableByteChannel(blockSize, false)) {
             final String testString = "hello world";
@@ -198,14 +198,14 @@ public class FixedLengthBlockOutputStreamTest {
     }
 
     @Test
-    public void testPartialWritingThrowsException() {
+    void testPartialWritingThrowsException() {
         final IOException e = assertThrows(IOException.class, () -> testWriteAndPad(512, "hello world!\n", true), "Exception for partial write not thrown");
         final String msg = e.getMessage();
         assertEquals("Failed to write 512 bytes atomically. Only wrote  511", msg, "exception message");
     }
 
     @Test
-    public void testSmallWrite() throws IOException {
+    void testSmallWrite() throws IOException {
         testWriteAndPad(10240, "hello world!\n", false);
         testWriteAndPad(512, "hello world!\n", false);
         testWriteAndPad(11, "hello world!\n", false);
@@ -213,7 +213,7 @@ public class FixedLengthBlockOutputStreamTest {
     }
 
     @Test
-    public void testSmallWriteToStream() throws IOException {
+    void testSmallWriteToStream() throws IOException {
         testWriteAndPadToStream(10240, "hello world!\n", false);
         testWriteAndPadToStream(512, "hello world!\n", false);
         testWriteAndPadToStream(11, "hello world!\n", false);
@@ -221,7 +221,7 @@ public class FixedLengthBlockOutputStreamTest {
     }
 
     @Test
-    public void testWithFileOutputStream() throws IOException {
+    void testWithFileOutputStream() throws IOException {
         final Path tempFile = Files.createTempFile("xxx", "yyy");
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
@@ -279,7 +279,7 @@ public class FixedLengthBlockOutputStreamTest {
     }
 
     @Test
-    public void testWriteBuf() throws IOException {
+    void testWriteBuf() throws IOException {
         final String hwa = "hello world avengers";
         testBuf(4, hwa);
         testBuf(512, hwa);
@@ -288,7 +288,7 @@ public class FixedLengthBlockOutputStreamTest {
     }
 
     @Test
-    public void testWriteFailsAfterDestClosedThrowsException() throws IOException {
+    void testWriteFailsAfterDestClosedThrowsException() throws IOException {
         final int blockSize = 2;
         try (MockOutputStream mock = new MockOutputStream(blockSize, false);
                 FixedLengthBlockOutputStream out = new FixedLengthBlockOutputStream(mock, blockSize)) {
@@ -303,7 +303,7 @@ public class FixedLengthBlockOutputStreamTest {
     }
 
     @Test
-    public void testWriteFailsAfterFLClosedThrowsException() {
+    void testWriteFailsAfterFLClosedThrowsException() {
         assertThrowsExactly(ClosedChannelException.class, () -> {
             try (FixedLengthBlockOutputStream out = newClosedFLBOS()) {
                 out.write(1);
@@ -324,7 +324,7 @@ public class FixedLengthBlockOutputStreamTest {
     }
 
     @Test
-    public void testWriteSingleBytes() throws IOException {
+    void testWriteSingleBytes() throws IOException {
         final int blockSize = 4;
         try (MockWritableByteChannel mock = new MockWritableByteChannel(blockSize, false)) {
             final ByteArrayOutputStream bos = mock.bos;

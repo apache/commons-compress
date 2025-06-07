@@ -49,7 +49,7 @@ public class ZipEightByteIntegerTest {
      * Tests conversion from bytes.
      */
     @Test
-    public void testBIFromBytes() {
+    void testBIFromBytes() {
         final byte[] val = { (byte) 0xFE, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF };
         final ZipEightByteInteger zl = new ZipEightByteInteger(val);
         assertEquals(BigInteger.valueOf(Long.MAX_VALUE).shiftLeft(1), zl.getValue(), "value from bytes");
@@ -59,7 +59,7 @@ public class ZipEightByteIntegerTest {
      * Tests conversion from max value.
      */
     @Test
-    public void testBIFromMaxValue() {
+    void testBIFromMaxValue() {
         // https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT
         // 4.4.1.1 All fields unless otherwise noted are unsigned and stored in Intel low-byte:high-byte, low-word:high-word order.
         final ZipEightByteInteger zipEightByteInteger = newMaxValue();
@@ -70,7 +70,7 @@ public class ZipEightByteIntegerTest {
      * Tests conversion from bytes.
      */
     @Test
-    public void testBILongFromBytes() {
+    void testBILongFromBytes() {
         final ZipEightByteInteger zl = newMaxValue();
         assertEquals(0XFFFFFFFFFFFFFFFFL, zl.getLongValue(), "longValue from bytes");
     }
@@ -79,7 +79,7 @@ public class ZipEightByteIntegerTest {
      * Tests conversion to bytes.
      */
     @Test
-    public void testBIToBytes() {
+    void testBIToBytes() {
         final byte[] result = getBytes(new ZipEightByteInteger(BigInteger.valueOf(Long.MAX_VALUE).shiftLeft(1)));
         assertEquals((byte) 0xFE, result[0], "first byte getBytes");
         assertEquals((byte) 0xFF, result[1], "second byte getBytes");
@@ -95,7 +95,7 @@ public class ZipEightByteIntegerTest {
      * Tests the contract of the equals method.
      */
     @Test
-    public void testEquals() {
+    void testEquals() {
         final ZipEightByteInteger zl = new ZipEightByteInteger(0x12345678);
         final ZipEightByteInteger zl2 = new ZipEightByteInteger(0x12345678);
         final ZipEightByteInteger zl3 = new ZipEightByteInteger(0x87654321);
@@ -115,7 +115,7 @@ public class ZipEightByteIntegerTest {
      * Tests conversion from bytes.
      */
     @Test
-    public void testLongFromBytes() {
+    void testLongFromBytes() {
         final byte[] val = { 0x78, 0x56, 0x34, 0x12, (byte) 0xAB, 0x00, 0x00, 0x00 };
         final ZipEightByteInteger zl = new ZipEightByteInteger(val);
         assertEquals(0xAB12345678L, zl.getLongValue(), "longValue from bytes");
@@ -125,7 +125,7 @@ public class ZipEightByteIntegerTest {
      * Tests conversion to bytes.
      */
     @Test
-    public void testLongToBytes() {
+    void testLongToBytes() {
         final byte[] result = getBytes(new ZipEightByteInteger(0xAB12345678L));
         assertEquals(8, result.length, "length getBytes");
         assertEquals(0x78, result[0], "first byte getBytes");
@@ -142,7 +142,7 @@ public class ZipEightByteIntegerTest {
      * Tests sign handling.
      */
     @Test
-    public void testSign() {
+    void testSign() {
         assertEquals(BigInteger.valueOf(Long.MAX_VALUE).shiftLeft(1).setBit(0), newMaxValue().getValue());
     }
 
@@ -150,7 +150,7 @@ public class ZipEightByteIntegerTest {
      * Tests {@link ZipEightByteInteger#toString()}.
      */
     @Test
-    public void testToString() {
+    void testToString() {
         assertEquals("0", ZipEightByteInteger.ZERO.toString());
         assertEquals("0", ZipEightByteInteger.getValue(new byte[ZipEightByteInteger.BYTES]).toString());
         assertEquals(Long.toString(Long.MAX_VALUE), new ZipEightByteInteger(BigInteger.valueOf(Long.MAX_VALUE)).toString());
@@ -161,7 +161,7 @@ public class ZipEightByteIntegerTest {
      * Tests {@link ZipEightByteInteger#toUnsignedBigInteger(long)}.
      */
     @Test
-    public void testToUnsignedBigInteger() {
+    void testToUnsignedBigInteger() {
         assertEquals(BigInteger.valueOf(Long.MAX_VALUE), ZipEightByteInteger.toUnsignedBigInteger(Long.MAX_VALUE));
         assertEquals(BigInteger.valueOf(Long.MAX_VALUE).shiftLeft(1), ZipEightByteInteger.toUnsignedBigInteger(0XFFFFFFFFFFFFFFFEL));
     }

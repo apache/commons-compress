@@ -43,14 +43,14 @@ import org.junit.jupiter.api.Test;
 public class ZCompressorInputStreamTest {
 
     @Test
-    public void testFailsToCreateZCompressorInputStreamAndThrowsIOException() throws IOException {
+    void testFailsToCreateZCompressorInputStreamAndThrowsIOException() throws IOException {
         try (SequenceInputStream sequenceInputStream = new SequenceInputStream(Collections.emptyEnumeration())) {
             assertThrows(IOException.class, () -> new ZCompressorInputStream(sequenceInputStream));
         }
     }
 
     @Test
-    public void testInvalidMaxCodeSize() throws IOException {
+    void testInvalidMaxCodeSize() throws IOException {
         final byte[] bytes = AbstractTest.readAllBytes("bla.tar.Z");
 
         // @formatter:off
@@ -74,7 +74,7 @@ public class ZCompressorInputStreamTest {
     }
 
     @Test
-    public void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+    void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = AbstractTest.getFile("bla.tar.Z");
         final byte[] buf = new byte[2];
         try (InputStream is = Files.newInputStream(input.toPath());
@@ -86,7 +86,7 @@ public class ZCompressorInputStreamTest {
     }
 
     @Test
-    public void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+    void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = AbstractTest.getFile("bla.tar.Z");
         try (InputStream is = Files.newInputStream(input.toPath());
                 ZCompressorInputStream in = new ZCompressorInputStream(is)) {

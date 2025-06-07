@@ -90,7 +90,7 @@ public class GzipCompressorInputStreamTest {
 
     @Test
     @Disabled
-    public void testGzipParametersMembersIo() throws IOException {
+    void testGzipParametersMembersIo() throws IOException {
         final Path targetFile = tempDir.resolve("test.gz");
         final String sourceFileName1 = "file1";
         final String sourceFileName2 = "file2";
@@ -132,7 +132,7 @@ public class GzipCompressorInputStreamTest {
      * @throws IOException on test failure.
      */
     @Test
-    public void testOnMemberFirstAll() throws IOException {
+    void testOnMemberFirstAll() throws IOException {
         final List<GzipParameters> parametersStart = new ArrayList<>();
         final List<GzipParameters> parametersEnd = new ArrayList<>();
         // Concatenated members, same file
@@ -172,7 +172,7 @@ public class GzipCompressorInputStreamTest {
      * @throws IOException on test failure.
      */
     @Test
-    public void testOnMemberFirstOnly() throws IOException {
+    void testOnMemberFirstOnly() throws IOException {
         final List<GzipParameters> parametersStart = new ArrayList<>();
         final List<GzipParameters> parametersEnd = new ArrayList<>();
         // First member only
@@ -207,7 +207,7 @@ public class GzipCompressorInputStreamTest {
      * @throws IOException on test failure.
      */
     @Test
-    public void testOnMemberSaveAsFiles() throws IOException {
+    void testOnMemberSaveAsFiles() throws IOException {
         final List<Path> resolved = extractMembers("src/test/resources/org/apache/commons/compress/gzip/members.gz");
         assertEquals("Hello1\n", PathUtils.readString(resolved.get(0), StandardCharsets.ISO_8859_1));
         assertEquals("Hello2\n", PathUtils.readString(resolved.get(1), StandardCharsets.ISO_8859_1));
@@ -226,7 +226,7 @@ public class GzipCompressorInputStreamTest {
      */
     @SuppressWarnings("resource")
     @Test
-    public void testOnMemberSaveAsSize0Files() throws IOException {
+    void testOnMemberSaveAsSize0Files() throws IOException {
         final List<Path> resolved = extractMembers("src/test/resources/org/apache/commons/compress/gzip/members-size-0.gz");
         assertEquals(3, resolved.size());
         IOStream.of(resolved).forEach(p -> {
@@ -246,7 +246,7 @@ public class GzipCompressorInputStreamTest {
      * @throws IOException on test failure.
      */
     @Test
-    public void testReadGzipFileCreatedByCli() throws IOException {
+    void testReadGzipFileCreatedByCli() throws IOException {
         // First member only
         try (GzipCompressorInputStream gis = GzipCompressorInputStream.builder().setFile("src/test/resources/org/apache/commons/compress/gzip/members.gz")
                 .get()) {

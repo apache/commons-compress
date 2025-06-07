@@ -53,7 +53,7 @@ public class BandSetTest {
     };
 
     @Test
-    public void testDecodeBandInt() throws IOException, Pack200Exception {
+    void testDecodeBandInt() throws IOException, Pack200Exception {
         final BHSDCodec codec = Codec.BYTE1;
         final byte[] bytes = { (byte) 3, (byte) 56, (byte) 122, (byte) 78 };
         final InputStream in = new ByteArrayInputStream(bytes);
@@ -65,31 +65,31 @@ public class BandSetTest {
 
     @Test
     @Disabled("TODO: Implement")
-    public void testParseFlags1() {
+    void testParseFlags1() {
 
     }
 
     @Test
     @Disabled("TODO: Implement")
-    public void testParseFlags2() {
+    void testParseFlags2() {
 
     }
 
     @Test
     @Disabled("TODO: Implement")
-    public void testParseFlags3() {
+    void testParseFlags3() {
 
     }
 
     @Test
     @Disabled("TODO: Implement")
-    public void testParseReferences1() {
+    void testParseReferences1() {
 
     }
 
     @Test
     @Disabled("TODO: Implement")
-    public void testParseReferences2() {
+    void testParseReferences2() {
 
     }
 

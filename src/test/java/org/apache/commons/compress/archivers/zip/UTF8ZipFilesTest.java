@@ -151,22 +151,22 @@ public class UTF8ZipFilesTest extends AbstractTest {
     }
 
     @Test
-    public void testASCIIFileRoundtripExplicitUnicodeExtra() throws IOException {
+    void testASCIIFileRoundtripExplicitUnicodeExtra() throws IOException {
         testFileRoundtrip(StandardCharsets.US_ASCII.name(), false, true);
     }
 
     @Test
-    public void testASCIIFileRoundtripImplicitUnicodeExtra() throws IOException {
+    void testASCIIFileRoundtripImplicitUnicodeExtra() throws IOException {
         testFileRoundtrip(StandardCharsets.US_ASCII.name(), false, false);
     }
 
     @Test
-    public void testCP437FileRoundtripExplicitUnicodeExtra() throws IOException {
+    void testCP437FileRoundtripExplicitUnicodeExtra() throws IOException {
         testFileRoundtrip(CP437, false, true);
     }
 
     @Test
-    public void testCP437FileRoundtripImplicitUnicodeExtra() throws IOException {
+    void testCP437FileRoundtripImplicitUnicodeExtra() throws IOException {
         testFileRoundtrip(CP437, false, false);
     }
 
@@ -177,14 +177,14 @@ public class UTF8ZipFilesTest extends AbstractTest {
     }
 
     @Test
-    public void testRawNameReadFromStream() throws IOException {
+    void testRawNameReadFromStream() throws IOException {
         try (ZipArchiveInputStream zi = new ZipArchiveInputStream(newInputStream("utf8-7zip-test.zip"), CP437, false)) {
             assertRawNameOfAcsiiTxt(zi.getNextEntry());
         }
     }
 
     @Test
-    public void testRawNameReadFromZipFile() throws IOException {
+    void testRawNameReadFromZipFile() throws IOException {
         final File archive = getFile("utf8-7zip-test.zip");
         try (ZipFile zf = ZipFile.builder().setFile(archive).setCharset(CP437).setUseUnicodeExtraFields(false).get()) {
             assertRawNameOfAcsiiTxt(zf.getEntry(ASCII_TXT));
@@ -197,7 +197,7 @@ public class UTF8ZipFilesTest extends AbstractTest {
      * 7-ZIP doesn't use EFS for strings that can be encoded in CP437 - which is true for OIL_BARREL_TXT.
      */
     @Test
-    public void testRead7ZipArchive() throws IOException {
+    void testRead7ZipArchive() throws IOException {
         final File archive = getFile("utf8-7zip-test.zip");
         try (ZipFile zf = new ZipFile(archive, CP437, false)) {
             assertNotNull(zf.getEntry(ASCII_TXT));
@@ -207,7 +207,7 @@ public class UTF8ZipFilesTest extends AbstractTest {
     }
 
     @Test
-    public void testRead7ZipArchiveForStream() throws IOException {
+    void testRead7ZipArchiveForStream() throws IOException {
         try (ZipArchiveInputStream zi = new ZipArchiveInputStream(newInputStream("utf8-7zip-test.zip"), CP437, false)) {
             assertEquals(ASCII_TXT, zi.getNextEntry().getName());
             assertEquals(OIL_BARREL_TXT, zi.getNextEntry().getName());
@@ -219,7 +219,7 @@ public class UTF8ZipFilesTest extends AbstractTest {
      * WinZIP created archive, uses Unicode Extra Fields but only in the central directory.
      */
     @Test
-    public void testReadWinZipArchive() throws IOException {
+    void testReadWinZipArchive() throws IOException {
         final File archive = getFile("utf8-winzip-test.zip");
         // fix for test fails on Windows with default charset that is not UTF-8
         String encoding = null;
@@ -234,7 +234,7 @@ public class UTF8ZipFilesTest extends AbstractTest {
     }
 
     @Test
-    public void testReadWinZipArchiveForStream() throws IOException {
+    void testReadWinZipArchiveForStream() throws IOException {
         // fix for test fails on Windows with default charset that is not UTF-8
         String encoding = null;
         if (Charset.defaultCharset() != UTF_8) {
@@ -252,7 +252,7 @@ public class UTF8ZipFilesTest extends AbstractTest {
      * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-479">COMPRESS-479</a>
      */
     @Test
-    public void testStreamSkipsOverUnicodeExtraFieldWithUnsupportedVersion() throws IOException {
+    void testStreamSkipsOverUnicodeExtraFieldWithUnsupportedVersion() throws IOException {
         try (InputStream archive = newInputStream("COMPRESS-479.zip");
                 ZipArchiveInputStream zi = new ZipArchiveInputStream(archive)) {
             assertEquals(OIL_BARREL_TXT, zi.getNextEntry().getName());
@@ -262,27 +262,27 @@ public class UTF8ZipFilesTest extends AbstractTest {
     }
 
     @Test
-    public void testUtf8FileRoundtripExplicitUnicodeExtra() throws IOException {
+    void testUtf8FileRoundtripExplicitUnicodeExtra() throws IOException {
         testFileRoundtrip(StandardCharsets.UTF_8.name(), true, true);
     }
 
     @Test
-    public void testUtf8FileRoundtripImplicitUnicodeExtra() throws IOException {
+    void testUtf8FileRoundtripImplicitUnicodeExtra() throws IOException {
         testFileRoundtrip(StandardCharsets.UTF_8.name(), true, false);
     }
 
     @Test
-    public void testUtf8FileRoundtripNoEFSExplicitUnicodeExtra() throws IOException {
+    void testUtf8FileRoundtripNoEFSExplicitUnicodeExtra() throws IOException {
         testFileRoundtrip(StandardCharsets.UTF_8.name(), false, true);
     }
 
     @Test
-    public void testUtf8FileRoundtripNoEFSImplicitUnicodeExtra() throws IOException {
+    void testUtf8FileRoundtripNoEFSImplicitUnicodeExtra() throws IOException {
         testFileRoundtrip(StandardCharsets.UTF_8.name(), false, false);
     }
 
     @Test
-    public void testUtf8Interoperability() throws IOException {
+    void testUtf8Interoperability() throws IOException {
         final File file1 = getFile("utf8-7zip-test.zip");
         final File file2 = getFile("utf8-winzip-test.zip");
         testFile(file1, CP437);
@@ -290,7 +290,7 @@ public class UTF8ZipFilesTest extends AbstractTest {
     }
 
     @Test
-    public void testZipArchiveInputStreamReadsUnicodeFields() throws IOException {
+    void testZipArchiveInputStreamReadsUnicodeFields() throws IOException {
         final File file = createTempFile("unicode-test", ".zip");
         createTestFile(file, StandardCharsets.US_ASCII.name(), false, true);
         try (ZipFile zf = ZipFile.builder().setFile(file).setCharset(StandardCharsets.US_ASCII).setUseUnicodeExtraFields(true).get()) {
@@ -301,7 +301,7 @@ public class UTF8ZipFilesTest extends AbstractTest {
     }
 
     @Test
-    public void testZipFileReadsUnicodeFields() throws IOException {
+    void testZipFileReadsUnicodeFields() throws IOException {
         final File file = createTempFile("unicode-test", ".zip");
         createTestFile(file, StandardCharsets.US_ASCII.name(), false, true);
         try (ZipArchiveInputStream zi = new ZipArchiveInputStream(Files.newInputStream(file.toPath()), StandardCharsets.US_ASCII.name(), true)) {
@@ -315,7 +315,7 @@ public class UTF8ZipFilesTest extends AbstractTest {
      * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-479">COMPRESS-479</a>
      */
     @Test
-    public void testZipFileSkipsOverUnicodeExtraFieldWithUnsupportedVersion() throws IOException {
+    void testZipFileSkipsOverUnicodeExtraFieldWithUnsupportedVersion() throws IOException {
         try (ZipFile zf = ZipFile.builder().setFile(getFile("COMPRESS-479.zip")).get()) {
             assertNotNull(zf.getEntry(ASCII_TXT));
             assertNotNull(zf.getEntry("%U20AC_for_Dollar.txt"));

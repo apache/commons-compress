@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
 public class ZipLongTest {
 
     @Test
-    public void testClone() {
+    void testClone() {
         final ZipLong s1 = new ZipLong(42);
         final ZipLong s2 = (ZipLong) s1.clone();
         assertNotSame(s1, s2);
@@ -43,7 +43,7 @@ public class ZipLongTest {
      * Test the contract of the equals method.
      */
     @Test
-    public void testEquals() {
+    void testEquals() {
         final ZipLong zl = new ZipLong(0x12345678);
         final ZipLong zl2 = new ZipLong(0x12345678);
         final ZipLong zl3 = new ZipLong(0x87654321);
@@ -63,7 +63,7 @@ public class ZipLongTest {
      * Test conversion from bytes.
      */
     @Test
-    public void testFromBytes() {
+    void testFromBytes() {
         final byte[] val = { 0x78, 0x56, 0x34, 0x12 };
         final ZipLong zl = new ZipLong(val);
         assertEquals(0x12345678, zl.getValue(), "value from bytes");
@@ -73,7 +73,7 @@ public class ZipLongTest {
      * Test conversion to bytes.
      */
     @Test
-    public void testPut() {
+    void testPut() {
         final byte[] arr = new byte[5];
         ZipLong.putLong(0x12345678, arr, 1);
         assertEquals(0x78, arr[1], "first byte getBytes");
@@ -86,7 +86,7 @@ public class ZipLongTest {
      * Test sign handling.
      */
     @Test
-    public void testSign() {
+    void testSign() {
         ZipLong zl = new ZipLong(new byte[] { (byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF });
         assertEquals(0x00000000FFFFFFFFL, zl.getValue());
         assertEquals(-1, zl.getIntValue());
@@ -102,7 +102,7 @@ public class ZipLongTest {
      * Test conversion to bytes.
      */
     @Test
-    public void testToBytes() {
+    void testToBytes() {
         final ZipLong zl = new ZipLong(0x12345678);
         final byte[] result = zl.getBytes();
         assertEquals(4, result.length, "length getBytes");

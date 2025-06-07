@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 public class BitStreamTest {
 
     @Test
-    public void testNextByte() throws Exception {
+    void testNextByte() throws Exception {
         try (BitStream stream = new BitStream(new ByteArrayInputStream(new byte[] { (byte) 0xEA, 0x35 }))) {
             assertEquals(0, stream.readBit(), "bit 0");
             assertEquals(1, stream.readBit(), "bit 1");
@@ -42,7 +42,7 @@ public class BitStreamTest {
     }
 
     @Test
-    public void testNextByteFromEmptyStream() throws Exception {
+    void testNextByteFromEmptyStream() throws Exception {
         try (BitStream stream = new BitStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY))) {
             assertEquals(-1, stream.nextByte(), "next byte");
             assertEquals(-1, stream.nextByte(), "next byte");
@@ -50,7 +50,7 @@ public class BitStreamTest {
     }
 
     @Test
-    public void testReadAlignedBytes() throws Exception {
+    void testReadAlignedBytes() throws Exception {
         try (BitStream stream = new BitStream(new ByteArrayInputStream(new byte[] { (byte) 0xEA, 0x35 }))) {
             assertEquals(0xEA, stream.nextByte(), "next byte");
             assertEquals(0x35, stream.nextByte(), "next byte");

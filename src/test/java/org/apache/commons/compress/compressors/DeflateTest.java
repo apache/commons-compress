@@ -37,7 +37,7 @@ public final class DeflateTest extends AbstractTest {
      * @throws Exception
      */
     @Test
-    public void testDeflateCreation() throws Exception {
+    void testDeflateCreation() throws Exception {
         final File input = getFile("test1.xml");
         final File output = newTempFile("test1.xml.deflatez");
         try (OutputStream out = Files.newOutputStream(output.toPath())) {
@@ -53,7 +53,7 @@ public final class DeflateTest extends AbstractTest {
      * @throws Exception
      */
     @Test
-    public void testDeflateUnarchive() throws Exception {
+    void testDeflateUnarchive() throws Exception {
         final File input = getFile("bla.tar.deflatez");
         final File output = newTempFile("bla.tar");
         try (InputStream is = Files.newInputStream(input.toPath())) {
@@ -70,7 +70,7 @@ public final class DeflateTest extends AbstractTest {
      * @throws Exception
      */
     @Test
-    public void testRawDeflateCreation() throws Exception {
+    void testRawDeflateCreation() throws Exception {
         final File input = getFile("test1.xml");
         final File output = newTempFile("test1.xml.deflate");
         try (OutputStream out = Files.newOutputStream(output.toPath())) {
@@ -88,7 +88,7 @@ public final class DeflateTest extends AbstractTest {
      * @throws Exception
      */
     @Test
-    public void testRawDeflateUnarchive() throws Exception {
+    void testRawDeflateUnarchive() throws Exception {
         final File input = getFile("bla.tar.deflate");
         final File output = newTempFile("bla.tar");
         try (InputStream is = Files.newInputStream(input.toPath())) {

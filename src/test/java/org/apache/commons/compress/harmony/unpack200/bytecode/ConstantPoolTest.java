@@ -36,7 +36,7 @@ public class ConstantPoolTest {
     }
 
     @Test
-    public void testDuplicateField() {
+    void testDuplicateField() {
         final CPMember cp1 = new CPMember(new CPUTF8("name", 1), new CPUTF8("I", 2), 0, null);
         pool.add(cp1);
         pool.addNestedEntries();
@@ -48,7 +48,7 @@ public class ConstantPoolTest {
     }
 
     @Test
-    public void testDuplicateUTF8() {
+    void testDuplicateUTF8() {
         final CPUTF8 u1 = new CPUTF8("thing", 1);
         final CPUTF8 u2 = new CPUTF8("thing", 1);
         pool.add(u1);
@@ -57,14 +57,14 @@ public class ConstantPoolTest {
     }
 
     @Test
-    public void testEntries() {
+    void testEntries() {
         pool.add(new CPClass(new CPUTF8("RandomClass", 1), 10));
         pool.add(new CPClass(new CPUTF8("RandomClass2", 2), 20));
         assertEquals(2, pool.entries().size());
     }
 
     @Test
-    public void testIndex() {
+    void testIndex() {
         pool.add(new CPUTF8("OtherThing", 1));
         final CPUTF8 u1 = new CPUTF8("thing", 2);
         pool.add(u1);

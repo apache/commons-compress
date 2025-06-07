@@ -58,7 +58,7 @@ public class ArArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testCantReadAfterClose() throws Exception {
+    void testCantReadAfterClose() throws Exception {
         try (InputStream in = newInputStream("bla.ar");
                 ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
             archive.close();
@@ -67,7 +67,7 @@ public class ArArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testCantReadWithoutOpeningAnEntry() throws Exception {
+    void testCantReadWithoutOpeningAnEntry() throws Exception {
         try (InputStream in = newInputStream("bla.ar");
                 ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
             assertThrows(IllegalStateException.class, () -> archive.read());
@@ -75,7 +75,7 @@ public class ArArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testCompress661() throws IOException {
+    void testCompress661() throws IOException {
         testCompress661(false);
         testCompress661(true);
     }
@@ -100,7 +100,7 @@ public class ArArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testInvalidBadTableLength() throws Exception {
+    void testInvalidBadTableLength() throws Exception {
         try (InputStream in = newInputStream("org/apache/commons/compress/ar/number_parsing/bad_table_length_gnu-fail.ar");
                 ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
             assertThrows(IOException.class, archive::getNextEntry);
@@ -110,7 +110,7 @@ public class ArArchiveInputStreamTest extends AbstractTest {
     @ParameterizedTest
     @ValueSource(strings = { "bad_long_namelen_bsd-fail.ar", "bad_long_namelen_gnu1-fail.ar", "bad_long_namelen_gnu2-fail.ar", "bad_long_namelen_gnu3-fail.ar",
             "bad_table_length_gnu-fail.ar" })
-    public void testInvalidLongNameLength(final String testFileName) throws Exception {
+    void testInvalidLongNameLength(final String testFileName) throws Exception {
         try (InputStream in = newInputStream("org/apache/commons/compress/ar/number_parsing/" + testFileName);
                 ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
             assertThrows(IOException.class, archive::getNextEntry);
@@ -119,7 +119,7 @@ public class ArArchiveInputStreamTest extends AbstractTest {
 
     @ParameterizedTest
     @ValueSource(strings = { "bad_group-fail.ar", "bad_length-fail.ar", "bad_modified-fail.ar", "bad_user-fail.ar" })
-    public void testInvalidNumericFields(final String testFileName) throws Exception {
+    void testInvalidNumericFields(final String testFileName) throws Exception {
         try (InputStream in = newInputStream("org/apache/commons/compress/ar/number_parsing/" + testFileName);
                 ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
             assertThrows(IOException.class, archive::getNextEntry);
@@ -127,7 +127,7 @@ public class ArArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
+    void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         final byte[] buf = new byte[2];
         try (InputStream in = newInputStream("bla.ar");
                 ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
@@ -139,17 +139,17 @@ public class ArArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testReadLongNamesBSD() throws Exception {
+    void testReadLongNamesBSD() throws Exception {
         checkLongNameEntry("longfile_bsd.ar");
     }
 
     @Test
-    public void testReadLongNamesGNU() throws Exception {
+    void testReadLongNamesGNU() throws Exception {
         checkLongNameEntry("longfile_gnu.ar");
     }
 
     @Test
-    public void testSimpleInputStream() throws IOException {
+    void testSimpleInputStream() throws IOException {
         try (InputStream fileInputStream = newInputStream("bla.ar");
                 // This default implementation of InputStream.available() always returns zero,
                 // and there are many streams in practice where the total length of the stream is not known.
@@ -174,7 +174,7 @@ public class ArArchiveInputStreamTest extends AbstractTest {
 
     @SuppressWarnings("deprecation")
     @Test
-    public void testSimpleInputStreamDeprecated() throws IOException {
+    void testSimpleInputStreamDeprecated() throws IOException {
         try (InputStream fileInputStream = newInputStream("bla.ar");
                 // This default implementation of InputStream.available() always returns zero,
                 // and there are many streams in practice where the total length of the stream is not known.
@@ -198,7 +198,7 @@ public class ArArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
+    void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         try (InputStream in = newInputStream("bla.ar");
                 ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
             assertNotNull(archive.getNextEntry());

@@ -63,7 +63,7 @@ public class ScatterSampleTest extends AbstractTempDirTest {
     }
 
     @Test
-    public void testSample() throws Exception {
+    void testSample() throws Exception {
         final File result = createTempFile("testSample", "fe");
         createFile(result);
         checkFile(result);

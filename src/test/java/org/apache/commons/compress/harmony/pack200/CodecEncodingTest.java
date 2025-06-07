@@ -86,7 +86,7 @@ public class CodecEncodingTest {
 
     @ParameterizedTest
     @MethodSource("arbitraryCodec")
-    public void testArbitraryCodec(final String expected, final byte[] bytes) throws IOException, Pack200Exception {
+    void testArbitraryCodec(final String expected, final byte[] bytes) throws IOException, Pack200Exception {
         assertEquals(expected, CodecEncoding.getCodec(116, new ByteArrayInputStream(bytes), null).toString());
     }
 
@@ -98,18 +98,18 @@ public class CodecEncodingTest {
 
     @ParameterizedTest
     @MethodSource("canonicalGetSpecifier")
-    public void testCanonicalGetSpecifier(final int i) throws Pack200Exception, IOException {
+    void testCanonicalGetSpecifier(final int i) throws Pack200Exception, IOException {
         assertEquals(i, CodecEncoding.getSpecifier(CodecEncoding.getCodec(i, null, null), null)[0]);
     }
 
     @Test
-    public void testDefaultCodec() throws Pack200Exception, IOException {
+    void testDefaultCodec() throws Pack200Exception, IOException {
         final Codec defaultCodec = new BHSDCodec(2, 16, 0, 0);
         assertEquals(defaultCodec, CodecEncoding.getCodec(0, null, defaultCodec));
     }
 
     @Test
-    public void testGetSpeciferForPopulationCodec() throws IOException, Pack200Exception {
+    void testGetSpeciferForPopulationCodec() throws IOException, Pack200Exception {
         final PopulationCodec populationCodec = new PopulationCodec(Codec.BYTE1, Codec.CHAR3, Codec.UNSIGNED5);
         final int[] specifiers = CodecEncoding.getSpecifier(populationCodec, null);
         assertTrue(specifiers[0] > 140);
@@ -126,7 +126,7 @@ public class CodecEncodingTest {
     }
 
     @Test
-    public void testGetSpeciferForRunCodec() throws Pack200Exception, IOException {
+    void testGetSpeciferForRunCodec() throws Pack200Exception, IOException {
         RunCodec runCodec = new RunCodec(25, Codec.DELTA5, Codec.BYTE1);
         int[] specifiers = CodecEncoding.getSpecifier(runCodec, null);
         assertTrue(specifiers[0] > 116);

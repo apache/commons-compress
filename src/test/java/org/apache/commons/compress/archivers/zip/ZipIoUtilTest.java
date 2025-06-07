@@ -53,7 +53,7 @@ public class ZipIoUtilTest extends AbstractTempDirTest {
     }
 
     @Test
-    public void testWriteFully_whenFullAtOnce_thenSucceed() throws IOException {
+    void testWriteFully_whenFullAtOnce_thenSucceed() throws IOException {
         try (SeekableByteChannel channel = mockSeekableByteChannel()) {
             when(channel.write((ByteBuffer) any())).thenAnswer(answer -> {
                 ((ByteBuffer) answer.getArgument(0)).position(5);
@@ -69,7 +69,7 @@ public class ZipIoUtilTest extends AbstractTempDirTest {
     }
 
     @Test
-    public void testWriteFully_whenFullButPartial_thenSucceed() throws IOException {
+    void testWriteFully_whenFullButPartial_thenSucceed() throws IOException {
         try (SeekableByteChannel channel = mockSeekableByteChannel()) {
             when(channel.write((ByteBuffer) any())).thenAnswer(answer -> {
                 ((ByteBuffer) answer.getArgument(0)).position(3);
@@ -88,7 +88,7 @@ public class ZipIoUtilTest extends AbstractTempDirTest {
     }
 
     @Test
-    public void testWriteFully_whenPartial_thenFail() throws IOException {
+    void testWriteFully_whenPartial_thenFail() throws IOException {
         try (SeekableByteChannel channel = mockSeekableByteChannel()) {
             when(channel.write((ByteBuffer) any())).thenAnswer(answer -> {
                 ((ByteBuffer) answer.getArgument(0)).position(3);
@@ -100,7 +100,7 @@ public class ZipIoUtilTest extends AbstractTempDirTest {
     }
 
     @Test
-    public void testWriteFullyAt_whenFullAtOnce_thenSucceed() throws IOException {
+    void testWriteFullyAt_whenFullAtOnce_thenSucceed() throws IOException {
         try (FileChannel channel = mockFileChannel()) {
             when(channel.write((ByteBuffer) any(), eq(20L))).thenAnswer(answer -> {
                 ((ByteBuffer) answer.getArgument(0)).position(5);
@@ -118,7 +118,7 @@ public class ZipIoUtilTest extends AbstractTempDirTest {
     }
 
     @Test
-    public void testWriteFullyAt_whenFullButPartial_thenSucceed() throws IOException {
+    void testWriteFullyAt_whenFullButPartial_thenSucceed() throws IOException {
         try (FileChannel channel = mockFileChannel()) {
             when(channel.write((ByteBuffer) any(), eq(20L))).thenAnswer(answer -> {
                 ((ByteBuffer) answer.getArgument(0)).position(3);
@@ -141,7 +141,7 @@ public class ZipIoUtilTest extends AbstractTempDirTest {
     }
 
     @Test
-    public void testWriteFullyAt_whenPartial_thenFail() throws IOException {
+    void testWriteFullyAt_whenPartial_thenFail() throws IOException {
         try (FileChannel channel = mockFileChannel()) {
             when(channel.write((ByteBuffer) any(), eq(20L))).thenAnswer(answer -> {
                 ((ByteBuffer) answer.getArgument(0)).position(3);

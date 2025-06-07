@@ -44,7 +44,7 @@ public class DataDescriptorTest {
     }
 
     @Test
-    public void testDoesntWriteDataDescriptorForDeflatedEntryOnSeekableOutput() throws IOException {
+    void testDoesntWriteDataDescriptorForDeflatedEntryOnSeekableOutput() throws IOException {
         final File file = new File(dir, "test.zip");
         try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(file)) {
             zos.putArchiveEntry(new ZipArchiveEntry("test1.txt"));
@@ -83,7 +83,7 @@ public class DataDescriptorTest {
     }
 
     @Test
-    public void testDoesntWriteDataDescriptorWhenAddingRawEntries() throws IOException {
+    void testDoesntWriteDataDescriptorWhenAddingRawEntries() throws IOException {
         final ByteArrayOutputStream init = new ByteArrayOutputStream();
         try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(init)) {
             zos.putArchiveEntry(new ZipArchiveEntry("test1.txt"));
@@ -135,7 +135,7 @@ public class DataDescriptorTest {
     }
 
     @Test
-    public void testWritesDataDescriptorForDeflatedEntryOnUnseekableOutput() throws IOException {
+    void testWritesDataDescriptorForDeflatedEntryOnUnseekableOutput() throws IOException {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(baos)) {
             zos.putArchiveEntry(new ZipArchiveEntry("test1.txt"));

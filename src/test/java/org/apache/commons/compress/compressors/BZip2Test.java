@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
 public final class BZip2Test extends AbstractTest {
 
     @Test
-    public void testBzip2Unarchive() throws Exception {
+    void testBzip2Unarchive() throws Exception {
         final File input = getFile("bla.txt.bz2");
         final File output = newTempFile("bla.txt");
         try (InputStream is = Files.newInputStream(input.toPath());
@@ -42,7 +42,7 @@ public final class BZip2Test extends AbstractTest {
     }
 
     @Test
-    public void testBzipCreation() throws Exception {
+    void testBzipCreation() throws Exception {
         final File output;
         final File input = getFile("test.txt");
         {
@@ -65,7 +65,7 @@ public final class BZip2Test extends AbstractTest {
     }
 
     @Test
-    public void testCOMPRESS131() throws Exception {
+    void testCOMPRESS131() throws Exception {
         final File input = getFile("COMPRESS-131.bz2");
         try (InputStream is = Files.newInputStream(input.toPath())) {
             try (CompressorInputStream in = new BZip2CompressorInputStream(is, true)) {
@@ -79,7 +79,7 @@ public final class BZip2Test extends AbstractTest {
     }
 
     @Test
-    public void testConcatenatedStreamsReadFirstOnly() throws Exception {
+    void testConcatenatedStreamsReadFirstOnly() throws Exception {
         final File input = getFile("multiple.bz2");
         try (InputStream is = Files.newInputStream(input.toPath())) {
             try (CompressorInputStream in = new CompressorStreamFactory().createCompressorInputStream("bzip2", is)) {
@@ -90,7 +90,7 @@ public final class BZip2Test extends AbstractTest {
     }
 
     @Test
-    public void testConcatenatedStreamsReadFully() throws Exception {
+    void testConcatenatedStreamsReadFully() throws Exception {
         final File input = getFile("multiple.bz2");
         try (InputStream is = Files.newInputStream(input.toPath())) {
             try (CompressorInputStream in = new BZip2CompressorInputStream(is, true)) {

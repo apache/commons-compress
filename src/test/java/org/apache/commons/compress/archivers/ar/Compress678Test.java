@@ -42,7 +42,7 @@ public class Compress678Test {
 
     @ParameterizedTest
     @ValueSource(ints = { 15, 16, 17, 18, 32, 64, 128 })
-    public void test_LONGFILE_BSD(final int fileNameLen) throws IOException {
+    void test_LONGFILE_BSD(final int fileNameLen) throws IOException {
         test_LONGFILE_BSD(StringUtils.repeat('x', fileNameLen));
     }
 
@@ -81,12 +81,12 @@ public class Compress678Test {
 
     @ParameterizedTest
     @ValueSource(ints = { 15, 16, 17, 18, 32, 64, 128 })
-    public void test_LONGFILE_BSD_with_spaces(final int fileNameLen) throws IOException {
+    void test_LONGFILE_BSD_with_spaces(final int fileNameLen) throws IOException {
         test_LONGFILE_BSD(StringUtils.repeat("x y", fileNameLen / 3));
     }
 
     @Test
-    public void test_LONGFILE_ERROR() throws IOException {
+    void test_LONGFILE_ERROR() throws IOException {
         final File file = new File("target/Compress678Test-a.ar");
         Files.deleteIfExists(file.toPath());
         // First entry's name length is longer than 16 bytes and odd
@@ -101,7 +101,7 @@ public class Compress678Test {
     }
 
     @Test
-    public void testShortName() throws IOException {
+    void testShortName() throws IOException {
         final File file = new File("target/Compress678Test-c.ar");
         Files.deleteIfExists(file.toPath());
         // First entry's name length is <= than 16 bytes and odd

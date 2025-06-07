@@ -38,7 +38,7 @@ public class ClassFileEntryTest {
     }
 
     @Test
-    public void testCPDouble() {
+    void testCPDouble() {
         final CPDouble cp1 = new CPDouble(Double.valueOf(3), 3);
         final CPDouble cp2 = new CPDouble(Double.valueOf(3), 3);
         final CPDouble cp3 = new CPDouble(Double.valueOf(5), 5);
@@ -46,7 +46,7 @@ public class ClassFileEntryTest {
     }
 
     @Test
-    public void testCPField() {
+    void testCPField() {
         final CPMember cp1 = new CPMember(new CPUTF8("Name", 3), new CPUTF8("I", 4), 0, null);
         final CPMember cp2 = new CPMember(new CPUTF8("Name", 3), new CPUTF8("I", 4), 0, null);
         final CPMember cp3 = new CPMember(new CPUTF8("Name", 3), new CPUTF8("Z", 5), 0, null);
@@ -56,7 +56,7 @@ public class ClassFileEntryTest {
     }
 
     @Test
-    public void testCPFloat() {
+    void testCPFloat() {
         final CPFloat cp1 = new CPFloat(Float.valueOf(3), 3);
         final CPFloat cp2 = new CPFloat(Float.valueOf(3), 3);
         final CPFloat cp3 = new CPFloat(Float.valueOf(5), 5);
@@ -64,7 +64,7 @@ public class ClassFileEntryTest {
     }
 
     @Test
-    public void testCPInteger() {
+    void testCPInteger() {
         final CPInteger cp1 = new CPInteger(Integer.valueOf(3), 3);
         final CPInteger cp2 = new CPInteger(Integer.valueOf(3), 3);
         final CPInteger cp3 = new CPInteger(Integer.valueOf(5), 5);
@@ -72,7 +72,7 @@ public class ClassFileEntryTest {
     }
 
     @Test
-    public void testCPLong() {
+    void testCPLong() {
         final CPLong cp1 = new CPLong(Long.valueOf(3), 3);
         final CPLong cp2 = new CPLong(Long.valueOf(3), 3);
         final CPLong cp3 = new CPLong(Long.valueOf(5), 5);
@@ -80,7 +80,7 @@ public class ClassFileEntryTest {
     }
 
     @Test
-    public void testCPString() {
+    void testCPString() {
         final CPString cp1 = new CPString(new CPUTF8("3", 3), 3);
         final CPString cp2 = new CPString(new CPUTF8("3", 3), 3);
         final CPString cp3 = new CPString(new CPUTF8("5", 5), 5);
@@ -88,7 +88,7 @@ public class ClassFileEntryTest {
     }
 
     @Test
-    public void testSourceAttribute() {
+    void testSourceAttribute() {
         final SourceFileAttribute sfa1 = new SourceFileAttribute(new CPUTF8("Thing.java", 1)); //$NON-NLS-1$
         final SourceFileAttribute sfa2 = new SourceFileAttribute(new CPUTF8("Thing.java", 1)); //$NON-NLS-1$
         final SourceFileAttribute sfa3 = new SourceFileAttribute(new CPUTF8("OtherThing.java", 2)); //$NON-NLS-1$
@@ -96,7 +96,7 @@ public class ClassFileEntryTest {
     }
 
     @Test
-    public void testUTF8() {
+    void testUTF8() {
         final CPUTF8 u1 = new CPUTF8("thing", 1); //$NON-NLS-1$
         final CPUTF8 u2 = new CPUTF8("thing", 1); //$NON-NLS-1$
         final CPUTF8 u3 = new CPUTF8("otherthing", 2); //$NON-NLS-1$

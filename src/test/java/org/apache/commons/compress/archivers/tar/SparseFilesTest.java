@@ -114,7 +114,7 @@ public class SparseFilesTest extends AbstractTest {
     }
 
     @Test
-    public void testCompareTarArchiveInputStreamWithTarFile() throws IOException {
+    void testCompareTarArchiveInputStreamWithTarFile() throws IOException {
         final Path file = getPath("oldgnu_sparse.tar");
         try (TarArchiveInputStream tarIn = new TarArchiveInputStream(new BufferedInputStream(Files.newInputStream(file)));
                 TarFile tarFile = new TarFile(file)) {
@@ -127,7 +127,7 @@ public class SparseFilesTest extends AbstractTest {
 
     @Test
     @DisabledOnOs(OS.WINDOWS)
-    public void testExtractExtendedOldGNU() throws IOException, InterruptedException {
+    void testExtractExtendedOldGNU() throws IOException, InterruptedException {
         final File file = getFile("oldgnu_extended_sparse.tar");
         try (InputStream sparseFileInputStream = extractTarAndGetInputStream(file, "sparse6");
                 TarArchiveInputStream tin = new TarArchiveInputStream(Files.newInputStream(file.toPath()))) {
@@ -164,7 +164,7 @@ public class SparseFilesTest extends AbstractTest {
 
     @Test
     @DisabledOnOs(OS.WINDOWS)
-    public void testExtractOldGNU() throws IOException, InterruptedException {
+    void testExtractOldGNU() throws IOException, InterruptedException {
         try {
             final File file = getFile("oldgnu_sparse.tar");
             try (InputStream sparseFileInputStream = extractTarAndGetInputStream(file, "sparsefile");
@@ -181,7 +181,7 @@ public class SparseFilesTest extends AbstractTest {
 
     @Test
     @DisabledOnOs(OS.WINDOWS)
-    public void testExtractPaxGNU() throws IOException, InterruptedException {
+    void testExtractPaxGNU() throws IOException, InterruptedException {
         // GNU tar with version 1.28 has some problems reading sparsefile-0.1,
         // so the test should be skipped then
         // TODO : what about the versions lower than 1.28?
@@ -212,7 +212,7 @@ public class SparseFilesTest extends AbstractTest {
 
     @Test
     @EnabledOnOs(OS.WINDOWS)
-    public void testExtractSparseTarsOnWindows() throws IOException {
+    void testExtractSparseTarsOnWindows() throws IOException {
         final File oldGNUSparseTar = getFile("oldgnu_sparse.tar");
         final File paxGNUSparseTar = getFile("pax_gnu_sparse.tar");
         try (TarArchiveInputStream paxGNUSparseInputStream = new TarArchiveInputStream(Files.newInputStream(paxGNUSparseTar.toPath()))) {
@@ -247,7 +247,7 @@ public class SparseFilesTest extends AbstractTest {
     }
 
     @Test
-    public void testOldGNU() throws Throwable {
+    void testOldGNU() throws Throwable {
         final File file = getFile("oldgnu_sparse.tar");
         try (TarArchiveInputStream tin = new TarArchiveInputStream(Files.newInputStream(file.toPath()))) {
             final TarArchiveEntry ae = tin.getNextTarEntry();
@@ -288,7 +288,7 @@ public class SparseFilesTest extends AbstractTest {
     }
 
     @Test
-    public void testPaxGNU() throws Throwable {
+    void testPaxGNU() throws Throwable {
         final File file = getFile("pax_gnu_sparse.tar");
         try (TarArchiveInputStream tin = new TarArchiveInputStream(Files.newInputStream(file.toPath()))) {
             assertPaxGNUEntry(tin, "0.0");
@@ -299,7 +299,7 @@ public class SparseFilesTest extends AbstractTest {
 
     @Test
     @DisabledOnOs(OS.WINDOWS)
-    public void testTarFileExtractExtendedOldGNU() throws IOException, InterruptedException {
+    void testTarFileExtractExtendedOldGNU() throws IOException, InterruptedException {
         final File file = getFile("oldgnu_extended_sparse.tar");
         try (InputStream sparseFileInputStream = extractTarAndGetInputStream(file, "sparse6");
                 TarFile tarFile = new TarFile(file)) {
@@ -337,7 +337,7 @@ public class SparseFilesTest extends AbstractTest {
 
     @Test
     @DisabledOnOs(OS.WINDOWS)
-    public void testTarFileExtractOldGNU() throws IOException, InterruptedException {
+    void testTarFileExtractOldGNU() throws IOException, InterruptedException {
         final File file = getFile("oldgnu_sparse.tar");
         try (InputStream sparseFileInputStream = extractTarAndGetInputStream(file, "sparsefile");
                 TarFile tarFile = new TarFile(file)) {
@@ -350,7 +350,7 @@ public class SparseFilesTest extends AbstractTest {
 
     @Test
     @DisabledOnOs(OS.WINDOWS)
-    public void testTarFileExtractPaxGNU() throws IOException, InterruptedException {
+    void testTarFileExtractPaxGNU() throws IOException, InterruptedException {
         // GNU tar with version 1.28 has some problems reading sparsefile-0.1,
         // so the test should be skipped then
         // TODO : what about the versions lower than 1.28?
@@ -382,7 +382,7 @@ public class SparseFilesTest extends AbstractTest {
 
     @Test
     @EnabledOnOs(OS.WINDOWS)
-    public void testTarFileExtractSparseTarsOnWindows() throws IOException {
+    void testTarFileExtractSparseTarsOnWindows() throws IOException {
         final File oldGNUSparseTar = getFile("oldgnu_sparse.tar");
         final File paxGNUSparseTar = getFile("pax_gnu_sparse.tar");
         try (TarFile paxGnu = new TarFile(paxGNUSparseTar)) {
@@ -421,7 +421,7 @@ public class SparseFilesTest extends AbstractTest {
     }
 
     @Test
-    public void testTarFileOldGNU() throws Throwable {
+    void testTarFileOldGNU() throws Throwable {
         final File file = getFile("oldgnu_sparse.tar");
         try (TarFile tarFile = new TarFile(file)) {
             final TarArchiveEntry ae = tarFile.getEntries().get(0);
@@ -461,7 +461,7 @@ public class SparseFilesTest extends AbstractTest {
     }
 
     @Test
-    public void testTarFilePaxGNU() throws IOException {
+    void testTarFilePaxGNU() throws IOException {
         final File file = getFile("pax_gnu_sparse.tar");
         try (TarFile tarFile = new TarFile(file)) {
             final List<TarArchiveEntry> entries = tarFile.getEntries();

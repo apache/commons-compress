@@ -48,7 +48,7 @@ public final class GZipTest extends AbstractTest {
     private static final Instant MTIME_INSTANT = Instant.ofEpochSecond(MTIME);
 
     @Test
-    public void testConcatenatedStreamsReadFirstOnly() throws Exception {
+    void testConcatenatedStreamsReadFirstOnly() throws Exception {
         final File input = getFile("multiple.gz");
         try (InputStream is = Files.newInputStream(input.toPath())) {
             try (CompressorInputStream in = new CompressorStreamFactory().createCompressorInputStream("gz", is)) {
@@ -59,7 +59,7 @@ public final class GZipTest extends AbstractTest {
     }
 
     @Test
-    public void testConcatenatedStreamsReadFully() throws Exception {
+    void testConcatenatedStreamsReadFully() throws Exception {
         final File input = getFile("multiple.gz");
         try (InputStream is = Files.newInputStream(input.toPath())) {
             try (CompressorInputStream in = new GzipCompressorInputStream(is, true)) {
@@ -75,7 +75,7 @@ public final class GZipTest extends AbstractTest {
      * @see "https://issues.apache.org/jira/browse/COMPRESS-84"
      */
     @Test
-    public void testCorruptedInput() throws Exception {
+    void testCorruptedInput() throws Exception {
         final byte[] data = readAllBytes("bla.tgz");
         try (InputStream in = new ByteArrayInputStream(data, 0, data.length - 1);
                 CompressorInputStream cin = new CompressorStreamFactory().createCompressorInputStream("gz", in);
@@ -101,22 +101,22 @@ public final class GZipTest extends AbstractTest {
     }
 
     @Test
-    public void testExtraFlagsBestCompression() throws Exception {
+    void testExtraFlagsBestCompression() throws Exception {
         testExtraFlags(Deflater.BEST_COMPRESSION, 2, 1024);
     }
 
     @Test
-    public void testExtraFlagsDefaultCompression() throws Exception {
+    void testExtraFlagsDefaultCompression() throws Exception {
         testExtraFlags(Deflater.DEFAULT_COMPRESSION, 0, 4096);
     }
 
     @Test
-    public void testExtraFlagsFastestCompression() throws Exception {
+    void testExtraFlagsFastestCompression() throws Exception {
         testExtraFlags(Deflater.BEST_SPEED, 4, 128);
     }
 
     @Test
-    public void testGzipCreation() throws Exception {
+    void testGzipCreation() throws Exception {
         final File input = getFile("test1.xml");
         final File output = newTempFile("test1.xml.gz");
         try (OutputStream out = Files.newOutputStream(output.toPath())) {
@@ -127,7 +127,7 @@ public final class GZipTest extends AbstractTest {
     }
 
     @Test
-    public void testGzipUnarchive() throws Exception {
+    void testGzipUnarchive() throws Exception {
         final File input = getFile("bla.tgz");
         final File output = newTempFile("bla.tar");
         try (InputStream is = Files.newInputStream(input.toPath())) {
@@ -138,7 +138,7 @@ public final class GZipTest extends AbstractTest {
     }
 
     @Test
-    public void testInteroperabilityWithGzipCompressorInputStream() throws Exception {
+    void testInteroperabilityWithGzipCompressorInputStream() throws Exception {
         final byte[] content = readAllBytes("test3.xml");
         final ByteArrayOutputStream bout = new ByteArrayOutputStream();
         final GzipParameters parameters = new GzipParameters();
@@ -161,7 +161,7 @@ public final class GZipTest extends AbstractTest {
     }
 
     @Test
-    public void testInteroperabilityWithGZIPInputStream() throws Exception {
+    void testInteroperabilityWithGZIPInputStream() throws Exception {
         final byte[] content = readAllBytes("test3.xml");
         final ByteArrayOutputStream bout = new ByteArrayOutputStream();
         final GzipParameters parameters = new GzipParameters();
@@ -184,20 +184,20 @@ public final class GZipTest extends AbstractTest {
 
     @ParameterizedTest
     @ValueSource(ints = { 0, -1 })
-    public void testInvalidBufferSize(final int bufferSize) {
+    void testInvalidBufferSize(final int bufferSize) {
         final GzipParameters parameters = new GzipParameters();
         assertThrows(IllegalArgumentException.class, () -> parameters.setBufferSize(bufferSize), "IllegalArgumentException not thrown");
     }
 
     @ParameterizedTest
     @ValueSource(ints = { 10, -5 })
-    public void testInvalidCompressionLevel(final int compressionLevel) {
+    void testInvalidCompressionLevel(final int compressionLevel) {
         final GzipParameters parameters = new GzipParameters();
         assertThrows(IllegalArgumentException.class, () -> parameters.setCompressionLevel(compressionLevel), "IllegalArgumentException not thrown");
     }
 
     @Test
-    public void testMetadataRoundTrip() throws Exception {
+    void testMetadataRoundTrip() throws Exception {
         final ByteArrayOutputStream bout = new ByteArrayOutputStream();
 
         final GzipParameters parameters = new GzipParameters();
@@ -236,7 +236,7 @@ public final class GZipTest extends AbstractTest {
     }
 
     @Test
-    public void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+    void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.tgz");
         final byte[] buf = new byte[2];
         try (InputStream is = Files.newInputStream(input.toPath());
@@ -248,14 +248,14 @@ public final class GZipTest extends AbstractTest {
     }
 
     @Test
-    public void testOverWrite() throws Exception {
+    void testOverWrite() throws Exception {
         final GzipCompressorOutputStream out = new GzipCompressorOutputStream(new ByteArrayOutputStream());
         out.close();
         assertThrows(IOException.class, () -> out.write(0));
     }
 
     @Test
-    public void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
+    void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
         final File input = getFile("bla.tgz");
         try (InputStream is = Files.newInputStream(input.toPath());
                 GzipCompressorInputStream in = new GzipCompressorInputStream(is)) {

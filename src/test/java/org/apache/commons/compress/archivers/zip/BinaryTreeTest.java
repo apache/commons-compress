@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
 public class BinaryTreeTest {
 
     @Test
-    public void testDecode() throws IOException {
+    void testDecode() throws IOException {
         final InputStream in = new ByteArrayInputStream(new byte[] { 0x02, 0x42, 0x01, 0x13 });
 
         final BinaryTree tree = BinaryTree.decode(in, 8);
@@ -52,7 +52,7 @@ public class BinaryTreeTest {
     }
 
     @Test
-    public void testExceptions() {
+    void testExceptions() {
         final BinaryTree binaryFinary = new BinaryTree(4);
         binaryFinary.addLeaf(0, 0, 0, 1);
         assertThrows(IllegalArgumentException.class, () -> binaryFinary.addLeaf(0, 0, 0, 1));

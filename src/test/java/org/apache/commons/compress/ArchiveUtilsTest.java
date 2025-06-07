@@ -52,14 +52,14 @@ public class ArchiveUtilsTest extends AbstractTest {
     }
 
     @Test
-    public void testAsciiConversions() {
+    void testAsciiConversions() {
         asciiToByteAndBackOK("");
         asciiToByteAndBackOK("abcd");
         asciiToByteAndBackFail("\u8025");
     }
 
     @Test
-    public void testCompareAscii() {
+    void testCompareAscii() {
         final byte[] buffer1 = { 'a', 'b', 'c' };
         final byte[] buffer2 = { 'd', 'e', 'f', 0 };
         assertTrue(ArchiveUtils.matchAsciiBuffer("abc", buffer1));
@@ -69,7 +69,7 @@ public class ArchiveUtilsTest extends AbstractTest {
     }
 
     @Test
-    public void testCompareBA() {
+    void testCompareBA() {
         final byte[] buffer1 = { 1, 2, 3 };
         final byte[] buffer2 = { 1, 2, 3, 0 };
         final byte[] buffer3 = { 1, 2, 3 };
@@ -84,32 +84,32 @@ public class ArchiveUtilsTest extends AbstractTest {
     }
 
     @Test
-    public void testIsEqual() {
+    void testIsEqual() {
         assertTrue(ArchiveUtils.isEqual(null, 0, 0, null, 0, 0));
     }
 
     @Test
-    public void testIsEqualWithNullWithPositive() {
+    void testIsEqualWithNullWithPositive() {
         final byte[] byteArray = new byte[8];
         byteArray[1] = (byte) -77;
         assertFalse(ArchiveUtils.isEqualWithNull(byteArray, 0, (byte) 0, byteArray, (byte) 0, (byte) 80));
     }
 
     @Test
-    public void testSanitizeLeavesShortStringsAlone() {
+    void testSanitizeLeavesShortStringsAlone() {
         final String input = "012345678901234567890123456789012345678901234567890123456789";
         assertEquals(input, ArchiveUtils.sanitize(input));
     }
 
     @Test
-    public void testSanitizeRemovesUnprintableCharacters() {
+    void testSanitizeRemovesUnprintableCharacters() {
         final String input = "\b12345678901234567890123456789012345678901234567890123456789";
         final String expected = "?12345678901234567890123456789012345678901234567890123456789";
         assertEquals(expected, ArchiveUtils.sanitize(input));
     }
 
     @Test
-    public void testSanitizeShortensString() {
+    void testSanitizeShortensString() {
         // @formatter:off
         final String input = "012345678901234567890123456789012345678901234567890123456789"
             + "012345678901234567890123456789012345678901234567890123456789"
@@ -126,20 +126,20 @@ public class ArchiveUtilsTest extends AbstractTest {
     }
 
     @Test
-    public void testToAsciiBytes() {
+    void testToAsciiBytes() {
         final byte[] byteArray = ArchiveUtils.toAsciiBytes("SOCKET");
         assertArrayEquals(new byte[] { (byte) 83, (byte) 79, (byte) 67, (byte) 75, (byte) 69, (byte) 84 }, byteArray);
         assertFalse(ArchiveUtils.isEqualWithNull(byteArray, 0, 46, byteArray, 63, 0));
     }
 
     @Test
-    public void testToAsciiStringThrowsStringIndexOutOfBoundsException() {
+    void testToAsciiStringThrowsStringIndexOutOfBoundsException() {
         final byte[] byteArray = new byte[3];
         assertThrows(StringIndexOutOfBoundsException.class, () -> ArchiveUtils.toAsciiString(byteArray, 940, 2730));
     }
 
     @Test
-    public void testToStringWithNonNull() {
+    void testToStringWithNonNull() {
         final SevenZArchiveEntry sevenZArchiveEntry = new SevenZArchiveEntry();
         final String string = ArchiveUtils.toString(sevenZArchiveEntry);
         assertEquals("-       0 null", string);

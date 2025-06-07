@@ -99,7 +99,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
      * @throws Exception
      */
     @Test
-    public void testAddAlreadyExistingWithReplaceFalse() throws Exception {
+    void testAddAlreadyExistingWithReplaceFalse() throws Exception {
         final String archiverName = "zip";
         final Path input = createArchive(archiverName);
         final File result = createTempFile("test", "." + archiverName);
@@ -126,7 +126,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
      * @throws Exception
      */
     @Test
-    public void testAddAlreadyExistingWithReplaceTrue() throws Exception {
+    void testAddAlreadyExistingWithReplaceTrue() throws Exception {
         final String archiverName = "zip";
         final Path input = createArchive(archiverName);
         final File result = createTempFile("test", "." + archiverName);
@@ -151,7 +151,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
      * @throws Exception
      */
     @Test
-    public void testAddChangeTwice() throws Exception {
+    void testAddChangeTwice() throws Exception {
         try (InputStream in = newInputStream("test.txt");
                 InputStream in2 = newInputStream("test2.xml")) {
             final ZipArchiveEntry e = new ZipArchiveEntry("test.txt");
@@ -174,7 +174,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
      * @throws Exception
      */
     @Test
-    public void testAddChangeTwiceWithoutReplace() throws Exception {
+    void testAddChangeTwiceWithoutReplace() throws Exception {
         try (InputStream in = newInputStream("test.txt");
                 InputStream in2 = newInputStream("test2.xml")) {
             final ZipArchiveEntry e = new ZipArchiveEntry("test.txt");
@@ -196,7 +196,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
      * @throws Exception
      */
     @Test
-    public void testAddDeleteAdd() throws Exception {
+    void testAddDeleteAdd() throws Exception {
         final String archiverName = "cpio";
         final Path input = createArchive(archiverName);
         final File result = createTempFile("test", "." + archiverName);
@@ -222,7 +222,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
      * @throws Exception
      */
     @Test
-    public void testAddDeleteToOneFileArchive() throws Exception {
+    void testAddDeleteToOneFileArchive() throws Exception {
         final String archiverName = "cpio";
         final Path input = createSingleEntryArchive(archiverName);
         final File result = createTempFile("test", "." + archiverName);
@@ -252,7 +252,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
      * @throws Exception
      */
     @Test
-    public void testAddMoveDelete() throws Exception {
+    void testAddMoveDelete() throws Exception {
     }
 
     /**
@@ -263,7 +263,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
      */
     @ParameterizedTest
     @MethodSource("org.apache.commons.compress.changes.TestFixtures#getEmptyOutputArchiveNames")
-    public void testAddToEmptyArchive(final String archiverName) throws Exception {
+    void testAddToEmptyArchive(final String archiverName) throws Exception {
         // final String archiverName = "zip";
         final Path input = createEmptyArchive(archiverName);
         final File result = createTempFile("test", "." + archiverName);
@@ -284,7 +284,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
 
     @ParameterizedTest
     @MethodSource("org.apache.commons.compress.changes.TestFixtures#getZipOutputArchiveNames")
-    public void testAddToEmptyZipArchive(final String archiverName) throws Exception {
+    void testAddToEmptyZipArchive(final String archiverName) throws Exception {
         // final String archiverName = "zip";
         final Path input = createEmptyArchive(archiverName);
         final File result = createTempFile("test", "." + archiverName);
@@ -306,7 +306,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
 
     @ParameterizedTest
     @MethodSource("org.apache.commons.compress.changes.TestFixtures#getZipOutputArchiveNames")
-    public void testAddToEmptyZipParamArchive(final String archiverName) throws Exception {
+    void testAddToEmptyZipParamArchive(final String archiverName) throws Exception {
         final Path input = createEmptyArchive(archiverName);
         final File result = createTempFile("test", "." + archiverName);
         final ChangeSet<ZipArchiveEntry> changeSet = createChangeSet();
@@ -333,7 +333,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
      */
     @ParameterizedTest
     @MethodSource("org.apache.commons.compress.changes.TestFixtures#getOutputArchiveNames")
-    public void testChangeSetResults(final String archiverName) throws Exception {
+    void testChangeSetResults(final String archiverName) throws Exception {
         final Path input = createArchive(archiverName);
         final File result = createTempFile("test", "." + archiverName);
         final File file1 = getFile("test.txt");
@@ -375,7 +375,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
      * @throws Exception
      */
     @Test
-    public void testDeleteAddDelete() throws Exception {
+    void testDeleteAddDelete() throws Exception {
         final String archiverName = "cpio";
         final Path input = createArchive(archiverName);
         final File result = createTempFile("test", "." + archiverName);
@@ -402,7 +402,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
      * @throws Exception
      */
     @Test
-    public void testDeleteAddToOneFileArchive() throws Exception {
+    void testDeleteAddToOneFileArchive() throws Exception {
         final String archiverName = "zip";
         final Path input = createSingleEntryArchive(archiverName);
         final File result = createTempFile("test", "." + archiverName);
@@ -432,7 +432,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
      */
     @ParameterizedTest
     @MethodSource("org.apache.commons.compress.changes.TestFixtures#getOutputArchiveNames")
-    public void testDeleteDir(final String archiverName) throws Exception {
+    void testDeleteDir(final String archiverName) throws Exception {
         final Path input = createArchive(archiverName);
         final File result = createTempFile("test", "." + archiverName);
         try (InputStream inputStream = Files.newInputStream(input);
@@ -455,7 +455,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
      */
     @ParameterizedTest
     @MethodSource("org.apache.commons.compress.changes.TestFixtures#getOutputArchiveNames")
-    public void testDeleteDir2(final String archiverName) throws Exception {
+    void testDeleteDir2(final String archiverName) throws Exception {
         final Path input = createArchive(archiverName);
         final File result = createTempFile("test", "." + archiverName);
         try (InputStream inputStream = Files.newInputStream(input);
@@ -478,7 +478,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
      */
     @ParameterizedTest
     @MethodSource("org.apache.commons.compress.changes.TestFixtures#getOutputArchiveNames")
-    public void testDeleteDir3(final String archiverName) throws Exception {
+    void testDeleteDir3(final String archiverName) throws Exception {
         final Path input = createArchive(archiverName);
         final File result = createTempFile("test", "." + archiverName);
         try (InputStream inputStream = Files.newInputStream(input);
@@ -502,7 +502,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
      */
     @ParameterizedTest
     @MethodSource("org.apache.commons.compress.changes.TestFixtures#getOutputArchiveNames")
-    public void testDeleteFileCpio(final String archiverName) throws Exception {
+    void testDeleteFileCpio(final String archiverName) throws Exception {
         final Path input = createArchive(archiverName);
         final File result = createTempFile("test", "." + archiverName);
         try (InputStream inputStream = Files.newInputStream(input);
@@ -525,7 +525,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
      */
     @ParameterizedTest
     @MethodSource("org.apache.commons.compress.changes.TestFixtures#getOutputArchiveNames")
-    public void testDeleteFileCpio2(final String archiverName) throws Exception {
+    void testDeleteFileCpio2(final String archiverName) throws Exception {
         final Path input = createArchive(archiverName);
         final File result = createTempFile("test", "." + archiverName);
         try (InputStream inputStream = Files.newInputStream(input);
@@ -546,7 +546,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
      * @throws Exception
      */
     @Test
-    public void testDeleteFromAndAddToAr() throws Exception {
+    void testDeleteFromAndAddToAr() throws Exception {
         final String archiverName = "ar";
         final ChangeSet<ArArchiveEntry> changeSet = createChangeSet();
         changeSet.delete("test2.xml");
@@ -574,7 +574,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
      * @throws Exception
      */
     @Test
-    public void testDeleteFromAndAddToJar() throws Exception {
+    void testDeleteFromAndAddToJar() throws Exception {
         final String archiverName = "jar";
         final ChangeSet<JarArchiveEntry> changeSet = createChangeSet();
         changeSet.delete("test2.xml");
@@ -600,7 +600,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
     }
 
     @Test
-    public void testDeleteFromAndAddToTar() throws Exception {
+    void testDeleteFromAndAddToTar() throws Exception {
         final String archiverName = "tar";
         final ChangeSet<TarArchiveEntry> changeSet = createChangeSet();
         changeSet.delete("test2.xml");
@@ -640,7 +640,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
      */
     @ParameterizedTest
     @MethodSource("org.apache.commons.compress.changes.TestFixtures#getZipOutputArchiveNames")
-    public void testDeleteFromAndAddToZip(final String archiverName) throws Exception {
+    void testDeleteFromAndAddToZip(final String archiverName) throws Exception {
         final Path input = createArchive(archiverName);
         final File result = createTempFile("test", "." + archiverName);
         final File file1 = getFile("test.txt");
@@ -669,7 +669,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
      */
     @ParameterizedTest
     @MethodSource("org.apache.commons.compress.changes.TestFixtures#getZipOutputArchiveNames")
-    public void testDeleteFromAndAddToZipUsingZipFilePerform(final String archiverName) throws Exception {
+    void testDeleteFromAndAddToZipUsingZipFilePerform(final String archiverName) throws Exception {
         final Path input = createArchive(archiverName);
         final File result = createTempFile("test", "." + archiverName);
         final File file1 = getFile("test.txt");
@@ -694,7 +694,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
      * @throws Exception
      */
     @Test
-    public void testDeleteFromAr() throws Exception {
+    void testDeleteFromAr() throws Exception {
         final String archiverName = "ar";
         final ChangeSet<E> changeSet = createChangeSet();
         changeSet.delete("test2.xml");
@@ -720,7 +720,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
      */
     @ParameterizedTest
     @MethodSource("org.apache.commons.compress.changes.TestFixtures#getZipOutputArchiveNames")
-    public void testDeleteFromJar(final String archiverName) throws Exception {
+    void testDeleteFromJar(final String archiverName) throws Exception {
         final ChangeSet<E> changeSet = createChangeSet();
         changeSet.delete("test2.xml");
         changeSet.deleteDir("META-INF");
@@ -746,7 +746,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
      * @throws Exception
      */
     @Test
-    public void testDeleteFromTar() throws Exception {
+    void testDeleteFromTar() throws Exception {
         final String archiverName = "tar";
         final ChangeSet<E> changeSet = createChangeSet();
         changeSet.delete("test2.xml");
@@ -771,7 +771,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
      */
     @ParameterizedTest
     @MethodSource("org.apache.commons.compress.changes.TestFixtures#getZipOutputArchiveNames")
-    public void testDeleteFromZip(final String archiverName) throws Exception {
+    void testDeleteFromZip(final String archiverName) throws Exception {
         final ChangeSet<E> changeSet = createChangeSet();
         changeSet.delete("test2.xml");
         final File input = getFile("bla.zip");
@@ -796,7 +796,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
      */
     @ParameterizedTest
     @MethodSource("org.apache.commons.compress.changes.TestFixtures#getOutputArchiveNames")
-    public void testDeletePlusAdd(final String archiverName) throws Exception {
+    void testDeletePlusAdd(final String archiverName) throws Exception {
         final Path input = createArchive(archiverName);
         final File result = createTempFile("test", "." + archiverName);
         final File file1 = getFile("test.txt");
@@ -825,7 +825,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
      */
     @ParameterizedTest
     @MethodSource("org.apache.commons.compress.changes.TestFixtures#getOutputArchiveNames")
-    public void testDeletePlusAddSame(final String archiverName) throws Exception {
+    void testDeletePlusAddSame(final String archiverName) throws Exception {
         final Path input = createArchive(archiverName);
         final File result = createTempFile("test", "." + archiverName);
         final File testTxt = getFile("test.txt");
@@ -868,7 +868,7 @@ public final class ChangeSetSafeTypesTest<I extends ArchiveInputStream<E>, O ext
      * mv dir1/test.text dir2/test.txt + delete dir1 Moves the file to dir2 and deletes everything in dir1
      */
     @Test
-    public void testRenameAndDelete() {
+    void testRenameAndDelete() {
     }
 
 }

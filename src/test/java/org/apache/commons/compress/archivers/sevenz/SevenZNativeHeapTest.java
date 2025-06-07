@@ -243,7 +243,7 @@ public class SevenZNativeHeapTest extends AbstractTest {
     }
 
     @Test
-    public void testEndDeflaterOnCloseStream() throws Exception {
+    void testEndDeflaterOnCloseStream() throws Exception {
         final Coders.DeflateDecoder deflateDecoder = new DeflateDecoder();
         final DelegatingDeflater delegatingDeflater;
         try (DeflateDecoderOutputStream outputStream = (DeflateDecoderOutputStream) deflateDecoder.encode(new ByteArrayOutputStream(), 9)) {
@@ -255,7 +255,7 @@ public class SevenZNativeHeapTest extends AbstractTest {
     }
 
     @Test
-    public void testEndInflaterOnCloseStream() throws Exception {
+    void testEndInflaterOnCloseStream() throws Exception {
         final Coders.DeflateDecoder deflateDecoder = new DeflateDecoder();
         final DelegatingInflater delegatingInflater;
         try (DeflateDecoderInputStream inputStream = (DeflateDecoderInputStream) deflateDecoder.decode("dummy",

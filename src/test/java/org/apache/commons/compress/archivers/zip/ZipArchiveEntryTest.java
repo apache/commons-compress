@@ -47,7 +47,7 @@ import org.junit.jupiter.api.Test;
 public class ZipArchiveEntryTest {
 
     @Test
-    public void bestEffortIncludesUnparseableExtraData() throws Exception {
+    void bestEffortIncludesUnparseableExtraData() throws Exception {
         final ZipExtraField[] extraFields = parsingModeBehaviorTestData();
         final ZipArchiveEntry ze = new ZipArchiveEntry("foo");
         ze.setExtraFields(extraFields);
@@ -72,7 +72,7 @@ public class ZipArchiveEntryTest {
      * test handling of extra fields
      */
     @Test
-    public void testAddAsFirstExtraField() {
+    void testAddAsFirstExtraField() {
         final AsiExtraField a = new AsiExtraField();
         a.setDirectory(true);
         a.setMode(0755);
@@ -111,7 +111,7 @@ public class ZipArchiveEntryTest {
      * Test case for <a href="https://issues.apache.org/jira/browse/COMPRESS-93">COMPRESS-93</a>.
      */
     @Test
-    public void testCompressionMethod() throws Exception {
+    void testCompressionMethod() throws Exception {
         try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(new ByteArrayOutputStream())) {
             final ZipArchiveEntry entry = new ZipArchiveEntry("foo");
             assertEquals(-1, entry.getMethod());
@@ -133,7 +133,7 @@ public class ZipArchiveEntryTest {
     }
 
     @Test
-    public void testCopyConstructor() throws Exception {
+    void testCopyConstructor() throws Exception {
         final ZipArchiveEntry archiveEntry = new ZipArchiveEntry("fred");
         archiveEntry.setUnixMode(0664);
         archiveEntry.setMethod(ZipEntry.DEFLATED);
@@ -143,7 +143,7 @@ public class ZipArchiveEntryTest {
     }
 
     @Test
-    public void testDraconicThrowsOnUnparseableExtraData() throws Exception {
+    void testDraconicThrowsOnUnparseableExtraData() throws Exception {
         final ZipExtraField[] extraFields = parsingModeBehaviorTestData();
         final ZipArchiveEntry ze = new ZipArchiveEntry("foo");
         ze.setExtraFields(extraFields);
@@ -154,7 +154,7 @@ public class ZipArchiveEntryTest {
      * test handling of extra fields via central directory
      */
     @Test
-    public void testExtraFieldMerging() {
+    void testExtraFieldMerging() {
         final AsiExtraField a = new AsiExtraField();
         a.setDirectory(true);
         a.setMode(0755);
@@ -200,7 +200,7 @@ public class ZipArchiveEntryTest {
      * test handling of extra fields
      */
     @Test
-    public void testExtraFields() {
+    void testExtraFields() {
         final AsiExtraField a = new AsiExtraField();
         a.setDirectory(true);
         a.setMode(0755);
@@ -247,7 +247,7 @@ public class ZipArchiveEntryTest {
     }
 
     @Test
-    public void testIsUnixSymlink() {
+    void testIsUnixSymlink() {
         final ZipArchiveEntry ze = new ZipArchiveEntry("foo");
         ze.setUnixMode(UnixStat.LINK_FLAG);
         assertTrue(ze.isUnixSymlink());
@@ -259,7 +259,7 @@ public class ZipArchiveEntryTest {
      * @see "https://issues.apache.org/jira/browse/COMPRESS-379"
      */
     @Test
-    public void testIsUnixSymlinkIsFalseIfMoreThanOneFlagIsSet() throws Exception {
+    void testIsUnixSymlinkIsFalseIfMoreThanOneFlagIsSet() throws Exception {
         try (ZipFile zf = ZipFile.builder().setFile(getFile("COMPRESS-379.jar")).get()) {
             final ZipArchiveEntry ze = zf.getEntry("META-INF/maven/");
             assertFalse(ze.isUnixSymlink());
@@ -270,7 +270,7 @@ public class ZipArchiveEntryTest {
      * Test case for <a href="https://issues.apache.org/jira/browse/COMPRESS-94">COMPRESS-94</a>.
      */
     @Test
-    public void testNotEquals() {
+    void testNotEquals() {
         final ZipArchiveEntry entry1 = new ZipArchiveEntry("foo");
         final ZipArchiveEntry entry2 = new ZipArchiveEntry("bar");
         assertNotEquals(entry1, entry2);
@@ -282,7 +282,7 @@ public class ZipArchiveEntryTest {
      * @see "https://issues.apache.org/jira/browse/COMPRESS-187"
      */
     @Test
-    public void testNullCommentEqualsEmptyComment() {
+    void testNullCommentEqualsEmptyComment() {
         final ZipArchiveEntry entry1 = new ZipArchiveEntry("foo");
         final ZipArchiveEntry entry2 = new ZipArchiveEntry("foo");
         final ZipArchiveEntry entry3 = new ZipArchiveEntry("foo");
@@ -295,7 +295,7 @@ public class ZipArchiveEntryTest {
     }
 
     @Test
-    public void testOnlyParseableLenientExcludesUnparseableExtraData() throws Exception {
+    void testOnlyParseableLenientExcludesUnparseableExtraData() throws Exception {
         final ZipExtraField[] extraFields = parsingModeBehaviorTestData();
         final ZipArchiveEntry ze = new ZipArchiveEntry("foo");
         ze.setExtraFields(extraFields);
@@ -304,7 +304,7 @@ public class ZipArchiveEntryTest {
     }
 
     @Test
-    public void testOnlyParseableStrictExcludesUnparseableExtraData() throws Exception {
+    void testOnlyParseableStrictExcludesUnparseableExtraData() throws Exception {
         final ZipExtraField[] extraFields = parsingModeBehaviorTestData();
         final ZipArchiveEntry ze = new ZipArchiveEntry("foo");
         ze.setExtraFields(extraFields);
@@ -313,7 +313,7 @@ public class ZipArchiveEntryTest {
     }
 
     @Test
-    public void testReparsingUnicodeExtraWithUnsupportedversionThrowsInStrictMode() throws Exception {
+    void testReparsingUnicodeExtraWithUnsupportedversionThrowsInStrictMode() throws Exception {
         try (ZipFile zf = ZipFile.builder().setFile(getFile("COMPRESS-479.zip")).get()) {
             final ZipArchiveEntry ze = zf.getEntry("%U20AC_for_Dollar.txt");
             assertThrows(ZipException.class, () -> ze.getExtraFields(ZipArchiveEntry.ExtraFieldParsingMode.STRICT_FOR_KNOW_EXTRA_FIELDS));
@@ -321,7 +321,7 @@ public class ZipArchiveEntryTest {
     }
 
     @Test
-    public void testShouldNotSetExtraDateFieldsIfDateFitsInDosDates() {
+    void testShouldNotSetExtraDateFieldsIfDateFitsInDosDates() {
         final ZipArchiveEntry ze = new ZipArchiveEntry();
         final FileTime time = FileTime.from(ZipUtilTest.toLocalInstant("2022-12-28T20:39:33.1234567"));
         ze.setTime(time);
@@ -336,7 +336,7 @@ public class ZipArchiveEntryTest {
     }
 
     @Test
-    public void testShouldNotSetInfoZipFieldIfAnyDatesExceedUnixTime() {
+    void testShouldNotSetInfoZipFieldIfAnyDatesExceedUnixTime() {
         final ZipArchiveEntry ze = new ZipArchiveEntry();
         final FileTime accessTime = FileTime.from(Instant.parse("2022-12-29T21:40:34.1234567Z"));
         final FileTime creationTime = FileTime.from(Instant.parse("2038-12-28T20:39:33.1234567Z"));
@@ -356,7 +356,7 @@ public class ZipArchiveEntryTest {
     }
 
     @Test
-    public void testShouldNotSetInfoZipFieldIfDateExceedsUnixTime() {
+    void testShouldNotSetInfoZipFieldIfDateExceedsUnixTime() {
         final ZipArchiveEntry ze = new ZipArchiveEntry();
         final FileTime time = FileTime.from(ZipUtilTest.toLocalInstant("2138-11-27T00:00:00"));
         ze.setTime(time.toMillis());
@@ -372,7 +372,7 @@ public class ZipArchiveEntryTest {
     }
 
     @Test
-    public void testShouldSetExtraDateFieldsIfAccessDateIsSet() {
+    void testShouldSetExtraDateFieldsIfAccessDateIsSet() {
         final ZipArchiveEntry ze = new ZipArchiveEntry();
         final FileTime lastAccessTime = FileTime.from(Instant.parse("2022-12-28T20:39:33.1234567Z"));
         final long time = Instant.parse("2020-03-04T12:34:56.1234567Z").toEpochMilli();
@@ -393,7 +393,7 @@ public class ZipArchiveEntryTest {
     }
 
     @Test
-    public void testShouldSetExtraDateFieldsIfAllDatesAreSet() {
+    void testShouldSetExtraDateFieldsIfAllDatesAreSet() {
         final ZipArchiveEntry ze = new ZipArchiveEntry();
         final FileTime accessTime = FileTime.from(Instant.parse("2022-12-29T21:40:34.1234567Z"));
         final FileTime creationTime = FileTime.from(Instant.parse("2022-12-28T20:39:33.1234567Z"));
@@ -416,7 +416,7 @@ public class ZipArchiveEntryTest {
     }
 
     @Test
-    public void testShouldSetExtraDateFieldsIfCreationDateIsSet() {
+    void testShouldSetExtraDateFieldsIfCreationDateIsSet() {
         final ZipArchiveEntry ze = new ZipArchiveEntry();
         final FileTime creationTime = FileTime.from(Instant.parse("2022-12-28T20:39:33.1234567Z"));
         final long time = Instant.parse("2020-03-04T12:34:56.1234567Z").toEpochMilli();
@@ -437,7 +437,7 @@ public class ZipArchiveEntryTest {
     }
 
     @Test
-    public void testShouldSetExtraDateFieldsIfDateExceedsDosDate() {
+    void testShouldSetExtraDateFieldsIfDateExceedsDosDate() {
         final ZipArchiveEntry ze = new ZipArchiveEntry();
         final FileTime time = FileTime.from(ZipUtilTest.toLocalInstant("1975-11-27T00:00:00"));
         ze.setTime(time.toMillis());
@@ -457,7 +457,7 @@ public class ZipArchiveEntryTest {
     }
 
     @Test
-    public void testShouldSetExtraDateFieldsIfModifyDateIsExplicitlySet() {
+    void testShouldSetExtraDateFieldsIfModifyDateIsExplicitlySet() {
         final ZipArchiveEntry ze = new ZipArchiveEntry();
         final FileTime time = FileTime.from(Instant.parse("2022-12-28T20:39:33.1234567Z"));
         ze.setLastModifiedTime(time);
@@ -477,7 +477,7 @@ public class ZipArchiveEntryTest {
     }
 
     @Test
-    public void testStrictForKnowExtraFieldsIncludesUnparseableExtraData() throws Exception {
+    void testStrictForKnowExtraFieldsIncludesUnparseableExtraData() throws Exception {
         final ZipExtraField[] extraFields = parsingModeBehaviorTestData();
         final ZipArchiveEntry ze = new ZipArchiveEntry("foo");
         ze.setExtraFields(extraFields);
@@ -486,7 +486,7 @@ public class ZipArchiveEntryTest {
     }
 
     @Test
-    public void testUnixMode() {
+    void testUnixMode() {
         ZipArchiveEntry ze = new ZipArchiveEntry("foo");
         assertEquals(0, ze.getPlatform());
         ze.setUnixMode(0755);
@@ -513,7 +513,7 @@ public class ZipArchiveEntryTest {
     }
 
     @Test
-    public void testZipArchiveClone() throws Exception {
+    void testZipArchiveClone() throws Exception {
         try (ZipFile zf = ZipFile.builder().setFile(getFile("COMPRESS-479.zip")).get()) {
             final ZipArchiveEntry ze = zf.getEntry("%U20AC_for_Dollar.txt");
             final ZipArchiveEntry clonedZe = (ZipArchiveEntry) ze.clone();

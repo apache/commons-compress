@@ -76,7 +76,7 @@ public class Codec_decodeInts_OutOfMemoryErrorTest {
     // @formatter:on
 
     @Test
-    public void test() throws IOException {
+    void test() throws IOException {
         final byte[] input = Base64.getDecoder().decode(BASE64_BYTES);
         try (InputStream is = new Pack200CompressorInputStream(new ByteArrayInputStream(input), Pack200Strategy.TEMP_FILE)) {
             // do nothing

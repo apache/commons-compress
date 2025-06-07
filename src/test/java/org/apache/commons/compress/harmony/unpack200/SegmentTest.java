@@ -46,7 +46,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 public class SegmentTest extends AbstractTempDirTest {
 
     @Test
-    public void testHelloWorld() throws Exception {
+    void testHelloWorld() throws Exception {
         final File file = createTempFile("hello", "world.jar");
         try (InputStream in = Segment.class.getResourceAsStream("/pack200/HelloWorld.pack");
                 JarOutputStream out = new JarOutputStream(new FileOutputStream(file))) {
@@ -77,7 +77,7 @@ public class SegmentTest extends AbstractTempDirTest {
     }
 
     @Test
-    public void testInterfaceOnly() throws Exception {
+    void testInterfaceOnly() throws Exception {
         final File file = createTempFile("Interface", "Only.jar");
         try (InputStream in = Segment.class.getResourceAsStream("/pack200/InterfaceOnly.pack");
                 JarOutputStream out = new JarOutputStream(new FileOutputStream(file))) {
@@ -86,7 +86,7 @@ public class SegmentTest extends AbstractTempDirTest {
     }
 
     @Test
-    public void testJustResources() throws Exception {
+    void testJustResources() throws Exception {
         final File file = createTempFile("just", "resources.jar");
         try (InputStream in = Segment.class.getResourceAsStream("/pack200/JustResources.pack");
                 JarOutputStream out = new JarOutputStream(new FileOutputStream(file))) {
@@ -109,7 +109,7 @@ public class SegmentTest extends AbstractTempDirTest {
             // @formatter:on
     })
     // Tests of various files that can cause out of memory errors
-    public void testParsingOOMBounded(final String testFileName) throws Exception {
+    void testParsingOOMBounded(final String testFileName) throws Exception {
         final URL url = Segment.class.getResource("/org/apache/commons/compress/pack/" + testFileName);
         try (BoundedInputStream in = Pack200UnpackerAdapter.newBoundedInputStream(url);
                 JarOutputStream out = new JarOutputStream(NullOutputStream.INSTANCE)) {
@@ -132,7 +132,7 @@ public class SegmentTest extends AbstractTempDirTest {
             // @formatter:on
     })
     // Tests of various files that can cause out of memory errors
-    public void testParsingOOMUnounded(final String testFileName) throws Exception {
+    void testParsingOOMUnounded(final String testFileName) throws Exception {
         try (InputStream in = Segment.class.getResourceAsStream("/org/apache/commons/compress/pack/" + testFileName);
                 JarOutputStream out = new JarOutputStream(NullOutputStream.INSTANCE)) {
             assertThrows(IOException.class, () -> new Segment().unpack(in, out));

@@ -53,32 +53,32 @@ public final class DumpTest extends AbstractTest {
     }
 
     @Test
-    public void testArchiveDetection() throws Exception {
+    void testArchiveDetection() throws Exception {
         archiveDetection(getFile("bla.dump"));
     }
 
     @Test
-    public void testCheckArchive() throws Exception {
+    void testCheckArchive() throws Exception {
         checkDumpArchive(getFile("bla.dump"));
     }
 
     @Test
-    public void testCheckCompressedArchive() throws Exception {
+    void testCheckCompressedArchive() throws Exception {
         checkDumpArchive(getFile("bla.z.dump"));
     }
 
     @Test
-    public void testCompressedArchiveDetection() throws Exception {
+    void testCompressedArchiveDetection() throws Exception {
         archiveDetection(getFile("bla.z.dump"));
     }
 
     @Test
-    public void testCompressedDumpUnarchiveAll() throws Exception {
+    void testCompressedDumpUnarchiveAll() throws Exception {
         unarchiveAll(getFile("bla.z.dump"));
     }
 
     @Test
-    public void testDumpUnarchiveAll() throws Exception {
+    void testDumpUnarchiveAll() throws Exception {
         unarchiveAll(getFile("bla.dump"));
     }
 

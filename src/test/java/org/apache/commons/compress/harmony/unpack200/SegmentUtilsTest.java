@@ -60,18 +60,18 @@ public class SegmentUtilsTest {
 
     @ParameterizedTest
     @MethodSource("countArgs")
-    public void testCountArgs(final String descriptor, final int expectedArgsCount) {
+    void testCountArgs(final String descriptor, final int expectedArgsCount) {
         assertEquals(expectedArgsCount, SegmentUtils.countArgs(descriptor));
     }
 
     @ParameterizedTest
     @MethodSource("countInvokeInterfaceArgs")
-    public void testCountInvokeInterfaceArgs(final String descriptor, final int expectedCountInvokeInterfaceArgs) {
+    void testCountInvokeInterfaceArgs(final String descriptor, final int expectedCountInvokeInterfaceArgs) {
         assertEquals(expectedCountInvokeInterfaceArgs, SegmentUtils.countInvokeInterfaceArgs(descriptor));
     }
 
     @Test
-    public void testMatches() {
+    void testMatches() {
         final long[] oneToTen = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
         assertEquals(6, SegmentUtils.countMatches(new long[][] { oneToTen, new long[] { 5, 6, 7 } }, even));
         assertEquals(5, SegmentUtils.countMatches(new long[][] { oneToTen }, even));

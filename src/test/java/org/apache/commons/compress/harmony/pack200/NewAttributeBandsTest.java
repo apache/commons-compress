@@ -58,7 +58,7 @@ public class NewAttributeBandsTest {
     }
 
     @Test
-    public void testAddAttributes() throws IOException, Pack200Exception {
+    void testAddAttributes() throws IOException, Pack200Exception {
         final CPUTF8 name = new CPUTF8("TestAttribute");
         final CPUTF8 layout = new CPUTF8("B");
         final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1, null, null,
@@ -78,7 +78,7 @@ public class NewAttributeBandsTest {
     }
 
     @Test
-    public void testAddAttributesWithReplicationLayout() throws IOException, Pack200Exception {
+    void testAddAttributesWithReplicationLayout() throws IOException, Pack200Exception {
         final CPUTF8 name = new CPUTF8("TestAttribute");
         final CPUTF8 layout = new CPUTF8("NB[SH]");
         final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1, null, null,
@@ -104,7 +104,7 @@ public class NewAttributeBandsTest {
     }
 
     @Test
-    public void testEmptyLayout() throws IOException {
+    void testEmptyLayout() throws IOException {
         final CPUTF8 name = new CPUTF8("TestAttribute");
         final CPUTF8 layout = new CPUTF8("");
         final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1, null, null,
@@ -115,7 +115,7 @@ public class NewAttributeBandsTest {
 
     @ParameterizedTest
     @ValueSource(strings = { "B", "FB", "SB", "H", "FH", "SH", "I", "FI", "SI", "PB", "OB", "OSB", "POB", "PH", "OH", "OSH", "POH", "PI", "OI", "OSI", "POI" })
-    public void testIntegralLayouts(final String layoutStr) throws IOException {
+    void testIntegralLayouts(final String layoutStr) throws IOException {
         final CPUTF8 name = new CPUTF8("TestAttribute");
         final CPUTF8 layout = new CPUTF8(layoutStr);
         final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1, null, null,
@@ -127,7 +127,7 @@ public class NewAttributeBandsTest {
     }
 
     @Test
-    public void testLayoutWithBackwardsCalls() throws Exception {
+    void testLayoutWithBackwardsCalls() throws Exception {
         CPUTF8 name = new CPUTF8("TestAttribute");
         CPUTF8 layout = new CPUTF8("[NH[(1)]][KIH][(-1)]");
         MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1, null, null,
@@ -179,7 +179,7 @@ public class NewAttributeBandsTest {
     }
 
     @Test
-    public void testLayoutWithCalls() throws IOException {
+    void testLayoutWithCalls() throws IOException {
         final CPUTF8 name = new CPUTF8("TestAttribute");
         // @formatter:off
         final CPUTF8 layout = new CPUTF8(
@@ -208,7 +208,7 @@ public class NewAttributeBandsTest {
 
     @ParameterizedTest
     @ValueSource(strings = { "KIB", "KIH", "KII", "KINH", "KJH", "KDH", "KSH", "KQH", "RCH", "RSH", "RDH", "RFH", "RMH", "RIH", "RUH", "RQH", "RQNH", "RQNI" })
-    public void testReferenceLayouts(final String layoutStr) throws IOException {
+    void testReferenceLayouts(final String layoutStr) throws IOException {
         final CPUTF8 name = new CPUTF8("TestAttribute");
         final CPUTF8 layout = new CPUTF8(layoutStr);
         final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1, null, null,
@@ -220,7 +220,7 @@ public class NewAttributeBandsTest {
     }
 
     @Test
-    public void testReplicationLayouts() throws IOException {
+    void testReplicationLayouts() throws IOException {
         final CPUTF8 name = new CPUTF8("TestAttribute");
         final CPUTF8 layout = new CPUTF8("NH[PHOHRUHRSHH]");
         final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1, null, null,
@@ -245,7 +245,7 @@ public class NewAttributeBandsTest {
     }
 
     @Test
-    public void testUnionLayout() throws IOException {
+    void testUnionLayout() throws IOException {
         final CPUTF8 name = new CPUTF8("TestAttribute");
         final CPUTF8 layout = new CPUTF8("TB(55)[FH](23)[]()[RSH]");
         final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1, null, null,

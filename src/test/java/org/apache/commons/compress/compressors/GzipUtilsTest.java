@@ -32,7 +32,7 @@ public class GzipUtilsTest {
 
     @SuppressWarnings("deprecation")
     @Test
-    public void testGetCompressedFileName() {
+    void testGetCompressedFileName() {
         assertEquals(".gz", GzipUtils.getCompressedFilename(""));
         assertEquals(".gz", GzipUtils.getCompressedFileName(""));
         assertEquals("x.gz", GzipUtils.getCompressedFilename("x"));
@@ -66,7 +66,7 @@ public class GzipUtilsTest {
 
     @SuppressWarnings("deprecation")
     @Test
-    public void testGetUncompressedFileName() {
+    void testGetUncompressedFileName() {
         assertEquals("", GzipUtils.getUncompressedFilename(""));
         assertEquals("", GzipUtils.getUncompressedFileName(""));
         assertEquals(".gz", GzipUtils.getUncompressedFilename(".gz"));
@@ -115,7 +115,7 @@ public class GzipUtilsTest {
 
     @SuppressWarnings("deprecation")
     @Test
-    public void testIsCompressedFileName() {
+    void testIsCompressedFileName() {
         assertFalse(GzipUtils.isCompressedFilename(""));
         assertFalse(GzipUtils.isCompressedFileName(""));
         assertFalse(GzipUtils.isCompressedFilename(".gz"));

@@ -36,7 +36,7 @@ public class Compress687Test {
     private static final int BUFFER_SIZE = 16_384;
 
     @Test
-    public void testTransferTo() throws Exception {
+    void testTransferTo() throws Exception {
         try (InputStream inputStream = Compress687Test.class.getClassLoader().getResourceAsStream(FIXTURE);
                 Pack200CompressorInputStream compressInputStream = new Pack200CompressorInputStream(inputStream)) {
             transferTo(compressInputStream, NullOutputStream.INSTANCE);

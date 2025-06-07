@@ -49,7 +49,7 @@ public class Compress700Test {
     private static final Path PATH = Paths.get("src/test/resources/org/apache/commons/compress/COMPRESS-700/flutter_awesome_buttons-0.1.0.tar");
 
     @Test
-    public void testFirstTarArchiveEntry() throws Exception {
+    void testFirstTarArchiveEntry() throws Exception {
         try (TarArchiveInputStream inputStream = new TarArchiveInputStream(new BufferedInputStream(Files.newInputStream(PATH)))) {
             final TarArchiveEntry entry = inputStream.getNextEntry();
             assertNull(entry.getCreationTime());
@@ -100,7 +100,7 @@ public class Compress700Test {
     }
 
     @Test
-    public void testListEntries() throws IOException {
+    void testListEntries() throws IOException {
         final List<Object[]> list = Arrays.asList(
                 new Object[] {0,     "build/app.dill"}, // 0
                 new Object[] {105,   "CHANGELOG.md"},
@@ -194,7 +194,7 @@ public class Compress700Test {
     //@Disabled
     //@Ignore
     @Test
-    public void testTarArchive() throws Exception {
+    void testTarArchive() throws Exception {
         try (BufferedInputStream fileInputStream = new BufferedInputStream(Files.newInputStream(PATH))) {
             assertEquals(ArchiveStreamFactory.TAR, ArchiveStreamFactory.detect(fileInputStream));
         }

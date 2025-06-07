@@ -172,7 +172,7 @@ public class ExpanderTest extends AbstractTest {
     }
 
     @Test
-    public void testCompress603Tar() throws IOException, ArchiveException {
+    void testCompress603Tar() throws IOException, ArchiveException {
         setupTarForCompress603();
         try (TarFile f = new TarFile(archive)) {
             new Expander().expand(f, tempResultDir);
@@ -181,7 +181,7 @@ public class ExpanderTest extends AbstractTest {
     }
 
     @Test
-    public void testFileCantEscapeDoubleDotPath() throws IOException, ArchiveException {
+    void testFileCantEscapeDoubleDotPath() throws IOException, ArchiveException {
         setupZip("../foo");
         try (ZipFile f = ZipFile.builder().setFile(archive).get()) {
             assertThrows(IOException.class, () -> new Expander().expand(f, tempResultDir));
@@ -189,7 +189,7 @@ public class ExpanderTest extends AbstractTest {
     }
 
     @Test
-    public void testFileCantEscapeDoubleDotPathWithSimilarSibling() throws IOException, ArchiveException {
+    void testFileCantEscapeDoubleDotPathWithSimilarSibling() throws IOException, ArchiveException {
         final String sibling = tempResultDir.getName() + "x";
         final File s = new File(tempResultDir.getParentFile(), sibling);
         assumeFalse(s.exists());
@@ -202,7 +202,7 @@ public class ExpanderTest extends AbstractTest {
     }
 
     @Test
-    public void testFileCantEscapeViaAbsolutePath() throws IOException, ArchiveException {
+    void testFileCantEscapeViaAbsolutePath() throws IOException, ArchiveException {
         setupZip("/tmp/foo");
         try (ZipFile f = ZipFile.builder().setFile(archive).get()) {
             assertThrows(IOException.class, () -> new Expander().expand(f, tempResultDir));
@@ -211,7 +211,7 @@ public class ExpanderTest extends AbstractTest {
     }
 
     @Test
-    public void testSevenZChannelVersion() throws IOException, ArchiveException {
+    void testSevenZChannelVersion() throws IOException, ArchiveException {
         setup7z();
         try (SeekableByteChannel c = FileChannel.open(archive.toPath(), StandardOpenOption.READ)) {
             new Expander().expand("7z", c, tempResultDir);
@@ -220,7 +220,7 @@ public class ExpanderTest extends AbstractTest {
     }
 
     @Test
-    public void testSevenZFileVersion() throws IOException {
+    void testSevenZFileVersion() throws IOException {
         setup7z();
         try (SevenZFile file = SevenZFile.builder().setFile(archive).get()) {
             new Expander().expand(file, tempResultDir);
@@ -229,7 +229,7 @@ public class ExpanderTest extends AbstractTest {
     }
 
     @Test
-    public void testSevenZInputStreamVersion() throws IOException {
+    void testSevenZInputStreamVersion() throws IOException {
         setup7z();
         try (InputStream i = new BufferedInputStream(Files.newInputStream(archive.toPath()))) {
             assertThrows(StreamingNotSupportedException.class, () -> new Expander().expand("7z", i, tempResultDir));
@@ -237,7 +237,7 @@ public class ExpanderTest extends AbstractTest {
     }
 
     @Test
-    public void testSevenZInputStreamVersionWithAutoDetection() throws IOException {
+    void testSevenZInputStreamVersionWithAutoDetection() throws IOException {
         setup7z();
         try (InputStream i = new BufferedInputStream(Files.newInputStream(archive.toPath()))) {
             assertThrows(StreamingNotSupportedException.class, () -> new Expander().expand(i, tempResultDir));
@@ -245,21 +245,21 @@ public class ExpanderTest extends AbstractTest {
     }
 
     @Test
-    public void testSevenZTwoFileVersion() throws IOException, ArchiveException {
+    void testSevenZTwoFileVersion() throws IOException, ArchiveException {
         setup7z();
         new Expander().expand("7z", archive, tempResultDir);
         verifyTargetDir();
     }
 
     @Test
-    public void testSevenZTwoFileVersionWithAutoDetection() throws IOException, ArchiveException {
+    void testSevenZTwoFileVersionWithAutoDetection() throws IOException, ArchiveException {
         setup7z();
         new Expander().expand(archive, tempResultDir);
         verifyTargetDir();
     }
 
     @Test
-    public void testTarFileVersion() throws IOException, ArchiveException {
+    void testTarFileVersion() throws IOException, ArchiveException {
         setupTar();
         try (TarFile f = new TarFile(archive)) {
             new Expander().expand(f, tempResultDir);
@@ -268,7 +268,7 @@ public class ExpanderTest extends AbstractTest {
     }
 
     @Test
-    public void testZipFileVersion() throws IOException, ArchiveException {
+    void testZipFileVersion() throws IOException, ArchiveException {
         setupZip();
         try (ZipFile f = ZipFile.builder().setFile(archive).get()) {
             new Expander().expand(f, tempResultDir);

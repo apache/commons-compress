@@ -81,14 +81,14 @@ public class ZipUtilTest {
     }
 
     @Test
-    public void testAdjustToLong() {
+    void testAdjustToLong() {
         assertEquals(Integer.MAX_VALUE, ZipUtil.adjustToLong(Integer.MAX_VALUE));
         assertEquals((long) Integer.MAX_VALUE + 1, ZipUtil.adjustToLong(Integer.MAX_VALUE + 1));
         assertEquals(2 * (long) Integer.MAX_VALUE, ZipUtil.adjustToLong(2 * Integer.MAX_VALUE));
     }
 
     @Test
-    public void testBigToLong() {
+    void testBigToLong() {
         final BigInteger big1 = BigInteger.valueOf(1);
         final BigInteger big2 = BigInteger.valueOf(Long.MAX_VALUE);
         final BigInteger big3 = BigInteger.valueOf(Long.MIN_VALUE);
@@ -106,7 +106,7 @@ public class ZipUtilTest {
     }
 
     @Test
-    public void testFromDosTime() {
+    void testFromDosTime() {
         ZipLong testDosTime = new ZipLong(1 << 21);
         final Calendar cal = Calendar.getInstance();
         cal.set(Calendar.YEAR, 1980);
@@ -126,7 +126,7 @@ public class ZipUtilTest {
     }
 
     @Test
-    public void testInsideCalendar() {
+    void testInsideCalendar() {
         final long date = toLocalInstant("1985-02-01T09:00:00").toEpochMilli();
         final byte[] b1 = ZipUtil.toDosTime(date);
         assertEquals(0, b1[0]);
@@ -136,28 +136,28 @@ public class ZipUtilTest {
     }
 
     @Test
-    public void testInsideCalendar_bigValue() {
+    void testInsideCalendar_bigValue() {
         final long date = toLocalInstant("2097-11-27T23:59:59").toEpochMilli();
         final long value = ZipLong.getValue(ZipUtil.toDosTime(date));
         assertDosDate(value, 2097, 11, 27, 23, 59, 58); // DOS dates only store even seconds
     }
 
     @Test
-    public void testInsideCalendar_long() {
+    void testInsideCalendar_long() {
         final long date = toLocalInstant("1985-02-01T09:00:00").toEpochMilli();
         final long value = ZipLong.getValue(ZipUtil.toDosTime(date));
         assertDosDate(value, 1985, 2, 1, 9, 0, 0);
     }
 
     @Test
-    public void testInsideCalendar_modernDate() {
+    void testInsideCalendar_modernDate() {
         final long date = toLocalInstant("2022-12-27T16:18:23").toEpochMilli();
         final long value = ZipLong.getValue(ZipUtil.toDosTime(date));
         assertDosDate(value, 2022, 12, 27, 16, 18, 22); // DOS dates only store even seconds
     }
 
     @Test
-    public void testIsDosTime() {
+    void testIsDosTime() {
         assertFalse(ZipUtil.isDosTime(toLocalInstant("1975-01-31T23:00:00").toEpochMilli()));
         assertTrue(ZipUtil.isDosTime(toLocalInstant("1980-01-03T00:00:00").toEpochMilli()));
         assertTrue(ZipUtil.isDosTime(toLocalInstant("2097-11-27T00:00:00").toEpochMilli()));
@@ -168,7 +168,7 @@ public class ZipUtilTest {
     }
 
     @Test
-    public void testLongToBig() {
+    void testLongToBig() {
         final long l0 = 0;
         final long l1 = 1;
         final long l2 = -1;
@@ -192,7 +192,7 @@ public class ZipUtilTest {
     }
 
     @Test
-    public void testMinTime() {
+    void testMinTime() {
         final byte[] b1 = ZipUtil.toDosTime(0);
         final byte b10 = b1[0]; // Save the first byte
         b1[0]++; // change it
@@ -201,7 +201,7 @@ public class ZipUtilTest {
     }
 
     @Test
-    public void testOutsideCalendar() {
+    void testOutsideCalendar() {
         final long date = toLocalInstant("1975-01-31T23:00:00").toEpochMilli();
         final byte[] b1 = ZipUtil.toDosTime(date);
         assertEquals(0, b1[0]);
@@ -211,14 +211,14 @@ public class ZipUtilTest {
     }
 
     @Test
-    public void testOutsideCalendar_long() {
+    void testOutsideCalendar_long() {
         final long date = toLocalInstant("1975-01-31T23:00:00").toEpochMilli();
         final long value = ZipLong.getValue(ZipUtil.toDosTime(date));
         assertDosDate(value, 1980, 1, 1, 0, 0, 0);
     }
 
     @Test
-    public void testReverse() {
+    void testReverse() {
         final byte[][] bTest = new byte[6][];
         bTest[0] = new byte[] {};
         bTest[1] = new byte[] { 1 };
@@ -245,7 +245,7 @@ public class ZipUtilTest {
     }
 
     @Test
-    public void testSignedByteToUnsignedInt() {
+    void testSignedByteToUnsignedInt() {
         // Yay, we can completely test all possible input values in this case!
         int expectedVal = 128;
         for (int i = Byte.MIN_VALUE; i <= Byte.MAX_VALUE; i++) {
@@ -259,14 +259,14 @@ public class ZipUtilTest {
     }
 
     @Test
-    public void testUnknownMethod() throws Exception {
+    void testUnknownMethod() throws Exception {
         final ZipArchiveEntry ze = new ZipArchiveEntry();
         ze.setMethod(100);
         assertThrows(UnsupportedZipFeatureException.class, () -> ZipUtil.checkRequestedFeatures(ze));
     }
 
     @Test
-    public void testUnsignedIntToSignedByte() {
+    void testUnsignedIntToSignedByte() {
         int unsignedVal = 128;
         for (int i = Byte.MIN_VALUE; i <= Byte.MAX_VALUE; i++) {
             final byte expectedVal = (byte) i;
@@ -285,14 +285,14 @@ public class ZipUtilTest {
     }
 
     @Test
-    public void testUnsupportedMethod() throws Exception {
+    void testUnsupportedMethod() throws Exception {
         final ZipArchiveEntry ze = new ZipArchiveEntry();
         ze.setMethod(ZipMethod.EXPANDING_LEVEL_1.getCode());
         assertThrows(UnsupportedZipFeatureException.class, () -> ZipUtil.checkRequestedFeatures(ze));
     }
 
     @Test
-    public void testZipLong() {
+    void testZipLong() {
         final ZipLong test = ZipUtil.toDosTime(time);
         assertEquals(test.getValue(), zl.getValue());
     }

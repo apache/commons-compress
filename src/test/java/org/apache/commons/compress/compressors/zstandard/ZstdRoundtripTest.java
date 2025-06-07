@@ -70,12 +70,12 @@ public class ZstdRoundtripTest extends AbstractTest {
     }
 
     @Test
-    public void testDirectRoundtrip() throws Exception {
+    void testDirectRoundtrip() throws Exception {
         roundtrip(ZstdCompressorOutputStream::new);
     }
 
     @Test
-    public void testFactoryRoundtrip() throws Exception {
+    void testFactoryRoundtrip() throws Exception {
         final Path input = getPath("bla.tar");
         final File output = newTempFile(input.getFileName() + ".zstd");
         try (OutputStream os = Files.newOutputStream(output.toPath());
@@ -91,88 +91,88 @@ public class ZstdRoundtripTest extends AbstractTest {
     }
 
     @Test
-    public void testRoundtripSetChainLogNonDefaultMax() throws Exception {
+    void testRoundtripSetChainLogNonDefaultMax() throws Exception {
         roundtrip(os -> ZstdCompressorOutputStream.builder().setOutputStream(os).setChainLog(ZstdConstants.ZSTD_CHAINLOG_MAX).get());
     }
 
     @Test
-    public void testRoundtripSetChainLogNonDefaultMin() throws Exception {
+    void testRoundtripSetChainLogNonDefaultMin() throws Exception {
         roundtrip(os -> ZstdCompressorOutputStream.builder().setOutputStream(os).setChainLog(ZstdConstants.ZSTD_CHAINLOG_MIN).get());
     }
 
     @Test
-    public void testRoundtripSetChecksumNonDefault() throws Exception {
+    void testRoundtripSetChecksumNonDefault() throws Exception {
         roundtrip(os -> ZstdCompressorOutputStream.builder().setOutputStream(os).setChecksum(true).get());
     }
 
     @Test
-    public void testRoundtripSetCloseFrameOnFlushNonDefault() throws Exception {
+    void testRoundtripSetCloseFrameOnFlushNonDefault() throws Exception {
         roundtrip(os -> ZstdCompressorOutputStream.builder().setOutputStream(os).setCloseFrameOnFlush(true).get());
     }
 
     @Test
-    public void testRoundtripSetHashLogNonDefaultMax() throws Exception {
+    void testRoundtripSetHashLogNonDefaultMax() throws Exception {
         roundtrip(os -> ZstdCompressorOutputStream.builder().setOutputStream(os).setHashLog(ZstdConstants.ZSTD_HASHLOG_MAX).get());
     }
 
     @Test
-    public void testRoundtripSetHashLogNonDefaultMin() throws Exception {
+    void testRoundtripSetHashLogNonDefaultMin() throws Exception {
         roundtrip(os -> ZstdCompressorOutputStream.builder().setOutputStream(os).setHashLog(ZstdConstants.ZSTD_HASHLOG_MIN).get());
     }
 
     @Test
-    public void testRoundtripSetJobSizeNonDefault() throws Exception {
+    void testRoundtripSetJobSizeNonDefault() throws Exception {
         roundtrip(os -> ZstdCompressorOutputStream.builder().setOutputStream(os).setJobSize(1).get());
     }
 
     @Test
-    public void testRoundtripSetLevelNonDefault() throws Exception {
+    void testRoundtripSetLevelNonDefault() throws Exception {
         roundtrip(os -> ZstdCompressorOutputStream.builder().setOutputStream(os).setLevel(1).get());
     }
 
     @Test
-    public void testRoundtripSetMinMatchNonDefaultMax() throws Exception {
+    void testRoundtripSetMinMatchNonDefaultMax() throws Exception {
         roundtrip(os -> ZstdCompressorOutputStream.builder().setOutputStream(os).setMinMatch(ZstdConstants.ZSTD_MINMATCH_MAX).get());
     }
 
     @Test
-    public void testRoundtripSetMinMatchNonDefaultMin() throws Exception {
+    void testRoundtripSetMinMatchNonDefaultMin() throws Exception {
         roundtrip(os -> ZstdCompressorOutputStream.builder().setOutputStream(os).setMinMatch(ZstdConstants.ZSTD_MINMATCH_MIN).get());
     }
 
     @Test
-    public void testRoundtripSetOverlapLogNonDefault() throws Exception {
+    void testRoundtripSetOverlapLogNonDefault() throws Exception {
         roundtrip(os -> ZstdCompressorOutputStream.builder().setOutputStream(os).setOverlapLog(1).get());
     }
 
     @Test
-    public void testRoundtripSetSearchLogNonDefault() throws Exception {
+    void testRoundtripSetSearchLogNonDefault() throws Exception {
         roundtrip(os -> ZstdCompressorOutputStream.builder().setOutputStream(os).setSearchLog(1).get());
     }
 
     @Test
-    public void testRoundtripSetStrategyNonDefault() throws Exception {
+    void testRoundtripSetStrategyNonDefault() throws Exception {
         roundtrip(os -> ZstdCompressorOutputStream.builder().setOutputStream(os).setStrategy(1).get());
     }
 
     @Test
     @Disabled("com.github.luben.zstd.ZstdIOException: Frame requires too much memory for decoding")
-    public void testRoundtripSetWindowLogNonDefaultMax() throws Exception {
+    void testRoundtripSetWindowLogNonDefaultMax() throws Exception {
         roundtrip(os -> ZstdCompressorOutputStream.builder().setOutputStream(os).setWindowLog(ZstdConstants.ZSTD_WINDOWLOG_MAX).get());
     }
 
     @Test
-    public void testRoundtripSetWindowLogNonDefaultMin() throws Exception {
+    void testRoundtripSetWindowLogNonDefaultMin() throws Exception {
         roundtrip(os -> ZstdCompressorOutputStream.builder().setOutputStream(os).setWindowLog(ZstdConstants.ZSTD_WINDOWLOG_MIN).get());
     }
 
     @Test
-    public void testRoundtripSetWorkersNonDefault() throws Exception {
+    void testRoundtripSetWorkersNonDefault() throws Exception {
         roundtrip(os -> ZstdCompressorOutputStream.builder().setOutputStream(os).setWorkers(1).get());
     }
 
     @Test
-    public void testRoundtripSetZstdDict() throws Exception {
+    void testRoundtripSetZstdDict() throws Exception {
         // Avoid JVM segmentation fault in zstd-jni 1.5.7-2
         // TODO Remove ternary expression in the ctor if/when https://github.com/luben/zstd-jni/pull/356 is fixed.
         roundtrip(os -> ZstdCompressorOutputStream.builder().setOutputStream(os).setDict(null).get());
@@ -182,7 +182,7 @@ public class ZstdRoundtripTest extends AbstractTest {
 
     @CartesianTest
     // @formatter:off
-    public void testRoundtripWithAll(
+    void testRoundtripWithAll(
             @Values(ints = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }) final int level, // see zstd.h
             @Values(booleans = { false, true }) final boolean checksum,
             @Values(booleans = { false, true }) final boolean closeFrameOnFlush,
@@ -209,25 +209,25 @@ public class ZstdRoundtripTest extends AbstractTest {
     // @formatter:on
 
     @Test
-    public void testRoundtripWithChecksum() throws Exception {
+    void testRoundtripWithChecksum() throws Exception {
         roundtrip(os -> new ZstdCompressorOutputStream(os, 3, false, true));
         roundtrip(os -> ZstdCompressorOutputStream.builder().setOutputStream(os).setLevel(3).setCloseFrameOnFlush(true).setChecksum(true).get());
     }
 
     @Test
-    public void testRoundtripWithCloseFrameOnFlush() throws Exception {
+    void testRoundtripWithCloseFrameOnFlush() throws Exception {
         roundtrip(os -> new ZstdCompressorOutputStream(os, 3, true));
         roundtrip(os -> ZstdCompressorOutputStream.builder().setOutputStream(os).setLevel(3).setCloseFrameOnFlush(true).get());
     }
 
     @Test
-    public void testRoundtripWithCustomLevel() throws Exception {
+    void testRoundtripWithCustomLevel() throws Exception {
         roundtrip(os -> new ZstdCompressorOutputStream(os, 1));
         roundtrip(os -> ZstdCompressorOutputStream.builder().setOutputStream(os).setLevel(1).get());
     }
 
     @Test
-    public void testRoundtripWithZstdOutputStream() throws Exception {
+    void testRoundtripWithZstdOutputStream() throws Exception {
         roundtrip(os -> ZstdCompressorOutputStream.builder().setOutputStream(new ZstdOutputStream(os)).get());
         roundtrip(os -> new ZstdCompressorOutputStream(new ZstdOutputStream(os)));
     }

@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 public class CountingStreamTest {
 
     @Test
-    public void testInput() throws Exception {
+    void testInput() throws Exception {
         // I don't like "test all at once" tests either, but the class
         // is so trivial
         final ByteArrayInputStream bis = new ByteArrayInputStream(new byte[] { 1, 2, 3, 4 });
@@ -52,7 +52,7 @@ public class CountingStreamTest {
     }
 
     @Test
-    public void testOutput() throws Exception {
+    void testOutput() throws Exception {
         // I don't like "test all at once" tests either, but the class
         // is so trivial
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();

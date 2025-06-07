@@ -84,19 +84,19 @@ public class AttributeLayoutTest {
 
     @ParameterizedTest
     @MethodSource("badData")
-    public void testBadData(final String name, final int context, final String layout) {
+    void testBadData(final String name, final int context, final String layout) {
         assertThrows(Pack200Exception.class, () -> new AttributeLayout(name, context, layout, -1));
     }
 
     @ParameterizedTest
     @MethodSource("codec")
-    public void testGetCodec(final String name, final int context, final String layout, final Codec expectedCodec) throws Pack200Exception {
+    void testGetCodec(final String name, final int context, final String layout, final Codec expectedCodec) throws Pack200Exception {
         final AttributeLayout attributeLayout = new AttributeLayout(name, context, layout, 1);
         assertEquals(expectedCodec, attributeLayout.getCodec());
     }
 
     @Test
-    public void testLayoutRS() throws Pack200Exception {
+    void testLayoutRS() throws Pack200Exception {
         final AttributeLayout layout = new AttributeLayout("RS", AttributeLayout.CONTEXT_CLASS, "RS", 1);
         final Segment segment = new TestSegment();
         assertNull(layout.getValue(-1, segment.getConstantPool()));
@@ -105,7 +105,7 @@ public class AttributeLayoutTest {
     }
 
     @Test
-    public void testLayoutRSN() throws Pack200Exception {
+    void testLayoutRSN() throws Pack200Exception {
         final AttributeLayout layout = new AttributeLayout("RSN", AttributeLayout.CONTEXT_CLASS, "RSN", 1);
         final Segment segment = new TestSegment();
         assertNull(layout.getValue(0, segment.getConstantPool()));
@@ -114,7 +114,7 @@ public class AttributeLayoutTest {
     }
 
     @Test
-    public void testLayoutRU() throws Pack200Exception {
+    void testLayoutRU() throws Pack200Exception {
         final AttributeLayout layout = new AttributeLayout("RU", AttributeLayout.CONTEXT_CLASS, "RU", 1);
         final Segment segment = new TestSegment();
         assertNull(layout.getValue(-1, segment.getConstantPool()));
@@ -123,7 +123,7 @@ public class AttributeLayoutTest {
     }
 
     @Test
-    public void testLayoutRUN() throws Pack200Exception {
+    void testLayoutRUN() throws Pack200Exception {
         final AttributeLayout layout = new AttributeLayout("RUN", AttributeLayout.CONTEXT_CLASS, "RUN", 1);
         final Segment segment = new TestSegment();
         assertNull(layout.getValue(0, segment.getConstantPool()));
@@ -133,7 +133,7 @@ public class AttributeLayoutTest {
 
     @ParameterizedTest
     @MethodSource("okData")
-    public void testOkData(final String name, final int context, final String layout) {
+    void testOkData(final String name, final int context, final String layout) {
         assertDoesNotThrow(() -> new AttributeLayout(name, context, layout, -1));
     }
 }

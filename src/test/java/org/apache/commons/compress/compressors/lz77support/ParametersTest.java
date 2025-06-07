@@ -36,7 +36,7 @@ public class ParametersTest {
     }
 
     @Test
-    public void testAllParametersUsuallyTakeTheirSpecifiedValues() {
+    void testAllParametersUsuallyTakeTheirSpecifiedValues() {
         final Parameters p = newParameters(256, 4, 5, 6, 7);
         assertEquals(256, p.getWindowSize());
         assertEquals(4, p.getMinBackReferenceLength());
@@ -46,7 +46,7 @@ public class ParametersTest {
     }
 
     @Test
-    public void testDefaultConstructor() {
+    void testDefaultConstructor() {
         final Parameters p = newParameters(128);
         assertEquals(128, p.getWindowSize());
         assertEquals(3, p.getMinBackReferenceLength());
@@ -56,73 +56,73 @@ public class ParametersTest {
     }
 
     @Test
-    public void testMaxBackReferenceLengthIsMinBackReferenceLengthIfBothAreEqual() {
+    void testMaxBackReferenceLengthIsMinBackReferenceLengthIfBothAreEqual() {
         final Parameters p = newParameters(128, 2, 3, 4, 5);
         assertEquals(3, p.getMaxBackReferenceLength());
     }
 
     @Test
-    public void testMaxBackReferenceLengthIsMinBackReferenceLengthWhenSmallerThanMinBackReferenceLength() {
+    void testMaxBackReferenceLengthIsMinBackReferenceLengthWhenSmallerThanMinBackReferenceLength() {
         final Parameters p = newParameters(128, 2, 2, 4, 5);
         assertEquals(3, p.getMaxBackReferenceLength());
     }
 
     @Test
-    public void testMaxBackReferenceLengthIsMinBackReferenceLengthWhenSmallerThanMinBackReferenceLengthReversedInvocationOrder() {
+    void testMaxBackReferenceLengthIsMinBackReferenceLengthWhenSmallerThanMinBackReferenceLengthReversedInvocationOrder() {
         final Parameters p = Parameters.builder(128).withMaxBackReferenceLength(2).withMinBackReferenceLength(2).withMaxOffset(4).withMaxLiteralLength(5)
                 .build();
         assertEquals(3, p.getMaxBackReferenceLength());
     }
 
     @Test
-    public void testMaxLiteralLengthIsWindowSizeIfSetTo0() {
+    void testMaxLiteralLengthIsWindowSizeIfSetTo0() {
         final Parameters p = newParameters(128, 2, 3, 4, 0);
         assertEquals(128, p.getMaxLiteralLength());
     }
 
     @Test
-    public void testMaxLiteralLengthIsWindowSizeIfSetToANegativeValue() {
+    void testMaxLiteralLengthIsWindowSizeIfSetToANegativeValue() {
         final Parameters p = newParameters(128, 2, 3, 0, -1);
         assertEquals(128, p.getMaxLiteralLength());
     }
 
     @Test
-    public void testMaxLiteralLengthIsWindowSizeIfSetToAValueTooBigToHoldInSlidingWindow() {
+    void testMaxLiteralLengthIsWindowSizeIfSetToAValueTooBigToHoldInSlidingWindow() {
         final Parameters p = newParameters(128, 2, 3, 0, 259);
         assertEquals(128, p.getMaxLiteralLength());
     }
 
     @Test
-    public void testMaxOffsetIsWindowSizeMinus1IfBiggerThanWindowSize() {
+    void testMaxOffsetIsWindowSizeMinus1IfBiggerThanWindowSize() {
         final Parameters p = newParameters(128, 2, 3, 129, 5);
         assertEquals(127, p.getMaxOffset());
     }
 
     @Test
-    public void testMaxOffsetIsWindowSizeMinus1IfSetTo0() {
+    void testMaxOffsetIsWindowSizeMinus1IfSetTo0() {
         final Parameters p = newParameters(128, 2, 3, 0, 5);
         assertEquals(127, p.getMaxOffset());
     }
 
     @Test
-    public void testMaxOffsetIsWindowSizeMinus1IfSetToANegativeValue() {
+    void testMaxOffsetIsWindowSizeMinus1IfSetToANegativeValue() {
         final Parameters p = newParameters(128, 2, 3, -1, 5);
         assertEquals(127, p.getMaxOffset());
     }
 
     @Test
-    public void testMinBackReferenceLengthIsAtLeastThree() {
+    void testMinBackReferenceLengthIsAtLeastThree() {
         final Parameters p = newParameters(128, 2, 3, 4, 5);
         assertEquals(3, p.getMinBackReferenceLength());
     }
 
     @Test
-    public void testWindowSizeMustBeAPowerOfTwo() {
+    void testWindowSizeMustBeAPowerOfTwo() {
         assertThrows(IllegalArgumentException.class, () -> newParameters(100, 200, 300, 400, 500));
     }
 
     @Test
-    public void testWindowSizeMustNotBeSmallerThanMinBackReferenceLength() {
+    void testWindowSizeMustNotBeSmallerThanMinBackReferenceLength() {
         assertThrows(IllegalArgumentException.class, () -> newParameters(128, 200, 300, 400, 500));
     }
 }

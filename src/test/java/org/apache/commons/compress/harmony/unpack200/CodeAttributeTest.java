@@ -141,7 +141,7 @@ public class CodeAttributeTest {
     };
 
     @Test
-    public void testLength() throws Pack200Exception {
+    void testLength() throws Pack200Exception {
         final OperandManager operandManager = new MockOperandManager();
         operandManager.setSegment(segment);
         operandManager.setCurrentClass("java/lang/Foo");
@@ -159,7 +159,7 @@ public class CodeAttributeTest {
     }
 
     @Test
-    public void testMixedByteCodes() throws Pack200Exception {
+    void testMixedByteCodes() throws Pack200Exception {
         final OperandManager operandManager = new MockOperandManager();
         operandManager.setSegment(segment);
         operandManager.setCurrentClass("java/lang/Foo");
@@ -181,7 +181,7 @@ public class CodeAttributeTest {
     }
 
     @Test
-    public void testSingleByteCodes() throws Pack200Exception {
+    void testSingleByteCodes() throws Pack200Exception {
         final OperandManager operandManager = new MockOperandManager();
         operandManager.setSegment(segment);
         operandManager.setCurrentClass("java/lang/Foo");

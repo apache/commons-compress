@@ -79,12 +79,12 @@ public class ZipEncodingTest {
     }
 
     @Test
-    public void testEbcidic() throws IOException {
+    void testEbcidic() throws IOException {
         doSimpleEncodingTest("IBM1047", null);
     }
 
     @Test
-    public void testGetNonexistentEncoding() {
+    void testGetNonexistentEncoding() {
         final ZipEncoding ze = ZipEncodingHelper.getZipEncoding("I-am-a-banana");
         assertNotNull(ze);
         if (ze instanceof CharsetAccessor) {
@@ -94,7 +94,7 @@ public class ZipEncodingTest {
     }
 
     @Test
-    public void testNioCp1252Encoding() throws IOException {
+    void testNioCp1252Encoding() throws IOException {
         // CP1252 has some undefined code points, these are
         // the defined ones
         // retrieved by
@@ -121,7 +121,7 @@ public class ZipEncodingTest {
     }
 
     @Test
-    public void testNothingToMakeCoverallsHappier() {
+    void testNothingToMakeCoverallsHappier() {
         final Object o = new ZipEncodingHelper() {
             // empty
         };
@@ -129,12 +129,12 @@ public class ZipEncodingTest {
     }
 
     @Test
-    public void testSimpleCp437Encoding() throws IOException {
+    void testSimpleCp437Encoding() throws IOException {
         doSimpleEncodingsTest(437);
     }
 
     @Test
-    public void testSimpleCp850Encoding() throws IOException {
+    void testSimpleCp850Encoding() throws IOException {
         doSimpleEncodingsTest(850);
     }
 

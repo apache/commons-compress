@@ -81,7 +81,7 @@ public class ArjArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testFirstHeaderSizeSetToZero() throws Exception {
+    void testFirstHeaderSizeSetToZero() throws Exception {
         try (InputStream in = newInputStream("org/apache/commons/compress/arj/zero_sized_headers-fail.arj")) {
             final ArchiveException ex = assertThrows(ArchiveException.class, () -> {
                 try (ArjArchiveInputStream archive = new ArjArchiveInputStream(in)) {
@@ -94,7 +94,7 @@ public class ArjArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testForEach() throws Exception {
+    void testForEach() throws Exception {
         final StringBuilder expected = new StringBuilder();
         expected.append("test1.xml<?xml version=\"1.0\"?>\n");
         expected.append("<empty/>test2.xml<?xml version=\"1.0\"?>\n");
@@ -116,7 +116,7 @@ public class ArjArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testGetNextEntry() throws Exception {
+    void testGetNextEntry() throws Exception {
         final StringBuilder expected = new StringBuilder();
         expected.append("test1.xml<?xml version=\"1.0\"?>\n");
         expected.append("<empty/>test2.xml<?xml version=\"1.0\"?>\n");
@@ -139,7 +139,7 @@ public class ArjArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
+    void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         final byte[] buf = new byte[2];
         try (InputStream in = newInputStream("bla.arj");
                 ArjArchiveInputStream archive = new ArjArchiveInputStream(in)) {
@@ -152,7 +152,7 @@ public class ArjArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testRead() throws Exception {
+    void testRead() throws Exception {
         final StringBuilder expected = new StringBuilder();
         expected.append("test1.xml<?xml version=\"1.0\"?>\n");
         expected.append("<empty/>test2.xml<?xml version=\"1.0\"?>\n");
@@ -177,7 +177,7 @@ public class ArjArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testReadByteArray() throws Exception {
+    void testReadByteArray() throws Exception {
         final StringBuilder expected = new StringBuilder();
         expected.append("test1.xml<?xml version=\"1.0\"?>\n");
         expected.append("<empty/>test2.xml<?xml version=\"1.0\"?>\n");
@@ -202,7 +202,7 @@ public class ArjArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testReadByteArrayIndex() throws Exception {
+    void testReadByteArrayIndex() throws Exception {
         final StringBuilder expected = new StringBuilder();
         expected.append("test1.xml<?xml version=\"1.0\"?>\n");
         expected.append("<empty/>test2.xml<?xml version=\"1.0\"?>\n");
@@ -227,7 +227,7 @@ public class ArjArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testReadingOfAttributesDosVersion() throws Exception {
+    void testReadingOfAttributesDosVersion() throws Exception {
         try (ArjArchiveInputStream archive = new ArjArchiveInputStream(newInputStream("bla.arj"))) {
             final ArjArchiveEntry entry = archive.getNextEntry();
             assertEquals("test1.xml", entry.getName());
@@ -242,7 +242,7 @@ public class ArjArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testReadingOfAttributesUnixVersion() throws Exception {
+    void testReadingOfAttributesUnixVersion() throws Exception {
         try (ArjArchiveInputStream in = new ArjArchiveInputStream(newInputStream("bla.unix.arj"))) {
             final ArjArchiveEntry entry = in.getNextEntry();
             assertEquals("test1.xml", entry.getName());
@@ -257,7 +257,7 @@ public class ArjArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
+    void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         try (InputStream in = newInputStream("bla.arj");
                 ArjArchiveInputStream archive = new ArjArchiveInputStream(in)) {
             assertNotNull(archive.getNextEntry());

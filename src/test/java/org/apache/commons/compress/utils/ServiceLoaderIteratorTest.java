@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test;
 public class ServiceLoaderIteratorTest {
 
     @Test
-    public void testHasNextReturnsFalse() {
+    void testHasNextReturnsFalse() {
         final Class<Object> clasz = Object.class;
         final ServiceLoaderIterator<Object> serviceLoaderIterator = new ServiceLoaderIterator<>(clasz);
         final boolean result = serviceLoaderIterator.hasNext();
@@ -41,14 +41,14 @@ public class ServiceLoaderIteratorTest {
     }
 
     @Test
-    public void testNextThrowsNoSuchElementException() {
+    void testNextThrowsNoSuchElementException() {
         final Class<String> clasz = String.class;
         final ServiceLoaderIterator<String> serviceLoaderIterator = new ServiceLoaderIterator<>(clasz);
         assertThrows(NoSuchElementException.class, () -> serviceLoaderIterator.next());
     }
 
     @Test
-    public void testRemoveThrowsUnsupportedOperationException() {
+    void testRemoveThrowsUnsupportedOperationException() {
         final Class<Integer> clasz = Integer.class;
         final ServiceLoaderIterator<Integer> serviceLoaderIterator = new ServiceLoaderIterator<>(clasz);
         assertThrows(UnsupportedOperationException.class, () -> serviceLoaderIterator.remove());

@@ -73,7 +73,7 @@ public final class ChangeSetRawTypesTest extends AbstractTest {
     @ParameterizedTest
     @MethodSource("org.apache.commons.compress.changes.TestFixtures#getOutputArchiveNames")
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void testAddAlreadyExistingWithReplaceFalse(final String archiverName) throws Exception {
+    void testAddAlreadyExistingWithReplaceFalse(final String archiverName) throws Exception {
         final Path inputPath = createArchive(archiverName);
         final Path result = Files.createTempFile("test", "." + archiverName);
         try (InputStream inputStream = Files.newInputStream(inputPath);
@@ -105,7 +105,7 @@ public final class ChangeSetRawTypesTest extends AbstractTest {
     @ParameterizedTest
     @MethodSource("org.apache.commons.compress.changes.TestFixtures#getZipOutputArchiveNames")
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void testAddAlreadyExistingWithReplaceTrue(final String archiverName) throws Exception {
+    void testAddAlreadyExistingWithReplaceTrue(final String archiverName) throws Exception {
         final Path inputPath = createArchive(archiverName);
         final Path result = Files.createTempFile("test", "." + archiverName);
         try (InputStream inputStream = Files.newInputStream(inputPath);
@@ -132,7 +132,7 @@ public final class ChangeSetRawTypesTest extends AbstractTest {
      */
     @Test
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void testAddChangeTwice() throws Exception {
+    void testAddChangeTwice() throws Exception {
         try (InputStream inputStream = newInputStream("test.txt");
                 InputStream inputStream2 = newInputStream("test2.xml")) {
             final ArchiveEntry e = new ZipArchiveEntry("test.txt");
@@ -157,7 +157,7 @@ public final class ChangeSetRawTypesTest extends AbstractTest {
      */
     @Test
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void testAddChangeTwiceWithoutReplace() throws Exception {
+    void testAddChangeTwiceWithoutReplace() throws Exception {
         try (InputStream inputStream = newInputStream("test.txt");
                 InputStream inputStream2 = newInputStream("test2.xml")) {
             final ArchiveEntry e = new ZipArchiveEntry("test.txt");
@@ -181,7 +181,7 @@ public final class ChangeSetRawTypesTest extends AbstractTest {
      */
     @Test
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void testAddDeleteAdd() throws Exception {
+    void testAddDeleteAdd() throws Exception {
         final String archiverName = "cpio";
         final Path inputPath = createArchive(archiverName);
         final Path result = Files.createTempFile("test", "." + archiverName);
@@ -214,7 +214,7 @@ public final class ChangeSetRawTypesTest extends AbstractTest {
     @ParameterizedTest
     @MethodSource("org.apache.commons.compress.changes.TestFixtures#getOutputArchiveNames")
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void testAddDeleteToOneFileArchive(final String archiverName) throws Exception {
+    void testAddDeleteToOneFileArchive(final String archiverName) throws Exception {
         final Path inputPath = createSingleEntryArchive(archiverName);
         final Path result = Files.createTempFile("test", "." + archiverName);
         final ChangeSet changeSet = new ChangeSet();
@@ -247,7 +247,7 @@ public final class ChangeSetRawTypesTest extends AbstractTest {
      * @throws Exception Thrown on test failure. Thrown on test failure.
      */
     @Test
-    public void testAddMoveDelete() throws Exception {
+    void testAddMoveDelete() throws Exception {
     }
 
     /**
@@ -259,7 +259,7 @@ public final class ChangeSetRawTypesTest extends AbstractTest {
     @ParameterizedTest
     @MethodSource("org.apache.commons.compress.changes.TestFixtures#getEmptyOutputArchiveNames")
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void testAddToEmptyArchive(final String archiverName) throws Exception {
+    void testAddToEmptyArchive(final String archiverName) throws Exception {
         final Path inputPath = createEmptyArchive(archiverName);
         final Path result = Files.createTempFile("test", "." + archiverName);
         final ChangeSet changeSet = new ChangeSet();
@@ -288,7 +288,7 @@ public final class ChangeSetRawTypesTest extends AbstractTest {
     @ParameterizedTest
     @MethodSource("org.apache.commons.compress.changes.TestFixtures#getOutputArchiveNames")
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void testChangeSetResults(final String archiverName) throws Exception {
+    void testChangeSetResults(final String archiverName) throws Exception {
         final Path inputPath = createArchive(archiverName);
         final Path result = Files.createTempFile("test", "." + archiverName);
         final File file1 = getFile("test.txt");
@@ -336,7 +336,7 @@ public final class ChangeSetRawTypesTest extends AbstractTest {
      */
     @Test
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void testDeleteAddDelete() throws Exception {
+    void testDeleteAddDelete() throws Exception {
         final String archiverName = "cpio";
         final Path inputPath = createArchive(archiverName);
         final Path result = Files.createTempFile("test", "." + archiverName);
@@ -370,7 +370,7 @@ public final class ChangeSetRawTypesTest extends AbstractTest {
     @ParameterizedTest
     @MethodSource("org.apache.commons.compress.changes.TestFixtures#getOutputArchiveNames")
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void testDeleteAddToOneFileArchive(final String archiverName) throws Exception {
+    void testDeleteAddToOneFileArchive(final String archiverName) throws Exception {
         final Path inputPath = createSingleEntryArchive(archiverName);
         final Path result = Files.createTempFile("test", "." + archiverName);
         final ChangeSet changeSet = new ChangeSet();
@@ -404,7 +404,7 @@ public final class ChangeSetRawTypesTest extends AbstractTest {
     @ParameterizedTest
     @MethodSource("org.apache.commons.compress.changes.TestFixtures#getOutputArchiveNames")
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void testDeleteDir(final String archiverName) throws Exception {
+    void testDeleteDir(final String archiverName) throws Exception {
         final Path inputPath = createArchive(archiverName);
         final Path result = Files.createTempFile("test", "." + archiverName);
         try (InputStream inputStream = Files.newInputStream(inputPath);
@@ -431,7 +431,7 @@ public final class ChangeSetRawTypesTest extends AbstractTest {
     @ParameterizedTest
     @MethodSource("org.apache.commons.compress.changes.TestFixtures#getOutputArchiveNames")
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void testDeleteDir2(final String archiverName) throws Exception {
+    void testDeleteDir2(final String archiverName) throws Exception {
         final Path inputPath = createArchive(archiverName);
         final Path result = Files.createTempFile("test", "." + archiverName);
         try (InputStream inputStream = Files.newInputStream(inputPath);
@@ -458,7 +458,7 @@ public final class ChangeSetRawTypesTest extends AbstractTest {
     @ParameterizedTest
     @MethodSource("org.apache.commons.compress.changes.TestFixtures#getOutputArchiveNames")
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void testDeleteDir3(final String archiverName) throws Exception {
+    void testDeleteDir3(final String archiverName) throws Exception {
         final Path inputPath = createArchive(archiverName);
         final Path result = Files.createTempFile("test", "." + archiverName);
         try (InputStream inputStream = Files.newInputStream(inputPath);
@@ -485,7 +485,7 @@ public final class ChangeSetRawTypesTest extends AbstractTest {
     @ParameterizedTest
     @MethodSource("org.apache.commons.compress.changes.TestFixtures#getOutputArchiveNames")
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void testDeleteFile(final String archiverName) throws Exception {
+    void testDeleteFile(final String archiverName) throws Exception {
         final Path inputPath = createArchive(archiverName);
         final Path result = Files.createTempFile("test", "." + archiverName);
         try (InputStream inputStream = Files.newInputStream(inputPath);
@@ -512,7 +512,7 @@ public final class ChangeSetRawTypesTest extends AbstractTest {
     @ParameterizedTest
     @MethodSource("org.apache.commons.compress.changes.TestFixtures#getOutputArchiveNames")
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void testDeleteFile2(final String archiverName) throws Exception {
+    void testDeleteFile2(final String archiverName) throws Exception {
         final Path inputPath = createArchive(archiverName);
         final Path result = Files.createTempFile("test", "." + archiverName);
         try (InputStream inputStream = Files.newInputStream(inputPath);
@@ -537,7 +537,7 @@ public final class ChangeSetRawTypesTest extends AbstractTest {
      */
     @Test
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void testDeleteFromAndAddToAr() throws Exception {
+    void testDeleteFromAndAddToAr() throws Exception {
         final ChangeSet changeSet = new ChangeSet();
         changeSet.delete("test2.xml");
         final File file1 = getFile("test.txt");
@@ -566,7 +566,7 @@ public final class ChangeSetRawTypesTest extends AbstractTest {
      */
     @Test
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void testDeleteFromAndAddToJar() throws Exception {
+    void testDeleteFromAndAddToJar() throws Exception {
         final ChangeSet changeSet = new ChangeSet();
         changeSet.delete("test2.xml");
         changeSet.deleteDir("META-INF");
@@ -592,7 +592,7 @@ public final class ChangeSetRawTypesTest extends AbstractTest {
 
     @Test
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void testDeleteFromAndAddToTar() throws Exception {
+    void testDeleteFromAndAddToTar() throws Exception {
         final ChangeSet changeSet = new ChangeSet();
         changeSet.delete("test2.xml");
         final File file1 = getFile("test.txt");
@@ -631,7 +631,7 @@ public final class ChangeSetRawTypesTest extends AbstractTest {
      */
     @Test
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void testDeleteFromAndAddToZip() throws Exception {
+    void testDeleteFromAndAddToZip() throws Exception {
         final String archiverName = "zip";
         final Path input = createArchive(archiverName);
         final Path result = Files.createTempFile("test", "." + archiverName);
@@ -662,7 +662,7 @@ public final class ChangeSetRawTypesTest extends AbstractTest {
      */
     @Test
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void testDeleteFromAndAddToZipUsingZipFilePerform() throws Exception {
+    void testDeleteFromAndAddToZipUsingZipFilePerform() throws Exception {
         final String archiverName = "zip";
         final Path input = createArchive(archiverName);
         final Path result = Files.createTempFile("test", "." + archiverName);
@@ -691,7 +691,7 @@ public final class ChangeSetRawTypesTest extends AbstractTest {
      */
     @Test
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void testDeleteFromAr() throws Exception {
+    void testDeleteFromAr() throws Exception {
         final ChangeSet changeSet = new ChangeSet();
         changeSet.delete("test2.xml");
         final File input = getFile("bla.ar");
@@ -718,7 +718,7 @@ public final class ChangeSetRawTypesTest extends AbstractTest {
     @ParameterizedTest
     @MethodSource("org.apache.commons.compress.changes.TestFixtures#getZipOutputArchiveNames")
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void testDeleteFromJar(final String archiverName) throws Exception {
+    void testDeleteFromJar(final String archiverName) throws Exception {
         final ChangeSet changeSet = new ChangeSet();
         changeSet.delete("test2.xml");
         changeSet.deleteDir("META-INF");
@@ -745,7 +745,7 @@ public final class ChangeSetRawTypesTest extends AbstractTest {
      */
     @Test
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void testDeleteFromTar() throws Exception {
+    void testDeleteFromTar() throws Exception {
         final ChangeSet changeSet = new ChangeSet();
         changeSet.delete("test2.xml");
         final File result = newTempFile("bla.tar");
@@ -771,7 +771,7 @@ public final class ChangeSetRawTypesTest extends AbstractTest {
     @ParameterizedTest
     @MethodSource("org.apache.commons.compress.changes.TestFixtures#getZipOutputArchiveNames")
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void testDeleteFromZip(final String archiverName) throws Exception {
+    void testDeleteFromZip(final String archiverName) throws Exception {
         final ChangeSet changeSet = new ChangeSet();
         changeSet.delete("test2.xml");
         final File inputFile = getFile("bla.zip");
@@ -800,7 +800,7 @@ public final class ChangeSetRawTypesTest extends AbstractTest {
     @ParameterizedTest
     @MethodSource("org.apache.commons.compress.changes.TestFixtures#getOutputArchiveNames")
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void testDeletePlusAdd(final String archiverName) throws Exception {
+    void testDeletePlusAdd(final String archiverName) throws Exception {
         final Path inputPath = createArchive(archiverName);
         final Path result = Files.createTempFile("test", "." + archiverName);
         final File file1 = getFile("test.txt");
@@ -833,7 +833,7 @@ public final class ChangeSetRawTypesTest extends AbstractTest {
     @ParameterizedTest
     @MethodSource("org.apache.commons.compress.changes.TestFixtures#getOutputArchiveNames")
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public void testDeletePlusAddSame(final String archiverName) throws Exception {
+    void testDeletePlusAddSame(final String archiverName) throws Exception {
         final Path inputPath = createArchive(archiverName);
         final File testTxt = getFile("test.txt");
         final Path result = Files.createTempFile("test", "." + archiverName);
@@ -880,7 +880,7 @@ public final class ChangeSetRawTypesTest extends AbstractTest {
      * mv dir1/test.text dir2/test.txt + delete dir1 Moves the file to dir2 and deletes everything in dir1
      */
     @Test
-    public void testRenameAndDelete() {
+    void testRenameAndDelete() {
     }
 
 }

@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
 public class MemoryLimitExceptionTest {
 
     @Test
-    public void testAccessorsCause() {
+    void testAccessorsCause() {
         final IOException ioe = new IOException();
         final MemoryLimitException e = new MemoryLimitException(1, 2, (Throwable) ioe);
         assertEquals(1, e.getMemoryNeededInKb());
@@ -41,7 +41,7 @@ public class MemoryLimitExceptionTest {
     }
 
     @Test
-    public void testAccessorsCauseDepreacted() {
+    void testAccessorsCauseDepreacted() {
         final IOException ioe = new IOException();
         @SuppressWarnings("deprecation")
         final MemoryLimitException e = new MemoryLimitException(1, 2, ioe);
@@ -51,7 +51,7 @@ public class MemoryLimitExceptionTest {
     }
 
     @Test
-    public void testAccessorsLimit() {
+    void testAccessorsLimit() {
         final MemoryLimitException e = new MemoryLimitException(1, 2);
         assertEquals(1, e.getMemoryNeededInKb());
         assertEquals(2, e.getMemoryLimitInKb());

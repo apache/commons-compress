@@ -38,22 +38,22 @@ public class LZ77CompressorBlockTest {
     }
 
     @Test
-    public void testBackReferenceBlockToString() {
+    void testBackReferenceBlockToString() {
         assertTrue(new BackReference(1, 2).toString().contains(BlockType.BACK_REFERENCE.name()));
     }
 
     @Test
-    public void testDeprecatedBlock() {
+    void testDeprecatedBlock() {
         assertNotNull(new DeprecatedBlock().toString().contains(DeprecatedBlock.class.getSimpleName()));
     }
 
     @Test
-    public void testEodBlockToString() {
+    void testEodBlockToString() {
         assertTrue(new EOD().toString().contains(BlockType.EOD.name()));
     }
 
     @Test
-    public void testLiteralBlockToString() {
+    void testLiteralBlockToString() {
         assertTrue(new LiteralBlock(new byte[10], 1, 2).toString().contains(BlockType.LITERAL.name()));
     }
 

@@ -86,7 +86,7 @@ public final class DetectArchiverTest extends AbstractTest {
     }
 
     @Test
-    public void testCOMPRESS_117() throws Exception {
+    void testCOMPRESS_117() throws Exception {
         try (ArchiveInputStream<?> tar = createArchiveInputStream("COMPRESS-117.tar")) {
             assertNotNull(tar);
             assertInstanceOf(TarArchiveInputStream.class, tar);
@@ -94,7 +94,7 @@ public final class DetectArchiverTest extends AbstractTest {
     }
 
     @Test
-    public void testCOMPRESS_335() throws Exception {
+    void testCOMPRESS_335() throws Exception {
         try (ArchiveInputStream<?> tar = createArchiveInputStream("COMPRESS-335.tar")) {
             assertNotNull(tar);
             assertInstanceOf(TarArchiveInputStream.class, tar);
@@ -102,7 +102,7 @@ public final class DetectArchiverTest extends AbstractTest {
     }
 
     @Test
-    public void testDetection() throws Exception {
+    void testDetection() throws Exception {
 
         try (ArchiveInputStream<?> ar = createArchiveInputStream("bla.ar")) {
             assertNotNull(ar);
@@ -144,17 +144,17 @@ public final class DetectArchiverTest extends AbstractTest {
     // Check that the empty archives created by the code are readable
 
     // Not possible to detect empty "ar" archive as it is completely empty
-//    public void testEmptyArArchive() throws Exception {
+//    void testEmptyArArchive() throws Exception {
 //        emptyArchive("ar");
 //    }
 
     @Test
-    public void testDetectionNotArchive() {
+    void testDetectionNotArchive() {
         assertThrows(ArchiveException.class, () -> createArchiveInputStream("test.txt"));
     }
 
     @Test
-    public void testDetectOldTarFormatArchive() throws Exception {
+    void testDetectOldTarFormatArchive() throws Exception {
         try (ArchiveInputStream<?> tar = createArchiveInputStream("COMPRESS-612/test-times-star-folder.tar")) {
             assertNotNull(tar);
             assertInstanceOf(TarArchiveInputStream.class, tar);
@@ -162,24 +162,24 @@ public final class DetectArchiverTest extends AbstractTest {
     }
 
     @Test
-    public void testEmptyCpioArchive() throws Exception {
+    void testEmptyCpioArchive() throws Exception {
         checkEmptyArchive("cpio");
     }
 
     @Test
-    public void testEmptyJarArchive() throws Exception {
+    void testEmptyJarArchive() throws Exception {
         checkEmptyArchive("jar");
     }
 
     @Test
-    public void testEmptyTarArchive() throws Exception {
+    void testEmptyTarArchive() throws Exception {
         // Can't detect empty tar archive from its contents.
         final Path path = createEmptyArchive("tar"); // will be deleted by tearDown()
         assertThrows(ArchiveException.class, () -> checkDetectedType("tar", path));
     }
 
     @Test
-    public void testEmptyZipArchive() throws Exception {
+    void testEmptyZipArchive() throws Exception {
         checkEmptyArchive("zip");
     }
 
@@ -187,7 +187,7 @@ public final class DetectArchiverTest extends AbstractTest {
      * Tests COMPRESS-644.
      */
     @Test
-    public void testIcoFile() {
+    void testIcoFile() {
         assertThrows(ArchiveException.class, () -> {
             try (InputStream in = createBufferedInputStream("org/apache/commons/compress/COMPRESS-644/ARW05UP.ICO")) {
                 assertNull(ArchiveStreamFactory.detect(in));
@@ -196,7 +196,7 @@ public final class DetectArchiverTest extends AbstractTest {
     }
 
     @Test
-    public void testIcoFileFirstTarArchiveEntry() throws Exception {
+    void testIcoFileFirstTarArchiveEntry() throws Exception {
         try (TarArchiveInputStream inputStream = new TarArchiveInputStream(createBufferedInputStream("org/apache/commons/compress/COMPRESS-644/ARW05UP.ICO"))) {
             final TarArchiveEntry entry = inputStream.getNextEntry();
             // Find hints that the file is not a TAR file.

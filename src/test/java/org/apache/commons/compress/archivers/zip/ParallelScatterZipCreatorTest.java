@@ -175,31 +175,31 @@ public class ParallelScatterZipCreatorTest extends AbstractTempDirTest {
     }
 
     @Test
-    public void testCallableApiUsingSubmit() throws Exception {
+    void testCallableApiUsingSubmit() throws Exception {
         final File result = createTempFile("parallelScatterGather2", "");
         callableApi(zipCreator -> zipCreator::submit, result);
     }
 
     @Test
-    public void testCallableApiUsingSubmitStreamAwareCallable() throws Exception {
+    void testCallableApiUsingSubmitStreamAwareCallable() throws Exception {
         final File result = createTempFile("parallelScatterGather3", "");
         callableApi(zipCreator -> zipCreator::submitStreamAwareCallable, result);
     }
 
     @Test
-    public void testCallableApiWithHighestLevelUsingSubmitStreamAwareCallable() throws Exception {
+    void testCallableApiWithHighestLevelUsingSubmitStreamAwareCallable() throws Exception {
         final File result = createTempFile("parallelScatterGather5", "");
         callableApiWithTestFiles(zipCreator -> zipCreator::submitStreamAwareCallable, Deflater.BEST_COMPRESSION, result);
     }
 
     @Test
-    public void testCallableWithLowestLevelApiUsingSubmit() throws Exception {
+    void testCallableWithLowestLevelApiUsingSubmit() throws Exception {
         final File result = createTempFile("parallelScatterGather4", "");
         callableApiWithTestFiles(zipCreator -> zipCreator::submit, Deflater.NO_COMPRESSION, result);
     }
 
     @Test
-    public void testConcurrentCustomTempFolder() throws Exception {
+    void testConcurrentCustomTempFolder() throws Exception {
         final File result = createTempFile("parallelScatterGather1", "");
         final ParallelScatterZipCreator zipCreator;
         final Map<String, byte[]> entries;
@@ -222,7 +222,7 @@ public class ParallelScatterZipCreatorTest extends AbstractTempDirTest {
     }
 
     @Test
-    public void testConcurrentDefaultTempFolder() throws Exception {
+    void testConcurrentDefaultTempFolder() throws Exception {
         final File result = createTempFile("parallelScatterGather1", "");
         final ParallelScatterZipCreator zipCreator;
         final Map<String, byte[]> entries;
@@ -239,7 +239,7 @@ public class ParallelScatterZipCreatorTest extends AbstractTempDirTest {
     }
 
     @Test
-    public void testThrowsExceptionWithCompressionLevelTooBig() {
+    void testThrowsExceptionWithCompressionLevelTooBig() {
         final int compressLevelTooBig = Deflater.BEST_COMPRESSION + 1;
         final ExecutorService es = Executors.newFixedThreadPool(1);
         assertThrows(IllegalArgumentException.class, () -> new ParallelScatterZipCreator(es,
@@ -248,7 +248,7 @@ public class ParallelScatterZipCreatorTest extends AbstractTempDirTest {
     }
 
     @Test
-    public void testThrowsExceptionWithCompressionLevelTooSmall() {
+    void testThrowsExceptionWithCompressionLevelTooSmall() {
         final int compressLevelTooSmall = Deflater.DEFAULT_COMPRESSION - 1;
         final ExecutorService es = Executors.newFixedThreadPool(1);
         assertThrows(IllegalArgumentException.class, () -> new ParallelScatterZipCreator(es,

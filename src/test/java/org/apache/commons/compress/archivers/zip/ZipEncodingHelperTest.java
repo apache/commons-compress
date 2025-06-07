@@ -31,23 +31,23 @@ import org.junit.jupiter.api.Test;
 public class ZipEncodingHelperTest {
 
     @Test
-    public void testGetZipEncodingForDefault() {
+    void testGetZipEncodingForDefault() {
         assertEquals(Charset.defaultCharset(), ((NioZipEncoding) ZipEncodingHelper.getZipEncoding(Charset.defaultCharset().name())).getCharset());
     }
 
     @Test
-    public void testGetZipEncodingForIllegalName() {
+    void testGetZipEncodingForIllegalName() {
         assertEquals(Charset.defaultCharset(), ((NioZipEncoding) ZipEncodingHelper.getZipEncoding("")).getCharset());
     }
 
     @Test
-    public void testGetZipEncodingForNull() {
+    void testGetZipEncodingForNull() {
         assertEquals(Charset.defaultCharset(), ((NioZipEncoding) ZipEncodingHelper.getZipEncoding((Charset) null)).getCharset());
         assertEquals(Charset.defaultCharset(), ((NioZipEncoding) ZipEncodingHelper.getZipEncoding((String) null)).getCharset());
     }
 
     @Test
-    public void testGetZipEncodingForUnknown() {
+    void testGetZipEncodingForUnknown() {
         assertEquals(Charset.defaultCharset(), ((NioZipEncoding) ZipEncodingHelper.getZipEncoding("X")).getCharset());
     }
 }

@@ -64,17 +64,17 @@ public class BigFilesIT extends AbstractTest {
     }
 
     @Test
-    public void testReadFileBiggerThan8GBytePosix() throws Exception {
+    void testReadFileBiggerThan8GBytePosix() throws Exception {
         readFileBiggerThan8GByte("8.posix.tar.gz");
     }
 
     @Test
-    public void testReadFileBiggerThan8GByteStar() throws Exception {
+    void testReadFileBiggerThan8GByteStar() throws Exception {
         readFileBiggerThan8GByte("8.star.tar.gz");
     }
 
     @Test
-    public void testReadFileHeadersOfArchiveBiggerThan8GByte() throws Exception {
+    void testReadFileHeadersOfArchiveBiggerThan8GByte() throws Exception {
         try (InputStream in = new BufferedInputStream(Files.newInputStream(getPath("8.posix.tar.gz")));
                 GzipCompressorInputStream gzin = new GzipCompressorInputStream(in);
                 TarArchiveInputStream tin = new TarArchiveInputStream(gzin)) {
@@ -85,7 +85,7 @@ public class BigFilesIT extends AbstractTest {
     }
 
     @Test
-    public void testTarFileReadFileHeadersOfArchiveBiggerThan8GByte() throws Exception {
+    void testTarFileReadFileHeadersOfArchiveBiggerThan8GByte() throws Exception {
         final Path file = getPath("8.posix.tar.gz");
         final Path output = tempResultDir.toPath().resolve("8.posix.tar");
         try (InputStream in = new BufferedInputStream(Files.newInputStream(file));

@@ -84,7 +84,7 @@ public class TarArchiveOutputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testBigNumberErrorMode() throws Exception {
+    void testBigNumberErrorMode() throws Exception {
         final TarArchiveEntry t = new TarArchiveEntry("foo");
         t.setSize(0100000000000L);
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -94,7 +94,7 @@ public class TarArchiveOutputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testBigNumberPosixMode() throws Exception {
+    void testBigNumberPosixMode() throws Exception {
         final TarArchiveEntry t = new TarArchiveEntry("foo");
         t.setSize(0100000000000L);
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -116,7 +116,7 @@ public class TarArchiveOutputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testBigNumberStarMode() throws Exception {
+    void testBigNumberStarMode() throws Exception {
         final TarArchiveEntry t = new TarArchiveEntry("foo");
         t.setSize(0100000000000L);
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -137,7 +137,7 @@ public class TarArchiveOutputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testBlockSizes() throws Exception {
+    void testBlockSizes() throws Exception {
         final String fileName = "/test1.xml";
         final byte[] contents = getResourceContents(fileName);
         testPadding(TarConstants.DEFAULT_BLKSIZE, fileName, contents); // USTAR / pre-pax
@@ -157,7 +157,7 @@ public class TarArchiveOutputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testCount() throws Exception {
+    void testCount() throws Exception {
         final File f = createTempFile("commons-compress-tarcount", ".tar");
         try (OutputStream fos = Files.newOutputStream(f.toPath());
                 ArchiveOutputStream<ArchiveEntry> tarOut = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(ArchiveStreamFactory.TAR, fos)) {
@@ -183,7 +183,7 @@ public class TarArchiveOutputStreamTest extends AbstractTest {
      * caused identical archives to have different MD5 hashes.
      */
     @Test
-    public void testLongNameMd5Hash() throws Exception {
+    void testLongNameMd5Hash() throws Exception {
         // @formatter:off
         final String longFileName =
             "a/considerably/longer/file/name/which/forces/use/of/the/long/link/header/which/appears/to/always/use/the/current/time/as/modification/date";
@@ -215,7 +215,7 @@ public class TarArchiveOutputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testMaxFileSizeError() throws Exception {
+    void testMaxFileSizeError() throws Exception {
         final TarArchiveEntry t = new TarArchiveEntry("foo");
         t.setSize(077777777777L);
         final TarArchiveOutputStream tos1 = new TarArchiveOutputStream(new ByteArrayOutputStream());
@@ -226,7 +226,7 @@ public class TarArchiveOutputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testOldEntryError() throws Exception {
+    void testOldEntryError() throws Exception {
         final TarArchiveEntry t = new TarArchiveEntry("foo");
         t.setSize(Integer.MAX_VALUE);
         t.setModTime(-1000);
@@ -236,7 +236,7 @@ public class TarArchiveOutputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testOldEntryPosixMode() throws Exception {
+    void testOldEntryPosixMode() throws Exception {
         final TarArchiveEntry t = new TarArchiveEntry("foo");
         t.setSize(Integer.MAX_VALUE);
         t.setModTime(-1000);
@@ -262,7 +262,7 @@ public class TarArchiveOutputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testOldEntryStarMode() throws Exception {
+    void testOldEntryStarMode() throws Exception {
         final TarArchiveEntry t = new TarArchiveEntry("foo");
         t.setSize(Integer.MAX_VALUE);
         t.setModTime(-1000);
@@ -313,7 +313,7 @@ public class TarArchiveOutputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testPaxHeadersWithLength101() throws Exception {
+    void testPaxHeadersWithLength101() throws Exception {
         final Map<String, String> m = new HashMap<>();
         m.put("a", "0123456789012345678901234567890123456789" + "01234567890123456789012345678901234567890123456789" + "0123");
         final byte[] data = writePaxHeader(m);
@@ -323,7 +323,7 @@ public class TarArchiveOutputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testPaxHeadersWithLength99() throws Exception {
+    void testPaxHeadersWithLength99() throws Exception {
         final Map<String, String> m = new HashMap<>();
         m.put("a", "0123456789012345678901234567890123456789" + "01234567890123456789012345678901234567890123456789" + "012");
         final byte[] data = writePaxHeader(m);
@@ -333,7 +333,7 @@ public class TarArchiveOutputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testPutGlobalPaxHeaderEntry() throws IOException {
+    void testPutGlobalPaxHeaderEntry() throws IOException {
         final String x = "If at first you don't succeed, give up";
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try (TarArchiveOutputStream tos = new TarArchiveOutputStream(bos)) {
@@ -376,7 +376,7 @@ public class TarArchiveOutputStreamTest extends AbstractTest {
 
     @SuppressWarnings("deprecation")
     @Test
-    public void testRecordSize() throws IOException {
+    void testRecordSize() throws IOException {
         assertThrows(IllegalArgumentException.class, () -> new TarArchiveOutputStream(new ByteArrayOutputStream(), 512, 511),
                 "should have rejected recordSize of 511");
         try (TarArchiveOutputStream tos = new TarArchiveOutputStream(new ByteArrayOutputStream(), 512, 512)) {
@@ -409,7 +409,7 @@ public class TarArchiveOutputStreamTest extends AbstractTest {
      * @see "https://issues.apache.org/jira/browse/COMPRESS-200"
      */
     @Test
-    public void testRoundtripWith67CharFileNameGnu() throws Exception {
+    void testRoundtripWith67CharFileNameGnu() throws Exception {
         testRoundtripWith67CharFileName(TarArchiveOutputStream.LONGFILE_GNU);
     }
 
@@ -417,7 +417,7 @@ public class TarArchiveOutputStreamTest extends AbstractTest {
      * @see "https://issues.apache.org/jira/browse/COMPRESS-200"
      */
     @Test
-    public void testRoundtripWith67CharFileNamePosix() throws Exception {
+    void testRoundtripWith67CharFileNamePosix() throws Exception {
         testRoundtripWith67CharFileName(TarArchiveOutputStream.LONGFILE_POSIX);
     }
 
@@ -440,7 +440,7 @@ public class TarArchiveOutputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testWriteLongDirectoryNameErrorMode() throws Exception {
+    void testWriteLongDirectoryNameErrorMode() throws Exception {
         final String n = "01234567890123456789012345678901234567890123456789" + "01234567890123456789012345678901234567890123456789"
                 + "01234567890123456789012345678901234567890123456789/";
 
@@ -459,7 +459,7 @@ public class TarArchiveOutputStreamTest extends AbstractTest {
      * @see "https://issues.apache.org/jira/browse/COMPRESS-203"
      */
     @Test
-    public void testWriteLongDirectoryNameGnuMode() throws Exception {
+    void testWriteLongDirectoryNameGnuMode() throws Exception {
         testWriteLongDirectoryName(TarArchiveOutputStream.LONGFILE_GNU);
     }
 
@@ -467,12 +467,12 @@ public class TarArchiveOutputStreamTest extends AbstractTest {
      * @see "https://issues.apache.org/jira/browse/COMPRESS-203"
      */
     @Test
-    public void testWriteLongDirectoryNamePosixMode() throws Exception {
+    void testWriteLongDirectoryNamePosixMode() throws Exception {
         testWriteLongDirectoryName(TarArchiveOutputStream.LONGFILE_POSIX);
     }
 
     @Test
-    public void testWriteLongDirectoryNameTruncateMode() throws Exception {
+    void testWriteLongDirectoryNameTruncateMode() throws Exception {
         final String n = "01234567890123456789012345678901234567890123456789" + "01234567890123456789012345678901234567890123456789"
                 + "01234567890123456789012345678901234567890123456789/";
         final TarArchiveEntry t = new TarArchiveEntry(n);
@@ -492,7 +492,7 @@ public class TarArchiveOutputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testWriteLongFileNamePosixMode() throws Exception {
+    void testWriteLongFileNamePosixMode() throws Exception {
         // @formatter:off
         final String n = "01234567890123456789012345678901234567890123456789"
                 + "01234567890123456789012345678901234567890123456789"
@@ -516,7 +516,7 @@ public class TarArchiveOutputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testWriteLongFileNameThrowsException() throws Exception {
+    void testWriteLongFileNameThrowsException() throws Exception {
         final String n = "01234567890123456789012345678901234567890123456789" + "01234567890123456789012345678901234567890123456789"
                 + "01234567890123456789012345678901234567890123456789";
         final TarArchiveEntry t = new TarArchiveEntry(n);
@@ -554,7 +554,7 @@ public class TarArchiveOutputStreamTest extends AbstractTest {
      * @see "https://issues.apache.org/jira/browse/COMPRESS-237"
      */
     @Test
-    public void testWriteLongLinkNameErrorMode() throws Exception {
+    void testWriteLongLinkNameErrorMode() throws Exception {
         final String linkName = "01234567890123456789012345678901234567890123456789" + "01234567890123456789012345678901234567890123456789"
                 + "01234567890123456789012345678901234567890123456789/test";
         final TarArchiveEntry entry = new TarArchiveEntry("test", TarConstants.LF_SYMLINK);
@@ -574,7 +574,7 @@ public class TarArchiveOutputStreamTest extends AbstractTest {
      * @see "https://issues.apache.org/jira/browse/COMPRESS-237"
      */
     @Test
-    public void testWriteLongLinkNameGnuMode() throws Exception {
+    void testWriteLongLinkNameGnuMode() throws Exception {
         testWriteLongLinkName(TarArchiveOutputStream.LONGFILE_GNU);
     }
 
@@ -582,12 +582,12 @@ public class TarArchiveOutputStreamTest extends AbstractTest {
      * @see "https://issues.apache.org/jira/browse/COMPRESS-237"
      */
     @Test
-    public void testWriteLongLinkNamePosixMode() throws Exception {
+    void testWriteLongLinkNamePosixMode() throws Exception {
         testWriteLongLinkName(TarArchiveOutputStream.LONGFILE_POSIX);
     }
 
     @Test
-    public void testWriteLongLinkNameTruncateMode() throws Exception {
+    void testWriteLongLinkNameTruncateMode() throws Exception {
         final String linkName = "01234567890123456789012345678901234567890123456789" + "01234567890123456789012345678901234567890123456789"
                 + "01234567890123456789012345678901234567890123456789/";
         final TarArchiveEntry entry = new TarArchiveEntry("test", TarConstants.LF_SYMLINK);
@@ -612,7 +612,7 @@ public class TarArchiveOutputStreamTest extends AbstractTest {
      * @see "https://issues.apache.org/jira/browse/COMPRESS-203"
      */
     @Test
-    public void testWriteNonAsciiDirectoryNamePosixMode() throws Exception {
+    void testWriteNonAsciiDirectoryNamePosixMode() throws Exception {
         final String n = "f\u00f6\u00f6/";
         final TarArchiveEntry t = new TarArchiveEntry(n);
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -631,7 +631,7 @@ public class TarArchiveOutputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testWriteNonAsciiLinkPathNamePaxHeader() throws Exception {
+    void testWriteNonAsciiLinkPathNamePaxHeader() throws Exception {
         final String n = "\u00e4";
         final TarArchiveEntry t = new TarArchiveEntry("a", TarConstants.LF_LINK);
         t.setSize(10 * 1024);
@@ -656,7 +656,7 @@ public class TarArchiveOutputStreamTest extends AbstractTest {
      * @see "https://issues.apache.org/jira/browse/COMPRESS-265"
      */
     @Test
-    public void testWriteNonAsciiNameWithUnfortunateNamePosixMode() throws Exception {
+    void testWriteNonAsciiNameWithUnfortunateNamePosixMode() throws Exception {
         final String n = "f\u00f6\u00f6\u00dc";
         final TarArchiveEntry t = new TarArchiveEntry(n);
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -675,7 +675,7 @@ public class TarArchiveOutputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testWriteNonAsciiPathNamePaxHeader() throws Exception {
+    void testWriteNonAsciiPathNamePaxHeader() throws Exception {
         final String n = "\u00e4";
         final TarArchiveEntry t = new TarArchiveEntry(n);
         t.setSize(10 * 1024);
@@ -696,7 +696,7 @@ public class TarArchiveOutputStreamTest extends AbstractTest {
     }
 
     @Test
-    public void testWriteSimplePaxHeaders() throws Exception {
+    void testWriteSimplePaxHeaders() throws Exception {
         final Map<String, String> m = new HashMap<>();
         m.put("a", "b");
         final byte[] data = writePaxHeader(m);
@@ -709,7 +709,7 @@ public class TarArchiveOutputStreamTest extends AbstractTest {
      */
     @Disabled("The test needs to write 1.1 TB in chunks of 512 bytes which takes a long time. So it's disabled by default")
     @Test
-    public void testWritingBigFile() throws Exception {
+    void testWritingBigFile() throws Exception {
         final TarArchiveEntry t = new TarArchiveEntry("foo");
         t.setSize((Integer.MAX_VALUE + 1L) * TarConstants.DEFAULT_RCDSIZE);
         try (TarArchiveOutputStream tos = new TarArchiveOutputStream(NullOutputStream.NULL_OUTPUT_STREAM)) {

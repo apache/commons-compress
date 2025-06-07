@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 public class ExactMathTest {
 
     @Test
-    public void testOverflow() {
+    void testOverflow() {
         assertThrows(IllegalArgumentException.class, () -> ExactMath.add(1, Long.MAX_VALUE / 1000));
         assertThrows(IllegalArgumentException.class, () -> ExactMath.add(Integer.MAX_VALUE, Integer.MAX_VALUE));
     }

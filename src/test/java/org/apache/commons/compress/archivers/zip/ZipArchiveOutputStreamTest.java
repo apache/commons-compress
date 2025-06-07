@@ -38,7 +38,7 @@ import org.junit.jupiter.api.Test;
 public class ZipArchiveOutputStreamTest extends AbstractTempDirTest {
 
     @Test
-    public void testFileBasics() throws IOException {
+    void testFileBasics() throws IOException {
         final ZipArchiveOutputStream ref;
         try (ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(createTempFile())) {
             ref = outputStream;
@@ -48,7 +48,7 @@ public class ZipArchiveOutputStreamTest extends AbstractTempDirTest {
     }
 
     @Test
-    public void testOptionDefaults() throws IOException {
+    void testOptionDefaults() throws IOException {
         final ZipArchiveOutputStream ref;
         try (ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(createTempFile())) {
             ref = outputStream;
@@ -62,14 +62,14 @@ public class ZipArchiveOutputStreamTest extends AbstractTempDirTest {
     }
 
     @Test
-    public void testOutputStreamBasics() throws IOException {
+    void testOutputStreamBasics() throws IOException {
         try (ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(new ByteArrayOutputStream())) {
             assertFalse(outputStream.isSeekable());
         }
     }
 
     @Test
-    public void testSetEncoding() throws IOException {
+    void testSetEncoding() throws IOException {
         try (ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(createTempFile())) {
             outputStream.setEncoding(StandardCharsets.UTF_8.name());
             assertEquals(StandardCharsets.UTF_8.name(), outputStream.getEncoding());

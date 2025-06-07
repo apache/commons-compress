@@ -154,7 +154,7 @@ public class X5455_ExtendedTimestampTest {
     }
 
     @Test
-    public void testBitsAreSetWithTime() {
+    void testBitsAreSetWithTime() {
         xf.setModifyJavaTime(new Date(1111));
         assertTrue(xf.isBit0_modifyTimePresent());
         assertEquals(1, xf.getFlags());
@@ -176,12 +176,12 @@ public class X5455_ExtendedTimestampTest {
     }
 
     @Test
-    public void testGetHeaderId() {
+    void testGetHeaderId() {
         assertEquals(X5455, xf.getHeaderId());
     }
 
     @Test
-    public void testGettersSetters() {
+    void testGettersSetters() {
         // X5455 is concerned with time, so let's
         // get a timestamp to play with (Jan 1st, 2000).
         final Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
@@ -378,7 +378,7 @@ public class X5455_ExtendedTimestampTest {
     }
 
     @Test
-    public void testMisc() throws Exception {
+    void testMisc() throws Exception {
         assertNotEquals(xf, new Object());
         assertTrue(xf.toString().startsWith("0x5455 Zip Extra Field"));
         assertFalse(xf.toString().contains(" Modify:"));
@@ -403,7 +403,7 @@ public class X5455_ExtendedTimestampTest {
     }
 
     @Test
-    public void testParseReparse() throws ZipException {
+    void testParseReparse() throws ZipException {
         /*
          * Recall the spec:
          *
@@ -448,14 +448,14 @@ public class X5455_ExtendedTimestampTest {
     }
 
     @Test
-    public void testResetsFlagsWhenLocalFileArrayIsTooShort() throws Exception {
+    void testResetsFlagsWhenLocalFileArrayIsTooShort() throws Exception {
         final byte[] local = { 7 }; // claims all three time values would be present, but they are not
         xf.parseFromLocalFileData(local, 0, 1);
         assertArrayEquals(new byte[1], xf.getLocalFileDataData());
     }
 
     @Test
-    public void testSampleFile() throws Exception {
+    void testSampleFile() throws Exception {
 
         /*
          * Contains entries with zipTime, accessTime, and modifyTime. The file name tells you the year we tried to set the time to (Jan 1st, Midnight, UTC).
@@ -552,7 +552,7 @@ public class X5455_ExtendedTimestampTest {
     }
 
     @Test
-    public void testWriteReadRoundtrip() throws IOException {
+    void testWriteReadRoundtrip() throws IOException {
         final File output = new File(tmpDir, "write_rewrite.zip");
         final Calendar instance = Calendar.getInstance();
         instance.clear();

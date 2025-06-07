@@ -89,7 +89,7 @@ public class ArchiveReadTest extends AbstractTest {
 
     @ParameterizedTest
     @MethodSource("data")
-    public void testArchive(final File file) throws Exception {
+    void testArchive(final File file) throws Exception {
         @SuppressWarnings("unchecked") // fileList is correct type already
         final ArrayList<String> expected = (ArrayList<String>) FILE_LIST.clone();
         assertDoesNotThrow(() -> checkArchiveContent(file, expected), "Problem checking " + file);

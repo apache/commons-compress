@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 public class CircularBufferTest {
 
     @Test
-    public void testCopy() {
+    void testCopy() {
         final CircularBuffer buffer = new CircularBuffer(16);
 
         buffer.put(1);
@@ -63,7 +63,7 @@ public class CircularBufferTest {
     }
 
     @Test
-    public void testPutAndGet() {
+    void testPutAndGet() {
         final int size = 16;
         final CircularBuffer buffer = new CircularBuffer(size);
         for (int i = 0; i < size / 2; i++) {

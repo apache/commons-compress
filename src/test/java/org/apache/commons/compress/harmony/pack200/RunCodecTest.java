@@ -43,7 +43,7 @@ public class RunCodecTest {
     }
 
     @Test
-    public void testDecode() throws Exception {
+    void testDecode() throws Exception {
         RunCodec runCodec = new RunCodec(1, Codec.UNSIGNED5, Codec.BYTE1);
         ByteArrayInputStream bais = new ByteArrayInputStream(new byte[] { (byte) 192, 0, (byte) 192, 0 });
         assertEquals(192, runCodec.decode(bais));
@@ -59,7 +59,7 @@ public class RunCodecTest {
     }
 
     @Test
-    public void testDecodeInts() throws Exception {
+    void testDecodeInts() throws Exception {
         final int[] band = { 1, -2, -3, 1000, 55, 5, 10, 20 };
         // first 5 of band to be encoded with DELTA5
         final byte[] bytes1 = Codec.DELTA5.encode(new int[] { 1, -2, -3, 1000, 55 });
@@ -77,7 +77,7 @@ public class RunCodecTest {
     }
 
     @Test
-    public void testEncodeSingleValue() {
+    void testEncodeSingleValue() {
         assertThrows(Pack200Exception.class, () -> new RunCodec(10, Codec.SIGNED5, Codec.UDELTA5).encode(5),
                 "Should not allow a single value to be encoded as we don't know which codec to use");
         assertThrows(Pack200Exception.class, () -> new RunCodec(10, Codec.SIGNED5, Codec.UDELTA5).encode(5, 8),
@@ -85,7 +85,7 @@ public class RunCodecTest {
     }
 
     @Test
-    public void testNestedPopulationCodec() throws Exception {
+    void testNestedPopulationCodec() throws Exception {
         final int[] band = { 11, 12, 33, 4000, -555, 5, 10, 20, 10, 3, 20, 20, 20, 10, 10, 999, 20, 789, 10, 10, 355, 12345 };
         // first 5 of band to be encoded with DELTA5
         final byte[] bytes1 = Codec.DELTA5.encode(new int[] { 11, 12, 33, 4000, -555 });
@@ -105,7 +105,7 @@ public class RunCodecTest {
     }
 
     @Test
-    public void testNestedRunCodec() throws Exception {
+    void testNestedRunCodec() throws Exception {
         final int[] band = { 1, 2, 3, 10, 20, 30, 100, 200, 300 };
         // first 3 of band to be encoded with UDELTA5
         final byte[] bytes1 = Codec.UDELTA5.encode(new int[] { 1, 2, 3 });
@@ -126,7 +126,7 @@ public class RunCodecTest {
 
     @Disabled
     @Test
-    public void testPopulationCodecDecodeIntsOverflow() throws Exception {
+    void testPopulationCodecDecodeIntsOverflow() throws Exception {
         final byte[] bytes1 = Codec.DELTA5.encode(new int[] { 11, 12, 33, 4000, -555 });
         final PopulationCodec popCodec = new PopulationCodec(Codec.UNSIGNED5, Codec.BYTE1, Codec.UNSIGNED5);
         final byte[] bytes2 = popCodec.encode(new int[] { 10, 20 }, new int[] { 0, 1, 2, 1, 0, 2, 2, 2, 1, 1, 0, 2, 0, 1, 1, 0, 0 },
@@ -139,13 +139,13 @@ public class RunCodecTest {
 
     @ParameterizedTest
     @MethodSource("runCodec")
-    public void testRunCodec(final int k, final Codec aCodec, final Codec bCodec, final String failureMessage) {
+    void testRunCodec(final int k, final Codec aCodec, final Codec bCodec, final String failureMessage) {
         assertThrows(Pack200Exception.class, () -> new RunCodec(k, aCodec, bCodec), failureMessage);
     }
 
     @Disabled
     @Test
-    public void testRunCodecDecodeIntsOverflow() throws Exception {
+    void testRunCodecDecodeIntsOverflow() throws Exception {
         final byte[] bytes1 = Codec.DELTA5.encode(new int[] { 1, -2, -3, 1000, 55 });
         final byte[] bytes2 = Codec.UNSIGNED5.encode(new int[] { 5, 10, 20 });
         final byte[] bandEncoded = new byte[bytes1.length + bytes2.length];
@@ -159,7 +159,7 @@ public class RunCodecTest {
     }
 
     @Test
-    public void testToString() throws Pack200Exception {
+    void testToString() throws Pack200Exception {
         final RunCodec runCodec = new RunCodec(3, Codec.UNSIGNED5, Codec.BYTE1);
         assertEquals("RunCodec[k=" + 3 + ";aCodec=" + Codec.UNSIGNED5 + "bCodec=" + Codec.BYTE1 + "]", runCodec.toString());
     }

@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
 public class ExtraFieldTest {
 
     @Test
-    public void testEquals() throws IOException {
+    void testEquals() throws IOException {
         assertEquals(new ExtraField(), new ExtraField());
         assertEquals(new ExtraField().addSubField("BB", "CCCC".getBytes(StandardCharsets.ISO_8859_1)),
                 new ExtraField().addSubField("BB", "CCCC".getBytes(StandardCharsets.ISO_8859_1)));
@@ -44,7 +44,7 @@ public class ExtraFieldTest {
     }
 
     @Test
-    public void testHashCode() throws IOException {
+    void testHashCode() throws IOException {
         assertEquals(new ExtraField().hashCode(), new ExtraField().hashCode());
         assertEquals(new ExtraField().addSubField("BB", "CCCC".getBytes(StandardCharsets.ISO_8859_1)).hashCode(),
                 new ExtraField().addSubField("BB", "CCCC".getBytes(StandardCharsets.ISO_8859_1)).hashCode());

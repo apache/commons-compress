@@ -138,56 +138,56 @@ public class IOMethodsTest extends AbstractTest {
     }
 
     @Test
-    public void testReadAr() throws Exception {
+    void testReadAr() throws Exception {
         compareReads("ar");
     }
 
     @Test
-    public void testReadCpio() throws Exception {
+    void testReadCpio() throws Exception {
         compareReads("cpio");
     }
 
     @Test
-    public void testReadJar() throws Exception {
+    void testReadJar() throws Exception {
         compareReads("jar");
     }
 
     @Test
-    public void testReadTar() throws Exception {
+    void testReadTar() throws Exception {
         compareReads("tar");
     }
 
     @Test
-    public void testReadZip() throws Exception {
+    void testReadZip() throws Exception {
         compareReads("zip");
     }
 
     @Test
-    public void testWriteAr() throws Exception {
+    void testWriteAr() throws Exception {
         compareWrites("ar", new ArArchiveEntry("dummy", bytesToTest));
     }
 
     @Test
-    public void testWriteCpio() throws Exception {
+    void testWriteCpio() throws Exception {
         final ArchiveEntry entry = new CpioArchiveEntry("dummy", bytesToTest);
         compareWrites("cpio", entry);
     }
 
     @Test
-    public void testWriteJar() throws Exception {
+    void testWriteJar() throws Exception {
         final ArchiveEntry entry = new JarArchiveEntry("dummy");
         compareWrites("jar", entry);
     }
 
     @Test
-    public void testWriteTar() throws Exception {
+    void testWriteTar() throws Exception {
         final TarArchiveEntry entry = new TarArchiveEntry("dummy");
         entry.setSize(bytesToTest);
         compareWrites("tar", entry);
     }
 
     @Test
-    public void testWriteZip() throws Exception {
+    void testWriteZip() throws Exception {
         final ArchiveEntry entry = new ZipArchiveEntry("dummy");
         compareWrites("zip", entry);
     }

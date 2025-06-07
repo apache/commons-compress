@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 public class SegmentConstantPoolArrayCacheTest {
 
     @Test
-    public void testMultipleArrayMultipleHit() {
+    void testMultipleArrayMultipleHit() {
         final SegmentConstantPoolArrayCache arrayCache = new SegmentConstantPoolArrayCache();
         final String[] arrayOne = { "Zero", "Shared", "Two", "Shared", "Shared" };
         final String[] arrayTwo = { "Shared", "One", "Shared", "Shared", "Shared" };
@@ -61,7 +61,7 @@ public class SegmentConstantPoolArrayCacheTest {
     }
 
     @Test
-    public void testSingleMultipleHitArray() {
+    void testSingleMultipleHitArray() {
         final SegmentConstantPoolArrayCache arrayCache = new SegmentConstantPoolArrayCache();
         final String[] array = { "Zero", "OneThreeFour", "Two", "OneThreeFour", "OneThreeFour" };
         final List<Integer> list = arrayCache.indexesForArrayKey(array, "OneThreeFour");
@@ -72,7 +72,7 @@ public class SegmentConstantPoolArrayCacheTest {
     }
 
     @Test
-    public void testSingleSimpleArray() {
+    void testSingleSimpleArray() {
         final SegmentConstantPoolArrayCache arrayCache = new SegmentConstantPoolArrayCache();
         final String[] array = { "Zero", "One", "Two", "Three", "Four" };
         final List<Integer> list = arrayCache.indexesForArrayKey(array, "Three");

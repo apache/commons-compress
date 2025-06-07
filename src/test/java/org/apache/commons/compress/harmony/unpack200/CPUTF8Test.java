@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
 public class CPUTF8Test {
 
     @Test
-    public void testEquality() {
+    void testEquality() {
         final CPUTF8 one = new CPUTF8("(III)V", 1);
         final CPUTF8 two = new CPUTF8("((I[II)V", 2);
         final CPUTF8 three = new CPUTF8("([III)V", 3);

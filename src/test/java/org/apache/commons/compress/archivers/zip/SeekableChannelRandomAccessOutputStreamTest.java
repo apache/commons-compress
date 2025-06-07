@@ -46,7 +46,7 @@ import org.junit.jupiter.api.Test;
 public class SeekableChannelRandomAccessOutputStreamTest extends AbstractTempDirTest {
 
     @Test
-    public void testInitialization() throws IOException {
+    void testInitialization() throws IOException {
         final Path file = newTempPath("testChannel");
         try (SeekableChannelRandomAccessOutputStream stream = new SeekableChannelRandomAccessOutputStream(
                 Files.newByteChannel(file, StandardOpenOption.CREATE, StandardOpenOption.WRITE))) {
@@ -55,7 +55,7 @@ public class SeekableChannelRandomAccessOutputStreamTest extends AbstractTempDir
     }
 
     @Test
-    public void testWrite() throws IOException {
+    void testWrite() throws IOException {
         final FileChannel channel = mock(FileChannel.class);
         final SeekableChannelRandomAccessOutputStream stream = new SeekableChannelRandomAccessOutputStream(channel);
         when(channel.position()).thenReturn(11L);
@@ -73,7 +73,7 @@ public class SeekableChannelRandomAccessOutputStreamTest extends AbstractTempDir
     }
 
     @Test
-    public void testWriteFullyAt_whenFullAtOnce_thenSucceed() throws IOException {
+    void testWriteFullyAt_whenFullAtOnce_thenSucceed() throws IOException {
         try (SeekableByteChannel channel = mock(SeekableByteChannel.class);
                 SeekableChannelRandomAccessOutputStream stream = new SeekableChannelRandomAccessOutputStream(channel)) {
             when(channel.position()).thenReturn(50L).thenReturn(60L);
@@ -94,7 +94,7 @@ public class SeekableChannelRandomAccessOutputStreamTest extends AbstractTempDir
     }
 
     @Test
-    public void testWriteFullyAt_whenFullButPartial_thenSucceed() throws IOException {
+    void testWriteFullyAt_whenFullButPartial_thenSucceed() throws IOException {
         try (SeekableByteChannel channel = mock(SeekableByteChannel.class);
                 SeekableChannelRandomAccessOutputStream stream = new SeekableChannelRandomAccessOutputStream(channel)) {
             when(channel.position()).thenReturn(50L).thenReturn(60L);
@@ -118,7 +118,7 @@ public class SeekableChannelRandomAccessOutputStreamTest extends AbstractTempDir
     }
 
     @Test
-    public void testWriteFullyAt_whenPartial_thenFail() throws IOException {
+    void testWriteFullyAt_whenPartial_thenFail() throws IOException {
         try (SeekableByteChannel channel = mock(SeekableByteChannel.class);
                 SeekableChannelRandomAccessOutputStream stream = new SeekableChannelRandomAccessOutputStream(channel)) {
             when(channel.position()).thenReturn(50L);

@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 public class BoundedSeekableByteChannelInputStreamTest {
 
     @Test
-    public void testCheckRestrictedRead() throws IOException {
+    void testCheckRestrictedRead() throws IOException {
         final byte[] readContent;
         try (SeekableInMemoryByteChannel channel = new SeekableInMemoryByteChannel("Hello World!".getBytes(UTF_8));
                 BoundedSeekableByteChannelInputStream input = new BoundedSeekableByteChannelInputStream(0, 5, channel)) {

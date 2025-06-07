@@ -53,7 +53,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 public class ArchiveTest extends AbstractTempDirTest {
 
     @Test
-    public void testAlternativeConstructor() throws Exception {
+    void testAlternativeConstructor() throws Exception {
         final String inputFile = new File(Archive.class.getResource("/pack200/sql.pack.gz").toURI()).getPath();
         final File file = createTempFile("sql", ".jar");
         final String outputFile = file.getPath();
@@ -61,7 +61,7 @@ public class ArchiveTest extends AbstractTempDirTest {
     }
 
     @Test
-    public void testDeflateHint() throws Exception {
+    void testDeflateHint() throws Exception {
         File file = createTempFile("sql", ".jar");
         try (InputStream in = Archive.class.getResourceAsStream("/pack200/sql.pack.gz");
                 JarOutputStream out = new JarOutputStream(new FileOutputStream(file))) {
@@ -86,7 +86,7 @@ public class ArchiveTest extends AbstractTempDirTest {
     }
 
     @Test
-    public void testJustResourcesGZip() throws Exception {
+    void testJustResourcesGZip() throws Exception {
         final File file = createTempFile("Just", "ResourcesGz.jar");
         try (InputStream in = Archive.class.getResourceAsStream("/pack200/JustResources.pack.gz");
                 JarOutputStream out = new JarOutputStream(new FileOutputStream(file))) {
@@ -96,7 +96,7 @@ public class ArchiveTest extends AbstractTempDirTest {
 
     // Test verbose, quiet and log file options.
     @Test
-    public void testLoggingOptions() throws Exception {
+    void testLoggingOptions() throws Exception {
         // test default option, which is quiet (no output at all)
         File file = createTempFile("logtest", ".jar");
         File logFile = createTempFile("logfile", ".txt");
@@ -169,7 +169,7 @@ public class ArchiveTest extends AbstractTempDirTest {
     // @formatter:on
     })
     // Tests of various files that can cause out of memory errors
-    public void testParsingOOMBounded(final String testFileName) throws Exception {
+    void testParsingOOMBounded(final String testFileName) throws Exception {
         final URL url = Segment.class.getResource("/org/apache/commons/compress/pack/" + testFileName);
         try (BoundedInputStream in = Pack200UnpackerAdapter.newBoundedInputStream(url);
                 JarOutputStream out = new JarOutputStream(NullOutputStream.INSTANCE)) {
@@ -192,7 +192,7 @@ public class ArchiveTest extends AbstractTempDirTest {
     // @formatter:on
     })
     // Tests of various files that can cause out of memory errors
-    public void testParsingOOMUnbounded(final String testFileName) throws Exception {
+    void testParsingOOMUnbounded(final String testFileName) throws Exception {
         try (InputStream is = Segment.class.getResourceAsStream("/org/apache/commons/compress/pack/" + testFileName);
                 JarOutputStream out = new JarOutputStream(NullOutputStream.INSTANCE)) {
             assertThrows(IOException.class, () -> new Archive(is, out).unpack());
@@ -200,7 +200,7 @@ public class ArchiveTest extends AbstractTempDirTest {
     }
 
     @Test
-    public void testRemovePackFile() throws Exception {
+    void testRemovePackFile() throws Exception {
         final File copy = createTempFile("sqlcopy", ".pack.gz");
         final File original = new File(Archive.class.getResource("/pack200/sql.pack.gz").toURI());
         try (BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(original));
@@ -223,7 +223,7 @@ public class ArchiveTest extends AbstractTempDirTest {
 
     // Test with an archive containing Annotations
     @Test
-    public void testWithAnnotations() throws Exception {
+    void testWithAnnotations() throws Exception {
         final File file = createTempFile("annotations", ".jar");
         try (InputStream in = Archive.class.getResourceAsStream("/pack200/annotations.pack.gz");
                 JarOutputStream out = new JarOutputStream(new FileOutputStream(file))) {
@@ -234,7 +234,7 @@ public class ArchiveTest extends AbstractTempDirTest {
 
     // Test with an archive packed with the -E0 option
     @Test
-    public void testWithE0() throws Exception {
+    void testWithE0() throws Exception {
         final File file = createTempFile("simple-e0", ".jar");
         try (InputStream in = Archive.class.getResourceAsStream("/pack200/simple-E0.pack.gz");
                 JarOutputStream out = new JarOutputStream(new FileOutputStream(file))) {
@@ -245,7 +245,7 @@ public class ArchiveTest extends AbstractTempDirTest {
 
     // Test with an archive containing Harmony's JNDI module
     @Test
-    public void testWithJNDIE1() throws Exception {
+    void testWithJNDIE1() throws Exception {
         final File file = createTempFile("jndi-e1", ".jar");
         try (InputStream in = Archive.class.getResourceAsStream("/pack200/jndi-e1.pack.gz");
                 JarOutputStream out = new JarOutputStream(new FileOutputStream(file))) {
@@ -257,7 +257,7 @@ public class ArchiveTest extends AbstractTempDirTest {
     // Test with a class containing lots of local variables (regression test for
     // HARMONY-5470)
     @Test
-    public void testWithLargeClass() throws Exception {
+    void testWithLargeClass() throws Exception {
         final File file = createTempFile("largeClass", ".jar");
         try (InputStream in = Archive.class.getResourceAsStream("/pack200/LargeClass.pack.gz");
                 JarOutputStream out = new JarOutputStream(new FileOutputStream(file))) {
@@ -268,7 +268,7 @@ public class ArchiveTest extends AbstractTempDirTest {
 
     // Test with an archive containing Harmony's Pack200 module
     @Test
-    public void testWithPack200() throws Exception {
+    void testWithPack200() throws Exception {
         final File file = createTempFile("p200", ".jar");
         try (InputStream in = Archive.class.getResourceAsStream("/pack200/pack200.pack.gz");
                 JarOutputStream out = new JarOutputStream(new FileOutputStream(file))) {
@@ -279,7 +279,7 @@ public class ArchiveTest extends AbstractTempDirTest {
 
     // Test with an archive containing Harmony's Pack200 module, packed with -E1
     @Test
-    public void testWithPack200E1() throws Exception {
+    void testWithPack200E1() throws Exception {
         final File file = createTempFile("p200-e1", ".jar");
         try (InputStream in = Archive.class.getResourceAsStream("/pack200/pack200-e1.pack.gz");
                 JarOutputStream out = new JarOutputStream(new FileOutputStream(file))) {
@@ -290,7 +290,7 @@ public class ArchiveTest extends AbstractTempDirTest {
 
     // Test with an archive containing Harmony's SQL module
     @Test
-    public void testWithSql() throws Exception {
+    void testWithSql() throws Exception {
         final File file = createTempFile("sql", ".jar");
         try (InputStream in = Archive.class.getResourceAsStream("/pack200/sql.pack.gz");
                 JarOutputStream out = new JarOutputStream(new FileOutputStream(file))) {
@@ -338,7 +338,7 @@ public class ArchiveTest extends AbstractTempDirTest {
 
     // Test with an archive containing Harmony's SQL module, packed with -E1
     @Test
-    public void testWithSqlE1() throws Exception {
+    void testWithSqlE1() throws Exception {
         final File file = createTempFile("sql-e1", ".jar");
         try (InputStream in = Archive.class.getResourceAsStream("/pack200/sql-e1.pack.gz");
                 JarOutputStream out = new JarOutputStream(new FileOutputStream(file))) {

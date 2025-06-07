@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test;
 public class AsiExtraFieldTest implements UnixStat {
 
     @Test
-    public void testClone() {
+    void testClone() {
         final AsiExtraField s1 = new AsiExtraField();
         s1.setUserId(42);
         s1.setGroupId(12);
@@ -53,7 +53,7 @@ public class AsiExtraFieldTest implements UnixStat {
      * Test content.
      */
     @Test
-    public void testContent() {
+    void testContent() {
         final AsiExtraField a = new AsiExtraField();
         a.setMode(0123);
         a.setUserId(5);
@@ -88,7 +88,7 @@ public class AsiExtraFieldTest implements UnixStat {
      * Test file mode magic.
      */
     @Test
-    public void testModes() {
+    void testModes() {
         final AsiExtraField a = new AsiExtraField();
         a.setMode(0123);
         assertEquals(0100123, a.getMode(), "plain file");
@@ -102,7 +102,7 @@ public class AsiExtraFieldTest implements UnixStat {
      * Test reparse
      */
     @Test
-    public void testReparse() throws Exception {
+    void testReparse() throws Exception {
         // CRC manually calculated, sorry
         final byte[] data1 = { (byte) 0xC6, 0x02, 0x78, (byte) 0xB6, // CRC
                 0123, (byte) 0x80, // mode

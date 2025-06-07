@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 public class JarMarkerTest {
 
     @Test
-    public void testJarMarkerLengthCheck() {
+    void testJarMarkerLengthCheck() {
         assertThrows(ZipException.class, () -> JarMarker.getInstance().parseFromLocalFileData(null, 0, 1));
     }
 
