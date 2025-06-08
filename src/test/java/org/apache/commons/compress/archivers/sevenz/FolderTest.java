@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
  *
  * @see Folder
  */
-public class FolderTest {
+class FolderTest {
 
     @Test
     void testFindBindPairForInStream() {

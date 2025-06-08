@@ -48,7 +48,7 @@ import org.junit.jupiter.params.provider.MethodSource;
  *
  * Files must be in resources/longsymlink, and there must be a file.txt containing the list of files in the archives.
  */
-public class LongSymLinkTest extends AbstractTest {
+class LongSymLinkTest extends AbstractTest {
 
     private static final ClassLoader CLASS_LOADER = LongSymLinkTest.class.getClassLoader();
     private static final File ARC_DIR;

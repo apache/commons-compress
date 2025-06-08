@@ -26,7 +26,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 /**
  */
-public class SegmentOptionsTest {
+class SegmentOptionsTest {
 
     @ParameterizedTest
     @ValueSource(ints = { 3, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31 })

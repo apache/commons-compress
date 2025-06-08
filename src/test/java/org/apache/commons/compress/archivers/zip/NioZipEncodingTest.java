@@ -31,7 +31,7 @@ import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 
-public class NioZipEncodingTest {
+class NioZipEncodingTest {
 
     private static final String UMLAUTS = "\u00e4\u00f6\u00fc";
 

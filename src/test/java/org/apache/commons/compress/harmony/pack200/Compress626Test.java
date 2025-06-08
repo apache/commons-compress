@@ -31,7 +31,7 @@ import org.apache.commons.compress.java.util.jar.Pack200;
 import org.apache.commons.io.output.NullOutputStream;
 import org.junit.jupiter.api.Test;
 
-public class Compress626Test {
+class Compress626Test {
 
     @Test
     void test() throws Exception {

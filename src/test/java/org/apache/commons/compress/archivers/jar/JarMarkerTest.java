@@ -25,7 +25,7 @@ import java.util.zip.ZipException;
 import org.apache.commons.compress.archivers.zip.JarMarker;
 import org.junit.jupiter.api.Test;
 
-public class JarMarkerTest {
+class JarMarkerTest {
 
     @Test
     void testJarMarkerLengthCheck() {

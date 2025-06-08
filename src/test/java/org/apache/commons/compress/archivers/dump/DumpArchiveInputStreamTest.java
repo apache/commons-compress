@@ -37,7 +37,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.Timeout.ThreadMode;
 
-public class DumpArchiveInputStreamTest extends AbstractTest {
+class DumpArchiveInputStreamTest extends AbstractTest {
 
     @SuppressWarnings("deprecation")
     @Test

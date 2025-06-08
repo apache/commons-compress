@@ -40,7 +40,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests {@link FileRandomAccessOutputStream}.
  */
-public class FileRandomAccessOutputStreamTest extends AbstractTempDirTest {
+class FileRandomAccessOutputStreamTest extends AbstractTempDirTest {
 
     @Test
     void testChannelReturn() throws IOException {

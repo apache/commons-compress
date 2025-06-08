@@ -31,7 +31,7 @@ import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
-public class ZipSplitOutputStreamTest extends AbstractTest {
+class ZipSplitOutputStreamTest extends AbstractTest {
 
     @Test
     void testCreateSplittedFiles() throws IOException {

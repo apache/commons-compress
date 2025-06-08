@@ -47,7 +47,7 @@ import org.junit.jupiter.api.Test;
 
 import shaded.org.apache.commons.lang3.StringUtils;
 
-public class TarFileTest extends AbstractTest {
+class TarFileTest extends AbstractTest {
 
     private void datePriorToEpoch(final String archive) throws Exception {
         try (TarFile tarFile = new TarFile(getPath(archive))) {

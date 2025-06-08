@@ -32,7 +32,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public class XXHash32Test {
+class XXHash32Test {
 
     public static Stream<Arguments> factory() {
         return Stream.of(

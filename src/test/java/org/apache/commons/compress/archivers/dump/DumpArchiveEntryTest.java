@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-public class DumpArchiveEntryTest {
+class DumpArchiveEntryTest {
     @Test
     void testPublicNameAddsTrailingSlashForDirectories() {
         final DumpArchiveEntry ent = new DumpArchiveEntry("foo", "bar", -1, DumpArchiveEntry.TYPE.DIRECTORY);

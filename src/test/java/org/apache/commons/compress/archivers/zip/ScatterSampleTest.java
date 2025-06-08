@@ -33,7 +33,7 @@ import org.apache.commons.compress.parallel.InputStreamSupplier;
 import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.Test;
 
-public class ScatterSampleTest extends AbstractTempDirTest {
+class ScatterSampleTest extends AbstractTempDirTest {
 
     private void checkFile(final File result) throws IOException {
         try (ZipFile zipFile = ZipFile.builder().setFile(result).get()) {

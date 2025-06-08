@@ -46,7 +46,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Test different options for packing a Jar file.
  */
-public class PackingOptionsTest extends AbstractTempDirTest {
+class PackingOptionsTest extends AbstractTempDirTest {
 
     private void compareFiles(final JarFile jarFile, final JarFile jarFile2) throws IOException {
         final Enumeration<JarEntry> entries = jarFile.entries();

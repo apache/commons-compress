@@ -32,7 +32,7 @@ import org.apache.commons.compress.parallel.InputStreamSupplier;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
-public class ScatterZipOutputStreamTest extends AbstractTempDirTest {
+class ScatterZipOutputStreamTest extends AbstractTempDirTest {
 
     private InputStreamSupplier createPayloadSupplier(final ByteArrayInputStream payload) {
         return () -> payload;

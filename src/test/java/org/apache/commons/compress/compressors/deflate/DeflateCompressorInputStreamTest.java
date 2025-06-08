@@ -29,7 +29,7 @@ import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
-public class DeflateCompressorInputStreamTest {
+class DeflateCompressorInputStreamTest {
 
     @Test
     void testAvailableShouldReturnNonZero() throws IOException {

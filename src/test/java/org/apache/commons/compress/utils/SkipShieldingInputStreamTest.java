@@ -27,7 +27,7 @@ import java.io.InputStream;
 
 import org.junit.jupiter.api.Test;
 
-public class SkipShieldingInputStreamTest {
+class SkipShieldingInputStreamTest {
 
     @Test
     void testSkipDelegatesToRead() throws IOException {

@@ -31,7 +31,7 @@ import org.apache.commons.compress.utils.ByteUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class X7875_NewUnixTest {
+class X7875_NewUnixTest {
 
     private static final ZipShort X7875 = new ZipShort(0x7875);
 

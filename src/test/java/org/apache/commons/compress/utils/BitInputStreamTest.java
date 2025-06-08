@@ -27,7 +27,7 @@ import java.nio.ByteOrder;
 
 import org.junit.jupiter.api.Test;
 
-public class BitInputStreamTest {
+class BitInputStreamTest {
 
     private ByteArrayInputStream getStream() {
         return new ByteArrayInputStream(new byte[] { (byte) 0xF8, // 11111000

@@ -37,7 +37,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-public class ZipCompressMethodXzTest extends AbstractTest {
+class ZipCompressMethodXzTest extends AbstractTest {
 
     private static final int DEFAULT_LEVEL = 6;
 

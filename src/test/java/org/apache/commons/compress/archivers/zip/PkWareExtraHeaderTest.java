@@ -25,7 +25,7 @@ import org.apache.commons.compress.archivers.zip.PKWareExtraHeader.EncryptionAlg
 import org.apache.commons.compress.archivers.zip.PKWareExtraHeader.HashAlgorithm;
 import org.junit.jupiter.api.Test;
 
-public class PkWareExtraHeaderTest {
+class PkWareExtraHeaderTest {
 
     @Test
     void testEncryptionAlgorithm() {

@@ -30,7 +30,7 @@ import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
-public class BlockLZ4CompressorInputStreamTest extends AbstractTest {
+class BlockLZ4CompressorInputStreamTest extends AbstractTest {
 
     @Test
     void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {

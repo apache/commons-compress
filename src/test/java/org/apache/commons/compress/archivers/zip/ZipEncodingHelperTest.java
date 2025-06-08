@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests {@link ZipEncodingHelper}.
  */
-public class ZipEncodingHelperTest {
+class ZipEncodingHelperTest {
 
     @Test
     void testGetZipEncodingForDefault() {

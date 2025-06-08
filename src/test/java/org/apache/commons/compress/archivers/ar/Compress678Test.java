@@ -38,7 +38,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 /**
  * Tests COMPRESS-678.
  */
-public class Compress678Test {
+class Compress678Test {
 
     @ParameterizedTest
     @ValueSource(ints = { 15, 16, 17, 18, 32, 64, 128 })

@@ -24,7 +24,7 @@ import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
 
 @RunWith(PaxExam.class)
-public class OsgiWithoutOptionalDepsITest  extends AbstractOsgiITest {
+class OsgiWithoutOptionalDepsITest  extends AbstractOsgiITest {
 
     @Configuration
     @Override

@@ -39,7 +39,7 @@ import java.util.Random;
 import org.apache.commons.compress.archivers.zip.ZipSplitReadOnlySeekableByteChannel;
 import org.junit.jupiter.api.Test;
 
-public class ZipSplitReadOnlySeekableByteChannelTest {
+class ZipSplitReadOnlySeekableByteChannelTest {
 
     private List<SeekableByteChannel> getSplitZipChannels() throws IOException {
         final List<SeekableByteChannel> channels = new ArrayList<>();

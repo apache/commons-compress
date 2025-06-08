@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-public class ClassFileEntryTest {
+class ClassFileEntryTest {
 
     private void checkEquality(final Object equal1, final Object equal2, final String toString, final Object unequal) {
         assertEquals(equal1, equal2);

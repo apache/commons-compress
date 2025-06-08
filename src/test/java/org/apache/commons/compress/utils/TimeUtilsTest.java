@@ -41,7 +41,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public class TimeUtilsTest {
+class TimeUtilsTest {
 
     public static Stream<Arguments> dateToNtfsProvider() {
         return Stream.of(Arguments.of("1601-01-01T00:00:00.000Z", 0), Arguments.of("1601-01-01T00:00:00.000Z", 1), Arguments.of("1600-12-31T23:59:59.999Z", -1),

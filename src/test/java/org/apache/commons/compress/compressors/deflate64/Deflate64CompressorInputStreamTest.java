@@ -42,7 +42,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class Deflate64CompressorInputStreamTest {
+class Deflate64CompressorInputStreamTest {
     private final HuffmanDecoder nullDecoder = null;
 
     @Mock

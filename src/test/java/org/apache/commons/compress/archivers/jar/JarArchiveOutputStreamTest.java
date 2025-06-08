@@ -35,7 +35,7 @@ import org.apache.commons.compress.archivers.zip.ZipExtraField;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.junit.jupiter.api.Test;
 
-public class JarArchiveOutputStreamTest extends AbstractTempDirTest {
+class JarArchiveOutputStreamTest extends AbstractTempDirTest {
 
     @Test
     void testJarMarker() throws IOException {

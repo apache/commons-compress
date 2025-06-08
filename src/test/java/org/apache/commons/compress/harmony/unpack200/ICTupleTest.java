@@ -27,7 +27,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public class ICTupleTest {
+class ICTupleTest {
 
     static Stream<Arguments> explicit() {
         return Stream.of(Arguments.of("Foo$$2$Local", null, "$2$Local", "$2$Local", "Foo$$2"),

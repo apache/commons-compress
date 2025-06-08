@@ -39,7 +39,7 @@ import org.apache.commons.io.input.NullInputStream;
 import org.apache.commons.io.output.NullOutputStream;
 import org.junit.jupiter.api.Test;
 
-public class IOUtilsTest {
+class IOUtilsTest {
 
     private interface StreamWrapper {
         InputStream wrap(InputStream toWrap);

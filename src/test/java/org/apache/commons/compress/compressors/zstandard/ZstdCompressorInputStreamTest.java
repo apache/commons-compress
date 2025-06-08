@@ -38,7 +38,7 @@ import org.junit.jupiter.api.Test;
 import com.github.luben.zstd.NoPool;
 import com.github.luben.zstd.RecyclingBufferPool;
 
-public class ZstdCompressorInputStreamTest extends AbstractTest {
+class ZstdCompressorInputStreamTest extends AbstractTest {
 
     @Test
     void testCachingIsEnabledByDefaultAndZstdUtilsPresent() {

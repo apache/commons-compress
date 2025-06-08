@@ -26,7 +26,7 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 
-public class DumpArchiveUtilTest {
+class DumpArchiveUtilTest {
 
     @Test
     void testConvert16() {

@@ -32,7 +32,7 @@ import org.junit.Test;
 /**
  * Tests https://issues.apache.org/jira/browse/COMPRESS-699
  */
-public class Compress699Test {
+class Compress699Test {
 
     @Test
     void testTarArchive() throws Exception {

@@ -44,7 +44,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests https://issues.apache.org/jira/browse/COMPRESS-699
  */
-public class Compress700Test {
+class Compress700Test {
 
     private static final Path PATH = Paths.get("src/test/resources/org/apache/commons/compress/COMPRESS-700/flutter_awesome_buttons-0.1.0.tar");
 

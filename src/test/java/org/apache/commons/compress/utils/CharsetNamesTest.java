@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests {@link CharsetNames}.
  */
-public class CharsetNamesTest {
+class CharsetNamesTest {
 
     @Test
     void testConstants() {

@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-public class BlockSortTest {
+class BlockSortTest {
 
     private static final class DS {
         private final BZip2CompressorOutputStream.Data data;

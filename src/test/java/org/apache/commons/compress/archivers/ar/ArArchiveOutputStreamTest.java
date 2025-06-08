@@ -32,7 +32,7 @@ import java.util.List;
 import org.apache.commons.compress.AbstractTest;
 import org.junit.jupiter.api.Test;
 
-public class ArArchiveOutputStreamTest extends AbstractTest {
+class ArArchiveOutputStreamTest extends AbstractTest {
 
     @Test
     void testLongFileNamesCauseExceptionByDefault() throws IOException {

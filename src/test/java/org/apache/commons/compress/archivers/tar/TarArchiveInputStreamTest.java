@@ -64,7 +64,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-public class TarArchiveInputStreamTest extends AbstractTest {
+class TarArchiveInputStreamTest extends AbstractTest {
 
     private void datePriorToEpoch(final String archive) throws Exception {
         try (TarArchiveInputStream in = new TarArchiveInputStream(Files.newInputStream(getFile(archive).toPath()))) {

@@ -50,7 +50,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 /**
  * Tests for org.apache.commons.compress.harmony.unpack200.Archive, which is the main class for unpack200.
  */
-public class ArchiveTest extends AbstractTempDirTest {
+class ArchiveTest extends AbstractTempDirTest {
 
     @Test
     void testAlternativeConstructor() throws Exception {

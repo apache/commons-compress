@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests {@link LZ77Compressor.Block}.
  */
-public class LZ77CompressorBlockTest {
+class LZ77CompressorBlockTest {
 
     @SuppressWarnings("deprecation")
     static final class DeprecatedBlock extends Block {

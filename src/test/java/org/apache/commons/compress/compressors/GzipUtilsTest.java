@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests {@link GzipUtils}.
  */
-public class GzipUtilsTest {
+class GzipUtilsTest {
 
     @SuppressWarnings("deprecation")
     @Test

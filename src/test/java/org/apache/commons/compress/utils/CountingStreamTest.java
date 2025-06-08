@@ -26,7 +26,7 @@ import java.io.ByteArrayOutputStream;
 
 import org.junit.jupiter.api.Test;
 
-public class CountingStreamTest {
+class CountingStreamTest {
 
     @Test
     void testInput() throws Exception {

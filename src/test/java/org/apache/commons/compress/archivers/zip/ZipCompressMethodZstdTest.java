@@ -39,7 +39,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
-public class ZipCompressMethodZstdTest extends AbstractTest {
+class ZipCompressMethodZstdTest extends AbstractTest {
 
     private static final int DEFAULT_LEVEL = 3;
 

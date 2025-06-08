@@ -38,7 +38,7 @@ import org.junit.jupiter.api.Test;
  * This test is intended to prove that this error doesn't occur anymore. All entries but the last one are returned correctly, the last entry yields an
  * exception.
  */
-public class Maven221MultiVolumeTest extends AbstractTest {
+class Maven221MultiVolumeTest extends AbstractTest {
 
     private static final String[] ENTRIES = {
         // @formatter:off

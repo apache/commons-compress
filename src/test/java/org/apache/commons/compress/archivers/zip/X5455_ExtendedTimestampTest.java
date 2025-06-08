@@ -48,7 +48,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-public class X5455_ExtendedTimestampTest {
+class X5455_ExtendedTimestampTest {
     private static final ZipShort X5455 = new ZipShort(0x5455);
 
     private static final ZipLong ZERO_TIME = new ZipLong(0);

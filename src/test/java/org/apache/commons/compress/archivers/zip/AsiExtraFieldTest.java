@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 /**
  * JUnit tests for org.apache.commons.compress.archivers.zip.AsiExtraField.
  */
-public class AsiExtraFieldTest implements UnixStat {
+class AsiExtraFieldTest implements UnixStat {
 
     @Test
     void testClone() {

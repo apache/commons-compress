@@ -28,7 +28,7 @@ import java.lang.reflect.InvocationTargetException;
 
 import org.junit.jupiter.api.Test;
 
-public class ZipClassCoverageTest {
+class ZipClassCoverageTest {
 
     @Test
     void testConstantConstructor() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {

@@ -35,7 +35,7 @@ import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
-public class BrotliCompressorInputStreamTest extends AbstractTest {
+class BrotliCompressorInputStreamTest extends AbstractTest {
 
     @Test
     void testAvailableShouldReturnZero() throws IOException {

@@ -42,7 +42,7 @@ import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 
-public class SparseFilesTest extends AbstractTest {
+class SparseFilesTest extends AbstractTest {
 
     private void assertPaxGNUEntry(final TarArchiveEntry entry, final String suffix) {
         assertEquals("sparsefile-" + suffix, entry.getName());

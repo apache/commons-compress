@@ -38,7 +38,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  */
-public class CodecTest {
+class CodecTest {
 
     static Stream<Arguments> bCodings() {
         return IntStream.rangeClosed(1, 5).mapToObj(Arguments::of);

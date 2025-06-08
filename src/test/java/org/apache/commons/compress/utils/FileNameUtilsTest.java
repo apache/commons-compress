@@ -29,7 +29,7 @@ import java.nio.file.Paths;
 import org.apache.commons.lang3.SystemUtils;
 import org.junit.jupiter.api.Test;
 
-public class FileNameUtilsTest {
+class FileNameUtilsTest {
 
     @Test
     void testGetBaseNamePathBaseCases() {

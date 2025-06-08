@@ -36,7 +36,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 /**
  * Tests {@link GzipParameters}.
  */
-public class GzipParametersTest {
+class GzipParametersTest {
 
     @Test
     void testDeflaterStrategy() {

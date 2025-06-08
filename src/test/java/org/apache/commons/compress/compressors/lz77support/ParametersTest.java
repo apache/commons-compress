@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
-public class ParametersTest {
+class ParametersTest {
 
     private static Parameters newParameters(final int windowSize) {
         return Parameters.builder(windowSize).build();

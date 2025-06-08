@@ -63,7 +63,7 @@ import org.junit.jupiter.api.Test;
 
 import com.github.marschall.memoryfilesystem.MemoryFileSystemBuilder;
 
-public class ZipMemoryFileSystemTest {
+class ZipMemoryFileSystemTest {
 
     static void println(final String x) {
         // System.out.println(x);

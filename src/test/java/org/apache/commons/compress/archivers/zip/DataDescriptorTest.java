@@ -33,7 +33,7 @@ import java.util.Arrays;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-public class DataDescriptorTest {
+class DataDescriptorTest {
 
     @TempDir
     private File dir;

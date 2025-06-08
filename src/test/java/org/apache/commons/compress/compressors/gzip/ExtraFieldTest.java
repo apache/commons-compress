@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests {@link ExtraField}.
  */
-public class ExtraFieldTest {
+class ExtraFieldTest {
 
     @Test
     void testEquals() throws IOException {

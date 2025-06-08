@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
-public class ExactMathTest {
+class ExactMathTest {
 
     @Test
     void testOverflow() {

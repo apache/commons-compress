@@ -26,7 +26,7 @@ import java.io.ByteArrayInputStream;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.junit.jupiter.api.Test;
 
-public class BitStreamTest {
+class BitStreamTest {
 
     @Test
     void testNextByte() throws Exception {

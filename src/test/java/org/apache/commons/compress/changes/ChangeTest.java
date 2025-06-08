@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
  *
  * @see Change
  */
-public class ChangeTest {
+class ChangeTest {
 
     @Test
     void testFailsToCreateChangeTakingFourArgumentsThrowsNullPointerExceptionOne() {

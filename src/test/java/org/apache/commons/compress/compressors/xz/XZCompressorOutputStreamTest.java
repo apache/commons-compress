@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
  *
  * @see XZCompressorOutputStream
  */
-public class XZCompressorOutputStreamTest {
+class XZCompressorOutputStreamTest {
 
     @Test
     void testWrite() throws IOException {

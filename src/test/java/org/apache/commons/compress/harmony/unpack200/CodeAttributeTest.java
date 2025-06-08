@@ -37,11 +37,11 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests for CodeAttribute
  */
-public class CodeAttributeTest {
+class CodeAttributeTest {
 
     public class MockCodeAttribute extends CodeAttribute {
 
-        public MockCodeAttribute(final int maxStack, final int maxLocals, final byte[] codePacked, final Segment segment, final OperandManager operandManager,
+        MockCodeAttribute(final int maxStack, final int maxLocals, final byte[] codePacked, final Segment segment, final OperandManager operandManager,
                 final List<ExceptionTableEntry> exceptionTable) throws Pack200Exception {
             super(maxStack, maxLocals, codePacked, segment, operandManager, exceptionTable);
         }
@@ -54,7 +54,7 @@ public class CodeAttributeTest {
 
     public class MockCpBands extends CpBands {
 
-        public MockCpBands(final Segment segment) {
+        MockCpBands(final Segment segment) {
             super(segment);
         }
 
@@ -77,7 +77,7 @@ public class CodeAttributeTest {
 
     public class MockOperandManager extends OperandManager {
 
-        public MockOperandManager() {
+        MockOperandManager() {
             super(new int[] {}, // bcCaseCount
                     new int[] {}, // bcCaseValues
                     new int[] {}, // bcByte
@@ -112,7 +112,7 @@ public class CodeAttributeTest {
 
     public class MockSegmentConstantPool extends SegmentConstantPool {
 
-        public MockSegmentConstantPool(final CpBands bands) {
+        MockSegmentConstantPool(final CpBands bands) {
             super(bands);
         }
 

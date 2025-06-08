@@ -47,7 +47,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public class ParameterizedArchiverTest extends AbstractTest {
+class ParameterizedArchiverTest extends AbstractTest {
 
     // can't test 7z here as 7z cannot write to non-seekable streams
     // and reading logic would be different as well - see

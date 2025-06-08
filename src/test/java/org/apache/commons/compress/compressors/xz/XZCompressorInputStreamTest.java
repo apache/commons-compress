@@ -31,7 +31,7 @@ import java.nio.file.Files;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
-public class XZCompressorInputStreamTest {
+class XZCompressorInputStreamTest {
     private void multiByteReadConsistentlyReturnsMinusOneAtEof(final boolean decompressConcatenated) throws IOException {
         final File input = getFile("bla.tar.xz");
         final byte[] buf = new byte[2];

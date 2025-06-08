@@ -42,7 +42,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Check that the different write methods create the same output. TODO perform the same checks for reads.
  */
-public class IOMethodsTest extends AbstractTest {
+class IOMethodsTest extends AbstractTest {
 
     private static final int bytesToTest = 50;
     private static final byte[] byteTest = new byte[bytesToTest];

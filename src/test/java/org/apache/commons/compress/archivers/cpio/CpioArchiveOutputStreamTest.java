@@ -28,7 +28,7 @@ import java.nio.file.Files;
 import org.apache.commons.compress.AbstractTest;
 import org.junit.jupiter.api.Test;
 
-public class CpioArchiveOutputStreamTest extends AbstractTest {
+class CpioArchiveOutputStreamTest extends AbstractTest {
 
     @Test
     void testWriteOldBinary() throws Exception {

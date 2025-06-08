@@ -25,7 +25,7 @@ import java.util.HashSet;
 
 import org.junit.jupiter.api.Test;
 
-public class SetsTest {
+class SetsTest {
 
     @Test
     void testNewHashSet() {

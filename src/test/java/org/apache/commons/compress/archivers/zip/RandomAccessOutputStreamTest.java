@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests {@link RandomAccessOutputStream}.
  */
-public class RandomAccessOutputStreamTest extends AbstractTempDirTest {
+class RandomAccessOutputStreamTest extends AbstractTempDirTest {
 
     @Test
     void testWrite() throws IOException {

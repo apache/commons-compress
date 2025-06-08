@@ -44,7 +44,7 @@ import org.junit.jupiter.api.io.TempDir;
 /**
  * Tests {@link GzipCompressorInputStream}.
  */
-public class GzipCompressorInputStreamTest {
+class GzipCompressorInputStreamTest {
 
     @TempDir
     Path tempDir;

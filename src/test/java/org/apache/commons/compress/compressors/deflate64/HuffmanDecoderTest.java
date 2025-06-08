@@ -27,7 +27,7 @@ import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 
-public class HuffmanDecoderTest {
+class HuffmanDecoderTest {
 
     @Test
     void testDecodeFixedHuffmanBlockWithMemoryLookup() throws Exception {

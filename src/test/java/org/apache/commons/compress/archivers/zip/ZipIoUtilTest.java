@@ -40,7 +40,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests {@link ZipIoUtil}.
  */
-public class ZipIoUtilTest extends AbstractTempDirTest {
+class ZipIoUtilTest extends AbstractTempDirTest {
 
     private FileChannel mockFileChannel() throws IOException {
         final FileChannel spy = spy(FileChannel.class);

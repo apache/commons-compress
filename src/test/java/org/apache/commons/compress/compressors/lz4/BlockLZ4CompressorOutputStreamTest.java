@@ -32,7 +32,7 @@ import org.apache.commons.lang3.ArrayFill;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-public class BlockLZ4CompressorOutputStreamTest {
+class BlockLZ4CompressorOutputStreamTest {
 
     @Test
     @Disabled("would pass if the algorithm used for rewriting the final pairs was smarter")

@@ -68,7 +68,7 @@ import org.junit.jupiter.api.Test;
 
 import io.airlift.compress.zstd.ZstdInputStream;
 
-public class ZipFileTest extends AbstractTest {
+class ZipFileTest extends AbstractTest {
 
     /**
      * This Class simulates the case where the Zip File uses the aircompressors {@link ZstdInputStream}

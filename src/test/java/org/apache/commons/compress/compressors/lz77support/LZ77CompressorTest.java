@@ -30,7 +30,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-public class LZ77CompressorTest {
+class LZ77CompressorTest {
 
     private static final byte[] BLA;
     private static final byte[] SAM;

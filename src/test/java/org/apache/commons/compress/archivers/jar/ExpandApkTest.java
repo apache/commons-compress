@@ -29,7 +29,7 @@ import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.lang3.stream.Streams;
 import org.junit.jupiter.api.Test;
 
-public class ExpandApkTest {
+class ExpandApkTest {
 
     private <T> T println(final T object) {
         // System.out.println(object);

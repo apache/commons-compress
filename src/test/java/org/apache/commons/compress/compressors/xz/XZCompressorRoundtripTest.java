@@ -40,7 +40,7 @@ import org.tukaani.xz.XZOutputStream;
  * @see XZCompressorOutputStream
  * @see XZCompressorInputStream
  */
-public class XZCompressorRoundtripTest {
+class XZCompressorRoundtripTest {
 
     @TempDir
     static Path tempDir;

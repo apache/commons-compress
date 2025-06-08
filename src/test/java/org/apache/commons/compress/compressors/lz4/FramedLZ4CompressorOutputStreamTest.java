@@ -26,7 +26,7 @@ import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 
-public class FramedLZ4CompressorOutputStreamTest {
+class FramedLZ4CompressorOutputStreamTest {
 
     @Test
     void testFinishWithNoWrite() throws IOException {

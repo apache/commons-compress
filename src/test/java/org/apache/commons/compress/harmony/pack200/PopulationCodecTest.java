@@ -31,7 +31,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public class PopulationCodecTest {
+class PopulationCodecTest {
 
     static Stream<Arguments> populationCodec() {
         return Stream.of(Arguments.of(new byte[] { 4, 5, 6, 4, 2, 1, 3, 0, 7 }, new long[] { 5, 4, 6, 7 }, Codec.BYTE1),

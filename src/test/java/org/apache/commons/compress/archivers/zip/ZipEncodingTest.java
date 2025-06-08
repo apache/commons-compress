@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Test ZIP encodings.
  */
-public class ZipEncodingTest {
+class ZipEncodingTest {
 
     private static final String UNENC_STRING = "\u2016";
 

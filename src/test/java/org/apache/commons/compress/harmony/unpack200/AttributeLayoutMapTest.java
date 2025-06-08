@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.junit.jupiter.api.Test;
 
-public class AttributeLayoutMapTest {
+class AttributeLayoutMapTest {
 
     @Test
     void testRepeatable() throws Pack200Exception {

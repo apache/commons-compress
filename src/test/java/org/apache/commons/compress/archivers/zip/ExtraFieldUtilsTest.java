@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
 /**
  * JUnit tests for org.apache.commons.compress.archivers.zip.ExtraFieldUtils.
  */
-public class ExtraFieldUtilsTest implements UnixStat {
+class ExtraFieldUtilsTest implements UnixStat {
 
     public static class AiobThrowingExtraField implements ZipExtraField {
         static final int LENGTH = 4;

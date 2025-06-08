@@ -43,7 +43,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 /**
  * Tests for org.apache.commons.compress.harmony.unpack200.Segment.
  */
-public class SegmentTest extends AbstractTempDirTest {
+class SegmentTest extends AbstractTempDirTest {
 
     @Test
     void testHelloWorld() throws Exception {

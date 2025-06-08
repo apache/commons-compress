@@ -68,7 +68,7 @@ import org.junit.jupiter.api.Test;
  * </pre>
  */
 @Disabled
-public class Codec_decodeInts_OutOfMemoryErrorTest {
+class Codec_decodeInts_OutOfMemoryErrorTest {
 
     // @formatter:off
     private static final String BASE64_BYTES =

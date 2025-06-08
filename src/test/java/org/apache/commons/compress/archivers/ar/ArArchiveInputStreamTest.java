@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-public class ArArchiveInputStreamTest extends AbstractTest {
+class ArArchiveInputStreamTest extends AbstractTest {
 
     private void checkLongNameEntry(final String archive) throws Exception {
         try (InputStream fis = newInputStream(archive);

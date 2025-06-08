@@ -43,7 +43,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests {@link SeekableChannelRandomAccessOutputStream}.
  */
-public class SeekableChannelRandomAccessOutputStreamTest extends AbstractTempDirTest {
+class SeekableChannelRandomAccessOutputStreamTest extends AbstractTempDirTest {
 
     @Test
     void testInitialization() throws IOException {

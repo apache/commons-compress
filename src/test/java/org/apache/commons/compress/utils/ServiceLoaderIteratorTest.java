@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
  *
  * @see ServiceLoaderIterator
  */
-public class ServiceLoaderIteratorTest {
+class ServiceLoaderIteratorTest {
 
     @Test
     void testHasNextReturnsFalse() {

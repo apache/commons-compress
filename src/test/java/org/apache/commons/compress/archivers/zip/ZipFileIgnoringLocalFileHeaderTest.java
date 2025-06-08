@@ -33,7 +33,7 @@ import org.apache.commons.compress.AbstractTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-public class ZipFileIgnoringLocalFileHeaderTest {
+class ZipFileIgnoringLocalFileHeaderTest {
 
     private static ZipFile openZipWithoutLocalFileHeader(final String fileName) throws IOException {
         // @formatter:off

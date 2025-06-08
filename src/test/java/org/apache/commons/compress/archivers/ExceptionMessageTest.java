@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
-public class ExceptionMessageTest {
+class ExceptionMessageTest {
 
     private static final String ARCHIVER_NULL_MESSAGE = "Archiver name must not be null.";
 

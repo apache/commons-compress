@@ -50,7 +50,7 @@ import org.apache.commons.lang3.SystemProperties;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 
-public class TarArchiveEntryTest implements TarConstants {
+class TarArchiveEntryTest implements TarConstants {
 
     private static final String OS = SystemProperties.getOsName().toLowerCase(Locale.ROOT);
     private static final String ROOT = OS.startsWith("windows") || OS.startsWith("netware") ? "C:\\" : "/";

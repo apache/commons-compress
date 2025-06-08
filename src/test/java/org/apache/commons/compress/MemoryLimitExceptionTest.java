@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests {@link MemoryLimitException}.
  */
-public class MemoryLimitExceptionTest {
+class MemoryLimitExceptionTest {
 
     @Test
     void testAccessorsCause() {

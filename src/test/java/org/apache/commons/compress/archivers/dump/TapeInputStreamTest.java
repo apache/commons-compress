@@ -27,7 +27,7 @@ import org.apache.commons.compress.AbstractTest;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-public class TapeInputStreamTest extends AbstractTest {
+class TapeInputStreamTest extends AbstractTest {
     @ParameterizedTest
     @ValueSource(ints = {-1, 0, Integer.MAX_VALUE / 1000, Integer.MAX_VALUE})
     void testResetBlockSizeWithInvalidValues(final int recsPerBlock) throws Exception {

@@ -42,7 +42,7 @@ import org.apache.commons.compress.archivers.sevenz.SevenZFile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class SevenZArchiverTest extends AbstractTest {
+class SevenZArchiverTest extends AbstractTest {
     private File target;
 
     private void assertDir(final String expectedName, final ArchiveEntry entry) {

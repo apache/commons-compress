@@ -41,7 +41,7 @@ import org.apache.commons.compress.utils.TimeUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class SevenZTest extends AbstractTest {
+class SevenZTest extends AbstractTest {
 
     private static void assumeStrongCryptoIsAvailable() throws NoSuchAlgorithmException {
         assumeTrue(Cipher.getMaxAllowedKeyLength("AES/ECB/PKCS5Padding") >= 256, "test requires strong crypto");
@@ -52,7 +52,7 @@ public class SevenZTest extends AbstractTest {
     private final File file1;
     private final File file2;
 
-    public SevenZTest() throws IOException {
+    SevenZTest() throws IOException {
         file1 = getFile("test1.xml");
         file2 = getFile("test2.xml");
     }

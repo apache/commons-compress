@@ -34,7 +34,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 /**
  * Test for RunCodec
  */
-public class RunCodecTest {
+class RunCodecTest {
 
     static Stream<Arguments> runCodec() {
         return Stream.of(Arguments.of(0, Codec.SIGNED5, Codec.UDELTA5, "Should not allow a k value of 0"),

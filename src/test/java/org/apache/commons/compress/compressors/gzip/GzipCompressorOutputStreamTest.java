@@ -55,7 +55,7 @@ import shaded.org.apache.commons.io.IOUtils;
 /**
  * Tests {@link GzipCompressorOutputStream}.
  */
-public class GzipCompressorOutputStreamTest {
+class GzipCompressorOutputStreamTest {
 
     private static final String EXPECTED_BASE_NAME = "\u6D4B\u8BD5\u4E2D\u6587\u540D\u79F0";
     private static final String EXPECTED_FILE_NAME = EXPECTED_BASE_NAME + ".xml";

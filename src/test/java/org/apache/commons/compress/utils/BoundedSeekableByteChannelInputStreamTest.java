@@ -26,7 +26,7 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 
-public class BoundedSeekableByteChannelInputStreamTest {
+class BoundedSeekableByteChannelInputStreamTest {
 
     @Test
     void testCheckRestrictedRead() throws IOException {

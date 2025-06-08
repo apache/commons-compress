@@ -44,7 +44,7 @@ import org.junit.jupiter.api.Test;
 /**
  * JUnit tests for org.apache.commons.compress.archivers.zip.ZipEntry.
  */
-public class ZipArchiveEntryTest {
+class ZipArchiveEntryTest {
 
     @Test
     void bestEffortIncludesUnparseableExtraData() throws Exception {

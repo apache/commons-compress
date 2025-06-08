@@ -43,7 +43,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.runners.Parameterized.Parameters;
 
-public class ParameterizedExpanderTest extends AbstractTest {
+class ParameterizedExpanderTest extends AbstractTest {
 
     // 7z and ZIP using ZipFile is in ExpanderTest
     @Parameters(name = "format={0}")

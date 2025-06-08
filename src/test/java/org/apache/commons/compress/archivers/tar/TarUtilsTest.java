@@ -42,7 +42,7 @@ import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.junit.jupiter.api.Test;
 
-public class TarUtilsTest extends AbstractTest {
+class TarUtilsTest extends AbstractTest {
 
     private void checkName(final String string) {
         final byte[] buff = new byte[100];

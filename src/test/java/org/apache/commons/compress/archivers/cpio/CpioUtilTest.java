@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
-public class CpioUtilTest {
+class CpioUtilTest {
 
     @Test
     void testByteArray2longThrowsUnsupportedOperationException() {

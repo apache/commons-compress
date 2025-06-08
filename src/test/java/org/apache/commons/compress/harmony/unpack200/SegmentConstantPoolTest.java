@@ -27,11 +27,11 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests for org.apache.commons.compress.harmony.unpack200.SegmentConstantPool.
  */
-public class SegmentConstantPoolTest {
+class SegmentConstantPoolTest {
 
     public class MockSegmentConstantPool extends SegmentConstantPool {
 
-        public MockSegmentConstantPool() {
+        MockSegmentConstantPool() {
             super(new CpBands(new Segment()));
         }
 

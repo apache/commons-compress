@@ -29,7 +29,7 @@ import java.io.InputStream;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.junit.jupiter.api.Test;
 
-public class AbstractLZ77CompressorInputStreamTest {
+class AbstractLZ77CompressorInputStreamTest {
 
     private static final class TestStream extends AbstractLZ77CompressorInputStream {
 

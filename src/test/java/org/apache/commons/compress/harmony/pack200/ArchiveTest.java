@@ -46,7 +46,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public class ArchiveTest extends AbstractTempDirTest {
+class ArchiveTest extends AbstractTempDirTest {
 
     @SuppressWarnings("resource") // Caller closes
     static Stream<Arguments> loadMultipleJars() throws URISyntaxException, IOException {

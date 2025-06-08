@@ -33,7 +33,7 @@ import org.tukaani.xz.LZMA2Options;
 /**
  * Tests {@link LZMACompressorOutputStream}.
  */
-public class LZMACompressorOutputStreamTest {
+class LZMACompressorOutputStreamTest {
 
     @TempDir
     static Path tempDir;

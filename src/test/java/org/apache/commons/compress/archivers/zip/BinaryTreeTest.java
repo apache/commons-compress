@@ -29,7 +29,7 @@ import java.io.InputStream;
 
 import org.junit.jupiter.api.Test;
 
-public class BinaryTreeTest {
+class BinaryTreeTest {
 
     @Test
     void testDecode() throws IOException {

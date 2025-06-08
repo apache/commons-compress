@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
-public class CpioArchiveEntryTest {
+class CpioArchiveEntryTest {
     @Test
     void testGetHeaderPadCountOverflow() throws Exception {
         final CpioArchiveEntry entry = new CpioArchiveEntry(CpioConstants.FORMAT_NEW);

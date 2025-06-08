@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import org.tukaani.xz.LZMA2Options;
 
-public class SevenZMethodConfigurationTest {
+class SevenZMethodConfigurationTest {
 
     @Test
     void testShouldAllowLZMA2OptionsForLZMA() {

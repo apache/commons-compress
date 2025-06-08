@@ -46,11 +46,11 @@ import org.junit.jupiter.api.Test;
  * TODO: The number 8 is used in most of the tests in this class as a low (non-zero) number that is not likely to indicate a multiple byte number, but should be
  * replaced with properly encoded byte arrays when encoding is implemented.
  */
-public class BcBandsTest extends AbstractBandsTest {
+class BcBandsTest extends AbstractBandsTest {
 
     public class MockClassBands extends ClassBands {
 
-        public MockClassBands(final Segment segment) {
+        MockClassBands(final Segment segment) {
             super(segment);
         }
 
@@ -152,7 +152,7 @@ public class BcBandsTest extends AbstractBandsTest {
         private final CPClass cpClass = new CPClass(cpUTF8, -1);
         private final CPNameAndType descriptor = new CPNameAndType(new CPUTF8("Hello"), new CPUTF8("(a, b, c)"), -1);
 
-        public MockCpBands(final Segment segment) {
+        MockCpBands(final Segment segment) {
             super(segment);
         }
 

@@ -28,7 +28,7 @@ import org.apache.commons.compress.compressors.TestCompressorStreamProvider.Invo
 import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.Test;
 
-public class CompressorServiceLoaderTest {
+class CompressorServiceLoaderTest {
 
     @Test
     void testInputStream() {

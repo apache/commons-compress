@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests {@link SevenZArchiveEntry}.
  */
-public class SevenZArchiveEntryTest {
+class SevenZArchiveEntryTest {
 
     @Test
     void testMethodConfigurationMattersInEquals() {

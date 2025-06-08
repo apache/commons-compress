@@ -60,7 +60,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import io.airlift.compress.zstd.ZstdInputStream;
 
-public class ZipArchiveInputStreamTest extends AbstractTest {
+class ZipArchiveInputStreamTest extends AbstractTest {
 
     private static final class AirliftZipArchiveInputStream extends ZipArchiveInputStream {
 

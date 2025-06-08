@@ -33,7 +33,7 @@ import java.util.Arrays;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-public class SeekableInMemoryByteChannelTest {
+class SeekableInMemoryByteChannelTest {
 
     private final byte[] testData = "Some data".getBytes(UTF_8);
 

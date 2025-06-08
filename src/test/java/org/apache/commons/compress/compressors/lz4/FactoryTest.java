@@ -31,7 +31,7 @@ import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
-public class FactoryTest extends AbstractTest {
+class FactoryTest extends AbstractTest {
 
     private void roundtripViaFactory(final String format) throws Exception {
         final Path input = getPath("bla.tar");

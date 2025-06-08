@@ -55,7 +55,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-public class ParallelScatterZipCreatorTest extends AbstractTempDirTest {
+class ParallelScatterZipCreatorTest extends AbstractTempDirTest {
 
     private interface CallableConsumer extends Consumer<Callable<? extends ScatterZipOutputStream>> {
         // empty

@@ -49,7 +49,7 @@ import org.apache.commons.compress.utils.TimeUtils;
 import org.junit.jupiter.api.Test;
 import org.tukaani.xz.LZMA2Options;
 
-public class SevenZOutputFileTest extends AbstractTest {
+class SevenZOutputFileTest extends AbstractTest {
 
     private static final boolean XZ_BCJ_IS_BUGGY;
 

@@ -38,7 +38,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 /**
  * Tests COMPRESS-686.
  */
-public class Compress686Test {
+class Compress686Test {
 
     @TempDir
     private Path tempDir;

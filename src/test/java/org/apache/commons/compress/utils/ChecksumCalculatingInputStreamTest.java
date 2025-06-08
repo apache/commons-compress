@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
  *
  * @see ChecksumCalculatingInputStream
  */
-public class ChecksumCalculatingInputStreamTest {
+class ChecksumCalculatingInputStreamTest {
 
     @Test
     void testClassInstantiationWithParameterBeingNullThrowsNullPointerExceptionOne() {

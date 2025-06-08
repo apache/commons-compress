@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 /**
  * JUnit tests for org.apache.commons.compress.archivers.zip.ZipLong.
  */
-public class ZipLongTest {
+class ZipLongTest {
 
     @Test
     void testClone() {

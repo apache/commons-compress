@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests {@link ZipArchiveOutputStream}.
  */
-public class ZipArchiveOutputStreamTest extends AbstractTempDirTest {
+class ZipArchiveOutputStreamTest extends AbstractTempDirTest {
 
     @Test
     void testFileBasics() throws IOException {

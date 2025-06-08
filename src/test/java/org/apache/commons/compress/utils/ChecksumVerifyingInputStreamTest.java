@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
  *
  * @see ChecksumVerifyingInputStream
  */
-public class ChecksumVerifyingInputStreamTest {
+class ChecksumVerifyingInputStreamTest {
 
     @Test
     void testReadTakingByteArrayThrowsIOException() throws IOException {

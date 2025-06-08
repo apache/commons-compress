@@ -39,7 +39,7 @@ import org.apache.commons.compress.utils.ByteUtils.InputStreamByteSupplier;
 import org.apache.commons.compress.utils.ByteUtils.OutputStreamByteConsumer;
 import org.junit.jupiter.api.Test;
 
-public class ByteUtilsTest {
+class ByteUtilsTest {
 
     @Test
     void testFromLittleEndianFromArray() {

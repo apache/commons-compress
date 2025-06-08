@@ -48,7 +48,7 @@ import org.apache.commons.compress.archivers.tar.TarFile;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.junit.jupiter.api.Test;
 
-public class ExpanderTest extends AbstractTest {
+class ExpanderTest extends AbstractTest {
 
     private File archive;
 

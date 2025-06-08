@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests {@link LZMAUtils}.
  */
-public class LZMAUtilsTest {
+class LZMAUtilsTest {
 
     @Test
     void testCachingIsEnabledByDefaultAndLZMAIsPresent() {

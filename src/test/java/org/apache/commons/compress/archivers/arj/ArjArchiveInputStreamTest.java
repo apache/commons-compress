@@ -42,7 +42,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests {@link ArjArchiveInputStream}.
  */
-public class ArjArchiveInputStreamTest extends AbstractTest {
+class ArjArchiveInputStreamTest extends AbstractTest {
 
     private void assertArjArchiveEntry(final ArjArchiveEntry entry) {
         assertNotNull(entry.getName());

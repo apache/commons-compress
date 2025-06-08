@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPUTF8;
 import org.junit.jupiter.api.Test;
 
-public class CPUTF8Test {
+class CPUTF8Test {
 
     @Test
     void testEquality() {

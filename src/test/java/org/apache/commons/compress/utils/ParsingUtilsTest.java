@@ -32,7 +32,7 @@ import org.junit.jupiter.params.provider.ValueSource;
  *
  * @see ParsingUtils
  */
-public class ParsingUtilsTest {
+class ParsingUtilsTest {
 
     @ParameterizedTest
     @ValueSource(strings = {Integer.MIN_VALUE + "1", "x.x", "9e999", "1.1", "one", Integer.MAX_VALUE + "1"})

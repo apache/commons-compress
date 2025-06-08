@@ -32,7 +32,7 @@ import java.util.zip.ZipEntry;
 
 import org.junit.jupiter.api.Test;
 
-public class StreamCompressorTest {
+class StreamCompressorTest {
 
     @Test
     void testCreateDataOutputCompressor() throws IOException {

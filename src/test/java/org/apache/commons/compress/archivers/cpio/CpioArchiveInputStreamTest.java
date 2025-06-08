@@ -30,7 +30,7 @@ import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
-public class CpioArchiveInputStreamTest extends AbstractTest {
+class CpioArchiveInputStreamTest extends AbstractTest {
 
     private long consumeEntries(final CpioArchiveInputStream in) throws IOException {
         long count = 0;

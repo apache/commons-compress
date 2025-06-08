@@ -39,7 +39,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.jupiter.api.Test;
 
-public class FixedLengthBlockOutputStreamTest {
+class FixedLengthBlockOutputStreamTest {
 
     private static final class MockOutputStream extends OutputStream {
 

@@ -34,7 +34,7 @@ import org.apache.commons.compress.archivers.sevenz.Coders.DeflateDecoder.Deflat
 import org.apache.commons.compress.utils.ByteUtils;
 import org.junit.jupiter.api.Test;
 
-public class SevenZNativeHeapTest extends AbstractTest {
+class SevenZNativeHeapTest extends AbstractTest {
 
     private static final class DelegatingDeflater extends Deflater {
 

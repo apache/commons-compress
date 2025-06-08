@@ -34,7 +34,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  */
-public class CodecEncodingTest {
+class CodecEncodingTest {
 
     static Stream<Arguments> arbitraryCodec() {
         return Stream.of(Arguments.of("(1,256)", new byte[] { 0x00, (byte) 0xFF }), Arguments.of("(5,128,2,1)", new byte[] { 0x25, (byte) 0x7F }),

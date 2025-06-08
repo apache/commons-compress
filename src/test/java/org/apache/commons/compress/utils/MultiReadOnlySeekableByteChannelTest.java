@@ -48,7 +48,7 @@ import org.junit.jupiter.api.Test;
  * by Tim Underwood.
  */
 //@formatter:on
-public class MultiReadOnlySeekableByteChannelTest {
+class MultiReadOnlySeekableByteChannelTest {
 
     private static final class ThrowingSeekableByteChannel implements SeekableByteChannel {
         private boolean closed;

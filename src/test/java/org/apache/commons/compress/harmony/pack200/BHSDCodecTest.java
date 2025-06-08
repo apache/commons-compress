@@ -35,7 +35,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 /**
  * Tests for BHSDCodec
  */
-public class BHSDCodecTest {
+class BHSDCodecTest {
 
     static Stream<Arguments> encodeDecodeRange() {
         return IntStream.range(1, 116).mapToObj(Arguments::of);

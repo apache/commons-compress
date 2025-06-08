@@ -32,7 +32,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests https://issues.apache.org/jira/browse/COMPRESS-598
  */
-public class Crash_f2efd9eaeb86cda597d07b5e3c3d81363633c2da_Test {
+class Crash_f2efd9eaeb86cda597d07b5e3c3d81363633c2da_Test {
 
     @Test
     void test() throws IOException {

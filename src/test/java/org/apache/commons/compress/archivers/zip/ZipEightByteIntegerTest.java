@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests {@link ZipEightByteInteger}.
  */
-public class ZipEightByteIntegerTest {
+class ZipEightByteIntegerTest {
 
     private byte[] getBytes(final ZipEightByteInteger zl) {
         final byte[] result = zl.getBytes();

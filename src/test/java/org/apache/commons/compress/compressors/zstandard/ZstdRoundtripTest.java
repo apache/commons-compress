@@ -47,7 +47,7 @@ import com.github.luben.zstd.ZstdOutputStream;
 /**
  * Tests {@link ZstdCompressorOutputStream}.
  */
-public class ZstdRoundtripTest extends AbstractTest {
+class ZstdRoundtripTest extends AbstractTest {
 
     private interface OutputStreamCreator extends IOFunction<FileOutputStream, ZstdCompressorOutputStream> {
         // empty

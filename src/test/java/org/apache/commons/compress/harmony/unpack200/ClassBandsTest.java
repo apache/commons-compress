@@ -31,11 +31,11 @@ import org.junit.jupiter.api.Test;
 
 /**
  */
-public class ClassBandsTest extends AbstractBandsTest {
+class ClassBandsTest extends AbstractBandsTest {
 
     public class MockCpBands extends CpBands {
 
-        public MockCpBands(final Segment segment) {
+        MockCpBands(final Segment segment) {
             super(segment);
         }
 

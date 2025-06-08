@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import org.junit.jupiter.api.Test;
 
-public class Compress628Test {
+class Compress628Test {
 
     @Test
     void test() throws Exception {

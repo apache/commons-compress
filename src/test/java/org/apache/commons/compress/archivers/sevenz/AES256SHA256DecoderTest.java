@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test;
  *
  * @see AES256SHA256Decoder
  **/
-public class AES256SHA256DecoderTest {
+class AES256SHA256DecoderTest {
 
     @Test
     void testDecodeWithNonEmptyString() throws IOException {

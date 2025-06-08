@@ -30,7 +30,7 @@ import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
 import org.apache.commons.compress.utils.ArchiveUtils;
 import org.junit.jupiter.api.Test;
 
-public class ArchiveUtilsTest extends AbstractTest {
+class ArchiveUtilsTest extends AbstractTest {
 
     private static final int bytesToTest = 50;
     private static final byte[] byteTest = new byte[bytesToTest];

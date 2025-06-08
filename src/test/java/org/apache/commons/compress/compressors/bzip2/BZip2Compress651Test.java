@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests https://issues.apache.org/jira/browse/COMPRESS-651
  */
-public class BZip2Compress651Test {
+class BZip2Compress651Test {
 
     @Test
     void testCompress651() throws IOException {

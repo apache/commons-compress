@@ -27,7 +27,7 @@ import java.util.zip.ZipException;
 
 import org.junit.jupiter.api.Test;
 
-public class Zip64ExtendedInformationExtraFieldTest {
+class Zip64ExtendedInformationExtraFieldTest {
 
     private static final ZipEightByteInteger SIZE = new ZipEightByteInteger(0x12345678);
     private static final ZipEightByteInteger CSIZE = new ZipEightByteInteger(0x9ABCDEF);

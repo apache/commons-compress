@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests {@link ExtraField.SubField}.
  */
-public class SubFieldTest {
+class SubFieldTest {
 
     @Test
     void testEquals() {

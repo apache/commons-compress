@@ -40,7 +40,7 @@ import org.junit.jupiter.api.Test;
  *
  * @see ZCompressorInputStream
  */
-public class ZCompressorInputStreamTest {
+class ZCompressorInputStreamTest {
 
     @Test
     void testFailsToCreateZCompressorInputStreamAndThrowsIOException() throws IOException {

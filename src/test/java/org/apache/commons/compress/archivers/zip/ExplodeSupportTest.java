@@ -36,7 +36,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.junit.jupiter.api.Test;
 
-public class ExplodeSupportTest {
+class ExplodeSupportTest {
 
     private void testArchiveWithImplodeCompression(final String fileName, final String entryName) throws IOException {
         try (ZipFile zip = ZipFile.builder().setFile(fileName).get()) {

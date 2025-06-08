@@ -25,7 +25,7 @@ import java.io.InputStream;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.junit.jupiter.api.Test;
 
-public class Deflate64BugsTest {
+class Deflate64BugsTest {
 
     @Test
     void testReadBeyondMemoryException() throws Exception {
