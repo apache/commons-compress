@@ -222,6 +222,10 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <url>https://gitbox.apache.org/repos/asf?p=commons-compress.git</url>
     <tag>HEAD</tag>
   </scm>
+  <ciManagement>
+    <system>GitHub</system>
+    <url>https://github.com/apache/commons-compress/actions</url>
+  </ciManagement>
   <build>
     <defaultGoal>clean artifact:check-buildplan verify apache-rat:check checkstyle:check pmd:check japicmp:cmp javadoc:javadoc</defaultGoal>
     <pluginManagement>
