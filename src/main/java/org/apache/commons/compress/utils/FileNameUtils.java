@@ -29,7 +29,9 @@ import org.apache.commons.io.file.PathUtils;
  * Generic file name utilities.
  *
  * @since 1.20
+ * @deprecated Use {@link PathUtils} and {@link FilenameUtils}.
  */
+@Deprecated
 public class FileNameUtils {
 
     /**
@@ -56,7 +58,7 @@ public class FileNameUtils {
      *
      * @return the base name of file name
      * @param fileName the name of the file to obtain the base name of.
-     * @deprecated No longer used, no replacement.
+     * @deprecated Use {@link FilenameUtils#removeExtension(String)}.
      */
     @Deprecated
     public static String getBaseName(final String fileName) {
