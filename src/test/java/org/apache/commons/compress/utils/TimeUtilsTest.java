@@ -36,6 +36,7 @@ import java.util.Date;
 import java.util.stream.Stream;
 
 import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
+import org.apache.commons.io.file.attribute.FileTimes;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -163,7 +164,7 @@ class TimeUtilsTest {
     @ParameterizedTest
     @MethodSource("fileTimeToUnixTimeArguments")
     void testToUnixTime(final long expectedUnixTime, final String instant) {
-        assertEquals(expectedUnixTime, TimeUtils.toUnixTime(FileTime.from(Instant.parse(instant))));
+        assertEquals(expectedUnixTime, FileTimes.toUnixTime(FileTime.from(Instant.parse(instant))));
     }
 
     @ParameterizedTest

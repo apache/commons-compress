@@ -30,7 +30,7 @@ import java.util.Objects;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.utils.ExactMath;
-import org.apache.commons.compress.utils.TimeUtils;
+import org.apache.commons.io.file.attribute.FileTimes;
 
 /**
  * A cpio archive consists of a sequence of files. There are several types of headers defined in two categories of new and old format. The headers are
@@ -921,7 +921,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @param time The time to set.
      */
     public void setTime(final FileTime time) {
-        this.mtime = TimeUtils.toUnixTime(time);
+        this.mtime = FileTimes.toUnixTime(time);
     }
 
     /**

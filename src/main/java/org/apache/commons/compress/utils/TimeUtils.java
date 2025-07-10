@@ -170,11 +170,17 @@ public final class TimeUtils {
     }
 
     /**
-     * Converts {@link FileTime} to standard Unix time.
+     * Converts a {@link FileTime} to standard Unix time in seconds.
+     * <p>
+     * The returned seconds value may lie out of bounds of Unix time. Check with {@link FileTimes#isUnixTime(long)}.
+     * </p>
      *
      * @param fileTime the original FileTime.
-     * @return the Unix timestamp.
+     * @return the Unix timestamp or 0 if the input is null.
+     * @see FileTimes#isUnixTime(long)
+     * @deprecated Use {@link FileTimes#toUnixTime(FileTime)}.
      */
+    @Deprecated
     public static long toUnixTime(final FileTime fileTime) {
         return FileTimes.toUnixTime(fileTime);
     }

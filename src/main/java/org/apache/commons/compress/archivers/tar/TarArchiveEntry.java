@@ -51,7 +51,6 @@ import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.ParsingUtils;
-import org.apache.commons.compress.utils.TimeUtils;
 import org.apache.commons.io.file.attribute.FileTimes;
 import org.apache.commons.lang3.SystemProperties;
 
@@ -2017,7 +2016,8 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         offset = writeEntryHeaderField(userId, outbuf, offset, UIDLEN, starMode);
         offset = writeEntryHeaderField(groupId, outbuf, offset, GIDLEN, starMode);
         offset = writeEntryHeaderField(size, outbuf, offset, SIZELEN, starMode);
-        offset = writeEntryHeaderField(TimeUtils.toUnixTime(mTime), outbuf, offset, MODTIMELEN, starMode);
+        final FileTime fileTime = mTime;
+        offset = writeEntryHeaderField(FileTimes.toUnixTime(fileTime), outbuf, offset, MODTIMELEN, starMode);
         final int csOffset = offset;
         offset = fill((byte) ' ', offset, outbuf, CHKSUMLEN);
         outbuf[offset++] = linkFlag;
@@ -2056,7 +2056,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
 
     private int writeEntryHeaderOptionalTimeField(final FileTime time, int offset, final byte[] outbuf, final int fieldLength) {
         if (time != null) {
-            offset = writeEntryHeaderField(TimeUtils.toUnixTime(time), outbuf, offset, fieldLength, true);
+            offset = writeEntryHeaderField(FileTimes.toUnixTime(time), outbuf, offset, fieldLength, true);
         } else {
             offset = fill(0, offset, outbuf, fieldLength);
         }

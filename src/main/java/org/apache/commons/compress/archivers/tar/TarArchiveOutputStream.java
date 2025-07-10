@@ -39,7 +39,6 @@ import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.FixedLengthBlockOutputStream;
-import org.apache.commons.compress.utils.TimeUtils;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.file.attribute.FileTimes;
 import org.apache.commons.io.output.CountingOutputStream;
@@ -373,7 +372,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
     private void failForBigNumbers(final TarArchiveEntry entry) {
         failForBigNumber("entry size", entry.getSize(), TarConstants.MAXSIZE);
         failForBigNumberWithPosixMessage("group id", entry.getLongGroupId(), TarConstants.MAXID);
-        failForBigNumber("last modification time", TimeUtils.toUnixTime(entry.getLastModifiedTime()), TarConstants.MAXSIZE);
+        failForBigNumber("last modification time", FileTimes.toUnixTime(entry.getLastModifiedTime()), TarConstants.MAXSIZE);
         failForBigNumber("user id", entry.getLongUserId(), TarConstants.MAXID);
         failForBigNumber("mode", entry.getMode(), TarConstants.MAXID);
         failForBigNumber("major device number", entry.getDevMajor(), TarConstants.MAXID);
@@ -614,7 +613,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
     }
 
     private void transferModTime(final TarArchiveEntry from, final TarArchiveEntry to) {
-        long fromModTimeSeconds = TimeUtils.toUnixTime(from.getLastModifiedTime());
+        long fromModTimeSeconds = FileTimes.toUnixTime(from.getLastModifiedTime());
         if (fromModTimeSeconds < 0 || fromModTimeSeconds > TarConstants.MAXSIZE) {
             fromModTimeSeconds = 0;
         }

@@ -25,7 +25,6 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.zip.ZipException;
 
-import org.apache.commons.compress.utils.TimeUtils;
 import org.apache.commons.io.file.attribute.FileTimes;
 
 /**
@@ -118,7 +117,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      * @return ZipLong
      */
     private static ZipLong fileTimeToZipLong(final FileTime time) {
-        return time == null ? null : unixTimeToZipLong(TimeUtils.toUnixTime(time));
+        return time == null ? null : unixTimeToZipLong(FileTimes.toUnixTime(time));
     }
 
     private static FileTime unixTimeToFileTime(final ZipLong unixTime) {
