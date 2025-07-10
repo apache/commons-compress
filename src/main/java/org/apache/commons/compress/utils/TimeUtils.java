@@ -38,7 +38,10 @@ import org.apache.commons.io.file.attribute.FileTimes;
  * </ul>
  *
  * @since 1.23
+ * @see FileTimes
+ * @deprecated Use {@link FileTimes}.
  */
+@Deprecated
 public final class TimeUtils {
 
     /** The amount of 100-nanosecond intervals in one millisecond. */
@@ -190,7 +193,9 @@ public final class TimeUtils {
      *
      * @param fileTime the FileTime to be truncated.
      * @return the truncated FileTime.
+     * @deprecated No replacement, only used in tests.
      */
+    @Deprecated
     public static FileTime truncateToHundredNanos(final FileTime fileTime) {
         final Instant instant = fileTime.toInstant();
         return FileTime.from(Instant.ofEpochSecond(instant.getEpochSecond(), instant.getNano() / 100 * 100));

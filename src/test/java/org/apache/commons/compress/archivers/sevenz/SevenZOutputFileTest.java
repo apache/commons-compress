@@ -45,7 +45,7 @@ import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.PasswordRequiredException;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
-import org.apache.commons.compress.utils.TimeUtils;
+import org.apache.commons.compress.utils.TimeUtilsTest;
 import org.junit.jupiter.api.Test;
 import org.tukaani.xz.LZMA2Options;
 
@@ -134,7 +134,7 @@ class SevenZOutputFileTest extends AbstractTest {
         final FileTime fileTime = FileTime.from(Instant.ofEpochSecond(now.getEpochSecond(), now.getNano() + 999900));
         // However, in some platforms, Java's Instant has a precision of nanoseconds.
         // Truncate the resulting FileTime to 100ns intervals.
-        return TimeUtils.truncateToHundredNanos(fileTime);
+        return TimeUtilsTest.truncateToHundredNanos(fileTime);
     }
 
     @Test

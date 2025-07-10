@@ -37,7 +37,7 @@ import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
 import org.apache.commons.compress.archivers.sevenz.SevenZMethod;
 import org.apache.commons.compress.archivers.sevenz.SevenZOutputFile;
-import org.apache.commons.compress.utils.TimeUtils;
+import org.apache.commons.compress.utils.TimeUtilsTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -165,16 +165,16 @@ class SevenZTest extends AbstractTest {
             assertNotNull(entry);
             assertEquals(file1.getName(), entry.getName());
             BasicFileAttributes attributes = Files.readAttributes(file1.toPath(), BasicFileAttributes.class);
-            assertEquals(TimeUtils.truncateToHundredNanos(attributes.lastModifiedTime()), entry.getLastModifiedTime());
-            assertEquals(TimeUtils.truncateToHundredNanos(attributes.creationTime()), entry.getCreationTime());
+            assertEquals(TimeUtilsTest.truncateToHundredNanos(attributes.lastModifiedTime()), entry.getLastModifiedTime());
+            assertEquals(TimeUtilsTest.truncateToHundredNanos(attributes.creationTime()), entry.getCreationTime());
             assertNotNull(entry.getAccessTime());
 
             entry = archive.getNextEntry();
             assertNotNull(entry);
             assertEquals(file2.getName(), entry.getName());
             attributes = Files.readAttributes(file2.toPath(), BasicFileAttributes.class);
-            assertEquals(TimeUtils.truncateToHundredNanos(attributes.lastModifiedTime()), entry.getLastModifiedTime());
-            assertEquals(TimeUtils.truncateToHundredNanos(attributes.creationTime()), entry.getCreationTime());
+            assertEquals(TimeUtilsTest.truncateToHundredNanos(attributes.lastModifiedTime()), entry.getLastModifiedTime());
+            assertEquals(TimeUtilsTest.truncateToHundredNanos(attributes.creationTime()), entry.getCreationTime());
             assertNotNull(entry.getAccessTime());
 
             assertNull(archive.getNextEntry());

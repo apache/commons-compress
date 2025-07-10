@@ -42,7 +42,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-class TimeUtilsTest {
+public class TimeUtilsTest {
 
     public static Stream<Arguments> dateToNtfsProvider() {
         return Stream.of(Arguments.of("1601-01-01T00:00:00.000Z", 0), Arguments.of("1601-01-01T00:00:00.000Z", 1), Arguments.of("1600-12-31T23:59:59.999Z", -1),
@@ -86,6 +86,17 @@ class TimeUtilsTest {
                 Arguments.of("1969-12-31T23:59:59.000000001Z", "1969-12-31T23:59:59.0000000Z"),
                 Arguments.of("1969-12-31T23:59:59.000000010Z", "1969-12-31T23:59:59.0000000Z"),
                 Arguments.of("1969-12-31T23:59:59.000000199Z", "1969-12-31T23:59:59.0000001Z"));
+    }
+
+    /**
+     * Truncates a FileTime to 100-nanosecond precision.
+     *
+     * @param fileTime the FileTime to be truncated.
+     * @return the truncated FileTime.
+     */
+    public static FileTime truncateToHundredNanos(final FileTime fileTime) {
+        final Instant instant = fileTime.toInstant();
+        return FileTime.from(Instant.ofEpochSecond(instant.getEpochSecond(), instant.getNano() / 100 * 100));
     }
 
     @Test

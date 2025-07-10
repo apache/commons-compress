@@ -99,6 +99,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory" issue="COMPRESS-699">ArchiveStreamFactory.detect(inputStream) ArchiveException for TAR regression.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory" issue="COMPRESS-700">Can't detect file flutter_awesome_buttons-0.1.0.tar as a TAR file.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Deprecate org.apache.commons.compress.utils.TimeUtils.toUnixTime(FileTime) in favor of org.apache.commons.io.file.attribute.FileTimes.toUnixTime(FileTime).</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">Deprecate org.apache.commons.compress.utils.TimeUtils.truncateToHundredNanos(FileTime).</action>
       <!-- ADD -->
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add GzipParameters.getModificationInstant().</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add GzipParameters.setModificationInstant(Instant).</action>
