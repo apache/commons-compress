@@ -54,6 +54,7 @@ public interface CompressorStreamProvider {
     /**
      * Creates a compressor output stream from a compressor name and an output stream.
      *
+     * @param <T> The underlying output stream.
      * @param name the compressor name, i.e. {@value org.apache.commons.compress.compressors.CompressorStreamFactory#GZIP},
      *             {@value org.apache.commons.compress.compressors.CompressorStreamFactory#BZIP2},
      *             {@value org.apache.commons.compress.compressors.CompressorStreamFactory#XZ},
@@ -64,7 +65,7 @@ public interface CompressorStreamProvider {
      * @throws CompressorException      if the archiver name is not known
      * @throws IllegalArgumentException if the archiver name or stream is null
      */
-    CompressorOutputStream createCompressorOutputStream(String name, OutputStream out) throws CompressorException;
+    <T extends OutputStream> CompressorOutputStream<T> createCompressorOutputStream(String name, T out) throws CompressorException;
 
     /**
      * Gets all the input stream compressor names for this provider
