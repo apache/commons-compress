@@ -38,12 +38,12 @@
 <site xmlns="http://maven.apache.org/SITE/2.0.0" 
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/SITE/2.0.0 https://maven.apache.org/xsd/site-2.0.0.xsd"
-  name="Apache Commons BCEL">
-  <bannerRight name="Commons BCEL" href="/index.html">
+  name="Apache Commons Compress">
+  <bannerRight name="Commons Compress" href="/index.html">
     <image src="/images/logo.png"/>
   </bannerRight>
   <body>
-    <menu name="Commons BCEL">
+    <menu name="Commons Compress">
       <!-- Start: For all components. -->
       <item name="About" href="index.html" />
       <item name="Asking Questions" href="/mail-lists.html" />
