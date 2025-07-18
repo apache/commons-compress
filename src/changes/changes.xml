@@ -139,7 +139,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory, sebb">Bump org.apache.commons:commons-parent from 72 to 85 #563, #567, #574, #582, #587, #595, #668.</action>
       <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump com.github.luben:zstd-jni from 1.5.6-4 to 1.5.7-4 #565, #578, #601, #616, #630, #640, #642. Version 1.5.7-3 fixes https://github.com/luben/zstd-jni/pull/356</action>
       <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump org.apache.commons:commons-lang3 from 3.16.0 to 3.18.0 #568, #678.</action>
-      <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump commons-io:commons-io from 2.16.1 to 2.19.0 #575, #610.</action>
+      <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump commons-io:commons-io from 2.16.1 to 2.20.0 #575, #610.</action>
       <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump com.github.marschall:memoryfilesystem from 2.8.0 to 2.8.1 #577.</action>
       <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump org.ow2.asm:asm from 9.7 to 9.7.1 #586.</action>
       <action type="update" dev="ggregory" due-to="Gary Gregory">Bump commons-codec:commons-codec from 1.17.1 to 1.18.0 #636.</action>
