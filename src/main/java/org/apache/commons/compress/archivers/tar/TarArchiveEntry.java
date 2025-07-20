@@ -1681,48 +1681,48 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         }
     }
 
-    private void readOsSpecificProperties(final Path file, final LinkOption... options) throws IOException {
-        final Set<String> availableAttributeViews = file.getFileSystem().supportedFileAttributeViews();
+    private void readOsSpecificProperties(final Path path, final LinkOption... options) throws IOException {
+        final Set<String> availableAttributeViews = path.getFileSystem().supportedFileAttributeViews();
         if (availableAttributeViews.contains("posix")) {
-            final PosixFileAttributes posixFileAttributes = Files.readAttributes(file, PosixFileAttributes.class, options);
+            final PosixFileAttributes posixFileAttributes = Files.readAttributes(path, PosixFileAttributes.class, options);
             setLastModifiedTime(posixFileAttributes.lastModifiedTime());
             setCreationTime(posixFileAttributes.creationTime());
             setLastAccessTime(posixFileAttributes.lastAccessTime());
             this.userName = posixFileAttributes.owner().getName();
             this.groupName = posixFileAttributes.group().getName();
             if (availableAttributeViews.contains("unix")) {
-                this.userId = ((Number) Files.getAttribute(file, "unix:uid", options)).longValue();
-                this.groupId = ((Number) Files.getAttribute(file, "unix:gid", options)).longValue();
+                this.userId = ((Number) Files.getAttribute(path, "unix:uid", options)).longValue();
+                this.groupId = ((Number) Files.getAttribute(path, "unix:gid", options)).longValue();
                 try {
-                    setStatusChangeTime((FileTime) Files.getAttribute(file, "unix:ctime", options));
+                    setStatusChangeTime((FileTime) Files.getAttribute(path, "unix:ctime", options));
                 } catch (final IllegalArgumentException ignored) {
                     // ctime is not supported
                 }
             }
         } else {
             if (availableAttributeViews.contains("dos")) {
-                final DosFileAttributes dosFileAttributes = Files.readAttributes(file, DosFileAttributes.class, options);
+                final DosFileAttributes dosFileAttributes = Files.readAttributes(path, DosFileAttributes.class, options);
                 setLastModifiedTime(dosFileAttributes.lastModifiedTime());
                 setCreationTime(dosFileAttributes.creationTime());
                 setLastAccessTime(dosFileAttributes.lastAccessTime());
             } else {
-                final BasicFileAttributes basicFileAttributes = Files.readAttributes(file, BasicFileAttributes.class, options);
+                final BasicFileAttributes basicFileAttributes = Files.readAttributes(path, BasicFileAttributes.class, options);
                 setLastModifiedTime(basicFileAttributes.lastModifiedTime());
                 setCreationTime(basicFileAttributes.creationTime());
                 setLastAccessTime(basicFileAttributes.lastAccessTime());
             }
-            this.userName = Files.getOwner(file, options).getName();
+            this.userName = Files.getOwner(path, options).getName();
         }
     }
 
     /**
      * Sets this entry's creation time.
      *
-     * @param time This entry's new creation time.
+     * @param birthTime This entry's new creation time.
      * @since 1.22
      */
-    public void setCreationTime(final FileTime time) {
-        birthTime = time;
+    public void setCreationTime(final FileTime birthTime) {
+        this.birthTime = birthTime;
     }
 
     /**
@@ -1747,7 +1747,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      */
     public void setDevMajor(final int devNo) {
         if (devNo < 0) {
-            throw new IllegalArgumentException("Major device number is out of " + "range: " + devNo);
+            throw new IllegalArgumentException("Major device number is out of range: " + devNo);
         }
         this.devMajor = devNo;
     }
