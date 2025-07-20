@@ -41,18 +41,18 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Random;
 
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemProperties;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 
 class TarArchiveEntryTest implements TarConstants {
 
-    private static final String OS = SystemProperties.getOsName().toLowerCase(Locale.ROOT);
+    private static final String OS = StringUtils.toRootLowerCase(SystemProperties.getOsName());
     private static final String ROOT = OS.startsWith("windows") || OS.startsWith("netware") ? "C:\\" : "/";
 
     private void assertGnuMagic(final TarArchiveEntry t) {
