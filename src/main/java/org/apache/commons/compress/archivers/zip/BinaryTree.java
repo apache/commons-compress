@@ -138,7 +138,7 @@ final class BinaryTree {
 
     BinaryTree(final int depth) {
         if (depth < 0 || depth > 30) {
-            throw new IllegalArgumentException("depth must be bigger than 0 and not bigger than 30" + " but is " + depth);
+            throw new IllegalArgumentException("depth must be bigger than 0 and not bigger than 30 but is " + depth);
         }
         tree = ArrayFill.fill(new int[(int) ((1L << depth + 1) - 1)], UNDEFINED);
     }

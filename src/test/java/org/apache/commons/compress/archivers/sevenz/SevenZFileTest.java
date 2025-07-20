@@ -60,7 +60,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
 class SevenZFileTest extends AbstractTest {
-    private static final String TEST2_CONTENT = "<?xml version = '1.0'?>\r\n<!DOCTYPE" + " connections>\r\n<meinxml>\r\n\t<leer />\r\n</meinxml>\n";
+    private static final String TEST2_CONTENT = "<?xml version = '1.0'?>\r\n<!DOCTYPE connections>\r\n<meinxml>\r\n\t<leer />\r\n</meinxml>\n";
 
     private static boolean isStrongCryptoAvailable() throws NoSuchAlgorithmException {
         return Cipher.getMaxAllowedKeyLength("AES/ECB/PKCS5Padding") >= 256;

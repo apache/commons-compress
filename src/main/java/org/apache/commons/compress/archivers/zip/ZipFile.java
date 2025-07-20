@@ -1068,7 +1068,7 @@ public class ZipFile implements Closeable {
      */
     private BoundedArchiveInputStream createBoundedInputStream(final long start, final long remaining) {
         if (start < 0 || remaining < 0 || start + remaining < start) {
-            throw new IllegalArgumentException("Corrupted archive, stream boundaries" + " are out of range");
+            throw new IllegalArgumentException("Corrupted archive, stream boundaries are out of range");
         }
         return archive instanceof FileChannel ? new BoundedFileChannelInputStream(start, remaining, (FileChannel) archive)
                 : new BoundedSeekableByteChannelInputStream(start, remaining, archive);
@@ -1354,7 +1354,7 @@ public class ZipFile implements Closeable {
         long sig = ZipLong.getValue(wordBuf);
 
         if (sig != CFH_SIG && startsWithLocalFileHeader()) {
-            throw new IOException("Central directory is empty, can't expand" + " corrupt archive.");
+            throw new IOException("Central directory is empty, can't expand corrupt archive.");
         }
 
         while (sig == CFH_SIG) {

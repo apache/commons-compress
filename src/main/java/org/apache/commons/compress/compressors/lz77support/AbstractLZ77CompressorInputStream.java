@@ -274,7 +274,7 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
      */
     protected final void startBackReference(final int offset, final long length) {
         if (offset <= 0 || offset > writeIndex) {
-            throw new IllegalArgumentException("offset must be bigger than 0 but not bigger than the number" + " of bytes available for back-references");
+            throw new IllegalArgumentException("offset must be bigger than 0 but not bigger than the number of bytes available for back-references");
         }
         if (length < 0) {
             throw new IllegalArgumentException("length must not be negative");

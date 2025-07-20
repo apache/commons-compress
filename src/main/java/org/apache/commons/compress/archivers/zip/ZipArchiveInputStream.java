@@ -1026,7 +1026,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
                 return -1;
             }
             if (inf.needsDictionary()) {
-                throw new ZipException("This archive needs a preset dictionary" + " which is not supported by Commons" + " Compress.");
+                throw new ZipException("This archive needs a preset dictionary" + " which is not supported by Commons Compress.");
             }
             if (read == -1) {
                 throw new IOException("Truncated ZIP file");

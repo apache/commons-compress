@@ -91,7 +91,7 @@ public class ExtraFieldUtils {
                 throws ZipException {
             switch (key) {
             case THROW_KEY:
-                throw new ZipException("Bad extra field starting at " + off + ".  Block length of " + claimedLength + " bytes exceeds remaining" + " data of "
+                throw new ZipException("Bad extra field starting at " + off + ".  Block length of " + claimedLength + " bytes exceeds remaining data of "
                         + (len - WORD) + " bytes.");
             case READ_KEY:
                 final UnparseableExtraFieldData field = new UnparseableExtraFieldData();

@@ -92,6 +92,6 @@ public final class TarArchiveStructSparse {
 
     @Override
     public String toString() {
-        return "TarArchiveStructSparse{" + "offset=" + offset + ", numbytes=" + numbytes + '}';
+        return "TarArchiveStructSparse{offset=" + offset + ", numbytes=" + numbytes + '}';
     }
 }

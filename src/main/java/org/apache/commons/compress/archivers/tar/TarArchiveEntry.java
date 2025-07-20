@@ -1761,7 +1761,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      */
     public void setDevMinor(final int devNo) {
         if (devNo < 0) {
-            throw new IllegalArgumentException("Minor device number is out of " + "range: " + devNo);
+            throw new IllegalArgumentException("Minor device number is out of range: " + devNo);
         }
         this.devMinor = devNo;
     }

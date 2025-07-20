@@ -675,7 +675,7 @@ public class TarUtils {
                                 totalRead += restLen;
                                 // Drop trailing NL
                                 if (rest[restLen - 1] != '\n') {
-                                    throw new IOException("Failed to read Paxheader." + "Value should end with a newline");
+                                    throw new IOException("Failed to read Paxheader.Value should end with a newline");
                                 }
                                 final String value = new String(rest, 0, restLen - 1, StandardCharsets.UTF_8);
                                 headers.put(keyword, value);

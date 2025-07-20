@@ -1533,10 +1533,10 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
         // Size/CRC not required if SeekableByteChannel is used
         if (entry.entry.getMethod() == STORED && !(out instanceof RandomAccessOutputStream)) {
             if (entry.entry.getSize() == ArchiveEntry.SIZE_UNKNOWN) {
-                throw new ZipException("Uncompressed size is required for" + " STORED method when not writing to a" + " file");
+                throw new ZipException("Uncompressed size is required for" + " STORED method when not writing to a file");
             }
             if (entry.entry.getCrc() == ZipArchiveEntry.CRC_UNKNOWN) {
-                throw new ZipException("CRC checksum is required for STORED" + " method when not writing to a file");
+                throw new ZipException("CRC checksum is required for STORED method when not writing to a file");
             }
             entry.entry.setCompressedSize(entry.entry.getSize());
         }

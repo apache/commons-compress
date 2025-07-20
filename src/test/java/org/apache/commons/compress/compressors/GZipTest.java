@@ -220,7 +220,7 @@ public final class GZipTest extends AbstractTest {
         assertEquals(parameters.getFilename(), parameters.getFileName());
         parameters.setComment("Umlaute möglich?");
         try (GzipCompressorOutputStream out = new GzipCompressorOutputStream(bout, parameters)) {
-            out.write(getFile("test3" + ".xml"));
+            out.write(getFile("test3.xml"));
         }
 
         final GzipCompressorInputStream input = new GzipCompressorInputStream(new ByteArrayInputStream(bout.toByteArray()));

@@ -44,7 +44,7 @@ public class Zip64ExtendedInformationExtraField implements ZipExtraField {
 
     static final ZipShort HEADER_ID = new ZipShort(0x0001);
 
-    private static final String LFH_MUST_HAVE_BOTH_SIZES_MSG = "Zip64 extended information must contain" + " both size values in the local file header.";
+    private static final String LFH_MUST_HAVE_BOTH_SIZES_MSG = "Zip64 extended information must contain both size values in the local file header.";
     private ZipEightByteInteger size;
     private ZipEightByteInteger compressedSize;
     private ZipEightByteInteger relativeHeaderOffset;
@@ -263,7 +263,7 @@ public class Zip64ExtendedInformationExtraField implements ZipExtraField {
             final int expectedLength = (hasUncompressedSize ? DWORD : 0) + (hasCompressedSize ? DWORD : 0) + (hasRelativeHeaderOffset ? DWORD : 0)
                     + (hasDiskStart ? WORD : 0);
             if (rawCentralDirectoryData.length < expectedLength) {
-                throw new ZipException("Central directory zip64 extended" + " information extra field's length" + " doesn't match central directory"
+                throw new ZipException("Central directory zip64 extended information extra field's length doesn't match central directory"
                         + " data.  Expected length " + expectedLength + " but is " + rawCentralDirectoryData.length);
             }
             int offset = 0;

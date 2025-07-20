@@ -1564,7 +1564,7 @@ public class SevenZFile implements Closeable {
             return tryToLocateEndHeader(password);
         }
         throw new IOException("archive seems to be invalid.\nYou may want to retry and enable the"
-                + " tryToRecoverBrokenArchives if the archive could be a multi volume archive that has been closed" + " prematurely.");
+                + " tryToRecoverBrokenArchives if the archive could be a multi volume archive that has been closed prematurely.");
     }
 
     private void readPackInfo(final ByteBuffer header, final Archive archive) throws IOException {

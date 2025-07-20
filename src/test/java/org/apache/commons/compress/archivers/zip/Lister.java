@@ -133,7 +133,7 @@ public final class Lister {
     }
 
     private static void usage() {
-        System.err.println("lister [-enc encoding] [-stream] [-file]" + " [+storeddd] [-extract dir] archive");
+        System.err.println("lister [-enc encoding] [-stream] [-file] [+storeddd] [-extract dir] archive");
         System.exit(1);
     }
 }
