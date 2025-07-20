@@ -20,8 +20,9 @@ package org.apache.commons.compress.compressors;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * File name mapping code for the compression formats.
@@ -136,7 +137,7 @@ public class FileNameUtil {
      * @since 1.25.0
      */
     public String getCompressedFileName(final String fileName) {
-        final String lower = fileName.toLowerCase(Locale.ROOT);
+        final String lower = StringUtils.toRootLowerCase(fileName);
         final int n = lower.length();
         for (int i = shortestUncompressedSuffix; i <= longestUncompressedSuffix && i < n; i++) {
             final String suffix = compressSuffix.get(lower.substring(n - i));
@@ -174,7 +175,7 @@ public class FileNameUtil {
      * @since 1.25.0
      */
     public String getUncompressedFileName(final String fileName) {
-        final String lower = fileName.toLowerCase(Locale.ROOT);
+        final String lower = StringUtils.toRootLowerCase(fileName);
         final int n = lower.length();
         for (int i = shortestCompressedSuffix; i <= longestCompressedSuffix && i < n; i++) {
             final String suffix = uncompressSuffix.get(lower.substring(n - i));
@@ -205,7 +206,7 @@ public class FileNameUtil {
      * @since 1.25.0
      */
     public boolean isCompressedFileName(final String fileName) {
-        final String lower = fileName.toLowerCase(Locale.ROOT);
+        final String lower = StringUtils.toRootLowerCase(fileName);
         final int n = lower.length();
         for (int i = shortestCompressedSuffix; i <= longestCompressedSuffix && i < n; i++) {
             if (uncompressSuffix.containsKey(lower.substring(n - i))) {
