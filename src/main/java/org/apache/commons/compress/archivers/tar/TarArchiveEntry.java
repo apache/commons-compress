@@ -1662,8 +1662,8 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         }
     }
 
-    private void readFileMode(final Path file, final String normalizedName, final LinkOption... options) throws IOException {
-        if (Files.isDirectory(file, options)) {
+    private void readFileMode(final Path path, final String normalizedName, final LinkOption... options) throws IOException {
+        if (Files.isDirectory(path, options)) {
             this.mode = DEFAULT_DIR_MODE;
             this.linkFlag = LF_DIR;
 
@@ -1677,7 +1677,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
             this.mode = DEFAULT_FILE_MODE;
             this.linkFlag = LF_NORMAL;
             this.name = normalizedName;
-            this.size = Files.size(file);
+            this.size = Files.size(path);
         }
     }
 
