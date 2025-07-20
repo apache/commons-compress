@@ -388,7 +388,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * Constructs an empty entry and prepares the header values.
      */
     private TarArchiveEntry(final boolean preserveAbsolutePath) {
-        String user = System.getProperty("user.name", "");
+        String user = SystemProperties.getUserName("");
         if (user.length() > MAX_NAMELEN) {
             user = user.substring(0, MAX_NAMELEN);
         }
