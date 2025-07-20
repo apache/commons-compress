@@ -25,7 +25,6 @@ import java.io.OutputStream;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Collections;
-import java.util.Locale;
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.SortedMap;
@@ -47,6 +46,7 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.Sets;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Creates an Archive[In|Out]putStreams from names or the first bytes of the InputStream. In order to add other implementations, you should extend
@@ -357,7 +357,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
     }
 
     private static String toKey(final String name) {
-        return name.toUpperCase(Locale.ROOT);
+        return StringUtils.toRootUpperCase(name);
     }
 
     /**
