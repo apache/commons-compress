@@ -230,7 +230,7 @@ public class LZ77Compressor {
     public static final class EOD extends Block {
 
         /**
-         * Singleton instance.
+         * The singleton instance.
          */
         private static final EOD INSTANCE = new EOD();
 
