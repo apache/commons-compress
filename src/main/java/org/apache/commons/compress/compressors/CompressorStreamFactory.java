@@ -24,7 +24,6 @@ import java.io.OutputStream;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Collections;
-import java.util.Locale;
 import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.SortedMap;
@@ -60,6 +59,7 @@ import org.apache.commons.compress.compressors.zstandard.ZstdCompressorOutputStr
 import org.apache.commons.compress.compressors.zstandard.ZstdUtils;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.Sets;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * <p>
@@ -473,7 +473,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
     }
 
     private static String toKey(final String name) {
-        return name.toUpperCase(Locale.ROOT);
+        return StringUtils.toRootUpperCase(name);
     }
 
     private static String youNeed(final String name, final String url) {
