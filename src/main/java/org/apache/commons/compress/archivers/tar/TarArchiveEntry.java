@@ -38,7 +38,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -52,6 +51,7 @@ import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.ParsingUtils;
 import org.apache.commons.io.file.attribute.FileTimes;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemProperties;
 
 /**
@@ -230,7 +230,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         if (!preserveAbsolutePath) {
             final String property = SystemProperties.getOsName();
             if (property != null) {
-                final String osName = property.toLowerCase(Locale.ROOT);
+                final String osName = StringUtils.toRootLowerCase(property);
 
                 // Strip off drive letters!
                 // REVIEW Would a better check be "(File.separator == '\')"?
