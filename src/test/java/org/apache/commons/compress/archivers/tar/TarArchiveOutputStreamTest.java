@@ -712,7 +712,7 @@ class TarArchiveOutputStreamTest extends AbstractTest {
     void testWritingBigFile() throws Exception {
         final TarArchiveEntry t = new TarArchiveEntry("foo");
         t.setSize((Integer.MAX_VALUE + 1L) * TarConstants.DEFAULT_RCDSIZE);
-        try (TarArchiveOutputStream tos = new TarArchiveOutputStream(NullOutputStream.NULL_OUTPUT_STREAM)) {
+        try (TarArchiveOutputStream tos = new TarArchiveOutputStream(NullOutputStream.INSTANCE)) {
             tos.setBigNumberMode(TarArchiveOutputStream.BIGNUMBER_POSIX);
             tos.putArchiveEntry(t);
 

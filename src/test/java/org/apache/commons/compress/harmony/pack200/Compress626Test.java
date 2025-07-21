@@ -44,7 +44,7 @@ class Compress626Test {
     @Test
     void testJar() throws IOException {
         try (InputStream inputStream = Files.newInputStream(Paths.get("src/test/resources/org/apache/commons/compress/COMPRESS-626/compress-626-pack200.jar"));
-                JarOutputStream out = new JarOutputStream(NullOutputStream.NULL_OUTPUT_STREAM);) {
+                JarOutputStream out = new JarOutputStream(NullOutputStream.INSTANCE);) {
             Pack200.newUnpacker().unpack(inputStream, out);
         }
     }
