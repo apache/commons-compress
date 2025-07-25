@@ -527,7 +527,6 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
                 <!-- 
                 WARNING: Javadoc 8 expects to find package-list, but this is now called element-list
                 -->
-                <link>https://commons.apache.org/proper/commons-codec/apidocs</link>
               </links>
               <tags>
                 <tag>
