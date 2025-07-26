@@ -1,3 +1,151 @@
+Apache Commons Compress 1.28.0 Release Notes
+--------------------------------------------
+
+The Apache Commons Compress team is pleased to announce the release of Apache Commons Compress 1.28.0.
+
+Apache Commons Compress defines an API for working with
+compression and archive formats. These include bzip2, gzip, pack200,
+LZMA, XZ, Snappy, traditional Unix Compress, DEFLATE, DEFLATE64, LZ4,
+Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
+
+This is a feature and maintenance release. Java 8 or later is required.
+
+Changes in this version
+-----------------------
+
+Changes in this version include the following.
+
+New Features
+------------
+
+*            Add GzipParameters.getModificationInstant(). Thanks to Gary Gregory. 
+*            Add GzipParameters.setModificationInstant(Instant). Thanks to Gary Gregory. 
+*            Add GzipParameters.OS, setOS(OS), getOS(). Thanks to Gary Gregory. 
+*            Add GzipParameters.toString(). Thanks to Gary Gregory. 
+*  COMPRESS-638:  Add GzipParameters.setFileNameCharset(Charset) and getFileNameCharset() to override the default ISO-8859-1 Charset #602. Thanks to vincexjl, Gary Gregory, Piotr P. Karwasz. 
+*            Add support for gzip extra subfields, see GzipParameters.setExtra(HeaderExtraField) #604. Thanks to ddeschenes-1, Gary Gregory. 
+*            Add CompressFilterOutputStream and refactor to use. Thanks to Gary Gregory. 
+*            Add ZipFile.stream(). Thanks to Gary Gregory. 
+*            GzipCompressorInputStream reads the modification time (MTIME) and stores its value incorrectly multiplied by 1,000. Thanks to Danny Deschenes, Gary Gregory. 
+*            GzipCompressorInputStream writes the modification time (MTIME) the value incorrectly divided by 1,000. Thanks to Danny Deschenes, Gary Gregory. 
+*            Add optional FHCRC to GZIP header #627. Thanks to Danny Deschenes, Gary Gregory. 
+*            Add GzipCompressorInputStream.Builder allowing to customize the file name and comment Charsets. Thanks to Gary Gregory. 
+*            Add GzipCompressorInputStream.Builder.setOnMemberStart(IOConsumer) to monitor member parsing. Thanks to Gary Gregory. 
+*            Add GzipCompressorInputStream.Builder.setOnMemberEnd(IOConsumer) to monitor member parsing. Thanks to Gary Gregory. 
+*            Add PMD check to default Maven goal. Thanks to Gary Gregory. 
+*            Add SevenZFile.Builder.setMaxMemoryLimitKiB(int). Thanks to Gary Gregory. 
+*            Add MemoryLimitException.MemoryLimitException(long, int, Throwable) and deprecate MemoryLimitException.MemoryLimitException(long, int, Exception). Thanks to Gary Gregory. 
+*  COMPRESS-692:  Add support for zstd compression in zip archives. Thanks to Mehmet Karaman, Andrey Loskutov, Gary Gregory. 
+*            Add support for XZ compression in ZIP archives. Thanks to Gary Gregory. 
+*  COMPRESS-695:  Add ZipArchiveInputStream.createZstdInputStream(InputStream) to provide a different InputStream implementation for Zstandard (Zstd) #649. Thanks to Gary Gregory. 
+*            Add org.apache.commons.compress.harmony.pack200.Pack200Exception.Pack200Exception(String, Throwable). Thanks to Gary Gregory. 
+*  COMPRESS-697:  Move BitStream.nextBit() method to BitInputStream #663. Thanks to Fredrik Kjellberg, Gary Gregory. 
+*            Add org.apache.commons.compress.compressors.lzma.LZMACompressorInputStream.builder/Builder(). Thanks to Gary Gregory. 
+*            Add org.apache.commons.compress.compressors.lzma.LZMACompressorOutputStream.builder/Builder(). Thanks to Gary Gregory. 
+*            Add org.apache.commons.compress.compressors.xz.XZCompressorInputStream.builder/Builder(). Thanks to Gary Gregory. 
+*            Add org.apache.commons.compress.compressors.xz.XZCompressorOutputStream.builder/Builder(). Thanks to Gary Gregory. 
+*            Add org.apache.commons.compress.compressors.xz.ZstdCompressorOutputStream.builder/Builder() #666. Thanks to Gary Gregory, David Walluck, Piotr P. Karwasz. 
+*            Add org.apache.commons.compress.compressors.xz.ZstdConstants #666. Thanks to Gary Gregory, David Walluck, Piotr P. Karwasz. 
+*            Add org.apache.commons.compress.archivers.ArchiveException.requireNonNull(T, Supplier<String>). Thanks to Gary Gregory, Zaki. 
+*            Add org.apache.commons.compress.compressors.CompressorException as the root for all custom exceptions ArchiveException and CompressorException. Thanks to Gary Gregory. 
+*            Add ArchiveException.ArchiveException(String, Throwable). Thanks to Gary Gregory. 
+*            Add ArchiveException.ArchiveException(Throwable). Thanks to Gary Gregory. 
+*            Add org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry.isEmptyStream(). Thanks to Gary Gregory. 
+*            Add generics for org.apache.commons.compress.compressors.CompressorStreamProvider.createCompressorOutputStream(String, T). Thanks to Gary Gregory. 
+
+Fixed Bugs
+----------
+
+*  COMPRESS-686:  Better exception messages in SeekableInMemoryByteChannel. Thanks to Richard Blank, Gary Gregory. 
+*  COMPRESS-691:  ZipArchiveOutputStream.addRawArchiveEntry() should check is2PhaseSource #571. Thanks to yujincheng08, Gary Gregory. 
+*            ArchiveException extends IOException #605, see also https://github.com/apache/httpcomponents-client/pull/580. Thanks to Gary Gregory, Arturo Bernal. 
+*            CompressorException extends IOException #605, see also https://github.com/apache/httpcomponents-client/pull/580. Thanks to Gary Gregory, Arturo Bernal. 
+*            Update outdated descriptions in IOUtils and IOUtilsTest #612. Thanks to Glavo. 
+*            Remove unused local variable in ZipFile #615. Thanks to Glavo. 
+*            Optimize ZipEightByteInteger #614. Thanks to Glavo, Gary Gregory. 
+*            ZipEightByteInteger.toString() now returns a number string without text prefix, like BigInteger. Thanks to Gary Gregory. 
+*            Throw an IllegalArgumentException when a file name or comment in gzip parameters encodes to a byte array with a 0 byte #618. Thanks to ddeschenes-1, Gary Gregory. 
+*            Update outdated links in ZipMethod Javadoc #619. Thanks to Glavo. 
+*            Deprecate ZipUtil.signedByteToUnsignedInt(byte) in favor of Byte.toUnsignedInt(byte). Thanks to Gary Gregory. 
+*            ZipArchiveOutputStream.close() does not close its underlying output stream. Thanks to Gary Gregory. 
+*            ZipArchiveOutputStream.close() does not close its underlying output stream. Thanks to Gary Gregory. 
+*            Don't use deprecated code in TarArchiveInputStream. Thanks to Gary Gregory. 
+*            Don't use deprecated code in TarFile. Thanks to Gary Gregory. 
+*            CpioArchiveInputStream.read(byte[], int, int) now throws an IOException on a data pad count mismatch. Thanks to Gary Gregory. 
+*            CpioArchiveInputStream.readNewEntry(boolean) now throws an IOException on a header pad count mismatch. Thanks to Gary Gregory. 
+*            CpioArchiveInputStream.readOldBinaryEntry(boolean) now throws an IOException on a header pad count mismatch. Thanks to Gary Gregory. 
+*            Fix Javadoc and names in the org.apache.commons.compress.archivers.sevenz package to specify kibibyte scale in memory limits. Thanks to Gary Gregory. 
+*            Fix Javadoc and names in the org.apache.commons.compress.compressors.lzw package to specify kibibyte scale in memory limits. Thanks to Gary Gregory. 
+*            Fix Javadoc and names in the org.apache.commons.compress.compressors.z package to specify kibibyte scale in memory limits. Thanks to Gary Gregory. 
+*            Refactor LZ77Compressor block classes to reduce duplication. Thanks to Gary Gregory. 
+*            Package-private and private classes can be final. Thanks to Gary Gregory. 
+*            Deprecate ArjArchiveEntry.HostOs.HostOs(). Thanks to Gary Gregory. 
+*            Drop coveralls reference (no longer needed) 
+*            Some ZIP operations won't read all data from a non-blocking file channel. Thanks to Gary Gregory. 
+*  COMPRESS-696:  ZipArchiveInputStream.getCompressedCount() throws NullPointerException if called before getNextEntry(). Thanks to Steve Roughley, Gary Gregory. 
+*            org.apache.commons.compress.harmony.unpack200.SegmentConstantPool.getConstantPoolEntry(int, long) now throws Pack200Exception instead of Error and does better range checking of the index argument. Thanks to Gary Gregory. 
+*            org.apache.commons.compress.harmony.unpack200.SegmentConstantPool.getInitMethodPoolEntry(int, long, String) now throws Pack200Exception instead of Error and does better range checking of the index argument. Thanks to Gary Gregory. 
+*            org.apache.commons.compress.harmony.unpack200.SegmentConstantPool.getInitMethodPoolEntry(int, long, String) now throws Pack200Exception instead of Error on bad constant pool type input. Thanks to Gary Gregory. 
+*            org.apache.commons.compress.harmony.unpack200.SegmentConstantPool.getClassSpecificPoolEntry(int, long, String) now throws Pack200Exception instead of Error on bad constant pool type input. Thanks to Gary Gregory. 
+*            org.apache.commons.compress.harmony.unpack200.SegmentConstantPool.getClassPoolEntry(String) now throws Pack200Exception instead of Error on some bad inputs and states. Thanks to Gary Gregory. 
+*            org.apache.commons.compress.harmony.unpack200.bytecode.ByteCode.extractOperands(OperandManager, Segment, int) now throws Pack200Exception instead of Error on some bad inputs and states. Thanks to Gary Gregory. 
+*            org.apache.commons.compress.harmony.unpack200.bytecode.forms.ByteCodeForm.setByteCodeOperands(ByteCode, OperandManager, int) now throws Pack200Exception instead of Error on some bad inputs and states. Thanks to Gary Gregory. 
+*            org.apache.commons.compress.harmony.unpack200.bytecode.CodeAttribute.CodeAttribute(int, int, byte[], Segment, OperandManager, List) now throws Pack200Exception instead of Error on some bad inputs and states. Thanks to Gary Gregory. 
+*            org.apache.commons.compress.harmony.unpack200.bytecode.forms.IMethodRefForm.setByteCodeOperands(ByteCode, OperandManager, int) now throws Pack200Exception instead of Error on some bad inputs and states. Thanks to Gary Gregory. 
+*            org.apache.commons.compress.harmony.unpack200.bytecode.forms.MultiANewArrayForm.setByteCodeOperands(ByteCode, OperandManager, int) now throws Pack200Exception instead of Error on some bad inputs and states. Thanks to Gary Gregory. 
+*            org.apache.commons.compress.harmony.unpack200.bytecode.forms.NewClassRefForm.setByteCodeOperands(ByteCode, OperandManager, int) now throws Pack200Exception instead of Error on some bad inputs and states. Thanks to Gary Gregory. 
+*            org.apache.commons.compress.harmony.unpack200.bytecode.forms.ReferenceForm.setByteCodeOperands(ByteCode, OperandManager, int) now throws Pack200Exception instead of Error on some bad inputs and states. Thanks to Gary Gregory. 
+*            Deprecate org.apache.commons.compress.harmony.pack200.CanonicalCodecFamilies.CanonicalCodecFamilies(). Thanks to Gary Gregory. 
+*            Deprecate FileNameUtils#getBaseName(Path). Thanks to Gary Gregory. 
+*            Deprecate FileNameUtils#getExtension(Path). Thanks to Gary Gregory. 
+*            org.apache.commons.compress.harmony.unpack200.Archive.unpack() should not log to system out (the console). Thanks to Alexis Jehan, Gary Gregory. 
+*            [site] Fix minor zip docs type: remove extraneous 'a' #665. Thanks to aSemy. 
+*            Throw a better exception in org.apache.commons.compress.archivers.sevenz.SevenZFile.readFilesInfo(ByteBuffer, Archive). Thanks to Zaki, Gary Gregory. 
+*            MemoryLimitException now extends CompressException instead of IOException (CompressException extends IOException). Thanks to Gary Gregory. 
+*            DumpArchiveException now extends ArchiveException instead of IOException (ArchiveException extends CompressException). Thanks to Gary Gregory. 
+*            PasswordRequiredException now extends CompressException instead of IOException (CompressException extends IOException). Thanks to Gary Gregory. 
+*            Pack200Exception now extends CompressException instead of IOException (CompressException extends IOException). Thanks to Gary Gregory. 
+*            ArArchiveInputStream.getBSDLongName(String) now throws its EOFException with a message. Thanks to Gary Gregory. 
+*            ZipEncodingHelper.getZipEncoding(*) can throw NullPointerException and IllegalArgumentException on bad input instead of returning a value using the default Charset. Thanks to Gary Gregory. 
+*            Javadoc improvements throughout. Thanks to Gary Gregory. 
+*  COMPRESS-699:  ArchiveStreamFactory.detect(inputStream) ArchiveException for TAR regression. Thanks to Gary Gregory. 
+*  COMPRESS-700:  Can't detect file flutter_awesome_buttons-0.1.0.tar as a TAR file. Thanks to Gary Gregory. 
+*            Deprecate org.apache.commons.compress.utils.TimeUtils.toUnixTime(FileTime) in favor of org.apache.commons.io.file.attribute.FileTimes.toUnixTime(FileTime). Thanks to Gary Gregory. 
+*            Deprecate org.apache.commons.compress.utils.TimeUtils.truncateToHundredNanos(FileTime). Thanks to Gary Gregory. 
+
+Changes
+-------
+
+*            Bump org.apache.commons:commons-parent from 72 to 85 #563, #567, #574, #582, #587, #595, #668. Thanks to Dependabot, Gary Gregory, sebb. 
+*            Bump com.github.luben:zstd-jni from 1.5.6-4 to 1.5.7-4 #565, #578, #601, #616, #630, #640, #642. Version 1.5.7-3 fixes https://github.com/luben/zstd-jni/pull/356 Thanks to Dependabot, Gary Gregory. 
+*            Bump org.apache.commons:commons-lang3 from 3.16.0 to 3.18.0 #568, #678. Thanks to Dependabot, Gary Gregory. 
+*            Bump commons-io:commons-io from 2.16.1 to 2.20.0 #575, #610. Thanks to Dependabot, Gary Gregory. 
+*            Bump com.github.marschall:memoryfilesystem from 2.8.0 to 2.8.1 #577. Thanks to Dependabot, Gary Gregory. 
+*            Bump org.ow2.asm:asm from 9.7 to 9.7.1 #586. Thanks to Dependabot, Gary Gregory. 
+*            Bump commons-codec:commons-codec from 1.17.1 to 1.19.0 #636. Thanks to Gary Gregory. 
+
+Removed
+-------
+
+*  COMPRESS-638:  GzipCompressorOutputStream no longer percent-endcodes in US-ASCII a file name or comment that the Charset in GzipParameters.setFileNameCharset(Charset) cannot encode. Thanks to vincexjl, Gary Gregory, Piotr P. Karwasz. 
+*            Remove ZstdCompressorOutputStream.toString(), it was misleading by returning the delegate's toString(). Thanks to Gary Gregory.
+
+Resources
+---------
+
+Historical list of changes: https://commons.apache.org/proper/commons-compress/changes.html
+
+For complete information on Apache Commons Compress, including instructions on how to submit bug reports,
+patches, or suggestions for improvement, see the Apache Commons Compress website:
+
+https://commons.apache.org/proper/commons-compress/
+
+Download page: https://commons.apache.org/proper/commons-compress/download_compress.cgi
+
+Have fun!
+-Apache Commons Team
+
+-----------------------------------------------------------------------------
 
 Apache Commons Compress 
 Version 1.27.1
@@ -145,7 +293,7 @@ Fixed Bugs
 *            ArArchiveOutputStream doesn't pad correctly when a file name length is odd and greater than 16 (padding missing). Thanks to takaaki nakama, Gary Gregory. 
 *  COMPRESS-678:  ArArchiveOutputStream should check that a file name length greater than 16 fits in a header. Thanks to Gary Gregory. 
 *            ArArchiveOutputStream implicit narrowing conversion in compound assignment. Thanks to Gary Gregory. 
-*  COMPRESS-679:  Regression on parallel processing of 7zip files. Thanks to Mikaël MECHOULAM, Gary Gregory. 
+*  COMPRESS-679:  Regression on parallel processing of 7zip files. Thanks to Mikaï¿½l MECHOULAM, Gary Gregory. 
 *  COMPRESS-675:  Regression in pack200's Archive class -- underlying InputStream is now closed. Thanks to Tim Allison, Gary Gregory. 
 *            Avoid NullPointerException in java.nio.channels.spi.AbstractInterruptibleChannel.close() when calling org.apache.commons.compress.archivers.zip.FileRandomAccessOutputStream.close(). Thanks to Gary Gregory. 
 *            Fix SpotBugs NP_NULL_PARAM_DEREF in Sets.newHashSet(). Thanks to Gary Gregory. 
@@ -489,7 +637,7 @@ Fixed Bugs
 * Add TarArchiveEntry.getLinkFlag() #365.
   Issue: COMPRESS-641. Thanks to XenoAmess, Gary Gregory, Bruno P. Kinoshita. 
 * Integer overflow ArithmeticException in TarArchiveOutputStream #368.
-  Issue: COMPRESS-642. Thanks to Anton Klarén, Gary Gregory. 
+  Issue: COMPRESS-642. Thanks to Anton Klarï¿½n, Gary Gregory. 
 * org.apache.commons.compress.archivers.zip.ZipFile.finalize() should not write to std err.
   Issue: COMPRESS-642. Thanks to Dominik Stadler, Stefan Bodewig, Gary Gregory. 
 
@@ -544,7 +692,7 @@ Fixed Bugs
   avoid reading more from a channel than asked for.
   Github Pull Request #214.
   Issue: COMPRESS-584. Thanks to Matthijs Laan, Peter Lee. 
-* Documentation nits #217. Thanks to Helder Magalhães, Gary Gregory, PeterAlfredLee. 
+* Documentation nits #217. Thanks to Helder Magalhï¿½es, Gary Gregory, PeterAlfredLee. 
 * Replace wrapper Collections.sort is with an instance method directly. #245. Thanks to Arturo Bernal. 
 * Replace manual comparisons with Comparator.comparingInt() #244. Thanks to Arturo Bernal. 
 * Replace manual copy of array contents with System.arraycopy() #246. Thanks to Arturo Bernal. 

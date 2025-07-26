@@ -45,7 +45,7 @@ Apache Commons Compress
 
 [![Java CI](https://github.com/apache/commons-compress/actions/workflows/maven.yml/badge.svg)](https://github.com/apache/commons-compress/actions/workflows/maven.yml)
 [![Maven Central](https://img.shields.io/maven-central/v/org.apache.commons/commons-compress?label=Maven%20Central)](https://search.maven.org/artifact/org.apache.commons/commons-compress)
-[![Javadocs](https://javadoc.io/badge/org.apache.commons/commons-compress/1.27.1.svg)](https://javadoc.io/doc/org.apache.commons/commons-compress/1.27.1)
+[![Javadocs](https://javadoc.io/badge/org.apache.commons/commons-compress/1.28.0.svg)](https://javadoc.io/doc/org.apache.commons/commons-compress/1.28.0)
 [![CodeQL](https://github.com/apache/commons-compress/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/apache/commons-compress/actions/workflows/codeql-analysis.yml)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/apache/commons-compress/badge)](https://api.securityscorecards.dev/projects/github.com/apache/commons-compress)
 
@@ -71,7 +71,7 @@ Alternatively, you can pull it from the central Maven repositories:
 <dependency>
   <groupId>org.apache.commons</groupId>
   <artifactId>commons-compress</artifactId>
-  <version>1.27.1</version>
+  <version>1.28.0</version>
 </dependency>
 ```
 
@@ -93,7 +93,7 @@ There are some guidelines which will make applying PRs easier for us:
 + Create minimal diffs - disable on save actions like reformat source code or organize imports. If you feel the source code should be reformatted create a separate PR for this change.
 + Provide JUnit tests for your changes and make sure your changes don't break any existing tests by running `mvn`.
 + Before you pushing a PR, run `mvn` (by itself), this runs the default goal, which contains all build checks.
-+ To see the code coverage report, regardless of coverage failures, run `mvn clean site -Dcommons.jacoco.haltOnFailure=false`
++ To see the code coverage report, regardless of coverage failures, run `mvn clean site -Dcommons.jacoco.haltOnFailure=false -Pjacoco`
 
 If you plan to contribute on a regular basis, please consider filing a [contributor license agreement](https://www.apache.org/licenses/#clas).
 You can learn more about contributing via GitHub in our [contribution guidelines](CONTRIBUTING.md).
