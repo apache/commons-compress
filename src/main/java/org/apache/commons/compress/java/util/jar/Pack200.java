@@ -150,7 +150,7 @@ public abstract class Pack200 {
          * Packs the specified JAR file to the specified output stream.
          *
          * @param in  JAR file to be compressed.
-         * @param out stream of compressed data.
+         * @param out target output stream for the compressed data.
          * @throws IOException if I/O exception occurs.
          */
         void pack(JarFile in, OutputStream out) throws IOException;
@@ -158,8 +158,8 @@ public abstract class Pack200 {
         /**
          * Packs the data from the specified jar input stream to the specified output stream.
          *
-         * @param in  stream of uncompressed JAR data.
-         * @param out stream of compressed data.
+         * @param in  input stream of uncompressed JAR data.
+         * @param out target output stream for the compressed data.
          * @throws IOException if I/O exception occurs.
          */
         void pack(JarInputStream in, OutputStream out) throws IOException;
