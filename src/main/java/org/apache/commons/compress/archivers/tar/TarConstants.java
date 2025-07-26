@@ -24,6 +24,9 @@ package org.apache.commons.compress.archivers.tar;
  * For tar formats (FORMAT_OLDGNU, FORMAT_POSIX, etc.) see GNU tar <a href="https://git.savannah.gnu.org/cgit/tar.git/tree/src/tar.h?h=v1.35">tar.h</a> and type
  * {@code enum archive_format}.
  * </p>
+ * <p>
+ * TODO Next major version: Update to a class.
+ * </p>
  */
 // CheckStyle:InterfaceIsTypeCheck OFF (bc)
 public interface TarConstants {
