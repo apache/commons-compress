@@ -48,11 +48,6 @@ import java.nio.charset.StandardCharsets;
  * on output.)</dd>
  * </dl>
  *
- * <p>
- * This class best belongs in the Commons Lang or IO project. Even if a similar class is defined in another Commons component, it is not foreseen that Commons
- * Compress would be made to depend on another Commons component.
- * </p>
- *
  * @see <a href="https://docs.oracle.com/javase/8/docs/api/java/nio/charset/Charset.html">Standard charsets</a>
  * @see StandardCharsets
  * @since 1.4
