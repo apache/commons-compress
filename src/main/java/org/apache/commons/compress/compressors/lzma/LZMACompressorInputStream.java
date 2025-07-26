@@ -71,7 +71,7 @@ public class LZMACompressorInputStream extends CompressorInputStream implements 
          *                       threshold.
          * @return this instance.
          */
-        public Builder setMemoryLimitKiB(int memoryLimitKiB) {
+        public Builder setMemoryLimitKiB(final int memoryLimitKiB) {
             this.memoryLimitKiB = memoryLimitKiB;
             return this;
         }
