@@ -23,7 +23,7 @@
     <version>85</version>
   </parent>
   <artifactId>commons-compress</artifactId>
-  <version>1.28.0-SNAPSHOT</version>
+  <version>1.28.0</version>
   <name>Apache Commons Compress</name>
   <url>https://commons.apache.org/proper/commons-compress/</url>
   <inceptionYear>2002</inceptionYear> <!-- from NOTICE file -->
@@ -73,7 +73,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <pax.exam.version>4.13.5</pax.exam.version>
     <slf4j.version>2.0.16</slf4j.version>
     <!-- project.build.outputTimestamp is managed by Maven plugins, see https://maven.apache.org/guides/mini/guide-reproducible-builds.html -->
-    <project.build.outputTimestamp>2024-08-20T11:00:46Z</project.build.outputTimestamp>
+    <project.build.outputTimestamp>2025-07-26T20:38:15Z</project.build.outputTimestamp>
     <!-- spdx 0.6.0 can require Java 11 depending on undocumented behavior which kicks in for us here. -->
     <commons.spdx.version>0.5.5</commons.spdx.version>
     <!-- JaCoCo: Don't make code coverage worse than: -->
