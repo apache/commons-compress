@@ -59,10 +59,6 @@ public final class TimeUtils {
     /**
      * Tests whether a FileTime can be safely represented in the standard Unix time.
      *
-     * <p>
-     * TODO ? If the FileTime is null, this method always returns true.
-     * </p>
-     *
      * @param time the FileTime to evaluate, can be null.
      * @return true if the time exceeds the minimum or maximum Unix time, false otherwise.
      * @deprecated use {@link FileTimes#isUnixTime(FileTime)}

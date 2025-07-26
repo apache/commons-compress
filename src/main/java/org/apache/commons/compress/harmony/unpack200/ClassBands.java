@@ -533,7 +533,7 @@ public class ClassBands extends BandSet {
      * @param in             TODO
      * @param classAttrCalls TODO
      * @return the number of backwards callables.
-     * @throws Pack200Exception TODO
+     * @throws Pack200Exception If a Pack200 semantic error occurs.
      * @throws IOException      If an I/O error occurs.
      */
     private int parseClassMetadataBands(final InputStream in, final int[] classAttrCalls) throws Pack200Exception, IOException {

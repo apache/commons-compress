@@ -174,28 +174,28 @@ public abstract class Codec {
     /**
      * Encodes a single value into a sequence of bytes. Note that this method can only be used for non-delta encodings.
      *
-     * @param value the value to encode
-     * @return the encoded bytes
-     * @throws Pack200Exception TODO
+     * @param value the value to encode.
+     * @return the encoded bytes.
+     * @throws Pack200Exception If a Pack200 semantic error occurs.
      */
     public abstract byte[] encode(int value) throws Pack200Exception;
 
     /**
      * Encodes a single value into a sequence of bytes.
      *
-     * @param value the value to encode
-     * @param last  the previous value encoded (for delta encodings)
-     * @return the encoded bytes
-     * @throws Pack200Exception TODO
+     * @param value the value to encode.
+     * @param last  the previous value encoded (for delta encodings).
+     * @return the encoded bytes.
+     * @throws Pack200Exception If a Pack200 semantic error occurs.
      */
     public abstract byte[] encode(int value, int last) throws Pack200Exception;
 
     /**
-     * Encodes a sequence of integers into a byte array
+     * Encodes a sequence of integers into a byte array.
      *
-     * @param ints the values to encode
-     * @return byte[] encoded bytes
-     * @throws Pack200Exception if there is a problem encoding any of the values
+     * @param ints the values to encode.
+     * @return byte[] encoded bytes.
+     * @throws Pack200Exception if there is a problem encoding any of the values.
      */
     public byte[] encode(final int[] ints) throws Pack200Exception {
         int total = 0;

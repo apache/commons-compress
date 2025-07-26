@@ -271,7 +271,7 @@ public class Archive {
     /**
      * Packs the archive.
      *
-     * @throws Pack200Exception TODO
+     * @throws Pack200Exception If a Pack200 semantic error occurs.
      * @throws IOException      If an I/O error occurs.
      */
     public void pack() throws Pack200Exception, IOException {

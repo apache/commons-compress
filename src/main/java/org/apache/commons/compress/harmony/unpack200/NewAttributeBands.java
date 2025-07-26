@@ -686,7 +686,7 @@ public class NewAttributeBands extends BandSet {
      * @param occurrenceCount TODO
      * @return Class file attributes as a List of {@link Attribute}.
      * @throws IOException      If an I/O error occurs.
-     * @throws Pack200Exception TODO
+     * @throws Pack200Exception If a Pack200 semantic error occurs.
      */
     public List<Attribute> parseAttributes(final InputStream in, final int occurrenceCount) throws IOException, Pack200Exception {
         for (final AttributeLayoutElement element : attributeLayoutElements) {

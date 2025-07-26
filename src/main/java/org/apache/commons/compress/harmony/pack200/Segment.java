@@ -562,10 +562,10 @@ public class Segment extends ClassVisitor {
      * The main method on Segment. Reads in all the class files, packs them and then writes the packed segment out to the given OutputStream.
      *
      * @param segmentUnit TODO
-     * @param out         the OutputStream to write the packed Segment to
-     * @param options     packing options
+     * @param out         the OutputStream to write the packed Segment to.
+     * @param options     packing options.
      * @throws IOException      If an I/O error occurs.
-     * @throws Pack200Exception TODO
+     * @throws Pack200Exception If a Pack200 semantic error occurs.
      */
     public void pack(final SegmentUnit segmentUnit, final OutputStream out, final PackingOptions options) throws IOException, Pack200Exception {
         this.options = options;
