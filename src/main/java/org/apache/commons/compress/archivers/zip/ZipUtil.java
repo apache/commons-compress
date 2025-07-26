@@ -196,15 +196,15 @@ public abstract class ZipUtil {
      * If the field is null or the CRCs don't match, return null instead.
      * </p>
      */
-    private static String getUnicodeStringIfOriginalMatches(final AbstractUnicodeExtraField f, final byte[] orig) {
-        if (f != null) {
+    private static String getUnicodeStringIfOriginalMatches(final AbstractUnicodeExtraField field, final byte[] originalNameBytes) {
+        if (field != null) {
             final CRC32 crc32 = new CRC32();
-            crc32.update(orig);
+            crc32.update(originalNameBytes);
             final long origCRC32 = crc32.getValue();
 
-            if (origCRC32 == f.getNameCRC32()) {
+            if (origCRC32 == field.getNameCRC32()) {
                 try {
-                    return ZipEncodingHelper.ZIP_ENCODING_UTF_8.decode(f.getUnicodeName());
+                    return ZipEncodingHelper.ZIP_ENCODING_UTF_8.decode(field.getUnicodeName());
                 } catch (final IOException ignored) {
                     // UTF-8 unsupported? should be impossible the
                     // Unicode*ExtraField must contain some bad bytes
