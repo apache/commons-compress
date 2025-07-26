@@ -1,0 +1,21 @@
+{
+  "@context": "https://openvex.dev/ns/v0.2.0",
+  "id": "https://apache.org/vex/statement-commons-compress-001",
+  "author": "apache.org",
+  "role": "Document Creator",
+  "timestamp": "2025-07-23T11:11:00Z",
+  "version": 1,
+  "statements": [
+    {
+      "vulnerability": {
+        "name": "CVE-2025-48924"
+      },
+      "products": [
+        "pkg:maven/org.apache.commons/commons-compress@1.28.0"
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "timestamp": "2025-07-23T11:11:00Z"
+    }
+  ]
+}
