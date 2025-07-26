@@ -43,13 +43,13 @@ public interface CompressorStreamProvider {
      *                           {@value org.apache.commons.compress.compressors.CompressorStreamFactory#Z} or
      *                           {@value org.apache.commons.compress.compressors.CompressorStreamFactory#DEFLATE}
      * @param in                 the input stream
-     * @param decompressUntilEOF if true, decompress until the end of the input; if false, stop after the first stream and leave the input position to point to
+     * @param decompressUntilEof if true, decompress until the end of the input; if false, stop after the first stream and leave the input position to point to
      *                           the next byte after the stream. This setting applies to the gzip, bzip2 and XZ formats only.
      * @return compressor input stream
      * @throws CompressorException      if the compressor name is not known
      * @throws IllegalArgumentException if the name or input stream is null
      */
-    CompressorInputStream createCompressorInputStream(String name, InputStream in, boolean decompressUntilEOF) throws CompressorException;
+    CompressorInputStream createCompressorInputStream(String name, InputStream in, boolean decompressUntilEof) throws CompressorException;
 
     /**
      * Creates a compressor output stream from a compressor name and an output stream.
