@@ -30,8 +30,8 @@ import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
 
 /**
- * Archive is the main entry point to pack200 and represents a packed archive. An archive is constructed with either a JarInputStream and an output stream or a
- * JarFile as input and an OutputStream. Options can be set, then {@code pack()} is called, to pack the Jar file into a pack200 archive.
+ * Main entry point to pack200 and represents a packed archive. An archive is constructed with either a {@link JarInputStream} and an output stream or a
+ * {@link JarFile} as input and an OutputStream. Options can be set, then {@link #pack()} is called, to pack the Jar file into a pack200 archive.
  */
 public class Archive {
 
@@ -148,11 +148,11 @@ public class Archive {
     private final PackingOptions options;
 
     /**
-     * Creates an Archive with the given input file and a stream for the output
+     * Creates an Archive with the given input file and a stream for the output.
      *
-     * @param jarFile      the input file
-     * @param outputStream TODO
-     * @param options      packing options (if null then defaults are used)
+     * @param jarFile      the input file.
+     * @param outputStream target output stream for the compressed data.
+     * @param options      packing options (if null then defaults are used).
      * @throws IOException If an I/O error occurs.
      */
     public Archive(final JarFile jarFile, OutputStream outputStream, PackingOptions options) throws IOException {
@@ -165,16 +165,16 @@ public class Archive {
         }
         this.outputStream = new BufferedOutputStream(outputStream);
         this.jarFile = jarFile;
-        jarInputStream = null;
+        this.jarInputStream = null;
         PackingUtils.config(options);
     }
 
     /**
      * Creates an Archive with streams for the input and output.
      *
-     * @param inputStream  TODO
-     * @param outputStream TODO
-     * @param options      packing options (if null then defaults are used)
+     * @param inputStream  input stream of uncompressed JAR data.
+     * @param outputStream target output stream for the compressed data.
+     * @param options      packing options (if null then defaults are used).
      * @throws IOException If an I/O error occurs.
      */
     public Archive(final JarInputStream inputStream, OutputStream outputStream, PackingOptions options) throws IOException {
