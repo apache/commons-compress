@@ -80,6 +80,8 @@ public class LZ77Compressor {
 
     /**
      * Represents a back-reference.
+     *
+     * @since 1.28.0
      */
     public abstract static class AbstractReference extends Block {
 

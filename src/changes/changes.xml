@@ -44,6 +44,7 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
     <release version="1.28.1" date="YYYY-MM-DD" description="This is a feature and maintenance release. Java 8 or later is required.">
       <!-- FIX -->
+      <action type="fix" dev="ggregory" due-to="Piotr P. Karwasz, Gary Gregory">Add missing Javadoc @since tag to org.apache.commons.compress.compressors.lz77support.LZ77Compressor.AbstractReference.</action>
       <!-- ADD -->
       <!-- UPDATE -->
     </release>
