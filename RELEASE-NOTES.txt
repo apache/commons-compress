@@ -10,6 +10,8 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
 
 This is a feature and maintenance release. Java 8 or later is required.
 
+This release updates Apache Commons Lang to 3.18.0 to pick up the fix for CVE-2025-48924 (https://nvd.nist.gov/vuln/detail/CVE-2025-48924), but is not affected by it.
+
 Changes in this version
 -----------------------
 
