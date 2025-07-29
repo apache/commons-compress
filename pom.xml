@@ -42,9 +42,9 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <commons.jira.id>COMPRESS</commons.jira.id>
     <commons.jira.pid>12310904</commons.jira.pid>
     <!-- configuration bits for cutting a release candidate -->
-    <commons.release.version>1.28.0</commons.release.version>
-    <commons.release.next>1.28.1</commons.release.next>
-    <commons.bc.version>1.27.1</commons.bc.version>
+    <commons.release.version>1.28.1</commons.release.version>
+    <commons.release.next>1.28.2</commons.release.next>
+    <commons.bc.version>1.28.0</commons.bc.version>
     <commons.rc.version>RC1</commons.rc.version>
     <commons.release.isDistModule>true</commons.release.isDistModule>
     <commons.distSvnStagingUrl>scm:svn:https://dist.apache.org/repos/dist/dev/commons/${commons.componentid}</commons.distSvnStagingUrl>
