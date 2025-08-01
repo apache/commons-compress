@@ -874,6 +874,7 @@ public class SevenZFile implements Closeable {
                     .setChecksum(new CRC32())
                     .setInputStream(fileStream)
                     .setExpectedChecksumValue(file.getCrcValue())
+                    .setCountThreshold(file.getSize())
                     .get();
             // @formatter:on
         }
