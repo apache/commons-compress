@@ -49,6 +49,7 @@ import java.util.zip.ZipException;
 
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.utils.ByteUtils;
@@ -278,11 +279,11 @@ class ZipArchiveInputStreamTest extends AbstractTest {
         try (ByteArrayInputStream in = new ByteArrayInputStream(content);
                 ZipArchiveInputStream archive = new ZipArchiveInputStream(in)) {
             assertNotNull(archive.getNextEntry());
-            final IOException ex1 = assertThrows(IOException.class, () -> IOUtils.toByteArray(archive), "expected exception");
+            final IOException ex1 = assertThrows(ArchiveException.class, () -> IOUtils.toByteArray(archive), "expected exception");
             assertEquals("Truncated ZIP file", ex1.getMessage());
-            final IOException ex2 = assertThrows(IOException.class, () -> archive.read(buf), "expected exception");
+            final IOException ex2 = assertThrows(ArchiveException.class, () -> archive.read(buf), "expected exception");
             assertEquals("Truncated ZIP file", ex2.getMessage());
-            final IOException ex3 = assertThrows(IOException.class, () -> archive.read(buf), "expected exception");
+            final IOException ex3 = assertThrows(ArchiveException.class, () -> archive.read(buf), "expected exception");
             assertEquals("Truncated ZIP file", ex3.getMessage());
         }
     }
@@ -527,11 +528,11 @@ class ZipArchiveInputStreamTest extends AbstractTest {
         try (ByteArrayInputStream in = new ByteArrayInputStream(content);
                 ZipArchiveInputStream archive = new ZipArchiveInputStream(in)) {
             assertNotNull(archive.getNextEntry());
-            final IOException ex1 = assertThrows(IOException.class, () -> IOUtils.toByteArray(archive), "expected exception");
+            final IOException ex1 = assertThrows(ArchiveException.class, () -> IOUtils.toByteArray(archive), "expected exception");
             assertEquals("Truncated ZIP file", ex1.getMessage());
-            final IOException ex2 = assertThrows(IOException.class, archive::read, "expected exception");
+            final IOException ex2 = assertThrows(ArchiveException.class, archive::read, "expected exception");
             assertEquals("Truncated ZIP file", ex2.getMessage());
-            final IOException ex3 = assertThrows(IOException.class, archive::read, "expected exception");
+            final IOException ex3 = assertThrows(ArchiveException.class, archive::read, "expected exception");
             assertEquals("Truncated ZIP file", ex3.getMessage());
         }
     }

@@ -35,6 +35,7 @@ import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.compress.AbstractTempDirTest;
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -94,7 +95,7 @@ class ZipIoUtilTest extends AbstractTempDirTest {
                 ((ByteBuffer) answer.getArgument(0)).position(3);
                 return 3;
             }).thenAnswer(answer -> 0).thenAnswer(answer -> -1);
-            assertThrows(IOException.class, () -> ZipIoUtil.writeAll(channel, ByteBuffer.wrap("hello".getBytes(StandardCharsets.UTF_8))));
+            assertThrows(ArchiveException.class, () -> ZipIoUtil.writeAll(channel, ByteBuffer.wrap("hello".getBytes(StandardCharsets.UTF_8))));
             verify(channel, times(3)).write((ByteBuffer) any());
         }
     }
@@ -148,7 +149,7 @@ class ZipIoUtilTest extends AbstractTempDirTest {
                 return 3;
             });
             when(channel.write((ByteBuffer) any(), eq(23L))).thenAnswer(answer -> 0).thenAnswer(answer -> -1);
-            assertThrows(IOException.class, () -> ZipIoUtil.writeAll(channel, ByteBuffer.wrap("hello".getBytes(StandardCharsets.UTF_8)), 20));
+            assertThrows(ArchiveException.class, () -> ZipIoUtil.writeAll(channel, ByteBuffer.wrap("hello".getBytes(StandardCharsets.UTF_8)), 20));
             verify(channel, times(1)).write((ByteBuffer) any(), eq(20L));
             verify(channel, times(2)).write((ByteBuffer) any(), eq(23L));
             verify(channel, times(0)).write((ByteBuffer) any(), eq(25L));

@@ -32,6 +32,7 @@ import java.util.zip.DeflaterOutputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 import org.apache.commons.compress.compressors.deflate64.Deflate64CompressorInputStream;
@@ -60,7 +61,7 @@ final class Coders {
             try {
                 return opts.getInputStream(in);
             } catch (final AssertionError e) {
-                throw new IOException("BCJ filter used in " + archiveName
+                throw new ArchiveException("BCJ filter used in " + archiveName
                         + " needs XZ for Java > 1.4 - see https://commons.apache.org/proper/commons-compress/limitations.html#7Z", e);
             }
         }
@@ -227,7 +228,7 @@ final class Coders {
             final int maxMemoryLimitKiB) throws IOException {
         final AbstractCoder cb = findByMethod(SevenZMethod.byId(coder.decompressionMethodId));
         if (cb == null) {
-            throw new IOException("Unsupported compression method " + Arrays.toString(coder.decompressionMethodId) + " used in " + archiveName);
+            throw new ArchiveException("Unsupported compression method " + Arrays.toString(coder.decompressionMethodId) + " used in " + archiveName);
         }
         return cb.decode(archiveName, is, uncompressedLength, coder, password, maxMemoryLimitKiB);
     }
@@ -235,7 +236,7 @@ final class Coders {
     static OutputStream addEncoder(final OutputStream out, final SevenZMethod method, final Object options) throws IOException {
         final AbstractCoder cb = findByMethod(method);
         if (cb == null) {
-            throw new IOException("Unsupported compression method " + method);
+            throw new ArchiveException("Unsupported compression method " + method);
         }
         return cb.encode(out, options);
     }

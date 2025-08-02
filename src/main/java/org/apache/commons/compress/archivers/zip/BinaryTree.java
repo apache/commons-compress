@@ -23,6 +23,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.lang3.ArrayFill;
 
@@ -49,7 +50,7 @@ final class BinaryTree {
         // the first byte contains the size of the structure minus one
         final int size = inputStream.read() + 1;
         if (size == 0) {
-            throw new IOException("Cannot read the size of the encoded tree, unexpected end of stream");
+            throw new ArchiveException("Cannot read the size of the encoded tree, unexpected end of stream");
         }
 
         final byte[] encodedTree = IOUtils.readRange(inputStream, size);
@@ -66,7 +67,7 @@ final class BinaryTree {
             // each byte encodes the number of values (upper 4 bits) for a bit length (lower 4 bits)
             final int numberOfValues = ((b & 0xF0) >> 4) + 1;
             if (pos + numberOfValues > totalNumberOfValues) {
-                throw new IOException("Number of values exceeds given total number of values");
+                throw new ArchiveException("Number of values exceeds given total number of values");
             }
             final int bitLength = (b & 0x0F) + 1;
 
@@ -192,7 +193,7 @@ final class BinaryTree {
             } else if (value != UNDEFINED) {
                 return value;
             } else {
-                throw new IOException("The child " + bit + " of node at index " + currentIndex + " is not defined");
+                throw new ArchiveException("The child " + bit + " of node at index " + currentIndex + " is not defined");
             }
         }
     }

@@ -43,6 +43,7 @@ import java.util.Iterator;
 
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.PasswordRequiredException;
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.apache.commons.compress.utils.TimeUtilsTest;
@@ -216,7 +217,7 @@ class SevenZOutputFileTest extends AbstractTest {
         final File output = newTempFile("finish.7z");
         try (SevenZOutputFile outArchive = new SevenZOutputFile(output)) {
             outArchive.finish();
-            final IOException ex = assertThrows(IOException.class, outArchive::finish, "shouldn't be able to call finish twice");
+            final IOException ex = assertThrows(ArchiveException.class, outArchive::finish, "shouldn't be able to call finish twice");
             assertEquals("This archive has already been finished", ex.getMessage());
         }
     }

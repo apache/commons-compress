@@ -25,6 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.IOUtils;
@@ -219,7 +220,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
      */
     private String getExtendedName(final int offset) throws IOException {
         if (namebuffer == null) {
-            throw new IOException("Cannot process GNU long file name as no // record was found");
+            throw new ArchiveException("Cannot process GNU long file name as no // record was found");
         }
         for (int i = offset; i < namebuffer.length; i++) {
             if (namebuffer[i] == '\012' || namebuffer[i] == 0) {
@@ -237,7 +238,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
                 break;
             }
         }
-        throw new IOException("Failed to read entry: " + offset);
+        throw new ArchiveException("Failed to read entry: " + offset);
     }
 
     /**
@@ -261,10 +262,10 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
             final int read = realized.length;
             trackReadBytes(read);
             if (read != expected.length) {
-                throw new IOException("Failed to read header. Occurred at byte: " + getBytesRead());
+                throw new ArchiveException("Failed to read header. Occurred at byte: " + getBytesRead());
             }
             if (!Arrays.equals(expected, realized)) {
-                throw new IOException("Invalid header " + ArchiveUtils.toAsciiString(realized));
+                throw new ArchiveException("Invalid header " + ArchiveUtils.toAsciiString(realized));
             }
         }
         if (offset % 2 != 0) {
@@ -281,7 +282,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
                 return null;
             }
             if (read < metaData.length) {
-                throw new IOException("Truncated ar archive");
+                throw new ArchiveException("Truncated ar archive");
             }
         }
         {
@@ -290,10 +291,10 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
             final int read = realized.length;
             trackReadBytes(read);
             if (read != expected.length) {
-                throw new IOException("Failed to read entry trailer. Occurred at byte: " + getBytesRead());
+                throw new ArchiveException("Failed to read entry trailer. Occurred at byte: " + getBytesRead());
             }
             if (!Arrays.equals(expected, realized)) {
-                throw new IOException("Invalid entry trailer. not read the content? Occurred at byte: " + getBytesRead());
+                throw new ArchiveException("Invalid entry trailer. not read the content? Occurred at byte: " + getBytesRead());
             }
         }
 
@@ -309,7 +310,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
         try {
             len = asLong(metaData, LENGTH_OFFSET, LENGTH_LEN);
         } catch (final NumberFormatException ex) {
-            throw new IOException("Broken archive, unable to parse ar_size field as a number", ex);
+            throw new ArchiveException("Broken archive, unable to parse ar_size field as a number", ex);
         }
         if (temp.endsWith("/")) { // GNU terminator
             temp = temp.substring(0, temp.length() - 1);
@@ -326,7 +327,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
             entryOffset += nameLen;
         }
         if (len < 0) {
-            throw new IOException("Broken archive, entry with negative size");
+            throw new ArchiveException("Broken archive, entry with negative size");
         }
         try {
             currentEntry = new ArArchiveEntry(temp, len, asInt(metaData, USER_ID_OFFSET, USER_ID_LEN, true),
@@ -334,7 +335,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
                     asLong(metaData, LAST_MODIFIED_OFFSET, LAST_MODIFIED_LEN));
             return currentEntry;
         } catch (final NumberFormatException ex) {
-            throw new IOException("Broken archive, unable to parse entry metadata fields as numbers", ex);
+            throw new ArchiveException("Broken archive, unable to parse entry metadata fields as numbers", ex);
         }
     }
 
@@ -390,13 +391,13 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
         try {
             bufflen = asInt(length, offset, len); // Assume length will fit in an int
         } catch (final NumberFormatException ex) {
-            throw new IOException("Broken archive, unable to parse GNU string table length field as a number", ex);
+            throw new ArchiveException("Broken archive, unable to parse GNU string table length field as a number", ex);
         }
         namebuffer = IOUtils.readRange(in, bufflen);
         final int read = namebuffer.length;
         trackReadBytes(read);
         if (read != bufflen) {
-            throw new IOException("Failed to read complete // record: expected=" + bufflen + " read=" + read);
+            throw new ArchiveException("Failed to read complete // record: expected=" + bufflen + " read=" + read);
         }
         return new ArArchiveEntry(GNU_STRING_TABLE_NAME, bufflen);
     }

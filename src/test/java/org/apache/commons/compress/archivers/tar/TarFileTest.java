@@ -42,6 +42,7 @@ import java.util.TimeZone;
 import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.compress.AbstractTest;
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
@@ -198,12 +199,12 @@ class TarFileTest extends AbstractTest {
 
     @Test
     void testParseTarWithNonNumberPaxHeaders() {
-        assertThrows(IOException.class, () -> new TarFile(getPath("COMPRESS-529-fail.tar")));
+        assertThrows(ArchiveException.class, () -> new TarFile(getPath("COMPRESS-529-fail.tar")));
     }
 
     @Test
     void testParseTarWithSpecialPaxHeaders() {
-        assertThrows(IOException.class, () -> new TarFile(getPath("COMPRESS-530-fail.tar")));
+        assertThrows(ArchiveException.class, () -> new TarFile(getPath("COMPRESS-530-fail.tar")));
     }
 
     @Test
@@ -223,7 +224,7 @@ class TarFileTest extends AbstractTest {
 
     @Test
     void testRejectsArchivesWithNegativeSizes() throws Exception {
-        assertThrows(IOException.class, () -> new TarFile(getFile("COMPRESS-569-fail.tar")));
+        assertThrows(ArchiveException.class, () -> new TarFile(getFile("COMPRESS-569-fail.tar")));
     }
 
     @Test
@@ -340,12 +341,12 @@ class TarFileTest extends AbstractTest {
 
     @Test
     void testThrowException() {
-        assertThrows(IOException.class, () -> new TarFile(getPath("COMPRESS-553-fail.tar")));
+        assertThrows(ArchiveException.class, () -> new TarFile(getPath("COMPRESS-553-fail.tar")));
     }
 
     @Test
     void testThrowExceptionWithNullEntry() {
-        assertThrows(IOException.class, () -> new TarFile(getPath("COMPRESS-554-fail.tar")));
+        assertThrows(ArchiveException.class, () -> new TarFile(getPath("COMPRESS-554-fail.tar")));
     }
 
     @Test

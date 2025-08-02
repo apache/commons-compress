@@ -86,7 +86,7 @@ public final class TarTest extends AbstractTest {
         final File input = getFile("COMPRESS-178-fail.tar");
         try (InputStream is = Files.newInputStream(input.toPath());
                 ArchiveInputStream<?> in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("tar", is)) {
-            final IOException e = assertThrows(IOException.class, in::getNextEntry, "Expected IOException");
+            final IOException e = assertThrows(ArchiveException.class, in::getNextEntry, "Expected IOException");
             final Throwable t = e.getCause();
             assertInstanceOf(IllegalArgumentException.class, t, "Expected cause = IllegalArgumentException");
         }
@@ -303,7 +303,7 @@ public final class TarTest extends AbstractTest {
     @Test
     void testTarFileCOMPRESS178() throws Exception {
         final File input = getFile("COMPRESS-178-fail.tar");
-        final IOException e = assertThrows(IOException.class, () -> {
+        final IOException e = assertThrows(ArchiveException.class, () -> {
             try (TarFile tarFile = new TarFile(input)) {
                 // Compared to the TarArchiveInputStream all entries are read when instantiating the tar file
             }

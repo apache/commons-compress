@@ -80,7 +80,7 @@ class TarArchiveInputStreamTest extends AbstractTest {
     }
 
     private void getNextEntryUntilIOException(final TarArchiveInputStream archive) {
-        assertThrows(IOException.class, () -> archive.forEach(IOConsumer.noop()));
+        assertThrows(ArchiveException.class, () -> archive.forEach(IOConsumer.noop()));
     }
 
     @SuppressWarnings("resource") // Caller closes
@@ -304,7 +304,7 @@ class TarArchiveInputStreamTest extends AbstractTest {
     void testParseTarWithNonNumberPaxHeaders() throws IOException {
         try (InputStream in = newInputStream("COMPRESS-529-fail.tar");
                 TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
-            assertThrows(IOException.class, () -> archive.getNextEntry());
+            assertThrows(ArchiveException.class, () -> archive.getNextEntry());
         }
     }
 
@@ -312,8 +312,8 @@ class TarArchiveInputStreamTest extends AbstractTest {
     void testParseTarWithSpecialPaxHeaders() throws IOException {
         try (InputStream in = newInputStream("COMPRESS-530-fail.tar");
                 TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
-            assertThrows(IOException.class, () -> archive.getNextEntry());
-            assertThrows(IOException.class, () -> IOUtils.toByteArray(archive));
+            assertThrows(ArchiveException.class, () -> archive.getNextEntry());
+            assertThrows(ArchiveException.class, () -> IOUtils.toByteArray(archive));
         }
     }
 
@@ -399,7 +399,7 @@ class TarArchiveInputStreamTest extends AbstractTest {
     void testShouldThrowAnExceptionOnTruncatedEntries() throws Exception {
         final Path dir = createTempDirectory("COMPRESS-279");
         try (TarArchiveInputStream is = getTestStream("/COMPRESS-279-fail.tar")) {
-            assertThrows(IOException.class, () -> {
+            assertThrows(ArchiveException.class, () -> {
                 TarArchiveEntry entry = is.getNextTarEntry();
                 int count = 0;
                 while (entry != null) {
@@ -416,7 +416,7 @@ class TarArchiveInputStreamTest extends AbstractTest {
         final Path dir = createTempDirectory("COMPRESS-279");
         try (TarArchiveInputStream is = getTestStream("/COMPRESS-279-fail.tar")) {
             final AtomicInteger count = new AtomicInteger();
-            assertThrows(IOException.class, () -> is.forEach(entry -> Files.copy(is, dir.resolve(String.valueOf(count.getAndIncrement())))));
+            assertThrows(ArchiveException.class, () -> is.forEach(entry -> Files.copy(is, dir.resolve(String.valueOf(count.getAndIncrement())))));
         }
     }
 

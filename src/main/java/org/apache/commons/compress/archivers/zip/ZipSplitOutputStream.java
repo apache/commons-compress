@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
 
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.io.file.PathUtils;
 
 /**
@@ -104,7 +105,7 @@ final class ZipSplitOutputStream extends RandomAccessOutputStream {
 
     public long calculateDiskPosition(final long disk, final long localOffset) throws IOException {
         if (disk >= Integer.MAX_VALUE) {
-            throw new IOException("Disk number exceeded internal limits: limit=" + Integer.MAX_VALUE + " requested=" + disk);
+            throw new ArchiveException("Disk number exceeded internal limits: limit=" + Integer.MAX_VALUE + " requested=" + disk);
         }
         return diskToPosition.get((int) disk) + localOffset;
     }
@@ -138,7 +139,7 @@ final class ZipSplitOutputStream extends RandomAccessOutputStream {
         final Path newFile = getSplitSegmentFileName(zipSplitSegmentSuffixIndex);
 
         if (Files.exists(newFile)) {
-            throw new IOException("Split ZIP segment " + newFile + " already exists");
+            throw new ArchiveException("Split ZIP segment " + newFile + " already exists");
         }
         return newFile;
     }
@@ -150,7 +151,7 @@ final class ZipSplitOutputStream extends RandomAccessOutputStream {
      */
     private void finish() throws IOException {
         if (finished) {
-            throw new IOException("This archive has already been finished");
+            throw new ArchiveException("This archive has already been finished");
         }
         final Path path = zipFile;
 

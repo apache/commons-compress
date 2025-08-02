@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -44,7 +45,7 @@ class SevenZAES256SHA256DecoderTest {
             byteArray[1] = (byte) -72;
             final Coder coder = new Coder(null, 0, 0, byteArray);
             try (InputStream inputStream = aES256SHA256Decoder.decode("x", bufferedInputStream, 3138, coder, coder.properties, Integer.MAX_VALUE)) {
-                final IOException e = assertThrows(IOException.class, () -> new ObjectInputStream(inputStream), "Expecting exception: IOException");
+                final IOException e = assertThrows(ArchiveException.class, () -> new ObjectInputStream(inputStream), "Expecting exception: IOException");
                 assertEquals("Salt size + IV size too long in x", e.getMessage());
                 assertEquals("org.apache.commons.compress.archivers.sevenz.AES256SHA256Decoder$AES256SHA256DecoderInputStream",
                         e.getStackTrace()[0].getClassName());

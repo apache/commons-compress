@@ -22,8 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.io.IOException;
-
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.junit.jupiter.api.Test;
 
 class DumpArchiveUtilTest {
@@ -45,7 +44,7 @@ class DumpArchiveUtilTest {
 
     @Test
     void testDecodeInvalidArguments() {
-        assertThrows(IOException.class, () -> DumpArchiveUtil.decode(null, new byte[10], 10, -1));
+        assertThrows(ArchiveException.class, () -> DumpArchiveUtil.decode(null, new byte[10], 10, -1));
     }
 
     @Test

@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.apache.commons.compress.MemoryLimitException;
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.FlushShieldFilterOutputStream;
 import org.tukaani.xz.LZMA2Options;
@@ -39,15 +40,15 @@ final class LZMADecoder extends AbstractCoder {
     InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength, final Coder coder, final byte[] password,
             final int maxMemoryLimitKiB) throws IOException {
         if (coder.properties == null) {
-            throw new IOException("Missing LZMA properties");
+            throw new ArchiveException("Missing LZMA properties");
         }
         if (coder.properties.length < 1) {
-            throw new IOException("LZMA properties too short");
+            throw new ArchiveException("LZMA properties too short");
         }
         final byte propsByte = coder.properties[0];
         final int dictSize = getDictionarySize(coder);
         if (dictSize > LZMAInputStream.DICT_SIZE_MAX) {
-            throw new IOException("Dictionary larger than 4 GiB maximum size used in " + archiveName);
+            throw new ArchiveException("Dictionary larger than 4 GiB maximum size used in " + archiveName);
         }
         final int memoryUsageInKiB = LZMAInputStream.getMemoryUsage(dictSize, propsByte);
         if (memoryUsageInKiB > maxMemoryLimitKiB) {
@@ -91,10 +92,10 @@ final class LZMADecoder extends AbstractCoder {
     @Override
     Object getOptionsFromCoder(final Coder coder, final InputStream in) throws IOException {
         if (coder.properties == null) {
-            throw new IOException("Missing LZMA properties");
+            throw new ArchiveException("Missing LZMA properties");
         }
         if (coder.properties.length < 1) {
-            throw new IOException("LZMA properties too short");
+            throw new ArchiveException("LZMA properties too short");
         }
         final byte propsByte = coder.properties[0];
         int props = propsByte & 0xFF;

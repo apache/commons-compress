@@ -42,6 +42,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.deflate64.Deflate64CompressorInputStream;
@@ -470,7 +471,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
      */
     private void closeEntry() throws IOException {
         if (closed) {
-            throw new IOException("The stream is closed");
+            throw new ArchiveException("The stream is closed");
         }
         if (current == null) {
             return;
@@ -552,7 +553,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
 
     private int fill() throws IOException {
         if (closed) {
-            throw new IOException("The stream is closed");
+            throw new ArchiveException("The stream is closed");
         }
         final int length = in.read(buf.array());
         if (length > 0) {
@@ -780,7 +781,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
                         current.inputStream = new ExplodingInputStream(current.entry.getGeneralPurposeBit().getSlidingDictionarySize(),
                                 current.entry.getGeneralPurposeBit().getNumberOfShannonFanoTrees(), bis);
                     } catch (final IllegalArgumentException ex) {
-                        throw new IOException("Bad IMPLODE data", ex);
+                        throw new ArchiveException("Bad IMPLODE data", ex);
                     }
                     break;
                 case BZIP2:
@@ -912,7 +913,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     private void pushback(final byte[] buf, final int offset, final int length) throws IOException {
         if (offset < 0) {
             // Instead of ArrayIndexOutOfBoundsException
-            throw new IOException(String.format("Negative offset %,d into buffer", offset));
+            throw new ArchiveException(String.format("Negative offset %,d into buffer", offset));
         }
         ((PushbackInputStream) in).unread(buf, offset, length);
         pushedBackBytes(length);
@@ -924,7 +925,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
             return 0;
         }
         if (closed) {
-            throw new IOException("The stream is closed");
+            throw new ArchiveException("The stream is closed");
         }
 
         if (current == null) {
@@ -1029,7 +1030,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
                 throw new ZipException("This archive needs a preset dictionary which is not supported by Commons Compress.");
             }
             if (read == -1) {
-                throw new IOException("Truncated ZIP file");
+                throw new ArchiveException("Truncated ZIP file");
             }
         }
         return read;
@@ -1185,7 +1186,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
             final int l = in.read(buf.array());
             if (l == -1) {
                 buf.limit(0);
-                throw new IOException("Truncated ZIP file");
+                throw new ArchiveException("Truncated ZIP file");
             }
             buf.limit(l);
 
@@ -1230,7 +1231,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
             if (r <= 0) {
                 // read the whole archive without ever finding a
                 // central directory
-                throw new IOException("Truncated ZIP file");
+                throw new ArchiveException("Truncated ZIP file");
             }
             if (r + off < 4) {
                 // buffer too small to check for a signature, loop
@@ -1339,7 +1340,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
                 return;
             }
         }
-        throw new IOException("Truncated ZIP file");
+        throw new ArchiveException("Truncated ZIP file");
     }
 
     /**

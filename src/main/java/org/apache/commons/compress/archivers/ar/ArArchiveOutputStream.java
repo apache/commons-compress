@@ -24,6 +24,7 @@ import java.io.OutputStream;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 
 /**
@@ -61,7 +62,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
 
     private String checkLength(final String value, final int max, final String name) throws IOException {
         if (value.length() > max) {
-            throw new IOException(name + " too long");
+            throw new ArchiveException(name + " too long");
         }
         return value;
     }
@@ -85,7 +86,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
     public void closeArchiveEntry() throws IOException {
         checkFinished();
         if (prevEntry == null || !prevEntryOpen) {
-            throw new IOException("No current entry to close");
+            throw new ArchiveException("No current entry to close");
         }
         if ((headerPlus + entryOffset) % 2 != 0) {
             out.write(PAD); // Pad byte
@@ -113,7 +114,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
     @Override
     public void finish() throws IOException {
         if (prevEntryOpen) {
-            throw new IOException("This archive contains unclosed entries.");
+            throw new ArchiveException("This archive contains unclosed entries.");
         }
         checkFinished();
         super.finish();
@@ -136,7 +137,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
             writeArchiveHeader();
         } else {
             if (prevEntry.getLength() != entryOffset) {
-                throw new IOException("Length does not match entry (" + prevEntry.getLength() + " != " + entryOffset);
+                throw new ArchiveException("Length does not match entry (" + prevEntry.getLength() + " != " + entryOffset);
             }
             if (prevEntryOpen) {
                 closeArchiveEntry();
@@ -180,13 +181,13 @@ public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
         final String eName = entry.getName();
         final int nLength = eName.length();
         if (LONGFILE_ERROR == longFileMode && nLength > 16) {
-            throw new IOException("File name too long, > 16 chars: " + eName);
+            throw new ArchiveException("File name too long, > 16 chars: " + eName);
         }
         if (LONGFILE_BSD == longFileMode && (nLength > 16 || eName.indexOf(SPACE) > -1)) {
             appendName = true;
             final String fileNameLen = ArArchiveInputStream.BSD_LONGNAME_PREFIX + nLength;
             if (fileNameLen.length() > 16) {
-                throw new IOException("File length too long, > 16 chars: " + eName);
+                throw new ArchiveException("File length too long, > 16 chars: " + eName);
             }
             offset += write(fileNameLen);
         } else {

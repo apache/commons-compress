@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.utils.ExactMath;
 import org.apache.commons.compress.utils.IOUtils;
 
@@ -176,7 +177,7 @@ final class TapeInputStream extends FilterInputStream {
      */
     private void readBlock(final boolean decompress) throws IOException {
         if (in == null) {
-            throw new IOException("Input buffer is closed");
+            throw new ArchiveException("Input buffer is closed");
         }
 
         if (!isCompressed || currBlkIdx == -1) {
@@ -291,11 +292,11 @@ final class TapeInputStream extends FilterInputStream {
         this.isCompressed = isCompressed;
 
         if (recsPerBlock < 1) {
-            throw new IOException("Block with " + recsPerBlock + " records found, must be at least 1");
+            throw new ArchiveException("Block with " + recsPerBlock + " records found, must be at least 1");
         }
         blockSize = RECORD_SIZE * recsPerBlock;
         if (blockSize < 1) {
-            throw new IOException("Block size cannot be less than or equal to 0: " + blockSize);
+            throw new ArchiveException("Block size cannot be less than or equal to 0: " + blockSize);
         }
 
         // save first block in case we need it again

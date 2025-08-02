@@ -34,6 +34,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.ArchiveUtils;
@@ -62,7 +63,7 @@ public class TarFile implements Closeable {
         BoundedTarEntryInputStream(final TarArchiveEntry entry, final SeekableByteChannel channel) throws IOException {
             super(entry.getDataOffset(), entry.getRealSize());
             if (channel.size() - entry.getSize() < entry.getDataOffset()) {
-                throw new IOException("Entry size exceeds archive size");
+                throw new ArchiveException("Entry size exceeds archive size");
             }
             this.entry = entry;
             this.channel = channel;
@@ -83,7 +84,7 @@ public class TarFile implements Closeable {
 
             if (totalRead == -1) {
                 if (buf.array().length > 0) {
-                    throw new IOException("Truncated TAR archive");
+                    throw new ArchiveException("Truncated TAR archive");
                 }
                 setAtEOF(true);
             } else {
@@ -346,7 +347,7 @@ public class TarFile implements Closeable {
             final long zeroBlockSize = sparseHeader.getOffset() - offset;
             if (zeroBlockSize < 0) {
                 // sparse header says to move backwards inside the extracted entry
-                throw new IOException("Corrupted struct sparse detected");
+                throw new ArchiveException("Corrupted struct sparse detected");
             }
             // only store the zero block if it is not empty
             if (zeroBlockSize > 0) {
@@ -358,7 +359,7 @@ public class TarFile implements Closeable {
                 final long start = currEntry.getDataOffset() + sparseHeader.getOffset() - numberOfZeroBytesInSparseEntry;
                 if (start + sparseHeader.getNumbytes() < start) {
                     // possible integer overflow
-                    throw new IOException("Unreadable TAR archive, sparse block offset or length too big");
+                    throw new ArchiveException("Unreadable TAR archive, sparse block offset or length too big");
                 }
                 streams.add(new BoundedSeekableByteChannelInputStream(start, sparseHeader.getNumbytes(), archive));
             }
@@ -403,7 +404,7 @@ public class TarFile implements Closeable {
         try {
             return new BoundedTarEntryInputStream(entry, archive);
         } catch (final RuntimeException ex) {
-            throw new IOException("Corrupted TAR archive. Can't read entry", ex);
+            throw new ArchiveException("Corrupted TAR archive. Can't read entry", ex);
         }
     }
 
@@ -470,7 +471,7 @@ public class TarFile implements Closeable {
             final long position = archive.position();
             currEntry = new TarArchiveEntry(globalPaxHeaders, headerBuf.array(), zipEncoding, lenient, position);
         } catch (final IllegalArgumentException e) {
-            throw new IOException("Error detected parsing the header", e);
+            throw new ArchiveException("Error detected parsing the header", e);
         }
 
         if (currEntry.isGNULongLinkEntry()) {
@@ -512,7 +513,7 @@ public class TarFile implements Closeable {
                 applyPaxHeadersToCurrentEntry(globalPaxHeaders, globalSparseHeaders);
             }
         } catch (final NumberFormatException e) {
-            throw new IOException("Error detected parsing the pax header", e);
+            throw new ArchiveException("Error detected parsing the pax header", e);
         }
 
         if (currEntry.isOldGNUSparse()) { // Process sparse files
@@ -605,7 +606,7 @@ public class TarFile implements Closeable {
         }
         getNextTarEntry(); // Get the actual file entry
         if (currEntry == null) {
-            throw new IOException("Premature end of tar archive. Didn't find any entry after PAX header.");
+            throw new ArchiveException("Premature end of tar archive. Didn't find any entry after PAX header.");
         }
         applyPaxHeadersToCurrentEntry(headers, sparseHeaders);
 
@@ -631,7 +632,7 @@ public class TarFile implements Closeable {
         getNextTarEntry(); // Get the actual file entry
 
         if (currEntry == null) {
-            throw new IOException("Error detected parsing the pax header");
+            throw new ArchiveException("Error detected parsing the pax header");
         }
     }
 
@@ -646,7 +647,7 @@ public class TarFile implements Closeable {
             do {
                 final ByteBuffer headerBuf = getRecord();
                 if (headerBuf == null) {
-                    throw new IOException("Premature end of tar archive. Didn't find extended_header after header with extended flag.");
+                    throw new ArchiveException("Premature end of tar archive. Didn't find extended_header after header with extended flag.");
                 }
                 entry = new TarArchiveSparseEntry(headerBuf.array());
                 currEntry.getSparseHeaders().addAll(entry.getSparseHeaders());
@@ -681,7 +682,7 @@ public class TarFile implements Closeable {
     private void repositionForwardTo(final long newPosition) throws IOException {
         final long currPosition = archive.position();
         if (newPosition < currPosition) {
-            throw new IOException("Trying to move backwards inside of the archive");
+            throw new ArchiveException("Trying to move backwards inside of the archive");
         }
         archive.position(newPosition);
     }
@@ -716,7 +717,7 @@ public class TarFile implements Closeable {
      */
     private void throwExceptionIfPositionIsNotInArchive() throws IOException {
         if (archive.size() < archive.position()) {
-            throw new IOException("Truncated TAR archive");
+            throw new ArchiveException("Truncated TAR archive");
         }
     }
 

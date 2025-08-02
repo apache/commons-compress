@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteOrder;
 
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.compressors.lzw.LZWInputStream;
 
 /**
@@ -94,18 +95,18 @@ final class UnshrinkingInputStream extends LZWInputStream {
         }
         final int subCode = readNextCode();
         if (subCode < 0) {
-            throw new IOException("Unexpected EOF;");
+            throw new ArchiveException("Unexpected EOF;");
         }
         if (subCode == 1) {
             if (getCodeSize() >= MAX_CODE_SIZE) {
-                throw new IOException("Attempt to increase code size beyond maximum");
+                throw new ArchiveException("Attempt to increase code size beyond maximum");
             }
             incrementCodeSize();
         } else if (subCode == 2) {
             partialClear();
             setTableSize(getClearCode() + 1);
         } else {
-            throw new IOException("Invalid clear code subcode " + subCode);
+            throw new ArchiveException("Invalid clear code subcode " + subCode);
         }
         return 0;
     }

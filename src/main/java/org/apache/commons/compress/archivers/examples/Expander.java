@@ -73,12 +73,12 @@ public class Expander {
             final Path targetPath = nullTarget ? null : nextEntry.resolveIn(targetDirPath);
             if (nextEntry.isDirectory()) {
                 if (!nullTarget && !Files.isDirectory(targetPath) && Files.createDirectories(targetPath) == null) {
-                    throw new IOException("Failed to create directory " + targetPath);
+                    throw new ArchiveException("Failed to create directory " + targetPath);
                 }
             } else {
                 final Path parent = nullTarget ? null : targetPath.getParent();
                 if (!nullTarget && !Files.isDirectory(parent) && Files.createDirectories(parent) == null) {
-                    throw new IOException("Failed to create directory " + parent);
+                    throw new ArchiveException("Failed to create directory " + parent);
                 }
                 if (nullTarget) {
                     writer.accept(nextEntry, NullOutputStream.INSTANCE);

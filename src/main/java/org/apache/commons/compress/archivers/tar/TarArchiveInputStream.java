@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
@@ -271,7 +272,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
             final long zeroBlockSize = sparseHeader.getOffset() - offset;
             if (zeroBlockSize < 0) {
                 // sparse header says to move backwards inside the extracted entry
-                throw new IOException("Corrupted struct sparse detected");
+                throw new ArchiveException("Corrupted struct sparse detected");
             }
             // only store the zero block if it is not empty
             if (zeroBlockSize > 0) {
@@ -350,7 +351,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
             actuallySkipped = Math.min(skipped, available);
         }
         if (actuallySkipped != expected) {
-            throw new IOException("Truncated TAR archive");
+            throw new ArchiveException("Truncated TAR archive");
         }
         return actuallySkipped;
     }
@@ -435,7 +436,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
         try {
             currEntry = new TarArchiveEntry(globalPaxHeaders, headerBuf, zipEncoding, lenient);
         } catch (final IllegalArgumentException e) {
-            throw new IOException("Error detected parsing the header", e);
+            throw new ArchiveException("Error detected parsing the header", e);
         }
         entryOffset = 0;
         entrySize = currEntry.getSize();
@@ -472,7 +473,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
                 applyPaxHeadersToCurrentEntry(globalPaxHeaders, globalSparseHeaders);
             }
         } catch (final NumberFormatException e) {
-            throw new IOException("Error detected parsing the pax header", e);
+            throw new ArchiveException("Error detected parsing the pax header", e);
         }
         if (currEntry.isOldGNUSparse()) { // Process sparse files
             readOldGNUSparse();
@@ -586,7 +587,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
         }
         getNextEntry(); // Get the actual file entry
         if (currEntry == null) {
-            throw new IOException("Premature end of tar archive. Didn't find any entry after PAX header.");
+            throw new ArchiveException("Premature end of tar archive. Didn't find any entry after PAX header.");
         }
         applyPaxHeadersToCurrentEntry(headers, sparseHeaders);
         // for 1.0 PAX Format, the sparse map is stored in the file data block
@@ -635,7 +636,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
         }
         if (totalRead == -1) {
             if (numToRead > 0) {
-                throw new IOException("Truncated TAR archive");
+                throw new ArchiveException("Truncated TAR archive");
             }
             setAtEOF(true);
         } else {
@@ -649,7 +650,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
         globalPaxHeaders = TarUtils.parsePaxHeaders(this, globalSparseHeaders, globalPaxHeaders, entrySize);
         getNextEntry(); // Get the actual file entry
         if (currEntry == null) {
-            throw new IOException("Error detected parsing the pax header");
+            throw new ArchiveException("Error detected parsing the pax header");
         }
     }
 
@@ -664,7 +665,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
             do {
                 final byte[] headerBuf = getRecord();
                 if (headerBuf == null) {
-                    throw new IOException("Premature end of tar archive. Didn't find extended_header after header with extended flag.");
+                    throw new ArchiveException("Premature end of tar archive. Didn't find extended_header after header with extended flag.");
                 }
                 entry = new TarArchiveSparseEntry(headerBuf);
                 currEntry.getSparseHeaders().addAll(entry.getSparseHeaders());

@@ -51,6 +51,7 @@ import java.util.stream.IntStream;
 import java.util.zip.Inflater;
 import java.util.zip.ZipException;
 
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.EntryStreamOffsets;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.deflate64.Deflate64CompressorInputStream;
@@ -542,7 +543,7 @@ public class ZipFile implements Closeable {
                 numberOfDisks = (buf.getShort() & 0xffff) + 1;
             }
             if (numberOfDisks > Math.min(maxNumberOfDisks, Integer.MAX_VALUE)) {
-                throw new IOException("Too many disks for zip archive, max=" + Math.min(maxNumberOfDisks, Integer.MAX_VALUE) + " actual=" + numberOfDisks);
+                throw new ArchiveException("Too many disks for zip archive, max=" + Math.min(maxNumberOfDisks, Integer.MAX_VALUE) + " actual=" + numberOfDisks);
             }
 
             if (numberOfDisks <= 1) {
@@ -928,7 +929,7 @@ public class ZipFile implements Closeable {
             fillNameMap();
             success = true;
         } catch (final IOException e) {
-            throw new IOException("Error reading Zip content from " + channelDescription, e);
+            throw new ArchiveException("Error reading Zip content from " + channelDescription, e);
         } finally {
             this.closed = !success;
             if (!success && closeOnError) {
@@ -1243,7 +1244,7 @@ public class ZipFile implements Closeable {
                 return new ExplodingInputStream(entry.getGeneralPurposeBit().getSlidingDictionarySize(),
                         entry.getGeneralPurposeBit().getNumberOfShannonFanoTrees(), is);
             } catch (final IllegalArgumentException ex) {
-                throw new IOException("Bad IMPLODE data", ex);
+                throw new ArchiveException("Bad IMPLODE data", ex);
             }
         case DEFLATED:
             final Inflater inflater = new Inflater(true);
@@ -1354,7 +1355,7 @@ public class ZipFile implements Closeable {
         long sig = ZipLong.getValue(wordBuf);
 
         if (sig != CFH_SIG && startsWithLocalFileHeader()) {
-            throw new IOException("Central directory is empty, can't expand corrupt archive.");
+            throw new ArchiveException("Central directory is empty, can't expand corrupt archive.");
         }
 
         while (sig == CFH_SIG) {
@@ -1510,14 +1511,14 @@ public class ZipFile implements Closeable {
 
         long size = ZipLong.getValue(cfhBuf, off);
         if (size < 0) {
-            throw new IOException("Broken archive, entry with negative compressed size");
+            throw new ArchiveException("Broken archive, entry with negative compressed size");
         }
         ze.setCompressedSize(size);
         off += ZipConstants.WORD;
 
         size = ZipLong.getValue(cfhBuf, off);
         if (size < 0) {
-            throw new IOException("Broken archive, entry with negative size");
+            throw new ArchiveException("Broken archive, entry with negative size");
         }
         ze.setSize(size);
         off += ZipConstants.WORD;
@@ -1525,19 +1526,19 @@ public class ZipFile implements Closeable {
         final int fileNameLen = ZipShort.getValue(cfhBuf, off);
         off += ZipConstants.SHORT;
         if (fileNameLen < 0) {
-            throw new IOException("Broken archive, entry with negative fileNameLen");
+            throw new ArchiveException("Broken archive, entry with negative fileNameLen");
         }
 
         final int extraLen = ZipShort.getValue(cfhBuf, off);
         off += ZipConstants.SHORT;
         if (extraLen < 0) {
-            throw new IOException("Broken archive, entry with negative extraLen");
+            throw new ArchiveException("Broken archive, entry with negative extraLen");
         }
 
         final int commentLen = ZipShort.getValue(cfhBuf, off);
         off += ZipConstants.SHORT;
         if (commentLen < 0) {
-            throw new IOException("Broken archive, entry with negative commentLen");
+            throw new ArchiveException("Broken archive, entry with negative commentLen");
         }
 
         ze.setDiskNumberStart(ZipShort.getValue(cfhBuf, off));
@@ -1618,20 +1619,20 @@ public class ZipFile implements Closeable {
 
     private void sanityCheckLFHOffset(final ZipArchiveEntry entry) throws IOException {
         if (entry.getDiskNumberStart() < 0) {
-            throw new IOException("Broken archive, entry with negative disk number");
+            throw new ArchiveException("Broken archive, entry with negative disk number");
         }
         if (entry.getLocalHeaderOffset() < 0) {
-            throw new IOException("Broken archive, entry with negative local file header offset");
+            throw new ArchiveException("Broken archive, entry with negative local file header offset");
         }
         if (isSplitZipArchive) {
             if (entry.getDiskNumberStart() > centralDirectoryStartDiskNumber) {
-                throw new IOException("Local file header for " + entry.getName() + " starts on a later disk than central directory");
+                throw new ArchiveException("Local file header for " + entry.getName() + " starts on a later disk than central directory");
             }
             if (entry.getDiskNumberStart() == centralDirectoryStartDiskNumber && entry.getLocalHeaderOffset() > centralDirectoryStartRelativeOffset) {
-                throw new IOException("Local file header for " + entry.getName() + " starts after central directory");
+                throw new ArchiveException("Local file header for " + entry.getName() + " starts after central directory");
             }
         } else if (entry.getLocalHeaderOffset() > centralDirectoryStartOffset) {
-            throw new IOException("Local file header for " + entry.getName() + " starts after central directory");
+            throw new ArchiveException("Local file header for " + entry.getName() + " starts after central directory");
         }
     }
 
@@ -1653,7 +1654,7 @@ public class ZipFile implements Closeable {
         final int extraFieldLen = ZipShort.getValue(shortBuf);
         entry.setDataOffset(offset + LFH_OFFSET_FOR_FILENAME_LENGTH + ZipConstants.SHORT + ZipConstants.SHORT + fileNameLen + extraFieldLen);
         if (entry.getDataOffset() + entry.getCompressedSize() > centralDirectoryStartOffset) {
-            throw new IOException("Data for " + entry.getName() + " overlaps with central directory.");
+            throw new ArchiveException("Data for " + entry.getName() + " overlaps with central directory.");
         }
         return new int[] { fileNameLen, extraFieldLen };
     }
@@ -1682,7 +1683,7 @@ public class ZipFile implements Closeable {
             if (hasUncompressedSize) {
                 final long size = z64.getSize().getLongValue();
                 if (size < 0) {
-                    throw new IOException("Broken archive, entry with negative size");
+                    throw new ArchiveException("Broken archive, entry with negative size");
                 }
                 entry.setSize(size);
             } else if (hasCompressedSize) {
@@ -1692,7 +1693,7 @@ public class ZipFile implements Closeable {
             if (hasCompressedSize) {
                 final long size = z64.getCompressedSize().getLongValue();
                 if (size < 0) {
-                    throw new IOException("Broken archive, entry with negative compressed size");
+                    throw new ArchiveException("Broken archive, entry with negative compressed size");
                 }
                 entry.setCompressedSize(size);
             } else if (hasUncompressedSize) {

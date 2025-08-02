@@ -21,9 +21,9 @@ package org.apache.commons.compress.archivers.dump;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 
 import org.apache.commons.compress.AbstractTest;
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -32,7 +32,7 @@ class TapeInputStreamTest extends AbstractTest {
     @ValueSource(ints = {-1, 0, Integer.MAX_VALUE / 1000, Integer.MAX_VALUE})
     void testResetBlockSizeWithInvalidValues(final int recsPerBlock) throws Exception {
         try (TapeInputStream tapeInputStream = new TapeInputStream(new ByteArrayInputStream(new byte[1]))) {
-            assertThrows(IOException.class, () -> tapeInputStream.resetBlockSize(recsPerBlock, true));
+            assertThrows(ArchiveException.class, () -> tapeInputStream.resetBlockSize(recsPerBlock, true));
         }
     }
 }

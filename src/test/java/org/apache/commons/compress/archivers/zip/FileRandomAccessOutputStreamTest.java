@@ -35,6 +35,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
 import org.apache.commons.compress.AbstractTempDirTest;
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -133,7 +134,7 @@ class FileRandomAccessOutputStreamTest extends AbstractTempDirTest {
             return 3;
         });
         when(channel.write((ByteBuffer) any(), eq(23L))).thenAnswer(answer -> -1);
-        assertThrows(IOException.class, () -> stream.writeAll("hello".getBytes(StandardCharsets.UTF_8), 20));
+        assertThrows(ArchiveException.class, () -> stream.writeAll("hello".getBytes(StandardCharsets.UTF_8), 20));
 
         verify(channel, times(2)).write((ByteBuffer) any(), eq(20L));
         verify(channel, times(1)).write((ByteBuffer) any(), eq(23L));

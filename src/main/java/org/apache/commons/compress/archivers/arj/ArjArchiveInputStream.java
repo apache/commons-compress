@@ -172,7 +172,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
             throw new IllegalStateException("No current arj entry");
         }
         if (currentLocalFileHeader.method != LocalFileHeader.Methods.STORED) {
-            throw new IOException("Unsupported compression method " + currentLocalFileHeader.method);
+            throw new ArchiveException("Unsupported compression method " + currentLocalFileHeader.method);
         }
         return currentInputStream.read(b, off, len);
     }
@@ -279,7 +279,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
                     final CRC32 crc32 = new CRC32();
                     crc32.update(extendedHeaderBytes);
                     if (extendedHeaderCrc32 != crc32.getValue()) {
-                        throw new IOException("Extended header CRC32 verification failure");
+                        throw new ArchiveException("Extended header CRC32 verification failure");
                     }
                     extendedHeaders.add(extendedHeaderBytes);
                 }
@@ -293,7 +293,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
     private MainHeader readMainHeader() throws IOException {
         final byte[] basicHeaderBytes = readHeader();
         if (basicHeaderBytes == null) {
-            throw new IOException("Archive ends without any headers");
+            throw new ArchiveException("Archive ends without any headers");
         }
         final DataInputStream basicHeader = new DataInputStream(new ByteArrayInputStream(basicHeaderBytes));
 
@@ -338,7 +338,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
             final CRC32 crc32 = new CRC32();
             crc32.update(header.extendedHeaderBytes);
             if (extendedHeaderCrc32 != crc32.getValue()) {
-                throw new IOException("Extended header CRC32 verification failure");
+                throw new ArchiveException("Extended header CRC32 verification failure");
             }
         }
 

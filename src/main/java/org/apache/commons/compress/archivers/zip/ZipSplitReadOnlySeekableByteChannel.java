@@ -36,6 +36,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.utils.MultiReadOnlySeekableByteChannel;
 import org.apache.commons.io.file.PathUtils;
@@ -283,7 +284,7 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
         final ZipLong signature = new ZipLong(zipSplitSignatureByteBuffer.array());
         if (!signature.equals(ZipLong.DD_SIG)) {
             channel.position(0L);
-            throw new IOException("The first ZIP split segment does not begin with split ZIP file signature");
+            throw new ArchiveException("The first ZIP split segment does not begin with split ZIP file signature");
         }
         channel.position(0L);
     }

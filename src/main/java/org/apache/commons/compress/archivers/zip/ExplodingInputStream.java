@@ -22,6 +22,7 @@ package org.apache.commons.compress.archivers.zip;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.utils.ExactMath;
 import org.apache.commons.compress.utils.InputStreamStatistics;
 import org.apache.commons.io.input.BoundedInputStream;
@@ -194,7 +195,7 @@ final class ExplodingInputStream extends InputStream implements InputStreamStati
             try {
                 fillBuffer();
             } catch (final IllegalArgumentException ex) {
-                throw new IOException("Bad IMPLODE stream", ex);
+                throw new ArchiveException("Bad IMPLODE stream", ex);
             }
         }
 

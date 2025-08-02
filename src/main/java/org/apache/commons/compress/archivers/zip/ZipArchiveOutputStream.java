@@ -38,6 +38,7 @@ import java.util.zip.Deflater;
 import java.util.zip.ZipException;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.io.Charsets;
@@ -651,7 +652,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     @Override
     public ZipArchiveEntry createArchiveEntry(final File inputFile, final String entryName) throws IOException {
         if (finished) {
-            throw new IOException("Stream has already been finished");
+            throw new ArchiveException("Stream has already been finished");
         }
         return new ZipArchiveEntry(inputFile, entryName);
     }
@@ -676,7 +677,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     @Override
     public ZipArchiveEntry createArchiveEntry(final Path inputPath, final String entryName, final LinkOption... options) throws IOException {
         if (finished) {
-            throw new IOException("Stream has already been finished");
+            throw new ArchiveException("Stream has already been finished");
         }
         return new ZipArchiveEntry(inputPath, entryName);
     }
@@ -922,11 +923,11 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     @Override
     public void finish() throws IOException {
         if (finished) {
-            throw new IOException("This archive has already been finished");
+            throw new ArchiveException("This archive has already been finished");
         }
 
         if (entry != null) {
-            throw new IOException("This archive contains unclosed entries.");
+            throw new ArchiveException("This archive contains unclosed entries.");
         }
 
         final long cdOverallOffset = streamCompressor.getTotalBytesWritten();
@@ -1157,11 +1158,11 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
 
     private void preClose() throws IOException {
         if (finished) {
-            throw new IOException("Stream has already been finished");
+            throw new ArchiveException("Stream has already been finished");
         }
 
         if (entry == null) {
-            throw new IOException("No current entry to close");
+            throw new ArchiveException("No current entry to close");
         }
 
         if (!entry.hasWritten) {
@@ -1193,7 +1194,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      */
     private void putArchiveEntry(final ZipArchiveEntry archiveEntry, final boolean phased) throws IOException {
         if (finished) {
-            throw new IOException("Stream has already been finished");
+            throw new ArchiveException("Stream has already been finished");
         }
 
         if (entry != null) {

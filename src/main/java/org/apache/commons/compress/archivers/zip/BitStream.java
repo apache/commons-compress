@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteOrder;
 
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.utils.BitInputStream;
 
 /**
@@ -45,7 +46,7 @@ final class BitStream extends BitInputStream {
      */
     long nextBits(final int n) throws IOException {
         if (n < 0 || n > 8) {
-            throw new IOException("Trying to read " + n + " bits, at most 8 are allowed");
+            throw new ArchiveException("Trying to read " + n + " bits, at most 8 are allowed");
         }
         return readBits(n);
     }

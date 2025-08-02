@@ -45,6 +45,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.EntryStreamOffsets;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.utils.ArchiveUtils;
@@ -267,7 +268,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     private static Instant parseInstantFromDecimalSeconds(final String value) throws IOException {
         // Validate field values to prevent denial of service attacks with BigDecimal values (see JDK-6560193)
         if (!PAX_EXTENDED_HEADER_FILE_TIMES_PATTERN.matcher(value).matches()) {
-            throw new IOException("Corrupted PAX header. Time field value is invalid '" + value + "'");
+            throw new ArchiveException("Corrupted PAX header. Time field value is invalid '" + value + "'");
         }
 
         final BigDecimal epochSeconds = new BigDecimal(value);
@@ -278,7 +279,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         } catch (DateTimeException | ArithmeticException e) {
             // DateTimeException: Thrown if the instant exceeds the maximum or minimum instant.
             // ArithmeticException: Thrown if numeric overflow occurs.
-            throw new IOException("Corrupted PAX header. Time field value is invalid '" + value + "'", e);
+            throw new ArchiveException("Corrupted PAX header. Time field value is invalid '" + value + "'", e);
         }
     }
 
@@ -999,17 +1000,17 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         for (int i = 0; i < numberOfHeaders; i++) {
             final TarArchiveStructSparse str = orderedAndFiltered.get(i);
             if (i + 1 < numberOfHeaders && str.getOffset() + str.getNumbytes() > orderedAndFiltered.get(i + 1).getOffset()) {
-                throw new IOException("Corrupted TAR archive. Sparse blocks for " + getName() + " overlap each other.");
+                throw new ArchiveException("Corrupted TAR archive. Sparse blocks for " + getName() + " overlap each other.");
             }
             if (str.getOffset() + str.getNumbytes() < 0) {
                 // integer overflow?
-                throw new IOException("Unreadable TAR archive. Offset and numbytes for sparse block in " + getName() + " too large.");
+                throw new ArchiveException("Unreadable TAR archive. Offset and numbytes for sparse block in " + getName() + " too large.");
             }
         }
         if (!orderedAndFiltered.isEmpty()) {
             final TarArchiveStructSparse last = orderedAndFiltered.get(numberOfHeaders - 1);
             if (last.getOffset() + last.getNumbytes() > getRealSize()) {
-                throw new IOException("Corrupted TAR archive. Sparse block extends beyond real size of the entry");
+                throw new ArchiveException("Corrupted TAR archive. Sparse block extends beyond real size of the entry");
             }
         }
         return orderedAndFiltered;
@@ -1468,7 +1469,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         try {
             parseUstarHeaderBlock(globalPaxHeaders, header, encoding, oldStyle, lenient);
         } catch (final IllegalArgumentException ex) {
-            throw new IOException("Corrupted TAR archive.", ex);
+            throw new ArchiveException("Corrupted TAR archive.", ex);
         }
     }
 
@@ -1484,7 +1485,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         offset += GIDLEN;
         size = TarUtils.parseOctalOrBinary(header, offset, SIZELEN);
         if (size < 0) {
-            throw new IOException("Broken archive, entry with negative size");
+            throw new ArchiveException("Broken archive, entry with negative size");
         }
         offset += SIZELEN;
         mTime = FileTimes.fromUnixTime(parseOctalOrBinary(header, offset, MODTIMELEN, lenient));
@@ -1616,7 +1617,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         case "size":
             final long size = ParsingUtils.parseLongValue(val);
             if (size < 0) {
-                throw new IOException("Corrupted TAR archive. Entry size is negative");
+                throw new ArchiveException("Corrupted TAR archive. Entry size is negative");
             }
             setSize(size);
             break;
@@ -1635,14 +1636,14 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         case "SCHILY.devminor":
             final int devMinor = ParsingUtils.parseIntValue(val);
             if (devMinor < 0) {
-                throw new IOException("Corrupted TAR archive. Dev-Minor is negative");
+                throw new ArchiveException("Corrupted TAR archive. Dev-Minor is negative");
             }
             setDevMinor(devMinor);
             break;
         case "SCHILY.devmajor":
             final int devMajor = ParsingUtils.parseIntValue(val);
             if (devMajor < 0) {
-                throw new IOException("Corrupted TAR archive. Dev-Major is negative");
+                throw new ArchiveException("Corrupted TAR archive. Dev-Major is negative");
             }
             setDevMajor(devMajor);
             break;

@@ -22,6 +22,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
@@ -244,7 +245,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
      */
     private void ensureOpen() throws IOException {
         if (this.closed) {
-            throw new IOException("Stream closed");
+            throw new ArchiveException("Stream closed");
         }
     }
 
@@ -281,7 +282,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
                 this.entry = readOldAsciiEntry();
                 break;
             default:
-                throw new IOException("Unknown magic [" + magicString + "]. Occurred at byte: " + getBytesRead());
+                throw new ArchiveException("Unknown magic [" + magicString + "]. Occurred at byte: " + getBytesRead());
             }
         }
 
@@ -327,11 +328,11 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         if (this.entryBytesRead == this.entry.getSize()) {
             final int dataPadCount = entry.getDataPadCount();
             if (skip(dataPadCount) != dataPadCount) {
-                throw new IOException("Data pad count missmatch.");
+                throw new ArchiveException("Data pad count missmatch.");
             }
             this.entryEOF = true;
             if (this.entry.getFormat() == FORMAT_NEW_CRC && this.crc != this.entry.getChksum()) {
-                throw new IOException("CRC Error. Occurred at byte: " + getBytesRead());
+                throw new ArchiveException("CRC Error. Occurred at byte: " + getBytesRead());
             }
             return -1; // EOF for this entry
         }
@@ -400,7 +401,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         newEntry.setTime(readAsciiLong(8, 16));
         newEntry.setSize(readAsciiLong(8, 16));
         if (newEntry.getSize() < 0) {
-            throw new IOException("Found illegal entry with negative length");
+            throw new ArchiveException("Found illegal entry with negative length");
         }
         newEntry.setDeviceMaj(readAsciiLong(8, 16));
         newEntry.setDeviceMin(readAsciiLong(8, 16));
@@ -408,18 +409,18 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         newEntry.setRemoteDeviceMin(readAsciiLong(8, 16));
         final long namesize = readAsciiLong(8, 16);
         if (namesize < 0) {
-            throw new IOException("Found illegal entry with negative name length");
+            throw new ArchiveException("Found illegal entry with negative name length");
         }
         newEntry.setChksum(readAsciiLong(8, 16));
         final String name = readCString((int) namesize);
         newEntry.setName(name);
         if (CpioUtil.fileType(mode) == 0 && !name.equals(CPIO_TRAILER)) {
-            throw new IOException(
+            throw new ArchiveException(
                     "Mode 0 only allowed in the trailer. Found entry name: " + ArchiveUtils.sanitize(name) + " Occurred at byte: " + getBytesRead());
         }
         final int headerPadCount = newEntry.getHeaderPadCount(namesize - 1);
         if (skip(headerPadCount) != headerPadCount) {
-            throw new IOException("Header pad count mismatch.");
+            throw new ArchiveException("Header pad count mismatch.");
         }
         return newEntry;
     }
@@ -440,16 +441,17 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         ret.setTime(readAsciiLong(11, 8));
         final long namesize = readAsciiLong(6, 8);
         if (namesize < 0) {
-            throw new IOException("Found illegal entry with negative name length");
+            throw new ArchiveException("Found illegal entry with negative name length");
         }
         ret.setSize(readAsciiLong(11, 8));
         if (ret.getSize() < 0) {
-            throw new IOException("Found illegal entry with negative length");
+            throw new ArchiveException("Found illegal entry with negative length");
         }
         final String name = readCString((int) namesize);
         ret.setName(name);
         if (CpioUtil.fileType(mode) == 0 && !name.equals(CPIO_TRAILER)) {
-            throw new IOException("Mode 0 only allowed in the trailer. Found entry: " + ArchiveUtils.sanitize(name) + " Occurred at byte: " + getBytesRead());
+            throw new ArchiveException(
+                    "Mode 0 only allowed in the trailer. Found entry: " + ArchiveUtils.sanitize(name) + " Occurred at byte: " + getBytesRead());
         }
 
         return ret;
@@ -470,20 +472,21 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         oldEntry.setTime(readBinaryLong(4, swapHalfWord));
         final long namesize = readBinaryLong(2, swapHalfWord);
         if (namesize < 0) {
-            throw new IOException("Found illegal entry with negative name length");
+            throw new ArchiveException("Found illegal entry with negative name length");
         }
         oldEntry.setSize(readBinaryLong(4, swapHalfWord));
         if (oldEntry.getSize() < 0) {
-            throw new IOException("Found illegal entry with negative length");
+            throw new ArchiveException("Found illegal entry with negative length");
         }
         final String name = readCString((int) namesize);
         oldEntry.setName(name);
         if (CpioUtil.fileType(mode) == 0 && !name.equals(CPIO_TRAILER)) {
-            throw new IOException("Mode 0 only allowed in the trailer. Found entry: " + ArchiveUtils.sanitize(name) + "Occurred at byte: " + getBytesRead());
+            throw new ArchiveException(
+                    "Mode 0 only allowed in the trailer. Found entry: " + ArchiveUtils.sanitize(name) + "Occurred at byte: " + getBytesRead());
         }
         final int headerPadCount = oldEntry.getHeaderPadCount(namesize - 1);
         if (skip(headerPadCount) != headerPadCount) {
-            throw new IOException("Header pad count mismatch.");
+            throw new ArchiveException("Header pad count mismatch.");
         }
         return oldEntry;
     }

@@ -38,6 +38,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
 import org.apache.commons.compress.AbstractTempDirTest;
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -126,7 +127,7 @@ class SeekableChannelRandomAccessOutputStreamTest extends AbstractTempDirTest {
                 ((ByteBuffer) answer.getArgument(0)).position(3);
                 return 3;
             }).thenAnswer(answer -> 0).thenAnswer(answer -> -1);
-            assertThrows(IOException.class, () -> stream.writeAll("hello".getBytes(StandardCharsets.UTF_8), 20));
+            assertThrows(ArchiveException.class, () -> stream.writeAll("hello".getBytes(StandardCharsets.UTF_8), 20));
             verify(channel, times(3)).write((ByteBuffer) any());
             assertEquals(50L, stream.position());
         }

@@ -229,7 +229,7 @@ class SevenZFileTest extends AbstractTest {
 
     @Test
     void test7zUnarchiveWithDefectHeaderFailsByDefault() throws Exception {
-        assertThrows(IOException.class, () -> test7zUnarchive(getFile("bla.noendheaderoffset.7z"), SevenZMethod.LZMA));
+        assertThrows(ArchiveException.class, () -> test7zUnarchive(getFile("bla.noendheaderoffset.7z"), SevenZMethod.LZMA));
     }
 
     @Test
@@ -483,7 +483,7 @@ class SevenZFileTest extends AbstractTest {
         testFiles.add(getPath("COMPRESS-542-endheadercorrupted2.7z"));
         for (final Path file : testFiles) {
             {
-                final IOException e = assertThrows(IOException.class, () -> {
+                final IOException e = assertThrows(ArchiveException.class, () -> {
                     try (@SuppressWarnings("deprecation")
                     SevenZFile sevenZFile = new SevenZFile(Files.newByteChannel(file),
                             SevenZFileOptions.builder().withTryToRecoverBrokenArchives(true).build())) {
@@ -493,7 +493,7 @@ class SevenZFileTest extends AbstractTest {
                 assertEquals("Start header corrupt and unable to guess end header", e.getMessage());
             }
             {
-                final IOException e = assertThrows(IOException.class, () -> {
+                final IOException e = assertThrows(ArchiveException.class, () -> {
                     try (SevenZFile sevenZFile = SevenZFile.builder().setSeekableByteChannel(Files.newByteChannel(file)).setTryToRecoverBrokenArchives(true)
                             .get()) {
                         // do nothing

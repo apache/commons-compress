@@ -24,6 +24,8 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
 
+import org.apache.commons.compress.archivers.ArchiveException;
+
 /**
  * IO utilities for Zip operations.
  */
@@ -48,7 +50,7 @@ final class ZipIoUtil {
                 continue;
             }
             if (written < 0) {
-                throw new IOException("Failed to write all bytes in the buffer for channel=" + channel + ", length=" + remaining + ", written=" + written);
+                throw new ArchiveException("Failed to write all bytes in the buffer for channel=" + channel + ", length=" + remaining + ", written=" + written);
             }
             currentPos += written;
         }
@@ -71,7 +73,7 @@ final class ZipIoUtil {
                 continue;
             }
             if (written < 0) {
-                throw new IOException("Failed to write all bytes in the buffer for channel=" + channel + ", length=" + remaining + ", written=" + written);
+                throw new ArchiveException("Failed to write all bytes in the buffer for channel=" + channel + ", length=" + remaining + ", written=" + written);
             }
         }
     }

@@ -380,7 +380,7 @@ public final class ZipTest extends AbstractTest {
             // create a file that has the same name of one of the created split segments
             final File sameNameFile = newTempFile("splitZip.z01");
             sameNameFile.createNewFile();
-            assertThrows(IOException.class, () -> addFilesToZip(zipArchiveOutputStream, directoryToZip));
+            assertThrows(ArchiveException.class, () -> addFilesToZip(zipArchiveOutputStream, directoryToZip));
         } catch (final Exception e) {
             // Ignore:
             // java.io.IOException: This archive contains unclosed entries.

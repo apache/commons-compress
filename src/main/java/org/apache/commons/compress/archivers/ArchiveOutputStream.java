@@ -104,7 +104,7 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Compre
      */
     protected void checkFinished() throws IOException {
         if (isFinished()) {
-            throw new IOException("Stream has already been finished.");
+            throw new ArchiveException("Stream has already been finished.");
         }
     }
 

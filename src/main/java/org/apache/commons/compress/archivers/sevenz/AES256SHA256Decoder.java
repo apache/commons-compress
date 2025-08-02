@@ -37,6 +37,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 
 import org.apache.commons.compress.PasswordRequiredException;
+import org.apache.commons.compress.archivers.ArchiveException;
 
 final class AES256SHA256Decoder extends AbstractCoder {
 
@@ -67,10 +68,10 @@ final class AES256SHA256Decoder extends AbstractCoder {
                 return cipherInputStream;
             }
             if (coder.properties == null) {
-                throw new IOException("Missing AES256 properties in " + archiveName);
+                throw new ArchiveException("Missing AES256 properties in " + archiveName);
             }
             if (coder.properties.length < 2) {
-                throw new IOException("AES256 properties too short in " + archiveName);
+                throw new ArchiveException("AES256 properties too short in " + archiveName);
             }
             final int byte0 = 0xff & coder.properties[0];
             final int numCyclesPower = byte0 & 0x3f;
@@ -78,7 +79,7 @@ final class AES256SHA256Decoder extends AbstractCoder {
             final int ivSize = (byte0 >> 6 & 1) + (byte1 & 0x0f);
             final int saltSize = (byte0 >> 7 & 1) + (byte1 >> 4);
             if (2 + saltSize + ivSize > coder.properties.length) {
-                throw new IOException("Salt size + IV size too long in " + archiveName);
+                throw new ArchiveException("Salt size + IV size too long in " + archiveName);
             }
             final byte[] salt = new byte[saltSize];
             System.arraycopy(coder.properties, 2, salt, 0, saltSize);

@@ -21,6 +21,7 @@ package org.apache.commons.compress.archivers.dump;
 import java.io.IOException;
 import java.util.Arrays;
 
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.utils.ByteUtils;
 
@@ -81,7 +82,7 @@ final class DumpArchiveUtil {
      */
     static String decode(final ZipEncoding encoding, final byte[] b, final int offset, final int len) throws IOException {
             if (offset > offset + len) {
-                throw new IOException("Invalid offset/length combination");
+                throw new ArchiveException("Invalid offset/length combination");
             }
             return encoding.decode(Arrays.copyOfRange(b, offset, offset + len));
     }

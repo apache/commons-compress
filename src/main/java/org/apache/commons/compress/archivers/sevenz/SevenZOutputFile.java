@@ -54,6 +54,7 @@ import java.util.stream.StreamSupport;
 import java.util.zip.CRC32;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.io.file.attribute.FileTimes;
 import org.apache.commons.io.output.CountingOutputStream;
 
@@ -291,7 +292,7 @@ public class SevenZOutputFile implements Closeable {
      */
     public void finish() throws IOException {
         if (finished) {
-            throw new IOException("This archive has already been finished");
+            throw new ArchiveException("This archive has already been finished");
         }
         finished = true;
 

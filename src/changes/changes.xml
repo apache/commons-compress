@@ -57,6 +57,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream throws CompressorException (an IOException subclass) instead of IOException when it encounters formatting problems.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.archivers.sevenz.DeltaDecoder.encode(OutputStream, Object) looses the underlying exception when throwing its IOException subclass.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Normalize exception message sentences to start with a capital letter.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">Classes in org.apache.commons.compress.archivers now throw a subclass of IOException called ArchiveException instead of IOException when a formatting problem is found.</action>
       <!-- ADD -->
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.MemoryLimitException.MemoryLimitException(long, long).</action>
       <!-- UPDATE -->

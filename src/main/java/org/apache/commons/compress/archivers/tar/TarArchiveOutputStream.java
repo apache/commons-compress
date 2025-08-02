@@ -35,6 +35,7 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
@@ -309,11 +310,11 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
     public void closeArchiveEntry() throws IOException {
         checkFinished();
         if (!haveUnclosedEntry) {
-            throw new IOException("No current entry to close");
+            throw new ArchiveException("No current entry to close");
         }
         ((FixedLengthBlockOutputStream) out).flushBlock();
         if (currBytes < currSize) {
-            throw new IOException(
+            throw new ArchiveException(
                     "Entry '" + currName + "' closed at '" + currBytes + "' before the '" + currSize + "' bytes specified in the header were written");
         }
         recordsWritten += currSize / RECORD_SIZE;
@@ -395,7 +396,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
     public void finish() throws IOException {
         checkFinished();
         if (haveUnclosedEntry) {
-            throw new IOException("This archive contains unclosed entries.");
+            throw new ArchiveException("This archive contains unclosed entries.");
         }
         writeEOFRecord();
         writeEOFRecord();
@@ -635,7 +636,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
             throw new IllegalStateException("No current tar entry");
         }
         if (currBytes + numToWrite > currSize) {
-            throw new IOException(
+            throw new ArchiveException(
                     "Request to write '" + numToWrite + "' bytes exceeds size in header of '" + currSize + "' bytes for entry '" + currName + "'");
         }
         out.write(wBuf, wOffset, numToWrite);
@@ -677,7 +678,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
      */
     private void writeRecord(final byte[] record) throws IOException {
         if (record.length != RECORD_SIZE) {
-            throw new IOException("Record to write has length '" + record.length + "' which is not the record size of '" + RECORD_SIZE + "'");
+            throw new ArchiveException("Record to write has length '" + record.length + "' which is not the record size of '" + RECORD_SIZE + "'");
         }
 
         out.write(record);

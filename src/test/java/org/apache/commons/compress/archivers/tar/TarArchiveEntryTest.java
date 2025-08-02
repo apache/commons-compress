@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.Random;
 
 import org.apache.commons.compress.AbstractTest;
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemProperties;
@@ -138,7 +139,7 @@ class TarArchiveEntryTest implements TarConstants {
         final TarArchiveEntry te = new TarArchiveEntry("test");
         te.fillStarSparseData(Collections.singletonMap("SCHILY.realsize", "201"));
         te.setSparseHeaders(Arrays.asList(new TarArchiveStructSparse(10, 5), new TarArchiveStructSparse(12, 1)));
-        assertThrows(IOException.class, () -> te.getOrderedSparseHeaders());
+        assertThrows(ArchiveException.class, () -> te.getOrderedSparseHeaders());
     }
 
     @Test
@@ -146,7 +147,7 @@ class TarArchiveEntryTest implements TarConstants {
         final TarArchiveEntry te = new TarArchiveEntry("test");
         te.setSparseHeaders(Arrays.asList(new TarArchiveStructSparse(200, 2)));
         te.fillStarSparseData(Collections.singletonMap("SCHILY.realsize", "201"));
-        assertThrows(IOException.class, () -> te.getOrderedSparseHeaders());
+        assertThrows(ArchiveException.class, () -> te.getOrderedSparseHeaders());
     }
 
     @Test
@@ -154,7 +155,7 @@ class TarArchiveEntryTest implements TarConstants {
         final TarArchiveEntry te = new TarArchiveEntry("test");
         te.fillStarSparseData(Collections.singletonMap("SCHILY.realsize", String.valueOf(Long.MAX_VALUE)));
         te.setSparseHeaders(Arrays.asList(new TarArchiveStructSparse(Long.MAX_VALUE, 2)));
-        assertThrows(IOException.class, () -> te.getOrderedSparseHeaders());
+        assertThrows(ArchiveException.class, () -> te.getOrderedSparseHeaders());
     }
 
     @Test

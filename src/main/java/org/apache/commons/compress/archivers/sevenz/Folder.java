@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedList;
 
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.lang3.ArrayUtils;
 
 /**
@@ -99,7 +100,7 @@ final class Folder {
         int current = (int) packedStreams[0]; // more that 2^31 coders?
         while (current >= 0 && current < coders.length) {
             if (list.contains(coders[current])) {
-                throw new IOException("Folder uses the same coder more than once in coder chain");
+                throw new ArchiveException("Folder uses the same coder more than once in coder chain");
             }
             list.addLast(coders[current]);
             final int pair = findBindPairForOutStream(current);

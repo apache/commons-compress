@@ -27,6 +27,7 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashMap;
 
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
@@ -194,15 +195,15 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
         checkFinished();
         checkOpen();
         if (entry == null) {
-            throw new IOException("Trying to close non-existent entry");
+            throw new ArchiveException("Trying to close non-existent entry");
         }
 
         if (this.entry.getSize() != this.written) {
-            throw new IOException("Invalid entry size (expected " + this.entry.getSize() + " but got " + this.written + " bytes)");
+            throw new ArchiveException("Invalid entry size (expected " + this.entry.getSize() + " but got " + this.written + " bytes)");
         }
         pad(this.entry.getDataPadCount());
         if (this.entry.getFormat() == FORMAT_NEW_CRC && this.crc != this.entry.getChksum()) {
-            throw new IOException("CRC Error");
+            throw new ArchiveException("CRC Error");
         }
         this.entry = null;
         this.crc = 0;
@@ -256,7 +257,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
         checkFinished();
 
         if (this.entry != null) {
-            throw new IOException("This archive contains unclosed entries.");
+            throw new ArchiveException("This archive contains unclosed entries.");
         }
         this.entry = new CpioArchiveEntry(this.entryFormat);
         this.entry.setName(CPIO_TRAILER);
@@ -299,11 +300,11 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
 
         final short format = entry.getFormat();
         if (format != this.entryFormat) {
-            throw new IOException("Header format: " + format + " does not match existing format: " + this.entryFormat);
+            throw new ArchiveException("Header format: " + format + " does not match existing format: " + this.entryFormat);
         }
 
         if (this.names.put(entry.getName(), entry) != null) {
-            throw new IOException("Duplicate entry: " + entry.getName());
+            throw new ArchiveException("Duplicate entry: " + entry.getName());
         }
 
         writeHeader(entry);
@@ -330,10 +331,10 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
         }
 
         if (this.entry == null) {
-            throw new IOException("No current CPIO entry");
+            throw new ArchiveException("No current CPIO entry");
         }
         if (this.written + len > this.entry.getSize()) {
-            throw new IOException("Attempt to write past end of STORED entry");
+            throw new ArchiveException("Attempt to write past end of STORED entry");
         }
         out.write(b, off, len);
         this.written += len;
@@ -411,7 +412,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
             writeOldBinaryEntry(e, swapHalfWord);
             break;
         default:
-            throw new IOException("Unknown format " + e.getFormat());
+            throw new ArchiveException("Unknown format " + e.getFormat());
         }
     }
 

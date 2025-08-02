@@ -30,6 +30,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -96,7 +97,7 @@ class Compress678Test {
         try (ArArchiveOutputStream arOut = new ArArchiveOutputStream(new FileOutputStream(file))) {
             arOut.setLongFileMode(ArArchiveOutputStream.LONGFILE_ERROR);
             // java.io.IOException: File name too long, > 16 chars: 01234567891234567
-            assertThrows(IOException.class, () -> arOut.putArchiveEntry(new ArArchiveEntry(name1, data.length)));
+            assertThrows(ArchiveException.class, () -> arOut.putArchiveEntry(new ArArchiveEntry(name1, data.length)));
         }
     }
 
