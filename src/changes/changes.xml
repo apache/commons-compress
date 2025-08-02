@@ -53,6 +53,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">org.apache.commons.compress.archivers.sevenz.SevenZFile.Builder.get() now throws an ArchiveException instead of an IllegalArgumentException.</action>
       <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">Fix format string in org.apache.commons.compress.archivers.sevenz.SevenZFile.assertFitsIntoNonNegativeInt(String, long).</action>
       <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">org.apache.commons.compress.archivers.sevenz.SevenZFile.Builder.get() now throws an ArchiveException instead of an OOME.</action>
+      <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream constructors now throws ArchiveException instead of ArrayIndexOutOfBoundsException.</action>
       <!-- ADD -->
       <!-- UPDATE -->
     </release>

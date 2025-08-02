@@ -29,6 +29,7 @@ import java.io.InputStream;
 import java.nio.ByteOrder;
 import java.util.Arrays;
 
+import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.utils.BitInputStream;
 import org.apache.commons.compress.utils.InputStreamStatistics;
@@ -145,10 +146,10 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
 
     private static void checkBounds(final int checkVal, final int limitExclusive, final String name) throws IOException {
         if (checkVal < 0) {
-            throw new IOException("Corrupted input, " + name + " value negative");
+            throw new CompressorException("Corrupted input, " + name + " value negative");
         }
         if (checkVal >= limitExclusive) {
-            throw new IOException("Corrupted input, " + name + " value too big");
+            throw new CompressorException("Corrupted input, " + name + " value too big");
         }
     }
 
@@ -169,9 +170,9 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
             limit[i] = 0;
         }
         for (int i = 0; i < alphaSize; i++) {
-            final int len = length[i];
+            final int len = length[i] + 1;
             checkBounds(len, MAX_ALPHA_SIZE, "length");
-            base[len + 1]++;
+            base[len]++;
         }
         for (int i = 1, b = base[0]; i < MAX_CODE_LEN; i++) {
             b += base[i];

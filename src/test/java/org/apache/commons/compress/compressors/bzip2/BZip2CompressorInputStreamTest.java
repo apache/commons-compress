@@ -28,11 +28,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
+import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
@@ -48,6 +50,12 @@ class BZip2CompressorInputStreamTest extends AbstractTest {
             ais.getNextEntry();
             IOUtils.toByteArray(ais);
         }
+    }
+
+    @Test
+    void testHbCreateDecodeTables() throws IOException {
+        assertThrows(CompressorException.class, () -> new BZip2CompressorInputStream(
+                Files.newInputStream(Paths.get("src/test/resources/org/apache/commons/compress/bzip2/hbCreateDecodeTables.bin"))));
     }
 
     @Test
