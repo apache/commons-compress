@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.charset.UnmappableCharacterException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -80,7 +81,8 @@ class TarArchiveInputStreamTest extends AbstractTest {
     }
 
     private void getNextEntryUntilIOException(final TarArchiveInputStream archive) {
-        assertThrows(ArchiveException.class, () -> archive.forEach(IOConsumer.noop()));
+        // Only on Windows: throws a UnmappableCharacterException
+        assertThrows(IOException.class, () -> archive.forEach(IOConsumer.noop()));
     }
 
     @SuppressWarnings("resource") // Caller closes

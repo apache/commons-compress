@@ -346,7 +346,8 @@ class TarFileTest extends AbstractTest {
 
     @Test
     void testThrowExceptionWithNullEntry() {
-        assertThrows(ArchiveException.class, () -> new TarFile(getPath("COMPRESS-554-fail.tar")));
+        // Only on Windows: throws a UnmappableCharacterException
+        assertThrows(IOException.class, () -> new TarFile(getPath("COMPRESS-554-fail.tar")));
     }
 
     @Test
