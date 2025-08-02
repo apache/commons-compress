@@ -20,6 +20,8 @@ package org.apache.commons.compress.archivers.sevenz;
 
 import java.util.BitSet;
 
+import org.apache.commons.compress.MemoryLimitException;
+
 /**
  * Properties for non-empty files.
  */
@@ -40,11 +42,15 @@ final class SubStreamsInfo {
      */
     final long[] crcs;
 
-    SubStreamsInfo(final long totalUnpackStreams, final int maxMemoryLimitKiB) {
+    SubStreamsInfo(final long totalUnpackStreams, final int maxMemoryLimitKiB) throws MemoryLimitException {
         final int intExact = Math.toIntExact(totalUnpackStreams);
         final int request = intExact * 3;
-        if (request > maxMemoryLimitKiB || request > Runtime.getRuntime().freeMemory()) {
-            throw new IllegalArgumentException("totalUnpackStreams = " + totalUnpackStreams);
+        if (request > maxMemoryLimitKiB) {
+            throw new MemoryLimitException(request, maxMemoryLimitKiB);
+        }
+        final long freeMemory = Runtime.getRuntime().freeMemory();
+        if (request > freeMemory) {
+            throw new MemoryLimitException(request, freeMemory);
         }
         this.unpackSizes = new long[intExact];
         this.hasCrc = new BitSet(intExact);

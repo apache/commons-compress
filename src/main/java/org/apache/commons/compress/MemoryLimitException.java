@@ -28,14 +28,14 @@ public class MemoryLimitException extends CompressException {
 
     private static final long serialVersionUID = 1L;
 
-    private static String buildMessage(final long memoryNeededInKb, final int memoryLimitInKb) {
+    private static String buildMessage(final long memoryNeededInKb, final long memoryLimitInKb) {
         return String.format("%,d KiB of memory would be needed; limit was %,d KiB. If the file is not corrupt, consider increasing the memory limit.",
                 memoryNeededInKb, memoryLimitInKb);
     }
 
     /** A long instead of int to account for overflow for corrupt files. */
     private final long memoryNeededKiB;
-    private final int memoryLimitKiB;
+    private final long memoryLimitKiB;
 
     /**
      * Constructs a new instance.
@@ -54,8 +54,21 @@ public class MemoryLimitException extends CompressException {
      *
      * @param memoryNeededKiB The memory needed in kibibytes (KiB).
      * @param memoryLimitKiB  The memory limit in kibibytes (KiB).
-     * @param cause            The cause (which is saved for later retrieval by the {@link #getCause()} method). (A null value is permitted, and indicates that
-     *                         the cause is nonexistent or unknown.)
+     * @since 1.29.0
+     */
+    public MemoryLimitException(final long memoryNeededKiB, final long memoryLimitKiB) {
+        super(buildMessage(memoryNeededKiB, memoryLimitKiB));
+        this.memoryNeededKiB = memoryNeededKiB;
+        this.memoryLimitKiB = memoryLimitKiB;
+    }
+
+    /**
+     * Constructs a new instance.
+     *
+     * @param memoryNeededKiB The memory needed in kibibytes (KiB).
+     * @param memoryLimitKiB  The memory limit in kibibytes (KiB).
+     * @param cause           The cause (which is saved for later retrieval by the {@link #getCause()} method). (A null value is permitted, and indicates that
+     *                        the cause is nonexistent or unknown.)
      * @deprecated Use {@link #MemoryLimitException(long, int, Throwable)}.
      */
     @Deprecated
@@ -70,8 +83,8 @@ public class MemoryLimitException extends CompressException {
      *
      * @param memoryNeededKiB The memory needed in kibibytes (KiB).
      * @param memoryLimitKiB  The memory limit in kibibytes (KiB).
-     * @param cause            The cause (which is saved for later retrieval by the {@link #getCause()} method). (A null value is permitted, and indicates that
-     *                         the cause is nonexistent or unknown.)
+     * @param cause           The cause (which is saved for later retrieval by the {@link #getCause()} method). (A null value is permitted, and indicates that
+     *                        the cause is nonexistent or unknown.)
      */
     public MemoryLimitException(final long memoryNeededKiB, final int memoryLimitKiB, final Throwable cause) {
         super(buildMessage(memoryNeededKiB, memoryLimitKiB), cause);
@@ -85,6 +98,15 @@ public class MemoryLimitException extends CompressException {
      * @return the memory limit in kibibytes (KiB).
      */
     public int getMemoryLimitInKb() {
+        return Math.toIntExact(memoryLimitKiB);
+    }
+
+    /**
+     * Gets the memory limit in kibibytes (KiB).
+     *
+     * @return the memory limit in kibibytes (KiB).
+     */
+    public long getMemoryLimitInKiBLong() {
         return memoryLimitKiB;
     }
 

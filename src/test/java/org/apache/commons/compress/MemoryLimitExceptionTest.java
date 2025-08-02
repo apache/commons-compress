@@ -51,9 +51,18 @@ class MemoryLimitExceptionTest {
     }
 
     @Test
-    void testAccessorsLimit() {
+    void testAccessorsLimitInt() {
         final MemoryLimitException e = new MemoryLimitException(1, 2);
         assertEquals(1, e.getMemoryNeededInKb());
         assertEquals(2, e.getMemoryLimitInKb());
+        assertEquals(2, e.getMemoryLimitInKiBLong());
+    }
+
+    @Test
+    void testAccessorsLimitLong() {
+        final MemoryLimitException e = new MemoryLimitException(1, 2L);
+        assertEquals(1, e.getMemoryNeededInKb());
+        assertEquals(2, e.getMemoryLimitInKb());
+        assertEquals(2, e.getMemoryLimitInKiBLong());
     }
 }
