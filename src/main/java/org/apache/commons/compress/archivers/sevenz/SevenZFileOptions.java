@@ -35,7 +35,7 @@ public class SevenZFileOptions {
      */
     public static class Builder {
 
-        private int maxMemoryLimitKb = SevenZFile.Builder.MEMORY_LIMIT_IN_KB;
+        private int maxMemoryLimitKb = SevenZFile.Builder.MEMORY_LIMIT_KIB;
         private boolean useDefaultNameForUnnamedEntries = SevenZFile.Builder.USE_DEFAULTNAME_FOR_UNNAMED_ENTRIES;
         private boolean tryToRecoverBrokenArchives = SevenZFile.Builder.TRY_TO_RECOVER_BROKEN_ARCHIVES;
 
@@ -98,7 +98,7 @@ public class SevenZFileOptions {
      * <li>don't modify the name of unnamed entries</li>
      * </ul>
      */
-    public static final SevenZFileOptions DEFAULT = new SevenZFileOptions(SevenZFile.Builder.MEMORY_LIMIT_IN_KB,
+    public static final SevenZFileOptions DEFAULT = new SevenZFileOptions(SevenZFile.Builder.MEMORY_LIMIT_KIB,
             SevenZFile.Builder.USE_DEFAULTNAME_FOR_UNNAMED_ENTRIES, SevenZFile.Builder.TRY_TO_RECOVER_BROKEN_ARCHIVES);
 
     /**

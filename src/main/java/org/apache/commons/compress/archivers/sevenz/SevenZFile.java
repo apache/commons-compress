@@ -182,14 +182,14 @@ public class SevenZFile implements Closeable {
      */
     public static class Builder extends AbstractStreamBuilder<SevenZFile, Builder> {
 
-        static final int MEMORY_LIMIT_IN_KB = Integer.MAX_VALUE;
+        static final int MEMORY_LIMIT_KIB = Integer.MAX_VALUE;
         static final boolean USE_DEFAULTNAME_FOR_UNNAMED_ENTRIES = false;
         static final boolean TRY_TO_RECOVER_BROKEN_ARCHIVES = false;
 
         private SeekableByteChannel seekableByteChannel;
         private String defaultName = DEFAULT_FILE_NAME;
         private byte[] password;
-        private int maxMemoryLimitKiB = MEMORY_LIMIT_IN_KB;
+        private int maxMemoryLimitKiB = MEMORY_LIMIT_KIB;
         private boolean useDefaultNameForUnnamedEntries = USE_DEFAULTNAME_FOR_UNNAMED_ENTRIES;
         private boolean tryToRecoverBrokenArchives = TRY_TO_RECOVER_BROKEN_ARCHIVES;
 
