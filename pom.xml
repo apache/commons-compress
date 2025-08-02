@@ -408,8 +408,8 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
           </systemPropertyVariables>
           <excludes>
             <!-- Needs low memory: -Xmx80m -->
-            <!-- TODO Run this test separately, in a second execution, which doesn't seem to work' -->
-            <exclude>**/SevenZFileBinTest.java</exclude>
+            <!-- TODO Run this test separately, in a second execution, which doesn't seem to work -->
+            <exclude>**/SevenZReadSubStreamsInfoTest.java</exclude>
           </excludes>
         </configuration>
       </plugin>
