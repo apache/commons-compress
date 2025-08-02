@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.zip.CheckedInputStream;
 
+import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.IOUtils;
@@ -264,11 +265,11 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream implem
     private void readFrameDescriptor() throws IOException {
         final int flags = readOneByte();
         if (flags == -1) {
-            throw new IOException("Premature end of stream while reading frame flags");
+            throw new CompressorException("Premature end of stream while reading frame flags");
         }
         contentHash.update(flags);
         if ((flags & VERSION_MASK) != SUPPORTED_VERSION) {
-            throw new IOException("Unsupported version " + (flags >> 6));
+            throw new CompressorException("Unsupported version " + (flags >> 6));
         }
         expectBlockDependency = (flags & BLOCK_INDEPENDENCE_MASK) == 0;
         if (expectBlockDependency) {
@@ -283,7 +284,7 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream implem
         expectContentChecksum = (flags & CONTENT_CHECKSUM_MASK) != 0;
         final int bdByte = readOneByte();
         if (bdByte == -1) { // max size is irrelevant for this implementation
-            throw new IOException("Premature end of stream while reading frame BD byte");
+            throw new CompressorException("Premature end of stream while reading frame BD byte");
         }
         contentHash.update(bdByte);
         if (expectContentSize) { // for now, we don't care, contains the uncompressed size
@@ -291,18 +292,18 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream implem
             final int skipped = IOUtils.readFully(inputStream, contentSize);
             count(skipped);
             if (8 != skipped) {
-                throw new IOException("Premature end of stream while reading content size");
+                throw new CompressorException("Premature end of stream while reading content size");
             }
             contentHash.update(contentSize, 0, contentSize.length);
         }
         final int headerHash = readOneByte();
         if (headerHash == -1) { // partial hash of header.
-            throw new IOException("Premature end of stream while reading frame header checksum");
+            throw new CompressorException("Premature end of stream while reading frame header checksum");
         }
         final int expectedHash = (int) (contentHash.getValue() >> 8 & 0xff);
         contentHash.reset();
         if (headerHash != expectedHash) {
-            throw new IOException("Frame header checksum mismatch");
+            throw new CompressorException("Frame header checksum mismatch");
         }
     }
 
@@ -339,7 +340,7 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream implem
             return false;
         }
         if (4 != read) {
-            throw new IOException(garbageMessage);
+            throw new CompressorException(garbageMessage);
         }
 
         read = skipSkippableFrame(b);
@@ -349,7 +350,7 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream implem
             return false;
         }
         if (4 != read || !matches(b, 4)) {
-            throw new IOException(garbageMessage);
+            throw new CompressorException(garbageMessage);
         }
         return true;
     }
@@ -366,12 +367,12 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream implem
         while (read == 4 && isSkippableFrameSignature(b)) {
             final long len = ByteUtils.fromLittleEndian(supplier, 4);
             if (len < 0) {
-                throw new IOException("Found illegal skippable frame with negative size");
+                throw new CompressorException("Found illegal skippable frame with negative size");
             }
             final long skipped = org.apache.commons.io.IOUtils.skip(inputStream, len);
             count(skipped);
             if (len != skipped) {
-                throw new IOException("Premature end of stream while skipping frame");
+                throw new CompressorException("Premature end of stream while skipping frame");
             }
             read = IOUtils.readFully(inputStream, b);
             count(read);
@@ -384,11 +385,11 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream implem
         final int read = IOUtils.readFully(inputStream, checksum);
         count(read);
         if (4 != read) {
-            throw new IOException("Premature end of stream while reading " + kind + " checksum");
+            throw new CompressorException("Premature end of stream while reading " + kind + " checksum");
         }
         final long expectedHash = hash.getValue();
         if (expectedHash != ByteUtils.fromLittleEndian(checksum)) {
-            throw new IOException(kind + " checksum mismatch.");
+            throw new CompressorException(kind + " checksum mismatch.");
         }
     }
 

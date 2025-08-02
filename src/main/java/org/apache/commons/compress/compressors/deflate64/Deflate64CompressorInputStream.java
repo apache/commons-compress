@@ -22,6 +22,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.utils.InputStreamStatistics;
 import org.apache.commons.io.IOUtils;
@@ -114,7 +115,7 @@ public class Deflate64CompressorInputStream extends CompressorInputStream implem
             try {
                 read = decoder.decode(b, off, len);
             } catch (final RuntimeException ex) {
-                throw new IOException("Invalid Deflate64 input", ex);
+                throw new CompressorException("Invalid Deflate64 input", ex);
             }
             compressedBytesRead = decoder.getBytesRead();
             count(read);

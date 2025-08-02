@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
+import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.IOUtils;
@@ -334,7 +335,7 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
         final int bytesRead = reallyTryToRead > 0 ? IOUtils.readFully(in, buf, writeIndex, reallyTryToRead) : 0 /* happens for bytesRemaining == 0 */;
         count(bytesRead);
         if (reallyTryToRead != bytesRead) {
-            throw new IOException("Premature end of stream reading literal");
+            throw new CompressorException("Premature end of stream reading literal");
         }
         writeIndex += reallyTryToRead;
         bytesRemaining -= reallyTryToRead;

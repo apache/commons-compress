@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.nio.ByteOrder;
 
 import org.apache.commons.compress.MemoryLimitException;
+import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.utils.BitInputStream;
 import org.apache.commons.compress.utils.InputStreamStatistics;
@@ -115,7 +116,7 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
     protected int addRepeatOfPreviousCode() throws IOException {
         if (previousCode == -1) {
             // can't have a repeat for the very first code
-            throw new IOException("The first code can't be a reference to its preceding code");
+            throw new CompressorException("The first code can't be a reference to its preceding code");
         }
         return addEntry(previousCode, previousCodeFirstChar);
     }

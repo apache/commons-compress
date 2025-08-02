@@ -32,6 +32,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.apache.commons.compress.AbstractTest;
+import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
@@ -45,7 +46,7 @@ class ZCompressorInputStreamTest {
     @Test
     void testFailsToCreateZCompressorInputStreamAndThrowsIOException() throws IOException {
         try (SequenceInputStream sequenceInputStream = new SequenceInputStream(Collections.emptyEnumeration())) {
-            assertThrows(IOException.class, () -> new ZCompressorInputStream(sequenceInputStream));
+            assertThrows(CompressorException.class, () -> new ZCompressorInputStream(sequenceInputStream));
         }
     }
 

@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteOrder;
 
+import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.lzw.LZWInputStream;
 
 /**
@@ -76,7 +77,7 @@ public class ZCompressorInputStream extends LZWInputStream {
         final int secondByte = (int) in.readBits(8);
         final int thirdByte = (int) in.readBits(8);
         if (firstByte != MAGIC_1 || secondByte != MAGIC_2 || thirdByte < 0) {
-            throw new IOException("Input is not in .Z format");
+            throw new CompressorException("Input is not in .Z format");
         }
         blockMode = (thirdByte & BLOCK_MODE_MASK) != 0;
         maxCodeSize = thirdByte & MAX_CODE_SIZE_MASK;
@@ -146,7 +147,7 @@ public class ZCompressorInputStream extends LZWInputStream {
             addRepeatOfPreviousCode();
             addedUnfinishedEntry = true;
         } else if (code > getTableSize()) {
-            throw new IOException(String.format("Invalid %d bit code 0x%x", getCodeSize(), code));
+            throw new CompressorException(String.format("Invalid %d bit code 0x%x", getCodeSize(), code));
         }
         return expandCodeToOutputStack(code, addedUnfinishedEntry);
     }

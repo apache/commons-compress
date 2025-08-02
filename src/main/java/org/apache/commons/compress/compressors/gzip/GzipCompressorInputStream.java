@@ -31,6 +31,7 @@ import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
+import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
@@ -352,7 +353,7 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
             return false;
         }
         if (magic0 != GzipUtils.ID1 || in.read() != GzipUtils.ID2) {
-            throw new IOException(isFirstMember ? "Input is not in the .gz format." : "Unexpected data after a valid .gz stream.");
+            throw new CompressorException(isFirstMember ? "Input is not in the .gz format." : "Unexpected data after a valid .gz stream.");
         }
         parameters = new GzipParameters();
         parameters.setFileNameCharset(fileNameCharset);
@@ -360,11 +361,11 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
         final DataInput inData = new DataInputStream(in);
         final int method = inData.readUnsignedByte();
         if (method != Deflater.DEFLATED) {
-            throw new IOException("Unsupported compression method " + method + " in the .gz header");
+            throw new CompressorException("Unsupported compression method " + method + " in the .gz header");
         }
         final int flg = inData.readUnsignedByte();
         if ((flg & GzipUtils.FRESERVED) != 0) {
-            throw new IOException("Reserved flags are set in the .gz header.");
+            throw new CompressorException("Reserved flags are set in the .gz header.");
         }
         parameters.setModificationTime(ByteUtils.fromLittleEndian(inData, 4));
         switch (inData.readUnsignedByte()) { // extra flags
@@ -450,7 +451,7 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
             try {
                 ret = inflater.inflate(b, off, len);
             } catch (final DataFormatException e) { // NOSONAR
-                throw new IOException("Gzip-compressed data is corrupt.", e);
+                throw new CompressorException("Gzip-compressed data is corrupt.", e);
             }
 
             crc.update(b, off, ret);
@@ -465,19 +466,19 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
                 in.reset();
                 final int skipAmount = bufUsed - inflater.getRemaining();
                 if (IOUtils.skip(in, skipAmount) != skipAmount) {
-                    throw new IOException();
+                    throw new CompressorException("skip");
                 }
                 bufUsed = 0;
                 final DataInput inData = new DataInputStream(in);
                 // CRC32
                 final long trailerCrc = ByteUtils.fromLittleEndian(inData, 4);
                 if (trailerCrc != crc.getValue()) {
-                    throw new IOException("Gzip-compressed data is corrupt (CRC32 error).");
+                    throw new CompressorException("Gzip-compressed data is corrupt (CRC32 error).");
                 }
                 // Uncompressed size modulo 2^32, ISIZE in the RFC.
                 final long iSize = ByteUtils.fromLittleEndian(inData, 4);
                 if (iSize != (inflater.getBytesWritten() & 0xffffffffL)) {
-                    throw new IOException("Gzip-compressed data is corrupt (uncompressed size mismatch).");
+                    throw new CompressorException("Gzip-compressed data is corrupt (uncompressed size mismatch).");
                 }
                 parameters.setTrailerCrc(trailerCrc);
                 parameters.setTrailerISize(iSize);

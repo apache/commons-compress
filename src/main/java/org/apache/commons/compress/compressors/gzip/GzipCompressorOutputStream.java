@@ -27,6 +27,7 @@ import java.util.zip.CRC32;
 import java.util.zip.Deflater;
 import java.util.zip.GZIPOutputStream;
 
+import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorOutputStream;
 
 /**
@@ -128,7 +129,7 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
     public void write(final byte[] buffer, final int offset, final int length) throws IOException {
         checkOpen();
         if (deflater.finished()) {
-            throw new IOException("Cannot write more data, the end of the compressed data stream has been reached.");
+            throw new CompressorException("Cannot write more data, the end of the compressed data stream has been reached.");
         }
         if (length > 0) {
             deflater.setInput(buffer, offset, length);

@@ -21,6 +21,7 @@ package org.apache.commons.compress.compressors.lz4;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.lz77support.AbstractLZ77CompressorInputStream;
 import org.apache.commons.compress.utils.ByteUtils;
 
@@ -77,12 +78,12 @@ public class BlockLZ4CompressorInputStream extends AbstractLZ77CompressorInputSt
         }
         // minimal match length 4 is encoded as 0
         if (backReferenceSize < 0) {
-            throw new IOException("Illegal block with a negative match length found");
+            throw new CompressorException("Illegal block with a negative match length found");
         }
         try {
             startBackReference(backReferenceOffset, backReferenceSize + 4);
         } catch (final IllegalArgumentException ex) {
-            throw new IOException("Illegal block with bad offset found", ex);
+            throw new CompressorException("Illegal block with bad offset found", ex);
         }
         state = State.IN_BACK_REFERENCE;
         return true;
@@ -121,7 +122,7 @@ public class BlockLZ4CompressorInputStream extends AbstractLZ77CompressorInputSt
             }
             return backReferenceLen > 0 ? backReferenceLen : read(b, off, len);
         default:
-            throw new IOException("Unknown stream state " + state);
+            throw new CompressorException("Unknown stream state " + state);
         }
     }
 
@@ -131,7 +132,7 @@ public class BlockLZ4CompressorInputStream extends AbstractLZ77CompressorInputSt
         do {
             nextByte = readOneByte();
             if (nextByte == -1) {
-                throw new IOException("Premature end of stream while parsing length");
+                throw new CompressorException("Premature end of stream while parsing length");
             }
             accum += nextByte;
         } while (nextByte == 255);
@@ -141,7 +142,7 @@ public class BlockLZ4CompressorInputStream extends AbstractLZ77CompressorInputSt
     private void readSizes() throws IOException {
         final int nextBlock = readOneByte();
         if (nextBlock == -1) {
-            throw new IOException("Premature end of stream while looking for next block");
+            throw new CompressorException("Premature end of stream while looking for next block");
         }
         nextBackReferenceSize = nextBlock & BACK_REFERENCE_SIZE_MASK;
         long literalSizePart = (nextBlock & LITERAL_SIZE_MASK) >> SIZE_BITS;
@@ -149,7 +150,7 @@ public class BlockLZ4CompressorInputStream extends AbstractLZ77CompressorInputSt
             literalSizePart += readSizeBytes();
         }
         if (literalSizePart < 0) {
-            throw new IOException("Illegal block with a negative literal size found");
+            throw new CompressorException("Illegal block with a negative literal size found");
         }
         startLiteral(literalSizePart);
         state = State.IN_LITERAL;

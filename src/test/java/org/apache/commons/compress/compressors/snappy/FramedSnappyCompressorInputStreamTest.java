@@ -34,6 +34,7 @@ import java.nio.file.Path;
 
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.zip.ZipFile;
+import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
@@ -183,7 +184,7 @@ public final class FramedSnappyCompressorInputStreamTest extends AbstractTest {
     void testUnskippableChunk() {
         final byte[] input = { (byte) 0xff, 6, 0, 0, 's', 'N', 'a', 'P', 'p', 'Y', 2, 2, 0, 0, 1, 1 };
         try (FramedSnappyCompressorInputStream in = new FramedSnappyCompressorInputStream(new ByteArrayInputStream(input))) {
-            final IOException exception = assertThrows(IOException.class, () -> in.read());
+            final IOException exception = assertThrows(CompressorException.class, () -> in.read());
             assertTrue(exception.getMessage().contains("Unskippable chunk"));
         } catch (final IOException ex) {
         }

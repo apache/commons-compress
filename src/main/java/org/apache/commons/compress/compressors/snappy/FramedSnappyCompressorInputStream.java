@@ -24,6 +24,7 @@ import java.io.PushbackInputStream;
 import java.util.Arrays;
 
 import org.apache.commons.codec.digest.PureJavaCrc32C;
+import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.IOUtils;
@@ -223,7 +224,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream imp
         final int read = IOUtils.readFully(inputStream, b);
         count(read);
         if (read != 4) {
-            throw new IOException("Premature end of stream");
+            throw new CompressorException("Premature end of stream");
         }
         return ByteUtils.fromLittleEndian(b);
     }
@@ -244,19 +245,19 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream imp
             skipBlock();
             readNextBlock();
         } else if (type >= MIN_UNSKIPPABLE_TYPE && type <= MAX_UNSKIPPABLE_TYPE) {
-            throw new IOException("Unskippable chunk with type " + type + " (hex " + Integer.toHexString(type) + ") detected.");
+            throw new CompressorException("Unskippable chunk with type " + type + " (hex " + Integer.toHexString(type) + ") detected.");
         } else if (type == UNCOMPRESSED_CHUNK_TYPE) {
             inUncompressedChunk = true;
             uncompressedBytesRemaining = readSize() - 4 /* CRC */;
             if (uncompressedBytesRemaining < 0) {
-                throw new IOException("Found illegal chunk with negative size");
+                throw new CompressorException("Found illegal chunk with negative size");
             }
             expectedChecksum = unmask(readCrc());
         } else if (type == COMPRESSED_CHUNK_TYPE) {
             final boolean expectChecksum = dialect.usesChecksumWithCompressedChunks();
             final long size = readSize() - (expectChecksum ? 4L : 0L);
             if (size < 0) {
-                throw new IOException("Found illegal chunk with negative size");
+                throw new CompressorException("Found illegal chunk with negative size");
             }
             if (expectChecksum) {
                 expectedChecksum = unmask(readCrc());
@@ -275,7 +276,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream imp
             count(currentCompressedChunk.getBytesRead());
         } else {
             // impossible as all potential byte values have been covered
-            throw new IOException("Unknown chunk type " + type + " detected.");
+            throw new CompressorException("Unknown chunk type " + type + " detected.");
         }
     }
 
@@ -330,25 +331,25 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream imp
         final int read = IOUtils.readFully(inputStream, b);
         count(read);
         if (10 != read || !matches(b, 10)) {
-            throw new IOException("Not a framed Snappy stream");
+            throw new CompressorException("Not a framed Snappy stream");
         }
     }
 
     private void skipBlock() throws IOException {
         final int size = readSize();
         if (size < 0) {
-            throw new IOException("Found illegal chunk with negative size");
+            throw new CompressorException("Found illegal chunk with negative size");
         }
         final long read = org.apache.commons.io.IOUtils.skip(inputStream, size);
         count(read);
         if (read != size) {
-            throw new IOException("Premature end of stream");
+            throw new CompressorException("Premature end of stream");
         }
     }
 
     private void verifyLastChecksumAndReset() throws IOException {
         if (expectedChecksum >= 0 && expectedChecksum != checksum.getValue()) {
-            throw new IOException("Checksum verification failed");
+            throw new CompressorException("Checksum verification failed");
         }
         expectedChecksum = -1;
         checksum.reset();

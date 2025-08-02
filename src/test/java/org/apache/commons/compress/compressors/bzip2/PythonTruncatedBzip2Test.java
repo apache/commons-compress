@@ -31,6 +31,7 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.util.Arrays;
 
+import org.apache.commons.compress.compressors.CompressorException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -101,7 +102,7 @@ class PythonTruncatedBzip2Test {
 
         // subsequent read should throw
         final ByteBuffer buffer2 = ByteBuffer.allocate(1);
-        assertThrows(IOException.class, () -> bz2Channel.read(buffer2), "The read should have thrown.");
+        assertThrows(CompressorException.class, () -> bz2Channel.read(buffer2), "The read should have thrown.");
     }
 
     @Test
@@ -109,6 +110,6 @@ class PythonTruncatedBzip2Test {
         // with BZ2File(self.filename) as f:
         // self.assertRaises(EOFError, f.read)
         final ByteBuffer buffer = ByteBuffer.allocate(8192);
-        assertThrows(IOException.class, () -> bz2Channel.read(buffer));
+        assertThrows(CompressorException.class, () -> bz2Channel.read(buffer));
     }
 }
