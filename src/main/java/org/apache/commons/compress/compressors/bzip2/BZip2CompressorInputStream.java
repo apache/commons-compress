@@ -139,7 +139,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     private static int bsR(final BitInputStream bin, final int n) throws IOException {
         final long thech = bin.readBits(n);
         if (thech < 0) {
-            throw new IOException("Unexpected end of stream");
+            throw new CompressorException("Unexpected end of stream");
         }
         return (int) thech;
     }
@@ -288,7 +288,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         this.currentState = EOF;
         this.data = null;
         if (this.storedCombinedCRC != this.computedCombinedCRC) {
-            throw new IOException("BZip2 CRC error");
+            throw new CompressorException("BZip2 CRC error");
         }
         // Look for the next .bz2 stream if decompressing
         // concatenated files.
@@ -332,7 +332,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
             // (repair feature, not yet documented, not tested)
             this.computedCombinedCRC = this.storedCombinedCRC << 1 | this.storedCombinedCRC >>> 31;
             this.computedCombinedCRC ^= this.storedBlockCRC;
-            throw new IOException("BZip2 CRC error");
+            throw new CompressorException("BZip2 CRC error");
         }
         this.computedCombinedCRC = this.computedCombinedCRC << 1 | this.computedCombinedCRC >>> 31;
         this.computedCombinedCRC ^= computedBlockCRC;
@@ -353,7 +353,6 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         final int[][] base = dataShadow.base;
         final int[][] perm = dataShadow.perm;
         final int limitLast = this.blockSize100k * 100000;
-
         /*
          * Setting up the unzftab entries here is not strictly necessary, but it does save having to do it later in a separate pass, and so saves a block's
          * worth of cache misses.
@@ -362,7 +361,6 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
             yy[i] = (char) i;
             unzftab[i] = 0;
         }
-
         int groupNo = 0;
         int groupPos = G_SIZE - 1;
         final int eob = this.nInUse + 1;
@@ -374,11 +372,9 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         int[] limit_zt = limit[zt];
         int[] perm_zt = perm[zt];
         int minLens_zt = minLens[zt];
-
         while (nextSym != eob) {
             if (nextSym == RUNA || nextSym == RUNB) {
                 int s = -1;
-
                 for (int n = 1; true; n <<= 1) {
                     if (nextSym == RUNA) {
                         s += n;
@@ -387,7 +383,6 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
                     } else {
                         break;
                     }
-
                     if (groupPos == 0) {
                         groupPos = G_SIZE - 1;
                         checkBounds(++groupNo, MAX_SELECTORS, "groupNo");
@@ -400,7 +395,6 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
                     } else {
                         groupPos--;
                     }
-
                     int zn = minLens_zt;
                     checkBounds(zn, MAX_ALPHA_SIZE, "zn");
                     int zvec = bsR(bin, zn);
@@ -413,31 +407,26 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
                     nextSym = perm_zt[tmp];
                 }
                 checkBounds(s, this.data.ll8.length, "s");
-
                 final int yy0 = yy[0];
                 checkBounds(yy0, 256, "yy");
                 final byte ch = seqToUnseq[yy0];
                 unzftab[ch & 0xff] += s + 1;
-
                 final int from = ++lastShadow;
                 lastShadow += s;
                 checkBounds(lastShadow, this.data.ll8.length, "lastShadow");
                 Arrays.fill(ll8, from, lastShadow + 1, ch);
-
                 if (lastShadow >= limitLast) {
-                    throw new IOException("Block overrun while expanding RLE in MTF, " + lastShadow + " exceeds " + limitLast);
+                    throw new CompressorException("Block overrun while expanding RLE in MTF, " + lastShadow + " exceeds " + limitLast);
                 }
             } else {
                 if (++lastShadow >= limitLast) {
-                    throw new IOException("Block overrun in MTF, " + lastShadow + " exceeds " + limitLast);
+                    throw new CompressorException("Block overrun in MTF, " + lastShadow + " exceeds " + limitLast);
                 }
                 checkBounds(nextSym, 256 + 1, "nextSym");
-
                 final char tmp = yy[nextSym - 1];
                 checkBounds(tmp, 256, "yy");
                 unzftab[seqToUnseq[tmp] & 0xff]++;
                 ll8[lastShadow] = seqToUnseq[tmp];
-
                 /*
                  * This loop is hammered during decompression, hence avoid native method call overhead of System.arraycopy for very small ranges to copy.
                  */
@@ -448,9 +437,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
                 } else {
                     System.arraycopy(yy, 0, yy, 1, nextSym - 1);
                 }
-
                 yy[0] = tmp;
-
                 if (groupPos == 0) {
                     groupPos = G_SIZE - 1;
                     checkBounds(++groupNo, MAX_SELECTORS, "groupNo");
@@ -463,7 +450,6 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
                 } else {
                     groupPos--;
                 }
-
                 int zn = minLens_zt;
                 checkBounds(zn, MAX_ALPHA_SIZE, "zn");
                 int zvec = bsR(bin, zn);
@@ -476,7 +462,6 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
                 nextSym = perm_zt[idx];
             }
         }
-
         this.last = lastShadow;
     }
 
@@ -494,7 +479,6 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         }
         final int tmp = zvec - dataShadow.base[zt][zn];
         checkBounds(tmp, MAX_ALPHA_SIZE, "zvec");
-
         return dataShadow.perm[zt][tmp];
     }
 
@@ -507,34 +491,27 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     }
 
     private boolean init(final boolean isFirstStream) throws IOException {
-        if (null == bin) {
-            throw new IOException("No InputStream");
+        if (bin == null) {
+            throw new CompressorException("No InputStream");
         }
-
         if (!isFirstStream) {
             bin.clearBitCache();
         }
-
         final int magic0 = readNextByte(this.bin);
         if (magic0 == -1 && !isFirstStream) {
             return false;
         }
         final int magic1 = readNextByte(this.bin);
         final int magic2 = readNextByte(this.bin);
-
         if (magic0 != 'B' || magic1 != 'Z' || magic2 != 'h') {
-            throw new IOException(isFirstStream ? "Stream is not in the BZip2 format" : "Unexpected data after a valid BZip2 stream");
+            throw new CompressorException(isFirstStream ? "Stream is not in the BZip2 format" : "Unexpected data after a valid BZip2 stream");
         }
-
         final int blockSize = readNextByte(this.bin);
         if (blockSize < '1' || blockSize > '9') {
-            throw new IOException("BZip2 block size is invalid");
+            throw new CompressorException("BZip2 block size is invalid");
         }
-
         this.blockSize100k = blockSize - '0';
-
         this.computedCombinedCRC = 0;
-
         return true;
     }
 
@@ -577,7 +554,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
                 magic5 != 0x59 // 'Y'
         ) {
             this.currentState = EOF;
-            throw new IOException("Bad block header");
+            throw new CompressorException("Bad block header");
         }
         this.storedBlockCRC = bsGetInt(bin);
         this.blockRandomised = bsR(bin, 1) == 1;
@@ -618,7 +595,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
             count(r < 0 ? -1 : 1);
             return r;
         }
-        throw new IOException("Stream closed");
+        throw new CompressorException("Stream closed");
     }
 
     /*
@@ -638,7 +615,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
             throw new IndexOutOfBoundsException("offs(" + offs + ") + len(" + len + ") > dest.length(" + dest.length + ").");
         }
         if (this.bin == null) {
-            throw new IOException("Stream closed");
+            throw new CompressorException("Stream closed");
         }
         if (len == 0) {
             return 0;
@@ -726,7 +703,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         final int nGroups = bsR(bin, 3);
         final int selectors = bsR(bin, 15);
         if (selectors < 0) {
-            throw new IOException("Corrupted input, nSelectors value negative");
+            throw new CompressorException("Corrupted input, nSelectors value negative");
         }
         checkBounds(alphaSize, MAX_ALPHA_SIZE + 1, "alphaSize");
         checkBounds(nGroups, N_GROUPS + 1, "nGroups");
@@ -806,7 +783,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         }
 
         if (this.origPtr < 0 || this.origPtr >= tt.length) {
-            throw new IOException("Stream corrupted");
+            throw new CompressorException("Stream corrupted");
         }
 
         this.su_tPos = tt[this.origPtr];
