@@ -269,7 +269,7 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream implem
         }
         contentHash.update(flags);
         if ((flags & VERSION_MASK) != SUPPORTED_VERSION) {
-            throw new CompressorException("Unsupported version " + (flags >> 6));
+            throw new CompressorException("Unsupported version %s", flags >> 6);
         }
         expectBlockDependency = (flags & BLOCK_INDEPENDENCE_MASK) == 0;
         if (expectBlockDependency) {
@@ -385,11 +385,11 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream implem
         final int read = IOUtils.readFully(inputStream, checksum);
         count(read);
         if (4 != read) {
-            throw new CompressorException("Premature end of stream while reading " + kind + " checksum");
+            throw new CompressorException("Premature end of stream while reading %s checksum", kind);
         }
         final long expectedHash = hash.getValue();
         if (expectedHash != ByteUtils.fromLittleEndian(checksum)) {
-            throw new CompressorException(kind + " checksum mismatch.");
+            throw new CompressorException("%s checksum mismatch.", kind);
         }
     }
 

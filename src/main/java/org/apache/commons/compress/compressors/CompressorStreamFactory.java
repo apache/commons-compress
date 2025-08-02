@@ -664,7 +664,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
         if (compressorStreamProvider != null) {
             return compressorStreamProvider.createCompressorInputStream(name, in, actualDecompressConcatenated);
         }
-        throw new CompressorException("Compressor: " + name + " not found.");
+        throw new CompressorException("Compressor: '%s' not found.", name);
     }
 
     /**
@@ -721,7 +721,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
         if (compressorStreamProvider != null) {
             return compressorStreamProvider.createCompressorOutputStream(name, out);
         }
-        throw new CompressorException("Compressor: " + name + " not found.");
+        throw new CompressorException("Compressor: '%s' not found.", name);
     }
 
     /**

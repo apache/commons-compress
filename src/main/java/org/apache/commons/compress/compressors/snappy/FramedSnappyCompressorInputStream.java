@@ -245,7 +245,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream imp
             skipBlock();
             readNextBlock();
         } else if (type >= MIN_UNSKIPPABLE_TYPE && type <= MAX_UNSKIPPABLE_TYPE) {
-            throw new CompressorException("Unskippable chunk with type " + type + " (hex " + Integer.toHexString(type) + ") detected.");
+            throw new CompressorException("Unskippable chunk with type %s (hex %s) detected.", type, Integer.toHexString(type));
         } else if (type == UNCOMPRESSED_CHUNK_TYPE) {
             inUncompressedChunk = true;
             uncompressedBytesRemaining = readSize() - 4 /* CRC */;
@@ -276,7 +276,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream imp
             count(currentCompressedChunk.getBytesRead());
         } else {
             // impossible as all potential byte values have been covered
-            throw new CompressorException("Unknown chunk type " + type + " detected.");
+            throw new CompressorException("Unknown chunk type %s detected.", type);
         }
     }
 

@@ -122,7 +122,7 @@ public class BlockLZ4CompressorInputStream extends AbstractLZ77CompressorInputSt
             }
             return backReferenceLen > 0 ? backReferenceLen : read(b, off, len);
         default:
-            throw new CompressorException("Unknown stream state " + state);
+            throw new CompressorException("Unknown stream state %s", state);
         }
     }
 

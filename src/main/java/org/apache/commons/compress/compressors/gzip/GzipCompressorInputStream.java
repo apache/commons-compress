@@ -361,7 +361,7 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
         final DataInput inData = new DataInputStream(in);
         final int method = inData.readUnsignedByte();
         if (method != Deflater.DEFLATED) {
-            throw new CompressorException("Unsupported compression method " + method + " in the .gz header");
+            throw new CompressorException("Unsupported compression method %d in the .gz header", method);
         }
         final int flg = inData.readUnsignedByte();
         if ((flg & GzipUtils.FRESERVED) != 0) {

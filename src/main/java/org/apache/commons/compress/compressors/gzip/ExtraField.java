@@ -152,7 +152,7 @@ public final class ExtraField implements Iterable<SubField> {
             final byte si2 = bytes[pos++];
             final int sublen = bytes[pos++] & 0xff | (bytes[pos++] & 0xff) << 8;
             if (sublen > bytes.length - pos) {
-                throw new CompressorException("Extra subfield lenght exceeds remaining bytes in extra: " + sublen + " > " + (bytes.length - pos));
+                throw new CompressorException("Extra subfield lenght exceeds remaining bytes in extra: %,d > %,d", sublen, bytes.length - pos);
             }
             final byte[] payload = new byte[sublen];
             System.arraycopy(bytes, pos, payload, 0, sublen);
@@ -161,7 +161,7 @@ public final class ExtraField implements Iterable<SubField> {
             extra.totalSize = pos;
         }
         if (pos < bytes.length) {
-            throw new CompressorException("" + (bytes.length - pos) + " remaining bytes not used to parse an extra subfield.");
+            throw new CompressorException("%,d remaining bytes not used to parse an extra subfield.", bytes.length - pos);
         }
         return extra;
     }
@@ -201,7 +201,7 @@ public final class ExtraField implements Iterable<SubField> {
         final SubField f = new SubField((byte) (si1 & 0xff), (byte) (si2 & 0xff), payload);
         final int len = 4 + payload.length;
         if (totalSize + len > MAX_SIZE) {
-            throw new CompressorException("Extra subfield '" + f.getId() + "' too big (extras total size is already at " + totalSize + ")");
+            throw new CompressorException("Extra subfield '%s' too big (extras total size is already at %,d", f.getId(), totalSize);
         }
         subFields.add(f);
         totalSize += len;

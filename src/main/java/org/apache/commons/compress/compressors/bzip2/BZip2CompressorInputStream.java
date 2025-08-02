@@ -146,10 +146,10 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
 
     private static void checkBounds(final int checkVal, final int limitExclusive, final String name) throws IOException {
         if (checkVal < 0) {
-            throw new CompressorException("Corrupted input, " + name + " value negative");
+            throw new CompressorException("Corrupted input, '%s' value negative", name);
         }
         if (checkVal >= limitExclusive) {
-            throw new CompressorException("Corrupted input, " + name + " value too big");
+            throw new CompressorException("Corrupted input, '%s' value too big", name);
         }
     }
 
@@ -416,11 +416,11 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
                 checkBounds(lastShadow, this.data.ll8.length, "lastShadow");
                 Arrays.fill(ll8, from, lastShadow + 1, ch);
                 if (lastShadow >= limitLast) {
-                    throw new CompressorException("Block overrun while expanding RLE in MTF, " + lastShadow + " exceeds " + limitLast);
+                    throw new CompressorException("Block overrun while expanding RLE in MTF, %,d exceeds %,d", lastShadow, limitLast);
                 }
             } else {
                 if (++lastShadow >= limitLast) {
-                    throw new CompressorException("Block overrun in MTF, " + lastShadow + " exceeds " + limitLast);
+                    throw new CompressorException("Block overrun in MTF, %,d exceeds %,d", lastShadow, limitLast);
                 }
                 checkBounds(nextSym, 256 + 1, "nextSym");
                 final char tmp = yy[nextSym - 1];
