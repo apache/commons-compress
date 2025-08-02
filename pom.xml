@@ -406,6 +406,11 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
             <pax.exam.karaf.version>${karaf.version}</pax.exam.karaf.version>
             <commons-compress.version>${project.version}</commons-compress.version>
           </systemPropertyVariables>
+          <excludes>
+            <!-- Needs low memory: -Xmx80m -->
+            <!-- TODO Run this test separately, in a second execution, which doesn't seem to work' -->
+            <exclude>**/SevenZFileBinTest.java</exclude>
+          </excludes>
         </configuration>
       </plugin>
       <plugin>
@@ -572,7 +577,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
             <artifactId>maven-surefire-plugin</artifactId>
             <configuration>
               <argLine>
-                ${argLine} --add-opens java.base/java.io=ALL-UNNAMED                     
+                ${argLine} --add-opens java.base/java.io=ALL-UNNAMED
               </argLine>
             </configuration>
           </plugin>

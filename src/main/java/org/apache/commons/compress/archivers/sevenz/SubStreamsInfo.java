@@ -40,8 +40,12 @@ final class SubStreamsInfo {
      */
     final long[] crcs;
 
-    SubStreamsInfo(final long totalUnpackStreams) {
+    SubStreamsInfo(final long totalUnpackStreams, final int maxMemoryLimitKiB) {
         final int intExact = Math.toIntExact(totalUnpackStreams);
+        final int request = intExact * 3;
+        if (request > maxMemoryLimitKiB || request > Runtime.getRuntime().freeMemory()) {
+            throw new IllegalArgumentException("totalUnpackStreams = " + totalUnpackStreams);
+        }
         this.unpackSizes = new long[intExact];
         this.hasCrc = new BitSet(intExact);
         this.crcs = new long[intExact];
