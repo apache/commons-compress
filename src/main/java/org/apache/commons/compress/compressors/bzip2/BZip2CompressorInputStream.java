@@ -164,23 +164,19 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
                 }
             }
         }
-
         for (int i = MAX_CODE_LEN; --i > 0;) {
             base[i] = 0;
             limit[i] = 0;
         }
-
         for (int i = 0; i < alphaSize; i++) {
-            final int l = length[i];
-            checkBounds(l, MAX_ALPHA_SIZE, "length");
-            base[l + 1]++;
+            final int len = length[i];
+            checkBounds(len, MAX_ALPHA_SIZE, "length");
+            base[len + 1]++;
         }
-
         for (int i = 1, b = base[0]; i < MAX_CODE_LEN; i++) {
             b += base[i];
             base[i] = b;
         }
-
         for (int i = minLen, vec = 0, b = base[i]; i <= maxLen; i++) {
             final int nb = base[i + 1];
             vec += nb - b;
@@ -188,7 +184,6 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
             limit[i] = vec - 1;
             vec <<= 1;
         }
-
         for (int i = minLen + 1; i <= maxLen; i++) {
             base[i] = (limit[i - 1] + 1 << 1) - base[i];
         }
