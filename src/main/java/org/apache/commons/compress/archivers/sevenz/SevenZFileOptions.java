@@ -114,8 +114,8 @@ public class SevenZFileOptions {
     private final boolean useDefaultNameForUnnamedEntries;
     private final boolean tryToRecoverBrokenArchives;
 
-    private SevenZFileOptions(final int maxMemoryLimitKb, final boolean useDefaultNameForUnnamedEntries, final boolean tryToRecoverBrokenArchives) {
-        this.maxMemoryLimitKiB = maxMemoryLimitKb;
+    private SevenZFileOptions(final int maxMemoryLimitKiB, final boolean useDefaultNameForUnnamedEntries, final boolean tryToRecoverBrokenArchives) {
+        this.maxMemoryLimitKiB = maxMemoryLimitKiB;
         this.useDefaultNameForUnnamedEntries = useDefaultNameForUnnamedEntries;
         this.tryToRecoverBrokenArchives = tryToRecoverBrokenArchives;
     }
