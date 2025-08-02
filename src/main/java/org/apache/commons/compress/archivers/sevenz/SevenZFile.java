@@ -1013,7 +1013,6 @@ public class SevenZFile implements Closeable {
         if (DEFAULT_FILE_NAME.equals(fileName) || fileName == null) {
             return null;
         }
-
         final String lastSegment = new File(fileName).getName();
         final int dotPos = lastSegment.lastIndexOf(".");
         if (dotPos > 0) { // if the file starts with a dot then this is not an extension
@@ -1116,6 +1115,7 @@ public class SevenZFile implements Closeable {
     private boolean hasCurrentEntryBeenRead() {
         boolean hasCurrentEntryBeenRead = false;
         if (!deferredBlockStreams.isEmpty()) {
+            @SuppressWarnings("resource")
             final InputStream currentEntryInputStream = deferredBlockStreams.get(deferredBlockStreams.size() - 1);
             // get the bytes remaining to read, and compare it with the size of
             // the file to figure out if the file has been read
