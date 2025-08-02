@@ -40,9 +40,10 @@ final class SubStreamsInfo {
      */
     final long[] crcs;
 
-    SubStreamsInfo(final int totalUnpackStreams) {
-        this.unpackSizes = new long[totalUnpackStreams];
-        this.hasCrc = new BitSet(totalUnpackStreams);
-        this.crcs = new long[totalUnpackStreams];
+    SubStreamsInfo(final long totalUnpackStreams) {
+        final int intExact = Math.toIntExact(totalUnpackStreams);
+        this.unpackSizes = new long[intExact];
+        this.hasCrc = new BitSet(intExact);
+        this.crcs = new long[intExact];
     }
 }
