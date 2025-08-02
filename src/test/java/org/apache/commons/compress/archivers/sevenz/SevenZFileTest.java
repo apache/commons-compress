@@ -881,6 +881,23 @@ class SevenZFileTest extends AbstractTest {
     }
 
     @Test
+    void testRemainingBytesUnchangedAfterRead() throws Exception {
+        try (SevenZFile sevenZFile = getSevenZFile("COMPRESS-256.7z")) {
+            for (final SevenZArchiveEntry entry : sevenZFile.getEntries()) {
+                final InputStream inputStream = sevenZFile.getInputStream(entry);
+                if (!(inputStream instanceof ChecksumInputStream)) {
+                    continue;
+                }
+                assertEquals(entry.getSize(), ((ChecksumInputStream) inputStream).getRemaining());
+                // read 10 byte
+                final byte[] bytes = new byte[10];
+                inputStream.read(bytes);
+                assertNotEquals(entry.getSize(), ((ChecksumInputStream) inputStream).getRemaining());
+            }
+        }
+    }
+
+    @Test
     void testRetrieveInputStreamForAllEntriesMultipleTimes() throws IOException {
         try (SevenZFile sevenZFile = getSevenZFile("bla.7z")) {
             for (final SevenZArchiveEntry entry : sevenZFile.getEntries()) {
@@ -939,22 +956,5 @@ class SevenZFileTest extends AbstractTest {
         assertFalse(SevenZFile.matches(new byte[] { 1, 2, 3, 4, 5, 6 }, 6));
         assertTrue(SevenZFile.matches(new byte[] { '7', 'z', (byte) 0xBC, (byte) 0xAF, 0x27, 0x1C }, 6));
         assertFalse(SevenZFile.matches(new byte[] { '7', 'z', (byte) 0xBC, (byte) 0xAF, 0x27, 0x1D }, 6));
-    }
-
-    @Test
-    void testRemainingBytesUnchangedAfterRead() throws Exception {
-        try (SevenZFile sevenZFile = getSevenZFile("COMPRESS-256.7z")) {
-            for (final SevenZArchiveEntry entry : sevenZFile.getEntries()) {
-                final InputStream inputStream = sevenZFile.getInputStream(entry);
-                if (!(inputStream instanceof ChecksumInputStream)) {
-                    continue;
-                }
-                assertEquals(entry.getSize(), ((ChecksumInputStream) inputStream).getRemaining());
-                // read 10 byte
-                final byte[] bytes = new byte[10];
-                inputStream.read(bytes);
-                assertNotEquals(entry.getSize(), ((ChecksumInputStream) inputStream).getRemaining());
-            }
-        }
     }
 }
