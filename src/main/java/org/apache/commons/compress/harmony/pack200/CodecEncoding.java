@@ -148,7 +148,7 @@ public class CodecEncoding {
             return new RunCodec(k, aCodec, bCodec);
         }
         if (value < 141 || value > 188) {
-            throw new Pack200Exception("Invalid codec encoding byte (" + value + ") found");
+            throw new Pack200Exception("Invalid codec encoding byte (%s) found", value);
         }
         final int offset = value - 141;
         final boolean fdef = (offset & 1) == 1;

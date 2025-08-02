@@ -158,8 +158,8 @@ public class AttributeLayoutMap {
                 for (int j2 = j + 1; j2 < layouts.size(); j2++) {
                     final AttributeLayout layout2 = layouts.get(j2);
                     if (layout1.getName().equals(layout2.getName()) && layout1.getLayout().equals(layout2.getLayout())) {
-                        throw new Pack200Exception("Same layout/name combination: " + layout1.getLayout() + "/" + layout1.getName()
-                                + " exists twice for context: " + AttributeLayout.contextNames[layout1.getContext()]);
+                        throw new Pack200Exception("Same layout/name combination: %s/%s exists twice for context: %s", layout1.getLayout(), layout1.getName(),
+                                AttributeLayout.contextNames[layout1.getContext()]);
                     }
                 }
             }

@@ -312,9 +312,8 @@ public final class BHSDCodec extends Codec {
     @Override
     public byte[] encode(final int value, final int last) throws Pack200Exception {
         if (!encodes(value)) {
-            throw new Pack200Exception("The codec " + this + " does not encode the value " + value);
+            throw new Pack200Exception("The codec %s does not encode the value %s", this, value);
         }
-
         long z = value;
         if (isDelta()) {
             z -= last;
@@ -340,7 +339,6 @@ public final class BHSDCodec extends Codec {
         if (z < 0) {
             throw new Pack200Exception("Unable to encode");
         }
-
         final List<Byte> byteList = new ArrayList<>();
         for (int n = 0; n < b; n++) {
             long byteN;

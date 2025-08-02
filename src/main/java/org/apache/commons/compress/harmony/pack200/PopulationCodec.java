@@ -105,7 +105,7 @@ public class PopulationCodec extends Codec {
                     }
                 }
                 if (tokenCodec == null) {
-                    throw new Pack200Exception("Cannot calculate token codec from " + k + " and " + l);
+                    throw new Pack200Exception("Cannot calculate token codec from %s and %s", k, l);
                 }
             }
         }

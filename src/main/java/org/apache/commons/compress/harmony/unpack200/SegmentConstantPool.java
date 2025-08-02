@@ -196,7 +196,7 @@ public class SegmentConstantPool {
             array = bands.getCpIMethodClass();
             break;
         default:
-            throw new Pack200Exception("Type is not supported yet: " + cp);
+            throw new Pack200Exception("Type is not supported yet: %s", cp);
         }
         return getConstantPoolEntry(cp, matchSpecificPoolEntryIndex(array, desiredClassName, toIndex(desiredIndex)));
     }
@@ -230,10 +230,10 @@ public class SegmentConstantPool {
         case CP_CLASS:
             return bands.cpClassValue(actualIndex);
         case SIGNATURE:
-            throw new Pack200Exception("Type SIGNATURE is not supported yet: " + SIGNATURE);
+            throw new Pack200Exception("Type SIGNATURE is not supported yet: %s", SIGNATURE);
         // return null /* new CPSignature(bands.getCpSignature()[index]) */;
         case CP_DESCR:
-            throw new Pack200Exception("Type CP_DESCR is not supported yet: " + CP_DESCR);
+            throw new Pack200Exception("Type CP_DESCR is not supported yet: %s", CP_DESCR);
         // return null /* new CPDescriptor(bands.getCpDescriptor()[index])
         // */;
         case CP_FIELD:
@@ -246,7 +246,7 @@ public class SegmentConstantPool {
             break;
         }
         // etc
-        throw new Pack200Exception("Type is not supported yet: " + type);
+        throw new Pack200Exception("Type is not supported yet: %s", type);
     }
 
     /**

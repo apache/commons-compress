@@ -324,7 +324,7 @@ public abstract class BandSet {
         for (int i = 0; i < count; i++) {
             final int index = indices[i];
             if (index < 0 || index >= reference.length) {
-                throw new Pack200Exception("Something has gone wrong during parsing references, index = " + index + ", array size = " + reference.length);
+                throw new Pack200Exception("Something has gone wrong parsing references, index = %,d, array size = %,d", index, reference.length);
             }
             result[i] = cpBands.cpIntegerValue(index);
         }
@@ -351,7 +351,7 @@ public abstract class BandSet {
         for (int i = 0; i < count; i++) {
             final int index = indices[i];
             if (index < 0 || index >= reference.length) {
-                throw new Pack200Exception("Something has gone wrong during parsing references, index = " + index + ", array size = " + reference.length);
+                throw new Pack200Exception("Something has gone wrong parsing references, index = %,d, array size = %,d", index, reference.length);
             }
             result[i] = cpBands.cpLongValue(index);
         }
@@ -637,7 +637,7 @@ public abstract class BandSet {
         for (int i1 = 0; i1 < sum; i1++) {
             final int index = indices[i1];
             if (index < 0 || index >= reference.length) {
-                throw new Pack200Exception("Something has gone wrong during parsing references, index = " + index + ", array size = " + reference.length);
+                throw new Pack200Exception("Something has gone wrong parsing references, index = %,d, array size = %,d", index, reference.length);
             }
             result1[i1] = reference[index];
         }

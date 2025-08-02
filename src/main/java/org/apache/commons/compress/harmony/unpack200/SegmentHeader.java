@@ -315,7 +315,7 @@ public class SegmentHeader {
      */
     private void setArchiveMajorVersion(final int version) throws Pack200Exception {
         if (version != 150) {
-            throw new Pack200Exception("Invalid segment major version: " + version);
+            throw new Pack200Exception("Invalid segment major version: %s", version);
         }
         archiveMajor = version;
     }

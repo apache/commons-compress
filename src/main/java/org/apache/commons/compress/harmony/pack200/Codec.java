@@ -92,7 +92,7 @@ public abstract class Codec {
                 final long remaining = maxLength - count;
                 final String format = "Can't read beyond end of stream (n = %,d, count = %,d, maxLength = %,d, remaining = %,d)";
                 if (count < -1 || n > remaining) {
-                    throw new Pack200Exception(String.format(format, n, count, maxLength, remaining));
+                    throw new Pack200Exception(format, n, count, maxLength, remaining);
                 }
             }
         }

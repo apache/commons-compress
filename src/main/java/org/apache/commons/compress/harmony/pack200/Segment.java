@@ -672,7 +672,7 @@ public class Segment extends ClassVisitor {
                     }
                 }
                 if (!found) {
-                    throw new Pack200Exception("Error passing file " + name);
+                    throw new Pack200Exception("Error passing file '%s'", name);
                 }
             }
         }

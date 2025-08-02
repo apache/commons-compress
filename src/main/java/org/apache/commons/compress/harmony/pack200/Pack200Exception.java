@@ -38,6 +38,21 @@ public class Pack200Exception extends CompressException {
     }
 
     /**
+     * Constructs a new exception with the specified detail message format and arguments. The cause is not initialized.
+     * <p>
+     * The arguments are used with {@link String#format(String, Object...)}.
+     * </p>
+     *
+     * @param message The message format (which is saved for later retrieval by the {@link #getMessage()} method).
+     * @param args    the format arguments to use.
+     * @since 1.29.0
+     * @see String#format(String, Object...)
+     */
+    public Pack200Exception(final String message, final Object... args) {
+        super(message, args);
+    }
+
+    /**
      * Constructs an {@code Pack200Exception} with the specified detail message and cause.
      * <p>
      * Note that the detail message associated with {@code cause} is <i>not</i> automatically incorporated into this exception's detail message.

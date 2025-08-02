@@ -242,7 +242,7 @@ public class AttributeLayout implements IMatcher {
                 return pool.getValue(SegmentConstantPool.CP_DOUBLE, longIndex);
             }
         }
-        throw new Pack200Exception("Unknown layout encoding: " + layout);
+        throw new Pack200Exception("Unknown layout encoding: '%s'", layout);
     }
 
     private final int context;
@@ -293,7 +293,7 @@ public class AttributeLayout implements IMatcher {
             this.mask = 0;
         }
         if (context != CONTEXT_CLASS && context != CONTEXT_CODE && context != CONTEXT_FIELD && context != CONTEXT_METHOD) {
-            throw new Pack200Exception("Attribute context out of range: " + context);
+            throw new Pack200Exception("Attribute context out of range: %d", context);
         }
         if (layout == null) {
             throw new Pack200Exception("Cannot have a null layout");
