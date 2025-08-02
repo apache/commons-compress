@@ -913,7 +913,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     private void pushback(final byte[] buf, final int offset, final int length) throws IOException {
         if (offset < 0) {
             // Instead of ArrayIndexOutOfBoundsException
-            throw new ArchiveException(String.format("Negative offset %,d into buffer", offset));
+            throw new ArchiveException("Negative offset %,d into buffer", offset);
         }
         ((PushbackInputStream) in).unread(buf, offset, length);
         pushedBackBytes(length);

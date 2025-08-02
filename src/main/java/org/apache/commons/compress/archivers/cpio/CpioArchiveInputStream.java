@@ -282,7 +282,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
                 this.entry = readOldAsciiEntry();
                 break;
             default:
-                throw new ArchiveException("Unknown magic [" + magicString + "]. Occurred at byte: " + getBytesRead());
+                throw new ArchiveException("Unknown magic '%s' at byte: %,d", magicString, getBytesRead());
             }
         }
 

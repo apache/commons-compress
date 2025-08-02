@@ -322,7 +322,7 @@ public class Archiver {
                 create(c.track(new SevenZOutputFile(target)), directory);
             } else {
                 // never reached as prefersSeekableByteChannel only returns true for ZIP and 7z
-                throw new ArchiveException("Don't know how to handle format " + format);
+                throw new ArchiveException("Don't know how to handle format '%s'", format);
             }
         }
     }

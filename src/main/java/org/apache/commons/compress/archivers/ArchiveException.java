@@ -76,6 +76,21 @@ public class ArchiveException extends CompressException {
     }
 
     /**
+     * Constructs a new exception with the specified detail message format and arguments. The cause is not initialized.
+     * <p>
+     * The arguments are used with {@link String#format(String, Object...)}.
+     * </p>
+     *
+     * @param message The message format (which is saved for later retrieval by the {@link #getMessage()} method).
+     * @param args    the format arguments to use.
+     * @since 1.29.0
+     * @see String#format(String, Object...)
+     */
+    public ArchiveException(final String message, final Object... args) {
+        super(message, args);
+    }
+
+    /**
      * Constructs a new exception with the specified detail message and cause.
      *
      * @param message The message (which is saved for later retrieval by the {@link #getMessage()} method).

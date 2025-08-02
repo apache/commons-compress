@@ -178,13 +178,11 @@ final class BinaryTree {
      */
     public int read(final BitStream stream) throws IOException {
         int currentIndex = 0;
-
         while (true) {
             final int bit = stream.readBit();
             if (bit == -1) {
                 return -1;
             }
-
             final int childIndex = 2 * currentIndex + 1 + bit;
             final int value = tree[childIndex];
             if (value == NODE) {
@@ -193,7 +191,7 @@ final class BinaryTree {
             } else if (value != UNDEFINED) {
                 return value;
             } else {
-                throw new ArchiveException("The child " + bit + " of node at index " + currentIndex + " is not defined");
+                throw new ArchiveException("The child %,d of node at index %,d is not defined", bit, currentIndex);
             }
         }
     }

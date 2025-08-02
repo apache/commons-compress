@@ -105,7 +105,7 @@ final class ZipSplitOutputStream extends RandomAccessOutputStream {
 
     public long calculateDiskPosition(final long disk, final long localOffset) throws IOException {
         if (disk >= Integer.MAX_VALUE) {
-            throw new ArchiveException("Disk number exceeded internal limits: limit=" + Integer.MAX_VALUE + " requested=" + disk);
+            throw new ArchiveException("Disk number exceeded internal limits: limit = %,d requested = %,d", Integer.MAX_VALUE, disk);
         }
         return diskToPosition.get((int) disk) + localOffset;
     }
@@ -139,7 +139,7 @@ final class ZipSplitOutputStream extends RandomAccessOutputStream {
         final Path newFile = getSplitSegmentFileName(zipSplitSegmentSuffixIndex);
 
         if (Files.exists(newFile)) {
-            throw new ArchiveException("Split ZIP segment " + newFile + " already exists");
+            throw new ArchiveException("Split ZIP segment '%s' already exists", newFile);
         }
         return newFile;
     }

@@ -300,7 +300,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
 
         final short format = entry.getFormat();
         if (format != this.entryFormat) {
-            throw new ArchiveException("Header format: " + format + " does not match existing format: " + this.entryFormat);
+            throw new ArchiveException("Header format: '%s' does not match existing format: '%s'", format, this.entryFormat);
         }
 
         if (this.names.put(entry.getName(), entry) != null) {
@@ -412,7 +412,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
             writeOldBinaryEntry(e, swapHalfWord);
             break;
         default:
-            throw new ArchiveException("Unknown format " + e.getFormat());
+            throw new ArchiveException("Unknown format '%s'", e.getFormat());
         }
     }
 

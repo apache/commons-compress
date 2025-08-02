@@ -543,7 +543,8 @@ public class ZipFile implements Closeable {
                 numberOfDisks = (buf.getShort() & 0xffff) + 1;
             }
             if (numberOfDisks > Math.min(maxNumberOfDisks, Integer.MAX_VALUE)) {
-                throw new ArchiveException("Too many disks for zip archive, max=" + Math.min(maxNumberOfDisks, Integer.MAX_VALUE) + " actual=" + numberOfDisks);
+                throw new ArchiveException("Too many disks for zip archive, max = %,d actual = %,d", Math.min(maxNumberOfDisks, Integer.MAX_VALUE),
+                        numberOfDisks);
             }
 
             if (numberOfDisks <= 1) {
@@ -1626,13 +1627,13 @@ public class ZipFile implements Closeable {
         }
         if (isSplitZipArchive) {
             if (entry.getDiskNumberStart() > centralDirectoryStartDiskNumber) {
-                throw new ArchiveException("Local file header for " + entry.getName() + " starts on a later disk than central directory");
+                throw new ArchiveException("Local file header for '%s' starts on a later disk than central directory", entry.getName());
             }
             if (entry.getDiskNumberStart() == centralDirectoryStartDiskNumber && entry.getLocalHeaderOffset() > centralDirectoryStartRelativeOffset) {
-                throw new ArchiveException("Local file header for " + entry.getName() + " starts after central directory");
+                throw new ArchiveException("Local file header for '%s' starts after central directory", entry.getName());
             }
         } else if (entry.getLocalHeaderOffset() > centralDirectoryStartOffset) {
-            throw new ArchiveException("Local file header for " + entry.getName() + " starts after central directory");
+            throw new ArchiveException("Local file header for '%s' starts after central directory", entry.getName());
         }
     }
 
@@ -1654,7 +1655,7 @@ public class ZipFile implements Closeable {
         final int extraFieldLen = ZipShort.getValue(shortBuf);
         entry.setDataOffset(offset + LFH_OFFSET_FOR_FILENAME_LENGTH + ZipConstants.SHORT + ZipConstants.SHORT + fileNameLen + extraFieldLen);
         if (entry.getDataOffset() + entry.getCompressedSize() > centralDirectoryStartOffset) {
-            throw new ArchiveException("Data for " + entry.getName() + " overlaps with central directory.");
+            throw new ArchiveException("Data for '%s' overlaps with central directory.", entry.getName());
         }
         return new int[] { fileNameLen, extraFieldLen };
     }

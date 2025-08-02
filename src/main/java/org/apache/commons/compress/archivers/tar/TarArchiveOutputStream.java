@@ -314,8 +314,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
         }
         ((FixedLengthBlockOutputStream) out).flushBlock();
         if (currBytes < currSize) {
-            throw new ArchiveException(
-                    "Entry '" + currName + "' closed at '" + currBytes + "' before the '" + currSize + "' bytes specified in the header were written");
+            throw new ArchiveException("Entry '%s' closed at %,d before the %,d bytes specified in the header were written", currName, currBytes, currSize);
         }
         recordsWritten += currSize / RECORD_SIZE;
 
@@ -636,8 +635,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
             throw new IllegalStateException("No current tar entry");
         }
         if (currBytes + numToWrite > currSize) {
-            throw new ArchiveException(
-                    "Request to write '" + numToWrite + "' bytes exceeds size in header of '" + currSize + "' bytes for entry '" + currName + "'");
+            throw new ArchiveException("Request to write %,d bytes exceeds size in header of %,d bytes for entry '%s'", numToWrite, currSize, currName);
         }
         out.write(wBuf, wOffset, numToWrite);
         currBytes += numToWrite;
@@ -678,7 +676,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
      */
     private void writeRecord(final byte[] record) throws IOException {
         if (record.length != RECORD_SIZE) {
-            throw new ArchiveException("Record to write has length '" + record.length + "' which is not the record size of '" + RECORD_SIZE + "'");
+            throw new ArchiveException("Record to write has length %,d which is not the record size of %,d", record.length, RECORD_SIZE);
         }
 
         out.write(record);

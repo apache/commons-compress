@@ -666,12 +666,12 @@ public class TarUtils {
                             if (restLen <= 1) { // only NL
                                 headers.remove(keyword);
                             } else if (headerSize >= 0 && restLen > headerSize - totalRead) {
-                                throw new ArchiveException("Paxheader value size " + restLen + " exceeds size of header record");
+                                throw new ArchiveException("Paxheader value size %,d exceeds size of header record", restLen);
                             } else {
                                 final byte[] rest = IOUtils.readRange(inputStream, restLen);
                                 final int got = rest.length;
                                 if (got != restLen) {
-                                    throw new ArchiveException("Failed to read Paxheader. Expected " + restLen + " bytes, read " + got);
+                                    throw new ArchiveException("Failed to read Paxheader. Expected %,d bytes, read %,d", restLen, got);
                                 }
                                 totalRead += restLen;
                                 // Drop trailing NL
@@ -690,22 +690,23 @@ public class TarUtils {
                                     try {
                                         offset = Long.valueOf(value);
                                     } catch (final NumberFormatException ex) {
-                                        throw new ArchiveException("Failed to read Paxheader." + TarGnuSparseKeys.OFFSET + " contains a non-numeric value");
+                                        throw new ArchiveException("Failed to read Paxheader. Offset %s contains a non-numeric value",
+                                                TarGnuSparseKeys.OFFSET);
                                     }
                                     if (offset < 0) {
-                                        throw new ArchiveException("Failed to read Paxheader." + TarGnuSparseKeys.OFFSET + " contains negative value");
+                                        throw new ArchiveException("Failed to read Paxheader. Offset %s contains negative value", TarGnuSparseKeys.OFFSET);
                                     }
                                 }
 
                                 // for 0.0 PAX Headers
                                 if (keyword.equals(TarGnuSparseKeys.NUMBYTES)) {
                                     if (offset == null) {
-                                        throw new ArchiveException(
-                                                "Failed to read Paxheader." + TarGnuSparseKeys.OFFSET + " is expected before GNU.sparse.numbytes shows up.");
+                                        throw new ArchiveException("Failed to read Paxheader. %s is expected before GNU.sparse.numbytes shows up.",
+                                                TarGnuSparseKeys.OFFSET);
                                     }
                                     final long numbytes = ParsingUtils.parseLongValue(value);
                                     if (numbytes < 0) {
-                                        throw new ArchiveException("Failed to read Paxheader." + TarGnuSparseKeys.NUMBYTES + " contains negative value");
+                                        throw new ArchiveException("Failed to read Paxheader. %s contains negative value", TarGnuSparseKeys.NUMBYTES);
                                     }
                                     sparseHeaders.add(new TarArchiveStructSparse(offset, numbytes));
                                     offset = null;

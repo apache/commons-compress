@@ -73,7 +73,7 @@ public class Expander {
             final Path targetPath = nullTarget ? null : nextEntry.resolveIn(targetDirPath);
             if (nextEntry.isDirectory()) {
                 if (!nullTarget && !Files.isDirectory(targetPath) && Files.createDirectories(targetPath) == null) {
-                    throw new ArchiveException("Failed to create directory " + targetPath);
+                    throw new ArchiveException("Failed to create directory '%s'", targetPath);
                 }
             } else {
                 final Path parent = nullTarget ? null : targetPath.getParent();
@@ -402,7 +402,7 @@ public class Expander {
                 expand(c.track(SevenZFile.builder().setSeekableByteChannel(archive).get()), targetDirectory);
             } else {
                 // never reached as prefersSeekableByteChannel only returns true for TAR, ZIP and 7z
-                throw new ArchiveException("Don't know how to handle format " + format);
+                throw new ArchiveException("Don't know how to handle format '%s'", format);
             }
         }
     }

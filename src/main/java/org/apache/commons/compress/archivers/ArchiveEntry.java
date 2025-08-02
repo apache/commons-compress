@@ -76,7 +76,7 @@ public interface ArchiveEntry {
         final String name = getName();
         final Path outputFile = parentPath.resolve(name).normalize();
         if (!outputFile.startsWith(parentPath)) {
-            throw new ArchiveException(String.format("Zip slip '%s' + '%s' -> '%s'", parentPath, name, outputFile));
+            throw new ArchiveException("Zip slip '%s' + '%s' -> '%s'", parentPath, name, outputFile);
         }
         return outputFile;
     }

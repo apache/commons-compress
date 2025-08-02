@@ -474,7 +474,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
         if (archiveStreamProvider != null) {
             return archiveStreamProvider.createArchiveInputStream(archiverName, in, actualEncoding);
         }
-        throw new ArchiveException("Archiver: " + archiverName + " not found.");
+        throw new ArchiveException("Archiver: %s not found.", archiverName);
     }
 
     /**
@@ -538,7 +538,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
         if (archiveStreamProvider != null) {
             return archiveStreamProvider.createArchiveOutputStream(archiverName, out, actualEncoding);
         }
-        throw new ArchiveException("Archiver: " + archiverName + " not found.");
+        throw new ArchiveException("Archiver: %s not found.", archiverName);
     }
 
     /**

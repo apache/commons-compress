@@ -354,7 +354,7 @@ public class SevenZFile implements Closeable {
      */
     private static int assertFitsIntoNonNegativeInt(final String description, final long value) throws IOException {
         if (value > Integer.MAX_VALUE || value < 0) {
-            throw new ArchiveException(String.format("Cannot handle %s %,d", description, value));
+            throw new ArchiveException("Cannot handle %s %,d", description, value);
         }
         return (int) value;
     }
@@ -1548,7 +1548,7 @@ public class SevenZFile implements Closeable {
         final byte archiveVersionMajor = buf.get();
         final byte archiveVersionMinor = buf.get();
         if (archiveVersionMajor != 0) {
-            throw new ArchiveException(String.format("Unsupported 7z version (%d,%d)", archiveVersionMajor, archiveVersionMinor));
+            throw new ArchiveException("Unsupported 7z version (%d,%d)", archiveVersionMajor, archiveVersionMinor);
         }
         boolean headerLooksValid = false; // See https://www.7-zip.org/recover.html - "There is no correct End Header at the end of archive"
         final long startHeaderCrc = 0xffffFFFFL & buf.getInt();
@@ -1789,7 +1789,7 @@ public class SevenZFile implements Closeable {
             nid = getUnsignedByte(header);
         }
         if (nid != NID.kEnd) {
-            throw new ArchiveException("Badly terminated header, found " + nid);
+            throw new ArchiveException("Badly terminated header, found %s", nid);
         }
         return stats;
     }
@@ -1850,7 +1850,7 @@ public class SevenZFile implements Closeable {
                     }
                 }
                 if (filesSeen != stats.numberOfEntries) {
-                    throw new ArchiveException("Invalid number of file names (" + filesSeen + " instead of " + stats.numberOfEntries + ")");
+                    throw new ArchiveException("Invalid number of file names (%,d instead of %,d)", filesSeen, stats.numberOfEntries);
                 }
                 break;
             }
@@ -1995,7 +1995,7 @@ public class SevenZFile implements Closeable {
     private void sanityCheckPackInfo(final ByteBuffer header, final ArchiveStatistics stats) throws IOException {
         final long packPos = readUint64(header);
         if (packPos < 0 || SIGNATURE_HEADER_SIZE + packPos > channel.size() || SIGNATURE_HEADER_SIZE + packPos < 0) {
-            throw new ArchiveException("packPos (" + packPos + ") is out of range");
+            throw new ArchiveException("packPos (%,d) is out of range", packPos);
         }
         final long numPackStreams = readUint64(header);
         stats.numberOfPackedStreams = assertFitsIntoNonNegativeInt("numPackStreams", numPackStreams);
@@ -2007,7 +2007,7 @@ public class SevenZFile implements Closeable {
                 totalPackSizes = Math.addExact(totalPackSizes, packSize);
                 final long endOfPackStreams = SIGNATURE_HEADER_SIZE + packPos + totalPackSizes;
                 if (packSize < 0 || endOfPackStreams > channel.size() || endOfPackStreams < packPos) {
-                    throw new ArchiveException("packSize (" + packSize + ") is out of range");
+                    throw new ArchiveException("packSize (%,d) is out of range", packSize);
                 }
             }
             nid = getUnsignedByte(header);
@@ -2020,7 +2020,7 @@ public class SevenZFile implements Closeable {
             nid = getUnsignedByte(header);
         }
         if (nid != NID.kEnd) {
-            throw new ArchiveException("Badly terminated PackInfo (" + nid + ")");
+            throw new ArchiveException("Badly terminated PackInfo (%s)", nid);
         }
     }
 
@@ -2097,7 +2097,7 @@ public class SevenZFile implements Closeable {
     private void sanityCheckUnpackInfo(final ByteBuffer header, final ArchiveStatistics stats) throws IOException {
         int nid = getUnsignedByte(header);
         if (nid != NID.kFolder) {
-            throw new ArchiveException("Expected kFolder, got " + nid);
+            throw new ArchiveException("Expected NID.kFolder, got %s", nid);
         }
         final long numFolders = readUint64(header);
         stats.numberOfFolders = assertFitsIntoNonNegativeInt("numFolders", numFolders);
@@ -2116,7 +2116,7 @@ public class SevenZFile implements Closeable {
         }
         nid = getUnsignedByte(header);
         if (nid != NID.kCodersUnpackSize) {
-            throw new ArchiveException("Expected kCodersUnpackSize, got " + nid);
+            throw new ArchiveException("Expected kCodersUnpackSize, got %s", nid);
         }
         for (final int numberOfOutputStreams : numberOfOutputStreamsPerFolder) {
             for (int i = 0; i < numberOfOutputStreams; i++) {

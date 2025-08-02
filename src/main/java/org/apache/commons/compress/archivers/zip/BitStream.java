@@ -46,7 +46,7 @@ final class BitStream extends BitInputStream {
      */
     long nextBits(final int n) throws IOException {
         if (n < 0 || n > 8) {
-            throw new ArchiveException("Trying to read " + n + " bits, at most 8 are allowed");
+            throw new ArchiveException("Trying to read %,d bits, at most 8 are allowed", n);
         }
         return readBits(n);
     }

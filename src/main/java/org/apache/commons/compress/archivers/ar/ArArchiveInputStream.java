@@ -262,7 +262,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
             final int read = realized.length;
             trackReadBytes(read);
             if (read != expected.length) {
-                throw new ArchiveException("Failed to read header. Occurred at byte: " + getBytesRead());
+                throw new ArchiveException("Failed to read header. Occurred at byte: %,d", getBytesRead());
             }
             if (!Arrays.equals(expected, realized)) {
                 throw new ArchiveException("Invalid header " + ArchiveUtils.toAsciiString(realized));

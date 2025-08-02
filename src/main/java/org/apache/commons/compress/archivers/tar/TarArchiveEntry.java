@@ -268,7 +268,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     private static Instant parseInstantFromDecimalSeconds(final String value) throws IOException {
         // Validate field values to prevent denial of service attacks with BigDecimal values (see JDK-6560193)
         if (!PAX_EXTENDED_HEADER_FILE_TIMES_PATTERN.matcher(value).matches()) {
-            throw new ArchiveException("Corrupted PAX header. Time field value is invalid '" + value + "'");
+            throw new ArchiveException("Corrupted PAX header. Time field value is invalid '%s'", value);
         }
 
         final BigDecimal epochSeconds = new BigDecimal(value);
@@ -1000,11 +1000,11 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         for (int i = 0; i < numberOfHeaders; i++) {
             final TarArchiveStructSparse str = orderedAndFiltered.get(i);
             if (i + 1 < numberOfHeaders && str.getOffset() + str.getNumbytes() > orderedAndFiltered.get(i + 1).getOffset()) {
-                throw new ArchiveException("Corrupted TAR archive. Sparse blocks for " + getName() + " overlap each other.");
+                throw new ArchiveException("Corrupted TAR archive. Sparse blocks for '%s' overlap each other.", getName());
             }
             if (str.getOffset() + str.getNumbytes() < 0) {
                 // integer overflow?
-                throw new ArchiveException("Unreadable TAR archive. Offset and numbytes for sparse block in " + getName() + " too large.");
+                throw new ArchiveException("Unreadable TAR archive. Offset and numbytes for sparse block in '%s' too large.", getName());
             }
         }
         if (!orderedAndFiltered.isEmpty()) {

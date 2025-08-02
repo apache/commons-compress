@@ -46,7 +46,7 @@ class SevenZAES256SHA256DecoderTest {
             final Coder coder = new Coder(null, 0, 0, byteArray);
             try (InputStream inputStream = aES256SHA256Decoder.decode("x", bufferedInputStream, 3138, coder, coder.properties, Integer.MAX_VALUE)) {
                 final IOException e = assertThrows(ArchiveException.class, () -> new ObjectInputStream(inputStream), "Expecting exception: IOException");
-                assertEquals("Salt size + IV size too long in x", e.getMessage());
+                assertEquals("Salt size + IV size too long in 'x'", e.getMessage());
                 assertEquals("org.apache.commons.compress.archivers.sevenz.AES256SHA256Decoder$AES256SHA256DecoderInputStream",
                         e.getStackTrace()[0].getClassName());
             }

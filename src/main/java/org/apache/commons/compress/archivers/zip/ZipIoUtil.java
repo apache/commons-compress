@@ -50,7 +50,8 @@ final class ZipIoUtil {
                 continue;
             }
             if (written < 0) {
-                throw new ArchiveException("Failed to write all bytes in the buffer for channel=" + channel + ", length=" + remaining + ", written=" + written);
+                throw new ArchiveException("Failed to write all bytes in the buffer for channel = %s, length = %,d, written = %,d", channel, remaining,
+                        written);
             }
             currentPos += written;
         }
@@ -73,7 +74,8 @@ final class ZipIoUtil {
                 continue;
             }
             if (written < 0) {
-                throw new ArchiveException("Failed to write all bytes in the buffer for channel=" + channel + ", length=" + remaining + ", written=" + written);
+                throw new ArchiveException("Failed to write all bytes in the buffer for channel = %s, length = %,d, written = %,d", channel, remaining,
+                        written);
             }
         }
     }

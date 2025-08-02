@@ -95,7 +95,7 @@ final class UnshrinkingInputStream extends LZWInputStream {
         }
         final int subCode = readNextCode();
         if (subCode < 0) {
-            throw new ArchiveException("Unexpected EOF;");
+            throw new ArchiveException("Unexpected EOF");
         }
         if (subCode == 1) {
             if (getCodeSize() >= MAX_CODE_SIZE) {
@@ -106,7 +106,7 @@ final class UnshrinkingInputStream extends LZWInputStream {
             partialClear();
             setTableSize(getClearCode() + 1);
         } else {
-            throw new ArchiveException("Invalid clear code subcode " + subCode);
+            throw new ArchiveException("Invalid clear code subcode %s", subCode);
         }
         return 0;
     }

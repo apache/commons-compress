@@ -290,23 +290,19 @@ final class TapeInputStream extends FilterInputStream {
      */
     public void resetBlockSize(final int recsPerBlock, final boolean isCompressed) throws IOException {
         this.isCompressed = isCompressed;
-
         if (recsPerBlock < 1) {
-            throw new ArchiveException("Block with " + recsPerBlock + " records found, must be at least 1");
+            throw new ArchiveException("Block with %,d records found, must be at least 1", recsPerBlock);
         }
         blockSize = RECORD_SIZE * recsPerBlock;
         if (blockSize < 1) {
-            throw new ArchiveException("Block size cannot be less than or equal to 0: " + blockSize);
+            throw new ArchiveException("Block size cannot be less than or equal to 0: %,d", blockSize);
         }
-
         // save first block in case we need it again
         final byte[] oldBuffer = blockBuffer;
-
         // read rest of new block
         blockBuffer = new byte[blockSize];
         System.arraycopy(oldBuffer, 0, blockBuffer, 0, RECORD_SIZE);
         readFully(blockBuffer, RECORD_SIZE, blockSize - RECORD_SIZE);
-
         this.currBlkIdx = 0;
         this.readOffset = RECORD_SIZE;
     }

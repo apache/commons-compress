@@ -62,7 +62,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
 
     private String checkLength(final String value, final int max, final String name) throws IOException {
         if (value.length() > max) {
-            throw new ArchiveException(name + " too long");
+            throw new ArchiveException("'%s' too long", name);
         }
         return value;
     }
@@ -137,7 +137,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
             writeArchiveHeader();
         } else {
             if (prevEntry.getLength() != entryOffset) {
-                throw new ArchiveException("Length does not match entry (" + prevEntry.getLength() + " != " + entryOffset);
+                throw new ArchiveException("Length does not match entry (%,d != %,d", entryOffset, prevEntry.getLength());
             }
             if (prevEntryOpen) {
                 closeArchiveEntry();
@@ -181,7 +181,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
         final String eName = entry.getName();
         final int nLength = eName.length();
         if (LONGFILE_ERROR == longFileMode && nLength > 16) {
-            throw new ArchiveException("File name too long, > 16 chars: " + eName);
+            throw new ArchiveException("File name too long, > 16 chars: '%s'", eName);
         }
         if (LONGFILE_BSD == longFileMode && (nLength > 16 || eName.indexOf(SPACE) > -1)) {
             appendName = true;

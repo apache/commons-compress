@@ -228,7 +228,7 @@ final class Coders {
             final int maxMemoryLimitKiB) throws IOException {
         final AbstractCoder cb = findByMethod(SevenZMethod.byId(coder.decompressionMethodId));
         if (cb == null) {
-            throw new ArchiveException("Unsupported compression method " + Arrays.toString(coder.decompressionMethodId) + " used in " + archiveName);
+            throw new ArchiveException("Unsupported compression method %s used in '%s'", Arrays.toString(coder.decompressionMethodId), archiveName);
         }
         return cb.decode(archiveName, is, uncompressedLength, coder, password, maxMemoryLimitKiB);
     }
@@ -236,7 +236,7 @@ final class Coders {
     static OutputStream addEncoder(final OutputStream out, final SevenZMethod method, final Object options) throws IOException {
         final AbstractCoder cb = findByMethod(method);
         if (cb == null) {
-            throw new ArchiveException("Unsupported compression method " + method);
+            throw new ArchiveException("Unsupported compression method '%s'", method);
         }
         return cb.encode(out, options);
     }
