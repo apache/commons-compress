@@ -193,6 +193,11 @@ public class SevenZFile implements Closeable {
         private boolean useDefaultNameForUnnamedEntries = USE_DEFAULTNAME_FOR_UNNAMED_ENTRIES;
         private boolean tryToRecoverBrokenArchives = TRY_TO_RECOVER_BROKEN_ARCHIVES;
 
+        /**
+         * Builds a new {@link SevenZFile}.
+         *
+         * @throws IOException Thrown if an I/O error occurs.
+         */
         @SuppressWarnings("resource") // Caller closes
         @Override
         public SevenZFile get() throws IOException {
@@ -684,6 +689,8 @@ public class SevenZFile implements Closeable {
                 this.password = null;
             }
             succeeded = true;
+        } catch (final ArithmeticException | IllegalArgumentException e) {
+            throw new IOException(e);
         } finally {
             if (!succeeded && closeOnError) {
                 this.channel.close();
