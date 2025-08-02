@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.commons.compress.archivers.sevenz;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -31,32 +32,25 @@ class FolderTest {
 
     @Test
     void testFindBindPairForInStream() {
-
         final Folder folder = new Folder();
         final BindPair[] bindPairArray = new BindPair[1];
         final BindPair bindPair = new BindPair(0, 0);
         bindPairArray[0] = bindPair;
         folder.bindPairs = bindPairArray;
-
         assertEquals(0, folder.findBindPairForInStream(0));
-
     }
 
     @Test
     void testGetUnpackSizeForCoderOne() {
-
         final Folder folder = new Folder();
         final Coder[] coderArray = new Coder[5];
         final Coder coder = new Coder(null, 0, 0, null);
         folder.coders = coderArray;
-
         assertEquals(0L, folder.getUnpackSizeForCoder(coder));
-
     }
 
     @Test
     void testGetUnpackSizeOne() {
-
         final Folder folder = new Folder();
         folder.totalOutputStreams = 266L;
         final BindPair[] bindPairArray = new BindPair[1];
@@ -64,18 +58,12 @@ class FolderTest {
         bindPairArray[0] = bindPair;
         folder.bindPairs = bindPairArray;
         folder.totalOutputStreams = 1L;
-
         assertEquals(0L, folder.getUnpackSize());
-
     }
 
     @Test
     void testGetUnpackSizeTwo() {
-
         final Folder folder = new Folder();
-
         assertEquals(0L, folder.getUnpackSize());
-
     }
-
 }

@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.commons.compress.archivers.sevenz;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -37,7 +38,6 @@ class AES256SHA256DecoderTest {
 
     @Test
     void testDecodeWithNonEmptyString() throws IOException {
-
         final AES256SHA256Decoder aES256SHA256Decoder = new AES256SHA256Decoder();
         try (BufferedInputStream bufferedInputStream = new BufferedInputStream(null, 3138)) {
             final byte[] byteArray = new byte[8];
@@ -51,5 +51,4 @@ class AES256SHA256DecoderTest {
             }
         }
     }
-
 }
