@@ -45,6 +45,7 @@ The <action> type attribute can be add,update,fix,remove.
     <release version="1.28.1" date="YYYY-MM-DD" description="This is a feature and maintenance release. Java 8 or later is required. This release updates Apache Commons Lang to 3.18.0 to pick up the fix for CVE-2025-48924 (https://nvd.nist.gov/vuln/detail/CVE-2025-48924), but is not affected by it.">
       <!-- FIX -->
       <action type="fix" dev="ggregory" due-to="Piotr P. Karwasz, Gary Gregory">Add missing Javadoc @since tag to org.apache.commons.compress.compressors.lz77support.LZ77Compressor.AbstractReference.</action>
+      <action type="fix" issue="COMPRESS-702" dev="ggregory" due-to="Zhang Di, Lastoneee">Performance issue in SevenZFile #681.</action>
       <!-- ADD -->
       <!-- UPDATE -->
     </release>
