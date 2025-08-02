@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
  *
  * @see Folder
  */
-class FolderTest {
+class SevenZFolderTest {
 
     @Test
     void testFindBindPairForInStream() {

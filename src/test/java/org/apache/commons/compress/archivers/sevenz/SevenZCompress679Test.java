@@ -36,7 +36,7 @@ import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.Test;
 
-class Compress679Test {
+class SevenZCompress679Test {
 
     @Test
     void testCompress679() {
