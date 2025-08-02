@@ -46,6 +46,9 @@ The <action> type attribute can be add,update,fix,remove.
       <!-- FIX -->
       <action type="fix" dev="ggregory" due-to="Piotr P. Karwasz, Gary Gregory">Add missing Javadoc @since tag to org.apache.commons.compress.compressors.lz77support.LZ77Compressor.AbstractReference.</action>
       <action type="fix" issue="COMPRESS-702" dev="ggregory" due-to="Zhang Di, Lastoneee">Performance issue in SevenZFile #681.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">Fix kilobyte to kibibyte conversion in org.apache.commons.compress.archivers.sevenz.SevenZFile.ArchiveStatistics.assertValidity(int).</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">Fix kilobyte to kibibyte conversion in org.apache.commons.compress.archivers.sevenz.SevenZFile.ArchiveStatistics.toString().</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">Fix kilobyte to kibibyte conversion in org.apache.commons.compress.archivers.sevenz.SevenZFile.Builder.setMaxMemoryLimitKb(int).</action>
       <!-- ADD -->
       <!-- UPDATE -->
     </release>
