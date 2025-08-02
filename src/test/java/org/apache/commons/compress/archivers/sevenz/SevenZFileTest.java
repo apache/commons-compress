@@ -282,7 +282,6 @@ class SevenZFileTest extends AbstractTest {
                     + "111111111111111111111111111000101011\n" + "111111111111111111111111111000101011\n" + "111111111111111111111111111000101011\n"
                     + "111111111111111111111111111000101011\n" + "111111111111111111111111111000101011\n" + "111111111111111111111111111000101011\n"
                     + "111111111111111111111111111000101011\n" + "111111111111111111111111111000101011";
-
             for (final SevenZArchiveEntry entry : sevenZFile.getEntries()) {
                 if (entry.getName().equals("commons-compress-1.7-src/src/test/resources/test.txt")) {
                     final byte[] contents = new byte[(int) entry.getSize()];
@@ -308,7 +307,6 @@ class SevenZFileTest extends AbstractTest {
                     + "111111111111111111111111111000101011\n" + "111111111111111111111111111000101011\n" + "111111111111111111111111111000101011\n"
                     + "111111111111111111111111111000101011\n" + "111111111111111111111111111000101011\n" + "111111111111111111111111111000101011\n"
                     + "111111111111111111111111111000101011\n" + "111111111111111111111111111000101011";
-
             for (final SevenZArchiveEntry entry : sevenZFile.getEntries()) {
                 if (entry.getName().equals("commons-compress-1.7-src/src/test/resources/test.txt")) {
                     final byte[] contents = new byte[(int) entry.getSize()];
@@ -511,7 +509,6 @@ class SevenZFileTest extends AbstractTest {
                     + "111111111111111111111111111000101011\n" + "111111111111111111111111111000101011\n" + "111111111111111111111111111000101011\n"
                     + "111111111111111111111111111000101011\n" + "111111111111111111111111111000101011\n" + "111111111111111111111111111000101011\n"
                     + "111111111111111111111111111000101011\n" + "111111111111111111111111111000101011";
-
             SevenZArchiveEntry entry;
             SevenZArchiveEntry testTxtEntry = null;
             while ((entry = sevenZFile.getNextEntry()) != null) {
@@ -520,7 +517,6 @@ class SevenZFileTest extends AbstractTest {
                     break;
                 }
             }
-
             assertNotNull(testTxtEntry, "testTxtEntry");
             final byte[] contents = new byte[(int) testTxtEntry.getSize()];
             int numberOfReads = 10;
@@ -556,7 +552,7 @@ class SevenZFileTest extends AbstractTest {
             final String filesTxtContents = "0xxxxxxxxx10xxxxxxxx20xxxxxxxx30xxxxxxxx40xxxxxxxx50xxxxxxxx60xxxxxxxx70xxxxxxxx80xxxxxxxx90xxxxxxxx100"
                     + "xxxxxxx110xxxxxxx120xxxxxxx130xxxxxxx -> 0yyyyyyyyy10yyyyyyyy20yyyyyyyy30yyyyyyyy40yyyyyyyy50yyyyyyyy60yyyyyyyy70yyyyyyyy80"
                     + "yyyyyyyy90yyyyyyyy100yyyyyyy110yyyyyyy120yyyyyyy130yyyyyyy\n";
-            // @formatter:off
+            // @formatter:on
             int off;
             byte[] contents;
 
@@ -830,7 +826,6 @@ class SevenZFileTest extends AbstractTest {
             outArchive.write(new byte[] { 'A' });
             outArchive.closeArchiveEntry();
         }
-
         try (SevenZFile archive = SevenZFile.builder().setFile(output).get()) {
             final SevenZArchiveEntry entry = archive.getNextEntry();
             final SevenZMethodConfiguration m = entry.getContentMethods().iterator().next();
@@ -850,7 +845,6 @@ class SevenZFileTest extends AbstractTest {
             outArchive.write(new byte[] { 'A' });
             outArchive.closeArchiveEntry();
         }
-
         try (SevenZFile archive = SevenZFile.builder().setFile(output).get()) {
             final SevenZArchiveEntry entry = archive.getNextEntry();
             final SevenZMethodConfiguration m = entry.getContentMethods().iterator().next();
@@ -867,19 +861,19 @@ class SevenZFileTest extends AbstractTest {
             assertEquals("test", entry.getName());
             assertTrue(entry.isDirectory());
             assertDates(entry, "2022-03-21T14:50:46.2099751Z", "2022-03-21T14:50:46.2099751Z", "2022-03-16T10:19:24.1051115Z");
-
+            // next entry
             entry = sevenZFile.getNextEntry();
             assertNotNull(entry);
             assertEquals("test/test-times.txt", entry.getName());
             assertFalse(entry.isDirectory());
             assertDates(entry, "2022-03-18T10:00:15Z", "2022-03-18T10:14:37.8130002Z", "2022-03-18T10:14:37.8110032Z");
-
+            // next entry
             entry = sevenZFile.getNextEntry();
             assertNotNull(entry);
             assertEquals("test/test-times2.txt", entry.getName());
             assertFalse(entry.isDirectory());
             assertDates(entry, "2022-03-18T10:00:19Z", "2022-03-18T10:14:37.8170038Z", "2022-03-18T10:14:37.8140004Z");
-
+            // next entry
             entry = sevenZFile.getNextEntry();
             assertNull(entry);
         }
@@ -900,15 +894,12 @@ class SevenZFileTest extends AbstractTest {
     void testRetrieveInputStreamForAllEntriesWithoutCRCMultipleTimes() throws IOException {
         try (SevenZOutputFile out = new SevenZOutputFile(newTempFile("test.7z"))) {
             final Path inputFile = Files.createTempFile("SevenZTestTemp", "");
-
             final SevenZArchiveEntry entry = out.createArchiveEntry(inputFile.toFile(), "test.txt");
             out.putArchiveEntry(entry);
             out.write("Test".getBytes(UTF_8));
             out.closeArchiveEntry();
-
             Files.deleteIfExists(inputFile);
         }
-
         try (SevenZFile sevenZFile = SevenZFile.builder().setFile(newTempFile("test.7z")).get()) {
             for (final SevenZArchiveEntry entry : sevenZFile.getEntries()) {
                 final byte[] firstRead = read(sevenZFile, entry);

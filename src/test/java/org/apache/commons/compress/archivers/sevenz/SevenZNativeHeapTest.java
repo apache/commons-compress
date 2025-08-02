@@ -263,7 +263,6 @@ class SevenZNativeHeapTest extends AbstractTest {
             delegatingInflater = new DelegatingInflater(inputStream.inflater);
             inputStream.inflater = delegatingInflater;
         }
-
         assertTrue(delegatingInflater.isEnded.get());
     }
 }

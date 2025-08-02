@@ -653,7 +653,6 @@ class SevenZOutputFileTest extends AbstractTest {
             return Boolean.FALSE;
         }
         assertEquals(size, entry.getSize());
-
         final byte[] actual = new byte[size];
         int count = 0;
         while (count < size) {
