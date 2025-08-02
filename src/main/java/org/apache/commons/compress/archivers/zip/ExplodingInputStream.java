@@ -194,7 +194,7 @@ final class ExplodingInputStream extends InputStream implements InputStreamStati
             try {
                 fillBuffer();
             } catch (final IllegalArgumentException ex) {
-                throw new IOException("bad IMPLODE stream", ex);
+                throw new IOException("Bad IMPLODE stream", ex);
             }
         }
 

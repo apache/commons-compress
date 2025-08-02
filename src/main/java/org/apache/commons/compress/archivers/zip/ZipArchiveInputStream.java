@@ -780,7 +780,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
                         current.inputStream = new ExplodingInputStream(current.entry.getGeneralPurposeBit().getSlidingDictionarySize(),
                                 current.entry.getGeneralPurposeBit().getNumberOfShannonFanoTrees(), bis);
                     } catch (final IllegalArgumentException ex) {
-                        throw new IOException("bad IMPLODE data", ex);
+                        throw new IOException("Bad IMPLODE data", ex);
                     }
                     break;
                 case BZIP2:
@@ -875,7 +875,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     private void processZip64Extra(final ZipLong size, final ZipLong cSize) throws ZipException {
         final ZipExtraField extra = current.entry.getExtraField(Zip64ExtendedInformationExtraField.HEADER_ID);
         if (extra != null && !(extra instanceof Zip64ExtendedInformationExtraField)) {
-            throw new ZipException("archive contains unparseable zip64 extra field");
+            throw new ZipException("Archive contains unparseable zip64 extra field");
         }
         final Zip64ExtendedInformationExtraField z64 = (Zip64ExtendedInformationExtraField) extra;
         current.usesZip64 = z64 != null;
@@ -884,25 +884,25 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
                     && (ZipLong.ZIP64_MAGIC.equals(cSize) || ZipLong.ZIP64_MAGIC.equals(size))) {
                 if (z64.getCompressedSize() == null || z64.getSize() == null) {
                     // avoid NPE if it's a corrupted ZIP archive
-                    throw new ZipException("archive contains corrupted zip64 extra field");
+                    throw new ZipException("Archive contains corrupted zip64 extra field");
                 }
                 long s = z64.getCompressedSize().getLongValue();
                 if (s < 0) {
-                    throw new ZipException("broken archive, entry with negative compressed size");
+                    throw new ZipException("Broken archive, entry with negative compressed size");
                 }
                 current.entry.setCompressedSize(s);
                 s = z64.getSize().getLongValue();
                 if (s < 0) {
-                    throw new ZipException("broken archive, entry with negative size");
+                    throw new ZipException("Broken archive, entry with negative size");
                 }
                 current.entry.setSize(s);
             } else if (cSize != null && size != null) {
                 if (cSize.getValue() < 0) {
-                    throw new ZipException("broken archive, entry with negative compressed size");
+                    throw new ZipException("Broken archive, entry with negative compressed size");
                 }
                 current.entry.setCompressedSize(cSize.getValue());
                 if (size.getValue() < 0) {
-                    throw new ZipException("broken archive, entry with negative size");
+                    throw new ZipException("Broken archive, entry with negative size");
                 }
                 current.entry.setSize(size.getValue());
             }
@@ -994,23 +994,23 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
             pushback(twoDwordBuf, DWORD, DWORD);
             long size = ZipLong.getValue(twoDwordBuf);
             if (size < 0) {
-                throw new ZipException("broken archive, entry with negative compressed size");
+                throw new ZipException("Broken archive, entry with negative compressed size");
             }
             current.entry.setCompressedSize(size);
             size = ZipLong.getValue(twoDwordBuf, WORD);
             if (size < 0) {
-                throw new ZipException("broken archive, entry with negative size");
+                throw new ZipException("Broken archive, entry with negative size");
             }
             current.entry.setSize(size);
         } else {
             long size = ZipEightByteInteger.getLongValue(twoDwordBuf);
             if (size < 0) {
-                throw new ZipException("broken archive, entry with negative compressed size");
+                throw new ZipException("Broken archive, entry with negative compressed size");
             }
             current.entry.setCompressedSize(size);
             size = ZipEightByteInteger.getLongValue(twoDwordBuf, DWORD);
             if (size < 0) {
-                throw new ZipException("broken archive, entry with negative size");
+                throw new ZipException("Broken archive, entry with negative size");
             }
             current.entry.setSize(size);
         }
@@ -1244,11 +1244,11 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
             }
         }
         if (current.entry.getCompressedSize() != current.entry.getSize()) {
-            throw new ZipException("compressed and uncompressed size don't match" + USE_ZIPFILE_INSTEAD_OF_STREAM_DISCLAIMER);
+            throw new ZipException("Compressed and uncompressed size don't match" + USE_ZIPFILE_INSTEAD_OF_STREAM_DISCLAIMER);
         }
         final byte[] b = bos.toByteArray();
         if (b.length != current.entry.getSize()) {
-            throw new ZipException("actual and claimed size don't match" + USE_ZIPFILE_INSTEAD_OF_STREAM_DISCLAIMER);
+            throw new ZipException("Actual and claimed size don't match" + USE_ZIPFILE_INSTEAD_OF_STREAM_DISCLAIMER);
         }
         lastStoredEntry = new ByteArrayInputStream(b);
     }

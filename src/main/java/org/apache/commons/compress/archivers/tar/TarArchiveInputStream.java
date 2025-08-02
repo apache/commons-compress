@@ -586,7 +586,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
         }
         getNextEntry(); // Get the actual file entry
         if (currEntry == null) {
-            throw new IOException("premature end of tar archive. Didn't find any entry after PAX header.");
+            throw new IOException("Premature end of tar archive. Didn't find any entry after PAX header.");
         }
         applyPaxHeadersToCurrentEntry(headers, sparseHeaders);
         // for 1.0 PAX Format, the sparse map is stored in the file data block
@@ -664,7 +664,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
             do {
                 final byte[] headerBuf = getRecord();
                 if (headerBuf == null) {
-                    throw new IOException("premature end of tar archive. Didn't find extended_header after header with extended flag.");
+                    throw new IOException("Premature end of tar archive. Didn't find extended_header after header with extended flag.");
                 }
                 entry = new TarArchiveSparseEntry(headerBuf);
                 currEntry.getSparseHeaders().addAll(entry.getSparseHeaders());

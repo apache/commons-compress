@@ -138,7 +138,7 @@ final class ZipSplitOutputStream extends RandomAccessOutputStream {
         final Path newFile = getSplitSegmentFileName(zipSplitSegmentSuffixIndex);
 
         if (Files.exists(newFile)) {
-            throw new IOException("split ZIP segment " + newFile + " already exists");
+            throw new IOException("Split ZIP segment " + newFile + " already exists");
         }
         return newFile;
     }

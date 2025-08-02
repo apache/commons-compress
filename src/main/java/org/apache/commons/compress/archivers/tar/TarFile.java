@@ -62,7 +62,7 @@ public class TarFile implements Closeable {
         BoundedTarEntryInputStream(final TarArchiveEntry entry, final SeekableByteChannel channel) throws IOException {
             super(entry.getDataOffset(), entry.getRealSize());
             if (channel.size() - entry.getSize() < entry.getDataOffset()) {
-                throw new IOException("entry size exceeds archive size");
+                throw new IOException("Entry size exceeds archive size");
             }
             this.entry = entry;
             this.channel = channel;
@@ -605,7 +605,7 @@ public class TarFile implements Closeable {
         }
         getNextTarEntry(); // Get the actual file entry
         if (currEntry == null) {
-            throw new IOException("premature end of tar archive. Didn't find any entry after PAX header.");
+            throw new IOException("Premature end of tar archive. Didn't find any entry after PAX header.");
         }
         applyPaxHeadersToCurrentEntry(headers, sparseHeaders);
 
@@ -646,7 +646,7 @@ public class TarFile implements Closeable {
             do {
                 final ByteBuffer headerBuf = getRecord();
                 if (headerBuf == null) {
-                    throw new IOException("premature end of tar archive. Didn't find extended_header after header with extended flag.");
+                    throw new IOException("Premature end of tar archive. Didn't find extended_header after header with extended flag.");
                 }
                 entry = new TarArchiveSparseEntry(headerBuf.array());
                 currEntry.getSparseHeaders().addAll(entry.getSparseHeaders());
@@ -681,7 +681,7 @@ public class TarFile implements Closeable {
     private void repositionForwardTo(final long newPosition) throws IOException {
         final long currPosition = archive.position();
         if (newPosition < currPosition) {
-            throw new IOException("trying to move backwards inside of the archive");
+            throw new IOException("Trying to move backwards inside of the archive");
         }
         archive.position(newPosition);
     }

@@ -130,7 +130,7 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
             }
         }
         if (first != null) {
-            throw new IOException("failed to close wrapped channel", first);
+            throw new IOException("Failed to close wrapped channel", first);
         }
     }
 

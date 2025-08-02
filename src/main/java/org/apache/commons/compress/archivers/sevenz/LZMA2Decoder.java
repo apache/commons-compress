@@ -42,9 +42,10 @@ final class LZMA2Decoder extends AbstractCoder {
             if (memoryUsageInKiB > maxMemoryLimitKiB) {
                 throw new MemoryLimitException(memoryUsageInKiB, maxMemoryLimitKiB);
             }
+            // Throws IllegalArgumentException
             return new LZMA2InputStream(in, dictionarySize);
-        } catch (final IllegalArgumentException ex) { // NOSONAR
-            throw new IOException(ex);
+        } catch (final IllegalArgumentException e) { // NOSONAR
+            throw new IOException(e);
         }
     }
 

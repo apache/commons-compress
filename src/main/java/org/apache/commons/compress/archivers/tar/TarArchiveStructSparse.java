@@ -49,7 +49,7 @@ public final class TarArchiveStructSparse {
             throw new IllegalArgumentException("offset must not be negative");
         }
         if (numBytes < 0) {
-            throw new IllegalArgumentException("numbytes must not be negative");
+            throw new IllegalArgumentException("numBytes must not be negative");
         }
         this.offset = offset;
         this.numbytes = numBytes;

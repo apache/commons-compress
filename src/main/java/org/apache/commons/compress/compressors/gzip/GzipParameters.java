@@ -504,7 +504,7 @@ public class GzipParameters {
      */
     public void setBufferSize(final int bufferSize) {
         if (bufferSize <= 0) {
-            throw new IllegalArgumentException("invalid buffer size: " + bufferSize);
+            throw new IllegalArgumentException("Invalid buffer size: " + bufferSize);
         }
         this.bufferSize = bufferSize;
     }

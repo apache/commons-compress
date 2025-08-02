@@ -99,7 +99,7 @@ final class Folder {
         int current = (int) packedStreams[0]; // more that 2^31 coders?
         while (current >= 0 && current < coders.length) {
             if (list.contains(coders[current])) {
-                throw new IOException("folder uses the same coder more than once in coder chain");
+                throw new IOException("Folder uses the same coder more than once in coder chain");
             }
             list.addLast(coders[current]);
             final int pair = findBindPairForOutStream(current);

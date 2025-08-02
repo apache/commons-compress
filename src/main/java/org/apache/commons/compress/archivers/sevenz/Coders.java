@@ -60,8 +60,8 @@ final class Coders {
             try {
                 return opts.getInputStream(in);
             } catch (final AssertionError e) {
-                throw new IOException("BCJ filter used in " + archiveName + " needs XZ for Java > 1.4 - see "
-                        + "https://commons.apache.org/proper/commons-compress/limitations.html#7Z", e);
+                throw new IOException("BCJ filter used in " + archiveName
+                        + " needs XZ for Java > 1.4 - see https://commons.apache.org/proper/commons-compress/limitations.html#7Z", e);
             }
         }
 

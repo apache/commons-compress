@@ -47,7 +47,7 @@ final class LZMADecoder extends AbstractCoder {
         final byte propsByte = coder.properties[0];
         final int dictSize = getDictionarySize(coder);
         if (dictSize > LZMAInputStream.DICT_SIZE_MAX) {
-            throw new IOException("Dictionary larger than 4GiB maximum size used in " + archiveName);
+            throw new IOException("Dictionary larger than 4 GiB maximum size used in " + archiveName);
         }
         final int memoryUsageInKiB = LZMAInputStream.getMemoryUsage(dictSize, propsByte);
         if (memoryUsageInKiB > maxMemoryLimitKiB) {

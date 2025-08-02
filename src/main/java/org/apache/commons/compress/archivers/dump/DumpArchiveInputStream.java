@@ -489,13 +489,13 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
                 throw new EOFException();
             }
 
-            int reclen = 0;
+            int recLen = 0;
 
-            for (int i = 0; i < datalen - 8 && i < size - 8; i += reclen) {
+            for (int i = 0; i < datalen - 8 && i < size - 8; i += recLen) {
                 final int ino = DumpArchiveUtil.convert32(blockBuffer, i);
-                reclen = DumpArchiveUtil.convert16(blockBuffer, i + 4);
-                if (reclen == 0) {
-                    throw new DumpArchiveException("reclen cannot be 0");
+                recLen = DumpArchiveUtil.convert16(blockBuffer, i + 4);
+                if (recLen == 0) {
+                    throw new DumpArchiveException("recLen cannot be 0");
                 }
 
                 final byte type = blockBuffer[i + 6];

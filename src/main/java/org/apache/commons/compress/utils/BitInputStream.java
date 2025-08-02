@@ -188,7 +188,7 @@ public class BitInputStream implements Closeable {
      */
     public long readBits(final int count) throws IOException {
         if (count < 0 || count > MAXIMUM_CACHE_SIZE) {
-            throw new IOException("count must not be negative or greater than " + MAXIMUM_CACHE_SIZE);
+            throw new IOException("Count must not be negative or greater than " + MAXIMUM_CACHE_SIZE);
         }
         if (ensureCache(count)) {
             return -1;

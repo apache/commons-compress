@@ -338,7 +338,7 @@ public final class BHSDCodec extends Codec {
             z += Math.min(cardinality, 4294967296L);
         }
         if (z < 0) {
-            throw new Pack200Exception("unable to encode");
+            throw new Pack200Exception("Unable to encode");
         }
 
         final List<Byte> byteList = new ArrayList<>();
