@@ -339,9 +339,17 @@ public class SevenZFile implements Closeable {
     static final byte[] sevenZSignature = { // NOSONAR
             (byte) '7', (byte) 'z', (byte) 0xBC, (byte) 0xAF, (byte) 0x27, (byte) 0x1C };
 
-    private static int assertFitsIntoNonNegativeInt(final String what, final long value) throws IOException {
+    /**
+     * Throws IOException if the given value is not in {@code [0, Integer.MAX_VALUE]}.
+     *
+     * @param description A description for the IOException.
+     * @param value The value to check.
+     * @return The given value as an int.
+     * @throws IOException Thrown if the given value is not in {@code [0, Integer.MAX_VALUE]}.
+     */
+    private static int assertFitsIntoNonNegativeInt(final String description, final long value) throws IOException {
         if (value > Integer.MAX_VALUE || value < 0) {
-            throw new IOException(String.format("Cannot handle %s %,d", what, value));
+            throw new IOException(String.format("Cannot handle %s %,d", description, value));
         }
         return (int) value;
     }
@@ -380,6 +388,13 @@ public class SevenZFile implements Closeable {
         return checkEndOfFile(buf, Long.BYTES).getLong();
     }
 
+    /**
+     * Gets the next unsigned byte as an int.
+     *
+     * @param buf the byte source.
+     * @return the next unsigned byte as an int.
+     * @throws EOFException Thrown if the given buffer doesn't have a remaining byte.
+     */
     private static int getUnsignedByte(final ByteBuffer buf) throws EOFException {
         if (!buf.hasRemaining()) {
             throw new EOFException();
