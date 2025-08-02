@@ -109,6 +109,8 @@ class BZip2CompressorInputStreamTest extends AbstractTest {
     }
 
     /**
+     * Tests <a href="https://issues.apache.org/jira/browse/COMPRESS-516">COMPRESS-516</a>.
+     *
      * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-516">COMPRESS-516</a>
      */
     @Test
