@@ -26,7 +26,7 @@ import java.io.IOException;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.junit.jupiter.api.Test;
 
-class SevenZFileBinTest {
+class SevenZReadSubStreamsInfoTest {
 
     @Test
     void testReadSubStreamsInfo() throws IOException {
