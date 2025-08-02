@@ -690,7 +690,7 @@ public class SevenZFile implements Closeable {
             }
             succeeded = true;
         } catch (final ArithmeticException | IllegalArgumentException e) {
-            throw new IOException(e);
+            throw new ArchiveException(e);
         } finally {
             if (!succeeded && closeOnError) {
                 this.channel.close();

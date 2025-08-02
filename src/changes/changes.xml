@@ -49,8 +49,8 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Fix kilobyte to kibibyte conversion in org.apache.commons.compress.archivers.sevenz.SevenZFile.ArchiveStatistics.assertValidity(int).</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Fix kilobyte to kibibyte conversion in org.apache.commons.compress.archivers.sevenz.SevenZFile.ArchiveStatistics.toString().</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Fix kilobyte to kibibyte conversion in org.apache.commons.compress.archivers.sevenz.SevenZFile.Builder.setMaxMemoryLimitKb(int).</action>
-      <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">org.apache.commons.compress.archivers.sevenz.SevenZFile now throws an IOException if a result overflows a long.</action>
-      <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">org.apache.commons.compress.archivers.sevenz.SevenZFile.Builder.get() now throws an IOException instead of an IllegalArgumentException.</action>
+      <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">org.apache.commons.compress.archivers.sevenz.SevenZFile now throws an ArchiveException if a result overflows a long.</action>
+      <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">org.apache.commons.compress.archivers.sevenz.SevenZFile.Builder.get() now throws an ArchiveException instead of an IllegalArgumentException.</action>
       <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">Fix format string in org.apache.commons.compress.archivers.sevenz.SevenZFile.assertFitsIntoNonNegativeInt(String, long).</action>
       <!-- ADD -->
       <!-- UPDATE -->
