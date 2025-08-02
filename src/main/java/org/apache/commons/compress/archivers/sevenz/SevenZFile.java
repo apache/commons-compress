@@ -235,11 +235,11 @@ public class SevenZFile implements Closeable {
          * Not all codecs honor this setting. Currently only LZMA and LZMA2 are supported.
          * </p>
          *
-         * @param maxMemoryLimitKiB the max memory limit in kilobytes.
+         * @param maxMemoryLimitKb the max memory limit in kilobytes.
          * @return {@code this} instance.
          */
-        public Builder setMaxMemoryLimitKb(final int maxMemoryLimitKiB) {
-            this.maxMemoryLimitKiB = maxMemoryLimitKiB / 1024;
+        public Builder setMaxMemoryLimitKb(final int maxMemoryLimitKb) {
+            this.maxMemoryLimitKiB = maxMemoryLimitKb / 1024;
             return this;
         }
 
@@ -452,7 +452,6 @@ public class SevenZFile implements Closeable {
     private final ArrayList<InputStream> deferredBlockStreams = new ArrayList<>();
     private final int maxMemoryLimitKiB;
     private final boolean useDefaultNameForUnnamedEntries;
-
     private final boolean tryToRecoverBrokenArchives;
 
     /**
