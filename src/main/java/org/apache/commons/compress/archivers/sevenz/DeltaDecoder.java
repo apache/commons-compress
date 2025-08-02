@@ -25,9 +25,9 @@ import java.io.OutputStream;
 import org.apache.commons.lang3.ArrayUtils;
 import org.tukaani.xz.DeltaOptions;
 import org.tukaani.xz.FinishableWrapperOutputStream;
-import org.tukaani.xz.UnsupportedOptionsException;
 
 final class DeltaDecoder extends AbstractCoder {
+
     DeltaDecoder() {
         super(Number.class);
     }
@@ -41,12 +41,7 @@ final class DeltaDecoder extends AbstractCoder {
     @SuppressWarnings("resource")
     @Override
     OutputStream encode(final OutputStream out, final Object options) throws IOException {
-        final int distance = toInt(options, 1);
-        try {
-            return new DeltaOptions(distance).getOutputStream(new FinishableWrapperOutputStream(out));
-        } catch (final UnsupportedOptionsException ex) { // NOSONAR
-            throw new IOException(ex.getMessage());
-        }
+        return new DeltaOptions(toInt(options, 1)).getOutputStream(new FinishableWrapperOutputStream(out));
     }
 
     @Override
