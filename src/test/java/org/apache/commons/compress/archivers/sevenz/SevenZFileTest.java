@@ -286,10 +286,19 @@ class SevenZFileTest extends AbstractTest {
     @Test
     void testExtractSpecifiedFile() throws Exception {
         try (SevenZFile sevenZFile = getSevenZFile("COMPRESS-256.7z")) {
-            final String testTxtContents = "111111111111111111111111111000101011\n" + "111111111111111111111111111000101011\n"
-                    + "111111111111111111111111111000101011\n" + "111111111111111111111111111000101011\n" + "111111111111111111111111111000101011\n"
-                    + "111111111111111111111111111000101011\n" + "111111111111111111111111111000101011\n" + "111111111111111111111111111000101011\n"
-                    + "111111111111111111111111111000101011\n" + "111111111111111111111111111000101011";
+            // @formatter:off
+            final String testTxtContents =
+                      "111111111111111111111111111000101011\n"
+                    + "111111111111111111111111111000101011\n"
+                    + "111111111111111111111111111000101011\n"
+                    + "111111111111111111111111111000101011\n"
+                    + "111111111111111111111111111000101011\n"
+                    + "111111111111111111111111111000101011\n"
+                    + "111111111111111111111111111000101011\n"
+                    + "111111111111111111111111111000101011\n"
+                    + "111111111111111111111111111000101011\n"
+                    + "111111111111111111111111111000101011";
+            // @formatter:off
             for (final SevenZArchiveEntry entry : sevenZFile.getEntries()) {
                 if (entry.getName().equals("commons-compress-1.7-src/src/test/resources/test.txt")) {
                     final byte[] contents = new byte[(int) entry.getSize()];
@@ -311,10 +320,19 @@ class SevenZFileTest extends AbstractTest {
     void testExtractSpecifiedFileDeprecated() throws Exception {
         try (@SuppressWarnings("deprecation")
         SevenZFile sevenZFile = new SevenZFile(getFile("COMPRESS-256.7z"))) {
-            final String testTxtContents = "111111111111111111111111111000101011\n" + "111111111111111111111111111000101011\n"
-                    + "111111111111111111111111111000101011\n" + "111111111111111111111111111000101011\n" + "111111111111111111111111111000101011\n"
-                    + "111111111111111111111111111000101011\n" + "111111111111111111111111111000101011\n" + "111111111111111111111111111000101011\n"
-                    + "111111111111111111111111111000101011\n" + "111111111111111111111111111000101011";
+            // @formatter:off
+            final String testTxtContents =
+                    "111111111111111111111111111000101011\n"
+                    + "111111111111111111111111111000101011\n"
+                    + "111111111111111111111111111000101011\n"
+                    + "111111111111111111111111111000101011\n"
+                    + "111111111111111111111111111000101011\n"
+                    + "111111111111111111111111111000101011\n"
+                    + "111111111111111111111111111000101011\n"
+                    + "111111111111111111111111111000101011\n"
+                    + "111111111111111111111111111000101011\n"
+                    + "111111111111111111111111111000101011";
+            // @formatter:on
             for (final SevenZArchiveEntry entry : sevenZFile.getEntries()) {
                 if (entry.getName().equals("commons-compress-1.7-src/src/test/resources/test.txt")) {
                     final byte[] contents = new byte[(int) entry.getSize()];
@@ -547,7 +565,8 @@ class SevenZFileTest extends AbstractTest {
     void testRandomAccessTogetherWithSequentialAccess() throws Exception {
         try (SevenZFile sevenZFile = getSevenZFile("COMPRESS-256.7z")) {
             // @formatter:off
-            final String testTxtContents = "111111111111111111111111111000101011\n"
+            final String testTxtContents =
+                      "111111111111111111111111111000101011\n"
                     + "111111111111111111111111111000101011\n"
                     + "111111111111111111111111111000101011\n"
                     + "111111111111111111111111111000101011\n"
@@ -557,7 +576,8 @@ class SevenZFileTest extends AbstractTest {
                     + "111111111111111111111111111000101011\n"
                     + "111111111111111111111111111000101011\n"
                     + "111111111111111111111111111000101011";
-            final String filesTxtContents = "0xxxxxxxxx10xxxxxxxx20xxxxxxxx30xxxxxxxx40xxxxxxxx50xxxxxxxx60xxxxxxxx70xxxxxxxx80xxxxxxxx90xxxxxxxx100"
+            final String filesTxtContents =
+                      "0xxxxxxxxx10xxxxxxxx20xxxxxxxx30xxxxxxxx40xxxxxxxx50xxxxxxxx60xxxxxxxx70xxxxxxxx80xxxxxxxx90xxxxxxxx100"
                     + "xxxxxxx110xxxxxxx120xxxxxxx130xxxxxxx -> 0yyyyyyyyy10yyyyyyyy20yyyyyyyy30yyyyyyyy40yyyyyyyy50yyyyyyyy60yyyyyyyy70yyyyyyyy80"
                     + "yyyyyyyy90yyyyyyyy100yyyyyyy110yyyyyyy120yyyyyyy130yyyyyyy\n";
             // @formatter:on
@@ -620,11 +640,19 @@ class SevenZFileTest extends AbstractTest {
     @Test
     void testRandomAccessWhenJumpingBackwards() throws Exception {
         try (SevenZFile sevenZFile = getSevenZFile("COMPRESS-256.7z")) {
-            final String testTxtContents = "111111111111111111111111111000101011\n" + "111111111111111111111111111000101011\n"
-                    + "111111111111111111111111111000101011\n" + "111111111111111111111111111000101011\n" + "111111111111111111111111111000101011\n"
-                    + "111111111111111111111111111000101011\n" + "111111111111111111111111111000101011\n" + "111111111111111111111111111000101011\n"
-                    + "111111111111111111111111111000101011\n" + "111111111111111111111111111000101011";
-
+            // @formatter:off
+            final String testTxtContents =
+                      "111111111111111111111111111000101011\n"
+                    + "111111111111111111111111111000101011\n"
+                    + "111111111111111111111111111000101011\n"
+                    + "111111111111111111111111111000101011\n"
+                    + "111111111111111111111111111000101011\n"
+                    + "111111111111111111111111111000101011\n"
+                    + "111111111111111111111111111000101011\n"
+                    + "111111111111111111111111111000101011\n"
+                    + "111111111111111111111111111000101011\n"
+                    + "111111111111111111111111111000101011";
+            // @formatter:on
             SevenZArchiveEntry entry;
             SevenZArchiveEntry testTxtEntry = null;
             while ((entry = sevenZFile.getNextEntry()) != null) {
@@ -677,11 +705,19 @@ class SevenZFileTest extends AbstractTest {
     @Test
     void testRandomAccessWhenJumpingForwards() throws Exception {
         try (SevenZFile sevenZFile = getSevenZFile("COMPRESS-256.7z")) {
-            final String testTxtContents = "111111111111111111111111111000101011\n" + "111111111111111111111111111000101011\n"
-                    + "111111111111111111111111111000101011\n" + "111111111111111111111111111000101011\n" + "111111111111111111111111111000101011\n"
-                    + "111111111111111111111111111000101011\n" + "111111111111111111111111111000101011\n" + "111111111111111111111111111000101011\n"
-                    + "111111111111111111111111111000101011\n" + "111111111111111111111111111000101011";
-
+            // @formatter:off
+            final String testTxtContents =
+                      "111111111111111111111111111000101011\n"
+                    + "111111111111111111111111111000101011\n"
+                    + "111111111111111111111111111000101011\n"
+                    + "111111111111111111111111111000101011\n"
+                    + "111111111111111111111111111000101011\n"
+                    + "111111111111111111111111111000101011\n"
+                    + "111111111111111111111111111000101011\n"
+                    + "111111111111111111111111111000101011\n"
+                    + "111111111111111111111111111000101011\n"
+                    + "111111111111111111111111111000101011";
+            // @formatter:on
             SevenZArchiveEntry testTxtEntry = null;
             final Iterable<SevenZArchiveEntry> entries = sevenZFile.getEntries();
             for (final SevenZArchiveEntry Entry : entries) {
