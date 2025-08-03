@@ -51,6 +51,8 @@ import org.apache.commons.io.input.BoundedInputStream;
  */
 public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
 
+    private static final int MAX_PAX_HEADER_DEPTH = Integer.getInteger("TarArchiveInputStream.MAX_PAX_HEADER_DEPTH", 850);
+
     /**
      * IBM AIX <a href=""https://www.ibm.com/docs/sv/aix/7.2.0?topic=files-tarh-file">tar.h</a>: "This field is terminated with a space only."
      */
@@ -128,6 +130,8 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
     private final List<TarArchiveStructSparse> globalSparseHeaders = new ArrayList<>();
 
     private final boolean lenient;
+
+    private int paxHeaderDepth;
 
     /**
      * Constructs a new instance.
@@ -560,15 +564,16 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
     }
 
     /**
-     * For PAX Format 0.0, the sparse headers(GNU.sparse.offset and GNU.sparse.numbytes) may appear multi times, and they look like:
-     * <p>
+     * For PAX Format 0.0, the sparse headers({@code GNU.sparse.offset} and {@code GNU.sparse.numbytes}) may appear multi times, and they look like:
+     *
+     * <pre>
      * GNU.sparse.size=size GNU.sparse.numblocks=numblocks repeat numblocks times GNU.sparse.offset=offset GNU.sparse.numbytes=numbytes end repeat
+     * </pre>
+     * <p>
+     * For PAX Format 0.1, the sparse headers are stored in a single variable: {@code GNU.sparse.map}
      * </p>
      * <p>
-     * For PAX Format 0.1, the sparse headers are stored in a single variable : GNU.sparse.map
-     * </p>
-     * <p>
-     * GNU.sparse.map Map of non-null data chunks. It is a string consisting of comma-separated values "offset,size[,offset-1,size-1...]"
+     * {@code GNU.sparse.map} is a map of non-null data chunks. It is a string consisting of comma-separated values {@code "offset,size[,offset-1,size-1...]"}
      * </p>
      * <p>
      * For PAX Format 1.X: The sparse map itself is stored in the file data block, preceding the actual file data. It consists of a series of decimal numbers
@@ -579,6 +584,10 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      * @throws IOException if an I/O error occurs.
      */
     private void paxHeaders() throws IOException {
+        if (paxHeaderDepth++ > MAX_PAX_HEADER_DEPTH) {
+            // TODO Consider not using recursion.
+            throw new ArchiveException("paxHeaderDepth = %,d", paxHeaderDepth);
+        }
         List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
         final Map<String, String> headers = TarUtils.parsePaxHeaders(this, sparseHeaders, globalPaxHeaders, entrySize);
         // for 0.1 PAX Headers

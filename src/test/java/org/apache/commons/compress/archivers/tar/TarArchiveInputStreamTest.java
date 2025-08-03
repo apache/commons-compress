@@ -61,7 +61,6 @@ import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.function.IOConsumer;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -317,8 +316,10 @@ class TarArchiveInputStreamTest extends AbstractTest {
         }
     }
 
+    /**
+     * Depending on your setup, this test may need a small stack size {@code --Xss1m}.
+     */
     @Test
-    @Disabled
     void testPaxHeaders() throws IOException {
         try (TarArchiveInputStream inputStream = new TarArchiveInputStream(
                 Files.newInputStream(Paths.get("src/test/resources/org/apache/commons/compress/tar/paxHeaders.bin")))) {
