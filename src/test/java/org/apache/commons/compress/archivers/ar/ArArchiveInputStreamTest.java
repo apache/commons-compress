@@ -27,11 +27,15 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -96,6 +100,18 @@ class ArArchiveInputStreamTest extends AbstractTest {
             assertEquals(-1, archive.read());
             assertEquals(-1, archive.read());
             assertNull(archive.getNextEntry());
+        }
+    }
+
+    /**
+     * Depending on your setup, this test may need a small stack size {@code -Xss1m}.
+     */
+    @Test
+    @Disabled
+    void testGetNextArEntry() throws IOException {
+        try (ArArchiveInputStream inputStream = new ArArchiveInputStream(
+                Files.newInputStream(Paths.get("src/test/resources/org/apache/commons/compress/ar/getNextArEntry.bin")))) {
+            assertThrows(ArchiveException.class, inputStream::getNextEntry);
         }
     }
 

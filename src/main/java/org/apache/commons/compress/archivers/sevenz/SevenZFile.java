@@ -779,8 +779,8 @@ public class SevenZFile implements Closeable {
         channel.position(folderOffset);
         InputStream inputStreamStack = new FilterInputStream(
                 new BufferedInputStream(new BoundedSeekableByteChannelInputStream(channel, archive.packSizes[firstPackStreamIndex]))) {
-            private void count(final int c) {
-                compressedBytesReadFromCurrentEntry = Math.addExact(compressedBytesReadFromCurrentEntry, c);
+            private void count(final int c) throws ArchiveException {
+                compressedBytesReadFromCurrentEntry = ArchiveException.addExact(compressedBytesReadFromCurrentEntry, c);
             }
 
             @Override
@@ -916,14 +916,14 @@ public class SevenZFile implements Closeable {
         final int[] folderFirstPackStreamIndex = new int[numFolders];
         for (int i = 0; i < numFolders; i++) {
             folderFirstPackStreamIndex[i] = nextFolderPackStreamIndex;
-            nextFolderPackStreamIndex = Math.addExact(nextFolderPackStreamIndex, archive.folders[i].packedStreams.length);
+            nextFolderPackStreamIndex = ArchiveException.addExact(nextFolderPackStreamIndex, archive.folders[i].packedStreams.length);
         }
         long nextPackStreamOffset = 0;
         final int numPackSizes = archive.packSizes.length;
         final long[] packStreamOffsets = new long[numPackSizes];
         for (int i = 0; i < numPackSizes; i++) {
             packStreamOffsets[i] = nextPackStreamOffset;
-            nextPackStreamOffset = Math.addExact(nextPackStreamOffset, archive.packSizes[i]);
+            nextPackStreamOffset = ArchiveException.addExact(nextPackStreamOffset, archive.packSizes[i]);
         }
         final int[] folderFirstFileIndex = new int[numFolders];
         final int[] fileFolderIndex = new int[archive.files.length];
@@ -1206,7 +1206,7 @@ public class SevenZFile implements Closeable {
         @SuppressWarnings("resource") // does not allocate
         final int current = getCurrentStream().read(b, off, len);
         if (current > 0) {
-            uncompressedBytesReadFromCurrentEntry = Math.addExact(uncompressedBytesReadFromCurrentEntry, current);
+            uncompressedBytesReadFromCurrentEntry = ArchiveException.addExact(uncompressedBytesReadFromCurrentEntry, current);
         }
         return current;
     }
@@ -1464,8 +1464,8 @@ public class SevenZFile implements Closeable {
                 numInStreams = readUint64(header);
                 numOutStreams = readUint64(header);
             }
-            totalInStreams = Math.addExact(totalInStreams, numInStreams);
-            totalOutStreams = Math.addExact(totalOutStreams, numOutStreams);
+            totalInStreams = ArchiveException.addExact(totalInStreams, numInStreams);
+            totalOutStreams = ArchiveException.addExact(totalOutStreams, numOutStreams);
             byte[] properties = null;
             if (hasAttributes) {
                 final long propertiesSize = readUint64(header);
@@ -1660,7 +1660,7 @@ public class SevenZFile implements Closeable {
             for (final Folder folder : archive.folders) {
                 final long numStreams = readUint64(header);
                 folder.numUnpackSubStreams = (int) numStreams;
-                unpackStreamsCount = Math.addExact(unpackStreamsCount, numStreams);
+                unpackStreamsCount = ArchiveException.addExact(unpackStreamsCount, numStreams);
             }
             nid = getUnsignedByte(header);
         }
@@ -1675,7 +1675,7 @@ public class SevenZFile implements Closeable {
                 for (int i = 0; i < folder.numUnpackSubStreams - 1; i++) {
                     final long size = readUint64(header);
                     subStreamsInfo.unpackSizes[nextUnpackStream++] = size;
-                    sum = Math.addExact(sum, size);
+                    sum = ArchiveException.addExact(sum, size);
                 }
             }
             if (sum > folder.getUnpackSize()) {
@@ -1689,7 +1689,7 @@ public class SevenZFile implements Closeable {
         int numDigests = 0;
         for (final Folder folder : archive.folders) {
             if (folder.numUnpackSubStreams != 1 || !folder.hasCrc) {
-                numDigests = Math.addExact(numDigests, folder.numUnpackSubStreams);
+                numDigests = ArchiveException.addExact(numDigests, folder.numUnpackSubStreams);
             }
         }
         if (nid == NID.kCRC) {
@@ -1929,7 +1929,7 @@ public class SevenZFile implements Closeable {
         if (numCoders == 0) {
             throw new ArchiveException("Folder without coders");
         }
-        stats.numberOfCoders = Math.addExact(stats.numberOfCoders, numCoders);
+        stats.numberOfCoders = ArchiveException.addExact(stats.numberOfCoders, numCoders);
         long totalOutStreams = 0;
         long totalInStreams = 0;
         for (int i = 0; i < numCoders; i++) {
@@ -1946,8 +1946,8 @@ public class SevenZFile implements Closeable {
                 totalInStreams++;
                 totalOutStreams++;
             } else {
-                totalInStreams = Math.addExact(totalInStreams, assertFitsIntoNonNegativeInt("numInStreams", readUint64(header)));
-                totalOutStreams = Math.addExact(totalOutStreams, assertFitsIntoNonNegativeInt("numOutStreams", readUint64(header)));
+                totalInStreams = ArchiveException.addExact(totalInStreams, assertFitsIntoNonNegativeInt("numInStreams", readUint64(header)));
+                totalOutStreams = ArchiveException.addExact(totalOutStreams, assertFitsIntoNonNegativeInt("numOutStreams", readUint64(header)));
             }
             if (hasAttributes) {
                 final int propertiesSize = assertFitsIntoNonNegativeInt("propertiesSize", readUint64(header));
@@ -1958,8 +1958,8 @@ public class SevenZFile implements Closeable {
         }
         assertFitsIntoNonNegativeInt("totalInStreams", totalInStreams);
         assertFitsIntoNonNegativeInt("totalOutStreams", totalOutStreams);
-        stats.numberOfOutStreams = Math.addExact(stats.numberOfOutStreams, totalOutStreams);
-        stats.numberOfInStreams = Math.addExact(stats.numberOfInStreams, totalInStreams);
+        stats.numberOfOutStreams = ArchiveException.addExact(stats.numberOfOutStreams, totalOutStreams);
+        stats.numberOfInStreams = ArchiveException.addExact(stats.numberOfInStreams, totalInStreams);
         if (totalOutStreams == 0) {
             throw new ArchiveException("Total output streams can't be 0");
         }
@@ -2007,7 +2007,7 @@ public class SevenZFile implements Closeable {
             long totalPackSizes = 0;
             for (int i = 0; i < stats.numberOfPackedStreams; i++) {
                 final long packSize = readUint64(header);
-                totalPackSizes = Math.addExact(totalPackSizes, packSize);
+                totalPackSizes = ArchiveException.addExact(totalPackSizes, packSize);
                 final long endOfPackStreams = SIGNATURE_HEADER_SIZE + packPos + totalPackSizes;
                 if (packSize < 0 || endOfPackStreams > channel.size() || endOfPackStreams < packPos) {
                     throw new ArchiveException("packSize (%,d) is out of range", packSize);
@@ -2080,7 +2080,7 @@ public class SevenZFile implements Closeable {
             int folderIdx = 0;
             for (final int numUnpackSubStreams : numUnpackSubStreamsPerFolder) {
                 if (numUnpackSubStreams != 1 || stats.folderHasCrc == null || !stats.folderHasCrc.get(folderIdx++)) {
-                    numDigests = Math.addExact(numDigests, numUnpackSubStreams);
+                    numDigests = ArchiveException.addExact(numDigests, numUnpackSubStreams);
                 }
             }
         }
