@@ -317,7 +317,7 @@ class TarArchiveInputStreamTest extends AbstractTest {
     }
 
     /**
-     * Depending on your setup, this test may need a small stack size {@code --Xss1m}.
+     * Depending on your setup, this test may need a small stack size {@code -Xss1m}.
      */
     @Test
     void testPaxHeaders() throws IOException {
