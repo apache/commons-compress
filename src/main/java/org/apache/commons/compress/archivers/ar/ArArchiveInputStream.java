@@ -389,7 +389,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
         final int bufflen;
         try {
             bufflen = asInt(length, offset, len); // Assume length will fit in an int
-        } catch (final NumberFormatException e) {
+        } catch (final IOException e) {
             throw new ArchiveException("Broken archive, unable to parse GNU string table length field as a number", (Throwable) e);
         }
         namebuffer = IOUtils.readRange(in, bufflen);
