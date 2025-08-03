@@ -29,7 +29,6 @@ class CpioUtilTest {
     @Test
     void testByteArray2longThrowsUnsupportedOperationException() {
         assertThrows(UnsupportedOperationException.class, () -> CpioUtil.byteArray2long(new byte[1], true));
-
     }
 
     @Test
