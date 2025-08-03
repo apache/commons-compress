@@ -245,23 +245,19 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
      *
      * @param maxCodeSize     maximum code size
      * @param memoryLimiKiB maximum allowed estimated memory usage in kibibytes (KiB).
-     * @throws MemoryLimitException     if estimated memory usage is greater than memoryLimitKiB
-     * @throws IllegalArgumentException if {@code maxCodeSize} is not bigger than 0
+     * @throws MemoryLimitException     if estimated memory usage is greater than memoryLimitKiB.
+     * @throws IllegalArgumentException if {@code maxCodeSize} is not bigger than 0.
      */
     protected void initializeTables(final int maxCodeSize, final int memoryLimiKiB) throws MemoryLimitException {
         if (maxCodeSize <= 0) {
             throw new IllegalArgumentException("maxCodeSize is " + maxCodeSize + ", must be bigger than 0");
         }
-
         if (memoryLimiKiB > -1) {
             final int maxTableSize = 1 << maxCodeSize;
             // account for potential overflow
             final long memoryUsageBytes = (long) maxTableSize * 6; // (4 (prefixes) + 1 (characters) +1 (outputStack))
             final long memoryUsageKiB = memoryUsageBytes >> 10;
-
-            if (memoryUsageKiB > memoryLimiKiB) {
-                throw new MemoryLimitException(memoryUsageKiB, memoryLimiKiB);
-            }
+            MemoryLimitException.checkKiB(memoryUsageKiB, memoryLimiKiB);
         }
         initializeTables(maxCodeSize);
     }

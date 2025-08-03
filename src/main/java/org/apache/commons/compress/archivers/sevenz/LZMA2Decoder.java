@@ -40,9 +40,7 @@ final class LZMA2Decoder extends AbstractCoder {
         try {
             final int dictionarySize = getDictionarySize(coder);
             final int memoryUsageKiB = LZMA2InputStream.getMemoryUsage(dictionarySize);
-            if (memoryUsageKiB > maxMemoryLimitKiB) {
-                throw new MemoryLimitException(memoryUsageKiB, maxMemoryLimitKiB);
-            }
+            MemoryLimitException.checkKiB(memoryUsageKiB, maxMemoryLimitKiB);
             // Throws IllegalArgumentException
             return new LZMA2InputStream(in, dictionarySize);
         } catch (final IllegalArgumentException e) { // NOSONAR

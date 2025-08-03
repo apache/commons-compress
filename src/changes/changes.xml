@@ -65,6 +65,8 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.archivers.ArchiveException.ArchiveException(String, Object...).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.compressors.CompressorException.CompressorException(String, Object...).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.harmony.pack200.Pack200Exception.Pack200Exception(String, Object...).</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.MemoryLimitException.checkBytes(int, long).</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.MemoryLimitException.checkKiB(long, long).</action>
       <!-- UPDATE -->
     </release>
     <release version="1.28.0" date="2025-07-26" description="This is a feature and maintenance release. Java 8 or later is required.">

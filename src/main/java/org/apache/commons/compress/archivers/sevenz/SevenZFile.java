@@ -110,10 +110,8 @@ public class SevenZFile implements Closeable {
             if (numberOfEntriesWithStream > numberOfUnpackSubStreams) {
                 throw new ArchiveException("Archive doesn't contain enough substreams for entries");
             }
-            final long memoryNeededKiB = kbToKiB(estimateSize());
-            if (maxMemoryLimitKiB < memoryNeededKiB) {
-                throw new MemoryLimitException(memoryNeededKiB, maxMemoryLimitKiB);
-            }
+            final long memoryNeededKiB = bytesToKiB(estimateSizeBytes());
+            MemoryLimitException.checkKiB(memoryNeededKiB, maxMemoryLimitKiB);
         }
 
         private long bindPairSize() {
@@ -145,7 +143,7 @@ public class SevenZFile implements Closeable {
          *
          * @return a size estimate in bytes.
          */
-        long estimateSize() {
+        long estimateSizeBytes() {
             final long lowerBound = 16L * numberOfPackedStreams /* packSizes, packCrcs in Archive */
                     + numberOfPackedStreams / 8 /* packCrcsDefined in Archive */
                     + numberOfFolders * folderSize() /* folders in Archive */
@@ -171,7 +169,8 @@ public class SevenZFile implements Closeable {
 
         @Override
         public String toString() {
-            return String.format("Archive with %,d entries in %,d folders, estimated size %,d KiB.", numberOfEntries, numberOfFolders, kbToKiB(estimateSize()));
+            return String.format("Archive with %,d entries in %,d folders, estimated size %,d KiB.", numberOfEntries, numberOfFolders,
+                    kbToKiB(estimateSizeBytes()));
         }
     }
 
@@ -367,6 +366,10 @@ public class SevenZFile implements Closeable {
      */
     public static Builder builder() {
         return new Builder();
+    }
+
+    private static long bytesToKiB(final long bytes) {
+        return bytes / 1024;
     }
 
     private static ByteBuffer checkEndOfFile(final ByteBuffer buf, final int expectRemaining) throws EOFException {

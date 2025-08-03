@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.commons.compress;
 
 /**
@@ -26,15 +27,58 @@ package org.apache.commons.compress;
  */
 public class MemoryLimitException extends CompressException {
 
+    private static final String MAXIMUM = "maximum";
+    private static final String BYTES = "bytes";
+    private static final String KIB = "KiB";
     private static final long serialVersionUID = 1L;
 
-    private static String buildMessage(final long memoryNeededInKb, final long memoryLimitInKb) {
-        return String.format("%,d KiB of memory would be needed; limit was %,d KiB. If the file is not corrupt, consider increasing the memory limit.",
-                memoryNeededInKb, memoryLimitInKb);
+    private static String buildMessage(final long memoryNeeded, final long memoryLimit, final String scale, final String boundary) {
+        return String.format("%,d %s of memory would be needed; %s was %,d %s. If the file is not corrupt, consider increasing the memory limit.", memoryNeeded,
+                scale, boundary, memoryLimit, scale);
     }
 
-    /** A long instead of int to account for overflow for corrupt files. */
+    private static long check(final long request, final long max, final long freeMemory, final String scale) throws MemoryLimitException {
+        check(request, max, scale, MAXIMUM);
+        check(request, freeMemory, scale, "free memory");
+        return request;
+    }
+
+    private static void check(final long request, final long max, final String scale, final String boundary) throws MemoryLimitException {
+        if (request > max) {
+            throw new MemoryLimitException(request, max, scale, boundary);
+        }
+    }
+
+    /**
+     * Throws a MemoryLimitException if the request is greater than the max.
+     *
+     * @param request The request.
+     * @param max     The max.
+     * @return The request.
+     * @throws MemoryLimitException Thrown if the request is greater than the max.
+     * @since 1.29.0
+     */
+    public static int checkBytes(final int request, final long max) throws MemoryLimitException {
+        check(request, max, Runtime.getRuntime().freeMemory(), BYTES);
+        return request;
+    }
+
+    /**
+     * Throws a MemoryLimitException if the request is greater than the max.
+     *
+     * @param request The request.
+     * @param max     The max.
+     * @return The request.
+     * @throws MemoryLimitException Thrown if the request is greater than the max.
+     * @since 1.29.0
+     */
+    public static long checkKiB(final long request, final long max) throws MemoryLimitException {
+        return check(request, max, Runtime.getRuntime().freeMemory() / 1024, KIB);
+    }
+
+    /** A long instead of int to account for overflow in corrupt files. */
     private final long memoryNeededKiB;
+    /** A long instead of int to account for overflow in corrupt files. */
     private final long memoryLimitKiB;
 
     /**
@@ -44,20 +88,7 @@ public class MemoryLimitException extends CompressException {
      * @param memoryLimitKiB  The memory limit in kibibytes (KiB).
      */
     public MemoryLimitException(final long memoryNeededKiB, final int memoryLimitKiB) {
-        super(buildMessage(memoryNeededKiB, memoryLimitKiB));
-        this.memoryNeededKiB = memoryNeededKiB;
-        this.memoryLimitKiB = memoryLimitKiB;
-    }
-
-    /**
-     * Constructs a new instance.
-     *
-     * @param memoryNeededKiB The memory needed in kibibytes (KiB).
-     * @param memoryLimitKiB  The memory limit in kibibytes (KiB).
-     * @since 1.29.0
-     */
-    public MemoryLimitException(final long memoryNeededKiB, final long memoryLimitKiB) {
-        super(buildMessage(memoryNeededKiB, memoryLimitKiB));
+        super(buildMessage(memoryNeededKiB, memoryLimitKiB, KIB, MAXIMUM));
         this.memoryNeededKiB = memoryNeededKiB;
         this.memoryLimitKiB = memoryLimitKiB;
     }
@@ -73,7 +104,7 @@ public class MemoryLimitException extends CompressException {
      */
     @Deprecated
     public MemoryLimitException(final long memoryNeededKiB, final int memoryLimitKiB, final Exception cause) {
-        super(buildMessage(memoryNeededKiB, memoryLimitKiB), cause);
+        super(buildMessage(memoryNeededKiB, memoryLimitKiB, KIB, MAXIMUM), cause);
         this.memoryNeededKiB = memoryNeededKiB;
         this.memoryLimitKiB = memoryLimitKiB;
     }
@@ -87,7 +118,26 @@ public class MemoryLimitException extends CompressException {
      *                        the cause is nonexistent or unknown.)
      */
     public MemoryLimitException(final long memoryNeededKiB, final int memoryLimitKiB, final Throwable cause) {
-        super(buildMessage(memoryNeededKiB, memoryLimitKiB), cause);
+        super(buildMessage(memoryNeededKiB, memoryLimitKiB, KIB, MAXIMUM), cause);
+        this.memoryNeededKiB = memoryNeededKiB;
+        this.memoryLimitKiB = memoryLimitKiB;
+    }
+
+    /**
+     * Constructs a new instance.
+     *
+     * @param memoryNeededKiB The memory needed in kibibytes (KiB).
+     * @param memoryLimitKiB  The memory limit in kibibytes (KiB).
+     * @since 1.29.0
+     */
+    public MemoryLimitException(final long memoryNeededKiB, final long memoryLimitKiB) {
+        super(buildMessage(memoryNeededKiB, memoryLimitKiB, KIB, MAXIMUM));
+        this.memoryNeededKiB = memoryNeededKiB;
+        this.memoryLimitKiB = memoryLimitKiB;
+    }
+
+    private MemoryLimitException(final long memoryNeededKiB, final long memoryLimitKiB, final String scale, final String boundary) {
+        super(buildMessage(memoryNeededKiB, memoryLimitKiB, scale, boundary));
         this.memoryNeededKiB = memoryNeededKiB;
         this.memoryLimitKiB = memoryLimitKiB;
     }
