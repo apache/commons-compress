@@ -16,20 +16,31 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.commons.compress.archivers.dump;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.compress.archivers.sevenz.SevenZFile;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 class TapeInputStreamTest extends AbstractTest {
+
+    @Test
+    void testResetBlockSizeBadSignature() throws IOException {
+        assertThrows(ArchiveException.class,
+                () -> SevenZFile.builder().setPath("src/test/resources/org/apache/commons/compress/dump/resetBlockSize.bin").get().close());
+    }
+
     @ParameterizedTest
-    @ValueSource(ints = {-1, 0, Integer.MAX_VALUE / 1000, Integer.MAX_VALUE})
+    @ValueSource(ints = { -1, 0, Integer.MAX_VALUE / 1000, Integer.MAX_VALUE })
     void testResetBlockSizeWithInvalidValues(final int recsPerBlock) throws Exception {
         try (TapeInputStream tapeInputStream = new TapeInputStream(new ByteArrayInputStream(new byte[1]))) {
             assertThrows(ArchiveException.class, () -> tapeInputStream.resetBlockSize(recsPerBlock, true));
