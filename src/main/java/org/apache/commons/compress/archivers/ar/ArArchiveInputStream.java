@@ -297,7 +297,6 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
                 throw new ArchiveException("Invalid entry trailer. not read the content? Occurred at byte: " + getBytesRead());
             }
         }
-
         entryOffset = offset;
         // GNU ar uses a '/' to mark the end of the file name; this allows for the use of spaces without the use of an extended file name.
         // entry name is stored as ASCII string
@@ -309,8 +308,8 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
         long len;
         try {
             len = asLong(metaData, LENGTH_OFFSET, LENGTH_LEN);
-        } catch (final NumberFormatException ex) {
-            throw new ArchiveException("Broken archive, unable to parse ar_size field as a number", ex);
+        } catch (final NumberFormatException e) {
+            throw new ArchiveException("Broken archive, unable to parse ar_size field as a number", (Throwable) e);
         }
         if (temp.endsWith("/")) { // GNU terminator
             temp = temp.substring(0, temp.length() - 1);
@@ -334,8 +333,8 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
                     asInt(metaData, GROUP_ID_OFFSET, GROUP_ID_LEN, true), asInt(metaData, FILE_MODE_OFFSET, FILE_MODE_LEN, 8),
                     asLong(metaData, LAST_MODIFIED_OFFSET, LAST_MODIFIED_LEN));
             return currentEntry;
-        } catch (final NumberFormatException ex) {
-            throw new ArchiveException("Broken archive, unable to parse entry metadata fields as numbers", ex);
+        } catch (final NumberFormatException e) {
+            throw new ArchiveException("Broken archive, unable to parse entry metadata fields as numbers", (Throwable) e);
         }
     }
 
@@ -390,8 +389,8 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
         final int bufflen;
         try {
             bufflen = asInt(length, offset, len); // Assume length will fit in an int
-        } catch (final NumberFormatException ex) {
-            throw new ArchiveException("Broken archive, unable to parse GNU string table length field as a number", ex);
+        } catch (final NumberFormatException e) {
+            throw new ArchiveException("Broken archive, unable to parse GNU string table length field as a number", (Throwable) e);
         }
         namebuffer = IOUtils.readRange(in, bufflen);
         final int read = namebuffer.length;

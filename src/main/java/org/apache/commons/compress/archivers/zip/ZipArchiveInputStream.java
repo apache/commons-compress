@@ -780,8 +780,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
                     try {
                         current.inputStream = new ExplodingInputStream(current.entry.getGeneralPurposeBit().getSlidingDictionarySize(),
                                 current.entry.getGeneralPurposeBit().getNumberOfShannonFanoTrees(), bis);
-                    } catch (final IllegalArgumentException ex) {
-                        throw new ArchiveException("Bad IMPLODE data", ex);
+                    } catch (final IllegalArgumentException e) {
+                        throw new ArchiveException("Bad IMPLODE data", (Throwable) e);
                     }
                     break;
                 case BZIP2:

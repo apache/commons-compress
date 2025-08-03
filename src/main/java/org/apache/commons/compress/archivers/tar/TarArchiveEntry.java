@@ -279,7 +279,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         } catch (DateTimeException | ArithmeticException e) {
             // DateTimeException: Thrown if the instant exceeds the maximum or minimum instant.
             // ArithmeticException: Thrown if numeric overflow occurs.
-            throw new ArchiveException("Corrupted PAX header. Time field value is invalid '" + value + "'", e);
+            throw new ArchiveException("Corrupted PAX header. Time field value is invalid '" + value + "'", (Throwable) e);
         }
     }
 
@@ -1468,8 +1468,8 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
             final boolean lenient) throws IOException {
         try {
             parseUstarHeaderBlock(globalPaxHeaders, header, encoding, oldStyle, lenient);
-        } catch (final IllegalArgumentException ex) {
-            throw new ArchiveException("Corrupted TAR archive.", ex);
+        } catch (final IllegalArgumentException e) {
+            throw new ArchiveException("Corrupted TAR archive.", (Throwable) e);
         }
     }
 

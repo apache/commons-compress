@@ -403,8 +403,8 @@ public class TarFile implements Closeable {
     public InputStream getInputStream(final TarArchiveEntry entry) throws IOException {
         try {
             return new BoundedTarEntryInputStream(entry, archive);
-        } catch (final RuntimeException ex) {
-            throw new ArchiveException("Corrupted TAR archive. Can't read entry", ex);
+        } catch (final RuntimeException e) {
+            throw new ArchiveException("Corrupted TAR archive. Can't read entry", (Throwable) e);
         }
     }
 
@@ -471,7 +471,7 @@ public class TarFile implements Closeable {
             final long position = archive.position();
             currEntry = new TarArchiveEntry(globalPaxHeaders, headerBuf.array(), zipEncoding, lenient, position);
         } catch (final IllegalArgumentException e) {
-            throw new ArchiveException("Error detected parsing the header", e);
+            throw new ArchiveException("Error detected parsing the header", (Throwable) e);
         }
 
         if (currEntry.isGNULongLinkEntry()) {
@@ -513,7 +513,7 @@ public class TarFile implements Closeable {
                 applyPaxHeadersToCurrentEntry(globalPaxHeaders, globalSparseHeaders);
             }
         } catch (final NumberFormatException e) {
-            throw new ArchiveException("Error detected parsing the pax header", e);
+            throw new ArchiveException("Error detected parsing the pax header", (Throwable) e);
         }
 
         if (currEntry.isOldGNUSparse()) { // Process sparse files

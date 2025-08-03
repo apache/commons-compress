@@ -930,7 +930,7 @@ public class ZipFile implements Closeable {
             fillNameMap();
             success = true;
         } catch (final IOException e) {
-            throw new ArchiveException("Error reading Zip content from " + channelDescription, e);
+            throw new ArchiveException("Error reading Zip content from " + channelDescription, (Throwable) e);
         } finally {
             this.closed = !success;
             if (!success && closeOnError) {
@@ -1247,8 +1247,8 @@ public class ZipFile implements Closeable {
             try {
                 return new ExplodingInputStream(entry.getGeneralPurposeBit().getSlidingDictionarySize(),
                         entry.getGeneralPurposeBit().getNumberOfShannonFanoTrees(), is);
-            } catch (final IllegalArgumentException ex) {
-                throw new ArchiveException("Bad IMPLODE data", ex);
+            } catch (final IllegalArgumentException e) {
+                throw new ArchiveException("Bad IMPLODE data", (Throwable) e);
             }
         case DEFLATED:
             final Inflater inflater = new Inflater(true);

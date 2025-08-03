@@ -440,7 +440,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
         try {
             currEntry = new TarArchiveEntry(globalPaxHeaders, headerBuf, zipEncoding, lenient);
         } catch (final IllegalArgumentException e) {
-            throw new ArchiveException("Error detected parsing the header", e);
+            throw new ArchiveException("Error detected parsing the header", (Throwable) e);
         }
         entryOffset = 0;
         entrySize = currEntry.getSize();
@@ -477,7 +477,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
                 applyPaxHeadersToCurrentEntry(globalPaxHeaders, globalSparseHeaders);
             }
         } catch (final NumberFormatException e) {
-            throw new ArchiveException("Error detected parsing the pax header", e);
+            throw new ArchiveException("Error detected parsing the pax header", (Throwable) e);
         }
         if (currEntry.isOldGNUSparse()) { // Process sparse files
             readOldGNUSparse();

@@ -792,9 +792,9 @@ public class TarUtils {
                     throw new ArchiveException("Corrupted TAR archive, sparse entry with negative numbytes");
                 }
                 sparseHeaders.add(sparseHeader);
-            } catch (final IllegalArgumentException ex) {
+            } catch (final IllegalArgumentException e) {
                 // thrown internally by parseOctalOrBinary
-                throw new ArchiveException("Corrupted TAR archive, sparse entry is invalid", ex);
+                throw new ArchiveException("Corrupted TAR archive, sparse entry is invalid", (Throwable) e);
             }
         }
         return Collections.unmodifiableList(sparseHeaders);
