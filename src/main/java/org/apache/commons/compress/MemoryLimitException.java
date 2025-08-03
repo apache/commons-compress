@@ -37,9 +37,9 @@ public class MemoryLimitException extends CompressException {
                 scale, boundary, memoryLimit, scale);
     }
 
-    private static long check(final long request, final long max, final long freeMemory, final String scale) throws MemoryLimitException {
+    private static long check(final long request, final long max, final long memory, String memoryType, final String scale) throws MemoryLimitException {
         check(request, max, scale, MAXIMUM);
-        check(request, freeMemory, scale, "free memory");
+        check(request, memory, scale, memoryType);
         return request;
     }
 
@@ -59,7 +59,7 @@ public class MemoryLimitException extends CompressException {
      * @since 1.29.0
      */
     public static int checkBytes(final int request, final long max) throws MemoryLimitException {
-        check(request, max, Runtime.getRuntime().maxMemory(), BYTES);
+        check(request, max, Runtime.getRuntime().maxMemory(), "max memory", BYTES);
         return request;
     }
 
@@ -73,7 +73,7 @@ public class MemoryLimitException extends CompressException {
      * @since 1.29.0
      */
     public static long checkKiB(final long request, final long max) throws MemoryLimitException {
-        return check(request, max, Runtime.getRuntime().maxMemory() / 1024, KIB);
+        return check(request, max, Runtime.getRuntime().maxMemory() / 1024, "max memory", KIB);
     }
 
     /** A long instead of int to account for overflow in corrupt files. */
