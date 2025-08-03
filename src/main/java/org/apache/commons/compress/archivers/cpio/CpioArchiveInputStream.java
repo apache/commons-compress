@@ -206,10 +206,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
     @Override
     public int available() throws IOException {
         ensureOpen();
-        if (this.entryEOF) {
-            return 0;
-        }
-        return 1;
+        return entryEOF ? 0 : 1;
     }
 
     /**
