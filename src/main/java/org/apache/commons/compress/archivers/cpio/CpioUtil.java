@@ -42,11 +42,9 @@ final class CpioUtil {
         if (number.length % 2 != 0) {
             throw new UnsupportedOperationException();
         }
-
         long ret;
         int pos = 0;
         final byte[] tmpNumber = Arrays.copyOf(number, number.length);
-
         if (!swapHalfWord) {
             byte tmp = 0;
             for (pos = 0; pos < tmpNumber.length; pos++) {
@@ -55,7 +53,6 @@ final class CpioUtil {
                 tmpNumber[pos] = tmp;
             }
         }
-
         ret = tmpNumber[0] & 0xFF;
         for (pos = 1; pos < tmpNumber.length; pos++) {
             ret <<= 8;
@@ -84,17 +81,14 @@ final class CpioUtil {
         final byte[] ret = new byte[length];
         int pos = 0;
         long tmp_number;
-
         if (length % 2 != 0 || length < 2) {
             throw new UnsupportedOperationException();
         }
-
         tmp_number = number;
         for (pos = length - 1; pos >= 0; pos--) {
             ret[pos] = (byte) (tmp_number & 0xFF);
             tmp_number >>= 8;
         }
-
         if (!swapHalfWord) {
             byte tmp = 0;
             for (pos = 0; pos < length; pos++) {
@@ -103,7 +97,6 @@ final class CpioUtil {
                 ret[pos] = tmp;
             }
         }
-
         return ret;
     }
 }

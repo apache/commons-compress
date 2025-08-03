@@ -255,7 +255,6 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
     public void finish() throws IOException {
         checkOpen();
         checkFinished();
-
         if (this.entry != null) {
             throw new ArchiveException("This archive contains unclosed entries.");
         }
@@ -264,7 +263,6 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
         this.entry.setNumberOfLinks(1);
         writeHeader(this.entry);
         closeArchiveEntry();
-
         final int lengthOfLastBlock = (int) (getBytesWritten() % blockSize);
         if (lengthOfLastBlock != 0) {
             pad(blockSize - lengthOfLastBlock);
@@ -297,16 +295,13 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
         if (entry.getTime() == -1) {
             entry.setTime(System.currentTimeMillis() / 1000);
         }
-
         final short format = entry.getFormat();
         if (format != this.entryFormat) {
             throw new ArchiveException("Header format: '%s' does not match existing format: '%s'", format, this.entryFormat);
         }
-
         if (this.names.put(entry.getName(), entry) != null) {
             throw new ArchiveException("Duplicate entry: " + entry.getName());
         }
-
         writeHeader(entry);
         this.entry = entry;
         this.written = 0;
@@ -329,7 +324,6 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
         if (len == 0) {
             return;
         }
-
         if (this.entry == null) {
             throw new ArchiveException("No current CPIO entry");
         }
@@ -357,7 +351,6 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
         } else {
             tmp.append(number);
         }
-
         if (tmp.length() <= length) {
             final int insertLength = length - tmp.length();
             for (int pos = 0; pos < insertLength; pos++) {
@@ -427,7 +420,6 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
         } else {
             nextArtificalDeviceAndInode = Math.max(nextArtificalDeviceAndInode, inode + 0x100000000L * devMin) + 1;
         }
-
         writeAsciiLong(inode, 8, 16);
         writeAsciiLong(entry.getMode(), 8, 16);
         writeAsciiLong(entry.getUID(), 8, 16);
@@ -457,7 +449,6 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
         } else {
             nextArtificalDeviceAndInode = Math.max(nextArtificalDeviceAndInode, inode + 01000000 * device) + 1;
         }
-
         writeAsciiLong(device, 6, 8);
         writeAsciiLong(inode, 6, 8);
         writeAsciiLong(entry.getMode(), 6, 8);
@@ -483,7 +474,6 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
         } else {
             nextArtificalDeviceAndInode = Math.max(nextArtificalDeviceAndInode, inode + 0x10000 * device) + 1;
         }
-
         writeBinaryLong(device, 2, swapHalfWord);
         writeBinaryLong(inode, 2, swapHalfWord);
         writeBinaryLong(entry.getMode(), 2, swapHalfWord);
