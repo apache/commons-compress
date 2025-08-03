@@ -22,6 +22,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.io.ByteArrayInputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -78,6 +80,33 @@ class CpioArchiveInputStreamTest extends AbstractTest {
             count = consumeEntries(in);
         }
         assertEquals(2, count);
+    }
+
+    @Test
+    void testEndOfFileInEntry() throws Exception {
+        // CPIO header with c_namesize = 0xFFFFFFFF
+        // @formatter:off
+        final String header =
+                "070701" + // c_magic
+                "00000000" + // c_ino
+                "000081A4" + // c_mode
+                "00000000" + // c_uid
+                "00000000" + // c_gid
+                "00000001" + // c_nlink
+                "00000000" + // c_mtime
+                "00000000" + // c_filesize
+                "00000000" + // c_devmajor
+                "00000000" + // c_devminor
+                "00000000" + // c_rdevmajor
+                "00000000" + // c_rdevminor
+                "FFFFFFFF" + // c_namesize
+                "00000000"; // c_check
+        // @formatter:on
+        final byte[] data = new byte[header.getBytes(StandardCharsets.US_ASCII).length + 1];
+        System.arraycopy(header.getBytes(), 0, data, 0, header.getBytes().length);
+        try (CpioArchiveInputStream cpio = new CpioArchiveInputStream(new ByteArrayInputStream(data))) {
+            assertThrows(EOFException.class, () -> cpio.getNextEntry());
+        }
     }
 
     @Test
