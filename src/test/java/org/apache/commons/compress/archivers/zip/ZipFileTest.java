@@ -55,6 +55,7 @@ import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
 
 import org.apache.commons.compress.AbstractTest;
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.apache.commons.io.IOUtils;
@@ -366,6 +367,15 @@ class ZipFileTest extends AbstractTest {
             t0.join();
             t1.join();
             assertEquals(2, passedCount.get());
+        }
+    }
+
+    @Test
+    void testCreateBoundedInputStream() throws IOException {
+        try (ZipFile zipFile = ZipFile.builder().setPath("src/test/resources/org/apache/commons/compress/zip/createBoundedInputStream.bin").get()) {
+            for (final ZipArchiveEntry entry : Collections.list(zipFile.getEntries())) {
+                assertThrows(ArchiveException.class, () -> zipFile.getInputStream(entry));
+            }
         }
     }
 

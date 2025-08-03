@@ -40,6 +40,7 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -60,6 +61,7 @@ import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.function.IOConsumer;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -223,7 +225,6 @@ class TarArchiveInputStreamTest extends AbstractTest {
             }
             final File dir = new File(rootPath + "/" + dirDirectory, "/" + subDir);
             dir.mkdir();
-
             // tar these dirs
             final String fileName = "/" + dirDirectory + "/" + subDir;
             final File tarF = new File(rootPath + "/tar" + i + ".tar");
@@ -231,7 +232,6 @@ class TarArchiveInputStreamTest extends AbstractTest {
                 final TarArchiveOutputStream out = new TarArchiveOutputStream(new BufferedOutputStream(dest));
                 out.setBigNumberMode(TarArchiveOutputStream.BIGNUMBER_STAR);
                 out.setLongFileMode(TarArchiveOutputStream.LONGFILE_GNU);
-
                 final File file = new File(rootPath, fileName);
                 final TarArchiveEntry entry = new TarArchiveEntry(file);
                 entry.setName(fileName);
@@ -239,7 +239,6 @@ class TarArchiveInputStreamTest extends AbstractTest {
                 out.closeArchiveEntry();
                 out.flush();
             }
-
             // untar these tars
             try (InputStream is = Files.newInputStream(tarF.toPath());
                     TarArchiveInputStream debInputStream = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("tar", is)) {
@@ -315,6 +314,15 @@ class TarArchiveInputStreamTest extends AbstractTest {
                 TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
             assertThrows(ArchiveException.class, () -> archive.getNextEntry());
             assertThrows(ArchiveException.class, () -> IOUtils.toByteArray(archive));
+        }
+    }
+
+    @Test
+    @Disabled
+    void testPaxHeaders() throws IOException {
+        try (TarArchiveInputStream inputStream = new TarArchiveInputStream(
+                Files.newInputStream(Paths.get("src/test/resources/org/apache/commons/compress/tar/paxHeaders.bin")))) {
+            assertThrows(ArchiveException.class, inputStream::getNextEntry);
         }
     }
 

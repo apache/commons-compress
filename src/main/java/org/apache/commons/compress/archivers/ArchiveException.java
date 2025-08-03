@@ -31,6 +31,23 @@ public class ArchiveException extends CompressException {
     private static final long serialVersionUID = 2772690708123267100L;
 
     /**
+     * Delegates to {@link Math#addExact(long, long)} wrapping its {@link ArithmeticException} in our {@link ArchiveException}.
+     *
+     * @param x the first value.
+     * @param y the second value.
+     * @return the result.
+     * @throws ArchiveException if the result overflows a long.
+     * @since 1.29.0
+     */
+    public static long addExact(final long x, final long y) throws ArchiveException {
+        try {
+            return Math.addExact(x, y);
+        } catch (final ArithmeticException e) {
+            throw new ArchiveException(e);
+        }
+    }
+
+    /**
      * Checks that the specified object reference is not {@code null} and throws a customized {@link ArchiveException} if it is. *
      *
      * @param obj             the object reference to check for nullity.

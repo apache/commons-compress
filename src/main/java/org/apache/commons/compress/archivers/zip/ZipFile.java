@@ -1067,10 +1067,12 @@ public class ZipFile implements Closeable {
 
     /**
      * Creates new BoundedInputStream, according to implementation of underlying archive channel.
+     *
+     * @throws ArchiveException Thrown when the input hints at a corrupted archive.
      */
-    private BoundedArchiveInputStream createBoundedInputStream(final long start, final long remaining) {
-        if (start < 0 || remaining < 0 || start + remaining < start) {
-            throw new IllegalArgumentException("Corrupted archive, stream boundaries are out of range");
+    private BoundedArchiveInputStream createBoundedInputStream(final long start, final long remaining) throws ArchiveException {
+        if (start < 0 || remaining < 0 || ArchiveException.addExact(start, remaining) < start) {
+            throw new ArchiveException("Corrupted archive, stream boundaries are out of range");
         }
         return archive instanceof FileChannel ? new BoundedFileChannelInputStream(start, remaining, (FileChannel) archive)
                 : new BoundedSeekableByteChannelInputStream(start, remaining, archive);
@@ -1120,9 +1122,10 @@ public class ZipFile implements Closeable {
      *
      * @return null if there is no content before the first local file header. Otherwise, returns a stream to read the content before the first local file
      *         header.
+     * @throws ArchiveException Thrown when the input hints at a corrupted archive.
      * @since 1.23
      */
-    public InputStream getContentBeforeFirstLocalFileHeader() {
+    public InputStream getContentBeforeFirstLocalFileHeader() throws ArchiveException {
         return firstLocalFileHeaderOffset == 0 ? null : createBoundedInputStream(0, firstLocalFileHeaderOffset);
     }
 
