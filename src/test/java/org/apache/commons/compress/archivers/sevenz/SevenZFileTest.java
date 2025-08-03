@@ -264,6 +264,12 @@ class SevenZFileTest extends AbstractTest {
     }
 
     @Test
+    void testCreateBoundedInputStream() throws IOException {
+        assertThrows(ArchiveException.class,
+                () -> SevenZFile.builder().setPath("src/test/resources/org/apache/commons/compress/zip/createBoundedInputStream.bin").get().close());
+    }
+
+    @Test
     void testEncryptedArchiveRequiresPassword() throws Exception {
         final PasswordRequiredException ex = assertThrows(PasswordRequiredException.class, () -> getSevenZFile("bla.encrypted.7z").close(),
                 "shouldn't decrypt without a password");
