@@ -110,9 +110,9 @@ public class SevenZFile implements Closeable {
             if (numberOfEntriesWithStream > numberOfUnpackSubStreams) {
                 throw new ArchiveException("Archive doesn't contain enough substreams for entries");
             }
-            final long memoryNeededInKiB = kbToKiB(estimateSize());
-            if (maxMemoryLimitKiB < memoryNeededInKiB) {
-                throw new MemoryLimitException(memoryNeededInKiB, maxMemoryLimitKiB);
+            final long memoryNeededKiB = kbToKiB(estimateSize());
+            if (maxMemoryLimitKiB < memoryNeededKiB) {
+                throw new MemoryLimitException(memoryNeededKiB, maxMemoryLimitKiB);
             }
         }
 
