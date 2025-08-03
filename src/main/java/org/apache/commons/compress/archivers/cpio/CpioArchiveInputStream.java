@@ -205,8 +205,19 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
      */
     @Override
     public int available() throws IOException {
-        ensureOpen();
+        checkOpen();
         return entryEOF ? 0 : 1;
+    }
+
+    /**
+     * Check to make sure that this stream has not been closed
+     *
+     * @throws IOException if the stream is already closed
+     */
+    private void checkOpen() throws IOException {
+        if (this.closed) {
+            throw new ArchiveException("Stream closed");
+        }
     }
 
     /**
@@ -236,17 +247,6 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
     }
 
     /**
-     * Check to make sure that this stream has not been closed
-     *
-     * @throws IOException if the stream is already closed
-     */
-    private void ensureOpen() throws IOException {
-        if (this.closed) {
-            throw new ArchiveException("Stream closed");
-        }
-    }
-
-    /**
      * Reads the next CPIO file entry and positions stream at the beginning of the entry data.
      *
      * @return the CpioArchiveEntry just read
@@ -255,7 +255,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
      */
     @Deprecated
     public CpioArchiveEntry getNextCPIOEntry() throws IOException {
-        ensureOpen();
+        checkOpen();
         if (this.entry != null) {
             closeEntry();
         }
@@ -309,7 +309,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
      */
     @Override
     public int read(final byte[] b, final int off, final int len) throws IOException {
-        ensureOpen();
+        checkOpen();
         if (off < 0 || len < 0 || off > b.length - len) {
             throw new IndexOutOfBoundsException();
         }
@@ -508,7 +508,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         if (n < 0) {
             throw new IllegalArgumentException("Negative skip length");
         }
-        ensureOpen();
+        checkOpen();
         final int max = (int) Math.min(n, Integer.MAX_VALUE);
         int total = 0;
 
