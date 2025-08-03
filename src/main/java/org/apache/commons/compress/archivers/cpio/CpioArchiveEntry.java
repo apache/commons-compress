@@ -57,7 +57,7 @@ import org.apache.commons.io.file.attribute.FileTimes;
  * <h2>OLD FORMAT</h2>
  *
  * <p>
- * Each file has a 76 (ascii) / 26 (binary) byte header, a variable length, NUL terminated file name, and variable length file data. A header for a file name
+ * Each file has a 76 (ASCII) / 26 (binary) byte header, a variable length, NUL terminated file name, and variable length file data. A header for a file name
  * "TRAILER!!!" indicates the end of the archive.
  * </p>
  *

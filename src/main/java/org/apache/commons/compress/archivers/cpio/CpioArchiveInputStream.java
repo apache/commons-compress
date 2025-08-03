@@ -31,7 +31,7 @@ import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.ParsingUtils;
 
 /**
- * CpioArchiveInputStream is a stream for reading cpio streams. All formats of cpio are supported (old ascii, old binary, new portable format and the new
+ * CpioArchiveInputStream is a stream for reading cpio streams. All formats of cpio are supported (old ASCII, old binary, new portable format and the new
  * portable format with CRC).
  * <p>
  * The stream can be read by extracting a cpio entry (containing all information about an entry) and afterwards reading from the stream the file specified by
