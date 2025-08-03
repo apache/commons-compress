@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
+import org.apache.commons.compress.MemoryLimitException;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.utils.ExactMath;
 import org.apache.commons.compress.utils.IOUtils;
@@ -293,6 +294,7 @@ final class TapeInputStream extends FilterInputStream {
         if (recsPerBlock < 1) {
             throw new ArchiveException("Block with %,d records found, must be at least 1", recsPerBlock);
         }
+        MemoryLimitException.checkKiB(recsPerBlock, Runtime.getRuntime().maxMemory());
         blockSize = RECORD_SIZE * recsPerBlock;
         if (blockSize < 1) {
             throw new ArchiveException("Block size cannot be less than or equal to 0: %,d", blockSize);
