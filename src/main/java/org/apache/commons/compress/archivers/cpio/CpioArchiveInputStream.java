@@ -282,11 +282,9 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
                 throw new ArchiveException("Unknown magic '%s' at byte: %,d", magicString, getBytesRead());
             }
         }
-
         this.entryBytesRead = 0;
         this.entryEOF = false;
         this.crc = 0;
-
         if (this.entry.getName().equals(CPIO_TRAILER)) {
             this.entryEOF = true;
             skipRemainderOfLastBlock();
@@ -318,7 +316,6 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         if (len == 0) {
             return 0;
         }
-
         if (this.entry == null || this.entryEOF) {
             return -1;
         }
@@ -337,7 +334,6 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         if (tmplength < 0) {
             return -1;
         }
-
         final int tmpread = readFully(b, off, tmplength);
         if (this.entry.getFormat() == FORMAT_NEW_CRC) {
             for (int pos = 0; pos < tmpread; pos++) {
@@ -348,7 +344,6 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         if (tmpread > 0) {
             this.entryBytesRead += tmpread;
         }
-
         return tmpread;
     }
 
@@ -424,7 +419,6 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
 
     private CpioArchiveEntry readOldAsciiEntry() throws IOException {
         final CpioArchiveEntry ret = new CpioArchiveEntry(FORMAT_OLD_ASCII);
-
         ret.setDevice(readAsciiLong(6, 8));
         ret.setInode(readAsciiLong(6, 8));
         final long mode = readAsciiLong(6, 8);
@@ -450,7 +444,6 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
             throw new ArchiveException(
                     "Mode 0 only allowed in the trailer. Found entry: " + ArchiveUtils.sanitize(name) + " Occurred at byte: " + getBytesRead());
         }
-
         return ret;
     }
 
