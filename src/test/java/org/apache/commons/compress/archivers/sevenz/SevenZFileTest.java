@@ -243,6 +243,12 @@ class SevenZFileTest extends AbstractTest {
         }
     }
 
+    @Test
+    void testAssertFitsIntoNonNegativeInt() throws IOException {
+        assertThrows(ArchiveException.class,
+                () -> SevenZFile.builder().setPath("src/test/resources/org/apache/commons/compress/sevenz/assertFitsIntoNonNegativeInt.bin").get().close());
+    }
+
     /**
      * @see "https://issues.apache.org/jira/browse/COMPRESS-256"
      */
