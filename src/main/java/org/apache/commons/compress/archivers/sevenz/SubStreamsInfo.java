@@ -43,17 +43,18 @@ final class SubStreamsInfo {
     final long[] crcs;
 
     SubStreamsInfo(final long totalUnpackStreams, final int maxMemoryLimitKiB) throws MemoryLimitException {
-        final int intExact = Math.toIntExact(totalUnpackStreams);
-        final int request = intExact * 3;
-        if (request > maxMemoryLimitKiB) {
-            throw new MemoryLimitException(request, maxMemoryLimitKiB);
+        final int intExactCount = Math.toIntExact(totalUnpackStreams);
+        final int requestBytes = intExactCount * 3;
+        final int requestKib = requestBytes / 1024;
+        if (requestKib > maxMemoryLimitKiB) {
+            throw new MemoryLimitException(requestKib, maxMemoryLimitKiB);
         }
         final long freeMemory = Runtime.getRuntime().freeMemory();
-        if (request > freeMemory) {
-            throw new MemoryLimitException(request, freeMemory);
+        if (requestBytes > freeMemory) {
+            throw new MemoryLimitException(requestKib, freeMemory);
         }
-        this.unpackSizes = new long[intExact];
-        this.hasCrc = new BitSet(intExact);
-        this.crcs = new long[intExact];
+        this.unpackSizes = new long[intExactCount];
+        this.hasCrc = new BitSet(intExactCount);
+        this.crcs = new long[intExactCount];
     }
 }

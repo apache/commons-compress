@@ -23,14 +23,17 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 
-import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.compress.MemoryLimitException;
 import org.junit.jupiter.api.Test;
 
+/**
+ * Must be run with a JVM memory limit like {@code  -Xmx80m}.
+ */
 class SevenZReadSubStreamsInfoTest {
 
     @Test
     void testReadSubStreamsInfo() throws IOException {
-        assertThrows(ArchiveException.class,
+        assertThrows(MemoryLimitException.class,
                 () -> SevenZFile.builder().setPath("src/test/resources/org/apache/commons/compress/sevenz/readSubStreamsInfo.bin").get().close());
     }
 }
