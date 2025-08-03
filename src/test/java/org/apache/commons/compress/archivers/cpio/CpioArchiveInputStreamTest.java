@@ -83,7 +83,7 @@ class CpioArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
-    void testEndOfFileInEntry() throws Exception {
+    void testEndOfFileInEntry_c_namesize_0xFFFFFFFF() throws Exception {
         // CPIO header with c_namesize = 0xFFFFFFFF
         // @formatter:off
         final String header =
