@@ -297,21 +297,21 @@ public interface TarConstants {
     // See "http://www.opengroup.org/onlinepubs/009695399/utilities/pax.html#tag_04_100_13_02"
 
     /**
-     * Identifies the entry as a Pax extended header.
+     * Identifies the entry as a PAX extended header.
      *
      * @since 1.1
      */
     byte LF_PAX_EXTENDED_HEADER_LC = (byte) 'x';
 
     /**
-     * Identifies the entry as a Pax extended header (SunOS tar -E).
+     * Identifies the entry as a PAX extended header (SunOS tar -E).
      *
      * @since 1.1
      */
     byte LF_PAX_EXTENDED_HEADER_UC = (byte) 'X';
 
     /**
-     * Identifies the entry as a Pax global extended header.
+     * Identifies the entry as a PAX global extended header.
      *
      * @since 1.1
      */

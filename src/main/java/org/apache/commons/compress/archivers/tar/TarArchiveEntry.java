@@ -1205,9 +1205,9 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Tests whether this is a Pax header.
+     * Tests whether this is a PAX header.
      *
-     * @return {@code true} if this is a Pax header.
+     * @return {@code true} if this is a PAX header.
      * @since 1.1
      */
     public boolean isGlobalPaxHeader() {
@@ -1318,9 +1318,9 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Tests whether this is a Pax header.
+     * Tests whether this is a PAX header.
      *
-     * @return {@code true} if this is a Pax header.
+     * @return {@code true} if this is a PAX header.
      * @since 1.1
      */
     public boolean isPaxHeader() {
@@ -1586,7 +1586,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      */
     private void processPaxHeader(final String key, final String val, final Map<String, String> headers) throws IOException {
         /*
-         * The following headers are defined for Pax. charset: cannot use these without changing TarArchiveEntry fields mtime atime ctime
+         * The following headers are defined for PAX. charset: cannot use these without changing TarArchiveEntry fields mtime atime ctime
          * LIBARCHIVE.creationtime comment gid, gname linkpath size uid,uname SCHILY.devminor, SCHILY.devmajor: don't have setters/getters for those
          *
          * GNU sparse files use additional members, we use GNU.sparse.size to detect the 0.0 and 0.1 versions and GNU.sparse.realsize for 1.0.

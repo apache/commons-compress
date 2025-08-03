@@ -467,11 +467,11 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
                 currEntry.setName(name + "/");
             }
         }
-        if (currEntry.isGlobalPaxHeader()) { // Process Global Pax headers
+        if (currEntry.isGlobalPaxHeader()) { // Process Global PAX headers
             readGlobalPaxHeaders();
         }
         try {
-            if (currEntry.isPaxHeader()) { // Process Pax headers
+            if (currEntry.isPaxHeader()) { // Process PAX headers
                 paxHeaders();
             } else if (!globalPaxHeaders.isEmpty()) {
                 applyPaxHeadersToCurrentEntry(globalPaxHeaders, globalSparseHeaders);
