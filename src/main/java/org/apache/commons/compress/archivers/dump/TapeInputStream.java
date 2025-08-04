@@ -60,7 +60,6 @@ final class TapeInputStream extends FilterInputStream {
         if (readOffset < blockSize) {
             return blockSize - readOffset;
         }
-
         return in.available();
     }
 
@@ -102,11 +101,9 @@ final class TapeInputStream extends FilterInputStream {
                 return null;
             }
         }
-
         // copy data, increment counters.
         final byte[] b = new byte[RECORD_SIZE];
         System.arraycopy(blockBuffer, readOffset, b, 0, b.length);
-
         return b;
     }
 
@@ -135,9 +132,7 @@ final class TapeInputStream extends FilterInputStream {
         if (len % RECORD_SIZE != 0) {
             throw new IllegalArgumentException("All reads must be multiple of record size (" + RECORD_SIZE + " bytes.");
         }
-
         int bytes = 0;
-
         while (bytes < len) {
             // we need to read from the underlying stream.
             // this will reset readOffset value.
@@ -149,9 +144,7 @@ final class TapeInputStream extends FilterInputStream {
                     return -1;
                 }
             }
-
             int n = 0;
-
             if (readOffset + len - bytes <= blockSize) {
                 // we can read entirely from the buffer.
                 n = len - bytes;
@@ -159,14 +152,12 @@ final class TapeInputStream extends FilterInputStream {
                 // copy what we can from the buffer.
                 n = blockSize - readOffset;
             }
-
             // copy data, increment counters.
             System.arraycopy(blockBuffer, readOffset, b, off, n);
             readOffset += n;
             bytes += n;
             off += n;
         }
-
         return bytes;
     }
 
