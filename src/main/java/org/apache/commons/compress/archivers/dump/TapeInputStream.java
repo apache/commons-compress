@@ -27,7 +27,6 @@ import java.util.zip.Inflater;
 
 import org.apache.commons.compress.MemoryLimitException;
 import org.apache.commons.compress.archivers.ArchiveException;
-import org.apache.commons.compress.utils.ExactMath;
 import org.apache.commons.compress.utils.IOUtils;
 
 /**
@@ -323,9 +322,7 @@ final class TapeInputStream extends FilterInputStream {
         if (len % RECORD_SIZE != 0) {
             throw new IllegalArgumentException("All reads must be multiple of record size (" + RECORD_SIZE + " bytes.");
         }
-
         long bytes = 0;
-
         while (bytes < len) {
             // we need to read from the underlying stream.
             // this will reset readOffset value. We do not perform
@@ -338,9 +335,7 @@ final class TapeInputStream extends FilterInputStream {
                     return -1;
                 }
             }
-
             long n = 0;
-
             if (readOffset + (len - bytes) <= blockSize) {
                 // we can read entirely from the buffer.
                 n = len - bytes;
@@ -348,12 +343,10 @@ final class TapeInputStream extends FilterInputStream {
                 // copy what we can from the buffer.
                 n = (long) blockSize - readOffset;
             }
-
             // do not copy data but still increment counters.
-            readOffset = ExactMath.add(readOffset, n);
+            readOffset = ArchiveException.addExact(readOffset, n);
             bytes += n;
         }
-
         return bytes;
     }
 }
