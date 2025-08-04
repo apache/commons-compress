@@ -26,9 +26,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
 
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.harmony.pack200.Archive.PackingFile;
 import org.apache.commons.compress.harmony.pack200.Archive.SegmentUnit;
-import org.apache.commons.compress.utils.ExactMath;
 import org.objectweb.asm.ClassReader;
 
 /**
@@ -47,7 +47,8 @@ public class FileBands extends BandSet {
     private final PackingOptions options;
     private final CpBands cpBands;
 
-    public FileBands(final CpBands cpBands, final SegmentHeader segmentHeader, final PackingOptions options, final SegmentUnit segmentUnit, final int effort) {
+    public FileBands(final CpBands cpBands, final SegmentHeader segmentHeader, final PackingOptions options, final SegmentUnit segmentUnit, final int effort)
+            throws ArchiveException {
         super(effort, segmentHeader);
         fileList = segmentUnit.getFileList();
         this.options = options;
@@ -60,7 +61,6 @@ public class FileBands extends BandSet {
         int totalSize = 0;
         file_bits = new byte[size][];
         final int archiveModtime = segmentHeader.getArchive_modtime();
-
         final Set<String> classNames = new HashSet<>();
         for (final ClassReader reader : segmentUnit.getClassList()) {
             classNames.add(reader.getClassName());
@@ -88,18 +88,15 @@ public class FileBands extends BandSet {
             }
             final byte[] bytes = packingFile.getContents();
             file_size[i] = bytes.length;
-            totalSize = ExactMath.add(totalSize, file_size[i]);
-
+            totalSize = ArchiveException.addExact(totalSize, file_size[i]);
             // update modification time
             modtime = (packingFile.getModtime() + TimeZone.getDefault().getRawOffset()) / 1000L;
             file_modtime[i] = (int) (modtime - archiveModtime);
             if (isLatest && latestModtime < file_modtime[i]) {
                 latestModtime = file_modtime[i];
             }
-
             file_bits[i] = packingFile.getContents();
         }
-
         if (isLatest) {
             Arrays.fill(file_modtime, latestModtime);
         }
