@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.harmony.pack200.BHSDCodec;
 import org.apache.commons.compress.harmony.pack200.Codec;
 import org.apache.commons.compress.harmony.pack200.CodecEncoding;
@@ -38,7 +39,6 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.CPMethodRef;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPNameAndType;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPString;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPUTF8;
-import org.apache.commons.compress.utils.ExactMath;
 import org.apache.commons.lang3.ArrayUtils;
 
 /**
@@ -126,7 +126,7 @@ public abstract class BandSet {
                         band[i] -= cardinality;
                     }
                     while (band[i] < bhsd.smallest()) {
-                        band[i] = ExactMath.add(band[i], cardinality);
+                        band[i] = ArchiveException.addExact(band[i], cardinality);
                     }
                 }
             }

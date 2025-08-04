@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.compress.archivers.ArchiveException;
-import org.apache.commons.compress.utils.ExactMath;
 import org.apache.commons.compress.utils.InputStreamStatistics;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.io.input.CloseShieldInputStream;
@@ -143,7 +142,7 @@ final class ExplodingInputStream extends InputStream implements InputStreamStati
                     // EOF
                     return;
                 }
-                length = ExactMath.add(length, nextByte);
+                length = ArchiveException.addExact(length, nextByte);
             }
             length += minimumMatchLength;
 

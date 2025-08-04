@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
-import org.apache.commons.compress.utils.ExactMath;
+import org.apache.commons.compress.archivers.ArchiveException;
 
 /**
  * A run codec is a grouping of two nested codecs; K values are decoded from the first codec, and the remaining codes are decoded from the remaining codec. Note
@@ -57,18 +57,18 @@ public class RunCodec extends Codec {
         if (--k >= 0) {
             final int value = aCodec.decode(in, this.last);
             this.last = k == 0 ? 0 : value;
-            return normalise(value, aCodec);
+            return normalize(value, aCodec);
         }
         this.last = bCodec.decode(in, this.last);
-        return normalise(this.last, bCodec);
+        return normalize(this.last, bCodec);
     }
 
     @Override
     public int[] decodeInts(final int n, final InputStream in) throws IOException, Pack200Exception {
         final int[] aValues = aCodec.decodeInts(k, in);
-        normalise(aValues, aCodec);
+        normalize(aValues, aCodec);
         final int[] bValues = bCodec.decodeInts(n - k, in);
-        normalise(bValues, bCodec);
+        normalize(bValues, bCodec);
         final int[] band = new int[check(n, in)];
         System.arraycopy(aValues, 0, band, 0, k);
         System.arraycopy(bValues, 0, band, k, n - k);
@@ -98,7 +98,7 @@ public class RunCodec extends Codec {
         return k;
     }
 
-    private int normalise(int value, final Codec codecUsed) {
+    private int normalize(int value, final Codec codecUsed) throws ArchiveException {
         if (codecUsed instanceof BHSDCodec) {
             final BHSDCodec bhsd = (BHSDCodec) codecUsed;
             if (bhsd.isDelta()) {
@@ -107,14 +107,14 @@ public class RunCodec extends Codec {
                     value -= cardinality;
                 }
                 while (value < bhsd.smallest()) {
-                    value = ExactMath.add(value, cardinality);
+                    value = ArchiveException.addExact(value, cardinality);
                 }
             }
         }
         return value;
     }
 
-    private void normalise(final int[] band, final Codec codecUsed) {
+    private void normalize(final int[] band, final Codec codecUsed) throws ArchiveException {
         if (codecUsed instanceof BHSDCodec) {
             final BHSDCodec bhsd = (BHSDCodec) codecUsed;
             if (bhsd.isDelta()) {
@@ -124,7 +124,7 @@ public class RunCodec extends Codec {
                         band[i] -= cardinality;
                     }
                     while (band[i] < bhsd.smallest()) {
-                        band[i] = ExactMath.add(band[i], cardinality);
+                        band[i] = ArchiveException.addExact(band[i], cardinality);
                     }
                 }
             }
@@ -143,7 +143,7 @@ public class RunCodec extends Codec {
                             band[i] -= cardinality;
                         }
                         while (band[i] < bhsd.smallest()) {
-                            band[i] = ExactMath.add(band[i], cardinality);
+                            band[i] = ArchiveException.addExact(band[i], cardinality);
                         }
                     }
                 }
