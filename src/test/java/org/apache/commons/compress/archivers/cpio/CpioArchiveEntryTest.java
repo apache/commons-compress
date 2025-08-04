@@ -16,17 +16,20 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.commons.compress.archivers.cpio;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.junit.jupiter.api.Test;
 
 class CpioArchiveEntryTest {
+
     @Test
     void testGetHeaderPadCountOverflow() throws Exception {
         final CpioArchiveEntry entry = new CpioArchiveEntry(CpioConstants.FORMAT_NEW);
         entry.setName("test name");
-        assertThrows(IllegalArgumentException.class, () -> entry.getHeaderPadCount(Long.MAX_VALUE));
+        assertThrows(ArchiveException.class, () -> entry.getHeaderPadCount(Long.MAX_VALUE));
     }
 }

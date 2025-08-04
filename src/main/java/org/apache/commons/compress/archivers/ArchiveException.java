@@ -54,12 +54,16 @@ public class ArchiveException extends CompressException {
      * @param x the first value.
      * @param y the second value.
      * @return the result.
-     * @throws ArchiveException if the result overflows an {@code int}.
+     * @throws ArchiveException if the result or input overflows an {@code int}.
      * @see Math#addExact(int, int)
      * @since 1.29.0
      */
     public static int addExact(final int x, final long y) throws ArchiveException {
-            return addExact(x, Math.toIntExact(y));
+        try {
+            return Math.addExact(x, Math.toIntExact(y));
+        } catch (final ArithmeticException e) {
+            throw new ArchiveException(e);
+        }
     }
 
     /**

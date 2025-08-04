@@ -29,7 +29,7 @@ import java.util.Date;
 import java.util.Objects;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
-import org.apache.commons.compress.utils.ExactMath;
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.io.file.attribute.FileTimes;
 
 /**
@@ -524,9 +524,10 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @deprecated This method doesn't properly work for multi-byte encodings. And creates corrupt archives. Use {@link #getHeaderPadCount(Charset)} or
      *             {@link #getHeaderPadCount(long)} in any case.
      * @return the number of bytes needed to pad the header (0,1,2,3)
+     * @throws ArchiveException if a computation overflows an {@code int}.
      */
     @Deprecated
-    public int getHeaderPadCount() {
+    public int getHeaderPadCount() throws ArchiveException {
         return getHeaderPadCount(null);
     }
 
@@ -535,9 +536,10 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      *
      * @param charset The character set used to encode the entry name in the stream.
      * @return the number of bytes needed to pad the header (0,1,2,3)
+     * @throws ArchiveException if a computation overflows an {@code int}.
      * @since 1.18
      */
-    public int getHeaderPadCount(final Charset charset) {
+    public int getHeaderPadCount(final Charset charset) throws ArchiveException {
         if (name == null) {
             return 0;
         }
@@ -552,15 +554,16 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      *
      * @param nameSize The length of the name in bytes, as read in the stream. Without the trailing zero byte.
      * @return the number of bytes needed to pad the header (0,1,2,3)
+     * @throws ArchiveException if a computation overflows an {@code int}.
      * @since 1.18
      */
-    public int getHeaderPadCount(final long nameSize) {
+    public int getHeaderPadCount(final long nameSize) throws ArchiveException {
         if (this.alignmentBoundary == 0) {
             return 0;
         }
         int size = this.headerSize + 1; // Name has terminating null
         if (name != null) {
-            size = ExactMath.add(size, nameSize);
+            size = ArchiveException.addExact(size, nameSize);
         }
         final int remain = size % this.alignmentBoundary;
         if (remain > 0) {
