@@ -54,6 +54,7 @@ import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.function.IOConsumer;
 import org.apache.commons.lang3.ArrayFill;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -211,6 +212,14 @@ class ZipArchiveInputStreamTest extends AbstractTest {
         try (ZipArchiveInputStream zin = new ZipArchiveInputStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY))) {
             final ZipArchiveEntry entry = zin.getNextEntry();
             assertNull(entry);
+        }
+    }
+
+    @Test
+    void testGetNextZipEntry() throws IOException {
+        try (ZipArchiveInputStream inputStream = new ZipArchiveInputStream(
+                Files.newInputStream(Paths.get("src/test/resources/org/apache/commons/compress/zip/getNextZipEntry.bin")))) {
+            assertThrows(IOException.class, () -> inputStream.forEach(IOConsumer.noop()));
         }
     }
 

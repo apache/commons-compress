@@ -33,7 +33,6 @@ import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.function.Function;
 import java.util.zip.CRC32;
 import java.util.zip.DataFormatException;
@@ -175,8 +174,11 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
         private InputStream inputStream;
 
         @SuppressWarnings("unchecked") // Caller beware
-        private <T extends InputStream> T checkInputStream() {
-            return (T) Objects.requireNonNull(inputStream, "inputStream");
+        private <T extends InputStream> T checkInputStream() throws ZipException {
+            if (inputStream == null) {
+                throw new ZipException("null inputStream");
+            }
+            return (T) inputStream;
         }
     }
 
@@ -629,7 +631,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
      */
     @SuppressWarnings("resource") // checkInputStream() does not allocate.
     @Override
-    public long getCompressedCount() {
+    public long getCompressedCount() throws IOException {
         if (current == null) {
             return -1;
         }
@@ -927,16 +929,13 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
         if (closed) {
             throw new ArchiveException("The stream is closed");
         }
-
         if (current == null) {
             return -1;
         }
-
         // avoid int overflow, check null buffer
         if (offset > buffer.length || length < 0 || offset < 0 || buffer.length - offset < length) {
             throw new ArrayIndexOutOfBoundsException();
         }
-
         ZipUtil.checkRequestedFeatures(current.entry);
         if (!supportsDataDescriptorFor(current.entry)) {
             throw new UnsupportedZipFeatureException(UnsupportedZipFeatureException.Feature.DATA_DESCRIPTOR, current.entry);
@@ -944,27 +943,22 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
         if (!supportsCompressedSizeFor(current.entry)) {
             throw new UnsupportedZipFeatureException(UnsupportedZipFeatureException.Feature.UNKNOWN_COMPRESSED_SIZE, current.entry);
         }
-
         final int read;
         final int method = current.entry.getMethod();
         if (method == ZipArchiveOutputStream.STORED) {
             read = readStored(buffer, offset, length);
         } else if (method == ZipArchiveOutputStream.DEFLATED) {
             read = readDeflated(buffer, offset, length);
-        } else if (method == ZipMethod.UNSHRINKING.getCode() || method == ZipMethod.IMPLODING.getCode()
-                || method == ZipMethod.ENHANCED_DEFLATED.getCode() || method == ZipMethod.BZIP2.getCode()
-                || ZipMethod.isZstd(method)
-                || method == ZipMethod.XZ.getCode()) {
-            read = current.inputStream.read(buffer, offset, length);
+        } else if (method == ZipMethod.UNSHRINKING.getCode() || method == ZipMethod.IMPLODING.getCode() || method == ZipMethod.ENHANCED_DEFLATED.getCode()
+                || method == ZipMethod.BZIP2.getCode() || ZipMethod.isZstd(method) || method == ZipMethod.XZ.getCode()) {
+            read = current.checkInputStream().read(buffer, offset, length);
         } else {
             throw new UnsupportedZipFeatureException(ZipMethod.getMethodByCode(method), current.entry);
         }
-
         if (read >= 0) {
             current.crc.update(buffer, offset, read);
             uncompressedCount += read;
         }
-
         return read;
     }
 

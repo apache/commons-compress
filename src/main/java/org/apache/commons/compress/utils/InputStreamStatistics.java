@@ -19,6 +19,8 @@
 
 package org.apache.commons.compress.utils;
 
+import java.io.IOException;
+
 /**
  * This interface provides statistics on the current decompression stream. The stream consumer can use that statistics to handle abnormal compression ratios,
  * i.e. to prevent ZIP bombs.
@@ -31,8 +33,9 @@ public interface InputStreamStatistics {
      * Gets the amount of raw or compressed bytes read by the stream.
      *
      * @return the amount of raw or compressed bytes read by the stream.
+     * @throws IOException if a formatting error occurs.
      */
-    long getCompressedCount();
+    long getCompressedCount() throws IOException;
 
     /**
      * Gets the amount of decompressed bytes returned by the stream.

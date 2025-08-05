@@ -53,6 +53,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.CRC32;
 import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
 
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveException;
@@ -377,6 +378,11 @@ class ZipFileTest extends AbstractTest {
                 assertThrows(ArchiveException.class, () -> zipFile.getInputStream(entry));
             }
         }
+    }
+
+    @Test
+    void testBuidlerGet() throws IOException {
+        assertThrows(ZipException.class, () -> ZipFile.builder().setPath("src/test/resources/org/apache/commons/compress/zip/getNextZipEntry.bin").get());
     }
 
     /**
