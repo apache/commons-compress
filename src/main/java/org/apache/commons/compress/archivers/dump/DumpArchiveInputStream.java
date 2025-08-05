@@ -220,6 +220,9 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
             // we might still have holes... easiest to do it
             // block by block. We may want to revisit this if
             // the unnecessary decompression time adds up.
+            if (active.getHeaderCount() >= DumpArchiveEntry.TapeSegmentHeader.CDATA_LEN) {
+                throw new ArchiveException("Header count");
+            }
             while (readIdx < active.getHeaderCount()) {
                 if (!active.isSparseRecord(readIdx++) && raw.skip(DumpArchiveConstants.TP_SIZE) == -1) {
                     throw new EOFException();

@@ -273,7 +273,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
      * Archive entry as stored on tape. There is one TSH for (at most) every 512k in the file.
      */
     static final class TapeSegmentHeader {
-        private static final int CDATA_LEN = 512;
+        static final int CDATA_LEN = 512;
         private DumpArchiveConstants.SEGMENT_TYPE type;
         private int volume;
         private int ino;
@@ -391,37 +391,29 @@ public class DumpArchiveEntry implements ArchiveEntry {
     static DumpArchiveEntry parse(final byte[] buffer) {
         final DumpArchiveEntry entry = new DumpArchiveEntry();
         final TapeSegmentHeader header = entry.header;
-
         header.type = DumpArchiveConstants.SEGMENT_TYPE.find(DumpArchiveUtil.convert32(buffer, 0));
-
         // header.dumpDate = new Date(1000L * DumpArchiveUtil.convert32(buffer, 4));
         // header.previousDumpDate = new Date(1000L * DumpArchiveUtil.convert32(
         // buffer, 8));
         header.volume = DumpArchiveUtil.convert32(buffer, 12);
         // header.tapea = DumpArchiveUtil.convert32(buffer, 16);
         entry.ino = header.ino = DumpArchiveUtil.convert32(buffer, 20);
-
         // header.magic = DumpArchiveUtil.convert32(buffer, 24);
         // header.checksum = DumpArchiveUtil.convert32(buffer, 28);
         final int m = DumpArchiveUtil.convert16(buffer, 32);
-
         // determine the type of the file.
         entry.setType(TYPE.find(m >> 12 & 0x0F));
-
         // determine the standard permissions
         entry.setMode(m);
-
         entry.nlink = DumpArchiveUtil.convert16(buffer, 34);
         // inumber, oldids?
         entry.setSize(DumpArchiveUtil.convert64(buffer, 40));
-
         long t = 1000L * DumpArchiveUtil.convert32(buffer, 48) + DumpArchiveUtil.convert32(buffer, 52) / 1000;
         entry.setAccessTime(new Date(t));
         t = 1000L * DumpArchiveUtil.convert32(buffer, 56) + DumpArchiveUtil.convert32(buffer, 60) / 1000;
         entry.setLastModifiedDate(new Date(t));
         t = 1000L * DumpArchiveUtil.convert32(buffer, 64) + DumpArchiveUtil.convert32(buffer, 68) / 1000;
         entry.ctime = t;
-
         // db: 72-119 - direct blocks
         // id: 120-131 - indirect blocks
         // entry.flags = DumpArchiveUtil.convert32(buffer, 132);
@@ -431,19 +423,14 @@ public class DumpArchiveEntry implements ArchiveEntry {
         entry.setGroupId(DumpArchiveUtil.convert32(buffer, 148));
         // two 32-bit spare values.
         header.count = DumpArchiveUtil.convert32(buffer, 160);
-
         header.holes = 0;
-
         for (int i = 0; i < 512 && i < header.count; i++) {
             if (buffer[164 + i] == 0) {
                 header.holes++;
             }
         }
-
         System.arraycopy(buffer, 164, header.cdata, 0, 512);
-
         entry.volume = header.getVolume();
-
         // entry.isSummaryOnly = false;
         return entry;
     }
@@ -528,19 +515,15 @@ public class DumpArchiveEntry implements ArchiveEntry {
         if (o == null || !o.getClass().equals(getClass())) {
             return false;
         }
-
         final DumpArchiveEntry rhs = (DumpArchiveEntry) o;
-
         if (ino != rhs.ino) {
             return false;
         }
-
         // summary is always null right now, but this may change some day
         if (summary == null && rhs.summary != null // NOSONAR
                 || summary != null && !summary.equals(rhs.summary)) { // NOSONAR
             return false;
         }
-
         return true;
     }
 
@@ -974,15 +957,12 @@ public class DumpArchiveEntry implements ArchiveEntry {
     void update(final byte[] buffer) {
         header.volume = DumpArchiveUtil.convert32(buffer, 16);
         header.count = DumpArchiveUtil.convert32(buffer, 160);
-
         header.holes = 0;
-
         for (int i = 0; i < 512 && i < header.count; i++) {
             if (buffer[164 + i] == 0) {
                 header.holes++;
             }
         }
-
         System.arraycopy(buffer, 164, header.cdata, 0, 512);
     }
 }

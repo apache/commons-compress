@@ -26,7 +26,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
@@ -59,6 +62,14 @@ class DumpArchiveInputStreamTest extends AbstractTest {
         try (InputStream is = newInputStream("org/apache/commons/compress/dump/directory_null_bytes-fail.dump");
                 DumpArchiveInputStream archive = new DumpArchiveInputStream(is)) {
             assertThrows(InvalidFormatException.class, archive::getNextEntry);
+        }
+    }
+
+    @Test
+    void testGetNextEntry() throws IOException {
+        try (DumpArchiveInputStream inputStream = new DumpArchiveInputStream(
+                Files.newInputStream(Paths.get("src/test/resources/org/apache/commons/compress/dump/getNextEntry.bin")))) {
+            assertThrows(ArchiveException.class, inputStream::getNextEntry);
         }
     }
 
