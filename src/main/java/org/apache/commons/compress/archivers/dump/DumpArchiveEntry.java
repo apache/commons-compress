@@ -32,13 +32,16 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * DumpEntries that are created from the header bytes read from an archive are instantiated with the DumpArchiveEntry( byte[] ) constructor. These entries will
  * be used when extracting from or listing the contents of an archive. These entries have their header filled in using the header bytes. They also set the File
  * to null, since they reference an archive entry not a file.
+ * </p>
  * <p>
  * DumpEntries can also be constructed from nothing but a name. This allows the programmer to construct the entry by hand, for instance when only an InputStream
  * is available for writing to the archive, and the header information is constructed from other information. In this case the header fields are set to defaults
  * and the File is set to null.
+ * </p>
  *
  * <p>
  * The C structure for a Dump Entry's header is:
+ * </p>
  *
  * <pre>
  * #define TP_BSIZE    1024          // size of each file block
@@ -115,6 +118,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  *
  * <p>
  * The C structure for the inode (file) information is:
+ * </p>
  *
  * <pre>
  * struct bsdtimeval {           //  **** alpha-*-linux is deviant
@@ -269,12 +273,13 @@ public class DumpArchiveEntry implements ArchiveEntry {
      * Archive entry as stored on tape. There is one TSH for (at most) every 512k in the file.
      */
     static final class TapeSegmentHeader {
+        private static final int CDATA_LEN = 512;
         private DumpArchiveConstants.SEGMENT_TYPE type;
         private int volume;
         private int ino;
         private int count;
         private int holes;
-        private final byte[] cdata = new byte[512]; // map of any 'holes'
+        private final byte[] cdata = new byte[CDATA_LEN]; // map of any 'holes'
 
         public int getCdata(final int idx) {
             return cdata[idx];
