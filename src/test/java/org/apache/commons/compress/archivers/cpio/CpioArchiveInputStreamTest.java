@@ -23,12 +23,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayInputStream;
-import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.compress.AbstractTest;
+import org.apache.commons.compress.MemoryLimitException;
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
@@ -105,7 +106,7 @@ class CpioArchiveInputStreamTest extends AbstractTest {
         final byte[] data = new byte[header.getBytes(StandardCharsets.US_ASCII).length + 1];
         System.arraycopy(header.getBytes(), 0, data, 0, header.getBytes().length);
         try (CpioArchiveInputStream cpio = new CpioArchiveInputStream(new ByteArrayInputStream(data))) {
-            assertThrows(EOFException.class, () -> cpio.getNextEntry());
+            assertThrows(MemoryLimitException.class, () -> cpio.getNextEntry());
         }
     }
 
@@ -132,7 +133,7 @@ class CpioArchiveInputStreamTest extends AbstractTest {
         final byte[] data = new byte[header.getBytes(StandardCharsets.US_ASCII).length + 1];
         System.arraycopy(header.getBytes(), 0, data, 0, header.getBytes().length);
         try (CpioArchiveInputStream cpio = new CpioArchiveInputStream(new ByteArrayInputStream(data))) {
-            assertThrows(EOFException.class, () -> cpio.getNextEntry());
+            assertThrows(ArchiveException.class, () -> cpio.getNextEntry());
         }
     }
 

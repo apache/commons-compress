@@ -19,6 +19,8 @@
 
 package org.apache.commons.compress;
 
+import java.io.ByteArrayOutputStream;
+
 /**
  * If a stream checks for estimated memory allocation, and the estimate goes above the memory limit, this is thrown. This can also be thrown if a stream tries
  * to allocate a byte array that is larger than the allowable limit.
@@ -27,17 +29,24 @@ package org.apache.commons.compress;
  */
 public class MemoryLimitException extends CompressException {
 
+    /**
+     * The maximum array size defined privately in {@link ByteArrayOutputStream}.
+     *
+     * @since 1.29.0
+     */
+    public static int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
+
     private static final String MAXIMUM = "maximum";
     private static final String BYTES = "bytes";
     private static final String KIB = "KiB";
     private static final long serialVersionUID = 1L;
 
     private static String buildMessage(final long memoryNeeded, final long memoryLimit, final String scale, final String boundary) {
-        return String.format("%,d %s of memory would be needed; %s was %,d %s. If the file is not corrupt, consider increasing the memory limit.", memoryNeeded,
+        return String.format("%,d %s of memory requested; %s set is %,d %s. If the file is not corrupt, consider increasing the memory limit.", memoryNeeded,
                 scale, boundary, memoryLimit, scale);
     }
 
-    private static long check(final long request, final long max, final long memory, String memoryType, final String scale) throws MemoryLimitException {
+    private static long check(final long request, final long max, final long memory, final String memoryType, final String scale) throws MemoryLimitException {
         check(request, max, scale, MAXIMUM);
         check(request, memory, scale, memoryType);
         return request;

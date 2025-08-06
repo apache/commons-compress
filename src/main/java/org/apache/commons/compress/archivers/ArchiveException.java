@@ -67,6 +67,22 @@ public class ArchiveException extends CompressException {
     }
 
     /**
+     * Delegates to {@link Math#toIntExact(long)} wrapping its {@link ArithmeticException} in our {@link ArchiveException}.
+     *
+     * @param value the long value.
+     * @return the argument as an int.
+     * @throws ArchiveException if the {@code argument} overflows an int.
+     * @since 1.29.0
+     */
+    public static int toIntExact(final long value) throws ArchiveException {
+        try {
+            return Math.toIntExact(value);
+        } catch (final ArithmeticException e) {
+            throw new ArchiveException(e);
+        }
+    }
+
+    /**
      * Delegates to {@link Math#addExact(long, long)} wrapping its {@link ArithmeticException} in our {@link ArchiveException}.
      *
      * @param x the first value.

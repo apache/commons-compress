@@ -30,6 +30,7 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 
+import org.apache.commons.compress.MemoryLimitException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.output.NullOutputStream;
 
@@ -46,6 +47,11 @@ public final class IOUtils {
      * @since 1.21
      */
     public static final LinkOption[] EMPTY_LINK_OPTIONS = {};
+
+    /**
+     * The {@code SOFT_MAX_ARRAY_LENGTH} constant from Java's internal ArraySupport class.
+     */
+    private static final int SOFT_MAX_ARRAY_LENGTH = Integer.MAX_VALUE - 8;
 
     /**
      * Closes the given Closeable and swallows any IOException that may occur.
@@ -109,15 +115,15 @@ public final class IOUtils {
      *
      * @param input  the InputStream to copy
      * @param output the target Stream
-     * @param len    maximum amount of bytes to copy
+     * @param length    maximum amount of bytes to copy
      * @return the number of bytes copied
      * @throws IOException if an error occurs
      * @since 1.21
      * @deprecated Use {@link org.apache.commons.io.IOUtils#copyLarge(InputStream, OutputStream, long, long)}.
      */
     @Deprecated
-    public static long copyRange(final InputStream input, final long len, final OutputStream output) throws IOException {
-        return org.apache.commons.io.IOUtils.copyLarge(input, output, 0, len);
+    public static long copyRange(final InputStream input, final long length, final OutputStream output) throws IOException {
+        return org.apache.commons.io.IOUtils.copyLarge(input, output, 0, length);
     }
 
     /**
@@ -229,7 +235,7 @@ public final class IOUtils {
      */
     public static byte[] readRange(final InputStream input, final int length) throws IOException {
         final ByteArrayOutputStream output = new ByteArrayOutputStream();
-        org.apache.commons.io.IOUtils.copyLarge(input, output, 0, length);
+        org.apache.commons.io.IOUtils.copyLarge(input, output, 0, MemoryLimitException.checkBytes(length, SOFT_MAX_ARRAY_LENGTH));
         return output.toByteArray();
     }
 

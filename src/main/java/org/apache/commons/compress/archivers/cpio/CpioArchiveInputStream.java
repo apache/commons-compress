@@ -404,7 +404,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
             throw new ArchiveException("Found illegal entry with negative name length");
         }
         newEntry.setChksum(readAsciiLong(8, 16));
-        final String name = readCString((int) namesize);
+        final String name = readCString(ArchiveException.toIntExact(namesize));
         newEntry.setName(name);
         if (CpioUtil.fileType(mode) == 0 && !name.equals(CPIO_TRAILER)) {
             throw new ArchiveException(
