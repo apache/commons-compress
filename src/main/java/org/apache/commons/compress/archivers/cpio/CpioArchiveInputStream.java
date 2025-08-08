@@ -430,15 +430,15 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         ret.setNumberOfLinks(readAsciiLong(6, 8));
         ret.setRemoteDevice(readAsciiLong(6, 8));
         ret.setTime(readAsciiLong(11, 8));
-        final long namesize = readAsciiLong(6, 8);
-        if (namesize < 0) {
+        final long nameSize = readAsciiLong(6, 8);
+        if (nameSize < 0) {
             throw new ArchiveException("Found illegal entry with negative name length");
         }
         ret.setSize(readAsciiLong(11, 8));
         if (ret.getSize() < 0) {
             throw new ArchiveException("Found illegal entry with negative length");
         }
-        final String name = readCString((int) namesize);
+        final String name = readCString((int) nameSize);
         ret.setName(name);
         if (CpioUtil.fileType(mode) == 0 && !name.equals(CPIO_TRAILER)) {
             throw new ArchiveException(
