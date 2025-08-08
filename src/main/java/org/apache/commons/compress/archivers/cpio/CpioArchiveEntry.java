@@ -399,7 +399,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * Checks if the method is allowed for the defined format.
      */
     private void checkNewFormat() {
-        if ((this.fileFormat & FORMAT_NEW_MASK) == 0) {
+        if ((fileFormat & FORMAT_NEW_MASK) == 0) {
             throw new UnsupportedOperationException();
         }
     }
@@ -408,7 +408,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * Checks if the method is allowed for the defined format.
      */
     private void checkOldFormat() {
-        if ((this.fileFormat & FORMAT_OLD_MASK) == 0) {
+        if ((fileFormat & FORMAT_OLD_MASK) == 0) {
             throw new UnsupportedOperationException();
         }
     }
@@ -436,7 +436,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @return the alignment boundary (0, 2, 4) in bytes
      */
     public int getAlignmentBoundary() {
-        return this.alignmentBoundary;
+        return alignmentBoundary;
     }
 
     /**
@@ -447,7 +447,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      */
     public long getChksum() {
         checkNewFormat();
-        return this.chksum & 0xFFFFFFFFL;
+        return chksum & 0xFFFFFFFFL;
     }
 
     /**
@@ -456,13 +456,13 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @return the number of bytes needed to pad the data (0,1,2,3)
      */
     public int getDataPadCount() {
-        if (this.alignmentBoundary == 0) {
+        if (alignmentBoundary == 0) {
             return 0;
         }
-        final long size = this.fileSize;
-        final int remain = (int) (size % this.alignmentBoundary);
+        final long size = fileSize;
+        final int remain = (int) (size % alignmentBoundary);
         if (remain > 0) {
-            return this.alignmentBoundary - remain;
+            return alignmentBoundary - remain;
         }
         return 0;
     }
@@ -475,7 +475,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      */
     public long getDevice() {
         checkOldFormat();
-        return this.min;
+        return min;
     }
 
     /**
@@ -486,7 +486,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      */
     public long getDeviceMaj() {
         checkNewFormat();
-        return this.maj;
+        return maj;
     }
 
     /**
@@ -497,7 +497,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      */
     public long getDeviceMin() {
         checkNewFormat();
-        return this.min;
+        return min;
     }
 
     /**
@@ -506,7 +506,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @return the format.
      */
     public short getFormat() {
-        return this.fileFormat;
+        return fileFormat;
     }
 
     /**
@@ -515,7 +515,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @return the group id.
      */
     public long getGID() {
-        return this.gid;
+        return gid;
     }
 
     /**
@@ -558,16 +558,16 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @since 1.18
      */
     public int getHeaderPadCount(final long nameSize) throws ArchiveException {
-        if (this.alignmentBoundary == 0) {
+        if (alignmentBoundary == 0) {
             return 0;
         }
-        int size = this.headerSize + 1; // Name has terminating null
+        int size = headerSize + 1; // Name has terminating null
         if (name != null) {
             size = ArchiveException.addExact(size, nameSize);
         }
-        final int remain = size % this.alignmentBoundary;
+        final int remain = size % alignmentBoundary;
         if (remain > 0) {
-            return this.alignmentBoundary - remain;
+            return alignmentBoundary - remain;
         }
         return 0;
     }
@@ -578,7 +578,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @return the header size in bytes.
      */
     public int getHeaderSize() {
-        return this.headerSize;
+        return headerSize;
     }
 
     /**
@@ -587,7 +587,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @return the inode.
      */
     public long getInode() {
-        return this.inode;
+        return inode;
     }
 
     @Override
@@ -615,7 +615,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      */
     @Override
     public String getName() {
-        return this.name;
+        return name;
     }
 
     /**
@@ -635,7 +635,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      */
     public long getRemoteDevice() {
         checkOldFormat();
-        return this.rmin;
+        return rmin;
     }
 
     /**
@@ -646,7 +646,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      */
     public long getRemoteDeviceMaj() {
         checkNewFormat();
-        return this.rmaj;
+        return rmaj;
     }
 
     /**
@@ -657,7 +657,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      */
     public long getRemoteDeviceMin() {
         checkNewFormat();
-        return this.rmin;
+        return rmin;
     }
 
     /**
@@ -668,7 +668,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      */
     @Override
     public long getSize() {
-        return this.fileSize;
+        return fileSize;
     }
 
     /**
@@ -677,7 +677,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @return the time.
      */
     public long getTime() {
-        return this.mtime;
+        return mtime;
     }
 
     /**
@@ -686,7 +686,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @return the user id.
      */
     public long getUID() {
-        return this.uid;
+        return uid;
     }
 
     /*
@@ -851,7 +851,6 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
         default:
             throw new IllegalArgumentException("Unknown mode. Full: " + Long.toHexString(mode) + " Masked: " + Long.toHexString(maskedMode));
         }
-
         this.mode = mode;
     }
 
