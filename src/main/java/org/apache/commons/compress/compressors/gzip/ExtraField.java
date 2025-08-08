@@ -141,7 +141,14 @@ public final class ExtraField implements Iterable<SubField> {
 
     private static final byte[] ZERO_BYTES = {};
 
-    static ExtraField fromBytes(final byte[] bytes) throws IOException {
+    /**
+     * Converts {@code XLEN} length bytes of "extra field" into an new instance.
+     *
+     * @param bytes without the {@code XLEN} field.
+     * @return a new instance.
+     * @throws CompressorException Thrown for a formatting problem.
+     */
+    static ExtraField fromBytes(final byte[] bytes) throws CompressorException {
         if (bytes == null) {
             return null;
         }
