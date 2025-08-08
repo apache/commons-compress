@@ -25,6 +25,7 @@ import java.time.Instant;
 import java.util.Objects;
 import java.util.zip.Deflater;
 
+import org.apache.commons.compress.CompressException;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -146,8 +147,13 @@ public class GzipParameters {
          *
          * @param code an OS or {@link #UNKNOWN} for no match.
          * @return a {@link OS}.
+         * @throws CompressException Thrown when the {@code code} is undefined, as opposed to {@code UNKNOWN}.
          */
-        public static OS from(final int code) {
+        public static OS from(final int code) throws CompressException {
+            return from(code, true);
+        }
+
+        static OS from(final int code, final boolean strict) throws CompressException {
             switch (code) {
             case OS_ACORN_RISCOS:
                 return ACORN_RISCOS;
@@ -180,6 +186,9 @@ public class GzipParameters {
             case OS_Z_SYSTEM:
                 return Z_SYSTEM;
             default:
+                if (strict) {
+                    throw new CompressException("Unknown operating system code: %s", code);
+                }
                 return UNKNOWN;
             }
         }
@@ -652,15 +661,16 @@ public class GzipParameters {
      * </ul>
      *
      * @param operatingSystem the code of the operating system
+     * @throws CompressException Thrown when the {@code code} is undefined, as opposed to {@code UNKNOWN (255)}.
      */
-    public void setOperatingSystem(final int operatingSystem) {
+    public void setOperatingSystem(final int operatingSystem) throws CompressException {
         this.operatingSystem = OS.from(operatingSystem);
     }
 
     /**
      * Sets the operating system on which the compression took place.
      *
-     * @param os operating system, null maps to {@link OS#UNKNOWN}.
+     * @param os operating system, null resets to {@link OS#UNKNOWN}.
      * @since 1.28.0
      */
     public void setOS(final OS os) {

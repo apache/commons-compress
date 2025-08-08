@@ -29,6 +29,8 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.zip.Deflater;
 
+import org.apache.commons.compress.CompressException;
+import org.apache.commons.compress.compressors.gzip.GzipParameters.OS;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -120,6 +122,13 @@ class GzipParametersTest {
         gzipParameters.setFileName(text);
         assertEquals(text, gzipParameters.getFileName());
         assertEquals(gzipParameters, gzipParameters);
+    }
+
+    @Test
+    void testOperatingSystem() {
+        final GzipParameters gzipParameters = new GzipParameters();
+        assertThrows(CompressException.class, () -> gzipParameters.setOperatingSystem(99));
+        assertEquals(OS.UNKNOWN, gzipParameters.getOS());
     }
 
     @Test
