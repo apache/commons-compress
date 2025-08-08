@@ -96,6 +96,8 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
         /** True if decompressing multi-member streams. */
         private boolean decompressConcatenated;
 
+        private boolean ignoreExtraField = true;
+
         private Charset fileNameCharset = GzipUtils.GZIP_ENCODING;
 
         private IOConsumer<GzipCompressorInputStream> onMemberStart;
@@ -155,6 +157,18 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
         }
 
         /**
+         * Sets whether to ignore extra fields. To best comply with gzip, this defaults to true.
+         *
+         * @param ignoreExtraFields whether to ignore extra fields.
+         * @return this instance.
+         * @since 1.29.0
+         */
+        public Builder setIgnoreExtraField(final boolean ignoreExtraFields) {
+            this.ignoreExtraField = ignoreExtraFields;
+            return this;
+        }
+
+        /**
          * Sets the consumer called when a member <em>trailer</em> is parsed.
          * <p>
          * When a member <em>header</em> is parsed, all {@link GzipParameters} values are initialized except {@code trailerCrc} and {@code trailerISize}.
@@ -171,6 +185,7 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
             this.onMemberEnd = onMemberEnd;
             return this;
         }
+
 
         /**
          * Sets the consumer called when a member <em>header</em> is parsed.
@@ -261,6 +276,9 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
 
     private final IOConsumer<GzipCompressorInputStream> onMemberEnd;
 
+    private final boolean ignoreExtraField;
+
+
     @SuppressWarnings("resource") // caller closes
     private GzipCompressorInputStream(final Builder builder) throws IOException {
         countingStream = BoundedInputStream.builder().setInputStream(builder.getInputStream()).get();
@@ -271,6 +289,7 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
         this.fileNameCharset = builder.fileNameCharset;
         this.onMemberStart = builder.onMemberStart != null ? builder.onMemberStart : NOOP;
         this.onMemberEnd = builder.onMemberEnd != null ? builder.onMemberEnd : NOOP;
+        this.ignoreExtraField = builder.ignoreExtraField;
         init(true);
     }
 
@@ -384,9 +403,13 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
         if ((flg & GzipUtils.FEXTRA) != 0) {
             int xlen = inData.readUnsignedByte();
             xlen |= inData.readUnsignedByte() << 8;
+            parameters.setExtraFieldXlen(xlen);
             final byte[] extra = new byte[xlen];
             inData.readFully(extra);
-            parameters.setExtraField(ExtraField.fromBytes(extra));
+            if (!ignoreExtraField) {
+                // Read the data but ignore it.
+                parameters.setExtraField(ExtraField.fromBytes(extra));
+            }
         }
         // Original file name
         if ((flg & GzipUtils.FNAME) != 0) {

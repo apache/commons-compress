@@ -298,6 +298,7 @@ public class GzipParameters {
     private int compressionLevel = Deflater.DEFAULT_COMPRESSION;
     private int deflateStrategy = Deflater.DEFAULT_STRATEGY;
     private ExtraField extraField;
+    private int extraFieldXlen;
     private String fileName;
     private Charset fileNameCharset = GzipUtils.GZIP_ENCODING;
     private boolean headerCrc;
@@ -383,6 +384,10 @@ public class GzipParameters {
      */
     public ExtraField getExtraField() {
         return extraField;
+    }
+
+    int getExtraFieldXlen() {
+        return extraFieldXlen;
     }
 
     /**
@@ -566,6 +571,10 @@ public class GzipParameters {
         this.extraField = extra;
     }
 
+    void setExtraFieldXlen(final int extraFieldXlen) {
+        this.extraFieldXlen = extraFieldXlen;
+    }
+
     /**
      * Sets the name of the compressed file.
      *
@@ -684,6 +693,7 @@ public class GzipParameters {
     void setTrailerISize(final long trailerISize) {
         this.trailerISize = trailerISize;
     }
+
 
     @Override
     public String toString() {

@@ -141,8 +141,7 @@ class GzipCompressorOutputStreamTest {
         "2, 32763, false"
     })
     // @formatter:on
-    void testExtraSubfields(final int subFieldCount, final Integer payloadSize, final boolean shouldFail)
-            throws IOException {
+    void testExtraSubfields(final int subFieldCount, final Integer payloadSize, final boolean shouldFail) throws IOException {
         final Path tempSourceFile = Files.createTempFile("test_gzip_extra_", ".txt");
         final Path targetFile = Files.createTempFile("test_gzip_extra_", ".txt.gz");
         Files.write(tempSourceFile, "Hello World!".getBytes(StandardCharsets.ISO_8859_1));
@@ -169,13 +168,12 @@ class GzipCompressorOutputStreamTest {
             assertThrows(UnsupportedOperationException.class, () -> extra.iterator().remove());
         }
         parameters.setExtraField(extra);
-        try (OutputStream fos = Files.newOutputStream(targetFile);
-                GzipCompressorOutputStream gos = new GzipCompressorOutputStream(fos, parameters)) {
+        try (OutputStream fos = Files.newOutputStream(targetFile); GzipCompressorOutputStream gos = new GzipCompressorOutputStream(fos, parameters)) {
             gos.write(tempSourceFile);
             gos.close();
             assertTrue(gos.isClosed());
         }
-        try (GzipCompressorInputStream gis = new GzipCompressorInputStream(Files.newInputStream(targetFile))) {
+        try (GzipCompressorInputStream gis = GzipCompressorInputStream.builder().setPath(targetFile).setIgnoreExtraField(false).get()) {
             final ExtraField extra2 = gis.getMetaData().getExtraField();
             assertEquals(parameters, gis.getMetaData());
             assertEquals(subFieldCount == 0, extra2.isEmpty());
@@ -265,26 +263,32 @@ class GzipCompressorOutputStreamTest {
             // nothing to write for this test.
         }
         final byte[] result = baos.toByteArray();
-        final byte[] expected = Hex.decodeHex("1f8b" // id1 id2
-                + "08" // cm
-                + "1e" // flg(FEXTRA|FNAME|FCOMMENT|FHCRC)
-                + "33445566" // mtime little endian
-                + "00" + "03" // xfl os
-                + "0800" + "4242" + "0400" + "43434343" // xlen sfid sflen "CCCC"
+        // @formatter:off
+        final byte[] expected = Hex.decodeHex(
+                "1f8b"         // id1 id2
+                + "08"         // cm
+                + "1e"         // flg(FEXTRA|FNAME|FCOMMENT|FHCRC)
+                + "33445566"   // mtime little endian
+                + "00" + "03"  // xfl os
+                + "0800"       // xlen
+                + "4242"       // sfid
+                + "0400"       // sflen
+                + "43434343"   // "CCCC"
                 + "4141414100" // "AAAA" with \0
                 + "5a5a5a5a00" // "ZZZZ" with \0
-                + "d842" // crc32 = 839242d8
-                + "0300" // empty deflate stream
-                + "00000000" // crs32
-                + "00000000" // isize
+                + "d842"       // crc32 = 839242d8
+                + "0300"       // empty deflate stream
+                + "00000000"   // crs32
+                + "00000000"   // isize
         );
+        // @formatter:on
         assertArrayEquals(expected, result);
         assertDoesNotThrow(() -> {
             try (GZIPInputStream gis = new GZIPInputStream(new ByteArrayInputStream(result))) {
                 // if it does not fail, the hcrc is good.
             }
         });
-        try (GzipCompressorInputStream gis = new GzipCompressorInputStream(new ByteArrayInputStream(result))) {
+        try (GzipCompressorInputStream gis = GzipCompressorInputStream.builder().setByteArray(result).setIgnoreExtraField(false).get()) {
             final GzipParameters metaData = gis.getMetaData();
             assertTrue(metaData.getHeaderCRC());
             assertEquals(0x66554433, metaData.getModificationTime());

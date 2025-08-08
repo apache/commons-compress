@@ -38,17 +38,26 @@ import org.apache.commons.compress.compressors.gzip.ExtraField.SubField;
  * | XLEN  |...XLEN bytes of "extra field"...| (more...)
  * +---+---+=================================+
  * </pre>
- *
+ * <p>
  * This class represents the extra field payload (excluding the XLEN 2 bytes). The ExtraField payload consists of a series of subfields, each of the form:
+ * </p>
  *
  * <pre>
  * +---+---+---+---+==================================+
  * |SI1|SI2|  LEN  |... LEN bytes of subfield data ...|
  * +---+---+---+---+==================================+
  * </pre>
- *
+ * <p>
  * This class does not expose the internal subfields list to prevent adding subfields without total extra length validation. The class is iterable, but this
  * iterator is immutable.
+ * </p>
+ * <p>
+ * Additional documentation on extra fields in use:
+ * </p>
+ * <ul>
+ * <li><a href="https://samtools.github.io/hts-specs/SAMv1.pdf">Sequence Alignment/Map Format Specification</a>: The BGZF compression format defines the extra
+ * field used by BGZF uses the two subfield ID values 66 and 67 (ASCII 'BC').</li>
+ * </ul>
  *
  * @see <a href="https://datatracker.ietf.org/doc/html/rfc1952">RFC 1952 GZIP File Format Specification</a>
  * @since 1.28.0
@@ -143,6 +152,16 @@ public final class ExtraField implements Iterable<SubField> {
 
     /**
      * Converts {@code XLEN} length bytes of "extra field" into an new instance.
+     * <p>
+     * The bytes for the {@code XLEN} field is not included in the input.
+     * </p>
+     * The ExtraField payload consists of a series of subfields, each of the form:
+     *
+     * <pre>
+     * +---+---+---+---+==================================+
+     * |SI1|SI2|  LEN  |... LEN bytes of subfield data ...| (repeat for other subfields)
+     * +---+---+---+---+==================================+
+     * </pre>
      *
      * @param bytes without the {@code XLEN} field.
      * @return a new instance.
@@ -159,7 +178,8 @@ public final class ExtraField implements Iterable<SubField> {
             final byte si2 = bytes[pos++];
             final int sublen = bytes[pos++] & 0xff | (bytes[pos++] & 0xff) << 8;
             if (sublen > bytes.length - pos) {
-                throw new CompressorException("Extra subfield lenght exceeds remaining bytes in extra: %,d > %,d", sublen, bytes.length - pos);
+                throw new CompressorException("Extra subfield length exceeds remaining bytes at subfield id = '%s%s': %,d > %,d", (char) (si1 & 0xff),
+                        (char) (si2 & 0xff), sublen, bytes.length - pos);
             }
             final byte[] payload = new byte[sublen];
             System.arraycopy(bytes, pos, payload, 0, sublen);

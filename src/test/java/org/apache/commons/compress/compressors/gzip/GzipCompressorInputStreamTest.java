@@ -23,16 +23,21 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.file.PathUtils;
 import org.apache.commons.io.function.IOStream;
@@ -86,6 +91,91 @@ class GzipCompressorInputStreamTest {
             });
         }
         return resolved;
+    }
+
+    @Test
+    void testCompress705() throws IOException {
+        try (GzipCompressorInputStream gis = GzipCompressorInputStream.builder()
+                .setFile("src/test/resources/org/apache/commons/compress/COMPRESS-705/grafana-9.2.9.tgz").setIgnoreExtraField(true).get()) {
+            // COMPRESS-705 didn't get you here
+            assertEquals("Helm", gis.getMetaData().getComment());
+            assertEquals(41, gis.getMetaData().getExtraFieldXlen());
+            final List<String> fileNames = new ArrayList<>();
+            try (TarArchiveInputStream tar = new TarArchiveInputStream(gis)) {
+                TarArchiveEntry entry;
+                while ((entry = tar.getNextEntry()) != null) {
+                    fileNames.add(entry.getName());
+                }
+            }
+            // @formatter:off
+            final List<String> expected = Arrays.asList(
+                    "grafana/Chart.yaml",
+                    "grafana/values.yaml",
+                    "grafana/templates/NOTES.txt",
+                    "grafana/templates/_config.tpl",
+                    "grafana/templates/_helpers.tpl",
+                    "grafana/templates/_pod.tpl",
+                    "grafana/templates/clusterrole.yaml",
+                    "grafana/templates/clusterrolebinding.yaml",
+                    "grafana/templates/configSecret.yaml",
+                    "grafana/templates/configmap-dashboard-provider.yaml",
+                    "grafana/templates/configmap.yaml",
+                    "grafana/templates/dashboards-json-configmap.yaml",
+                    "grafana/templates/deployment.yaml",
+                    "grafana/templates/extra-manifests.yaml",
+                    "grafana/templates/headless-service.yaml",
+                    "grafana/templates/hpa.yaml",
+                    "grafana/templates/image-renderer-deployment.yaml",
+                    "grafana/templates/image-renderer-hpa.yaml",
+                    "grafana/templates/image-renderer-network-policy.yaml",
+                    "grafana/templates/image-renderer-service.yaml",
+                    "grafana/templates/image-renderer-servicemonitor.yaml",
+                    "grafana/templates/ingress.yaml",
+                    "grafana/templates/networkpolicy.yaml",
+                    "grafana/templates/poddisruptionbudget.yaml",
+                    "grafana/templates/podsecuritypolicy.yaml",
+                    "grafana/templates/pvc.yaml",
+                    "grafana/templates/role.yaml",
+                    "grafana/templates/rolebinding.yaml",
+                    "grafana/templates/route.yaml",
+                    "grafana/templates/secret-env.yaml",
+                    "grafana/templates/secret.yaml",
+                    "grafana/templates/service.yaml",
+                    "grafana/templates/serviceaccount.yaml",
+                    "grafana/templates/servicemonitor.yaml",
+                    "grafana/templates/statefulset.yaml",
+                    "grafana/templates/tests/test-configmap.yaml",
+                    "grafana/templates/tests/test-podsecuritypolicy.yaml",
+                    "grafana/templates/tests/test-role.yaml",
+                    "grafana/templates/tests/test-rolebinding.yaml",
+                    "grafana/templates/tests/test-serviceaccount.yaml",
+                    "grafana/templates/tests/test.yaml",
+                    "grafana/.helmignore",
+                    "grafana/README.md",
+                    "grafana/ci/default-values.yaml",
+                    "grafana/ci/with-affinity-values.yaml",
+                    "grafana/ci/with-dashboard-json-values.yaml",
+                    "grafana/ci/with-dashboard-values.yaml",
+                    "grafana/ci/with-extraconfigmapmounts-values.yaml",
+                    "grafana/ci/with-image-renderer-values.yaml",
+                    "grafana/ci/with-nondefault-values.yaml",
+                    "grafana/ci/with-persistence.yaml",
+                    "grafana/ci/with-sidecars-envvaluefrom-values.yaml",
+                    "grafana/dashboards/custom-dashboard.json"
+            );
+            // @formatter:on
+            assertEquals(expected, fileNames);
+        }
+        try (GzipCompressorInputStream gis = GzipCompressorInputStream.builder()
+                .setFile("src/test/resources/org/apache/commons/compress/COMPRESS-705/grafana-9.2.9.tgz")
+                .setIgnoreExtraField(true)
+                .get()) {
+            // COMPRESS-705 didn't get you here
+            try (InputStream tarInputStream = Files
+                    .newInputStream(Paths.get("src/test/resources/org/apache/commons/compress/COMPRESS-705/grafana-9.2.9.tar"))) {
+                IOUtils.contentEquals(tarInputStream, gis);
+            }
+        }
     }
 
     @Test
