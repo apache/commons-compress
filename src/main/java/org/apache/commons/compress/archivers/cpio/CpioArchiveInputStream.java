@@ -438,7 +438,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         if (ret.getSize() < 0) {
             throw new ArchiveException("Found illegal entry with negative length");
         }
-        final String name = readCString((int) nameSize);
+        final String name = readCString(ArchiveException.toIntExact(nameSize));
         ret.setName(name);
         if (CpioUtil.fileType(mode) == 0 && !name.equals(CPIO_TRAILER)) {
             throw new ArchiveException(
@@ -460,21 +460,21 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         oldEntry.setNumberOfLinks(readBinaryLong(2, swapHalfWord));
         oldEntry.setRemoteDevice(readBinaryLong(2, swapHalfWord));
         oldEntry.setTime(readBinaryLong(4, swapHalfWord));
-        final long namesize = readBinaryLong(2, swapHalfWord);
-        if (namesize < 0) {
+        final long nameSize = readBinaryLong(2, swapHalfWord);
+        if (nameSize < 0) {
             throw new ArchiveException("Found illegal entry with negative name length");
         }
         oldEntry.setSize(readBinaryLong(4, swapHalfWord));
         if (oldEntry.getSize() < 0) {
             throw new ArchiveException("Found illegal entry with negative length");
         }
-        final String name = readCString((int) namesize);
+        final String name = readCString(ArchiveException.toIntExact(nameSize));
         oldEntry.setName(name);
         if (CpioUtil.fileType(mode) == 0 && !name.equals(CPIO_TRAILER)) {
             throw new ArchiveException(
                     "Mode 0 only allowed in the trailer. Found entry: " + ArchiveUtils.sanitize(name) + "Occurred at byte: " + getBytesRead());
         }
-        final int headerPadCount = oldEntry.getHeaderPadCount(namesize - 1);
+        final int headerPadCount = oldEntry.getHeaderPadCount(nameSize - 1);
         if (skip(headerPadCount) != headerPadCount) {
             throw new ArchiveException("Header pad count mismatch.");
         }
@@ -511,7 +511,6 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         checkOpen();
         final int max = (int) Math.min(n, Integer.MAX_VALUE);
         int total = 0;
-
         while (total < max) {
             int len = max - total;
             if (len > tmpBuf.length) {

@@ -77,9 +77,11 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.harmony.pack200.BHSDCodec now throws ArchiveException instead of Arithmetic exception.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.harmony.pack200.RunCodec now throws ArchiveException instead of Arithmetic exception.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.harmony.pack200.FileBands now throws ArchiveException instead of Arithmetic exception.</action>
-      <!-- FIX xpio -->      
+      <!-- FIX cpio -->      
       <action type="fix" dev="ggregory" due-to="Stan, Gary Gregory">org.apache.commons.compress.archivers.cpio.CpioArchiveEntry now throws ArchiveException instead of Arithmetic exception.</action>
       <action type="fix" dev="ggregory" due-to="Stan, Gary Gregory">org.apache.commons.compress.archivers.cpio.CpioArchiveInputStream.getNextEntry() now throws a MemoryLimitException instead of OutOfMemoryError when it can't process input greater than available memory.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.archivers.cpio.CpioArchiveInputStream.readOldAsciiEntry(boolean) now throws ArchiveException instead of Arithmetic exception.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.archivers.cpio.CpioArchiveInputStream.readOldBinaryEntry(boolean) now throws ArchiveException instead of Arithmetic exception.</action>
       <!-- FIX gzip -->      
       <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.compressors.gzip.GzipParameters.setOperatingSystem(int) now throws CompressorException on illegal input.</action>
       <action type="fix" issue="COMPRESS-705" dev="ggregory" due-to="Mario Fredenhagen, Gary Gregory">GZip IOException: Extra subfield lenght exceeds remaining bytes in extra field; use new option org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream.Builder.setIgnoreExtraField(boolean).</action>
