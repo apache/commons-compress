@@ -144,4 +144,95 @@ class ArchiveUtilsTest extends AbstractTest {
         final String string = ArchiveUtils.toString(sevenZArchiveEntry);
         assertEquals("-       0 null", string);
     }
+
+    @Test
+    public void testisArrayZeroWithOutOFBoundArray() {
+        final byte[] buffer3 = { 0, 0, 0 };
+        assertThrows(ArrayIndexOutOfBoundsException.class, () -> ArchiveUtils.isArrayZero(buffer3, 4));
+    }
+
+    @Test
+    public void testisArrayZeroWithZeroArrayMaxSize() {
+        final byte[] buffer = { 0, 0, 0 };
+        final int size = 3;
+        assertTrue(ArchiveUtils.isArrayZero(buffer, size));
+    }
+
+    @Test
+    public void testisArrayZeroWithZeroArrayMinSize() {
+        final byte[] buffer = { 0, 0, 0 };
+        final int size = 0;
+        assertTrue(ArchiveUtils.isArrayZero(buffer, size));
+    }
+
+    @Test
+    public void testisArrayZeroWithNotZeroArrayMinSize() {
+        final byte[] buffer = { 1, 2, 3 };
+        final int size = 0;
+        assertTrue(ArchiveUtils.isArrayZero(buffer, size));
+    }
+
+    @Test
+    public void testisArrayZeroWithNotZeroArrayMiddleSize() {
+        final byte[] buffer = { 1, 2, 3 };
+        final int size = 2;
+        assertFalse(ArchiveUtils.isArrayZero(buffer, size));
+    }
+
+    @Test
+    public void testisArrayZeroWithZeroArrayMiddleSize() {
+        final byte[] buffer = { 0, 0, 0 };
+        final int size = 2;
+        assertTrue(ArchiveUtils.isArrayZero(buffer, size));
+    }
+
+    @Test
+    void testToStringisDirectory() {
+        final SevenZArchiveEntry sevenZArchiveEntry = new SevenZArchiveEntry();
+        sevenZArchiveEntry.setDirectory(true);
+        sevenZArchiveEntry.setName("test");
+        sevenZArchiveEntry.setSize(1234567L);
+        final String result = ArchiveUtils.toString(sevenZArchiveEntry);
+        assertEquals("d 1234567 test", result);
+    }
+
+    @Test
+    void testToStringisNotDirectorySizelessThanSeven() {
+        final SevenZArchiveEntry sevenZArchiveEntry = new SevenZArchiveEntry();
+        sevenZArchiveEntry.setDirectory(false);
+        sevenZArchiveEntry.setName("test");
+        sevenZArchiveEntry.setSize(123L);
+        final String result = ArchiveUtils.toString(sevenZArchiveEntry);
+        assertEquals("-     123 test", result);
+    }
+
+    @Test
+    void testToStringisNotDirectorySizeisSeven() {
+        final SevenZArchiveEntry sevenZArchiveEntry = new SevenZArchiveEntry();
+        sevenZArchiveEntry.setDirectory(false);
+        sevenZArchiveEntry.setName("test");
+        sevenZArchiveEntry.setSize(1234567L);
+        final String result = ArchiveUtils.toString(sevenZArchiveEntry);
+        assertEquals("- 1234567 test", result);
+    }
+
+    @Test
+    void testToStringisNotDirectorySizeMoreThanSeven() {
+        final SevenZArchiveEntry sevenZArchiveEntry = new SevenZArchiveEntry();
+        sevenZArchiveEntry.setDirectory(false);
+        sevenZArchiveEntry.setName("test");
+        sevenZArchiveEntry.setSize(12345678L);
+        final String result = ArchiveUtils.toString(sevenZArchiveEntry);
+        assertEquals("- 12345678 test", result);
+    }
+
+    @Test
+    void testToStringisNotDirectoryZeroSize() {
+        final SevenZArchiveEntry sevenZArchiveEntry = new SevenZArchiveEntry();
+        sevenZArchiveEntry.setDirectory(false);
+        sevenZArchiveEntry.setName("test");
+        sevenZArchiveEntry.setSize(0L);
+        final String result = ArchiveUtils.toString(sevenZArchiveEntry);
+        assertEquals("-       0 test", result);
+    }
 }
