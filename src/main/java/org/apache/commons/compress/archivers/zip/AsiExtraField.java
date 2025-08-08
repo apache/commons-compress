@@ -282,28 +282,28 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
         }
 
         final long givenChecksum = ZipLong.getValue(data, offset);
-        final byte[] tmp = new byte[length - WORD];
-        System.arraycopy(data, offset + WORD, tmp, 0, length - WORD);
+        final byte[] tmpBuf = new byte[length - WORD];
+        System.arraycopy(data, offset + WORD, tmpBuf, 0, length - WORD);
         crc.reset();
-        crc.update(tmp);
+        crc.update(tmpBuf);
         final long realChecksum = crc.getValue();
         if (givenChecksum != realChecksum) {
             throw new ZipException("Bad CRC checksum, expected " + Long.toHexString(givenChecksum) + " instead of " + Long.toHexString(realChecksum));
         }
 
-        final int newMode = ZipShort.getValue(tmp, 0);
+        final int newMode = ZipShort.getValue(tmpBuf, 0);
         // CheckStyle:MagicNumber OFF
-        final int linkArrayLength = (int) ZipLong.getValue(tmp, 2);
-        if (linkArrayLength < 0 || linkArrayLength > tmp.length - 10) {
+        final int linkArrayLength = (int) ZipLong.getValue(tmpBuf, 2);
+        if (linkArrayLength < 0 || linkArrayLength > tmpBuf.length - 10) {
             throw new ZipException("Bad symbolic link name length " + linkArrayLength + " in ASI extra field");
         }
-        uid = ZipShort.getValue(tmp, 6);
-        gid = ZipShort.getValue(tmp, 8);
+        uid = ZipShort.getValue(tmpBuf, 6);
+        gid = ZipShort.getValue(tmpBuf, 8);
         if (linkArrayLength == 0) {
             link = "";
         } else {
             final byte[] linkArray = new byte[linkArrayLength];
-            System.arraycopy(tmp, 10, linkArray, 0, linkArrayLength);
+            System.arraycopy(tmpBuf, 10, linkArray, 0, linkArrayLength);
             link = new String(linkArray, Charset.defaultCharset()); // Uses default charset - see class Javadoc
         }
         // CheckStyle:MagicNumber ON

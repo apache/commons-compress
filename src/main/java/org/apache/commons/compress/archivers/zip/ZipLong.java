@@ -76,10 +76,10 @@ public final class ZipLong implements Cloneable, Serializable {
     public static final ZipLong AED_SIG = new ZipLong(0X08064B50L);
 
     /**
-     * Gets value as four bytes in big-endian byte order.
+     * Converts a long value to four bytes in big-endian byte order.
      *
-     * @param value the value to convert
-     * @return value as four bytes in big-endian byte order
+     * @param value the value to convert.
+     * @return value as four bytes in big-endian byte order.
      */
     public static byte[] getBytes(final long value) {
         final byte[] result = new byte[WORD];
@@ -88,21 +88,21 @@ public final class ZipLong implements Cloneable, Serializable {
     }
 
     /**
-     * Helper method to get the value as a Java long from a four-byte array
+     * Converts a four-byte array to a Java long,
      *
-     * @param bytes the array of bytes
-     * @return the corresponding Java long value
+     * @param bytes the array of bytes.
+     * @return the corresponding Java long value.
      */
     public static long getValue(final byte[] bytes) {
         return getValue(bytes, 0);
     }
 
     /**
-     * Helper method to get the value as a Java long from four bytes starting at given array offset
+     * Converts a four-byte array to a Java long at a given array offset.
      *
-     * @param bytes  the array of bytes
-     * @param offset the offset to start
-     * @return the corresponding Java long value
+     * @param bytes  the array of bytes.
+     * @param offset the offset to start.
+     * @return the corresponding Java long value.
      */
     public static long getValue(final byte[] bytes, final int offset) {
         return ByteUtils.fromLittleEndian(bytes, offset, 4);
@@ -111,9 +111,9 @@ public final class ZipLong implements Cloneable, Serializable {
     /**
      * Puts a long value in a buffer as four bytes in little-endian byte order.
      *
-     * @param value  the Java long to convert to bytes
-     * @param buf    the output buffer
-     * @param offset The offset within the output buffer of the first byte to be written. must be non-negative and no larger than {@code buf.length-4}
+     * @param value  the Java long to convert to bytes.
+     * @param buf    the output buffer.
+     * @param offset The offset within the output buffer of the first byte to be written. must be non-negative and no larger than {@code buf.length - 4}.
      */
     public static void putLong(final long value, final byte[] buf, final int offset) {
         ByteUtils.toLittleEndian(buf, value, offset, 4);
@@ -124,7 +124,7 @@ public final class ZipLong implements Cloneable, Serializable {
     /**
      * Constructs a new instance from bytes.
      *
-     * @param bytes the bytes to store as a ZipLong
+     * @param bytes the bytes to store as a ZipLong.
      */
     public ZipLong(final byte[] bytes) {
         this(bytes, 0);
@@ -133,8 +133,8 @@ public final class ZipLong implements Cloneable, Serializable {
     /**
      * Creates instance from the four bytes starting at offset.
      *
-     * @param bytes  the bytes to store as a ZipLong
-     * @param offset the offset to start
+     * @param bytes  the bytes to store as a ZipLong.
+     * @param offset the offset to start.
      */
     public ZipLong(final byte[] bytes, final int offset) {
         value = getValue(bytes, offset);
@@ -143,7 +143,7 @@ public final class ZipLong implements Cloneable, Serializable {
     /**
      * create instance from a Java int.
      *
-     * @param value the int to store as a ZipLong
+     * @param value the int to store as a ZipLong.
      * @since 1.15
      */
     public ZipLong(final int value) {
@@ -153,7 +153,7 @@ public final class ZipLong implements Cloneable, Serializable {
     /**
      * Creates instance from a number.
      *
-     * @param value the long to store as a ZipLong
+     * @param value the long to store as a ZipLong.
      */
     public ZipLong(final long value) {
         this.value = value;
@@ -172,8 +172,8 @@ public final class ZipLong implements Cloneable, Serializable {
     /**
      * Override to make two instances with same value equal.
      *
-     * @param o an object to compare
-     * @return true if the objects are equal
+     * @param o an object to compare.
+     * @return true if the objects are equal.
      */
     @Override
     public boolean equals(final Object o) {
@@ -186,7 +186,7 @@ public final class ZipLong implements Cloneable, Serializable {
     /**
      * Gets value as four bytes in big-endian byte order.
      *
-     * @return value as four bytes in big-endian order
+     * @return value as four bytes in big-endian order.
      */
     public byte[] getBytes() {
         return getBytes(value);
@@ -195,7 +195,7 @@ public final class ZipLong implements Cloneable, Serializable {
     /**
      * Gets value as a (signed) Java int
      *
-     * @return value as int
+     * @return value as int.
      * @since 1.15
      */
     public int getIntValue() {
@@ -205,7 +205,7 @@ public final class ZipLong implements Cloneable, Serializable {
     /**
      * Gets value as Java long.
      *
-     * @return value as a long
+     * @return value as a long.
      */
     public long getValue() {
         return value;
@@ -214,7 +214,7 @@ public final class ZipLong implements Cloneable, Serializable {
     /**
      * Override to make two instances with same value equal.
      *
-     * @return the value stored in the ZipLong
+     * @return the value stored in the ZipLong.
      */
     @Override
     public int hashCode() {
@@ -224,8 +224,8 @@ public final class ZipLong implements Cloneable, Serializable {
     /**
      * Puts this long value in a buffer as four bytes in little-endian byte order.
      *
-     * @param buf    the output buffer
-     * @param offset The offset within the output buffer of the first byte to be written. must be non-negative and no larger than {@code buf.length-4}
+     * @param buf    the output buffer.
+     * @param offset The offset within the output buffer of the first byte to be written. must be non-negative and no larger than {@code buf.length - 4}.
      */
     public void putLong(final byte[] buf, final int offset) {
         putLong(value, buf, offset);
