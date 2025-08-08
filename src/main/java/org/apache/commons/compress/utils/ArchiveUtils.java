@@ -25,14 +25,14 @@ import java.util.Arrays;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 
 /**
- * Generic Archive utilities
+ * Generic Archive utilities.
  */
 public class ArchiveUtils {
 
     private static final int MAX_SANITIZED_NAME_LENGTH = 255;
 
     /**
-     * Returns true if the first N bytes of an array are all zero.
+     * Tests whether true if the first N bytes of an array are all zero.
      *
      * @param a    The array to check.
      * @param size The number of characters to check (not the size of the array).
@@ -48,7 +48,7 @@ public class ArchiveUtils {
     }
 
     /**
-     * Compare byte buffers.
+     * Tests whether two byte buffer contents are equal.
      *
      * @param buffer1 the first buffer.
      * @param buffer2 the second buffer.
@@ -61,7 +61,7 @@ public class ArchiveUtils {
     }
 
     /**
-     * Compare byte buffers, optionally ignoring trailing nulls.
+     * CTests whether two byte buffer contents are equal, optionally ignoring trailing nulls.
      *
      * @param buffer1             the first buffer.
      * @param buffer2             the second buffer.
@@ -73,7 +73,7 @@ public class ArchiveUtils {
     }
 
     /**
-     * Compare byte buffers.
+     * Tests whether two byte buffer contents are equal.
      *
      * @param buffer1 the first buffer.
      * @param offset1 the first offset.
@@ -88,7 +88,7 @@ public class ArchiveUtils {
     }
 
     /**
-     * Compare byte buffers, optionally ignoring trailing nulls.
+     * Tests whether two byte buffer contents are equal, optionally ignoring trailing nulls.
      *
      * @param buffer1             first buffer.
      * @param offset1             first offset.
@@ -130,7 +130,7 @@ public class ArchiveUtils {
     }
 
     /**
-     * Compare byte buffers, ignoring trailing nulls.
+     * Tests whether two byte buffer contents are equal, ignoring trailing nulls.
      *
      * @param buffer1 the first buffer.
      * @param offset1 the first offset.
@@ -146,7 +146,7 @@ public class ArchiveUtils {
     }
 
     /**
-     * Check if buffer contents matches ASCII String.
+     * Tests whether buffer contents matches ASCII String.
      *
      * @param expected the expected string.
      * @param buffer   the buffer.
@@ -157,7 +157,7 @@ public class ArchiveUtils {
     }
 
     /**
-     * Check if buffer contents matches ASCII String.
+     * Tests whether buffer contents matches ASCII String.
      *
      * @param expected expected string.
      * @param buffer   the buffer.
@@ -204,7 +204,7 @@ public class ArchiveUtils {
     }
 
     /**
-     * Convert a string to ASCII bytes. Used for comparing "magic" strings which need to be independent of the default Locale.
+     * Converts a string to ASCII bytes. Used for comparing "magic" strings which need to be independent of the default Locale.
      *
      * @param inputString string to convert.
      * @return the bytes.
@@ -214,7 +214,7 @@ public class ArchiveUtils {
     }
 
     /**
-     * Convert an input byte array to a String using the ASCII character set.
+     * Converts an input byte array to a String using the ASCII character set.
      *
      * @param inputBytes bytes to convert.
      * @return the bytes, interpreted as an ASCII string.
@@ -224,7 +224,7 @@ public class ArchiveUtils {
     }
 
     /**
-     * Convert an input byte array to a String using the ASCII character set.
+     * Converts an input byte array to a String using the ASCII character set.
      *
      * @param inputBytes input byte array.
      * @param offset     offset within array.
@@ -236,7 +236,7 @@ public class ArchiveUtils {
     }
 
     /**
-     * Generates a string containing the name, isDirectory setting and size of an entry.
+     * Converts an archive entry to a string containing the name, isDirectory setting and size of an entry.
      * <p>
      * For example:
      *
