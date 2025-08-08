@@ -141,7 +141,8 @@ class ArchiveUtilsTest extends AbstractTest {
     @Test
     void testToStringWithNonNull() {
         final SevenZArchiveEntry sevenZArchiveEntry = new SevenZArchiveEntry();
-        final String string = ArchiveUtils.toString(sevenZArchiveEntry);
-        assertEquals("-       0 null", string);
+        assertEquals("-       0 null", ArchiveUtils.toString(sevenZArchiveEntry));
+        sevenZArchiveEntry.setDirectory(true);
+        assertEquals("d       0 null", ArchiveUtils.toString(sevenZArchiveEntry));
     }
 }
