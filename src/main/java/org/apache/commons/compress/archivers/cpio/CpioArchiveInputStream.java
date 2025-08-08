@@ -215,7 +215,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
      * @throws IOException if the stream is already closed
      */
     private void checkOpen() throws IOException {
-        if (this.closed) {
+        if (closed) {
             throw new ArchiveException("Stream closed");
         }
     }
@@ -227,9 +227,9 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
      */
     @Override
     public void close() throws IOException {
-        if (!this.closed) {
+        if (!closed) {
             in.close();
-            this.closed = true;
+            closed = true;
         }
     }
 
@@ -256,41 +256,41 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
     @Deprecated
     public CpioArchiveEntry getNextCPIOEntry() throws IOException {
         checkOpen();
-        if (this.entry != null) {
+        if (entry != null) {
             closeEntry();
         }
         readFully(buffer2, 0, buffer2.length);
         if (CpioUtil.byteArray2long(buffer2, false) == MAGIC_OLD_BINARY) {
-            this.entry = readOldBinaryEntry(false);
+            entry = readOldBinaryEntry(false);
         } else if (CpioUtil.byteArray2long(buffer2, true) == MAGIC_OLD_BINARY) {
-            this.entry = readOldBinaryEntry(true);
+            entry = readOldBinaryEntry(true);
         } else {
             System.arraycopy(buffer2, 0, buffer6, 0, buffer2.length);
             readFully(buffer6, buffer2.length, buffer4.length);
             final String magicString = ArchiveUtils.toAsciiString(buffer6);
             switch (magicString) {
             case MAGIC_NEW:
-                this.entry = readNewEntry(false);
+                entry = readNewEntry(false);
                 break;
             case MAGIC_NEW_CRC:
-                this.entry = readNewEntry(true);
+                entry = readNewEntry(true);
                 break;
             case MAGIC_OLD_ASCII:
-                this.entry = readOldAsciiEntry();
+                entry = readOldAsciiEntry();
                 break;
             default:
                 throw new ArchiveException("Unknown magic '%s' at byte: %,d", magicString, getBytesRead());
             }
         }
-        this.entryBytesRead = 0;
-        this.entryEOF = false;
-        this.crc = 0;
-        if (this.entry.getName().equals(CPIO_TRAILER)) {
-            this.entryEOF = true;
+        entryBytesRead = 0;
+        entryEOF = false;
+        crc = 0;
+        if (entry.getName().equals(CPIO_TRAILER)) {
+            entryEOF = true;
             skipRemainderOfLastBlock();
             return null;
         }
-        return this.entry;
+        return entry;
     }
 
     @Override
@@ -316,33 +316,33 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         if (len == 0) {
             return 0;
         }
-        if (this.entry == null || this.entryEOF) {
+        if (entry == null || entryEOF) {
             return -1;
         }
-        if (this.entryBytesRead == this.entry.getSize()) {
+        if (entryBytesRead == entry.getSize()) {
             final int dataPadCount = entry.getDataPadCount();
             if (skip(dataPadCount) != dataPadCount) {
                 throw new ArchiveException("Data pad count missmatch.");
             }
-            this.entryEOF = true;
-            if (this.entry.getFormat() == FORMAT_NEW_CRC && this.crc != this.entry.getChksum()) {
+            entryEOF = true;
+            if (entry.getFormat() == FORMAT_NEW_CRC && crc != entry.getChksum()) {
                 throw new ArchiveException("CRC Error. Occurred at byte: " + getBytesRead());
             }
             return -1; // EOF for this entry
         }
-        final int tmplength = (int) Math.min(len, this.entry.getSize() - this.entryBytesRead);
+        final int tmplength = (int) Math.min(len, entry.getSize() - entryBytesRead);
         if (tmplength < 0) {
             return -1;
         }
         final int tmpread = readFully(b, off, tmplength);
-        if (this.entry.getFormat() == FORMAT_NEW_CRC) {
+        if (entry.getFormat() == FORMAT_NEW_CRC) {
             for (int pos = 0; pos < tmpread; pos++) {
-                this.crc += b[pos] & 0xFF;
-                this.crc &= 0xFFFFFFFFL;
+                crc += b[pos] & 0xFF;
+                crc &= 0xFFFFFFFFL;
             }
         }
         if (tmpread > 0) {
-            this.entryBytesRead += tmpread;
+            entryBytesRead += tmpread;
         }
         return tmpread;
     }
@@ -360,7 +360,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
     private String readCString(final int length) throws IOException {
         // don't include trailing NUL in file name to decode
         final byte[] tmpBuffer = readRange(length - 1);
-        if (this.in.read() == -1) {
+        if (in.read() == -1) {
             throw new EOFException();
         }
         return zipEncoding.decode(tmpBuffer);
@@ -514,12 +514,12 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
 
         while (total < max) {
             int len = max - total;
-            if (len > this.tmpBuf.length) {
-                len = this.tmpBuf.length;
+            if (len > tmpBuf.length) {
+                len = tmpBuf.length;
             }
-            len = read(this.tmpBuf, 0, len);
+            len = read(tmpBuf, 0, len);
             if (len == -1) {
-                this.entryEOF = true;
+                entryEOF = true;
                 break;
             }
             total += len;
