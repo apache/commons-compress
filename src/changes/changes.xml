@@ -67,9 +67,10 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Classes in org.apache.commons.compress.compressors now throw a subclass of IOException called CompressorException instead of IOException when a formatting problem is found.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Use non-deprecated ArchiveException constructor.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.archivers.ar.ArArchiveInputStream.readGNUStringTable(byte[], int, int) now provides a better exception message, wrapping the underlying exception.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.archivers.ar.ArArchiveInputStream.read(byte[], int, int) now throws ArchiveException instead of ArithmeticException.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.harmony.unpack200.BandSet now throws ArchiveException instead of Arithmetic exception.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.harmony.pack200.BHSDCodec now throws ArchiveException instead of Arithmetic exception.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.archivers.zip.ExplodingInputStream now throws ArchiveException instead of Arithmetic exception.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.archivers.zip.ExplodingInputStream now throws ArchiveException instead of ArithmeticException.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.harmony.pack200.RunCodec now throws ArchiveException instead of Arithmetic exception.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.harmony.pack200.FileBands now throws ArchiveException instead of Arithmetic exception.</action>
       <action type="fix" dev="ggregory" due-to="Stan, Gary Gregory">org.apache.commons.compress.archivers.cpio.CpioArchiveEntry now throws ArchiveException instead of Arithmetic exception.</action>

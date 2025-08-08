@@ -374,7 +374,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
         if (len < 0 || offset >= entryEnd) {
             return -1;
         }
-        final int toRead = (int) Math.min(len, entryEnd - offset);
+        final int toRead = ArchiveException.toIntExact(Math.min(len, entryEnd - offset));
         final int ret = this.in.read(b, off, toRead);
         trackReadBytes(ret);
         return ret;
