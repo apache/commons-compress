@@ -80,7 +80,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
      * File this entry points to, if it is a symbolic link.
      *
      * <p>
-     * empty string - if entry is not a symbolic link.
+     * Empty string if the entry is not a symbolic link.
      * </p>
      */
     private String link = "";
@@ -280,7 +280,6 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
         if (length < MIN_SIZE) {
             throw new ZipException("The length is too short, only " + length + " bytes, expected at least " + MIN_SIZE);
         }
-
         final long givenChecksum = ZipLong.getValue(data, offset);
         final byte[] tmpBuf = new byte[length - WORD];
         System.arraycopy(data, offset + WORD, tmpBuf, 0, length - WORD);
@@ -290,11 +289,11 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
         if (givenChecksum != realChecksum) {
             throw new ZipException("Bad CRC checksum, expected " + Long.toHexString(givenChecksum) + " instead of " + Long.toHexString(realChecksum));
         }
-
         final int newMode = ZipShort.getValue(tmpBuf, 0);
         // CheckStyle:MagicNumber OFF
         final int linkArrayLength = (int) ZipLong.getValue(tmpBuf, 2);
-        if (linkArrayLength < 0 || linkArrayLength > tmpBuf.length - 10) {
+        final int linkIndex = 10;
+        if (linkArrayLength < 0 || linkArrayLength > tmpBuf.length - linkIndex) {
             throw new ZipException("Bad symbolic link name length " + linkArrayLength + " in ASI extra field");
         }
         uid = ZipShort.getValue(tmpBuf, 6);
@@ -303,7 +302,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
             link = "";
         } else {
             final byte[] linkArray = new byte[linkArrayLength];
-            System.arraycopy(tmpBuf, 10, linkArray, 0, linkArrayLength);
+            System.arraycopy(tmpBuf, linkIndex, linkArray, 0, linkArrayLength);
             link = new String(linkArray, Charset.defaultCharset()); // Uses default charset - see class Javadoc
         }
         // CheckStyle:MagicNumber ON
