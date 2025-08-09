@@ -43,15 +43,13 @@ public abstract class VariableInstructionForm extends ByteCodeForm {
      */
     public void setRewrite2Bytes(final int operand, final int absPosition, final int[] rewrite) {
         if (absPosition < 0) {
-            throw new Error("Trying to rewrite " + this + " but there is no room for 4 bytes");
+            throw new IllegalArgumentException("Trying to rewrite " + this + " but there is no room for 4 bytes");
         }
-
         final int byteCodeRewriteLength = rewrite.length;
-
         if (absPosition + 1 > byteCodeRewriteLength) {
-            throw new Error("Trying to rewrite " + this + " with an int at position " + absPosition + " but this won't fit in the rewrite array");
+            throw new IllegalArgumentException(
+                    "Trying to rewrite " + this + " with an int at position " + absPosition + " but this won't fit in the rewrite array");
         }
-
         rewrite[absPosition] = (0xFF00 & operand) >> 8;
         rewrite[absPosition + 1] = 0x00FF & operand;
     }
@@ -65,15 +63,13 @@ public abstract class VariableInstructionForm extends ByteCodeForm {
      */
     public void setRewrite4Bytes(final int operand, final int absPosition, final int[] rewrite) {
         if (absPosition < 0) {
-            throw new Error("Trying to rewrite " + this + " but there is no room for 4 bytes");
+            throw new IllegalArgumentException("Trying to rewrite " + this + " but there is no room for 4 bytes");
         }
-
         final int byteCodeRewriteLength = rewrite.length;
-
         if (absPosition + 3 > byteCodeRewriteLength) {
-            throw new Error("Trying to rewrite " + this + " with an int at position " + absPosition + " but this won't fit in the rewrite array");
+            throw new IllegalArgumentException(
+                    "Trying to rewrite " + this + " with an int at position " + absPosition + " but this won't fit in the rewrite array");
         }
-
         rewrite[absPosition] = (0xFF000000 & operand) >> 24;
         rewrite[absPosition + 1] = (0x00FF0000 & operand) >> 16;
         rewrite[absPosition + 2] = (0x0000FF00 & operand) >> 8;

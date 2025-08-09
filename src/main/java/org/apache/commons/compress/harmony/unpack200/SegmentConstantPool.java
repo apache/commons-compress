@@ -130,7 +130,7 @@ public class SegmentConstantPool {
             }
             return INITSTRING.equals(compareString.substring(0, INITSTRING.length()));
         }
-        throw new Error("regex trying to match a pattern I don't know: " + regexString);
+        throw new IllegalArgumentException("regex trying to match a pattern I don't know: " + regexString);
     }
 
     static int toIndex(final long index) throws Pack200Exception {
@@ -297,7 +297,7 @@ public class SegmentConstantPool {
         default:
             break;
         }
-        throw new Error("Tried to get a value I don't know about: " + cp);
+        throw new Pack200Exception("Tried to get a value I don't know about: " + cp);
     }
 
     /**

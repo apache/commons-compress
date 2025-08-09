@@ -108,21 +108,21 @@ public class OperandManager {
 
     public String getCurrentClass() {
         if (null == currentClass) {
-            throw new Error("Current class not set yet");
+            throw new IllegalStateException("Current class not set yet");
         }
         return currentClass;
     }
 
     public String getNewClass() {
         if (null == newClass) {
-            throw new Error("New class not set yet");
+            throw new IllegalStateException("New class not set yet");
         }
         return newClass;
     }
 
     public String getSuperClass() {
         if (null == superClass) {
-            throw new Error("SuperClass not set yet");
+            throw new IllegalStateException("SuperClass not set yet");
         }
         return superClass;
     }

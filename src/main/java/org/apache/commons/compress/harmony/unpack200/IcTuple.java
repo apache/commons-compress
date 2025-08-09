@@ -93,9 +93,8 @@ public class IcTuple {
     private boolean computeOuterIsAnonymous() {
         final String[] result = innerBreakAtDollar(cachedOuterClassString);
         if (result.length == 0) {
-            throw new Error("Should have an outer before checking if it's anonymous");
+            throw new IllegalStateException("Should have an outer before checking if it's anonymous");
         }
-
         for (final String element : result) {
             if (isAllDigits(element)) {
                 return true;
@@ -174,11 +173,11 @@ public class IcTuple {
         final String[] nameComponents = innerBreakAtDollar(C);
         if (nameComponents.length == 0) {
             // Unable to predict outer class
-            // throw new Error("Unable to predict outer class name: " + C);
+            // throw new IllegalStateException("Unable to predict outer class name: " + C);
         }
         if (nameComponents.length == 1) {
             // Unable to predict simple class name
-            // throw new Error("Unable to predict inner class name: " + C);
+            // throw new IllegalStateException("Unable to predict inner class name: " + C);
         }
         if (nameComponents.length < 2) {
             // If we get here, we hope cachedSimpleClassName

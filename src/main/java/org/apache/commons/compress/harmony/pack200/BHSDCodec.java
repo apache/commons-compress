@@ -183,7 +183,7 @@ public final class BHSDCodec extends Codec {
             result = 3L * cardinality() / 4 - 1;
             break;
         default:
-            throw new Error("Unknown s value");
+            throw new IllegalStateException("Unknown s value");
         }
         return Math.min((s == 0 ? (long) Integer.MAX_VALUE << 1 : Integer.MAX_VALUE) - 1, result);
     }

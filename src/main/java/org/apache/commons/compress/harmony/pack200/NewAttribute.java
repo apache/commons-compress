@@ -38,7 +38,7 @@ public class NewAttribute extends Attribute {
 
         @Override
         protected Attribute read(final ClassReader cr, final int off, final int len, final char[] buf, final int codeOff, final Label[] labels) {
-            throw new Error("Attribute " + type + " was found");
+            throw new IllegalStateException("Attribute " + type + " was found");
         }
     }
 

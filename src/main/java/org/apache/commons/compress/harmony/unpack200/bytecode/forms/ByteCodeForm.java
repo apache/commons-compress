@@ -374,7 +374,7 @@ public abstract class ByteCodeForm {
 
         // If last < first, something is wrong.
         if (difference < 0) {
-            throw new Error("Logic error: not finding rewrite operands correctly");
+            throw new IllegalStateException("Logic error: not finding rewrite operands correctly");
         }
         operandLength = difference + 1;
     }

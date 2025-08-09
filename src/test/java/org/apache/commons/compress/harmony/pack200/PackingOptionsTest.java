@@ -113,7 +113,7 @@ class PackingOptionsTest extends AbstractTempDirTest {
             final PackingOptions options = new PackingOptions();
             options.addClassAttributeAction("Pack200", "error");
             final Archive ar = new Archive(in, out, options);
-            final Error error = assertThrows(Error.class, () -> {
+            final IllegalStateException error = assertThrows(IllegalStateException.class, () -> {
                 ar.pack();
                 in.close();
                 out.close();

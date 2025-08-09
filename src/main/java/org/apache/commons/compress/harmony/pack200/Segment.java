@@ -276,7 +276,7 @@ public class Segment extends ClassVisitor {
                 if (action.equals(PackingOptions.PASS)) {
                     passCurrentClass();
                 } else if (action.equals(PackingOptions.ERROR)) {
-                    throw new Error("Unknown attribute encountered");
+                    throw new IllegalArgumentException("Unknown attribute encountered");
                 } // else skip
             } else if (attribute instanceof NewAttribute) {
                 final NewAttribute newAttribute = (NewAttribute) attribute;
@@ -285,7 +285,7 @@ public class Segment extends ClassVisitor {
                     if (action.equals(PackingOptions.PASS)) {
                         passCurrentClass();
                     } else if (action.equals(PackingOptions.ERROR)) {
-                        throw new Error("Unknown attribute encountered");
+                        throw new IllegalArgumentException("Unknown attribute encountered");
                     } // else skip
                 }
                 classBands.addFieldAttribute(newAttribute);
@@ -327,7 +327,7 @@ public class Segment extends ClassVisitor {
                 if (action.equals(PackingOptions.PASS)) {
                     passCurrentClass();
                 } else if (action.equals(PackingOptions.ERROR)) {
-                    throw new Error("Unknown attribute encountered");
+                    throw new IllegalArgumentException("Unknown attribute encountered");
                 } // else skip
             } else if (attribute instanceof NewAttribute) {
                 final NewAttribute newAttribute = (NewAttribute) attribute;
@@ -337,7 +337,7 @@ public class Segment extends ClassVisitor {
                         if (action.equals(PackingOptions.PASS)) {
                             passCurrentClass();
                         } else if (action.equals(PackingOptions.ERROR)) {
-                            throw new Error("Unknown attribute encountered");
+                            throw new IllegalArgumentException("Unknown attribute encountered");
                         } // else skip
                     }
                     classBands.addCodeAttribute(newAttribute);
@@ -347,7 +347,7 @@ public class Segment extends ClassVisitor {
                         if (action.equals(PackingOptions.PASS)) {
                             passCurrentClass();
                         } else if (action.equals(PackingOptions.ERROR)) {
-                            throw new Error("Unknown attribute encountered");
+                            throw new IllegalArgumentException("Unknown attribute encountered");
                         } // else skip
                     }
                     classBands.addMethodAttribute(newAttribute);
@@ -697,7 +697,7 @@ public class Segment extends ClassVisitor {
             if (action.equals(PackingOptions.PASS)) {
                 passCurrentClass();
             } else if (action.equals(PackingOptions.ERROR)) {
-                throw new Error("Unknown attribute encountered");
+                throw new IllegalArgumentException("Unknown attribute encountered");
             } // else skip
         } else if (attribute instanceof NewAttribute) {
             final NewAttribute newAttribute = (NewAttribute) attribute;
@@ -706,7 +706,7 @@ public class Segment extends ClassVisitor {
                 if (action.equals(PackingOptions.PASS)) {
                     passCurrentClass();
                 } else if (action.equals(PackingOptions.ERROR)) {
-                    throw new Error("Unknown attribute encountered");
+                    throw new IllegalArgumentException("Unknown attribute encountered");
                 } // else skip
             }
             classBands.addClassAttribute(newAttribute);
