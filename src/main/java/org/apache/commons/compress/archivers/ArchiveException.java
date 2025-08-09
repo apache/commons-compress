@@ -18,6 +18,7 @@
  */
 package org.apache.commons.compress.archivers;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.apache.commons.compress.CompressException;
@@ -26,6 +27,8 @@ import org.apache.commons.compress.CompressException;
  * Signals that an Archive exception of some sort has occurred.
  */
 public class ArchiveException extends CompressException {
+
+    private static final Function<Throwable, ArchiveException> E_FUNCTION = ArchiveException::new;
 
     /** Serial. */
     private static final long serialVersionUID = 2772690708123267100L;
@@ -59,11 +62,7 @@ public class ArchiveException extends CompressException {
      * @since 1.29.0
      */
     public static int addExact(final int x, final long y) throws ArchiveException {
-        try {
-            return Math.addExact(x, Math.toIntExact(y));
-        } catch (final ArithmeticException e) {
-            throw new ArchiveException(e);
-        }
+        return addExact(x, y, E_FUNCTION);
     }
 
     /**

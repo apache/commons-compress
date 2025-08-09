@@ -20,8 +20,10 @@
 package org.apache.commons.compress;
 
 import java.io.IOException;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.lang3.function.Suppliers;
 
 /**
@@ -33,6 +35,26 @@ public class CompressException extends IOException {
 
     /** Serial. */
     private static final long serialVersionUID = 1;
+
+    /**
+     * Delegates to {@link Math#addExact(int, int)} wrapping its {@link ArithmeticException} in our {@link ArchiveException}.
+     *
+     * @param <E>             The type of the exception.
+     * @param x the first value.
+     * @param y the second value.
+     * @param eFunction How to create an exception.
+     * @return the result.
+     * @throws E if the result or input overflows an {@code int}.
+     * @see Math#addExact(int, int)
+     * @since 1.29.0
+     */
+    public static <E extends CompressException> int addExact(final int x, final long y, final Function<Throwable, E> eFunction) throws E {
+        try {
+            return Math.addExact(x, Math.toIntExact(y));
+        } catch (final ArithmeticException e) {
+            throw eFunction.apply(e);
+        }
+    }
 
     /**
      * Checks that the specified object reference is not {@code null} and throws a customized {@link CompressException} if it is. *

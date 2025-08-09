@@ -22,8 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
-import org.apache.commons.compress.archivers.ArchiveException;
-
 /**
  * A run codec is a grouping of two nested codecs; K values are decoded from the first codec, and the remaining codes are decoded from the remaining codec. Note
  * that since this codec maintains state, the instances are not reusable.
@@ -98,7 +96,7 @@ public class RunCodec extends Codec {
         return k;
     }
 
-    private int normalize(int value, final Codec codecUsed) throws ArchiveException {
+    private int normalize(int value, final Codec codecUsed) throws Pack200Exception {
         if (codecUsed instanceof BHSDCodec) {
             final BHSDCodec bhsd = (BHSDCodec) codecUsed;
             if (bhsd.isDelta()) {
@@ -107,14 +105,14 @@ public class RunCodec extends Codec {
                     value -= cardinality;
                 }
                 while (value < bhsd.smallest()) {
-                    value = ArchiveException.addExact(value, cardinality);
+                    value = Pack200Exception.addExact(value, cardinality);
                 }
             }
         }
         return value;
     }
 
-    private void normalize(final int[] band, final Codec codecUsed) throws ArchiveException {
+    private void normalize(final int[] band, final Codec codecUsed) throws Pack200Exception {
         if (codecUsed instanceof BHSDCodec) {
             final BHSDCodec bhsd = (BHSDCodec) codecUsed;
             if (bhsd.isDelta()) {
@@ -124,7 +122,7 @@ public class RunCodec extends Codec {
                         band[i] -= cardinality;
                     }
                     while (band[i] < bhsd.smallest()) {
-                        band[i] = ArchiveException.addExact(band[i], cardinality);
+                        band[i] = Pack200Exception.addExact(band[i], cardinality);
                     }
                 }
             }
@@ -143,7 +141,7 @@ public class RunCodec extends Codec {
                             band[i] -= cardinality;
                         }
                         while (band[i] < bhsd.smallest()) {
-                            band[i] = ArchiveException.addExact(band[i], cardinality);
+                            band[i] = Pack200Exception.addExact(band[i], cardinality);
                         }
                     }
                 }

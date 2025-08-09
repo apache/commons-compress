@@ -72,12 +72,8 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.archivers.ar.ArArchiveInputStream.readGNUStringTable(byte[], int, int) now provides a better exception message, wrapping the underlying exception.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.archivers.ar.ArArchiveInputStream.read(byte[], int, int) now throws ArchiveException instead of ArithmeticException.</action>
       <!-- FIX unpack200 -->      
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.harmony.unpack200.BandSet now throws ArchiveException instead of Arithmetic exception.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.harmony.unpack200 now throws Pack200Exception, IllegalArgumentException, and IllegalStateException instead of Error.</action>
       <!-- FIX pack200 -->      
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.harmony.pack200.BHSDCodec now throws ArchiveException instead of Arithmetic exception.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.harmony.pack200.RunCodec now throws ArchiveException instead of Arithmetic exception.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.harmony.pack200.FileBands now throws ArchiveException instead of Arithmetic exception.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.harmony.pack200 now throws Pack200Exception, IllegalArgumentException, and IllegalStateException instead of Error.</action>
       <!-- FIX cpio -->      
       <action type="fix" dev="ggregory" due-to="Stan, Gary Gregory">org.apache.commons.compress.archivers.cpio.CpioArchiveEntry now throws ArchiveException instead of Arithmetic exception.</action>
@@ -103,6 +99,8 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.archivers.ArchiveException.addExact(int, long).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.archivers.ArchiveException.addExact(long, long).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.archivers.ArchiveException.toIntExact(long).</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.CompressException.addExact(int, long).</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.harmony.pack200.Pack200Exception.addExact(int, long).</action>
       <action type="add" issue="COMPRESS-705" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream.Builder.setIgnoreExtraField(boolean).</action>
       <!-- UPDATE -->
     </release>

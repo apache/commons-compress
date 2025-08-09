@@ -19,14 +19,33 @@
 
 package org.apache.commons.compress.harmony.pack200;
 
+import java.util.function.Function;
+
 import org.apache.commons.compress.CompressException;
+import org.apache.commons.compress.archivers.ArchiveException;
 
 /**
  * Signals a problem with a Pack200 coding or decoding issue.
  */
 public class Pack200Exception extends CompressException {
 
+    private static final Function<Throwable, Pack200Exception> E_FUNCTION = Pack200Exception::new;
+
     private static final long serialVersionUID = 5168177401552611803L;
+
+    /**
+     * Delegates to {@link Math#addExact(int, int)} wrapping its {@link ArithmeticException} in our {@link ArchiveException}.
+     *
+     * @param x the first value.
+     * @param y the second value.
+     * @return the result.
+     * @throws Pack200Exception if the result or input overflows an {@code int}.
+     * @see Math#addExact(int, int)
+     * @since 1.29.0
+     */
+    public static int addExact(final int x, final long y) throws Pack200Exception {
+        return addExact(x, y, E_FUNCTION);
+    }
 
     /**
      * Constructs an {@code Pack200Exception} with the specified detail message.
@@ -68,4 +87,16 @@ public class Pack200Exception extends CompressException {
     public Pack200Exception(final String message, final Throwable cause) {
         super(message, cause);
     }
+
+    /**
+     * Constructs a {@code Pack200Exception} with the specified cause and a detail message.
+     *
+     * @param cause The cause (which is saved for later retrieval by the {@link #getCause()} method). (A null value is permitted, and indicates that the cause
+     *              is nonexistent or unknown.)
+     * @since 1.29.0
+     */
+    public Pack200Exception(final Throwable cause) {
+        super(cause);
+    }
+
 }
