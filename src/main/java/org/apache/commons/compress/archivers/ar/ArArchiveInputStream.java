@@ -30,6 +30,7 @@ import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.ParsingUtils;
+import org.apache.commons.lang3.ArrayUtils;
 
 /**
  * Implements the "ar" archive format as an input stream.
@@ -42,13 +43,9 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
     private static final int NAME_OFFSET = 0;
     private static final int NAME_LEN = 16;
     private static final int LAST_MODIFIED_OFFSET = NAME_LEN;
-
     private static final int LAST_MODIFIED_LEN = 12;
-
     private static final int USER_ID_OFFSET = LAST_MODIFIED_OFFSET + LAST_MODIFIED_LEN;
-
     private static final int USER_ID_LEN = 6;
-
     private static final int GROUP_ID_OFFSET = USER_ID_OFFSET + USER_ID_LEN;
     private static final int GROUP_ID_LEN = 6;
     private static final int FILE_MODE_OFFSET = GROUP_ID_OFFSET + GROUP_ID_LEN;
@@ -60,6 +57,11 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
     private static final Pattern BSD_LONGNAME_PATTERN = Pattern.compile("^" + BSD_LONGNAME_PREFIX + "\\d+");
     private static final String GNU_STRING_TABLE_NAME = "//";
     private static final Pattern GNU_LONGNAME_PATTERN = Pattern.compile("^/\\d+");
+
+    /**
+     * Signature {@code 3c21 7261 6863 0a3e}
+     */
+    private static final byte[] SIGNATURE = { 0x21, 0x3c, 0x61, 0x72, 0x63, 0x68, 0x3e, 0x0a };
 
     /**
      * Does the name look like it is a long name (or a name containing spaces) as encoded by BSD ar?
@@ -108,23 +110,12 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
     /**
      * Checks if the signature matches ASCII "!&lt;arch&gt;" followed by a single LF control character
      *
-     * @param signature the bytes to check
+     * @param buffer the bytes to check
      * @param length    the number of bytes to check
      * @return true, if this stream is an Ar archive stream, false otherwise
      */
-    public static boolean matches(final byte[] signature, final int length) {
-        // 3c21 7261 6863 0a3e
-        // @formatter:off
-        return length >= 8 &&
-                signature[0] == 0x21 &&
-                signature[1] == 0x3c &&
-                signature[2] == 0x61 &&
-                signature[3] == 0x72 &&
-                signature[4] == 0x63 &&
-                signature[5] == 0x68 &&
-                signature[6] == 0x3e &&
-                signature[7] == 0x0a;
-        // @formatter:on
+    public static boolean matches(final byte[] buffer, final int length) {
+        return ArrayUtils.startsWith(buffer, SIGNATURE);
     }
 
     private long offset;
