@@ -73,7 +73,7 @@ public abstract class BCIRenumberedAttribute extends Attribute {
      */
     public void renumber(final List<Integer> byteCodeOffsets) throws Pack200Exception {
         if (renumbered) {
-            throw new Error("Trying to renumber a line number table that has already been renumbered");
+            throw new Pack200Exception("Trying to renumber a line number table that has already been renumbered");
         }
         renumbered = true;
         final int[] startPCs = getStartPCs();

@@ -91,7 +91,7 @@ public class CodecEncoding {
         // Sanity check to make sure that no-one has changed
         // the canonical codecs, which would really cause havoc
         if (canonicalCodec.length != 116) {
-            throw new Error("Canonical encodings have been incorrectly modified");
+            throw new Pack200Exception("Canonical encodings have been incorrectly modified");
         }
         if (value < 0) {
             throw new IllegalArgumentException("Encoding cannot be less than zero");

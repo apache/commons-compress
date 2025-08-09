@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.compress.harmony.pack200.Pack200Exception;
+
 /**
  * Annotations class file attribute, either a RuntimeVisibleAnnotations attribute or a RuntimeInvisibleAnnotations attribute.
  */
@@ -81,7 +83,7 @@ public class RuntimeVisibleorInvisibleAnnotationsAttribute extends AnnotationsAt
             annotation.writeBody(dos);
         }
         if (dos.size() - size != getLength()) {
-            throw new Error();
+            throw new Pack200Exception("Bad length");
         }
     }
 }

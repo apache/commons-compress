@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.compress.harmony.pack200.Pack200Exception;
+
 /**
  * Abstracts Annotations attributes.
  */
@@ -246,7 +248,7 @@ public abstract class AnnotationsAttribute extends Attribute {
                     nestedValue.writeBody(dos);
                 }
             } else {
-                throw new Error("");
+                throw new Pack200Exception("Value is not a CPNameAndType, Annotation, or ElementValue.");
             }
         }
     }
