@@ -110,11 +110,11 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
     /**
      * Checks if the signature matches ASCII "!&lt;arch&gt;" followed by a single LF control character
      *
-     * @param buffer the bytes to check
-     * @param length    the number of bytes to check
-     * @return true, if this stream is an Ar archive stream, false otherwise
+     * @param buffer  the bytes to check.
+     * @param ignored ignored.
+     * @return true, if this stream is an Ar archive stream, false otherwise.
      */
-    public static boolean matches(final byte[] buffer, final int length) {
+    public static boolean matches(final byte[] buffer, final int ignored) {
         return ArrayUtils.startsWith(buffer, SIGNATURE);
     }
 

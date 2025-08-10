@@ -50,6 +50,7 @@ import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
 import org.apache.commons.io.input.BoundedInputStream;
+import org.apache.commons.lang3.ArrayUtils;
 
 /**
  * Implements an input stream that can read Zip archives.
@@ -217,31 +218,21 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
 
     private static final BigInteger LONG_MAX = BigInteger.valueOf(Long.MAX_VALUE);
 
-    private static boolean checkSig(final byte[] expected, final byte[] signature) {
-        for (int i = 0; i < expected.length; i++) {
-            if (signature[i] != expected[i]) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     /**
      * Checks if the signature matches what is expected for a ZIP file. Does not currently handle self-extracting ZIPs which may have arbitrary leading content.
      *
-     * @param signature the bytes to check
+     * @param buffer the bytes to check
      * @param length    the number of bytes to check
      * @return true, if this stream is a ZIP archive stream, false otherwise
      */
-    public static boolean matches(final byte[] signature, final int length) {
+    public static boolean matches(final byte[] buffer, final int length) {
         if (length < ZipArchiveOutputStream.LFH_SIG.length) {
             return false;
         }
-
-        return checkSig(ZipArchiveOutputStream.LFH_SIG, signature) // normal file
-                || checkSig(ZipArchiveOutputStream.EOCD_SIG, signature) // empty zip
-                || checkSig(ZipArchiveOutputStream.DD_SIG, signature) // split zip
-                || checkSig(ZipLong.SINGLE_SEGMENT_SPLIT_MARKER.getBytes(), signature);
+        return ArrayUtils.startsWith(buffer, ZipArchiveOutputStream.LFH_SIG) // normal file
+                || ArrayUtils.startsWith(buffer, ZipArchiveOutputStream.EOCD_SIG) // empty zip
+                || ArrayUtils.startsWith(buffer, ZipArchiveOutputStream.DD_SIG) // split zip
+                || ArrayUtils.startsWith(buffer, ZipLong.SINGLE_SEGMENT_SPLIT_MARKER.getBytes());
     }
 
     /** The ZIP encoding to use for file names and the file comment. */

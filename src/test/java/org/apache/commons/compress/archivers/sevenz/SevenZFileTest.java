@@ -1008,11 +1008,15 @@ class SevenZFileTest extends AbstractTest {
 
     @Test
     void testSignatureCheck() {
-        assertTrue(SevenZFile.matches(SevenZFile.sevenZSignature, SevenZFile.sevenZSignature.length));
-        assertTrue(SevenZFile.matches(SevenZFile.sevenZSignature, SevenZFile.sevenZSignature.length + 1));
-        assertFalse(SevenZFile.matches(SevenZFile.sevenZSignature, SevenZFile.sevenZSignature.length - 1));
-        assertFalse(SevenZFile.matches(new byte[] { 1, 2, 3, 4, 5, 6 }, 6));
-        assertTrue(SevenZFile.matches(new byte[] { '7', 'z', (byte) 0xBC, (byte) 0xAF, 0x27, 0x1C }, 6));
-        assertFalse(SevenZFile.matches(new byte[] { '7', 'z', (byte) 0xBC, (byte) 0xAF, 0x27, 0x1D }, 6));
+        assertTrue(SevenZFile.matches(SevenZFile.SIGNATURE, SevenZFile.SIGNATURE.length));
+        assertTrue(SevenZFile.matches(SevenZFile.SIGNATURE, SevenZFile.SIGNATURE.length + 1));
+        final byte[] data0 = Arrays.copyOf(SevenZFile.SIGNATURE, SevenZFile.SIGNATURE.length - 1);
+        assertFalse(SevenZFile.matches(data0, data0.length));
+        final byte[] data1 = new byte[] { 1, 2, 3, 4, 5, 6 };
+        assertFalse(SevenZFile.matches(data1, data1.length));
+        final byte[] data2 = new byte[] { '7', 'z', (byte) 0xBC, (byte) 0xAF, 0x27, 0x1C };
+        assertTrue(SevenZFile.matches(data2, data2.length));
+        final byte[] data3 = new byte[] { '7', 'z', (byte) 0xBC, (byte) 0xAF, 0x27, 0x1D };
+        assertFalse(SevenZFile.matches(data3, data3.length));
     }
 }

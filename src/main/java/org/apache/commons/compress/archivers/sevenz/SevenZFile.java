@@ -340,8 +340,7 @@ public class SevenZFile implements Closeable {
     private static final String DEFAULT_FILE_NAME = "unknown archive";
 
     /** Shared with SevenZOutputFile and tests, neither mutates it. */
-    static final byte[] sevenZSignature = { // NOSONAR
-            (byte) '7', (byte) 'z', (byte) 0xBC, (byte) 0xAF, (byte) 0x27, (byte) 0x1C };
+    static final byte[] SIGNATURE = { (byte) '7', (byte) 'z', (byte) 0xBC, (byte) 0xAF, (byte) 0x27, (byte) 0x1C };
 
     /**
      * Throws IOException if the given value is not in {@code [0, Integer.MAX_VALUE]}.
@@ -421,21 +420,13 @@ public class SevenZFile implements Closeable {
     /**
      * Checks if the signature matches what is expected for a 7z file.
      *
-     * @param signature the bytes to check
-     * @param length    the number of bytes to check
+     * @param buffer  the bytes to check.
+     * @param ignored ignored.
      * @return true, if this is the signature of a 7z archive.
      * @since 1.8
      */
-    public static boolean matches(final byte[] signature, final int length) {
-        if (length < sevenZSignature.length) {
-            return false;
-        }
-        for (int i = 0; i < sevenZSignature.length; i++) {
-            if (signature[i] != sevenZSignature[i]) {
-                return false;
-            }
-        }
-        return true;
+    public static boolean matches(final byte[] buffer, final int ignored) {
+        return ArrayUtils.startsWith(buffer, SIGNATURE);
     }
 
     private static SeekableByteChannel newByteChannel(final File file) throws IOException {
@@ -1544,7 +1535,7 @@ public class SevenZFile implements Closeable {
         readFully(buf);
         final byte[] signature = new byte[6];
         buf.get(signature);
-        if (!Arrays.equals(signature, sevenZSignature)) {
+        if (!Arrays.equals(signature, SIGNATURE)) {
             throw new ArchiveException("Bad 7z signature");
         }
         // 7zFormat.txt has it wrong - it's first major then minor
