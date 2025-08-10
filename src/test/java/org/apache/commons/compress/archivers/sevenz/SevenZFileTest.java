@@ -1035,11 +1035,11 @@ class SevenZFileTest extends AbstractTest {
         assertTrue(SevenZFile.matches(SevenZFile.SIGNATURE, SevenZFile.SIGNATURE.length + 1));
         final byte[] data0 = Arrays.copyOf(SevenZFile.SIGNATURE, SevenZFile.SIGNATURE.length - 1);
         assertFalse(SevenZFile.matches(data0, data0.length));
-        final byte[] data1 = new byte[] { 1, 2, 3, 4, 5, 6 };
+        final byte[] data1 = { 1, 2, 3, 4, 5, 6 };
         assertFalse(SevenZFile.matches(data1, data1.length));
-        final byte[] data2 = new byte[] { '7', 'z', (byte) 0xBC, (byte) 0xAF, 0x27, 0x1C };
+        final byte[] data2 = { '7', 'z', (byte) 0xBC, (byte) 0xAF, 0x27, 0x1C };
         assertTrue(SevenZFile.matches(data2, data2.length));
-        final byte[] data3 = new byte[] { '7', 'z', (byte) 0xBC, (byte) 0xAF, 0x27, 0x1D };
+        final byte[] data3 = { '7', 'z', (byte) 0xBC, (byte) 0xAF, 0x27, 0x1D };
         assertFalse(SevenZFile.matches(data3, data3.length));
     }
 }
