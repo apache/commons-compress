@@ -204,7 +204,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
         if (namebuffer == null) {
             throw new ArchiveException("Cannot process GNU long file name as no GNU string table was found");
         }
-        if (offset < 0 || offset >= namebuffer.length) {
+        if (offset >= namebuffer.length) {
             throw new ArchiveException("GNU long file name offset out of range: " + offset);
         }
         for (int i = offset; i < namebuffer.length; i++) {
