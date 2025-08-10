@@ -90,6 +90,6 @@ final class FLG {
     static final int FRESERVED = 0xE0;
 
     private FLG() {
-        // no instance.
+        // No instance.
     }
 }
