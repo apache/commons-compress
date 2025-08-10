@@ -55,8 +55,22 @@ import org.apache.commons.compress.compressors.gzip.ExtraField.SubField;
  * Additional documentation on extra fields in use:
  * </p>
  * <ul>
- * <li><a href="https://samtools.github.io/hts-specs/SAMv1.pdf">Sequence Alignment/Map Format Specification</a>: The BGZF compression format defines the extra
- * field used by BGZF uses the two subfield ID values 66 and 67 (ASCII 'BC').</li>
+ * <li>Apollo
+ * <pre>
+ *   SI1         SI2         Data
+ *   ----------  ----------  ----
+ *   0x41 ('A')  0x70 ('P')  Apollo file type information
+ * </pre>
+ * </li>
+ * <li>
+ * <a href="https://samtools.github.io/hts-specs/SAMv1.pdf">Sequence Alignment/Map Format Specification</a>: The BGZF compression format defines the extra
+ * field used by BGZF uses the two subfield ID values 66 and 67 (ASCII 'BC').
+ * <pre>
+ *   SI1         SI2         Data
+ *   ----------  ----------  ----
+ *   0x42 ('B')  0x43 ('C')  BGZF usage
+ * </pre>
+ * </li>
  * </ul>
  *
  * @see <a href="https://datatracker.ietf.org/doc/html/rfc1952">RFC 1952 GZIP File Format Specification</a>
