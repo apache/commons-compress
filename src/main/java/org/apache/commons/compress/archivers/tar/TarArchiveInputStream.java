@@ -411,9 +411,10 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
         }
         final Map<String, String> paxHeaders = new HashMap<>();
         final List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
-        int specialRecordCount = 0;
 
-        while (true) {
+        // Handle special tar records
+        boolean lastWasSpecial = false;
+        do {
             // If there is a current entry, skip any unread data and padding
             if (currEntry != null) {
                 IOUtils.skip(this, Long.MAX_VALUE); // Skip to end of current entry
@@ -424,7 +425,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
             final byte[] headerBuf = getRecord();
             if (headerBuf == null) {
                 // If we encountered special records but no file entry, the archive is malformed
-                if (specialRecordCount > 0) {
+                if (lastWasSpecial) {
                     throw new ArchiveException(
                             "Premature end of tar archive. Didn't find any file entry after GNU or PAX record.");
                 }
@@ -437,39 +438,37 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
             entryOffset = 0;
             entrySize = currEntry.getSize();
 
-            if (TarUtils.isSpecialTarRecord(currEntry)) {
+            lastWasSpecial = TarUtils.isSpecialTarRecord(currEntry);
+            if (lastWasSpecial) {
                 // Handle PAX, GNU long name, or other special records
                 TarUtils.handleSpecialTarRecord(
                         this, zipEncoding, currEntry, paxHeaders, sparseHeaders, globalPaxHeaders, globalSparseHeaders);
-                specialRecordCount++;
-                continue; // Continue to next header, as this is not a file entry
             }
+        } while (lastWasSpecial);
 
-            // Apply global and local PAX headers
-            TarUtils.applyPaxHeadersToEntry(
-                    currEntry, paxHeaders, sparseHeaders, globalPaxHeaders, globalSparseHeaders);
+        // Apply global and local PAX headers
+        TarUtils.applyPaxHeadersToEntry(currEntry, paxHeaders, sparseHeaders, globalPaxHeaders, globalSparseHeaders);
 
-            // Handle sparse files
-            if (currEntry.isSparse()) {
-                if (currEntry.isOldGNUSparse()) {
-                    readOldGNUSparse();
-                } else if (currEntry.isPaxGNU1XSparse()) {
-                    currEntry.setSparseHeaders(TarUtils.parsePAX1XSparseHeaders(in, getRecordSize()));
-                }
-                // sparse headers are all done reading, we need to build
-                // sparse input streams using these sparse headers
-                buildSparseInputStreams();
+        // Handle sparse files
+        if (currEntry.isSparse()) {
+            if (currEntry.isOldGNUSparse()) {
+                readOldGNUSparse();
+            } else if (currEntry.isPaxGNU1XSparse()) {
+                currEntry.setSparseHeaders(TarUtils.parsePAX1XSparseHeaders(in, getRecordSize()));
             }
-
-            // Ensure directory names end with a slash
-            if (currEntry.isDirectory() && !currEntry.getName().endsWith("/")) {
-                currEntry.setName(currEntry.getName() + "/");
-            }
-
-            // Update entry size in case it changed due to PAX headers
-            entrySize = currEntry.getSize();
-            return currEntry;
+            // sparse headers are all done reading, we need to build
+            // sparse input streams using these sparse headers
+            buildSparseInputStreams();
         }
+
+        // Ensure directory names end with a slash
+        if (currEntry.isDirectory() && !currEntry.getName().endsWith("/")) {
+            currEntry.setName(currEntry.getName() + "/");
+        }
+
+        // Update entry size in case it changed due to PAX headers
+        entrySize = currEntry.getSize();
+        return currEntry;
     }
 
     /**

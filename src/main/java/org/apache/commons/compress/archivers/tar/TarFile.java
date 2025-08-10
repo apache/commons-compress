@@ -405,9 +405,10 @@ public class TarFile implements Closeable {
         }
         final Map<String, String> paxHeaders = new HashMap<>();
         final List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
-        int specialRecordCount = 0;
 
-        while (true) {
+        // Handle special tar records
+        boolean lastWasSpecial = false;
+        do {
             // If there is a current entry, skip any unread data and padding
             if (currEntry != null) {
                 repositionForwardTo(currEntry.getDataOffset() + currEntry.getSize());
@@ -419,7 +420,7 @@ public class TarFile implements Closeable {
             final ByteBuffer headerBuf = getRecord();
             if (headerBuf == null) {
                 // If we encountered special records but no file entry, the archive is malformed
-                if (specialRecordCount > 0) {
+                if (lastWasSpecial) {
                     throw new ArchiveException(
                             "Premature end of tar archive. Didn't find any file entry after GNU or PAX record.");
                 }
@@ -431,7 +432,8 @@ public class TarFile implements Closeable {
             final long position = archive.position();
             currEntry = new TarArchiveEntry(globalPaxHeaders, headerBuf.array(), zipEncoding, lenient, position);
 
-            if (TarUtils.isSpecialTarRecord(currEntry)) {
+            lastWasSpecial = TarUtils.isSpecialTarRecord(currEntry);
+            if (lastWasSpecial) {
                 // Handle PAX, GNU long name, or other special records
                 TarUtils.handleSpecialTarRecord(
                         getInputStream(currEntry),
@@ -441,34 +443,31 @@ public class TarFile implements Closeable {
                         sparseHeaders,
                         globalPaxHeaders,
                         globalSparseHeaders);
-                specialRecordCount++;
-                continue; // Continue to next header, as this is not a file entry
             }
+        } while (lastWasSpecial);
 
-            // Apply global and local PAX headers
-            TarUtils.applyPaxHeadersToEntry(
-                    currEntry, paxHeaders, sparseHeaders, globalPaxHeaders, globalSparseHeaders);
+        // Apply global and local PAX headers
+        TarUtils.applyPaxHeadersToEntry(currEntry, paxHeaders, sparseHeaders, globalPaxHeaders, globalSparseHeaders);
 
-            // Handle sparse files
-            if (currEntry.isSparse()) {
-                if (currEntry.isOldGNUSparse()) {
-                    readOldGNUSparse();
-                } else if (currEntry.isPaxGNU1XSparse()) {
-                    currEntry.setSparseHeaders(TarUtils.parsePAX1XSparseHeaders(getInputStream(currEntry), recordSize));
-                    currEntry.setDataOffset(currEntry.getDataOffset() + recordSize);
-                }
-                // sparse headers are all done reading, we need to build
-                // sparse input streams using these sparse headers
-                buildSparseInputStreams();
+        // Handle sparse files
+        if (currEntry.isSparse()) {
+            if (currEntry.isOldGNUSparse()) {
+                readOldGNUSparse();
+            } else if (currEntry.isPaxGNU1XSparse()) {
+                currEntry.setSparseHeaders(TarUtils.parsePAX1XSparseHeaders(getInputStream(currEntry), recordSize));
+                currEntry.setDataOffset(currEntry.getDataOffset() + recordSize);
             }
-
-            // Ensure directory names end with a slash
-            if (currEntry.isDirectory() && !currEntry.getName().endsWith("/")) {
-                currEntry.setName(currEntry.getName() + "/");
-            }
-
-            return currEntry;
+            // sparse headers are all done reading, we need to build
+            // sparse input streams using these sparse headers
+            buildSparseInputStreams();
         }
+
+        // Ensure directory names end with a slash
+        if (currEntry.isDirectory() && !currEntry.getName().endsWith("/")) {
+            currEntry.setName(currEntry.getName() + "/");
+        }
+
+        return currEntry;
     }
 
     /**
