@@ -20,6 +20,7 @@ package org.apache.commons.compress.archivers.ar;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
@@ -60,6 +61,8 @@ public class ArArchiveEntry implements ArchiveEntry {
 
     /** The header for each entry */
     public static final String HEADER = "!<arch>\n";
+
+    static final byte[] HEADER_BYTES = HEADER.getBytes(StandardCharsets.US_ASCII);
 
     /** The trailer for each entry {@code 0x60 0x0A} */
     public static final String TRAILER = "`\012";

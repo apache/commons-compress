@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.BufferedInputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -32,10 +33,8 @@ import java.nio.file.Paths;
 
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveEntry;
-import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.io.IOUtils;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -107,11 +106,10 @@ class ArArchiveInputStreamTest extends AbstractTest {
      * Depending on your setup, this test may need a small stack size {@code -Xss1m}.
      */
     @Test
-    @Disabled
     void testGetNextArEntry() throws IOException {
         try (ArArchiveInputStream inputStream = new ArArchiveInputStream(
                 Files.newInputStream(Paths.get("src/test/resources/org/apache/commons/compress/ar/getNextArEntry.bin")))) {
-            assertThrows(ArchiveException.class, inputStream::getNextEntry);
+            assertThrows(EOFException.class, inputStream::getNextEntry);
         }
     }
 
@@ -201,14 +199,14 @@ class ArArchiveInputStreamTest extends AbstractTest {
                     }
                 }) {
             try (ArArchiveInputStream archiveInputStream = new ArArchiveInputStream(simpleInputStream)) {
-                final ArArchiveEntry entry1 = archiveInputStream.getNextArEntry();
+                final ArArchiveEntry entry1 = archiveInputStream.getNextEntry();
                 assertNotNull(entry1);
                 assertEquals("test1.xml", entry1.getName());
                 assertEquals(610L, entry1.getLength());
-                final ArArchiveEntry entry2 = archiveInputStream.getNextArEntry();
+                final ArArchiveEntry entry2 = archiveInputStream.getNextEntry();
                 assertEquals("test2.xml", entry2.getName());
                 assertEquals(82L, entry2.getLength());
-                assertNull(archiveInputStream.getNextArEntry());
+                assertNull(archiveInputStream.getNextEntry());
             }
         }
     }
