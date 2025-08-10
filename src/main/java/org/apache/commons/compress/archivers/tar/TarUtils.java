@@ -35,6 +35,7 @@ import java.util.Map;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
+import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.ParsingUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
@@ -78,7 +79,7 @@ public class TarUtils {
 
         @Override
         public ByteBuffer encode(final String name) {
-            return ByteBuffer.wrap(name.getBytes(StandardCharsets.US_ASCII));
+            return ByteBuffer.wrap(ArchiveUtils.toAsciiBytes(name));
         }
     };
 
