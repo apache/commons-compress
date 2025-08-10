@@ -42,7 +42,7 @@ public class GzipUtils {
     /** Header flag indicating a header CRC follows the header. */
     static final int FHCRC = 0x02;
 
-    private static final FileNameUtil fileNameUtil;
+    private static final FileNameUtil FNU_INSTANCE;
 
     /** Header flag indicating a file name follows the header. */
     static final int FNAME = 0x08;
@@ -102,7 +102,7 @@ public class GzipUtils {
         uncompressSuffix.put("-gz", "");
         uncompressSuffix.put("-z", "");
         uncompressSuffix.put("_z", "");
-        fileNameUtil = new FileNameUtil(uncompressSuffix, ".gz");
+        FNU_INSTANCE = new FileNameUtil(uncompressSuffix, ".gz");
     }
     /**
      * Maps the given file name to the name that the file should have after compression with gzip. Common file types with custom suffixes for compressed
@@ -115,7 +115,7 @@ public class GzipUtils {
      */
     @Deprecated
     public static String getCompressedFilename(final String fileName) {
-        return fileNameUtil.getCompressedFileName(fileName);
+        return FNU_INSTANCE.getCompressedFileName(fileName);
     }
 
     /**
@@ -128,7 +128,7 @@ public class GzipUtils {
      * @since 1.25.0
      */
     public static String getCompressedFileName(final String fileName) {
-        return fileNameUtil.getCompressedFileName(fileName);
+        return FNU_INSTANCE.getCompressedFileName(fileName);
     }
 
     /**
@@ -143,7 +143,7 @@ public class GzipUtils {
      */
     @Deprecated
     public static String getUncompressedFilename(final String fileName) {
-        return fileNameUtil.getUncompressedFileName(fileName);
+        return FNU_INSTANCE.getUncompressedFileName(fileName);
     }
 
     /**
@@ -157,7 +157,7 @@ public class GzipUtils {
      * @since 1.25.0
      */
     public static String getUncompressedFileName(final String fileName) {
-        return fileNameUtil.getUncompressedFileName(fileName);
+        return FNU_INSTANCE.getUncompressedFileName(fileName);
     }
 
     /**
@@ -169,7 +169,7 @@ public class GzipUtils {
      */
     @Deprecated
     public static boolean isCompressedFilename(final String fileName) {
-        return fileNameUtil.isCompressedFileName(fileName);
+        return FNU_INSTANCE.isCompressedFileName(fileName);
     }
 
     /**
@@ -180,7 +180,7 @@ public class GzipUtils {
      * @since 1.25.0
      */
     public static boolean isCompressedFileName(final String fileName) {
-        return fileNameUtil.isCompressedFileName(fileName);
+        return FNU_INSTANCE.isCompressedFileName(fileName);
     }
 
     /** Private constructor to prevent instantiation of this utility class. */
