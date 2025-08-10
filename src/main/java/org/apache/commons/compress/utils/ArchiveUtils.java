@@ -250,7 +250,7 @@ public class ArchiveUtils {
      */
     public static String toString(final ArchiveEntry entry) {
         final StringBuilder sb = new StringBuilder();
-        sb.append(entry.isDirectory() ? 'd' : '-'); // c.f. "ls -l" output
+        sb.append(entry.isDirectory() ? 'd' : '-'); // Mimic "ls -l" output
         sb.append(' ');
         final String size = Long.toString(entry.getSize());
         // Pad output to 7 places, leading spaces
