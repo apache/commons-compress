@@ -180,11 +180,11 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
         // extra flags
         final int compressionLevel = parameters.getCompressionLevel();
         if (compressionLevel == Deflater.BEST_COMPRESSION) {
-            buffer.put(GzipUtils.XFL_MAX_COMPRESSION);
+            buffer.put(XFL.MAX_COMPRESSION);
         } else if (compressionLevel == Deflater.BEST_SPEED) {
-            buffer.put(GzipUtils.XFL_MAX_SPEED);
+            buffer.put(XFL.MAX_SPEED);
         } else {
-            buffer.put(GzipUtils.XFL_UNKNOWN);
+            buffer.put(XFL.UNKNOWN);
         }
         buffer.put((byte) parameters.getOperatingSystem());
         out.write(buffer.array());

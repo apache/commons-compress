@@ -59,23 +59,6 @@ public class GzipUtils {
     static final int ID2 = 139;
 
     /**
-     * Member header XFL (eXtra FLags) when the "deflate" method (CM = 8) is set, then XFL = 2 means the compressor used maximum compression (slowest
-     * algorithm).
-     *
-     * See <a href="https://datatracker.ietf.org/doc/html/rfc1952#page-5">RFC1952</a> 2.3.1. Member header and trailer.
-     */
-    static final byte XFL_MAX_COMPRESSION = 2;
-
-    /**
-     * Member header XFL (eXtra FLags) when the "deflate" method (CM = 8) is set, then XFL = 4 means the compressor used the fastest algorithm.
-     *
-     * See <a href="https://datatracker.ietf.org/doc/html/rfc1952#page-5">RFC1952</a> 2.3.1. Member header and trailer.
-     */
-    static final byte XFL_MAX_SPEED = 4;
-
-    static final byte XFL_UNKNOWN = 0;
-
-    /**
      * Maps the given file name to the name that the file should have after compression with gzip. Common file types with custom suffixes for compressed
      * versions are automatically detected and correctly mapped. For example the name "package.tar" is mapped to "package.tgz". If no custom mapping is
      * applicable, then the default ".gz" suffix is appended to the file name.

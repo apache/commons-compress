@@ -388,10 +388,10 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
         }
         parameters.setModificationTime(ByteUtils.fromLittleEndian(inData, 4));
         switch (inData.readUnsignedByte()) { // extra flags
-        case GzipUtils.XFL_MAX_COMPRESSION:
+        case XFL.MAX_COMPRESSION:
             parameters.setCompressionLevel(Deflater.BEST_COMPRESSION);
             break;
-        case GzipUtils.XFL_MAX_SPEED:
+        case XFL.MAX_SPEED:
             parameters.setCompressionLevel(Deflater.BEST_SPEED);
             break;
         default:
