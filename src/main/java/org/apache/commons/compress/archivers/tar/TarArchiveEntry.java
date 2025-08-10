@@ -33,6 +33,7 @@ import java.nio.file.attribute.PosixFileAttributes;
 import java.time.DateTimeException;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -720,9 +721,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     private int fill(final byte value, final int offset, final byte[] outbuf, final int length) {
-        for (int i = 0; i < length; i++) {
-            outbuf[offset + i] = value;
-        }
+        Arrays.fill(outbuf, offset, offset + length, value);
         return offset + length;
     }
 
