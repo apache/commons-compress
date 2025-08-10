@@ -16,6 +16,7 @@
 *        text=auto
 *.ar                                    binary
 *.arj                                   binary
+*.bin                                   binary
 *.java                                  text diff=java eol=lf
 *.md                                    text eol=lf
 *.properties                            text eol=lf
