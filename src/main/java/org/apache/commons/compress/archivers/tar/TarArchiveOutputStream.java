@@ -18,8 +18,6 @@
  */
 package org.apache.commons.compress.archivers.tar;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -93,16 +91,23 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
      * POSIX/PAX extensions are used to store big numbers in the archive.
      */
     public static final int BIGNUMBER_POSIX = 2;
+
     private static final int RECORD_SIZE = 512;
 
     private static final ZipEncoding ASCII = ZipEncodingHelper.getZipEncoding(StandardCharsets.US_ASCII);
 
     private static final int BLOCK_SIZE_UNSPECIFIED = -511;
+
+    static byte[] toUtf8Bytes(String line) {
+        return line.getBytes(StandardCharsets.UTF_8);
+    }
+
     private long currSize;
     private String currName;
     private long currBytes;
     private final byte[] recordBuf;
     private int longFileMode = LONGFILE_ERROR;
+
     private int bigNumberMode = BIGNUMBER_ERROR;
 
     private long recordsWritten;
@@ -340,7 +345,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
             int len = k.length() + v.length() + 3 /* blank, equals and newline */
                     + 2 /* guess 9 < actual length < 100 */;
             String line = len + " " + k + "=" + v + "\n";
-            int actualLength = line.getBytes(UTF_8).length;
+            int actualLength = toUtf8Bytes(line).length;
             while (len != actualLength) {
                 // Adjust for cases where length < 10 or > 100
                 // or where UTF-8 encoding isn't a single octet
@@ -349,11 +354,11 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
                 // first pass, so we'd need a second.
                 len = actualLength;
                 line = len + " " + k + "=" + v + "\n";
-                actualLength = line.getBytes(UTF_8).length;
+                actualLength = toUtf8Bytes(line).length;
             }
             w.write(line);
         });
-        return w.toString().getBytes(UTF_8);
+        return toUtf8Bytes(w.toString());
     }
 
     private void failForBigNumber(final String field, final long value, final long maxValue) {
