@@ -300,13 +300,8 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
             entryOffset += nameLen;
         }
 
-        currentEntry = new ArArchiveEntry(
-                name,
-                len,
-                currentEntry.getUserId(),
-                currentEntry.getGroupId(),
-                currentEntry.getMode(),
-                currentEntry.getLastModified());
+        currentEntry = new ArArchiveEntry(name, len, currentEntry.getUserId(), currentEntry.getGroupId(),
+                currentEntry.getMode(), currentEntry.getLastModified());
         return currentEntry;
     }
 
