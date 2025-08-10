@@ -41,6 +41,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -280,8 +281,33 @@ class TarArchiveInputStreamTest extends AbstractTest {
         try (TarArchiveInputStream inputStream = new TarArchiveInputStream(
                 Files.newInputStream(Paths.get("src/test/resources/org/apache/commons/compress/tar/getNextTarEntry.bin")))) {
             final AtomicLong count = new AtomicLong();
+            final TarArchiveEntry entry = inputStream.getNextEntry();
+            assertNull(entry.getCreationTime());
+            assertNull(entry.getLastAccessTime());
+            assertEquals(new Date(0), entry.getLastModifiedDate());
+            assertEquals(FileTime.fromMillis(0), entry.getLastModifiedTime());
+            assertNull(entry.getStatusChangeTime());
+            assertEquals(-1, entry.getDataOffset());
+            assertEquals(0, entry.getDevMajor());
+            assertEquals(0, entry.getDevMinor());
+            assertEquals(0, entry.getDirectoryEntries().length);
+            assertEquals(0, entry.getExtraPaxHeaders().size());
+            assertEquals(0, entry.getOrderedSparseHeaders().size());
+            assertEquals(0, entry.getSparseHeaders().size());
+            assertNull(entry.getFile());
+            assertNull(entry.getPath());
+            assertEquals("", entry.getGroupName());
+            assertEquals(0x1ff, entry.getMode());
+            assertEquals("", entry.getName());
+            assertEquals(0, entry.getRealSize());
+            assertEquals(0, entry.getSize());
+            assertEquals("", entry.getUserName());
+            assertEquals("", entry.getLinkName());
+            assertEquals(0x30, entry.getLinkFlag());
+            assertEquals(0, entry.getLongGroupId());
+            assertEquals(0, entry.getLongUserId());
             inputStream.forEach(e -> count.incrementAndGet());
-            assertEquals(1, count.get());
+            assertEquals(0, count.get());
         }
     }
 
