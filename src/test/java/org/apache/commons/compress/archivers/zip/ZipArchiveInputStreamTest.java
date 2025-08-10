@@ -201,6 +201,15 @@ class ZipArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
+    void testDecompressNextSymbol() throws IOException {
+        try (ZipArchiveInputStream inputStream = new ZipArchiveInputStream(
+                Files.newInputStream(Paths.get("src/test/resources/org/apache/commons/compress/zip/decompressNextSymbol.bin")))) {
+            inputStream.getNextEntry();
+            assertThrows(IOException.class, inputStream::getNextEntry);
+        }
+    }
+
+    @Test
     void testGetCompressedCountEmptyZip() throws IOException {
         try (ZipArchiveInputStream zin = new ZipArchiveInputStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY))) {
             assertEquals(-1, zin.getCompressedCount());
