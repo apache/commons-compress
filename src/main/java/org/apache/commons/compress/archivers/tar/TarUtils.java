@@ -359,15 +359,9 @@ public class TarUtils {
      * @param globalSparseHeaders the list to update with global sparse headers
      * @throws IOException if an I/O error occurs while reading the entry
      */
-    static void handleSpecialTarRecord(
-            final InputStream input,
-            final ZipEncoding encoding,
-            final TarArchiveEntry entry,
-            final Map<String, String> paxHeaders,
-            final List<TarArchiveStructSparse> sparseHeaders,
-            final Map<String, String> globalPaxHeaders,
-            final List<TarArchiveStructSparse> globalSparseHeaders)
-            throws IOException {
+    static void handleSpecialTarRecord(final InputStream input, final ZipEncoding encoding, final TarArchiveEntry entry, final Map<String, String> paxHeaders,
+            final List<TarArchiveStructSparse> sparseHeaders, final Map<String, String> globalPaxHeaders,
+            final List<TarArchiveStructSparse> globalSparseHeaders) throws IOException {
         if (entry.isGNULongLinkEntry()) {
             // GNU long link entry: read and store the link path
             final String longLinkName = readLongName(input, encoding, entry);
@@ -403,10 +397,7 @@ public class TarUtils {
      * @return {@code true} if the entry is a special tar record, {@code false} otherwise
      */
     static boolean isSpecialTarRecord(final TarArchiveEntry entry) {
-        return entry.isGNULongLinkEntry()
-                || entry.isGNULongNameEntry()
-                || entry.isGlobalPaxHeader()
-                || entry.isPaxHeader();
+        return entry.isGNULongLinkEntry() || entry.isGNULongNameEntry() || entry.isGlobalPaxHeader() || entry.isPaxHeader();
     }
 
     private static long parseBinaryBigInteger(final byte[] buffer, final int offset, final int length, final boolean negative) {
@@ -777,7 +768,6 @@ public class TarUtils {
                                 }
                                 final String value = new String(rest, 0, restLen - 1, StandardCharsets.UTF_8);
                                 headers.put(keyword, value);
-
                                 // for 0.0 PAX Headers
                                 if (keyword.equals(TarGnuSparseKeys.OFFSET)) {
                                     if (offset != null) {
@@ -787,14 +777,12 @@ public class TarUtils {
                                     try {
                                         offset = Long.valueOf(value);
                                     } catch (final NumberFormatException ex) {
-                                        throw new ArchiveException("Failed to read Paxheader. Offset %s contains a non-numeric value",
-                                                TarGnuSparseKeys.OFFSET);
+                                        throw new ArchiveException("Failed to read Paxheader. Offset %s contains a non-numeric value", TarGnuSparseKeys.OFFSET);
                                     }
                                     if (offset < 0) {
                                         throw new ArchiveException("Failed to read Paxheader. Offset %s contains negative value", TarGnuSparseKeys.OFFSET);
                                     }
                                 }
-
                                 // for 0.0 PAX Headers
                                 if (keyword.equals(TarGnuSparseKeys.NUMBYTES)) {
                                     if (offset == null) {
