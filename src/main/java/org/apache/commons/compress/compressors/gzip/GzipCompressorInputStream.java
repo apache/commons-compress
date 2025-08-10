@@ -186,7 +186,6 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
             return this;
         }
 
-
         /**
          * Sets the consumer called when a member <em>header</em> is parsed.
          * <p>
@@ -277,7 +276,6 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
     private final IOConsumer<GzipCompressorInputStream> onMemberEnd;
 
     private final boolean ignoreExtraField;
-
 
     @SuppressWarnings("resource") // caller closes
     private GzipCompressorInputStream(final Builder builder) throws IOException {
@@ -453,36 +451,29 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
         if (endReached) {
             return -1;
         }
-
         int size = 0;
-
         while (len > 0) {
             if (inflater.needsInput()) {
                 // Remember the current position because we may need to
                 // rewind after reading too much input.
                 in.mark(buf.length);
-
                 bufUsed = in.read(buf);
                 if (bufUsed == -1) {
                     throw new EOFException();
                 }
-
                 inflater.setInput(buf, 0, bufUsed);
             }
-
             final int ret;
             try {
                 ret = inflater.inflate(b, off, len);
             } catch (final DataFormatException e) { // NOSONAR
                 throw new CompressorException("Gzip-compressed data is corrupt.", e);
             }
-
             crc.update(b, off, ret);
             off += ret;
             len -= ret;
             size += ret;
             count(ret);
-
             if (inflater.finished()) {
                 // We may have read too many bytes. Rewind the read
                 // position to match the actual amount used.
@@ -515,7 +506,6 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
                 }
             }
         }
-
         return size;
     }
 }
