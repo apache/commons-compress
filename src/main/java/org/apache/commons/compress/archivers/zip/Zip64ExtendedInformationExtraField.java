@@ -119,7 +119,6 @@ public class Zip64ExtendedInformationExtraField implements ZipExtraField {
         }
         if (diskStart != null) {
             System.arraycopy(diskStart.getBytes(), 0, data, off, WORD);
-            off += WORD; // NOSONAR - assignment as documentation
         }
         return data;
     }
@@ -238,8 +237,6 @@ public class Zip64ExtendedInformationExtraField implements ZipExtraField {
         }
         if (remaining >= WORD) {
             diskStart = new ZipLong(buffer, offset);
-            offset += WORD; // NOSONAR - assignment as documentation
-            remaining -= WORD; // NOSONAR - assignment as documentation
         }
     }
 
@@ -281,7 +278,6 @@ public class Zip64ExtendedInformationExtraField implements ZipExtraField {
             }
             if (hasDiskStart) {
                 diskStart = new ZipLong(rawCentralDirectoryData, offset);
-                offset += WORD; // NOSONAR - assignment as documentation
             }
         }
     }

@@ -745,7 +745,6 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
         off += SHORT;
 
         final int extraLen = ZipShort.getValue(lfhBuf, off);
-        off += SHORT; // NOSONAR - assignment as documentation
 
         final byte[] fileName = readRange(fileNameLen);
         current.entry.setName(entryEncoding.decode(fileName), fileName);
