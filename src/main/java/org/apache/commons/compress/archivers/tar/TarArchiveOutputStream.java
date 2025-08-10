@@ -98,7 +98,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
 
     private static final int BLOCK_SIZE_UNSPECIFIED = -511;
 
-    static byte[] toUtf8Bytes(String line) {
+    static byte[] toUtf8Bytes(final String line) {
         return line.getBytes(StandardCharsets.UTF_8);
     }
 

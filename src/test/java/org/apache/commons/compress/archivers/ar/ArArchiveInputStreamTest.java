@@ -186,7 +186,6 @@ class ArArchiveInputStreamTest extends AbstractTest {
         }
     }
 
-    @SuppressWarnings("deprecation")
     @Test
     void testSimpleInputStreamDeprecated() throws IOException {
         try (InputStream fileInputStream = newInputStream("bla.ar");
