@@ -160,6 +160,26 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
         return ParsingUtils.parseLongValue(ArchiveUtils.toAsciiString(byteArray, offset, len).trim());
     }
 
+    /**
+     * Checks and skips the trailer of the current entry.
+     *
+     * @throws IOException if the trailer is invalid or not read correctly.
+     */
+    private void checkTrailer() throws IOException {
+        // Check and skip the record trailer
+        final byte[] expectedTrailer = ArchiveUtils.toAsciiBytes(ArArchiveEntry.TRAILER);
+        final byte[] actualTrailer = IOUtils.readRange(in, expectedTrailer.length);
+        if (actualTrailer.length < expectedTrailer.length) {
+            throw new EOFException(String.format(
+                    "Premature end of ar archive: invalid or incomplete trailer for entry '%s'.",
+                    ArchiveUtils.toAsciiString(metaData, NAME_OFFSET, NAME_LEN).trim()));
+        }
+        count(actualTrailer.length);
+        if (!Arrays.equals(expectedTrailer, actualTrailer)) {
+            throw new ArchiveException("Invalid ar archive entry trailer: " + ArchiveUtils.toAsciiString(actualTrailer));
+        }
+    }
+
     /*
      * (non-Javadoc)
      *
@@ -312,51 +332,6 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
     }
 
     /**
-     * Skips the global archive signature if at the beginning of the stream.
-     *
-     * @throws IOException if an I/O error occurs while reading the stream or if the signature is invalid.
-     */
-    private void skipGlobalSignature() throws IOException {
-        final long offset = getBytesRead();
-        if (offset == 0) {
-            final byte[] expectedMagic = ArArchiveEntry.HEADER_BYTES;
-            final byte[] actualMagic = IOUtils.readRange(in, expectedMagic.length);
-            count(actualMagic.length);
-            if (expectedMagic.length != actualMagic.length) {
-                throw new EOFException(String.format(
-                        "Premature end of ar archive: incomplete global header (expected %d bytes, got %d).",
-                        expectedMagic.length, actualMagic.length));
-            }
-            if (!Arrays.equals(expectedMagic, actualMagic)) {
-                throw new ArchiveException(
-                        "Invalid global ar archive header: " + ArchiveUtils.toAsciiString(actualMagic));
-            }
-        }
-    }
-
-    /**
-     * Skips the padding bytes at the end of each record.
-     * <p>
-     * The AR format requires that each record is padded to an even number of bytes, so if the current offset is odd,
-     * we skip one byte.
-     * </p>
-     *
-     * @throws IOException if an I/O error occurs while reading the stream.
-     */
-    private void skipRecordPadding() throws IOException {
-        // If the offset is odd, we need to skip one byte
-        final long offset = getBytesRead();
-        if (offset % 2 != 0) {
-            final int c = in.read();
-            if (c < 0) {
-                throw new EOFException(String.format(
-                        "Premature end of ar archive: missing padding for entry '%s'.", currentEntry.getName()));
-            }
-            count(1);
-        }
-    }
-
-    /**
      * Reads the next raw record from the input stream.
      * <p>
      *   The record is expected to be of a fixed size defined by the AR format.
@@ -380,32 +355,41 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
     }
 
     /**
-     * Checks and skips the trailer of the current entry.
-     *
-     * @throws IOException if the trailer is invalid or not read correctly.
-     */
-    private void checkTrailer() throws IOException {
-        // Check and skip the record trailer
-        final byte[] expectedTrailer = ArchiveUtils.toAsciiBytes(ArArchiveEntry.TRAILER);
-        final byte[] actualTrailer = IOUtils.readRange(in, expectedTrailer.length);
-        if (actualTrailer.length < expectedTrailer.length) {
-            throw new EOFException(String.format(
-                    "Premature end of ar archive: invalid or incomplete trailer for entry '%s'.",
-                    ArchiveUtils.toAsciiString(metaData, NAME_OFFSET, NAME_LEN).trim()));
-        }
-        count(actualTrailer.length);
-        if (!Arrays.equals(expectedTrailer, actualTrailer)) {
-            throw new ArchiveException("Invalid ar archive entry trailer: " + ArchiveUtils.toAsciiString(actualTrailer));
-        }
-    }
-
-    /**
      * Does the name look like it is a long name (or a name containing spaces) as encoded by SVR4/GNU ar?
      *
      * @see #isGNUStringTable
      */
     private boolean isGNULongName(final String name) {
         return name != null && GNU_LONGNAME_PATTERN.matcher(name).matches();
+    }
+
+    /**
+     * Parses the entry metadata from the provided raw record.
+     *
+     * @param headerBuf the buffer containing the entry metadata.
+     * @return an {@link ArArchiveEntry} object containing the parsed metadata.
+     * @throws IOException if the metadata cannot be parsed correctly.
+     */
+    private ArArchiveEntry parseEntry(final byte[] headerBuf) throws IOException {
+        // Parse the entry metadata from the header buffer
+        try {
+            final String name =
+                    ArchiveUtils.toAsciiString(headerBuf, NAME_OFFSET, NAME_LEN).trim();
+            final long length = asLong(headerBuf, LENGTH_OFFSET, LENGTH_LEN);
+            // The remaining fields in the GNU string table entry are not used and may be blank.
+            if (GNU_STRING_TABLE_NAME.equals(name)) {
+                return new ArArchiveEntry(name, length);
+            }
+            final int userId = asInt(metaData, USER_ID_OFFSET, USER_ID_LEN, true);
+            final int groupId = asInt(metaData, GROUP_ID_OFFSET, GROUP_ID_LEN, true);
+            final int mode = asInt(metaData, FILE_MODE_OFFSET, FILE_MODE_LEN, 8);
+            final long lastModified = asLong(metaData, LAST_MODIFIED_OFFSET, LAST_MODIFIED_LEN);
+            return new ArArchiveEntry(name, length, userId, groupId, mode, lastModified);
+        } catch (final IllegalArgumentException e) {
+            throw new ArchiveException("Broken archive, entry with negative size", (Throwable) e);
+        } catch (final IOException e) {
+            throw new ArchiveException("Failed to parse ar entry.", (Throwable) e);
+        }
     }
 
     /*
@@ -456,31 +440,47 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
     }
 
     /**
-     * Parses the entry metadata from the provided raw record.
+     * Skips the global archive signature if at the beginning of the stream.
      *
-     * @param headerBuf the buffer containing the entry metadata.
-     * @return an {@link ArArchiveEntry} object containing the parsed metadata.
-     * @throws IOException if the metadata cannot be parsed correctly.
+     * @throws IOException if an I/O error occurs while reading the stream or if the signature is invalid.
      */
-    private ArArchiveEntry parseEntry(final byte[] headerBuf) throws IOException {
-        // Parse the entry metadata from the header buffer
-        try {
-            final String name =
-                    ArchiveUtils.toAsciiString(headerBuf, NAME_OFFSET, NAME_LEN).trim();
-            final long length = asLong(headerBuf, LENGTH_OFFSET, LENGTH_LEN);
-            // The remaining fields in the GNU string table entry are not used and may be blank.
-            if (GNU_STRING_TABLE_NAME.equals(name)) {
-                return new ArArchiveEntry(name, length);
+    private void skipGlobalSignature() throws IOException {
+        final long offset = getBytesRead();
+        if (offset == 0) {
+            final byte[] expectedMagic = ArArchiveEntry.HEADER_BYTES;
+            final byte[] actualMagic = IOUtils.readRange(in, expectedMagic.length);
+            count(actualMagic.length);
+            if (expectedMagic.length != actualMagic.length) {
+                throw new EOFException(String.format(
+                        "Premature end of ar archive: incomplete global header (expected %d bytes, got %d).",
+                        expectedMagic.length, actualMagic.length));
             }
-            final int userId = asInt(metaData, USER_ID_OFFSET, USER_ID_LEN, true);
-            final int groupId = asInt(metaData, GROUP_ID_OFFSET, GROUP_ID_LEN, true);
-            final int mode = asInt(metaData, FILE_MODE_OFFSET, FILE_MODE_LEN, 8);
-            final long lastModified = asLong(metaData, LAST_MODIFIED_OFFSET, LAST_MODIFIED_LEN);
-            return new ArArchiveEntry(name, length, userId, groupId, mode, lastModified);
-        } catch (final IllegalArgumentException e) {
-            throw new ArchiveException("Broken archive, entry with negative size", (Throwable) e);
-        } catch (final IOException e) {
-            throw new ArchiveException("Failed to parse ar entry.", (Throwable) e);
+            if (!Arrays.equals(expectedMagic, actualMagic)) {
+                throw new ArchiveException(
+                        "Invalid global ar archive header: " + ArchiveUtils.toAsciiString(actualMagic));
+            }
+        }
+    }
+
+    /**
+     * Skips the padding bytes at the end of each record.
+     * <p>
+     * The AR format requires that each record is padded to an even number of bytes, so if the current offset is odd,
+     * we skip one byte.
+     * </p>
+     *
+     * @throws IOException if an I/O error occurs while reading the stream.
+     */
+    private void skipRecordPadding() throws IOException {
+        // If the offset is odd, we need to skip one byte
+        final long offset = getBytesRead();
+        if (offset % 2 != 0) {
+            final int c = in.read();
+            if (c < 0) {
+                throw new EOFException(String.format(
+                        "Premature end of ar archive: missing padding for entry '%s'.", currentEntry.getName()));
+            }
+            count(1);
         }
     }
 }
