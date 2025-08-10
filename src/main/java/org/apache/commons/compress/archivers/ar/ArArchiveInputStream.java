@@ -140,22 +140,20 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
         super(inputStream, StandardCharsets.US_ASCII.name());
     }
 
-    private int asOptionalDecimal(final byte[] byteArray, final int offset, final int len) throws IOException {
-        return asInt(byteArray, offset, len, 10);
-    }
-
-    private int asOptionalOctal(final byte[] byteArray, final int offset, final int len) throws IOException {
-        return asInt(byteArray, offset, len, 8);
+    private int asInt(final byte[] byteArray, final int offset, final int len, final boolean treatBlankAsZero) throws IOException {
+        return asInt(byteArray, offset, len, 10, treatBlankAsZero);
     }
 
     private int asInt(final byte[] byteArray, final int offset, final int len, final int base) throws IOException {
-        final String string = ArchiveUtils.toAsciiString(byteArray, offset, len).trim();
-        return string.isEmpty() ? 0 : ParsingUtils.parseIntValue(string, base);
+        return asInt(byteArray, offset, len, base, false);
     }
 
-    private long asOptionalLong(final byte[] byteArray, final int offset, final int len) throws IOException {
+    private int asInt(final byte[] byteArray, final int offset, final int len, final int base, final boolean treatBlankAsZero) throws IOException {
         final String string = ArchiveUtils.toAsciiString(byteArray, offset, len).trim();
-        return string.isEmpty() ? 0 : ParsingUtils.parseLongValue(string);
+        if (string.isEmpty() && treatBlankAsZero) {
+            return 0;
+        }
+        return ParsingUtils.parseIntValue(string, base);
     }
 
     private long asLong(final byte[] byteArray, final int offset, final int len) throws IOException {
@@ -469,10 +467,14 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
             final String name =
                     ArchiveUtils.toAsciiString(headerBuf, NAME_OFFSET, NAME_LEN).trim();
             final long length = asLong(headerBuf, LENGTH_OFFSET, LENGTH_LEN);
-            final int userId = asOptionalDecimal(headerBuf, USER_ID_OFFSET, USER_ID_LEN);
-            final int groupId = asOptionalDecimal(headerBuf, GROUP_ID_OFFSET, GROUP_ID_LEN);
-            final int mode = asOptionalOctal(headerBuf, FILE_MODE_OFFSET, FILE_MODE_LEN);
-            final long lastModified = asOptionalLong(headerBuf, LAST_MODIFIED_OFFSET, LAST_MODIFIED_LEN);
+            // The remaining fields in the GNU string table entry are not used and may be blank.
+            if (GNU_STRING_TABLE_NAME.equals(name)) {
+                return new ArArchiveEntry(name, length);
+            }
+            final int userId = asInt(metaData, USER_ID_OFFSET, USER_ID_LEN, true);
+            final int groupId = asInt(metaData, GROUP_ID_OFFSET, GROUP_ID_LEN, true);
+            final int mode = asInt(metaData, FILE_MODE_OFFSET, FILE_MODE_LEN, 8);
+            final long lastModified = asLong(metaData, LAST_MODIFIED_OFFSET, LAST_MODIFIED_LEN);
             return new ArArchiveEntry(name, length, userId, groupId, mode, lastModified);
         } catch (final IllegalArgumentException e) {
             throw new ArchiveException("Broken archive, entry with negative size", (Throwable) e);
