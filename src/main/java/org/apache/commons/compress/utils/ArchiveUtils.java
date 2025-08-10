@@ -251,14 +251,13 @@ public class ArchiveUtils {
     public static String toString(final ArchiveEntry entry) {
         final StringBuilder sb = new StringBuilder();
         sb.append(entry.isDirectory() ? 'd' : '-'); // c.f. "ls -l" output
-        final String size = Long.toString(entry.getSize());
         sb.append(' ');
+        final String size = Long.toString(entry.getSize());
         // Pad output to 7 places, leading spaces
         for (int i = 7; i > size.length(); i--) {
             sb.append(' ');
         }
-        sb.append(size);
-        sb.append(' ').append(entry.getName());
+        sb.append(size).append(' ').append(entry.getName());
         return sb.toString();
     }
 
