@@ -18,7 +18,6 @@
  */
 package org.apache.commons.compress.archivers.tar;
 
-import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +27,6 @@ import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -145,10 +143,6 @@ public class TarFile implements Closeable {
             return readLen;
         }
     }
-
-    private static final int SMALL_BUFFER_SIZE = 256;
-
-    private final byte[] smallBuf = new byte[SMALL_BUFFER_SIZE];
 
     private final SeekableByteChannel archive;
 
@@ -318,17 +312,6 @@ public class TarFile implements Closeable {
     }
 
     /**
-     * Update the current entry with the read pax headers
-     *
-     * @param headers       Headers read from the pax header
-     * @param sparseHeaders Sparse headers read from pax header
-     */
-    private void applyPaxHeadersToCurrentEntry(final Map<String, String> headers, final List<TarArchiveStructSparse> sparseHeaders) throws IOException {
-        currEntry.updateEntryFromPaxHeaders(headers);
-        currEntry.setSparseHeaders(sparseHeaders);
-    }
-
-    /**
      * Build the input streams consisting of all-zero input streams and non-zero input streams. When reading from the non-zero input streams, the data is
      * actually read from the original input stream. The size of each input stream is introduced by the sparse headers.
      *
@@ -409,38 +392,6 @@ public class TarFile implements Closeable {
     }
 
     /**
-     * Gets the next entry in this tar archive as long name data.
-     *
-     * @return The next entry in the archive as long name data, or null.
-     * @throws IOException on error
-     */
-    private byte[] getLongNameData() throws IOException {
-        final ByteArrayOutputStream longName = new ByteArrayOutputStream();
-        int length;
-        try (InputStream in = getInputStream(currEntry)) {
-            while ((length = in.read(smallBuf)) >= 0) {
-                longName.write(smallBuf, 0, length);
-            }
-        }
-        getNextTarEntry();
-        if (currEntry == null) {
-            // Bugzilla: 40334
-            // Malformed tar file - long entry name not followed by entry
-            return null;
-        }
-        byte[] longNameData = longName.toByteArray();
-        // remove trailing null terminator(s)
-        length = longNameData.length;
-        while (length > 0 && longNameData[length - 1] == 0) {
-            --length;
-        }
-        if (length != longNameData.length) {
-            longNameData = Arrays.copyOf(longNameData, length);
-        }
-        return longNameData;
-    }
-
-    /**
      * Gets the next entry in this tar archive. This will skip to the end of the current entry, if there is one, and place the position of the channel at the
      * header of the next entry, and read the header and instantiate a new TarEntry from the header bytes and return that entry. If there are no more entries in
      * the archive, null will be returned to indicate that the end of the archive has been reached.
@@ -452,75 +403,72 @@ public class TarFile implements Closeable {
         if (isAtEOF()) {
             return null;
         }
+        final Map<String, String> paxHeaders = new HashMap<>();
+        final List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
+        int specialRecordCount = 0;
 
-        if (currEntry != null) {
-            // Skip to the end of the entry
-            repositionForwardTo(currEntry.getDataOffset() + currEntry.getSize());
-            throwExceptionIfPositionIsNotInArchive();
-            skipRecordPadding();
-        }
+        while (true) {
+            // If there is a current entry, skip any unread data and padding
+            if (currEntry != null) {
+                repositionForwardTo(currEntry.getDataOffset() + currEntry.getSize());
+                throwExceptionIfPositionIsNotInArchive();
+                skipRecordPadding();
+            }
 
-        final ByteBuffer headerBuf = getRecord();
-        if (null == headerBuf) {
-            // Hit EOF
-            currEntry = null;
-            return null;
-        }
+            // Read the next header record
+            final ByteBuffer headerBuf = getRecord();
+            if (headerBuf == null) {
+                // If we encountered special records but no file entry, the archive is malformed
+                if (specialRecordCount > 0) {
+                    throw new ArchiveException(
+                            "Premature end of tar archive. Didn't find any file entry after GNU or PAX record.");
+                }
+                currEntry = null;
+                return null; // End of archive
+            }
 
-        try {
+            // Parse the header into a new entry
             final long position = archive.position();
             currEntry = new TarArchiveEntry(globalPaxHeaders, headerBuf.array(), zipEncoding, lenient, position);
-        } catch (final IllegalArgumentException e) {
-            throw new ArchiveException("Error detected parsing the header", (Throwable) e);
-        }
 
-        if (currEntry.isGNULongLinkEntry()) {
-            final byte[] longLinkData = getLongNameData();
-            if (longLinkData == null) {
-                // Bugzilla: 40334
-                // Malformed tar file - long link entry name not followed by
-                // entry
-                return null;
-            }
-            currEntry.setLinkName(zipEncoding.decode(longLinkData));
-        }
-
-        if (currEntry.isGNULongNameEntry()) {
-            final byte[] longNameData = getLongNameData();
-            if (longNameData == null) {
-                // Bugzilla: 40334
-                // Malformed tar file - long entry name not followed by
-                // entry
-                return null;
+            if (TarUtils.isSpecialTarRecord(currEntry)) {
+                // Handle PAX, GNU long name, or other special records
+                TarUtils.handleSpecialTarRecord(
+                        getInputStream(currEntry),
+                        zipEncoding,
+                        currEntry,
+                        paxHeaders,
+                        sparseHeaders,
+                        globalPaxHeaders,
+                        globalSparseHeaders);
+                specialRecordCount++;
+                continue; // Continue to next header, as this is not a file entry
             }
 
-            // COMPRESS-509 : the name of directories should end with '/'
-            final String name = zipEncoding.decode(longNameData);
-            currEntry.setName(name);
-            if (currEntry.isDirectory() && !name.endsWith("/")) {
-                currEntry.setName(name + "/");
+            // Apply global and local PAX headers
+            TarUtils.applyPaxHeadersToEntry(
+                    currEntry, paxHeaders, sparseHeaders, globalPaxHeaders, globalSparseHeaders);
+
+            // Handle sparse files
+            if (currEntry.isSparse()) {
+                if (currEntry.isOldGNUSparse()) {
+                    readOldGNUSparse();
+                } else if (currEntry.isPaxGNU1XSparse()) {
+                    currEntry.setSparseHeaders(TarUtils.parsePAX1XSparseHeaders(getInputStream(currEntry), recordSize));
+                    currEntry.setDataOffset(currEntry.getDataOffset() + recordSize);
+                }
+                // sparse headers are all done reading, we need to build
+                // sparse input streams using these sparse headers
+                buildSparseInputStreams();
             }
-        }
 
-        if (currEntry.isGlobalPaxHeader()) { // Process Global Pax headers
-            readGlobalPaxHeaders();
-        }
-
-        try {
-            if (currEntry.isPaxHeader()) { // Process Pax headers
-                paxHeaders();
-            } else if (!globalPaxHeaders.isEmpty()) {
-                applyPaxHeadersToCurrentEntry(globalPaxHeaders, globalSparseHeaders);
+            // Ensure directory names end with a slash
+            if (currEntry.isDirectory() && !currEntry.getName().endsWith("/")) {
+                currEntry.setName(currEntry.getName() + "/");
             }
-        } catch (final NumberFormatException e) {
-            throw new ArchiveException("Error detected parsing the pax header", (Throwable) e);
-        }
 
-        if (currEntry.isOldGNUSparse()) { // Process sparse files
-            readOldGNUSparse();
+            return currEntry;
         }
-
-        return currEntry;
     }
 
     /**
@@ -562,78 +510,6 @@ public class TarFile implements Closeable {
 
     private boolean isEOFRecord(final ByteBuffer headerBuf) {
         return headerBuf == null || ArchiveUtils.isArrayZero(headerBuf.array(), recordSize);
-    }
-
-    /**
-     * <p>
-     * For PAX Format 0.0, the sparse headers(GNU.sparse.offset and GNU.sparse.numbytes) may appear multi times, and they look like:
-     *
-     * <pre>
-     * GNU.sparse.size=size
-     * GNU.sparse.numblocks=numblocks
-     * repeat numblocks times
-     *   GNU.sparse.offset=offset
-     *   GNU.sparse.numbytes=numbytes
-     * end repeat
-     * </pre>
-     *
-     * <p>
-     * For PAX Format 0.1, the sparse headers are stored in a single variable : GNU.sparse.map
-     *
-     * <pre>
-     * GNU.sparse.map
-     *    Map of non-null data chunks. It is a string consisting of comma-separated values "offset,size[,offset-1,size-1...]"
-     * </pre>
-     *
-     * <p>
-     * For PAX Format 1.X: <br>
-     * The sparse map itself is stored in the file data block, preceding the actual file data. It consists of a series of decimal numbers delimited by newlines.
-     * The map is padded with nulls to the nearest block boundary. The first number gives the number of entries in the map. Following are map entries, each one
-     * consisting of two numbers giving the offset and size of the data block it describes.
-     *
-     * @throws IOException if an I/O error occurs.
-     */
-    private void paxHeaders() throws IOException {
-        List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
-        final Map<String, String> headers;
-        try (InputStream input = getInputStream(currEntry)) {
-            headers = TarUtils.parsePaxHeaders(input, sparseHeaders, globalPaxHeaders, currEntry.getSize());
-        }
-
-        // for 0.1 PAX Headers
-        if (headers.containsKey(TarGnuSparseKeys.MAP)) {
-            sparseHeaders = new ArrayList<>(TarUtils.parseFromPAX01SparseHeaders(headers.get(TarGnuSparseKeys.MAP)));
-        }
-        getNextTarEntry(); // Get the actual file entry
-        if (currEntry == null) {
-            throw new ArchiveException("Premature end of tar archive. Didn't find any entry after PAX header.");
-        }
-        applyPaxHeadersToCurrentEntry(headers, sparseHeaders);
-
-        // for 1.0 PAX Format, the sparse map is stored in the file data block
-        if (currEntry.isPaxGNU1XSparse()) {
-            try (InputStream input = getInputStream(currEntry)) {
-                sparseHeaders = TarUtils.parsePAX1XSparseHeaders(input, recordSize);
-            }
-            currEntry.setSparseHeaders(sparseHeaders);
-            // data of the entry is after the pax gnu entry. So we need to update the data position once again
-            currEntry.setDataOffset(currEntry.getDataOffset() + recordSize);
-        }
-
-        // sparse headers are all done reading, we need to build
-        // sparse input streams using these sparse headers
-        buildSparseInputStreams();
-    }
-
-    private void readGlobalPaxHeaders() throws IOException {
-        try (InputStream input = getInputStream(currEntry)) {
-            globalPaxHeaders = TarUtils.parsePaxHeaders(input, globalSparseHeaders, globalPaxHeaders, currEntry.getSize());
-        }
-        getNextTarEntry(); // Get the actual file entry
-
-        if (currEntry == null) {
-            throw new ArchiveException("Error detected parsing the pax header");
-        }
     }
 
     /**

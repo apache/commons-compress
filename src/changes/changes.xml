@@ -88,6 +88,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.archivers.ArchiveException.addExact(long, long).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.archivers.ArchiveException.toIntExact(long).</action>
       <!-- UPDATE -->
+      <action type="update" dev="pkarwasz">Uniform handling of special tar records in `TarFile` and `TarArchiveInputStream`.</action>
     </release>
     <release version="1.28.0" date="2025-07-26" description="This is a feature and maintenance release. Java 8 or later is required.">
       <!-- FIX -->
