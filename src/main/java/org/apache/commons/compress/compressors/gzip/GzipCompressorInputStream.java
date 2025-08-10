@@ -383,7 +383,7 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
             throw new CompressorException("Unsupported compression method %d in the .gz header", method);
         }
         final int flg = inData.readUnsignedByte();
-        if ((flg & GzipUtils.FRESERVED) != 0) {
+        if ((flg & FLG.FRESERVED) != 0) {
             throw new CompressorException("Reserved flags are set in the .gz header.");
         }
         parameters.setModificationTime(ByteUtils.fromLittleEndian(inData, 4));
@@ -400,7 +400,7 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
         }
         parameters.setOperatingSystem(inData.readUnsignedByte());
         // Extra field
-        if ((flg & GzipUtils.FEXTRA) != 0) {
+        if ((flg & FLG.FEXTRA) != 0) {
             int xlen = inData.readUnsignedByte();
             xlen |= inData.readUnsignedByte() << 8;
             parameters.setExtraFieldXlen(xlen);
@@ -412,11 +412,11 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
             }
         }
         // Original file name
-        if ((flg & GzipUtils.FNAME) != 0) {
+        if ((flg & FLG.FNAME) != 0) {
             parameters.setFileName(new String(readToNull(inData), parameters.getFileNameCharset()));
         }
         // Comment
-        if ((flg & GzipUtils.FCOMMENT) != 0) {
+        if ((flg & FLG.FCOMMENT) != 0) {
             parameters.setComment(new String(readToNull(inData), parameters.getFileNameCharset()));
         }
         // Header "CRC16" which is actually a truncated CRC32 (which isn't
@@ -424,7 +424,7 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
         // sets this, so it's not worth trying to verify it. GNU gzip 1.4
         // doesn't support this field, but zlib seems to be able to at least
         // skip over it.
-        if ((flg & GzipUtils.FHCRC) != 0) {
+        if ((flg & FLG.FHCRC) != 0) {
             parameters.setHeaderCRC(true);
             inData.readShort();
         }

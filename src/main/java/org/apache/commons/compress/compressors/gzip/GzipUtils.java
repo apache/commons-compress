@@ -27,27 +27,17 @@ import org.apache.commons.compress.compressors.FileNameUtil;
 
 /**
  * Utility code for the GZIP compression format.
- *
  * @see <a href="https://datatracker.ietf.org/doc/html/rfc1952">RFC 1952 GZIP File Format Specification</a>
+ *
  * @ThreadSafe
  */
 public class GzipUtils {
 
-    /** Header flag indicating a comment follows the header. */
-    static final int FCOMMENT = 0x10;
-
-    /** Header flag indicating an EXTRA subfields collection follows the header. */
-    static final int FEXTRA = 0x04;
-
-    /** Header flag indicating a header CRC follows the header. */
-    static final int FHCRC = 0x02;
-
-    private static final FileNameUtil FNU_INSTANCE;
-
-    /** Header flag indicating a file name follows the header. */
-    static final int FNAME = 0x08;
-
-    static final int FRESERVED = 0xE0;
+    /**
+     * Using {@link LinkedHashMap} so {@code .tgz} is preferred over {@code .taz} as compressed extension of {@code .tar} as FileNameUtil will use the first one
+     * found.
+     */
+    private static final FileNameUtil FNU_INSTANCE = new FileNameUtil(uncompressSuffix(), ".gz");
 
     /**
      * Charset for file name and comments per the <a href="https://tools.ietf.org/html/rfc1952">GZIP File Format Specification</a>.
@@ -86,25 +76,6 @@ public class GzipUtils {
     static final byte XFL_UNKNOWN = 0;
 
     /**
-     * Using {@link LinkedHashMap} so {@code .tgz} is preferred over {@code .taz} as compressed extension of {@code .tar} as FileNameUtil will use the first one
-     * found.
-     */
-    static {
-        final Map<String, String> uncompressSuffix = new LinkedHashMap<>();
-        uncompressSuffix.put(".tgz", ".tar");
-        uncompressSuffix.put(".taz", ".tar");
-        uncompressSuffix.put(".svgz", ".svg");
-        uncompressSuffix.put(".cpgz", ".cpio");
-        uncompressSuffix.put(".wmz", ".wmf");
-        uncompressSuffix.put(".emz", ".emf");
-        uncompressSuffix.put(".gz", "");
-        uncompressSuffix.put(".z", "");
-        uncompressSuffix.put("-gz", "");
-        uncompressSuffix.put("-z", "");
-        uncompressSuffix.put("_z", "");
-        FNU_INSTANCE = new FileNameUtil(uncompressSuffix, ".gz");
-    }
-    /**
      * Maps the given file name to the name that the file should have after compression with gzip. Common file types with custom suffixes for compressed
      * versions are automatically detected and correctly mapped. For example the name "package.tar" is mapped to "package.tgz". If no custom mapping is
      * applicable, then the default ".gz" suffix is appended to the file name.
@@ -117,7 +88,6 @@ public class GzipUtils {
     public static String getCompressedFilename(final String fileName) {
         return FNU_INSTANCE.getCompressedFileName(fileName);
     }
-
     /**
      * Maps the given file name to the name that the file should have after compression with gzip. Common file types with custom suffixes for compressed
      * versions are automatically detected and correctly mapped. For example the name "package.tar" is mapped to "package.tgz". If no custom mapping is
@@ -181,6 +151,22 @@ public class GzipUtils {
      */
     public static boolean isCompressedFileName(final String fileName) {
         return FNU_INSTANCE.isCompressedFileName(fileName);
+    }
+
+    private static Map<String, String> uncompressSuffix() {
+        final Map<String, String> uncompressSuffix = new LinkedHashMap<>();
+        uncompressSuffix.put(".tgz", ".tar");
+        uncompressSuffix.put(".taz", ".tar");
+        uncompressSuffix.put(".svgz", ".svg");
+        uncompressSuffix.put(".cpgz", ".cpio");
+        uncompressSuffix.put(".wmz", ".wmf");
+        uncompressSuffix.put(".emz", ".emf");
+        uncompressSuffix.put(".gz", "");
+        uncompressSuffix.put(".z", "");
+        uncompressSuffix.put("-gz", "");
+        uncompressSuffix.put("-z", "");
+        uncompressSuffix.put("_z", "");
+        return uncompressSuffix;
     }
 
     /** Private constructor to prevent instantiation of this utility class. */

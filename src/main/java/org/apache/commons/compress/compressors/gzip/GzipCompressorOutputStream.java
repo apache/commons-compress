@@ -171,10 +171,10 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
         buffer.put((byte) GzipUtils.ID1);
         buffer.put((byte) GzipUtils.ID2);
         buffer.put((byte) Deflater.DEFLATED); // compression method (8: deflate)
-        buffer.put((byte) ((extra != null ? GzipUtils.FEXTRA : 0)
-                | (fileName != null ? GzipUtils.FNAME : 0)
-                | (comment != null ? GzipUtils.FCOMMENT : 0)
-                | (parameters.getHeaderCRC() ? GzipUtils.FHCRC : 0)
+        buffer.put((byte) ((extra != null ? FLG.FEXTRA : 0)
+                | (fileName != null ? FLG.FNAME : 0)
+                | (comment != null ? FLG.FCOMMENT : 0)
+                | (parameters.getHeaderCRC() ? FLG.FHCRC : 0)
         )); // flags
         buffer.putInt((int) parameters.getModificationInstant().getEpochSecond());
         // extra flags
