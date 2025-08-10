@@ -201,14 +201,14 @@ class ArArchiveInputStreamTest extends AbstractTest {
                     }
                 }) {
             try (ArArchiveInputStream archiveInputStream = new ArArchiveInputStream(simpleInputStream)) {
-                final ArArchiveEntry entry1 = archiveInputStream.getNextArEntry();
+                final ArArchiveEntry entry1 = archiveInputStream.getNextEntry();
                 assertNotNull(entry1);
                 assertEquals("test1.xml", entry1.getName());
                 assertEquals(610L, entry1.getLength());
-                final ArArchiveEntry entry2 = archiveInputStream.getNextArEntry();
+                final ArArchiveEntry entry2 = archiveInputStream.getNextEntry();
                 assertEquals("test2.xml", entry2.getName());
                 assertEquals(82L, entry2.getLength());
-                assertNull(archiveInputStream.getNextArEntry());
+                assertNull(archiveInputStream.getNextEntry());
             }
         }
     }

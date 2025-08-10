@@ -72,6 +72,7 @@ The <action> type attribute can be add,update,fix,remove.
       <!-- FIX ar -->      
       <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.archivers.ar.ArArchiveInputStream.readGNUStringTable(byte[], int, int) now provides a better exception message, wrapping the underlying exception.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.archivers.ar.ArArchiveInputStream.read(byte[], int, int) now throws ArchiveException instead of ArithmeticException.</action>
+      <action type="fix" dev="pkarwasz" due-to="Tyler Nighswander">Simplify handling of special ar records in ArArchiveInputStream.</action>
       <!-- FIX unpack200 -->      
       <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.harmony.unpack200 now throws Pack200Exception, IllegalArgumentException, and IllegalStateException instead of Error.</action>
       <!-- FIX pack200 -->      
