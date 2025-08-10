@@ -529,6 +529,29 @@ class SevenZFileTest extends AbstractTest {
     }
 
     @Test
+    void testNumCyclesPower() throws IOException {
+        final String fixture = "src/test/resources/org/apache/commons/compress/sevenz/numCyclesPower.bin";
+        final char[] password = "secret".toCharArray();
+        // @formatter:off
+        assertThrows(ArchiveException.class,
+                () -> SevenZFile.builder()
+                    .setPath(fixture)
+                    .get().close());
+        assertThrows(ArchiveException.class,
+                () -> SevenZFile.builder()
+                    .setPath(fixture)
+                    .setPassword(password)
+                    .get().close());
+        assertThrows(ArchiveException.class,
+                () -> SevenZFile.builder()
+                    .setPath(fixture)
+                    .setPassword(password)
+                    .setTryToRecoverBrokenArchives(true)
+                    .get().close());
+        // @formatter:on
+    }
+
+    @Test
     void testRandomAccessMultipleReadSameFile() throws Exception {
         try (SevenZFile sevenZFile = getSevenZFile("COMPRESS-256.7z")) {
             // @formatter:off
