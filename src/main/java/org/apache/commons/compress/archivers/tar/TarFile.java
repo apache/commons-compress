@@ -172,7 +172,7 @@ public class TarFile implements Closeable {
     private TarArchiveEntry currEntry;
 
     // the global PAX header
-    private Map<String, String> globalPaxHeaders = new HashMap<>();
+    private final Map<String, String> globalPaxHeaders = new HashMap<>();
 
     private final Map<String, List<InputStream>> sparseInputStreams = new HashMap<>();
 
