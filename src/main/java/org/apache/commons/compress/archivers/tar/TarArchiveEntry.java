@@ -55,6 +55,7 @@ import org.apache.commons.compress.utils.ParsingUtils;
 import org.apache.commons.io.file.attribute.FileTimes;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemProperties;
+import org.apache.commons.lang3.SystemUtils;
 
 /**
  * An entry in a <a href="https://www.gnu.org/software/tar/manual/html_node/Standard.html">Tar archive</a>.
@@ -230,23 +231,25 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      */
     private static String normalizeFileName(String fileName, final boolean preserveAbsolutePath) {
         if (!preserveAbsolutePath) {
-            final String property = SystemProperties.getOsName();
-            if (property != null) {
-                final String osName = StringUtils.toRootLowerCase(property);
-                // Strip off drive letters!
-                // REVIEW Would a better check be "(File.separator == '\')"?
-                if (osName.startsWith("windows")) {
-                    if (fileName.length() > 2) {
-                        final char ch1 = fileName.charAt(0);
-                        final char ch2 = fileName.charAt(1);
-                        if (ch2 == ':' && (ch1 >= 'a' && ch1 <= 'z' || ch1 >= 'A' && ch1 <= 'Z')) {
-                            fileName = fileName.substring(2);
-                        }
+            // Strip off drive letters!
+            // REVIEW Would a better check be "(File.separator == '\')"?
+            if (SystemUtils.IS_OS_WINDOWS) {
+                if (fileName.length() > 2) {
+                    final char ch1 = fileName.charAt(0);
+                    final char ch2 = fileName.charAt(1);
+                    if (ch2 == ':' && (ch1 >= 'a' && ch1 <= 'z' || ch1 >= 'A' && ch1 <= 'Z')) {
+                        fileName = fileName.substring(2);
                     }
-                } else if (osName.contains("netware")) {
-                    final int colon = fileName.indexOf(':');
-                    if (colon != -1) {
-                        fileName = fileName.substring(colon + 1);
+                }
+            } else {
+                final String property = SystemProperties.getOsName();
+                if (property != null) {
+                    final String osName = StringUtils.toRootLowerCase(property);
+                    if (osName.contains("netware")) {
+                        final int colon = fileName.indexOf(':');
+                        if (colon != -1) {
+                            fileName = fileName.substring(colon + 1);
+                        }
                     }
                 }
             }
