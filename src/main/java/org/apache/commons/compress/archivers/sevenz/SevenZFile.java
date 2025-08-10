@@ -1481,7 +1481,8 @@ public class SevenZFile implements Closeable {
         folder.bindPairs = bindPairs;
 
         final long numPackedStreams = totalInStreams - numBindPairs;
-        final long[] packedStreams = new long[(int) numPackedStreams];
+        final int numPackedStreamsInt = (int) numPackedStreams;
+        final long[] packedStreams = new long[numPackedStreamsInt];
         if (numPackedStreams == 1) {
             int i;
             for (i = 0; i < (int) totalInStreams; i++) {
@@ -1491,7 +1492,7 @@ public class SevenZFile implements Closeable {
             }
             packedStreams[0] = i;
         } else {
-            for (int i = 0; i < (int) numPackedStreams; i++) {
+            for (int i = 0; i < numPackedStreamsInt; i++) {
                 packedStreams[i] = readUint64(header);
             }
         }
