@@ -257,7 +257,13 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
             // Read the next header record
             final byte[] headerBuf = getRecord();
             if (headerBuf == null) {
-                // If we encountered special records but no file entry, the archive is malformed
+                // If we encounter a GNU string table but no subsequent file member, the archive is malformed.
+                // GNU does not document the ordering of the GNU string table, but the FreeBSD ar(5) manual does:
+                //
+                //   "If present, this member immediately follows the archive symbol table if an archive symbol
+                //    table is present, or is the first member otherwise."
+                //
+                // Reference: https://man.freebsd.org/cgi/man.cgi?query=ar&sektion=5
                 if (foundGNUStringTable) {
                     throw new EOFException("Premature end of ar archive: no regular entry after GNU string table.");
                 }
