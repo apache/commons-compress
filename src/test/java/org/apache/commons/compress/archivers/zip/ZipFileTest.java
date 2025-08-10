@@ -269,6 +269,11 @@ class ZipFileTest extends AbstractTest {
     }
 
     @Test
+    void testBuidlerGet() throws IOException {
+        assertThrows(ZipException.class, () -> ZipFile.builder().setPath("src/test/resources/org/apache/commons/compress/zip/getNextZipEntry.bin").get());
+    }
+
+    @Test
     void testCDOrder() throws Exception {
         readOrderTest();
         testCDOrderInMemory();
@@ -378,11 +383,6 @@ class ZipFileTest extends AbstractTest {
                 assertThrows(ArchiveException.class, () -> zipFile.getInputStream(entry));
             }
         }
-    }
-
-    @Test
-    void testBuidlerGet() throws IOException {
-        assertThrows(ZipException.class, () -> ZipFile.builder().setPath("src/test/resources/org/apache/commons/compress/zip/getNextZipEntry.bin").get());
     }
 
     /**

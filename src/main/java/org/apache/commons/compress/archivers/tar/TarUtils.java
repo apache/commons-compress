@@ -83,6 +83,35 @@ public class TarUtils {
     };
 
     /**
+     * Applies the PAX headers and sparse headers to the given tar entry.
+     *
+     * @param entry the tar entry to handle
+     * @param paxHeaders per file PAX headers
+     * @param sparseHeaders per file sparse headers
+     * @param globalPaxHeaders global PAX headers
+     * @param globalSparseHeaders global sparse headers
+     * @throws IOException if an I/O error occurs while reading the entry
+     */
+    static void applyPaxHeadersToEntry(
+            final TarArchiveEntry entry,
+            final Map<String, String> paxHeaders,
+            final List<TarArchiveStructSparse> sparseHeaders,
+            final Map<String, String> globalPaxHeaders,
+            final List<TarArchiveStructSparse> globalSparseHeaders) throws IOException {
+        // Apply PAX headers to the entry
+        entry.updateEntryFromPaxHeaders(globalPaxHeaders);
+        entry.updateEntryFromPaxHeaders(paxHeaders);
+        // Apply sparse headers to the entry, unless it is a pre-pax GNU sparse entry
+        if (!entry.isOldGNUSparse()) {
+            entry.setSparseHeaders(globalSparseHeaders);
+            if (!sparseHeaders.isEmpty()) {
+                // If there are local sparse headers, they override the global ones
+                entry.setSparseHeaders(sparseHeaders);
+            }
+        }
+    }
+
+    /**
      * Computes the checksum of a tar entry header.
      *
      * @param buf The tar entry's header buffer.
@@ -310,6 +339,74 @@ public class TarUtils {
             buffer[offset + remaining] = (byte) '0';
         }
         Arrays.fill(buffer, offset, offset + remaining + 1, (byte) '0');
+    }
+
+    /**
+     * Processes a special tar record and updates the provided PAX global and per entry headers.
+     * <p>
+     *     This method reads the content of the special entry from the input stream and updates the relevant metadata structures.
+     * </p>
+     * <p>
+     *     GNU long file and link names are translated to their equivalent PAX headers.
+     * </p>
+     *
+     * @param input the input stream from which to read the special tar entry content
+     * @param encoding the encoding to use for reading names
+     * @param entry the tar entry to handle
+     * @param paxHeaders the map to update with PAX headers
+     * @param sparseHeaders the list to update with sparse headers
+     * @param globalPaxHeaders the map to update with global PAX headers
+     * @param globalSparseHeaders the list to update with global sparse headers
+     * @throws IOException if an I/O error occurs while reading the entry
+     */
+    static void handleSpecialTarRecord(
+            final InputStream input,
+            final ZipEncoding encoding,
+            final TarArchiveEntry entry,
+            final Map<String, String> paxHeaders,
+            final List<TarArchiveStructSparse> sparseHeaders,
+            final Map<String, String> globalPaxHeaders,
+            final List<TarArchiveStructSparse> globalSparseHeaders)
+            throws IOException {
+        if (entry.isGNULongLinkEntry()) {
+            // GNU long link entry: read and store the link path
+            final String longLinkName = readLongName(input, encoding, entry);
+            paxHeaders.put("linkpath", longLinkName);
+        } else if (entry.isGNULongNameEntry()) {
+            // GNU long name entry: read and store the file path
+            final String longName = readLongName(input, encoding, entry);
+            paxHeaders.put("path", longName);
+        } else if (entry.isGlobalPaxHeader()) {
+            // Global PAX header: clear and update global PAX and sparse headers
+            globalSparseHeaders.clear();
+            globalPaxHeaders.clear();
+            globalPaxHeaders.putAll(parsePaxHeaders(input, globalSparseHeaders, globalPaxHeaders, entry.getSize()));
+        } else if (entry.isPaxHeader()) {
+            // PAX header: clear and update local PAX and sparse headers, parse GNU sparse headers if present
+            sparseHeaders.clear();
+            paxHeaders.clear();
+            paxHeaders.putAll(parsePaxHeaders(input, sparseHeaders, globalPaxHeaders, entry.getSize()));
+            if (paxHeaders.containsKey(TarGnuSparseKeys.MAP)) {
+                sparseHeaders.addAll(parseFromPAX01SparseHeaders(paxHeaders.get(TarGnuSparseKeys.MAP)));
+            }
+        }
+    }
+
+    /**
+     * Determines if the given tar entry is a special tar record.
+     * <p>
+     *     Special tar records are used to store metadata such as long file names, long link names, or PAX headers
+     *     that apply to the entire archive or to the next file entry.
+     * </p>
+     *
+     * @param entry the tar record to check
+     * @return {@code true} if the entry is a special tar record, {@code false} otherwise
+     */
+    static boolean isSpecialTarRecord(final TarArchiveEntry entry) {
+        return entry.isGNULongLinkEntry()
+                || entry.isGNULongNameEntry()
+                || entry.isGlobalPaxHeader()
+                || entry.isPaxHeader();
     }
 
     private static long parseBinaryBigInteger(final byte[] buffer, final int offset, final int length, final boolean negative) {
@@ -777,6 +874,34 @@ public class TarUtils {
     }
 
     /**
+     * Reads a long name (file or link name) from the input stream for a special tar record.
+     *
+     * @param input the input stream from which to read the long name
+     * @param encoding the encoding to use for reading the name
+     * @param entry the tar entry containing the long name
+     * @return the decoded long name, with trailing NULs removed
+     * @throws IOException if an I/O error occurs or the entry is truncated
+     * @throws ArchiveException if the entry size is invalid
+     */
+    private static String readLongName(final InputStream input, final ZipEncoding encoding, final TarArchiveEntry entry)
+            throws IOException {
+        final long size = entry.getSize();
+        if (size > Integer.MAX_VALUE) {
+            throw new ArchiveException("Invalid long name size: " + entry.getSize());
+        }
+        final int sizeInt = (int) size;
+        final byte[] buffer = new byte[sizeInt];
+        if (IOUtils.readFully(input, buffer, 0, sizeInt) < sizeInt) {
+            throw new ArchiveException("TAR entry is truncated.");
+        }
+        int length = buffer.length;
+        while (length > 0 && buffer[length - 1] == 0) {
+            length--;
+        }
+        return encoding.decode(Arrays.copyOf(buffer, length));
+    }
+
+    /**
      * @since 1.21
      */
     static List<TarArchiveStructSparse> readSparseStructs(final byte[] buffer, final int offset, final int entries) throws IOException {
@@ -829,131 +954,6 @@ public class TarUtils {
             signedSum += b;
         }
         return storedSum == unsignedSum || storedSum == signedSum;
-    }
-
-    /**
-     * Determines if the given tar entry is a special tar record.
-     * <p>
-     *     Special tar records are used to store metadata such as long file names, long link names, or PAX headers
-     *     that apply to the entire archive or to the next file entry.
-     * </p>
-     *
-     * @param entry the tar record to check
-     * @return {@code true} if the entry is a special tar record, {@code false} otherwise
-     */
-    static boolean isSpecialTarRecord(final TarArchiveEntry entry) {
-        return entry.isGNULongLinkEntry()
-                || entry.isGNULongNameEntry()
-                || entry.isGlobalPaxHeader()
-                || entry.isPaxHeader();
-    }
-
-    /**
-     * Processes a special tar record and updates the provided PAX global and per entry headers.
-     * <p>
-     *     This method reads the content of the special entry from the input stream and updates the relevant metadata structures.
-     * </p>
-     * <p>
-     *     GNU long file and link names are translated to their equivalent PAX headers.
-     * </p>
-     *
-     * @param input the input stream from which to read the special tar entry content
-     * @param encoding the encoding to use for reading names
-     * @param entry the tar entry to handle
-     * @param paxHeaders the map to update with PAX headers
-     * @param sparseHeaders the list to update with sparse headers
-     * @param globalPaxHeaders the map to update with global PAX headers
-     * @param globalSparseHeaders the list to update with global sparse headers
-     * @throws IOException if an I/O error occurs while reading the entry
-     */
-    static void handleSpecialTarRecord(
-            final InputStream input,
-            final ZipEncoding encoding,
-            final TarArchiveEntry entry,
-            final Map<String, String> paxHeaders,
-            final List<TarArchiveStructSparse> sparseHeaders,
-            final Map<String, String> globalPaxHeaders,
-            final List<TarArchiveStructSparse> globalSparseHeaders)
-            throws IOException {
-        if (entry.isGNULongLinkEntry()) {
-            // GNU long link entry: read and store the link path
-            final String longLinkName = readLongName(input, encoding, entry);
-            paxHeaders.put("linkpath", longLinkName);
-        } else if (entry.isGNULongNameEntry()) {
-            // GNU long name entry: read and store the file path
-            final String longName = readLongName(input, encoding, entry);
-            paxHeaders.put("path", longName);
-        } else if (entry.isGlobalPaxHeader()) {
-            // Global PAX header: clear and update global PAX and sparse headers
-            globalSparseHeaders.clear();
-            globalPaxHeaders.clear();
-            globalPaxHeaders.putAll(parsePaxHeaders(input, globalSparseHeaders, globalPaxHeaders, entry.getSize()));
-        } else if (entry.isPaxHeader()) {
-            // PAX header: clear and update local PAX and sparse headers, parse GNU sparse headers if present
-            sparseHeaders.clear();
-            paxHeaders.clear();
-            paxHeaders.putAll(parsePaxHeaders(input, sparseHeaders, globalPaxHeaders, entry.getSize()));
-            if (paxHeaders.containsKey(TarGnuSparseKeys.MAP)) {
-                sparseHeaders.addAll(parseFromPAX01SparseHeaders(paxHeaders.get(TarGnuSparseKeys.MAP)));
-            }
-        }
-    }
-
-    /**
-     * Applies the PAX headers and sparse headers to the given tar entry.
-     *
-     * @param entry the tar entry to handle
-     * @param paxHeaders per file PAX headers
-     * @param sparseHeaders per file sparse headers
-     * @param globalPaxHeaders global PAX headers
-     * @param globalSparseHeaders global sparse headers
-     * @throws IOException if an I/O error occurs while reading the entry
-     */
-    static void applyPaxHeadersToEntry(
-            final TarArchiveEntry entry,
-            final Map<String, String> paxHeaders,
-            final List<TarArchiveStructSparse> sparseHeaders,
-            final Map<String, String> globalPaxHeaders,
-            final List<TarArchiveStructSparse> globalSparseHeaders) throws IOException {
-        // Apply PAX headers to the entry
-        entry.updateEntryFromPaxHeaders(globalPaxHeaders);
-        entry.updateEntryFromPaxHeaders(paxHeaders);
-        // Apply sparse headers to the entry, unless it is a pre-pax GNU sparse entry
-        if (!entry.isOldGNUSparse()) {
-            entry.setSparseHeaders(globalSparseHeaders);
-            if (!sparseHeaders.isEmpty()) {
-                // If there are local sparse headers, they override the global ones
-                entry.setSparseHeaders(sparseHeaders);
-            }
-        }
-    }
-
-    /**
-     * Reads a long name (file or link name) from the input stream for a special tar record.
-     *
-     * @param input the input stream from which to read the long name
-     * @param encoding the encoding to use for reading the name
-     * @param entry the tar entry containing the long name
-     * @return the decoded long name, with trailing NULs removed
-     * @throws IOException if an I/O error occurs or the entry is truncated
-     * @throws ArchiveException if the entry size is invalid
-     */
-    private static String readLongName(final InputStream input, final ZipEncoding encoding, final TarArchiveEntry entry)
-            throws IOException {
-        final long size = entry.getSize();
-        if (size > Integer.MAX_VALUE) {
-            throw new ArchiveException("Invalid long name size: " + entry.getSize());
-        }
-        final int sizeInt = (int) size;
-        final byte[] buffer = new byte[sizeInt];
-        if (IOUtils.readFully(input, buffer, 0, sizeInt) < sizeInt) {
-            throw new ArchiveException("TAR entry is truncated.");
-        }
-        int length = buffer.length;
-        while (length > 0 && buffer[length - 1] == 0) {
-            length--;
-        }
-        return encoding.decode(Arrays.copyOf(buffer, length));
     }
 
     /** Prevents instantiation. */
