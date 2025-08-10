@@ -272,6 +272,19 @@ class TarArchiveInputStreamTest extends AbstractTest {
         }
     }
 
+    /**
+     * Depending on your setup, this test may need a small stack size {@code -Xss256k}.
+     */
+    @Test
+    void testGetNextTarEntry() throws IOException {
+        try (TarArchiveInputStream inputStream = new TarArchiveInputStream(
+                Files.newInputStream(Paths.get("src/test/resources/org/apache/commons/compress/tar/getNextTarEntry.bin")))) {
+            final AtomicLong count = new AtomicLong();
+            inputStream.forEach(e -> count.incrementAndGet());
+            assertEquals(1, count.get());
+        }
+    }
+
     @Test
     void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         final byte[] buf = new byte[2];
@@ -325,19 +338,6 @@ class TarArchiveInputStreamTest extends AbstractTest {
         try (TarArchiveInputStream inputStream = new TarArchiveInputStream(
                 Files.newInputStream(Paths.get("src/test/resources/org/apache/commons/compress/tar/paxHeaders.bin")))) {
             assertThrows(ArchiveException.class, inputStream::getNextEntry);
-        }
-    }
-
-    /**
-     * Depending on your setup, this test may need a small stack size {@code -Xss256k}.
-     */
-    @Test
-    void testGetNextTarEntry() throws IOException {
-        try (TarArchiveInputStream inputStream = new TarArchiveInputStream(
-                Files.newInputStream(Paths.get("src/test/resources/org/apache/commons/compress/tar/getNextTarEntry.bin")))) {
-            final AtomicLong count = new AtomicLong();
-            inputStream.forEach(e -> count.incrementAndGet());
-            assertEquals(1, count.get());
         }
     }
 
