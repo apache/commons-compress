@@ -382,6 +382,14 @@ public class TarUtils {
         }
     }
 
+    private static boolean isAsciiDigit(final int ch) {
+        return ch >= '0' && ch <= '9';
+    }
+
+    static boolean isOctalDigit(final byte b) {
+        return b >= '0' && b <= '7';
+    }
+
     /**
      * Determines if the given tar entry is a special tar record.
      * <p>
@@ -562,7 +570,7 @@ public class TarUtils {
         for (; start < end; start++) {
             final byte currentByte = buffer[start];
             // CheckStyle:MagicNumber OFF
-            if (currentByte < '0' || currentByte > '7') {
+            if (!isOctalDigit(currentByte)) {
                 throw new IllegalArgumentException(exceptionMessage(buffer, offset, length, start, currentByte));
             }
             result = (result << 3) + (currentByte - '0'); // convert from ASCII
@@ -800,7 +808,7 @@ public class TarUtils {
                     break; // Processed single header
                 }
                 // COMPRESS-530 : throw if we encounter a non-number while reading length
-                if (ch < '0' || ch > '9') {
+                if (!isAsciiDigit(ch)) {
                     throw new ArchiveException("Failed to read Paxheader. Encountered a non-number while reading length");
                 }
                 len *= 10;
@@ -848,7 +856,7 @@ public class TarUtils {
             if (number == -1) {
                 throw new ArchiveException("Unexpected EOF when reading parse information of 1.X PAX format");
             }
-            if (number < '0' || number > '9') {
+            if (!isAsciiDigit(number)) {
                 throw new ArchiveException("Corrupted TAR archive. Non-numeric value in sparse headers block");
             }
             result = result * 10 + (number - '0');

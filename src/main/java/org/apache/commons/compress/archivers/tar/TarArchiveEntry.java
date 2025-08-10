@@ -1258,7 +1258,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
             final int lastIndex = length - 1;
             for (int i = 0; i < lastIndex; i++) {
                 final byte b = buffer[offset + i];
-                if (b < '0' || b > '7') {
+                if (!TarUtils.isOctalDigit(b)) {
                     return true;
                 }
             }
@@ -1380,7 +1380,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * @return whether the type flag contains a valid USTAR value.
      */
     boolean isTypeFlagUstar() {
-        return linkFlag == 0 || linkFlag >= '0' && linkFlag <= '7' || linkFlag >= 'A' && linkFlag <= 'Z';
+        return linkFlag == 0 || TarUtils.isOctalDigit(linkFlag) || linkFlag >= 'A' && linkFlag <= 'Z';
     }
 
     /**
