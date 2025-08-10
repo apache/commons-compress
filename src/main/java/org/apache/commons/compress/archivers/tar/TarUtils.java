@@ -85,19 +85,15 @@ public class TarUtils {
     /**
      * Applies the PAX headers and sparse headers to the given tar entry.
      *
-     * @param entry the tar entry to handle
-     * @param paxHeaders per file PAX headers
-     * @param sparseHeaders per file sparse headers
-     * @param globalPaxHeaders global PAX headers
+     * @param entry               the tar entry to handle
+     * @param paxHeaders          per file PAX headers
+     * @param sparseHeaders       per file sparse headers
+     * @param globalPaxHeaders    global PAX headers
      * @param globalSparseHeaders global sparse headers
      * @throws IOException if an I/O error occurs while reading the entry
      */
-    static void applyPaxHeadersToEntry(
-            final TarArchiveEntry entry,
-            final Map<String, String> paxHeaders,
-            final List<TarArchiveStructSparse> sparseHeaders,
-            final Map<String, String> globalPaxHeaders,
-            final List<TarArchiveStructSparse> globalSparseHeaders) throws IOException {
+    static void applyPaxHeadersToEntry(final TarArchiveEntry entry, final Map<String, String> paxHeaders, final List<TarArchiveStructSparse> sparseHeaders,
+            final Map<String, String> globalPaxHeaders, final List<TarArchiveStructSparse> globalSparseHeaders) throws IOException {
         // Apply PAX headers to the entry
         entry.updateEntryFromPaxHeaders(globalPaxHeaders);
         entry.updateEntryFromPaxHeaders(paxHeaders);

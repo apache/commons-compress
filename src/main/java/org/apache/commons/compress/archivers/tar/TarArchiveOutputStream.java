@@ -132,7 +132,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
      * Uses a block size of 512 bytes.
      * </p>
      *
-     * @param os the output stream to use
+     * @param os the output stream to use.
      */
     public TarArchiveOutputStream(final OutputStream os) {
         this(os, BLOCK_SIZE_UNSPECIFIED);
@@ -141,7 +141,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
     /**
      * Constructs a new instance.
      *
-     * @param os        the output stream to use
+     * @param os        the output stream to use.
      * @param blockSize the block size to use. Must be a multiple of 512 bytes.
      */
     public TarArchiveOutputStream(final OutputStream os, final int blockSize) {
@@ -151,8 +151,8 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
     /**
      * Constructs a new instance.
      *
-     * @param os         the output stream to use
-     * @param blockSize  the block size to use
+     * @param os         the output stream to use.
+     * @param blockSize  the block size to use.
      * @param recordSize the record size to use. Must be 512 bytes.
      * @deprecated recordSize must always be 512 bytes. An IllegalArgumentException will be thrown if any other value is used
      */
@@ -164,10 +164,10 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
     /**
      * Constructs a new instance.
      *
-     * @param os         the output stream to use
+     * @param os         the output stream to use.
      * @param blockSize  the block size to use . Must be a multiple of 512 bytes.
      * @param recordSize the record size to use. Must be 512 bytes.
-     * @param encoding   name of the encoding to use for file names
+     * @param encoding   name of the encoding to use for file names.
      * @since 1.4
      * @deprecated recordSize must always be 512 bytes. An IllegalArgumentException will be thrown if any other value is used.
      */
@@ -183,9 +183,9 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
     /**
      * Constructs a new instance.
      *
-     * @param os        the output stream to use
+     * @param os        the output stream to use.
      * @param blockSize the block size to use. Must be a multiple of 512 bytes.
-     * @param charset  name of the encoding to use for file names
+     * @param charset  name of the encoding to use for file names.
      * @since 1.4
      */
     public TarArchiveOutputStream(final OutputStream os, final int blockSize, final String charset) {
@@ -196,14 +196,12 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
         } else {
             realBlockSize = blockSize;
         }
-
         if (realBlockSize <= 0 || realBlockSize % RECORD_SIZE != 0) {
             throw new IllegalArgumentException("Block size must be a multiple of 512 bytes. Attempt to use set size of " + blockSize);
         }
         this.out = new FixedLengthBlockOutputStream(countingOut = new CountingOutputStream(os), RECORD_SIZE);
         this.charsetName = Charsets.toCharset(charset).name();
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(charset);
-
         this.recordBuf = new byte[RECORD_SIZE];
         this.recordsPerBlock = realBlockSize / RECORD_SIZE;
     }
@@ -215,8 +213,8 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
      * Uses a block size of 512 bytes.
      * </p>
      *
-     * @param os       the output stream to use
-     * @param charset name of the encoding to use for file names
+     * @param os       the output stream to use.
+     * @param charset name of the encoding to use for file names.
      * @since 1.4
      */
     public TarArchiveOutputStream(final OutputStream os, final String charset) {
@@ -389,7 +387,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
      * An archive consists of a series of file entries terminated by an end-of-archive entry, which consists of two 512 blocks of zero bytes. POSIX.1 requires
      * two EOF records, like some other implementations.
      *
-     * @throws IOException on error
+     * @throws IOException on error.
      */
     @Override
     public void finish() throws IOException {
@@ -439,14 +437,14 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
      * </ul>
      * </p>
      *
-     * @param entry         entry the name belongs to
-     * @param name          the name to write
-     * @param paxHeaders    current map of pax headers
-     * @param paxHeaderName name of the pax header to write
-     * @param linkType      type of the GNU entry to write
-     * @param fieldName     the name of the field
+     * @param entry         entry the name belongs to.
+     * @param name          the name to write.
+     * @param paxHeaders    current map of pax headers.
+     * @param paxHeaderName name of the pax header to write.
+     * @param linkType      type of the GNU entry to write.
+     * @param fieldName     the name of the field.
      * @throws IllegalArgumentException if the {@link TarArchiveOutputStream#longFileMode} equals {@link TarArchiveOutputStream#LONGFILE_ERROR} and the file
-     *                                  name is too long
+     *                                  name is too long.
      * @return whether a pax header has been written.
      */
     private boolean handleLongName(final TarArchiveEntry entry, final String name, final Map<String, String> paxHeaders, final String paxHeaderName,
@@ -520,32 +518,25 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
             final String linkName = archiveEntry.getLinkName();
             final boolean paxHeaderContainsLinkPath = linkName != null && !linkName.isEmpty()
                     && handleLongName(archiveEntry, linkName, paxHeaders, "linkpath", TarConstants.LF_GNUTYPE_LONGLINK, "link name");
-
             if (bigNumberMode == BIGNUMBER_POSIX) {
                 addPaxHeadersForBigNumbers(paxHeaders, archiveEntry);
             } else if (bigNumberMode != BIGNUMBER_STAR) {
                 failForBigNumbers(archiveEntry);
             }
-
             if (addPaxHeadersForNonAsciiNames && !paxHeaderContainsPath && !ASCII.canEncode(entryName)) {
                 paxHeaders.put("path", entryName);
             }
-
             if (addPaxHeadersForNonAsciiNames && !paxHeaderContainsLinkPath && (archiveEntry.isLink() || archiveEntry.isSymbolicLink())
                     && !ASCII.canEncode(linkName)) {
                 paxHeaders.put("linkpath", linkName);
             }
             paxHeaders.putAll(archiveEntry.getExtraPaxHeaders());
-
             if (!paxHeaders.isEmpty()) {
                 writePaxHeaders(archiveEntry, entryName, paxHeaders);
             }
-
             archiveEntry.writeEntryHeader(recordBuf, zipEncoding, bigNumberMode == BIGNUMBER_STAR);
             writeRecord(recordBuf);
-
             currBytes = 0;
-
             if (archiveEntry.isDirectory()) {
                 currSize = 0;
             } else {
@@ -581,7 +572,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
      * Sets the long file mode. This can be LONGFILE_ERROR(0), LONGFILE_TRUNCATE(1), LONGFILE_GNU(2) or LONGFILE_POSIX(3). This specifies the treatment of long
      * file names (names &gt;= TarConstants.NAMELEN). Default is LONGFILE_ERROR.
      *
-     * @param longFileMode the mode to use
+     * @param longFileMode the mode to use.
      */
     public void setLongFileMode(final int longFileMode) {
         this.longFileMode = longFileMode;
@@ -672,13 +663,12 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
      * Writes an archive record to the archive.
      *
      * @param record The record data to write to the archive.
-     * @throws IOException on error
+     * @throws IOException on error.
      */
     private void writeRecord(final byte[] record) throws IOException {
         if (record.length != RECORD_SIZE) {
             throw new ArchiveException("Record to write has length %,d which is not the record size of %,d", record.length, RECORD_SIZE);
         }
-
         out.write(record);
         recordsWritten++;
     }

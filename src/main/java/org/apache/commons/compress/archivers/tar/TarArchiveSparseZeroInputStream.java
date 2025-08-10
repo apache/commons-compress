@@ -28,7 +28,7 @@ final class TarArchiveSparseZeroInputStream extends InputStream {
     /**
      * Returns 0.
      *
-     * @return 0.
+     * @return Always 0.
      */
     @Override
     public int read() {
@@ -38,8 +38,8 @@ final class TarArchiveSparseZeroInputStream extends InputStream {
     /**
      * Returns the input.
      *
-     * @param n bytes to skip
-     * @return bytes actually skipped
+     * @param n a value to return.
+     * @return the input.
      */
     @Override
     public long skip(final long n) {

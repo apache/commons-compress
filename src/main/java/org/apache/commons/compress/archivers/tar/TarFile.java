@@ -72,14 +72,12 @@ public class TarFile implements Closeable {
             if (entryOffset >= entry.getRealSize()) {
                 return -1;
             }
-
             final int totalRead;
             if (entry.isSparse()) {
                 totalRead = readSparse(entryOffset, buf, buf.limit());
             } else {
                 totalRead = readArchive(pos, buf);
             }
-
             if (totalRead == -1) {
                 if (buf.array().length > 0) {
                     throw new ArchiveException("Truncated TAR archive");
@@ -103,30 +101,25 @@ public class TarFile implements Closeable {
             if (entrySparseInputStreams == null || entrySparseInputStreams.isEmpty()) {
                 return readArchive(entry.getDataOffset() + pos, buf);
             }
-
             if (currentSparseInputStreamIndex >= entrySparseInputStreams.size()) {
                 return -1;
             }
-
             final InputStream currentInputStream = entrySparseInputStreams.get(currentSparseInputStreamIndex);
             final byte[] bufArray = new byte[numToRead];
             final int readLen = currentInputStream.read(bufArray);
             if (readLen != -1) {
                 buf.put(bufArray, 0, readLen);
             }
-
             // if the current input stream is the last input stream,
             // just return the number of bytes read from current input stream
             if (currentSparseInputStreamIndex == entrySparseInputStreams.size() - 1) {
                 return readLen;
             }
-
             // if EOF of current input stream is meet, open a new input stream and recursively call read
             if (readLen == -1) {
                 currentSparseInputStreamIndex++;
                 return readSparse(pos, buf, numToRead);
             }
-
             // if the rest data of current input stream is not long enough, open a new input stream
             // and recursively call read
             if (readLen < numToRead) {
@@ -135,10 +128,8 @@ public class TarFile implements Closeable {
                 if (readLenOfNext == -1) {
                     return readLen;
                 }
-
                 return readLen + readLenOfNext;
             }
-
             // if the rest data of current input stream is enough(which means readLen == len), just return readLen
             return readLen;
         }
@@ -161,17 +152,21 @@ public class TarFile implements Closeable {
 
     private final ByteBuffer recordBuffer;
 
-    // the global sparse headers, this is only used in PAX Format 0.X
+    /**
+     * The global sparse headers, this is only used in PAX Format 0.X.
+     */
     private final List<TarArchiveStructSparse> globalSparseHeaders = new ArrayList<>();
 
     private boolean eof;
 
     /**
-     * The meta-data about the current entry
+     * The meta-data about the current entry.
      */
     private TarArchiveEntry currEntry;
 
-    // the global PAX header
+    /**
+     * The global PAX header.
+     */
     private final Map<String, String> globalPaxHeaders = new HashMap<>();
 
     private final Map<String, List<InputStream>> sparseInputStreams = new HashMap<>();
@@ -179,8 +174,8 @@ public class TarFile implements Closeable {
     /**
      * Constructor for TarFile.
      *
-     * @param content the content to use
-     * @throws IOException when reading the tar archive fails
+     * @param content the content to use.
+     * @throws IOException when reading the tar archive fails.
      */
     public TarFile(final byte[] content) throws IOException {
         this(new SeekableInMemoryByteChannel(content));
@@ -189,10 +184,10 @@ public class TarFile implements Closeable {
     /**
      * Constructor for TarFile.
      *
-     * @param content the content to use
+     * @param content the content to use.
      * @param lenient when set to true illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
      *                {@link TarArchiveEntry#UNKNOWN}. When set to false such illegal fields cause an exception instead.
-     * @throws IOException when reading the tar archive fails
+     * @throws IOException when reading the tar archive fails.
      */
     public TarFile(final byte[] content, final boolean lenient) throws IOException {
         this(new SeekableInMemoryByteChannel(content), TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, null, lenient);
@@ -201,9 +196,9 @@ public class TarFile implements Closeable {
     /**
      * Constructor for TarFile.
      *
-     * @param content  the content to use
-     * @param encoding the encoding to use
-     * @throws IOException when reading the tar archive fails
+     * @param content  the content to use.
+     * @param encoding the encoding to use.
+     * @throws IOException when reading the tar archive fails.
      */
     public TarFile(final byte[] content, final String encoding) throws IOException {
         this(new SeekableInMemoryByteChannel(content), TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, encoding, false);
@@ -212,8 +207,8 @@ public class TarFile implements Closeable {
     /**
      * Constructor for TarFile.
      *
-     * @param archive the file of the archive to use
-     * @throws IOException when reading the tar archive fails
+     * @param archive the file of the archive to use.
+     * @throws IOException when reading the tar archive fails.
      */
     public TarFile(final File archive) throws IOException {
         this(archive.toPath());
@@ -222,10 +217,10 @@ public class TarFile implements Closeable {
     /**
      * Constructor for TarFile.
      *
-     * @param archive the file of the archive to use
+     * @param archive the file of the archive to use.
      * @param lenient when set to true illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
      *                {@link TarArchiveEntry#UNKNOWN}. When set to false such illegal fields cause an exception instead.
-     * @throws IOException when reading the tar archive fails
+     * @throws IOException when reading the tar archive fails.
      */
     public TarFile(final File archive, final boolean lenient) throws IOException {
         this(archive.toPath(), lenient);
@@ -234,9 +229,9 @@ public class TarFile implements Closeable {
     /**
      * Constructor for TarFile.
      *
-     * @param archive  the file of the archive to use
-     * @param encoding the encoding to use
-     * @throws IOException when reading the tar archive fails
+     * @param archive  the file of the archive to use.
+     * @param encoding the encoding to use.
+     * @throws IOException when reading the tar archive fails.
      */
     public TarFile(final File archive, final String encoding) throws IOException {
         this(archive.toPath(), encoding);
@@ -245,8 +240,8 @@ public class TarFile implements Closeable {
     /**
      * Constructor for TarFile.
      *
-     * @param archivePath the path of the archive to use
-     * @throws IOException when reading the tar archive fails
+     * @param archivePath the path of the archive to use.
+     * @throws IOException when reading the tar archive fails.
      */
     public TarFile(final Path archivePath) throws IOException {
         this(Files.newByteChannel(archivePath), TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, null, false);
@@ -255,10 +250,10 @@ public class TarFile implements Closeable {
     /**
      * Constructor for TarFile.
      *
-     * @param archivePath the path of the archive to use
+     * @param archivePath the path of the archive to use.
      * @param lenient     when set to true illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
      *                    {@link TarArchiveEntry#UNKNOWN}. When set to false such illegal fields cause an exception instead.
-     * @throws IOException when reading the tar archive fails
+     * @throws IOException when reading the tar archive fails.
      */
     public TarFile(final Path archivePath, final boolean lenient) throws IOException {
         this(Files.newByteChannel(archivePath), TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, null, lenient);
@@ -267,9 +262,9 @@ public class TarFile implements Closeable {
     /**
      * Constructor for TarFile.
      *
-     * @param archivePath the path of the archive to use
-     * @param encoding    the encoding to use
-     * @throws IOException when reading the tar archive fails
+     * @param archivePath the path of the archive to use.
+     * @param encoding    the encoding to use.
+     * @throws IOException when reading the tar archive fails.
      */
     public TarFile(final Path archivePath, final String encoding) throws IOException {
         this(Files.newByteChannel(archivePath), TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, encoding, false);
@@ -278,8 +273,8 @@ public class TarFile implements Closeable {
     /**
      * Constructor for TarFile.
      *
-     * @param content the content to use
-     * @throws IOException when reading the tar archive fails
+     * @param content the content to use.
+     * @throws IOException when reading the tar archive fails.
      */
     public TarFile(final SeekableByteChannel content) throws IOException {
         this(content, TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, null, false);
@@ -288,13 +283,13 @@ public class TarFile implements Closeable {
     /**
      * Constructor for TarFile.
      *
-     * @param archive    the seekable byte channel to use
-     * @param blockSize  the blocks size to use
-     * @param recordSize the record size to use
-     * @param encoding   the encoding to use
+     * @param archive    the seekable byte channel to use.
+     * @param blockSize  the blocks size to use.
+     * @param recordSize the record size to use.
+     * @param encoding   the encoding to use.
      * @param lenient    when set to true illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
      *                   {@link TarArchiveEntry#UNKNOWN}. When set to false such illegal fields cause an exception instead.
-     * @throws IOException when reading the tar archive fails
+     * @throws IOException when reading the tar archive fails.
      */
     public TarFile(final SeekableByteChannel archive, final int blockSize, final int recordSize, final String encoding, final boolean lenient)
             throws IOException {
@@ -304,7 +299,6 @@ public class TarFile implements Closeable {
         this.recordBuffer = ByteBuffer.allocate(this.recordSize);
         this.blockSize = blockSize;
         this.lenient = lenient;
-
         TarArchiveEntry entry;
         while ((entry = getNextTarEntry()) != null) {
             entries.add(entry);
@@ -368,9 +362,9 @@ public class TarFile implements Closeable {
     }
 
     /**
-     * Gets all TAR Archive Entries from the TarFile
+     * Gets all TAR Archive Entries from the TarFile.
      *
-     * @return All entries from the tar file
+     * @return All entries from the tar file.
      */
     public List<TarArchiveEntry> getEntries() {
         return new ArrayList<>(entries);
@@ -379,8 +373,8 @@ public class TarFile implements Closeable {
     /**
      * Gets the input stream for the provided Tar Archive Entry.
      *
-     * @param entry Entry to get the input stream from
-     * @return Input stream of the provided entry
+     * @param entry Entry to get the input stream from.
+     * @return Input stream of the provided entry.
      * @throws IOException Corrupted TAR archive. Can't read entry.
      */
     public InputStream getInputStream(final TarArchiveEntry entry) throws IOException {
@@ -405,7 +399,6 @@ public class TarFile implements Closeable {
         }
         final Map<String, String> paxHeaders = new HashMap<>();
         final List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
-
         // Handle special tar records
         boolean lastWasSpecial = false;
         do {
@@ -415,40 +408,28 @@ public class TarFile implements Closeable {
                 throwExceptionIfPositionIsNotInArchive();
                 skipRecordPadding();
             }
-
             // Read the next header record
             final ByteBuffer headerBuf = getRecord();
             if (headerBuf == null) {
                 // If we encountered special records but no file entry, the archive is malformed
                 if (lastWasSpecial) {
-                    throw new ArchiveException(
-                            "Premature end of tar archive. Didn't find any file entry after GNU or PAX record.");
+                    throw new ArchiveException("Premature end of tar archive. Didn't find any file entry after GNU or PAX record.");
                 }
                 currEntry = null;
                 return null; // End of archive
             }
-
             // Parse the header into a new entry
             final long position = archive.position();
             currEntry = new TarArchiveEntry(globalPaxHeaders, headerBuf.array(), zipEncoding, lenient, position);
-
             lastWasSpecial = TarUtils.isSpecialTarRecord(currEntry);
             if (lastWasSpecial) {
                 // Handle PAX, GNU long name, or other special records
-                TarUtils.handleSpecialTarRecord(
-                        getInputStream(currEntry),
-                        zipEncoding,
-                        currEntry,
-                        paxHeaders,
-                        sparseHeaders,
-                        globalPaxHeaders,
+                TarUtils.handleSpecialTarRecord(getInputStream(currEntry), zipEncoding, currEntry, paxHeaders, sparseHeaders, globalPaxHeaders,
                         globalSparseHeaders);
             }
         } while (lastWasSpecial);
-
         // Apply global and local PAX headers
         TarUtils.applyPaxHeadersToEntry(currEntry, paxHeaders, sparseHeaders, globalPaxHeaders, globalSparseHeaders);
-
         // Handle sparse files
         if (currEntry.isSparse()) {
             if (currEntry.isOldGNUSparse()) {
@@ -461,12 +442,10 @@ public class TarFile implements Closeable {
             // sparse input streams using these sparse headers
             buildSparseInputStreams();
         }
-
         // Ensure directory names end with a slash
         if (currEntry.isDirectory() && !currEntry.getName().endsWith("/")) {
             currEntry.setName(currEntry.getName() + "/");
         }
-
         return currEntry;
     }
 
@@ -529,7 +508,6 @@ public class TarFile implements Closeable {
                 currEntry.setDataOffset(currEntry.getDataOffset() + recordSize);
             } while (entry.isExtended());
         }
-
         // sparse headers are all done reading, we need to build
         // sparse input streams using these sparse headers
         buildSparseInputStreams();

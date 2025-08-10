@@ -61,7 +61,7 @@ public class TarArchiveSparseEntry implements TarConstants {
      * Constructs an entry from an archive's header bytes. File is set to null.
      *
      * @param headerBuf The header bytes from a tar archive entry.
-     * @throws IOException on unknown format
+     * @throws IOException on unknown format.
      */
     public TarArchiveSparseEntry(final byte[] headerBuf) throws IOException {
         int offset = 0;

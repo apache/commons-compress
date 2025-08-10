@@ -232,15 +232,12 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
             final String property = SystemProperties.getOsName();
             if (property != null) {
                 final String osName = StringUtils.toRootLowerCase(property);
-
                 // Strip off drive letters!
                 // REVIEW Would a better check be "(File.separator == '\')"?
-
                 if (osName.startsWith("windows")) {
                     if (fileName.length() > 2) {
                         final char ch1 = fileName.charAt(0);
                         final char ch2 = fileName.charAt(1);
-
                         if (ch2 == ':' && (ch1 >= 'a' && ch1 <= 'z' || ch1 >= 'A' && ch1 <= 'Z')) {
                             fileName = fileName.substring(2);
                         }
@@ -253,9 +250,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
                 }
             }
         }
-
         fileName = fileName.replace(File.separatorChar, '/');
-
         // No absolute pathnames
         // Windows (and Posix?) paths can start with "\\NetworkDrive\",
         // so we loop on starting /'s.
@@ -270,7 +265,6 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         if (!PAX_EXTENDED_HEADER_FILE_TIMES_PATTERN.matcher(value).matches()) {
             throw new ArchiveException("Corrupted PAX header. Time field value is invalid '%s'", value);
         }
-
         final BigDecimal epochSeconds = new BigDecimal(value);
         final long seconds = epochSeconds.longValue();
         final long nanos = epochSeconds.remainder(BigDecimal.ONE).movePointRight(9).longValue();
@@ -354,7 +348,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /** The entry's minor device number. */
     private int devMinor;
 
-    /** The sparse headers in tar */
+    /** The sparse headers in tar. */
     private List<TarArchiveStructSparse> sparseHeaders;
 
     /** If an extension sparse header follows. */
@@ -367,20 +361,20 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     private boolean paxGNUSparse;
 
     /**
-     * is this entry a GNU sparse entry using 1.X PAX formats? the sparse headers of 1.x PAX Format is stored in file data block
+     * is this entry a GNU sparse entry using 1.X PAX formats? the sparse headers of 1.x PAX Format is stored in file data block.
      */
     private boolean paxGNU1XSparse;
 
     /** Is this entry a star sparse entry using the PAX header? */
     private boolean starSparse;
 
-    /** The entry's file reference */
+    /** The entry's file reference. */
     private final Path file;
 
-    /** The entry's file linkOptions */
+    /** The entry's file linkOptions. */
     private final LinkOption[] linkOptions;
 
-    /** Extra, user supplied pax headers */
+    /** Extra, user supplied pax headers. */
     private final Map<String, String> extraPaxHeaders = new HashMap<>();
 
     private long dataOffset = OFFSET_UNKNOWN;
@@ -403,7 +397,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * Constructs an entry from an archive's header bytes. File is set to null.
      *
      * @param headerBuf The header bytes from a tar archive entry.
-     * @throws IllegalArgumentException if any of the numeric fields have an invalid format
+     * @throws IllegalArgumentException if any of the numeric fields have an invalid format.
      */
     public TarArchiveEntry(final byte[] headerBuf) {
         this(false);
@@ -414,8 +408,8 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * Constructs an entry from an archive's header bytes. File is set to null.
      *
      * @param headerBuf The header bytes from a tar archive entry.
-     * @param encoding  encoding to use for file names
-     * @throws IllegalArgumentException if any of the numeric fields have an invalid format
+     * @param encoding  encoding to use for file names.
+     * @throws IllegalArgumentException if any of the numeric fields have an invalid format.
      * @throws IOException              on error
      * @since 1.4
      */
@@ -427,11 +421,11 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * Constructs an entry from an archive's header bytes. File is set to null.
      *
      * @param headerBuf The header bytes from a tar archive entry.
-     * @param encoding  encoding to use for file names
+     * @param encoding  encoding to use for file names.
      * @param lenient   when set to true illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
      *                  {@link #UNKNOWN}. When set to false such illegal fields cause an exception instead.
-     * @throws IllegalArgumentException if any of the numeric fields have an invalid format
-     * @throws IOException              on error
+     * @throws IllegalArgumentException if any of the numeric fields have an invalid format.
+     * @throws IOException              on error.
      * @since 1.19
      */
     public TarArchiveEntry(final byte[] headerBuf, final ZipEncoding encoding, final boolean lenient) throws IOException {
@@ -516,11 +510,11 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      *
      * @param globalPaxHeaders the parsed global PAX headers, or null if this is the first one.
      * @param headerBuf        The header bytes from a tar archive entry.
-     * @param encoding         encoding to use for file names
+     * @param encoding         encoding to use for file names.
      * @param lenient          when set to true illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
      *                         {@link #UNKNOWN}. When set to false such illegal fields cause an exception instead.
-     * @throws IllegalArgumentException if any of the numeric fields have an invalid format
-     * @throws IOException              on error
+     * @throws IllegalArgumentException if any of the numeric fields have an invalid format.
+     * @throws IOException              on error.
      * @since 1.22
      */
     public TarArchiveEntry(final Map<String, String> globalPaxHeaders, final byte[] headerBuf, final ZipEncoding encoding, final boolean lenient)
@@ -574,7 +568,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * @param file        The file that the entry represents.
      * @param fileName    the name to be used for the entry.
      * @param linkOptions options indicating how symbolic links are handled.
-     * @throws IOException if an I/O error occurs
+     * @throws IOException if an I/O error occurs.
      * @since 1.21
      */
     public TarArchiveEntry(final Path file, final String fileName, final LinkOption... linkOptions) throws IOException {
@@ -643,7 +637,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * letters are stripped if {@code preserveAbsolutePath} is {@code false}.
      * </p>
      *
-     * @param name                 the entry name
+     * @param name                 the entry name.
      * @param linkFlag             the entry link flag.
      * @param preserveAbsolutePath whether to allow leading slashes or drive letters in the name.
      * @since 1.5
@@ -1604,8 +1598,8 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Processes one pax header, using the entries extraPaxHeaders map as source for extra headers used when handling entries for sparse files.
      *
-     * @param key
-     * @param val
+     * @param key     the header name.
+     * @param val     the header value.
      * @since 1.15
      */
     private void processPaxHeader(final String key, final String val) throws IOException {
@@ -1704,7 +1698,6 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         if (Files.isDirectory(path, options)) {
             this.mode = DEFAULT_DIR_MODE;
             this.linkFlag = LF_DIR;
-
             final int nameLength = normalizedName.length();
             if (nameLength == 0 || normalizedName.charAt(nameLength - 1) != '/') {
                 this.name = normalizedName + "/";
@@ -1874,9 +1867,9 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Sets the mode for this entry
+     * Sets the mode for this entry.
      *
-     * @param mode the mode for this entry
+     * @param mode the mode for this entry.
      */
     public void setMode(final int mode) {
         this.mode = mode;
