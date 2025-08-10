@@ -941,12 +941,12 @@ public class TarUtils {
     private static String readLongName(final InputStream input, final ZipEncoding encoding, final TarArchiveEntry entry)
             throws IOException {
         final long size = entry.getSize();
-        if (size < 0 || size > Integer.MAX_VALUE) {
+        if (size > Integer.MAX_VALUE) {
             throw new ArchiveException("Invalid long name size: " + entry.getSize());
         }
         final int sizeInt = (int) size;
         final byte[] buffer = new byte[sizeInt];
-        if (IOUtils.readFully(input, buffer, 0, sizeInt) < buffer.length) {
+        if (IOUtils.readFully(input, buffer, 0, sizeInt) < sizeInt) {
             throw new ArchiveException("TAR entry is truncated.");
         }
         int length = buffer.length;
