@@ -51,8 +51,6 @@ import org.apache.commons.io.input.BoundedInputStream;
  */
 public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
 
-    private static final int MAX_PAX_HEADER_DEPTH = Integer.getInteger("TarArchiveInputStream.MAX_PAX_HEADER_DEPTH", 850);
-
     /**
      * IBM AIX <a href=""https://www.ibm.com/docs/sv/aix/7.2.0?topic=files-tarh-file">tar.h</a>: "This field is terminated with a space only."
      */
@@ -124,14 +122,12 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
     private final ZipEncoding zipEncoding;
 
     /** The global PAX header. */
-    private Map<String, String> globalPaxHeaders = new HashMap<>();
+    private final Map<String, String> globalPaxHeaders = new HashMap<>();
 
     /** The global sparse headers, this is only used in PAX Format 0.X. */
     private final List<TarArchiveStructSparse> globalSparseHeaders = new ArrayList<>();
 
     private final boolean lenient;
-
-    private int paxHeaderDepth;
 
     /**
      * Constructs a new instance.
@@ -228,11 +224,6 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      */
     public TarArchiveInputStream(final InputStream inputStream, final String encoding) {
         this(inputStream, TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, encoding);
-    }
-
-    private void applyPaxHeadersToCurrentEntry(final Map<String, String> headers, final List<TarArchiveStructSparse> sparseHeaders) throws IOException {
-        currEntry.updateEntryFromPaxHeaders(headers);
-        currEntry.setSparseHeaders(sparseHeaders);
     }
 
     /**
@@ -374,7 +365,10 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      *
      * @return The next entry in the archive as long name data, or null.
      * @throws IOException on error
+     *
+     * @deprecated Since 1.29.0 without replacement.
      */
+    @Deprecated
     protected byte[] getLongNameData() throws IOException {
         // read in the name
         final ByteArrayOutputStream longName = new ByteArrayOutputStream();
@@ -401,14 +395,80 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
     }
 
     /**
-     * Gets the next TarArchiveEntry in this stream.
+     * Advances to the next file entry in the tar archive.
+     * <p>
+     *     Skips any remaining data in the current entry, then reads and returns the next file entry.
+     *     Handles special records (PAX, GNU long name, sparse, etc.) and applies PAX headers as needed.
+     * </p>
      *
-     * @return the next entry, or {@code null} if there are no more entries
-     * @throws IOException if the next entry could not be read
+     * @return the next file entry, or {@code null} if there are no more entries
+     * @throws IOException if the next entry could not be read or the archive is malformed
      */
     @Override
     public TarArchiveEntry getNextEntry() throws IOException {
-        return getNextTarEntry();
+        if (isAtEOF()) {
+            return null;
+        }
+        final Map<String, String> paxHeaders = new HashMap<>();
+        final List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
+
+        // Handle special tar records
+        boolean lastWasSpecial = false;
+        do {
+            // If there is a current entry, skip any unread data and padding
+            if (currEntry != null) {
+                IOUtils.skip(this, Long.MAX_VALUE); // Skip to end of current entry
+                skipRecordPadding(); // Skip padding to align to the next record
+            }
+
+            // Read the next header record
+            final byte[] headerBuf = getRecord();
+            if (headerBuf == null) {
+                // If we encountered special records but no file entry, the archive is malformed
+                if (lastWasSpecial) {
+                    throw new ArchiveException(
+                            "Premature end of tar archive. Didn't find any file entry after GNU or PAX record.");
+                }
+                currEntry = null;
+                return null; // End of archive
+            }
+
+            // Parse the header into a new entry
+            currEntry = new TarArchiveEntry(globalPaxHeaders, headerBuf, zipEncoding, lenient);
+            entryOffset = 0;
+            entrySize = currEntry.getSize();
+
+            lastWasSpecial = TarUtils.isSpecialTarRecord(currEntry);
+            if (lastWasSpecial) {
+                // Handle PAX, GNU long name, or other special records
+                TarUtils.handleSpecialTarRecord(
+                        this, zipEncoding, currEntry, paxHeaders, sparseHeaders, globalPaxHeaders, globalSparseHeaders);
+            }
+        } while (lastWasSpecial);
+
+        // Apply global and local PAX headers
+        TarUtils.applyPaxHeadersToEntry(currEntry, paxHeaders, sparseHeaders, globalPaxHeaders, globalSparseHeaders);
+
+        // Handle sparse files
+        if (currEntry.isSparse()) {
+            if (currEntry.isOldGNUSparse()) {
+                readOldGNUSparse();
+            } else if (currEntry.isPaxGNU1XSparse()) {
+                currEntry.setSparseHeaders(TarUtils.parsePAX1XSparseHeaders(in, getRecordSize()));
+            }
+            // sparse headers are all done reading, we need to build
+            // sparse input streams using these sparse headers
+            buildSparseInputStreams();
+        }
+
+        // Ensure directory names end with a slash
+        if (currEntry.isDirectory() && !currEntry.getName().endsWith("/")) {
+            currEntry.setName(currEntry.getName() + "/");
+        }
+
+        // Update entry size in case it changed due to PAX headers
+        entrySize = currEntry.getSize();
+        return currEntry;
     }
 
     /**
@@ -422,72 +482,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      */
     @Deprecated
     public TarArchiveEntry getNextTarEntry() throws IOException {
-        if (isAtEOF()) {
-            return null;
-        }
-        if (currEntry != null) {
-            /* Skip will only go to the end of the current entry */
-            IOUtils.skip(this, Long.MAX_VALUE);
-            /* skip to the end of the last record */
-            skipRecordPadding();
-        }
-        final byte[] headerBuf = getRecord();
-        if (headerBuf == null) {
-            /* hit EOF */
-            currEntry = null;
-            return null;
-        }
-        try {
-            currEntry = new TarArchiveEntry(globalPaxHeaders, headerBuf, zipEncoding, lenient);
-        } catch (final IllegalArgumentException e) {
-            throw new ArchiveException("Error detected parsing the header", (Throwable) e);
-        }
-        entryOffset = 0;
-        entrySize = currEntry.getSize();
-        if (currEntry.isGNULongLinkEntry()) {
-            final byte[] longLinkData = getLongNameData();
-            if (longLinkData == null) {
-                // Bugzilla: 40334
-                // Malformed tar file - long link entry name not followed by entry
-                return null;
-            }
-            currEntry.setLinkName(zipEncoding.decode(longLinkData));
-        }
-        if (currEntry.isGNULongNameEntry()) {
-            final byte[] longNameData = getLongNameData();
-            if (longNameData == null) {
-                // Bugzilla: 40334
-                // Malformed tar file - long entry name not followed by entry
-                return null;
-            }
-            // COMPRESS-509 : the name of directories should end with '/'
-            final String name = zipEncoding.decode(longNameData);
-            currEntry.setName(name);
-            if (currEntry.isDirectory() && !name.endsWith("/")) {
-                currEntry.setName(name + "/");
-            }
-        }
-        if (currEntry.isGlobalPaxHeader()) { // Process Global PAX headers
-            readGlobalPaxHeaders();
-        }
-        try {
-            if (currEntry.isPaxHeader()) { // Process PAX headers
-                paxHeaders();
-            } else if (!globalPaxHeaders.isEmpty()) {
-                applyPaxHeadersToCurrentEntry(globalPaxHeaders, globalSparseHeaders);
-            }
-        } catch (final NumberFormatException e) {
-            throw new ArchiveException("Error detected parsing the pax header", (Throwable) e);
-        }
-        if (currEntry.isOldGNUSparse()) { // Process sparse files
-            readOldGNUSparse();
-        }
-        // If the size of the next element in the archive has changed
-        // due to a new size being reported in the POSIX header
-        // information, we update entrySize here so that it contains
-        // the correct value.
-        entrySize = currEntry.getSize();
-        return currEntry;
+        return getNextEntry();
     }
 
     /**
@@ -564,52 +559,6 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
     }
 
     /**
-     * For PAX Format 0.0, the sparse headers({@code GNU.sparse.offset} and {@code GNU.sparse.numbytes}) may appear multi times, and they look like:
-     *
-     * <pre>
-     * GNU.sparse.size=size GNU.sparse.numblocks=numblocks repeat numblocks times GNU.sparse.offset=offset GNU.sparse.numbytes=numbytes end repeat
-     * </pre>
-     * <p>
-     * For PAX Format 0.1, the sparse headers are stored in a single variable: {@code GNU.sparse.map}
-     * </p>
-     * <p>
-     * {@code GNU.sparse.map} is a map of non-null data chunks. It is a string consisting of comma-separated values {@code "offset,size[,offset-1,size-1...]"}
-     * </p>
-     * <p>
-     * For PAX Format 1.X: The sparse map itself is stored in the file data block, preceding the actual file data. It consists of a series of decimal numbers
-     * delimited by newlines. The map is padded with nulls to the nearest block boundary. The first number gives the number of entries in the map. Following are
-     * map entries, each one consisting of two numbers giving the offset and size of the data block it describes.
-     * </p>
-     *
-     * @throws IOException if an I/O error occurs.
-     */
-    private void paxHeaders() throws IOException {
-        if (paxHeaderDepth++ > MAX_PAX_HEADER_DEPTH) {
-            // TODO Consider not using recursion.
-            throw new ArchiveException("paxHeaderDepth = %,d", paxHeaderDepth);
-        }
-        List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
-        final Map<String, String> headers = TarUtils.parsePaxHeaders(this, sparseHeaders, globalPaxHeaders, entrySize);
-        // for 0.1 PAX Headers
-        if (headers.containsKey(TarGnuSparseKeys.MAP)) {
-            sparseHeaders = new ArrayList<>(TarUtils.parseFromPAX01SparseHeaders(headers.get(TarGnuSparseKeys.MAP)));
-        }
-        getNextEntry(); // Get the actual file entry
-        if (currEntry == null) {
-            throw new ArchiveException("Premature end of tar archive. Didn't find any entry after PAX header.");
-        }
-        applyPaxHeadersToCurrentEntry(headers, sparseHeaders);
-        // for 1.0 PAX Format, the sparse map is stored in the file data block
-        if (currEntry.isPaxGNU1XSparse()) {
-            sparseHeaders = TarUtils.parsePAX1XSparseHeaders(in, getRecordSize());
-            currEntry.setSparseHeaders(sparseHeaders);
-        }
-        // sparse headers are all done reading, we need to build
-        // sparse input streams using these sparse headers
-        buildSparseInputStreams();
-    }
-
-    /**
      * Reads bytes from the current tar archive entry.
      * <p>
      * This method is aware of the boundaries of the current entry in the archive and will deal with them as if they were this stream's start and EOF.
@@ -653,14 +602,6 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
             entryOffset += totalRead;
         }
         return totalRead;
-    }
-
-    private void readGlobalPaxHeaders() throws IOException {
-        globalPaxHeaders = TarUtils.parsePaxHeaders(this, globalSparseHeaders, globalPaxHeaders, entrySize);
-        getNextEntry(); // Get the actual file entry
-        if (currEntry == null) {
-            throw new ArchiveException("Error detected parsing the pax header");
-        }
     }
 
     /**
