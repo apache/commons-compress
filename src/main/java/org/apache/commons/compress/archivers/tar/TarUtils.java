@@ -918,11 +918,12 @@ public class TarUtils {
     }
 
     /**
-     * Wikipedia <a href="https://en.wikipedia.org/wiki/Tar_(computing)#File_header">says</a>: <blockquote> The checksum is calculated by taking the sum of the
-     * unsigned byte values of the header block with the eight checksum bytes taken to be ASCII spaces (decimal value 32). It is stored as a six digit octal
-     * number with leading zeroes followed by a NUL and then a space. Various implementations do not adhere to this format. For better compatibility, ignore
-     * leading and trailing whitespace, and get the first six digits. In addition, some historic tar implementations treated bytes as signed. Implementations
-     * typically calculate the checksum both ways, and treat it as good if either the signed or unsigned sum matches the included checksum. </blockquote>
+     * Verifies the checksum in the <a href="https://en.wikipedia.org/wiki/Tar_(computing)#File_header">TAR header</a>: <blockquote>The checksum is calculated
+     * by taking the sum of the unsigned byte values of the header block with the eight checksum bytes taken to be ASCII spaces (decimal value 32). It is stored
+     * as a six digit octal number with leading zeroes followed by a NUL and then a space. Various implementations do not adhere to this format. For better
+     * compatibility, ignore leading and trailing whitespace, and get the first six digits. In addition, some historic tar implementations treated bytes as
+     * signed. Implementations typically calculate the checksum both ways, and treat it as good if either the signed or unsigned sum matches the included
+     * checksum.</blockquote>
      * <p>
      * The return value of this method should be treated as a best-effort heuristic rather than an absolute and final truth. The checksum verification logic may
      * well evolve over time as more special cases are encountered.
@@ -930,6 +931,7 @@ public class TarUtils {
      *
      * @param header tar header
      * @return whether the checksum is reasonably good
+     * @see <a href="https://en.wikipedia.org/wiki/Tar_(computing)#File_header">TAR header</a>
      * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-191">COMPRESS-191</a>
      * @since 1.5
      */
@@ -948,7 +950,7 @@ public class TarUtils {
         return storedSum == unsignedSum || storedSum == signedSum;
     }
 
-    /** Prevents instantiation. */
+    /** No instances needed. */
     private TarUtils() {
     }
 }
