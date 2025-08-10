@@ -52,6 +52,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.zip.GZIPInputStream;
@@ -324,6 +325,19 @@ class TarArchiveInputStreamTest extends AbstractTest {
         try (TarArchiveInputStream inputStream = new TarArchiveInputStream(
                 Files.newInputStream(Paths.get("src/test/resources/org/apache/commons/compress/tar/paxHeaders.bin")))) {
             assertThrows(ArchiveException.class, inputStream::getNextEntry);
+        }
+    }
+
+    /**
+     * Depending on your setup, this test may need a small stack size {@code -Xss256k}.
+     */
+    @Test
+    void testGetNextTarEntry() throws IOException {
+        try (TarArchiveInputStream inputStream = new TarArchiveInputStream(
+                Files.newInputStream(Paths.get("src/test/resources/org/apache/commons/compress/tar/getNextTarEntry.bin")))) {
+            final AtomicLong count = new AtomicLong();
+            inputStream.forEach(e -> count.incrementAndGet());
+            assertEquals(1, count.get());
         }
     }
 
