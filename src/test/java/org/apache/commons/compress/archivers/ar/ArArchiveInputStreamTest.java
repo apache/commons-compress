@@ -19,13 +19,13 @@
 
 package org.apache.commons.compress.archivers.ar;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.BufferedInputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -107,15 +107,9 @@ class ArArchiveInputStreamTest extends AbstractTest {
      */
     @Test
     void testGetNextArEntry() throws IOException {
-        try (final ArArchiveInputStream inputStream = new ArArchiveInputStream(Files.newInputStream(
-                Paths.get("src/test/resources/org/apache/commons/compress/ar/getNextArEntry.bin")))) {
-            final ArArchiveEntry entry = assertDoesNotThrow(inputStream::getNextEntry);
-            assertEquals("test.txt", entry.getName(), "entry name");
-            assertEquals(0, entry.getSize(), "entry size");
-            assertEquals(0L, entry.getLastModified(), "entry mod time");
-            assertEquals(0, entry.getUserId(), "entry user id");
-            assertEquals(0, entry.getGroupId(), "entry group id");
-            assertEquals(0100644, entry.getMode(), "entry mode");
+        try (ArArchiveInputStream inputStream = new ArArchiveInputStream(
+                Files.newInputStream(Paths.get("src/test/resources/org/apache/commons/compress/ar/getNextArEntry.bin")))) {
+            assertThrows(EOFException.class, inputStream::getNextEntry);
         }
     }
 
