@@ -957,5 +957,6 @@ public class TarUtils {
     }
 
     /** Prevents instantiation. */
-    private TarUtils() {}
+    private TarUtils() {
+    }
 }
