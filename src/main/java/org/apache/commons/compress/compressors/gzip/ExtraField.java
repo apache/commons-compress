@@ -229,7 +229,7 @@ public final class ExtraField implements Iterable<SubField> {
      * @throws IOException              if appending this subfield would exceed the max size 65535 of the extra header.
      */
     public ExtraField addSubField(final String id, final byte[] payload) throws IOException {
-        Objects.requireNonNull(id, "payload");
+        Objects.requireNonNull(id, "id");
         Objects.requireNonNull(payload, "payload");
         if (id.length() != 2) {
             throw new IllegalArgumentException("Subfield id must be a 2 character ISO-8859-1 string.");
