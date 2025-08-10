@@ -19,6 +19,7 @@
 
 package org.apache.commons.compress.archivers.ar;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -32,10 +33,8 @@ import java.nio.file.Paths;
 
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveEntry;
-import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.io.IOUtils;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -107,11 +106,16 @@ class ArArchiveInputStreamTest extends AbstractTest {
      * Depending on your setup, this test may need a small stack size {@code -Xss1m}.
      */
     @Test
-    @Disabled
     void testGetNextArEntry() throws IOException {
-        try (ArArchiveInputStream inputStream = new ArArchiveInputStream(
-                Files.newInputStream(Paths.get("src/test/resources/org/apache/commons/compress/ar/getNextArEntry.bin")))) {
-            assertThrows(ArchiveException.class, inputStream::getNextEntry);
+        try (final ArArchiveInputStream inputStream = new ArArchiveInputStream(Files.newInputStream(
+                Paths.get("src/test/resources/org/apache/commons/compress/ar/getNextArEntry.bin")))) {
+            final ArArchiveEntry entry = assertDoesNotThrow(inputStream::getNextEntry);
+            assertEquals("test.txt", entry.getName(), "entry name");
+            assertEquals(0, entry.getSize(), "entry size");
+            assertEquals(0L, entry.getLastModified(), "entry mod time");
+            assertEquals(0, entry.getUserId(), "entry user id");
+            assertEquals(0, entry.getGroupId(), "entry group id");
+            assertEquals(0100644, entry.getMode(), "entry mode");
         }
     }
 
