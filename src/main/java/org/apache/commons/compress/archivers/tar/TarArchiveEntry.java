@@ -1568,7 +1568,6 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
                 isExtended = TarUtils.parseBoolean(header, offset);
                 offset += ISEXTENDEDLEN_GNU;
                 realSize = TarUtils.parseOctal(header, offset, REALSIZELEN_GNU);
-                offset += REALSIZELEN_GNU; // NOSONAR - assignment as documentation
                 break;
             }
             // Star format (Schily tar)
@@ -1583,7 +1582,6 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
                 aTime = fileTimeFromOptionalSeconds(parseOctalOrBinary(header, offset, ATIMELEN_XSTAR, lenient));
                 offset += ATIMELEN_XSTAR;
                 cTime = fileTimeFromOptionalSeconds(parseOctalOrBinary(header, offset, CTIMELEN_XSTAR, lenient));
-                offset += CTIMELEN_XSTAR; // NOSONAR - assignment as documentation
                 break;
             }
             // Pure POSIX.1-1988 UStar format
@@ -1592,7 +1590,6 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
                 final String prefix = oldStyle
                         ? TarUtils.parseName(header, offset, PREFIXLEN)
                         : TarUtils.parseName(header, offset, PREFIXLEN, encoding);
-                offset += PREFIXLEN; // NOSONAR - assignment as documentation
                 // SunOS tar -E does not add / to directory names, so fix up to be consistent
                 if (isDirectory() && !name.endsWith("/")) {
                     name += "/";
@@ -2080,7 +2077,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
             // This makes it effectively XUSTAR, which guarantees compatibility with USTAR
             offset = fill(0, offset, outbuf, XSTAR_MAGIC_LEN);
         }
-        offset = fill(0, offset, outbuf, outbuf.length - offset); // NOSONAR - assignment as documentation
+        fill(0, offset, outbuf, outbuf.length - offset);
         final long chk = TarUtils.computeCheckSum(outbuf);
         TarUtils.formatCheckSumOctalBytes(chk, outbuf, csOffset, CHKSUMLEN);
     }
