@@ -225,7 +225,6 @@ final class AES256SHA256Decoder extends AbstractCoder {
      *
      * @param chars characters to encode
      * @return encoded characters
-     * @since 1.23
      */
     static byte[] utf16Decode(final char[] chars) {
         if (chars == null) {
