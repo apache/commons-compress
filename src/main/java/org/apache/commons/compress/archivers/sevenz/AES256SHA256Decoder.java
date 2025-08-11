@@ -18,13 +18,12 @@
  */
 package org.apache.commons.compress.archivers.sevenz;
 
-import static java.nio.charset.StandardCharsets.UTF_16LE;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -232,7 +231,7 @@ final class AES256SHA256Decoder extends AbstractCoder {
         if (chars == null) {
             return null;
         }
-        final ByteBuffer encoded = UTF_16LE.encode(CharBuffer.wrap(chars));
+        final ByteBuffer encoded = StandardCharsets.UTF_16LE.encode(CharBuffer.wrap(chars));
         if (encoded.hasArray()) {
             return encoded.array();
         }
