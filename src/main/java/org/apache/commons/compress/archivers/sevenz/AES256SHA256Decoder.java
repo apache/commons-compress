@@ -257,15 +257,19 @@ final class AES256SHA256Decoder extends AbstractCoder {
     @Override
     byte[] getOptionsAsProperties(final Object options) throws IOException {
         final AES256Options opts = (AES256Options) options;
-        final byte[] props = new byte[2 + opts.getSalt().length + opts.getIv().length];
+        final byte[] salt = opts.getSalt();
+        final int saltLen = salt.length;
+        final byte[] iv = opts.getIv();
+        final int ivLen = iv.length;
+        final byte[] props = new byte[2 + saltLen + ivLen];
         // First byte : control (numCyclesPower + flags of salt or iv presence)
-        props[0] = (byte) (opts.getNumCyclesPower() | (opts.getSalt().length == 0 ? 0 : 1 << 7) | (opts.getIv().length == 0 ? 0 : 1 << 6));
-        if (opts.getSalt().length != 0 || opts.getIv().length != 0) {
+        props[0] = (byte) (opts.getNumCyclesPower() | (saltLen == 0 ? 0 : 1 << 7) | (ivLen == 0 ? 0 : 1 << 6));
+        if (saltLen != 0 || ivLen != 0) {
             // second byte : size of salt/iv data
-            props[1] = (byte) ((opts.getSalt().length == 0 ? 0 : opts.getSalt().length - 1) << 4 | (opts.getIv().length == 0 ? 0 : opts.getIv().length - 1));
+            props[1] = (byte) ((saltLen == 0 ? 0 : saltLen - 1) << 4 | (ivLen == 0 ? 0 : ivLen - 1));
             // remain bytes : salt/iv data
-            System.arraycopy(opts.getSalt(), 0, props, 2, opts.getSalt().length);
-            System.arraycopy(opts.getIv(), 0, props, 2 + opts.getSalt().length, opts.getIv().length);
+            System.arraycopy(salt, 0, props, 2, saltLen);
+            System.arraycopy(iv, 0, props, 2 + saltLen, ivLen);
         }
         return props;
     }
