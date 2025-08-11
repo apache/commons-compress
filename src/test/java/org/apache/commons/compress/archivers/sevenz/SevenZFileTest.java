@@ -529,8 +529,8 @@ class SevenZFileTest extends AbstractTest {
     }
 
     @Test
-    void testNumCyclesPower() throws IOException {
-        final String fixture = "src/test/resources/org/apache/commons/compress/sevenz/numCyclesPower.bin";
+    void testNumCyclesPower30() throws IOException {
+        final String fixture = "src/test/resources/org/apache/commons/compress/sevenz/numCyclesPower30.bin";
         final char[] password = "secret".toCharArray();
         // @formatter:off
         assertThrows(ArchiveException.class,
@@ -548,6 +548,8 @@ class SevenZFileTest extends AbstractTest {
                     .setPassword(password)
                     .setTryToRecoverBrokenArchives(true)
                     .get().close());
+        assertThrows(ArchiveException.class,
+                () -> new SevenZFile(new File(fixture), password).close());
         // @formatter:on
     }
 

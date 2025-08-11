@@ -42,6 +42,15 @@ import org.apache.commons.compress.archivers.ArchiveException;
 final class AES256SHA256Decoder extends AbstractCoder {
 
     private static final class AES256SHA256DecoderInputStream extends InputStream {
+
+        /**
+         * See {@code 7z2500-src/CPP/7zip/Crypto/7zAes.cpp}.
+         *
+         * <pre>static const unsigned k_NumCyclesPower_Supported_MAX = 24;</pre>
+         */
+        private static final int NUM_CYCLES_POWER_MAX = 24;
+        private static final int NUM_CYCLES_POWER_SPECIAL = 0x3f;
+
         private final InputStream in;
         private final Coder coder;
         private final String archiveName;
@@ -74,7 +83,10 @@ final class AES256SHA256Decoder extends AbstractCoder {
                 throw new ArchiveException("AES256 properties too short in '%s'", archiveName);
             }
             final int byte0 = 0xff & coder.properties[0];
-            final int numCyclesPower = byte0 & 0x3f;
+            final int numCyclesPower = byte0 & NUM_CYCLES_POWER_SPECIAL;
+            if (numCyclesPower > NUM_CYCLES_POWER_MAX && numCyclesPower != NUM_CYCLES_POWER_SPECIAL) {
+                throw new ArchiveException("numCyclesPower %,d exceeds supported limit (%d) in '%s'", numCyclesPower, NUM_CYCLES_POWER_MAX, archiveName);
+            }
             final int byte1 = 0xff & coder.properties[1];
             final int ivSize = (byte0 >> 6 & 1) + (byte1 & 0x0f);
             final int saltSize = (byte0 >> 7 & 1) + (byte1 >> 4);
@@ -85,19 +97,17 @@ final class AES256SHA256Decoder extends AbstractCoder {
             System.arraycopy(coder.properties, 2, salt, 0, saltSize);
             final byte[] iv = new byte[16];
             System.arraycopy(coder.properties, 2 + saltSize, iv, 0, ivSize);
-
             if (passwordBytes == null) {
                 throw new PasswordRequiredException(archiveName);
             }
             final byte[] aesKeyBytes;
-            if (numCyclesPower == 0x3f) {
+            if (numCyclesPower == NUM_CYCLES_POWER_SPECIAL) {
                 aesKeyBytes = new byte[32];
                 System.arraycopy(salt, 0, aesKeyBytes, 0, saltSize);
                 System.arraycopy(passwordBytes, 0, aesKeyBytes, saltSize, Math.min(passwordBytes.length, aesKeyBytes.length - saltSize));
             } else {
                 aesKeyBytes = sha256Password(passwordBytes, numCyclesPower, salt);
             }
-
             final SecretKey aesKey = AES256Options.newSecretKeySpec(aesKeyBytes);
             try {
                 final Cipher cipher = Cipher.getInstance(AES256Options.TRANSFORMATION);
@@ -163,10 +173,8 @@ final class AES256SHA256Decoder extends AbstractCoder {
             int gap = len + count > cipherBlockSize ? cipherBlockSize - count : len;
             System.arraycopy(b, off, cipherBlockBuffer, count, gap);
             count += gap;
-
             if (count == cipherBlockSize) {
                 flushBuffer();
-
                 if (len - gap >= cipherBlockSize) {
                     // skip buffer to encrypt data chunks big enough to fit cipher block size
                     final int multipleCipherBlockSizeLen = (len - gap) / cipherBlockSize * cipherBlockSize;
@@ -252,19 +260,15 @@ final class AES256SHA256Decoder extends AbstractCoder {
     byte[] getOptionsAsProperties(final Object options) throws IOException {
         final AES256Options opts = (AES256Options) options;
         final byte[] props = new byte[2 + opts.getSalt().length + opts.getIv().length];
-
         // First byte : control (numCyclesPower + flags of salt or iv presence)
         props[0] = (byte) (opts.getNumCyclesPower() | (opts.getSalt().length == 0 ? 0 : 1 << 7) | (opts.getIv().length == 0 ? 0 : 1 << 6));
-
         if (opts.getSalt().length != 0 || opts.getIv().length != 0) {
             // second byte : size of salt/iv data
             props[1] = (byte) ((opts.getSalt().length == 0 ? 0 : opts.getSalt().length - 1) << 4 | (opts.getIv().length == 0 ? 0 : opts.getIv().length - 1));
-
             // remain bytes : salt/iv data
             System.arraycopy(opts.getSalt(), 0, props, 2, opts.getSalt().length);
             System.arraycopy(opts.getIv(), 0, props, 2 + opts.getSalt().length, opts.getIv().length);
         }
-
         return props;
     }
 }
