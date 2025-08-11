@@ -21,6 +21,8 @@ package org.apache.commons.compress.archivers.dump;
 
 /**
  * Unsupported compression algorithm. The dump archive uses an unsupported compression algorithm (BZLIB2 or LZO).
+ *
+ * @since 1.3
  */
 public class UnsupportedCompressionAlgorithmException extends DumpArchiveException {
 

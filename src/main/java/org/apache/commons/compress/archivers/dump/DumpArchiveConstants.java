@@ -20,6 +20,8 @@ package org.apache.commons.compress.archivers.dump;
 
 /**
  * Various constants associated with dump archives.
+ *
+ * @since 1.3
  */
 public final class DumpArchiveConstants {
 

@@ -23,6 +23,8 @@ import org.apache.commons.compress.archivers.ArchiveException;
 
 /**
  * Signals that an dump archive exception of some sort has occurred.
+ *
+ * @since 1.3
  */
 public class DumpArchiveException extends ArchiveException {
 

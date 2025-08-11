@@ -20,6 +20,8 @@ package org.apache.commons.compress.archivers.dump;
 
 /**
  * Invalid Format Exception. There was an error decoding a tape segment header.
+ *
+ * @since 1.3
  */
 public class InvalidFormatException extends DumpArchiveException {
     private static final long serialVersionUID = 1L;

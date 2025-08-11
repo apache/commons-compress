@@ -30,6 +30,8 @@ import org.apache.commons.compress.archivers.zip.ZipEncoding;
  * <p>
  * For the corresponding C structure see the header of {@link DumpArchiveEntry}.
  * </p>
+ *
+ * @since 1.3
  */
 public class DumpArchiveSummary {
 

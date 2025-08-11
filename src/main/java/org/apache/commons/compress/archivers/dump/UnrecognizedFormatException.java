@@ -20,6 +20,8 @@ package org.apache.commons.compress.archivers.dump;
 
 /**
  * Unrecognized Format Exception. This is either not a recognized dump archive or there's a bad tape segment header.
+ *
+ * @since 1.3
  */
 public class UnrecognizedFormatException extends DumpArchiveException {
     private static final long serialVersionUID = 1L;

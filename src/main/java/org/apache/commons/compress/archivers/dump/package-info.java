@@ -45,5 +45,7 @@
  * <p>
  * As of Apache Commons Compress 1.3 support for the dump format is read-only.
  * </p>
+ *
+ * @since 1.3
  */
 package org.apache.commons.compress.archivers.dump;

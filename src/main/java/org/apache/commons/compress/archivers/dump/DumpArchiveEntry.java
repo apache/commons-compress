@@ -174,6 +174,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * </pre>
  *
  * @NotThreadSafe
+ * @since 1.3
  */
 public class DumpArchiveEntry implements ArchiveEntry {
 

@@ -20,6 +20,8 @@ package org.apache.commons.compress.archivers.dump;
 
 /**
  * Short File Exception. There was an unexpected EOF when reading the input stream.
+ *
+ * @since 1.3
  */
 public class ShortFileException extends DumpArchiveException {
     private static final long serialVersionUID = 1L;
