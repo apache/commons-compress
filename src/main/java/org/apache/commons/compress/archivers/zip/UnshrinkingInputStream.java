@@ -29,7 +29,6 @@ import org.apache.commons.compress.compressors.lzw.LZWInputStream;
  * Input stream that decompresses ZIP method 1 (unshrinking). A variation of the LZW algorithm, with some twists.
  *
  * @NotThreadSafe
- * @since 1.7
  */
 final class UnshrinkingInputStream extends LZWInputStream {
 
