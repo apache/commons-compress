@@ -44,15 +44,15 @@ final class NioZipEncoding implements ZipEncoding, CharsetAccessor {
     private static final char[] HEX_CHARS = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 
     private static ByteBuffer encodeFully(final CharsetEncoder enc, final CharBuffer cb, final ByteBuffer out) {
-        ByteBuffer o = out;
+        ByteBuffer buffer = out;
         while (cb.hasRemaining()) {
-            final CoderResult result = enc.encode(cb, o, false);
+            final CoderResult result = enc.encode(cb, buffer, false);
             if (result.isOverflow()) {
                 final int increment = estimateIncrementalEncodingSize(enc, cb.remaining());
-                o = ZipEncodingHelper.growBufferBy(o, increment);
+                buffer = ZipEncodingHelper.growBufferBy(buffer, increment);
             }
         }
-        return o;
+        return buffer;
     }
 
     private static CharBuffer encodeSurrogate(final CharBuffer cb, final char c) {
