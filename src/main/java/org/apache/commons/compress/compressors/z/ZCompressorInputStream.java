@@ -116,7 +116,7 @@ public class ZCompressorInputStream extends LZWInputStream {
      * <strong>This method is only protected for technical reasons and is not part of Commons Compress' published API. It may change or disappear without
      * warning.</strong>
      * </p>
-     * <pre>
+     * <pre>{@code
      *  table entry table entry
      *  _____________ _____
      *  table entry / \ / \
@@ -127,7 +127,7 @@ public class ZCompressorInputStream extends LZWInputStream {
      *  +---+---+---+---+---+---+---+---+---+---+
      *  |<--------->|<------------->|<----->|<->|
      *  symbol symbol symbol symbol
-     * </pre>
+     * }</pre>
      */
     @Override
     protected int decompressNextSymbol() throws IOException {
