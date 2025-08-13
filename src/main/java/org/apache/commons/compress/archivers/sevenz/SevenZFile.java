@@ -249,7 +249,7 @@ public class SevenZFile implements Closeable {
         }
 
         /**
-         * Sets the maximum amount of memory in kilobytes to use for parsing the archive and during extraction.
+         * Sets the maximum amount of memory in kibibytes to use for parsing the archive and during extraction.
          * <p>
          * Not all codecs honor this setting. Currently only LZMA and LZMA2 are supported.
          * </p>
@@ -1132,7 +1132,7 @@ public class SevenZFile implements Closeable {
 
     private Archive initializeArchive(final StartHeader startHeader, final byte[] password, final boolean verifyCrc) throws IOException {
         final int nextHeaderSizeInt = toNonNegativeInt("startHeader.nextHeaderSize", startHeader.nextHeaderSize);
-        MemoryLimitException.checkKiB(nextHeaderSizeInt, Math.min(SOFT_MAX_ARRAY_LENGTH, maxMemoryLimitKiB));
+        MemoryLimitException.checkKiB(bytesToKiB(nextHeaderSizeInt), Math.min(bytesToKiB(SOFT_MAX_ARRAY_LENGTH), maxMemoryLimitKiB));
         channel.position(SIGNATURE_HEADER_SIZE + startHeader.nextHeaderOffset);
         if (verifyCrc) {
             final long position = channel.position();

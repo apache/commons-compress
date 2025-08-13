@@ -31,13 +31,21 @@ import java.nio.file.Paths;
 import java.util.zip.CRC32;
 
 import org.apache.commons.compress.MemoryLimitException;
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.io.RandomAccessFileMode;
+import org.apache.commons.io.file.PathUtils;
 import org.apache.commons.lang3.function.Consumers;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 
 final class SevenZHugeNextHeaderTest {
 
     private static final String FILE_NAME = "target/GenerateHugeNextHeader7zTest.7z";
+
+    @AfterAll
+    static void afterAll() throws IOException {
+        PathUtils.deleteFile(Paths.get(FILE_NAME));
+    }
 
     private static long crc32OfZeros(final long numBytes) {
         final CRC32 crc = new CRC32();
@@ -56,7 +64,8 @@ final class SevenZHugeNextHeaderTest {
         final Path path = Paths.get(FILE_NAME);
         final long sizeMB = 256L;
         final long nextHeaderSize = sizeMB * 1024L * 1024L;
-        assumeTrue(path.toFile().getUsableSpace() > nextHeaderSize);
+        final long usableSpace = path.toFile().getParentFile().getUsableSpace();
+        assumeTrue(usableSpace > nextHeaderSize, () -> String.format("usableSpace %,d > nextHeaderSize %,d, %s", usableSpace, nextHeaderSize, path));
         final long nextHeaderOffset = 0L;
         final long nextHeaderCrc = crc32OfZeros(nextHeaderSize);
         final ByteBuffer startHeader = ByteBuffer.allocate(8 + 8 + 4).order(ByteOrder.LITTLE_ENDIAN);
@@ -72,9 +81,9 @@ final class SevenZHugeNextHeaderTest {
         mainHeader.put((byte) 0x00);
         mainHeader.put((byte) 0x02);
         mainHeader.putInt((int) startHeaderCrcValue);
-        try (OutputStream fos = Files.newOutputStream(path)) {
-            fos.write(mainHeader.array());
-            fos.write(startHeaderBytes);
+        try (OutputStream outputStream = Files.newOutputStream(path)) {
+            outputStream.write(mainHeader.array());
+            outputStream.write(startHeaderBytes);
         }
         RandomAccessFileMode.READ_WRITE.accept(path, raf -> raf.setLength(32L + nextHeaderSize));
     }
@@ -91,8 +100,13 @@ final class SevenZHugeNextHeaderTest {
         generate();
         try {
             getEntries();
-        } catch (MemoryLimitException ignore) {
+        } catch (final MemoryLimitException ignore) {
             // You may need a lower memory configuration to get here, depending on your OS, Java version, and/or container.
+            // For example: -Xmx128m
+            ignore.printStackTrace();
+        } catch (final ArchiveException ignore) {
+            // If a MemoryLimitException isn't thrown beause a lot of memory is available, then we get this failure:
+            // org.apache.commons.compress.archivers.ArchiveException: Broken or unsupported archive: no Header
         }
     }
 }
