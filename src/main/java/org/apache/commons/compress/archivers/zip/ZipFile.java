@@ -588,7 +588,7 @@ public class ZipFile implements Closeable {
         boolean found64 = false;
         final long position = channel.position();
         if (position > ZIP64_EOCDL_LENGTH) {
-            final ByteBuffer wordBuf = ByteBuffer.allocate(4);
+            final ByteBuffer wordBuf = ByteBuffer.allocate(ZipConstants.WORD);
             channel.position(channel.position() - ZIP64_EOCDL_LENGTH);
             wordBuf.rewind();
             IOUtils.readFully(channel, wordBuf);
