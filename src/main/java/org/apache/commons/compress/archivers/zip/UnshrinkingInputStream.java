@@ -32,6 +32,7 @@ import org.apache.commons.compress.compressors.lzw.LZWInputStream;
  * @since 1.7
  */
 final class UnshrinkingInputStream extends LZWInputStream {
+
     private static final int MAX_CODE_SIZE = 13;
     private static final int MAX_TABLE_SIZE = 1 << MAX_CODE_SIZE;
     private final boolean[] isUsed;
@@ -66,20 +67,23 @@ final class UnshrinkingInputStream extends LZWInputStream {
         return idx;
     }
 
+    /**
+     * Decompresses the next symbol.
+     * <pre>
+     *  table entry table entry
+     *  _____________ _____
+     *  table entry / \ / \
+     *  ____________/ \ \
+     *  / / \ / \ \
+     *  +---+---+---+---+---+---+---+---+---+---+
+     *  | . | . | . | . | . | . | . | . | . | . |
+     *  +---+---+---+---+---+---+---+---+---+---+
+     *  |<--------->|<------------->|<----->|<->|
+     *  symbol symbol symbol symbol
+     * </pre>
+     */
     @Override
     protected int decompressNextSymbol() throws IOException {
-        //
-        // table entry table entry
-        // _____________ _____
-        // table entry / \ / \
-        // ____________/ \ \
-        // / / \ / \ \
-        // +---+---+---+---+---+---+---+---+---+---+
-        // | . | . | . | . | . | . | . | . | . | . |
-        // +---+---+---+---+---+---+---+---+---+---+
-        // |<--------->|<------------->|<----->|<->|
-        // symbol symbol symbol symbol
-        //
         final int code = readNextCode();
         if (code < 0) {
             return -1;
