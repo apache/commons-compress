@@ -1233,6 +1233,7 @@ public class SevenZFile implements Closeable {
         long nid = readUint64(input);
         while (nid != NID.kEnd) {
             final int propertySize = readUint64ToIntExact(input);
+            MemoryLimitException.checkKiB(bytesToKiB(propertySize), maxMemoryLimitKiB);
             final byte[] property = new byte[propertySize];
             get(input, property);
             nid = readUint64(input);
@@ -1326,6 +1327,7 @@ public class SevenZFile implements Closeable {
             }
             case NID.kName: {
                 /* final int external = */ getUnsignedByte(header);
+                MemoryLimitException.checkKiB(bytesToKiB(size - 1), maxMemoryLimitKiB);
                 final byte[] names = new byte[ArchiveException.toIntExact(size - 1)];
                 final int namesLength = names.length;
                 get(header, names);
@@ -1470,7 +1472,8 @@ public class SevenZFile implements Closeable {
             byte[] properties = null;
             if (hasAttributes) {
                 final long propertiesSize = readUint64(header);
-                properties = new byte[(int) propertiesSize];
+                MemoryLimitException.checkKiB(bytesToKiB(propertiesSize), maxMemoryLimitKiB);
+                properties = new byte[ArchiveException.toIntExact(propertiesSize)];
                 get(header, properties);
             }
             // would need to keep looping as above:
