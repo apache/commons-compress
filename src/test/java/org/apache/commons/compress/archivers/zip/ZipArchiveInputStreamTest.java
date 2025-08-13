@@ -245,12 +245,7 @@ class ZipArchiveInputStreamTest extends AbstractTest {
     @Test
     void testMessageWithCorruptFileName() throws Exception {
         try (ZipArchiveInputStream in = new ZipArchiveInputStream(newInputStream("COMPRESS-351.zip"))) {
-            final EOFException ex = assertThrows(EOFException.class, () -> {
-                ZipArchiveEntry ze = in.getNextZipEntry();
-                while (ze != null) {
-                    ze = in.getNextZipEntry();
-                }
-            }, "expected EOFException");
+            final EOFException ex = assertThrows(EOFException.class, () -> in.forEach(IOConsumer.noop()));
             final String m = ex.getMessage();
             assertTrue(m.startsWith("Truncated ZIP entry: ?2016")); // the first character is not printable
         }
