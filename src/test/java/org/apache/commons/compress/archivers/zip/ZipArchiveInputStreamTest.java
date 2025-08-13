@@ -44,6 +44,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 
@@ -285,9 +286,7 @@ class ZipArchiveInputStreamTest extends AbstractTest {
     void testMultiByteReadThrowsAtEofForCorruptedStoredEntry() throws Exception {
         final byte[] content = readAllBytes("COMPRESS-264.zip");
         // make size much bigger than entry's real size
-        for (int i = 17; i < 26; i++) {
-            content[i] = (byte) 0xff;
-        }
+        Arrays.fill(content, 17, 26, (byte) 0xff);
         final byte[] buf = new byte[2];
         try (ByteArrayInputStream in = new ByteArrayInputStream(content);
                 ZipArchiveInputStream archive = new ZipArchiveInputStream(in)) {
