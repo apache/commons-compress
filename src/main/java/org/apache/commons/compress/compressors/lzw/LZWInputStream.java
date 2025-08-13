@@ -139,10 +139,13 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
      *
      * @param code                 the code.
      * @param addedUnfinishedEntry whether unfinished entries have been added.
-     * @return the new location of the output stack.
+     * @return the new location of the output stack, or the input code if negative indicating an end-of-file condition.
      * @throws IOException if an I/O error occurs.
      */
     protected int expandCodeToOutputStack(final int code, final boolean addedUnfinishedEntry) throws IOException {
+        if (code < 0) {
+            return code;
+        }
         for (int entry = code; entry >= 0; entry = prefixes[entry]) {
             outputStack[--outputStackLocation] = characters[entry];
         }
