@@ -435,6 +435,10 @@ public class SevenZFile implements Closeable {
         return value;
     }
 
+    private static int readUint64ToIntExact(final ByteBuffer in) throws IOException {
+        return ArchiveException.toIntExact(readUint64(in));
+    }
+
     private static long skipBytesFully(final ByteBuffer input, long bytesToSkip) {
         if (bytesToSkip < 1) {
             return 0;
@@ -1296,7 +1300,7 @@ public class SevenZFile implements Closeable {
     }
 
     private void readFilesInfo(final ByteBuffer header, final Archive archive) throws IOException {
-        final int numFilesInt = (int) readUint64(header);
+        final int numFilesInt = readUint64ToIntExact(header);
         final Map<Integer, SevenZArchiveEntry> fileMap = new LinkedHashMap<>();
         BitSet isEmptyStream = null;
         BitSet isEmptyFile = null;
@@ -1578,13 +1582,13 @@ public class SevenZFile implements Closeable {
         if (tryToRecoverBrokenArchives) {
             return tryToLocateEndHeader(password);
         }
-        throw new ArchiveException("Archive seems to be invalid.\nYou may want to retry and enable the"
-                + " tryToRecoverBrokenArchives if the archive could be a multi volume archive that has been closed prematurely.");
+        throw new ArchiveException("Archive seems to be invalid. You may want to retry and enable the tryToRecoverBrokenArchives if "
+                + "the archive could be a multi volume archive that has been closed prematurely.");
     }
 
     private void readPackInfo(final ByteBuffer header, final Archive archive) throws IOException {
         archive.packPos = readUint64(header);
-        final int numPackStreamsInt = (int) readUint64(header);
+        final int numPackStreamsInt = readUint64ToIntExact(header);
         int nid = getUnsignedByte(header);
         if (nid == NID.kSize) {
             archive.packSizes = new long[numPackStreamsInt];
@@ -1723,7 +1727,7 @@ public class SevenZFile implements Closeable {
 
     private void readUnpackInfo(final ByteBuffer header, final Archive archive) throws IOException {
         int nid = getUnsignedByte(header);
-        final int numFoldersInt = (int) readUint64(header);
+        final int numFoldersInt = readUint64ToIntExact(header);
         final Folder[] folders = new Folder[numFoldersInt];
         archive.folders = folders;
         /* final int external = */ getUnsignedByte(header);
