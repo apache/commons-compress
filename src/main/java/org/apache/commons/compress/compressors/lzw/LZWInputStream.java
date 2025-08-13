@@ -83,10 +83,10 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
     /**
      * Add a new entry to the dictionary.
      *
-     * @param previousCode the previous code
-     * @param character    the next character to append
-     * @return the new code
-     * @throws IOException on error
+     * @param previousCode the previous code.
+     * @param character    the next character to append.
+     * @return the new code.
+     * @throws IOException on error.
      */
     protected abstract int addEntry(int previousCode, byte character) throws IOException;
 
@@ -110,8 +110,8 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
     /**
      * Add entry for repeat of previousCode we haven't added, yet.
      *
-     * @return new code for a repeat of the previous code or -1 if maxTableSize has been reached already
-     * @throws IOException on error
+     * @return new code for a repeat of the previous code or -1 if maxTableSize has been reached.
+     * @throws IOException on error.
      */
     protected int addRepeatOfPreviousCode() throws IOException {
         if (previousCode == -1) {
@@ -129,8 +129,8 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
     /**
      * Reads the next code and expand it.
      *
-     * @return the expanded next code, negative on EOF
-     * @throws IOException on error
+     * @return the expanded next code, negative at end-of-file.
+     * @throws IOException on error.
      */
     protected abstract int decompressNextSymbol() throws IOException;
 
@@ -306,8 +306,8 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
     /**
      * Reads the next code from the stream.
      *
-     * @return the next code
-     * @throws IOException on error
+     * @return the next code or -1 at end-of-file.
+     * @throws IOException on error.
      */
     protected int readNextCode() throws IOException {
         if (codeSize > MAX_CODE_SIZE) {

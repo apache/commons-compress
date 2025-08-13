@@ -116,21 +116,21 @@ public class ZCompressorInputStream extends LZWInputStream {
      * <strong>This method is only protected for technical reasons and is not part of Commons Compress' published API. It may change or disappear without
      * warning.</strong>
      * </p>
+     * <pre>
+     *  table entry table entry
+     *  _____________ _____
+     *  table entry / \ / \
+     *  ____________/ \ \
+     *  / / \ / \ \
+     *  +---+---+---+---+---+---+---+---+---+---+
+     *  | . | . | . | . | . | . | . | . | . | . |
+     *  +---+---+---+---+---+---+---+---+---+---+
+     *  |<--------->|<------------->|<----->|<->|
+     *  symbol symbol symbol symbol
+     * </pre>
      */
     @Override
     protected int decompressNextSymbol() throws IOException {
-        //
-        // table entry table entry
-        // _____________ _____
-        // table entry / \ / \
-        // ____________/ \ \
-        // / / \ / \ \
-        // +---+---+---+---+---+---+---+---+---+---+
-        // | . | . | . | . | . | . | . | . | . | . |
-        // +---+---+---+---+---+---+---+---+---+---+
-        // |<--------->|<------------->|<----->|<->|
-        // symbol symbol symbol symbol
-        //
         final int code = readNextCode();
         if (code < 0) {
             return -1;
@@ -168,11 +168,11 @@ public class ZCompressorInputStream extends LZWInputStream {
         return code;
     }
 
+    /**
+     * "compress" works in multiples of 8 symbols, each codeBits bits long. When codeBits changes, the remaining unused symbols in the current group of 8 are
+     * still written out, in the old codeSize, as garbage values (usually zeroes) that need to be skipped.
+     */
     private void reAlignReading() throws IOException {
-        // "compress" works in multiples of 8 symbols, each codeBits bits long.
-        // When codeBits changes, the remaining unused symbols in the current
-        // group of 8 are still written out, in the old codeSize,
-        // as garbage values (usually zeroes) that need to be skipped.
         long codeReadsToThrowAway = 8 - totalCodesRead % 8;
         if (codeReadsToThrowAway == 8) {
             codeReadsToThrowAway = 0;
@@ -182,5 +182,4 @@ public class ZCompressorInputStream extends LZWInputStream {
         }
         in.clearBitCache();
     }
-
 }
