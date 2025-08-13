@@ -137,11 +137,11 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
      * @throws IOException if an I/O error occurs.
      */
     private static int bsR(final BitInputStream bin, final int n) throws IOException {
-        final long thech = bin.readBits(n);
-        if (thech < 0) {
+        final long value = bin.readBits(n);
+        if (value < 0) {
             throw new CompressorException("Unexpected end of stream");
         }
-        return (int) thech;
+        return (int) value;
     }
 
     private static void checkBounds(final int checkVal, final int limitExclusive, final String name) throws IOException {
