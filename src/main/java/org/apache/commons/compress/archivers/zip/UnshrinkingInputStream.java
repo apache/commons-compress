@@ -68,7 +68,7 @@ final class UnshrinkingInputStream extends LZWInputStream {
 
     /**
      * Decompresses the next symbol.
-     * <pre>
+     * <pre>{@code
      *  table entry table entry
      *  _____________ _____
      *  table entry / \ / \
@@ -79,7 +79,7 @@ final class UnshrinkingInputStream extends LZWInputStream {
      *  +---+---+---+---+---+---+---+---+---+---+
      *  |<--------->|<------------->|<----->|<->|
      *  symbol symbol symbol symbol
-     * </pre>
+     * }</pre>
      *
      * @return the next symbol or -1 at end-of-file.
      */
