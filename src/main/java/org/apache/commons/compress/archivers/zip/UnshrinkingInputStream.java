@@ -34,7 +34,7 @@ final class UnshrinkingInputStream extends LZWInputStream {
 
     private static final int MAX_CODE_SIZE = 13;
     private static final int MAX_TABLE_SIZE = 1 << MAX_CODE_SIZE;
-    private final boolean[] isUsed;
+    private final boolean[] inUse;
 
     /**
      * IOException is not actually thrown!
@@ -45,9 +45,9 @@ final class UnshrinkingInputStream extends LZWInputStream {
         super(inputStream, ByteOrder.LITTLE_ENDIAN);
         setClearCode(DEFAULT_CODE_SIZE);
         initializeTables(MAX_CODE_SIZE);
-        isUsed = new boolean[getPrefixesLength()];
+        inUse = new boolean[getPrefixesLength()];
         for (int i = 0; i < 1 << 8; i++) {
-            isUsed[i] = true;
+            inUse[i] = true;
         }
         setTableSize(getClearCode() + 1);
     }
@@ -55,13 +55,13 @@ final class UnshrinkingInputStream extends LZWInputStream {
     @Override
     protected int addEntry(final int previousCode, final byte character) throws IOException {
         int tableSize = getTableSize();
-        while (tableSize < MAX_TABLE_SIZE && isUsed[tableSize]) {
+        while (tableSize < MAX_TABLE_SIZE && inUse[tableSize]) {
             tableSize++;
         }
         setTableSize(tableSize);
         final int idx = addEntry(previousCode, character, MAX_TABLE_SIZE);
         if (idx >= 0) {
-            isUsed[idx] = true;
+            inUse[idx] = true;
         }
         return idx;
     }
@@ -92,7 +92,7 @@ final class UnshrinkingInputStream extends LZWInputStream {
         if (code != getClearCode()) {
             boolean addedUnfinishedEntry = false;
             int effectiveCode = code;
-            if (!isUsed[code]) {
+            if (!inUse[code]) {
                 effectiveCode = addRepeatOfPreviousCode();
                 addedUnfinishedEntry = true;
             }
@@ -118,14 +118,14 @@ final class UnshrinkingInputStream extends LZWInputStream {
 
     private void partialClear() {
         final boolean[] isParent = new boolean[MAX_TABLE_SIZE];
-        for (int i = 0; i < isUsed.length; i++) {
-            if (isUsed[i] && getPrefix(i) != UNUSED_PREFIX) {
+        for (int i = 0; i < inUse.length; i++) {
+            if (inUse[i] && getPrefix(i) != UNUSED_PREFIX) {
                 isParent[getPrefix(i)] = true;
             }
         }
         for (int i = getClearCode() + 1; i < isParent.length; i++) {
             if (!isParent[i]) {
-                isUsed[i] = false;
+                inUse[i] = false;
                 setPrefix(i, UNUSED_PREFIX);
             }
         }
