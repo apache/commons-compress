@@ -47,8 +47,8 @@ public class BitInputStream implements Closeable {
     /**
      * Constructor taking an InputStream and its bit arrangement.
      *
-     * @param in        the InputStream
-     * @param byteOrder the bit arrangement across byte boundaries, either BIG_ENDIAN (aaaaabbb bb000000) or LITTLE_ENDIAN (bbbaaaaa 000000bb)
+     * @param in        the InputStream.
+     * @param byteOrder the bit arrangement across byte boundaries, either BIG_ENDIAN (aaaaabbb bb000000) or LITTLE_ENDIAN (bbbaaaaa 000000bb).
      */
     public BitInputStream(final InputStream in, final ByteOrder byteOrder) {
         this.in = org.apache.commons.io.input.BoundedInputStream.builder().setInputStream(in).asSupplier().get();
@@ -68,11 +68,11 @@ public class BitInputStream implements Closeable {
     }
 
     /**
-     * Returns an estimate of the number of bits that can be read from this input stream without blocking by the next invocation of a method for this input
+     * Returns an estimate of the number of bits that can be read from this input stream without blocking by the next invocation of a method for this input.
      * stream.
      *
-     * @throws IOException if the underlying stream throws one when calling available
-     * @return estimate of the number of bits that can be read without blocking
+     * @throws IOException if the underlying stream throws one when calling available.
+     * @return estimate of the number of bits that can be read without blocking.
      * @since 1.16
      */
     public long bitsAvailable() throws IOException {
@@ -82,7 +82,7 @@ public class BitInputStream implements Closeable {
     /**
      * Returns the number of bits that can be read from this input stream without reading from the underlying input stream at all.
      *
-     * @return estimate of the number of bits that can be read without reading from the underlying stream
+     * @return estimate of the number of bits that can be read without reading from the underlying stream.
      * @since 1.16
      */
     public int bitsCached() {
@@ -103,10 +103,10 @@ public class BitInputStream implements Closeable {
     }
 
     /**
-     * Fills the cache up to 56 bits
+     * Fills the cache up to 56 bits.
      *
-     * @param count
-     * @return return true, when EOF
+     * @param count How muchg to read.
+     * @return return true at end-of-file.
      * @throws IOException if an I/O error occurs.
      */
     private boolean ensureCache(final int count) throws IOException {
@@ -132,7 +132,7 @@ public class BitInputStream implements Closeable {
      * This includes the bytes read to fill the current cache and not read as bits so far.
      * </p>
      *
-     * @return the number of bytes read from the underlying stream
+     * @return the number of bytes read from the underlying stream.
      * @since 1.17
      */
     public long getBytesRead() {
@@ -143,7 +143,6 @@ public class BitInputStream implements Closeable {
         final long bitsOut;
         final int overflowBits;
         long overflow = 0L;
-
         // bitsCachedSize >= 57 and left-shifting it 8 bits would cause an overflow
         final int bitsToAddCount = count - bitsCachedSize;
         overflowBits = Byte.SIZE - bitsToAddCount;
@@ -170,7 +169,7 @@ public class BitInputStream implements Closeable {
     /**
      * Reads and returns the next bit read from the underlying stream.
      *
-     * @return the next bit (0 or 1) or -1 if the end of the stream has been reached
+     * @return the next bit (0 or 1) or -1 if the end of the stream has been reached.
      * @throws IOException if an I/O error occurs.
      * @since 1.28
      */
@@ -183,7 +182,7 @@ public class BitInputStream implements Closeable {
      *
      * @param count the number of bits to read, must be a positive number not bigger than 63.
      * @return the bits concatenated as a long using the stream's byte order. -1 if the end of the underlying stream has been reached before reading the
-     *         requested number of bits
+     *         requested number of bits.
      * @throws IOException if an I/O error occurs.
      */
     public long readBits(final int count) throws IOException {
@@ -193,7 +192,6 @@ public class BitInputStream implements Closeable {
         if (ensureCache(count)) {
             return -1;
         }
-
         if (bitsCachedSize < count) {
             return processBitsGreater57(count);
         }
