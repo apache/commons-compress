@@ -68,7 +68,7 @@ final class ExplodingInputStream extends InputStream implements InputStreamStati
     private long treeSizes;
 
     /**
-     * Constructs a new stream decompressing the content of the specified stream using the explode algorithm.
+     * Constructs a new stream decompressing the content of the specified stream using the <i>explode</i> algorithm.
      *
      * @param dictionarySize the size of the sliding dictionary (4096 or 8192)
      * @param numberOfTrees  the number of trees (2 or 3)

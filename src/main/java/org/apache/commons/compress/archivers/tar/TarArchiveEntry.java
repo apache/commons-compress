@@ -107,7 +107,7 @@ import org.apache.commons.lang3.SystemUtils;
  * and gid larger than 07777777L (7 7s) the sign bit of the first byte is set, and the rest of the field is the binary representation of the number. See
  * {@link TarUtils#parseOctalOrBinary(byte[], int, int)}.
  * <p>
- * The C structure for a old GNU Tar Entry's header is:
+ * The C structure for an old GNU Tar Entry's header is:
  * </p>
  * <pre>
  * struct oldgnu_header {

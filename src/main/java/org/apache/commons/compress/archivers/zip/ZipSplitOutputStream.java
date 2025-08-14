@@ -226,7 +226,7 @@ final class ZipSplitOutputStream extends RandomAccessOutputStream {
      * an archive.
      * </p>
      *
-     * @param unsplittableContentSize the split size request must be less than or equal to the the split size.
+     * @param unsplittableContentSize the split size request must be less than or equal to the split size.
      * @throws IllegalArgumentException if unsplittable content size is bigger than the split segment size.
      * @throws IOException if an I/O error occurs.
      */

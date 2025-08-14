@@ -128,7 +128,7 @@ public class Pack200UnpackerAdapter extends Pack200Adapter implements Unpacker {
      * @param url The URL.
      * @return a new BoundedInputStream
      * @throws IOException        if an I/O error occurs.
-     * @throws URISyntaxException if the URL is not formatted strictly according to to RFC2396 and cannot be converted to a URI.
+     * @throws URISyntaxException if the URL is not formatted strictly according to RFC2396 and cannot be converted to a URI.
      */
     static BoundedInputStream newBoundedInputStream(final URL url) throws IOException, URISyntaxException {
         return newBoundedInputStream(Paths.get(url.toURI()));

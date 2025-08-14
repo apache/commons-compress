@@ -86,8 +86,8 @@ public abstract class ZipUtil {
      * Approximately 128 years, in milliseconds (ignoring leap years, etc.).
      *
      * <p>
-     * This establish an approximate high-bound value for DOS times in milliseconds since epoch, used to enable an efficient but sufficient bounds check to
-     * avoid generating extended last modified time entries.
+     * This establishes an approximate high-bound value for DOS times in milliseconds since epoch, used to enable an efficient but sufficient
+     * bounds check to avoid generating extended last modified time entries.
      * </p>
      * <p>
      * Calculating the exact number is locale dependent, would require loading TimeZone data eagerly, and would make little practical sense. Since DOS times

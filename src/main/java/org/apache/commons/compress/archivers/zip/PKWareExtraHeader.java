@@ -28,7 +28,7 @@ import java.util.zip.ZipException;
  * Base class for all PKWare strong crypto extra headers.
  *
  * <p>
- * This base class acts as a marker so you know you can ignore all extra fields that extend this class if you are not interested in the meta data of PKWare
+ * This base class acts as a marker so you know you can ignore all extra fields that extend this class if you are not interested in the metadata of PKWare
  * strong encryption.
  * </p>
  *

@@ -189,8 +189,8 @@ public class CpBands extends BandSet {
     /**
      * Gets a constant pool class for the given class name.
      *
-     * @param className a fully-qualifed class name.
-     * @return a a constant pool class.
+     * @param className a fully-qualified class name.
+     * @return a constant pool class.
      */
     public CPClass getCPClass(String className) {
         if (className == null) {

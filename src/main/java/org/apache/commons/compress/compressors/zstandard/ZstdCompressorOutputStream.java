@@ -254,8 +254,8 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream<ZstdOutpu
          * <p>
          * Zstd can still find matches of smaller size, by updating its search algorithm to look for this size and larger. Using larger values increase
          * compression and decompression speed, but decrease the ratio. The value must be between {@link ZstdConstants#ZSTD_MINMATCH_MIN} and
-         * {@link ZstdConstants#ZSTD_MINMATCH_MAX}. Note that currently, for all strategies &lt; {@code btopt}, effective minimum is 4. , for all strategies
-         * &gt; {@code fast}, effective maximum is {@code 6}.
+         * {@link ZstdConstants#ZSTD_MINMATCH_MAX}. Note that currently, for all strategies &lt; {@code btopt}, effective minimum is {@code 4},
+         * for all strategies &gt; {@code fast}, effective maximum is {@code 6}.
          * </p>
          * <p>
          * The value {@code 0} means use the default minMatchLength.
