@@ -54,6 +54,9 @@ import org.apache.commons.lang3.ArrayFill;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+/**
+ * Tests {@link TarArchiveOutputStream}.
+ */
 class TarArchiveOutputStreamTest extends AbstractTest {
 
     private static byte[] createTarArchiveContainingOneDirectory(final String fileName, final Date modificationDate) throws IOException {
