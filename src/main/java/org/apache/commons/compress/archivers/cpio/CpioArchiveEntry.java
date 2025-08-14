@@ -170,10 +170,10 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      */
     private final short fileFormat;
 
-    /** The number of bytes in each header record; depends on the file format */
+    /** The number of bytes in each header record; depends on the file format. */
     private final int headerSize;
 
-    /** The boundary to which the header and data elements are aligned: 0, 2 or 4 bytes */
+    /** The boundary to which the header and data elements are aligned: 0, 2 or 4 bytes. */
     private final int alignmentBoundary;
 
     // Header fields
@@ -221,7 +221,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @param inputPath The file to gather information from.
      * @param entryName The name of this entry.
      * @param options   options indicating how symbolic links are handled.
-     * @throws IOException if an I/O error occurs
+     * @throws IOException if an I/O error occurs.
      * @since 1.21
      */
     public CpioArchiveEntry(final Path inputPath, final String entryName, final LinkOption... options) throws IOException {
@@ -314,7 +314,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      *                  </pre>
      *
      * @param options   options indicating how symbolic links are handled.
-     * @throws IOException if an I/O error occurs
+     * @throws IOException if an I/O error occurs.
      * @since 1.21
      */
     public CpioArchiveEntry(final short format, final Path inputPath, final String entryName, final LinkOption... options) throws IOException {
@@ -388,7 +388,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * Creates a CpioArchiveEntry with a specified name. The format of this entry will be the new format.
      *
      * @param name The name of this entry.
-     * @param size The size of this entry
+     * @param size The size of this entry.
      */
     public CpioArchiveEntry(final String name, final long size) {
         this(name);
@@ -431,9 +431,9 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Gets the alignment boundary for this CPIO format
+     * Gets the alignment boundary for this CPIO format.
      *
-     * @return the alignment boundary (0, 2, 4) in bytes
+     * @return the alignment boundary (0, 2, 4) in bytes.
      */
     public int getAlignmentBoundary() {
         return alignmentBoundary;
@@ -443,7 +443,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * Gets the checksum. Only supported for the new formats.
      *
      * @return the checksum.
-     * @throws UnsupportedOperationException if the format is not a new format
+     * @throws UnsupportedOperationException if the format is not a new format.
      */
     public long getChksum() {
         checkNewFormat();
@@ -490,10 +490,10 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Gets the minor device id
+     * Gets the minor device id.
      *
      * @return the minor device id.
-     * @throws UnsupportedOperationException if format is not a new format
+     * @throws UnsupportedOperationException if format is not a new format.
      */
     public long getDeviceMin() {
         checkNewFormat();
@@ -573,7 +573,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     }
 
     /**
-     * Gets the header size for this CPIO format
+     * Gets the header size for this CPIO format.
      *
      * @return the header size in bytes.
      */
