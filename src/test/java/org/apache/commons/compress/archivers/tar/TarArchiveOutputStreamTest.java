@@ -441,10 +441,12 @@ class TarArchiveOutputStreamTest extends AbstractTest {
 
     @Test
     void testWriteLongDirectoryNameErrorMode() throws Exception {
-        final String n = "01234567890123456789012345678901234567890123456789" + "01234567890123456789012345678901234567890123456789"
+        // @formatter:off
+        final String n = "01234567890123456789012345678901234567890123456789"
+                + "01234567890123456789012345678901234567890123456789"
                 + "01234567890123456789012345678901234567890123456789/";
-
-        assertThrows(RuntimeException.class, () -> {
+        // @formatter:on
+        assertThrows(IllegalArgumentException.class, () -> {
             final TarArchiveEntry t = new TarArchiveEntry(n);
             final ByteArrayOutputStream bos = new ByteArrayOutputStream();
             try (TarArchiveOutputStream tos = new TarArchiveOutputStream(bos, "ASCII")) {
@@ -473,8 +475,11 @@ class TarArchiveOutputStreamTest extends AbstractTest {
 
     @Test
     void testWriteLongDirectoryNameTruncateMode() throws Exception {
-        final String n = "01234567890123456789012345678901234567890123456789" + "01234567890123456789012345678901234567890123456789"
+        // @formatter:off
+        final String n = "01234567890123456789012345678901234567890123456789"
+                + "01234567890123456789012345678901234567890123456789"
                 + "01234567890123456789012345678901234567890123456789/";
+        // @formatter:on
         final TarArchiveEntry t = new TarArchiveEntry(n);
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try (TarArchiveOutputStream tos = new TarArchiveOutputStream(bos, "ASCII")) {

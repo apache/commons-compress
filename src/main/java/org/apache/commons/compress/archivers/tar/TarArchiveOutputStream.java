@@ -42,6 +42,7 @@ import org.apache.commons.io.Charsets;
 import org.apache.commons.io.file.attribute.FileTimes;
 import org.apache.commons.io.output.CountingOutputStream;
 import org.apache.commons.lang3.ArrayFill;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * The TarOutputStream writes a Unix tar archive as an OutputStream. Methods are provided to put entries, and then write their contents by writing to this
@@ -454,10 +455,14 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
      */
     private boolean handleLongName(final TarArchiveEntry entry, final String name, final Map<String, String> paxHeaders, final String paxHeaderName,
             final byte linkType, final String fieldName) throws IOException {
+        // Fail-fast with less precision with LONGFILE_ERROR, instead allocating a potentially huge buffers.
+        if (longFileMode == LONGFILE_ERROR && name.length() >= TarConstants.NAMELEN) {
+            throw new IllegalArgumentException(
+                    fieldName + " '" + StringUtils.truncate(name, TarConstants.NAMELEN) + "...' is too long ( > " + TarConstants.NAMELEN + " bytes)");
+        }
         final ByteBuffer encodedName = zipEncoding.encode(name);
         final int len = encodedName.limit() - encodedName.position();
         if (len >= TarConstants.NAMELEN) {
-
             if (longFileMode == LONGFILE_POSIX) {
                 paxHeaders.put(paxHeaderName, name);
                 return true;
@@ -466,7 +471,6 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
                 // create a TarEntry for the LongLink, the contents
                 // of which are the link's name
                 final TarArchiveEntry longLinkEntry = new TarArchiveEntry(TarConstants.GNU_LONGLINK, linkType);
-
                 longLinkEntry.setSize(len + 1L); // +1 for NUL
                 transferModTime(entry, longLinkEntry);
                 putArchiveEntry(longLinkEntry);
@@ -474,8 +478,8 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
                 write(0); // NUL terminator
                 closeArchiveEntry();
             } else if (longFileMode != LONGFILE_TRUNCATE) {
-                throw new IllegalArgumentException(fieldName + " '" + name // NOSONAR
-                        + "' is too long ( > " + TarConstants.NAMELEN + " bytes)");
+                throw new IllegalArgumentException(
+                        fieldName + " '" + StringUtils.truncate(name, TarConstants.NAMELEN) + "...' is too long ( > " + TarConstants.NAMELEN + " bytes)");
             }
         }
         return false;
