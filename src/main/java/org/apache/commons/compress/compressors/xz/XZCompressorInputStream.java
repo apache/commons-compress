@@ -222,6 +222,10 @@ public class XZCompressorInputStream extends CompressorInputStream implements In
         return countingStream.getCount();
     }
 
+    MemoryLimitException newMemoryLimitException(final org.tukaani.xz.MemoryLimitException e) {
+        return new MemoryLimitException(e.getMemoryNeeded(), e.getMemoryLimit(), (Throwable) e);
+    }
+
     @Override
     public int read() throws IOException {
         try {
@@ -229,7 +233,8 @@ public class XZCompressorInputStream extends CompressorInputStream implements In
             count(ret == -1 ? -1 : 1);
             return ret;
         } catch (final org.tukaani.xz.MemoryLimitException e) {
-            throw new MemoryLimitException(e.getMemoryNeeded(), e.getMemoryLimit(), (Throwable) e);
+            // Convert to Commons Compress MemoryLimtException
+            throw newMemoryLimitException(e);
         }
     }
 
@@ -243,8 +248,8 @@ public class XZCompressorInputStream extends CompressorInputStream implements In
             count(ret);
             return ret;
         } catch (final org.tukaani.xz.MemoryLimitException e) {
-            // convert to commons-compress MemoryLimtException
-            throw new MemoryLimitException(e.getMemoryNeeded(), e.getMemoryLimit(), (Throwable) e);
+            // Convert to Commons Compress MemoryLimtException
+            throw newMemoryLimitException(e);
         }
     }
 
@@ -253,8 +258,8 @@ public class XZCompressorInputStream extends CompressorInputStream implements In
         try {
             return org.apache.commons.io.IOUtils.skip(in, n);
         } catch (final org.tukaani.xz.MemoryLimitException e) {
-            // convert to commons-compress MemoryLimtException
-            throw new MemoryLimitException(e.getMemoryNeeded(), e.getMemoryLimit(), (Throwable) e);
+            // Convert to Commons Compress MemoryLimtException
+            throw newMemoryLimitException(e);
         }
     }
 }
