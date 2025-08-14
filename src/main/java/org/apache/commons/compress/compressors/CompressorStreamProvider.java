@@ -47,7 +47,7 @@ public interface CompressorStreamProvider {
      *                           the next byte after the stream. This setting applies to the gzip, bzip2 and XZ formats only.
      * @return compressor input stream
      * @throws CompressorException      if the compressor name is not known
-     * @throws IllegalArgumentException if the name or input stream is null
+     * @throws IllegalArgumentException if the name or input stream is {@code null}
      */
     CompressorInputStream createCompressorInputStream(String name, InputStream in, boolean decompressUntilEof) throws CompressorException;
 
@@ -63,7 +63,7 @@ public interface CompressorStreamProvider {
      * @param out  the output stream
      * @return the compressor output stream
      * @throws CompressorException      if the archiver name is not known
-     * @throws IllegalArgumentException if the archiver name or stream is null
+     * @throws IllegalArgumentException if the archiver name or stream is {@code null}
      */
     <T extends OutputStream> CompressorOutputStream<T> createCompressorOutputStream(String name, T out) throws CompressorException;
 

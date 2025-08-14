@@ -152,7 +152,7 @@ public class Archive {
      *
      * @param jarFile      the input file.
      * @param outputStream target output stream for the compressed data.
-     * @param options      packing options (if null then defaults are used).
+     * @param options      packing options (if {@code null} then defaults are used).
      * @throws IOException If an I/O error occurs.
      */
     public Archive(final JarFile jarFile, OutputStream outputStream, PackingOptions options) throws IOException {
@@ -174,7 +174,7 @@ public class Archive {
      *
      * @param inputStream  input stream of uncompressed JAR data.
      * @param outputStream target output stream for the compressed data.
-     * @param options      packing options (if null then defaults are used).
+     * @param options      packing options (if {@code null} then defaults are used).
      * @throws IOException If an I/O error occurs.
      */
     public Archive(final JarInputStream inputStream, OutputStream outputStream, PackingOptions options) throws IOException {
