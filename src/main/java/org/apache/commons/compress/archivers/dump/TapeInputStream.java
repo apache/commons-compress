@@ -66,7 +66,7 @@ final class TapeInputStream extends FilterInputStream {
     /**
      * Close the input stream.
      *
-     * @throws IOException on error
+     * @throws IOException Thrown if an I/O error occurs.
      */
     @Override
     public void close() throws IOException {
@@ -88,7 +88,7 @@ final class TapeInputStream extends FilterInputStream {
      * Peek at the next record from the input stream and return the data.
      *
      * @return The record data.
-     * @throws IOException on error
+     * @throws IOException Thrown if an I/O error occurs.
      */
     public byte[] peek() throws IOException {
         // we need to read from the underlying stream. This
@@ -108,6 +108,8 @@ final class TapeInputStream extends FilterInputStream {
     }
 
     /**
+     * {@inheritDoc}
+     *
      * @see java.io.InputStream#read()
      */
     @Override
@@ -122,7 +124,8 @@ final class TapeInputStream extends FilterInputStream {
      * reads the full given length unless EOF is reached.
      * </p>
      *
-     * @param len length to read, must be a multiple of the stream's record size
+     * @param len length to read, must be a multiple of the stream's record size.
+     * @throws IOException Thrown if an I/O error occurs.
      */
     @Override
     public int read(final byte[] b, int off, final int len) throws IOException {
@@ -165,6 +168,7 @@ final class TapeInputStream extends FilterInputStream {
      * Reads next block. All decompression is handled here.
      *
      * @param decompress if false the buffer will not be decompressed. This is an optimization for longer seeks.
+     * @throws IOException Thrown if an I/O error occurs.
      */
     private void readBlock(final boolean decompress) throws IOException {
         if (in == null) {
@@ -235,6 +239,8 @@ final class TapeInputStream extends FilterInputStream {
 
     /**
      * Reads buffer
+     *
+     * @throws IOException Thrown if an I/O error occurs.
      */
     private void readFully(final byte[] b, final int off, final int len) throws IOException {
         final int count = IOUtils.readFully(in, b, off, len);
@@ -255,7 +261,7 @@ final class TapeInputStream extends FilterInputStream {
      * Reads a record from the input stream and return the data.
      *
      * @return The record data.
-     * @throws IOException on error
+     * @throws IOException Thrown if an I/O error occurs.
      */
     public byte[] readRecord() throws IOException {
         final byte[] result = new byte[RECORD_SIZE];
@@ -273,11 +279,11 @@ final class TapeInputStream extends FilterInputStream {
      * Sets the DumpArchive Buffer's block size. We need to sync the block size with the dump archive's actual block size since compression is handled at the
      * block level.
      *
-     * @param recsPerBlock records per block
-     * @param isCompressed true if the archive is compressed
-     * @throws IOException more than one block has been read
+     * @param recsPerBlock records per block.
+     * @param isCompressed true if the archive is compressed.
+     * @throws IOException more than one block has been read.
      * @throws IOException there was an error reading additional blocks.
-     * @throws IOException recsPerBlock is smaller than 1
+     * @throws IOException recsPerBlock is smaller than 1.
      */
     public void resetBlockSize(final int recsPerBlock, final boolean isCompressed) throws IOException {
         this.isCompressed = isCompressed;
@@ -306,7 +312,7 @@ final class TapeInputStream extends FilterInputStream {
      * skips the full given length unless EOF is reached.
      * </p>
      *
-     * @param len length to read, must be a multiple of the stream's record size
+     * @param len length to read, must be a multiple of the stream's record size.
      */
     @Override
     public long skip(final long len) throws IOException {
