@@ -67,8 +67,8 @@ public class FramedSnappyCompressorOutputStream extends CompressorOutputStream<O
     /**
      * Constructs a new output stream that compresses snappy-framed-compressed data to the specified output stream.
      *
-     * @param out the OutputStream to which to write the compressed data
-     * @throws IOException if writing the signature fails
+     * @param out the OutputStream to which to write the compressed data.
+     * @throws IOException if writing the signature fails.
      */
     public FramedSnappyCompressorOutputStream(final OutputStream out) throws IOException {
         this(out, SnappyCompressorOutputStream.createParameterBuilder(SnappyCompressorInputStream.DEFAULT_BLOCK_SIZE).build());
@@ -77,9 +77,9 @@ public class FramedSnappyCompressorOutputStream extends CompressorOutputStream<O
     /**
      * Constructs a new output stream that compresses snappy-framed-compressed data to the specified output stream.
      *
-     * @param out    the OutputStream to which to write the compressed data
+     * @param out    the OutputStream to which to write the compressed data.
      * @param params parameters used to fine-tune compression, in particular to balance compression ratio vs compression speed.
-     * @throws IOException if writing the signature fails
+     * @throws IOException if writing the signature fails.
      */
     public FramedSnappyCompressorOutputStream(final OutputStream out, final Parameters params) throws IOException {
         super(out);
@@ -100,7 +100,7 @@ public class FramedSnappyCompressorOutputStream extends CompressorOutputStream<O
     /**
      * Compresses all remaining data and writes it to the stream, doesn't close the underlying stream.
      *
-     * @throws IOException if an error occurs
+     * @throws IOException if an error occurs.
      */
     @Override
     public void finish() throws IOException {

@@ -69,27 +69,23 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream imp
      * .sz files start with a chunk with tag 0xff and content sNaPpY.
      * </p>
      *
-     * @param signature the bytes to check
-     * @param length    the number of bytes to check
-     * @return true if this is a .sz stream, false otherwise
+     * @param signature the bytes to check.
+     * @param length    the number of bytes to check.
+     * @return true if this is a .sz stream, false otherwise.
      */
     public static boolean matches(final byte[] signature, final int length) {
-
         if (length < SZ_SIGNATURE.length) {
             return false;
         }
-
         byte[] shortenedSig = signature;
         if (signature.length > SZ_SIGNATURE.length) {
             shortenedSig = Arrays.copyOf(signature, SZ_SIGNATURE.length);
         }
-
         return Arrays.equals(shortenedSig, SZ_SIGNATURE);
     }
 
     static long unmask(long x) {
-        // ugly, maybe we should just have used ints and deal with the
-        // overflow
+        // ugly, maybe we should just have used ints and deal with the overflow.
         x -= MASK_OFFSET;
         x &= 0xffffFFFFL;
         return (x >> 17 | x << 15) & 0xffffFFFFL;
@@ -99,7 +95,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream imp
 
     private final BoundedInputStream countingStream;
 
-    /** The underlying stream to read compressed data from */
+    /** The underlying stream to read compressed data from. */
     private final PushbackInputStream inputStream;
 
     /** The dialect to expect */
@@ -124,8 +120,8 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream imp
      * Constructs a new input stream that decompresses snappy-framed-compressed data from the specified input stream using the
      * {@link FramedSnappyDialect#STANDARD} dialect.
      *
-     * @param in the InputStream from which to read the compressed data
-     * @throws IOException if reading fails
+     * @param in the InputStream from which to read the compressed data.
+     * @throws IOException if reading fails.
      */
     public FramedSnappyCompressorInputStream(final InputStream in) throws IOException {
         this(in, FramedSnappyDialect.STANDARD);
@@ -134,9 +130,9 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream imp
     /**
      * Constructs a new input stream that decompresses snappy-framed-compressed data from the specified input stream.
      *
-     * @param in      the InputStream from which to read the compressed data
-     * @param dialect the dialect used by the compressed stream
-     * @throws IOException if reading fails
+     * @param in      the InputStream from which to read the compressed data.
+     * @param dialect the dialect used by the compressed stream.
+     * @throws IOException if reading fails.
      */
     public FramedSnappyCompressorInputStream(final InputStream in, final FramedSnappyDialect dialect) throws IOException {
         this(in, SnappyCompressorInputStream.DEFAULT_BLOCK_SIZE, dialect);
@@ -145,11 +141,11 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream imp
     /**
      * Constructs a new input stream that decompresses snappy-framed-compressed data from the specified input stream.
      *
-     * @param in        the InputStream from which to read the compressed data
-     * @param blockSize the block size to use for the compressed stream
-     * @param dialect   the dialect used by the compressed stream
-     * @throws IOException              if reading fails
-     * @throws IllegalArgumentException if blockSize is not bigger than 0
+     * @param in        the InputStream from which to read the compressed data.
+     * @param blockSize the block size to use for the compressed stream.
+     * @param dialect   the dialect used by the compressed stream.
+     * @throws IOException              if reading fails.
+     * @throws IllegalArgumentException if blockSize is not bigger than 0.
      * @since 1.14
      */
     public FramedSnappyCompressorInputStream(final InputStream in, final int blockSize, final FramedSnappyDialect dialect) throws IOException {

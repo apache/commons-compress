@@ -43,19 +43,19 @@ public class SnappyCompressorInputStream extends AbstractLZ77CompressorInputStre
         NO_BLOCK, IN_LITERAL, IN_BACK_REFERENCE
     }
 
-    /** Mask used to determine the type of "tag" is being processed */
+    /** Mask used to determine the type of "tag" is being processed. */
     private static final int TAG_MASK = 0x03;
 
-    /** Default block size */
+    /** Default block size. */
     public static final int DEFAULT_BLOCK_SIZE = 32768;
 
-    /** The size of the uncompressed data */
+    /** The size of the uncompressed data. */
     private final int size;
 
     /** Number of uncompressed bytes still to be read. */
     private int uncompressedBytesRemaining;
 
-    /** Current state of the stream */
+    /** Current state of the stream. */
     private State state = State.NO_BLOCK;
 
     private boolean endReached;
@@ -63,8 +63,8 @@ public class SnappyCompressorInputStream extends AbstractLZ77CompressorInputStre
     /**
      * Constructor using the default buffer size of 32k.
      *
-     * @param is An InputStream to read compressed data from
-     * @throws IOException if reading fails
+     * @param is An InputStream to read compressed data from.
+     * @throws IOException if reading fails.
      */
     public SnappyCompressorInputStream(final InputStream is) throws IOException {
         this(is, DEFAULT_BLOCK_SIZE);
@@ -73,10 +73,10 @@ public class SnappyCompressorInputStream extends AbstractLZ77CompressorInputStre
     /**
      * Constructor using a configurable buffer size.
      *
-     * @param is        An InputStream to read compressed data from
-     * @param blockSize The block size used in compression
-     * @throws IOException              if reading fails
-     * @throws IllegalArgumentException if blockSize is not bigger than 0
+     * @param is        An InputStream to read compressed data from.
+     * @param blockSize The block size used in compression.
+     * @throws IOException              if reading fails.
+     * @throws IllegalArgumentException if blockSize is not bigger than 0.
      */
     public SnappyCompressorInputStream(final InputStream is, final int blockSize) throws IOException {
         super(is, blockSize);
@@ -91,18 +91,14 @@ public class SnappyCompressorInputStream extends AbstractLZ77CompressorInputStre
             endReached = true;
             return;
         }
-
         int b = readOneByte();
         if (b == -1) {
             throw new CompressorException("Premature end of stream reading block start");
         }
         int length = 0;
         int offset = 0;
-
         switch (b & TAG_MASK) {
-
         case 0x00:
-
             length = readLiteralLength(b);
             if (length < 0) {
                 throw new CompressorException("Illegal block with a negative literal size found");
@@ -111,15 +107,12 @@ public class SnappyCompressorInputStream extends AbstractLZ77CompressorInputStre
             startLiteral(length);
             state = State.IN_LITERAL;
             break;
-
         case 0x01:
-
             /*
              * These elements can encode lengths between [4..11] bytes and offsets between [0..2047] bytes. (len-4) occupies three bits and is stored in bits
              * [2..4] of the tag byte. The offset occupies 11 bits, of which the upper three are stored in the upper three bits ([5..7]) of the tag byte, and
              * the lower eight are stored in a byte following the tag byte.
              */
-
             length = 4 + (b >> 2 & 0x07);
             uncompressedBytesRemaining -= length;
             offset = (b & 0xE0) << 3;
@@ -128,7 +121,6 @@ public class SnappyCompressorInputStream extends AbstractLZ77CompressorInputStre
                 throw new CompressorException("Premature end of stream reading back-reference length");
             }
             offset |= b;
-
             try {
                 startBackReference(offset, length);
             } catch (final IllegalArgumentException ex) {
@@ -136,22 +128,17 @@ public class SnappyCompressorInputStream extends AbstractLZ77CompressorInputStre
             }
             state = State.IN_BACK_REFERENCE;
             break;
-
         case 0x02:
-
             /*
              * These elements can encode lengths between [1..64] and offsets from [0..65535]. (len-1) occupies six bits and is stored in the upper six bits
              * ([2..7]) of the tag byte. The offset is stored as a little-endian 16-bit integer in the two bytes following the tag byte.
              */
-
             length = (b >> 2) + 1;
             if (length < 0) {
                 throw new CompressorException("Illegal block with a negative match length found");
             }
             uncompressedBytesRemaining -= length;
-
             offset = (int) ByteUtils.fromLittleEndian(supplier, 2);
-
             try {
                 startBackReference(offset, length);
             } catch (final IllegalArgumentException ex) {
@@ -159,22 +146,17 @@ public class SnappyCompressorInputStream extends AbstractLZ77CompressorInputStre
             }
             state = State.IN_BACK_REFERENCE;
             break;
-
         case 0x03:
-
             /*
              * These are like the copies with 2-byte offsets (see previous subsection), except that the offset is stored as a 32-bit integer instead of a 16-bit
              * integer (and thus will occupy four bytes).
              */
-
             length = (b >> 2) + 1;
             if (length < 0) {
                 throw new CompressorException("Illegal block with a negative match length found");
             }
             uncompressedBytesRemaining -= length;
-
             offset = (int) ByteUtils.fromLittleEndian(supplier, 4) & 0x7fffffff;
-
             try {
                 startBackReference(offset, length);
             } catch (final IllegalArgumentException ex) {
@@ -189,9 +171,9 @@ public class SnappyCompressorInputStream extends AbstractLZ77CompressorInputStre
     }
 
     /**
-     * Gets the uncompressed size of the stream
+     * Gets the uncompressed size of the stream.
      *
-     * @return the uncompressed size
+     * @return the uncompressed size.
      */
     @Override
     public int getSize() {
@@ -257,7 +239,6 @@ public class SnappyCompressorInputStream extends AbstractLZ77CompressorInputStre
             length = b >> 2;
             break;
         }
-
         return length + 1;
     }
 
@@ -266,14 +247,13 @@ public class SnappyCompressorInputStream extends AbstractLZ77CompressorInputStre
      * where the lower 7 bits are data and the upper bit is set iff there are more bytes to be read. In other words, an uncompressed length of 64 would be
      * stored as 0x40, and an uncompressed length of 2097150 (0x1FFFFE) would be stored as 0xFE 0xFF 0x7F.
      *
-     * @return The size of the uncompressed data
-     * @throws IOException Could not read a byte
+     * @return The size of the uncompressed data.
+     * @throws IOException Could not read a byte.
      */
     private long readSize() throws IOException {
         int index = 0;
         long sz = 0;
         int b = 0;
-
         do {
             b = readOneByte();
             if (b == -1) {

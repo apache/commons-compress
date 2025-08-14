@@ -451,7 +451,7 @@ public class LZ77Compressor {
      * The compressor will in turn emit at least one block ({@link EOD}) but potentially multiple blocks to the callback during the execution of this method.
      * </p>
      *
-     * @throws IOException if the callback throws an exception
+     * @throws IOException if the callback throws an exception.
      */
     public void finish() throws IOException {
         if (blockStart != currentPosition || lookahead > 0) {
