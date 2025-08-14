@@ -453,16 +453,16 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Gets the number of bytes needed to pad the data to the alignment boundary.
      *
-     * @return the number of bytes needed to pad the data (0,1,2,3)
+     * @return the number of bytes needed to pad the data (0,1,2,3).
      */
     public int getDataPadCount() {
         if (alignmentBoundary == 0) {
             return 0;
         }
         final long size = fileSize;
-        final int remain = (int) (size % alignmentBoundary);
+        final long remain = size % alignmentBoundary;
         if (remain > 0) {
-            return alignmentBoundary - remain;
+            return (int) (alignmentBoundary - remain);
         }
         return 0;
     }
