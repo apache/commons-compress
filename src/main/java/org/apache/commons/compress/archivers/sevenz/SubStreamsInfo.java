@@ -44,7 +44,7 @@ final class SubStreamsInfo {
 
     SubStreamsInfo(final long totalUnpackStreams, final int maxMemoryLimitKiB) throws MemoryLimitException {
         final int intExactCount = Math.toIntExact(totalUnpackStreams);
-        MemoryLimitException.checkKiB(Math.multiplyExact(intExactCount, 3L) / 1024, maxMemoryLimitKiB);
+        MemoryLimitException.checkKiB(SevenZFile.kbToKiB(Math.multiplyExact(intExactCount, 3L)), maxMemoryLimitKiB);
         this.unpackSizes = new long[intExactCount];
         this.hasCrc = new BitSet(intExactCount);
         this.crcs = new long[intExactCount];

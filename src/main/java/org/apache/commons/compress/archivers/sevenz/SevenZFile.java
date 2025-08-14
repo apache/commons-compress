@@ -398,7 +398,7 @@ public class SevenZFile implements Closeable {
         return kilobytes * 1000 / 1024;
     }
 
-    private static long kbToKiB(final long kilobytes) {
+    static long kbToKiB(final long kilobytes) {
         return kilobytes * 1000 / 1024;
     }
 
