@@ -49,7 +49,7 @@ public class CPNameAndType extends ConstantPoolEntry {
      * @param name        TODO
      * @param descriptor  TODO
      * @param globalIndex index in CpBands
-     * @throws NullPointerException if name or descriptor is null
+     * @throws NullPointerException if name or descriptor is {@code null}
      */
     public CPNameAndType(final CPUTF8 name, final CPUTF8 descriptor, final int globalIndex) {
         super(CP_NameAndType, globalIndex);

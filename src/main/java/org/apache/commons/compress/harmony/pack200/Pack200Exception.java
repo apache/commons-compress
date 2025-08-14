@@ -91,8 +91,8 @@ public class Pack200Exception extends CompressException {
      *
      * @param message The detail message (which is saved for later retrieval by the {@link #getMessage()} method)
      *
-     * @param cause   The cause (which is saved for later retrieval by the {@link #getCause()} method). (A null value is permitted, and indicates that the cause
-     *                is nonexistent or unknown.)
+     * @param cause   The cause (which is saved for later retrieval by the {@link #getCause()} method).
+     *                A {@code null} value is permitted, and indicates that the cause is nonexistent or unknown.
      *
      * @since 1.28.0
      */
@@ -103,8 +103,8 @@ public class Pack200Exception extends CompressException {
     /**
      * Constructs a {@code Pack200Exception} with the specified cause and a detail message.
      *
-     * @param cause The cause (which is saved for later retrieval by the {@link #getCause()} method). (A null value is permitted, and indicates that the cause
-     *              is nonexistent or unknown.)
+     * @param cause The cause (which is saved for later retrieval by the {@link #getCause()} method).
+     *              A {@code null} value is permitted, and indicates that the cause is nonexistent or unknown.
      * @since 1.29.0
      */
     public Pack200Exception(final Throwable cause) {

@@ -113,8 +113,8 @@ public class CompressException extends IOException {
      * Constructs a new exception with the specified detail message and cause.
      *
      * @param message The message (which is saved for later retrieval by the {@link #getMessage()} method).
-     * @param cause   The cause (which is saved for later retrieval by the {@link #getCause()} method). A null value indicates that the cause is nonexistent or
-     *                unknown.
+     * @param cause   The cause (which is saved for later retrieval by the {@link #getCause()} method).
+     *                A {@code null} value indicates that the cause is nonexistent or unknown.
      */
     public CompressException(final String message, final Throwable cause) {
         super(message, cause);
@@ -123,8 +123,8 @@ public class CompressException extends IOException {
     /**
      * Constructs a {@code CompressException} with the specified cause and a detail message.
      *
-     * @param cause The cause (which is saved for later retrieval by the {@link #getCause()} method). (A null value is permitted, and indicates that the cause
-     *              is nonexistent or unknown.)
+     * @param cause The cause (which is saved for later retrieval by the {@link #getCause()} method).
+     *              A {@code null} value is permitted, and indicates that the cause is nonexistent or unknown.
      */
     public CompressException(final Throwable cause) {
         super(cause);

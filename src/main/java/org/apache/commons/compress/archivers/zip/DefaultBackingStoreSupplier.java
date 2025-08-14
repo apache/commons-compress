@@ -52,9 +52,9 @@ public class DefaultBackingStoreSupplier implements ScatterGatherBackingStoreSup
     private final Path dir;
 
     /**
-     * Constructs a new instance. If {@code dir} is null, then use the default temporary-file directory.
+     * Constructs a new instance. If {@code dir} is {@code null}, then use the default temporary-file directory.
      *
-     * @param dir temporary folder, may be null, must exist if non-null.
+     * @param dir temporary folder, may be {@code null}, must exist if non-{@code null}.
      */
     public DefaultBackingStoreSupplier(final Path dir) {
         this.dir = dir;

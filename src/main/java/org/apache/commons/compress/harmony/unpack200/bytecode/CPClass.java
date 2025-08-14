@@ -44,7 +44,7 @@ public class CPClass extends ConstantPoolEntry {
      *
      * @param name        TODO
      * @param globalIndex index in CpBands
-     * @throws NullPointerException if name is null
+     * @throws NullPointerException if name is {@code null}
      */
     public CPClass(final CPUTF8 name, final int globalIndex) {
         super(CP_Class, globalIndex);

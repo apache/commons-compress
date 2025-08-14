@@ -202,7 +202,7 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
      * @param off offset to start writing to
      * @param len maximum amount of data to read
      * @return number of bytes read, may be 0. Will never return -1 as EOF-detection is the responsibility of the subclass
-     * @throws NullPointerException      if {@code b} is null
+     * @throws NullPointerException      if {@code b} is {@code null}
      * @throws IndexOutOfBoundsException if {@code off} is negative, {@code len} is negative, or {@code len} is greater than {@code b.length - off}
      */
     protected final int readBackReference(final byte[] b, final int off, final int len) {
@@ -234,7 +234,7 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
      * @param len maximum amount of data to read
      * @return number of bytes read, may be 0. Will never return -1 as EOF-detection is the responsibility of the subclass
      * @throws IOException               if the underlying stream throws or signals an EOF before the amount of data promised for the block have been read
-     * @throws NullPointerException      if {@code b} is null
+     * @throws NullPointerException      if {@code b} is {@code null}
      * @throws IndexOutOfBoundsException if {@code off} is negative, {@code len} is negative, or {@code len} is greater than {@code b.length - off}
      */
     protected final int readLiteral(final byte[] b, final int off, final int len) throws IOException {

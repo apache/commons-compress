@@ -53,7 +53,7 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
      * Concatenates the given files.
      *
      * @param files the files to concatenate
-     * @throws NullPointerException if files is null
+     * @throws NullPointerException if files is {@code null}
      * @throws IOException          if opening a channel for one of the files fails
      * @return SeekableByteChannel that concatenates all provided files
      */
@@ -71,7 +71,7 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
      * @param paths the file paths to concatenate, note that the LAST FILE of files should be the LAST SEGMENT(.zip) and these files should be added in correct
      *              order (for example: .z01, .z02... .z99, .zip)
      * @return SeekableByteChannel that concatenates all provided files
-     * @throws NullPointerException if files is null
+     * @throws NullPointerException if files is {@code null}
      * @throws IOException          if opening a channel for one of the files fails
      * @throws IOException          if the first channel doesn't seem to hold the beginning of a split archive
      * @since 1.22
@@ -91,7 +91,7 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
      * Concatenates the given channels.
      *
      * @param channels the channels to concatenate
-     * @throws NullPointerException if channels is null
+     * @throws NullPointerException if channels is {@code null}
      * @return SeekableByteChannel that concatenates all provided channels
      */
     public static SeekableByteChannel forSeekableByteChannels(final SeekableByteChannel... channels) {
@@ -111,7 +111,7 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
      * Concatenates the given channels.
      *
      * @param channels the channels to concatenate
-     * @throws NullPointerException if channels is null
+     * @throws NullPointerException if channels is {@code null}
      */
     public MultiReadOnlySeekableByteChannel(final List<SeekableByteChannel> channels) {
         this.channelList = Collections.unmodifiableList(new ArrayList<>(Objects.requireNonNull(channels, "channels")));

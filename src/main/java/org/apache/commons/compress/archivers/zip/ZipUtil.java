@@ -139,7 +139,7 @@ public abstract class ZipUtil {
     }
 
     /**
-     * Creates a copy of the given array - or return null if the argument is null.
+     * Creates a copy of the given array - or return {@code null} if the argument is {@code null}.
      */
     static byte[] copy(final byte[] from) {
         if (from != null) {
@@ -193,7 +193,7 @@ public abstract class ZipUtil {
      * If the stored CRC matches the one of the given name, return the Unicode name of the given field.
      *
      * <p>
-     * If the field is null or the CRCs don't match, return null instead.
+     * If the field is {@code null} or the CRCs don't match, return {@code null} instead.
      * </p>
      */
     private static String getUnicodeStringIfOriginalMatches(final AbstractUnicodeExtraField field, final byte[] originalNameBytes) {

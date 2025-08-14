@@ -50,7 +50,7 @@ public class CPUTF8 extends ConstantPoolEntry {
      *
      * @param string      a constant pool string.
      * @param globalIndex index in CpBands
-     * @throws NullPointerException if utf8 is null.
+     * @throws NullPointerException if utf8 is {@code null}.
      */
     public CPUTF8(final String string, final int globalIndex) {
         super(CP_UTF8, globalIndex);

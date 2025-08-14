@@ -74,19 +74,19 @@ public abstract class ZipEncodingHelper {
     }
 
     /**
-     * Tests whether a given encoding is UTF-8. If the given name is null, then check the platform's default encoding.
+     * Tests whether a given encoding is UTF-8. If the given name is {@code null}, then check the platform's default encoding.
      *
-     * @param charset If the given charset is null, then check the platform's default encoding.
+     * @param charset If the given charset is {@code null}, then check the platform's default encoding.
      */
     static boolean isUTF8(final Charset charset) {
         return isUTF8Alias(Charsets.toCharset(charset).name());
     }
 
     /**
-     * Tests whether the given non-null charset name is a UTF-8 alias.
+     * Tests whether the given non-{@code null} charset name is a UTF-8 alias.
      *
-     * @param name a non-null charset name.
-     * @return whether the given non-null charset name is a UTF-8 alias.
+     * @param name a non-{@code null} charset name.
+     * @return whether the given non-{@code null} charset name is a UTF-8 alias.
      */
     private static boolean isUTF8Alias(final String name) {
         return UTF_8.name().equalsIgnoreCase(name) || UTF_8.aliases().stream().anyMatch(name::equalsIgnoreCase);
@@ -95,7 +95,7 @@ public abstract class ZipEncodingHelper {
     /**
      * Returns a Charset for the named charset. If the name cannot find a charset, return {@link Charset#defaultCharset()}.
      *
-     * @param name The name of the requested charset, may be null.
+     * @param name The name of the requested charset, may be {@code null}.
      * @return a Charset for the named charset.
      * @see Charset#defaultCharset()
      */

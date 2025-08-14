@@ -35,7 +35,7 @@ public abstract class CPConstant extends ConstantPoolEntry {
      * @param tag         TODO
      * @param value       TODO
      * @param globalIndex index in CpBands
-     * @throws NullPointerException if value is null
+     * @throws NullPointerException if value is {@code null}
      */
     public CPConstant(final byte tag, final Object value, final int globalIndex) {
         super(tag, globalIndex);

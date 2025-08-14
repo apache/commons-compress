@@ -361,7 +361,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
     }
 
     /**
-     * Entry encoding, null for the default.
+     * Entry encoding, {@code null} for the default.
      */
     private volatile String entryEncoding;
 
@@ -395,7 +395,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
      * @return the archive input stream
      * @throws ArchiveException               if the archiver name is not known
      * @throws StreamingNotSupportedException if the format cannot be read from a stream
-     * @throws IllegalArgumentException       if the stream is null or does not support mark
+     * @throws IllegalArgumentException       if the stream is {@code null} or does not support mark
      */
     public <I extends ArchiveInputStream<? extends ArchiveEntry>> I createArchiveInputStream(final InputStream in) throws ArchiveException {
         return createArchiveInputStream(detect(in), in);
@@ -411,7 +411,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
      * @return the archive input stream
      * @throws ArchiveException               if the archiver name is not known
      * @throws StreamingNotSupportedException if the format cannot be read from a stream
-     * @throws IllegalArgumentException       if the archiver name or stream is null
+     * @throws IllegalArgumentException       if the archiver name or stream is {@code null}
      */
     public <I extends ArchiveInputStream<? extends ArchiveEntry>> I createArchiveInputStream(final String archiverName, final InputStream in)
             throws ArchiveException {
@@ -486,7 +486,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
      * @return the archive output stream
      * @throws ArchiveException               if the archiver name is not known
      * @throws StreamingNotSupportedException if the format cannot be written to a stream
-     * @throws IllegalArgumentException       if the archiver name or stream is null
+     * @throws IllegalArgumentException       if the archiver name or stream is {@code null}
      */
     public <O extends ArchiveOutputStream<? extends ArchiveEntry>> O createArchiveOutputStream(final String archiverName, final OutputStream out)
             throws ArchiveException {
@@ -568,9 +568,9 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
     }
 
     /**
-     * Gets the encoding to use for arj, jar, ZIP, dump, cpio and tar files, or null for the archiver default.
+     * Gets the encoding to use for arj, jar, ZIP, dump, cpio and tar files, or {@code null} for the archiver default.
      *
-     * @return entry encoding, or null for the archiver default
+     * @return entry encoding, or {@code null} for the archiver default
      * @since 1.5
      */
     public String getEntryEncoding() {
@@ -588,7 +588,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
     }
 
     /**
-     * Sets the encoding to use for arj, jar, ZIP, dump, cpio and tar files. Use null for the archiver default.
+     * Sets the encoding to use for arj, jar, ZIP, dump, cpio and tar files. Use {@code null} for the archiver default.
      *
      * @param entryEncoding the entry encoding, null uses the archiver default.
      * @since 1.5

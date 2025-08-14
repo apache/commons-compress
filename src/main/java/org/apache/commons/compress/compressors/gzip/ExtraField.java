@@ -225,7 +225,7 @@ public final class ExtraField implements Iterable<SubField> {
      * @return this instance.
      * @throws NullPointerException     if {@code id} is {@code null}.
      * @throws NullPointerException     if {@code payload} is {@code null}.
-     * @throws IllegalArgumentException if the subfield is not 2 characters or the payload is null
+     * @throws IllegalArgumentException if the subfield is not 2 characters or the payload is {@code null}
      * @throws IOException              if appending this subfield would exceed the max size 65535 of the extra header.
      */
     public ExtraField addSubField(final String id, final byte[] payload) throws IOException {
@@ -273,18 +273,18 @@ public final class ExtraField implements Iterable<SubField> {
     }
 
     /**
-     * Finds the first subfield that matched the id if found, null otherwise.
+     * Finds the first subfield that matched the id if found, {@code null} otherwise.
      *
      * @param id The ID to find.
-     * @return The first SubField that matched or null.
+     * @return The first SubField that matched or {@code null}.
      */
     public SubField findFirstSubField(final String id) {
         return subFields.stream().filter(f -> f.getId().equals(id)).findFirst().orElse(null);
     }
 
     /**
-     * Gets the size in bytes of the encoded extra field. This does not include its own 16 bits size when embeded in the gzip header. For N sub fields,
-     * the total is all subfields payloads bytes + 4N.
+     * Gets the size in bytes of the encoded extra field. This does not include its own 16 bits size when embedded in the gzip header.
+     * For N subfields, the total is all subfields payloads bytes + 4N.
      *
      * @return the bytes count of this extra payload when encoded.
      */
@@ -328,7 +328,7 @@ public final class ExtraField implements Iterable<SubField> {
     }
 
     /**
-     * Gets the count of subfields currently in in this extra field.
+     * Gets the count of subfields currently in this extra field.
      *
      * @return the count of subfields contained in this instance.
      */
