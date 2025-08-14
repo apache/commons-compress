@@ -343,6 +343,13 @@ public class SevenZFile implements Closeable {
     static final byte[] SIGNATURE = { (byte) '7', (byte) 'z', (byte) 0xBC, (byte) 0xAF, (byte) 0x27, (byte) 0x1C };
 
     /**
+     * The maximum array size defined privately in {@link ByteArrayOutputStream}.
+     *
+     * @since 1.29.0
+     */
+    public static int SOFT_MAX_ARRAY_LENGTH = Integer.MAX_VALUE - 8;
+
+    /**
      * Creates a new Builder.
      *
      * @return a new Builder.
@@ -465,7 +472,6 @@ public class SevenZFile implements Closeable {
         }
         return (int) value;
     }
-
     private final String fileName;
     private SeekableByteChannel channel;
     private final Archive archive;
@@ -478,14 +484,8 @@ public class SevenZFile implements Closeable {
     private final ArrayList<InputStream> deferredBlockStreams = new ArrayList<>();
     private final int maxMemoryLimitKiB;
     private final boolean useDefaultNameForUnnamedEntries;
-    private final boolean tryToRecoverBrokenArchives;
 
-    /**
-     * The maximum array size defined privately in {@link ByteArrayOutputStream}.
-     *
-     * @since 1.29.0
-     */
-    public static int SOFT_MAX_ARRAY_LENGTH = Integer.MAX_VALUE - 8;
+    private final boolean tryToRecoverBrokenArchives;
 
     /**
      * Reads a file as unencrypted 7z archive.
