@@ -194,9 +194,9 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
     }
 
     /**
-     * Gets the prefixes length.
+     * Gets the prefixes' length.
      *
-     * @return the prefixes length.
+     * @return the prefixes' length.
      */
     protected int getPrefixesLength() {
         return prefixes.length;

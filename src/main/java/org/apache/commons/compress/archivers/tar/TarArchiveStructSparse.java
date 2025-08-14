@@ -42,7 +42,7 @@ public final class TarArchiveStructSparse {
      * Constructs a new instance.
      *
      * @param offset An offset greater or equal to zero.
-     * @param numBytes An count greater or equal to zero.
+     * @param numBytes A count greater or equal to zero.
      */
     public TarArchiveStructSparse(final long offset, final long numBytes) {
         if (offset < 0) {

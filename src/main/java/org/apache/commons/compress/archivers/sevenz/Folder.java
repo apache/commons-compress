@@ -97,7 +97,7 @@ final class Folder {
             return Collections.emptyList();
         }
         final LinkedList<Coder> list = new LinkedList<>();
-        int current = (int) packedStreams[0]; // more that 2^31 coders?
+        int current = (int) packedStreams[0]; // more than 2^31 coders?
         while (current >= 0 && current < coders.length) {
             if (list.contains(coders[current])) {
                 throw new ArchiveException("Folder uses the same coder more than once in coder chain");

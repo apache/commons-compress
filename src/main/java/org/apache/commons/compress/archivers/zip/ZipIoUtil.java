@@ -38,7 +38,7 @@ final class ZipIoUtil {
      * @param channel  The target channel.
      * @param buffer   The source bytes.
      * @param position The file position at which the transfer is to begin; must be non-negative
-     * @throws IOException If some I/O error occurs or fails or fails to write all bytes.
+     * @throws IOException If some I/O error occurs or fails to write all bytes.
      */
     static void writeAll(final FileChannel channel, final ByteBuffer buffer, final long position) throws IOException {
         for (long currentPos = position; buffer.hasRemaining();) {
@@ -62,7 +62,7 @@ final class ZipIoUtil {
      *
      * @param channel The target channel.
      * @param buffer  The source bytes.
-     * @throws IOException If some I/O error occurs or fails or fails to write all bytes.
+     * @throws IOException If some I/O error occurs or fails to write all bytes.
      */
     static void writeAll(final WritableByteChannel channel, final ByteBuffer buffer) throws IOException {
         while (buffer.hasRemaining()) {
