@@ -30,7 +30,7 @@ import shaded.org.apache.commons.lang3.StringUtils;
 /**
  * Tests {@link TarArchiveOutputStream}.
  */
-public class TarArchiveOutputStreamLongFileModeTest {
+class TarArchiveOutputStreamLongFileModeTest {
 
     /**
      * Run with a non-default low memory configuration {@code -Xmx256m} if you want to see the test fail without the change to main.
