@@ -37,7 +37,7 @@ import java.util.Objects;
 /**
  * Implements a read-only {@link SeekableByteChannel} that concatenates a collection of other {@link SeekableByteChannel}s.
  * <p>
- * This is a lose port of <a href=
+ * This is a loose port of <a href=
  * "https://github.com/frugalmechanic/fm-common/blob/master/jvm/src/main/scala/fm/common/MultiReadOnlySeekableByteChannel.scala">
  * MultiReadOnlySeekableByteChannel</a>
  * by Tim Underwood.
@@ -142,8 +142,8 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
     /**
      * Gets this channel's position.
      * <p>
-     * This method violates the contract of {@link SeekableByteChannel#position()} as it will not throw any exception when invoked on a closed channel. Instead
-     * it will return the position the channel had when close has been called.
+     * This method violates the contract of {@link SeekableByteChannel#position()} as it will not throw any exception when invoked on a closed channel.
+     * Instead, it will return the position the channel had when close has been called.
      * </p>
      */
     @Override

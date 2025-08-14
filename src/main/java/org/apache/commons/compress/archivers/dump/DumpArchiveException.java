@@ -22,7 +22,7 @@ package org.apache.commons.compress.archivers.dump;
 import org.apache.commons.compress.archivers.ArchiveException;
 
 /**
- * Signals that an dump archive exception of some sort has occurred.
+ * Signals that a dump archive exception of some sort has occurred.
  *
  * @since 1.3
  */
