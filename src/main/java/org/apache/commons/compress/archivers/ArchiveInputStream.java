@@ -77,9 +77,9 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
         }
 
         /**
-         * Always returns null, this is a "native" IOIterator.
+         * Always returns {@code null}, this is a "native" IOIterator.
          *
-         * @return Always returns null.
+         * @return Always returns {@code null}.
          */
         @Override
         public Iterator<E> unwrap() {
@@ -174,7 +174,7 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
      *
      * @param action The action to be performed for each element.
      * @throws IOException          if an I/O error occurs.
-     * @throws NullPointerException if the specified action is null.
+     * @throws NullPointerException if the specified action is {@code null}.
      * @since 1.27.0
      */
     public void forEach(final IOConsumer<? super E> action) throws IOException {

@@ -206,7 +206,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
      * @param inputStream input stream
      * @return type of compressor stream detected
      * @throws CompressorException      if no compressor stream type was detected or if something else went wrong
-     * @throws IllegalArgumentException if stream is null or does not support mark
+     * @throws IllegalArgumentException if stream is {@code null} or does not support mark
      * @since 1.14
      */
     public static String detect(final InputStream inputStream) throws CompressorException {
@@ -220,7 +220,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
      * @param compressorNames compressor names to limit autodetection
      * @return type of compressor stream detected
      * @throws CompressorException      if no compressor stream type was detected or if something else went wrong
-     * @throws IllegalArgumentException if stream is null or does not support mark
+     * @throws IllegalArgumentException if stream is {@code null} or does not support mark
      */
     static String detect(final InputStream inputStream, final Set<String> compressorNames) throws CompressorException {
         if (inputStream == null) {
@@ -546,7 +546,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
      * @param in the input stream
      * @return the compressor input stream
      * @throws CompressorException      if the compressor name is not known
-     * @throws IllegalArgumentException if the stream is null or does not support mark
+     * @throws IllegalArgumentException if the stream is {@code null} or does not support mark
      * @since 1.1
      */
     public CompressorInputStream createCompressorInputStream(final InputStream in) throws CompressorException {
@@ -561,7 +561,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
      * @param compressorNames compressor names to limit autodetection
      * @return the compressor input stream
      * @throws CompressorException      if the autodetected compressor is not in the provided set of compressor names
-     * @throws IllegalArgumentException if the stream is null or does not support mark
+     * @throws IllegalArgumentException if the stream is {@code null} or does not support mark
      * @since 1.25.0
      */
     public CompressorInputStream createCompressorInputStream(final InputStream in, final Set<String> compressorNames) throws CompressorException {
@@ -578,7 +578,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
      * @return compressor input stream
      * @throws CompressorException      if the compressor name is not known or not available, or if there's an IOException or MemoryLimitException thrown during
      *                                  initialization
-     * @throws IllegalArgumentException if the name or input stream is null
+     * @throws IllegalArgumentException if the name or input stream is {@code null}
      */
     public CompressorInputStream createCompressorInputStream(final String name, final InputStream in) throws CompressorException {
         return createCompressorInputStream(name, in, decompressConcatenated);
@@ -675,7 +675,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
      * @param out  the output stream
      * @return the compressor output stream
      * @throws CompressorException      if the archiver name is not known
-     * @throws IllegalArgumentException if the archiver name or stream is null
+     * @throws IllegalArgumentException if the archiver name or stream is {@code null}
      */
     @SuppressWarnings("unchecked")
     @Override

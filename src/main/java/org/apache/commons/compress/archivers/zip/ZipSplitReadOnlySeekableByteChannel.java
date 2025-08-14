@@ -116,7 +116,7 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
      * @param files the files to concatenate, note that the LAST FILE of files should be the LAST SEGMENT(.zip) and these files should be added in correct order
      *              (for example .z01, .z02... .z99, .zip)
      * @return SeekableByteChannel that concatenates all provided files
-     * @throws NullPointerException if files is null
+     * @throws NullPointerException if files is {@code null}
      * @throws IOException          if opening a channel for one of the files fails
      * @throws IOException          if the first channel doesn't seem to hold the beginning of a split archive
      */
@@ -136,7 +136,7 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
      *                        .z99)
      * @return SeekableByteChannel that concatenates all provided files
      * @throws IOException          if the first channel doesn't seem to hold the beginning of a split archive
-     * @throws NullPointerException if files or lastSegmentFile is null
+     * @throws NullPointerException if files or lastSegmentFile is {@code null}
      */
     public static SeekableByteChannel forFiles(final File lastSegmentFile, final Iterable<File> files) throws IOException {
         Objects.requireNonNull(files, "files");
@@ -152,7 +152,7 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
      * @param channels the channels to concatenate, note that the LAST CHANNEL of channels should be the LAST SEGMENT(.zip) and these channels should be added
      *                 in correct order (for example .z01, .z02... .z99, .zip)
      * @return SeekableByteChannel that concatenates all provided channels
-     * @throws NullPointerException if channels is null
+     * @throws NullPointerException if channels is {@code null}
      * @throws IOException          if reading channels fails
      */
     public static SeekableByteChannel forOrderedSeekableByteChannels(final SeekableByteChannel... channels) throws IOException {
@@ -169,7 +169,7 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
      * @param channels           the channels to concatenate except for the last segment, note these channels should be added in correct order (for example
      *                           .z01, .z02... .z99)
      * @return SeekableByteChannel that concatenates all provided channels
-     * @throws NullPointerException if lastSegmentChannel or channels is null
+     * @throws NullPointerException if lastSegmentChannel or channels is {@code null}
      * @throws IOException          if the first channel doesn't seem to hold the beginning of a split archive
      */
     public static SeekableByteChannel forOrderedSeekableByteChannels(final SeekableByteChannel lastSegmentChannel, final Iterable<SeekableByteChannel> channels)
@@ -189,7 +189,7 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
      *                    correct order (for example: .z01, .z02... .z99, .zip)
      * @param openOptions the options to open paths (shared by all paths).
      * @return SeekableByteChannel that concatenates all provided files
-     * @throws NullPointerException if files is null
+     * @throws NullPointerException if files is {@code null}
      * @throws IOException          if opening a channel for one of the files fails
      * @throws IOException          if the first channel doesn't seem to hold the beginning of a split archive
      * @since 1.22
@@ -211,7 +211,7 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
      * @param paths the file paths to concatenate, note that the LAST FILE of files should be the LAST SEGMENT(.zip) and these files should be added in correct
      *              order (for example: .z01, .z02... .z99, .zip)
      * @return SeekableByteChannel that concatenates all provided files
-     * @throws NullPointerException if files is null
+     * @throws NullPointerException if files is {@code null}
      * @throws IOException          if opening a channel for one of the files fails
      * @throws IOException          if the first channel doesn't seem to hold the beginning of a split archive
      * @since 1.22
@@ -228,7 +228,7 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
      *                        .z02... .z99)
      * @return SeekableByteChannel that concatenates all provided files
      * @throws IOException          if the first channel doesn't seem to hold the beginning of a split archive
-     * @throws NullPointerException if files or lastSegmentPath is null
+     * @throws NullPointerException if files or lastSegmentPath is {@code null}
      * @since 1.22
      */
     public static SeekableByteChannel forPaths(final Path lastSegmentPath, final Iterable<Path> paths) throws IOException {
@@ -251,7 +251,7 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
      * </p>
      *
      * @param channels the channels to concatenate
-     * @throws NullPointerException if channels is null
+     * @throws NullPointerException if channels is {@code null}
      * @throws IOException          if the first channel doesn't seem to hold the beginning of a split archive
      */
     public ZipSplitReadOnlySeekableByteChannel(final List<SeekableByteChannel> channels) throws IOException {

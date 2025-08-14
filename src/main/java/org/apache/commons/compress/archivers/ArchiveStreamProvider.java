@@ -43,11 +43,11 @@ public interface ArchiveStreamProvider {
      *                     {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#DUMP} or
      *                     {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#SEVEN_Z}
      * @param inputStream  the input stream
-     * @param encoding     encoding name or null for the default
+     * @param encoding     encoding name or {@code null} for the default
      * @return the archive input stream
      * @throws ArchiveException               if the archiver name is not known
      * @throws StreamingNotSupportedException if the format cannot be read from a stream
-     * @throws IllegalArgumentException       if the archiver name or stream is null
+     * @throws IllegalArgumentException       if the archiver name or stream is {@code null}
      */
     <I extends ArchiveInputStream<? extends ArchiveEntry>> I createArchiveInputStream(String archiverName, InputStream inputStream, String encoding)
             throws ArchiveException;
@@ -62,11 +62,11 @@ public interface ArchiveStreamProvider {
      *                     {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#JAR} or
      *                     {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#CPIO}
      * @param outputStream the output stream
-     * @param encoding     encoding name or null for the default
+     * @param encoding     encoding name or {@code null} for the default
      * @return the archive output stream
      * @throws ArchiveException               if the archiver name is not known
      * @throws StreamingNotSupportedException if the format cannot be written to a stream
-     * @throws IllegalArgumentException       if the archiver name or stream is null
+     * @throws IllegalArgumentException       if the archiver name or stream is {@code null}
      */
     <O extends ArchiveOutputStream<? extends ArchiveEntry>> O createArchiveOutputStream(String archiverName, OutputStream outputStream, String encoding)
             throws ArchiveException;
