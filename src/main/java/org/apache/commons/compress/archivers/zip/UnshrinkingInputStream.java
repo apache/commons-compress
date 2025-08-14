@@ -37,9 +37,9 @@ final class UnshrinkingInputStream extends LZWInputStream {
     private final boolean[] inUse;
 
     /**
-     * IOException is not actually thrown!
+     * Constructs a new instance.
      *
-     * @param inputStream
+     * @param inputStream Input stream.
      */
     UnshrinkingInputStream(final InputStream inputStream) {
         super(inputStream, ByteOrder.LITTLE_ENDIAN);
