@@ -21,6 +21,7 @@ package org.apache.commons.compress.archivers.zip;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteOrder;
+import java.util.Arrays;
 
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.compressors.lzw.LZWInputStream;
@@ -46,9 +47,7 @@ final class UnshrinkingInputStream extends LZWInputStream {
         setClearCode(DEFAULT_CODE_SIZE);
         initializeTables(MAX_CODE_SIZE);
         inUse = new boolean[getPrefixesLength()];
-        for (int i = 0; i < 1 << 8; i++) {
-            inUse[i] = true;
-        }
+        Arrays.fill(inUse, 0, 256, true);
         setTableSize(getClearCode() + 1);
     }
 
