@@ -46,21 +46,19 @@ public class LookupSwitchForm extends SwitchForm {
         Arrays.setAll(caseValues, i -> operandManager.nextCaseValues());
         final int[] casePcs = new int[caseCount];
         Arrays.setAll(casePcs, i -> operandManager.nextLabel());
-
         final int[] labelsArray = new int[caseCount + 1];
         labelsArray[0] = defaultPc;
         System.arraycopy(casePcs, 0, labelsArray, 1, caseCount + 1 - 1);
         byteCode.setByteCodeTargets(labelsArray);
-
         // All this gets dumped into the rewrite bytes of the
         // poor bytecode.
-
+        //
         // Unlike most byte codes, the LookupSwitch is a
         // variable-sized bytecode. Because of this, the
         // rewrite array has to be defined here individually
         // for each bytecode, rather than in the ByteCodeForm
         // class.
-
+        //
         // First, there's the bytecode. Then there are 0-3
         // bytes of padding so that the first (default)
         // label is on a 4-byte offset.
@@ -68,31 +66,25 @@ public class LookupSwitchForm extends SwitchForm {
         final int rewriteSize = 1 + padLength + 4 // defaultbytes
                 + 4 // npairs
                 + 4 * caseValues.length + 4 * casePcs.length;
-
         final int[] newRewrite = new int[rewriteSize];
         int rewriteIndex = 0;
-
         // Fill in what we can now
         // opcode
         newRewrite[rewriteIndex++] = byteCode.getOpcode();
-
         // padding
         for (int index = 0; index < padLength; index++) {
             newRewrite[rewriteIndex++] = 0;
         }
-
         // defaultbyte
         // This gets overwritten by fixUpByteCodeTargets
         newRewrite[rewriteIndex++] = -1;
         newRewrite[rewriteIndex++] = -1;
         newRewrite[rewriteIndex++] = -1;
         newRewrite[rewriteIndex++] = -1;
-
         // npairs
         final int npairsIndex = rewriteIndex;
         setRewrite4Bytes(caseValues.length, npairsIndex, newRewrite);
         rewriteIndex += 4;
-
         // match-offset pairs
         // The caseValues aren't overwritten, but the
         // casePcs will get overwritten by fixUpByteCodeTargets

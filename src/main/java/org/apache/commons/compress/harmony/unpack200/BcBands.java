@@ -37,7 +37,41 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.NewAttribute;
 import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
 
 /**
- * Bytecode bands.
+ * Bytecode bands that transmit bytecode instructions.
+ *
+ * <pre>
+ * bc_bands:
+ *      *bc_codes :BYTE1 [...]
+ *      *bc_case_count :UNSIGNED5 [COUNT(switch,*bc_codes)]
+ *      *bc_case_value :DELTA5 [...]
+ *      *bc_byte :BYTE1 [...]
+ *      *bc_short :DELTA5 [...]
+ *      *bc_local :UNSIGNED5 [...]
+ *      *bc_label :BRANCH5 [...]
+ *      *bc_intref :DELTA5 [...] (cp_Int)
+ *      *bc_floatref :DELTA5 [...] (cp_Float)
+ *      *bc_longref :DELTA5 [...] (cp_Long)
+ *      *bc_doubleref :DELTA5 [...] (cp_Double)
+ *      *bc_stringref :DELTA5 [...] (cp_String)
+ *      *bc_loadablevalueref :DELTA5 [...] (cp_LoadableValue)
+ *      *bc_classref :UNSIGNED5 [...] (current class or cp_Class)
+ *      *bc_fieldref :DELTA5 [...] (cp_Field)
+ *      *bc_methodref :UNSIGNED5 [...] (cp_Method)
+ *      *bc_imethodref :DELTA5 [...] (cp_Imethod)
+ *      *bc_indyref :DELTA5 [...] (cp_InvokeDynamic)
+ *      *bc_thisfield :UNSIGNED5 [...] (cp_Field, only for current class)
+ *      *bc_superfield :UNSIGNED5 [...] (cp_Field, only for current super)
+ *      *bc_thismethod :UNSIGNED5 [...] (cp_Method, only for current class)
+ *      *bc_supermethod :UNSIGNED5 [...] (cp_Method, only for current super)
+ *      *bc_initref :UNSIGNED5 [...] (cp_Field, only for most recent new)
+ *      *bc_escref :UNSIGNED5 [COUNT(ref_escape,*bc_codes)] (cp_All)
+ *      *bc_escrefsize :UNSIGNED5 [...]
+ *      *bc_escsize :UNSIGNED5 [...]
+ *      *bc_escbyte :BYTE1 [...]
+ * </pre>
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications - 5.10.
+ *      Bytecode Instructions</a>
  */
 public class BcBands extends BandSet {
 
