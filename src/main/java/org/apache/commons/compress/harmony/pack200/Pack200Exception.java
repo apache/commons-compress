@@ -22,6 +22,7 @@ package org.apache.commons.compress.harmony.pack200;
 import java.util.function.Function;
 
 import org.apache.commons.compress.CompressException;
+import org.apache.commons.compress.MemoryLimitException;
 import org.apache.commons.compress.archivers.ArchiveException;
 
 /**
@@ -45,6 +46,15 @@ public class Pack200Exception extends CompressException {
      */
     public static int addExact(final int x, final long y) throws Pack200Exception {
         return addExact(x, y, E_FUNCTION);
+    }
+
+    public static int checkIntArray(final int size) throws Pack200Exception {
+        try {
+            MemoryLimitException.checkBytes((long) Integer.BYTES * size, Runtime.getRuntime().maxMemory());
+        } catch (final MemoryLimitException e) {
+            throw new Pack200Exception(e);
+        }
+        return size;
     }
 
     /**

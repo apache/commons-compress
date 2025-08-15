@@ -20,6 +20,7 @@ package org.apache.commons.compress.harmony.unpack200.bytecode.forms;
 
 import java.util.Arrays;
 
+import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.harmony.unpack200.bytecode.ByteCode;
 import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
 
@@ -39,8 +40,8 @@ public class LookupSwitchForm extends SwitchForm {
     }
 
     @Override
-    public void setByteCodeOperands(final ByteCode byteCode, final OperandManager operandManager, final int codeLength) {
-        final int caseCount = operandManager.nextCaseCount();
+    public void setByteCodeOperands(final ByteCode byteCode, final OperandManager operandManager, final int codeLength) throws Pack200Exception {
+        final int caseCount = Pack200Exception.checkIntArray(operandManager.nextCaseCount());
         final int defaultPc = operandManager.nextLabel();
         final int[] caseValues = new int[caseCount];
         Arrays.setAll(caseValues, i -> operandManager.nextCaseValues());

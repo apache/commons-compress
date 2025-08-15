@@ -62,7 +62,7 @@ public class PopulationCodec extends Codec {
     @Override
     public int[] decodeInts(final int n, final InputStream in) throws IOException, Pack200Exception {
         lastBandLength = 0;
-        favoured = new int[check(n, in)]; // there must be <= n values, but probably a lot
+        favoured = new int[Pack200Exception.checkIntArray(check(n, in))]; // there must be <= n values, but probably a lot
         // less
         final int[] result;
         // read table of favorites first

@@ -143,7 +143,7 @@ public abstract class Codec {
      */
     public int[] decodeInts(final int n, final InputStream in) throws IOException, Pack200Exception {
         lastBandLength = 0;
-        final int[] result = new int[check(n, in)];
+        final int[] result = new int[Pack200Exception.checkIntArray(check(n, in))];
         int last = 0;
         for (int i = 0; i < n; i++) {
             result[i] = last = decode(in, last);
@@ -162,7 +162,7 @@ public abstract class Codec {
      * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid
      */
     public int[] decodeInts(final int n, final InputStream in, final int firstValue) throws IOException, Pack200Exception {
-        final int[] result = new int[check(n, in) + 1];
+        final int[] result = new int[Pack200Exception.checkIntArray(check(n, in) + 1)];
         result[0] = firstValue;
         int last = firstValue;
         for (int i = 1; i < n + 1; i++) {

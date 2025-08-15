@@ -72,6 +72,20 @@ public class MemoryLimitException extends CompressException {
      * @throws MemoryLimitException Thrown if the request is greater than the max.
      * @since 1.29.0
      */
+    public static long checkBytes(final long request, final long max) throws MemoryLimitException {
+        check(request, max, Runtime.getRuntime().maxMemory(), "max memory", BYTES);
+        return request;
+    }
+
+    /**
+     * Throws a MemoryLimitException if the request is greater than the max.
+     *
+     * @param request The request.
+     * @param max     The max.
+     * @return The request.
+     * @throws MemoryLimitException Thrown if the request is greater than the max.
+     * @since 1.29.0
+     */
     public static long checkKiB(final long request, final long max) throws MemoryLimitException {
         return check(request, max, Runtime.getRuntime().maxMemory() / 1024, "max memory", KIB);
     }

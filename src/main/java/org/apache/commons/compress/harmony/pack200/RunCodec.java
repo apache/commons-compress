@@ -67,7 +67,7 @@ public class RunCodec extends Codec {
         normalize(aValues, aCodec);
         final int[] bValues = bCodec.decodeInts(n - k, in);
         normalize(bValues, bCodec);
-        final int[] band = new int[check(n, in)];
+        final int[] band = new int[Pack200Exception.checkIntArray(check(n, in))];
         System.arraycopy(aValues, 0, band, 0, k);
         System.arraycopy(bValues, 0, band, k, n - k);
         lastBandLength = aCodec.lastBandLength + bCodec.lastBandLength;
