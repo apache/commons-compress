@@ -107,7 +107,7 @@ public class SnappyCompressorOutputStream extends CompressorOutputStream<OutputS
     /**
      * Constructor using the default block size of 32k.
      *
-     * @param os               the outputstream to write compressed data to.
+     * @param os               the output stream to write compressed data to.
      * @param uncompressedSize the uncompressed size of data.
      * @throws IOException if writing of the size fails.
      */
@@ -118,7 +118,7 @@ public class SnappyCompressorOutputStream extends CompressorOutputStream<OutputS
     /**
      * Constructor using a configurable block size.
      *
-     * @param os               the outputstream to write compressed data to.
+     * @param os               the output stream to write compressed data to.
      * @param uncompressedSize the uncompressed size of data.
      * @param blockSize        the block size used - must be a power of two.
      * @throws IOException if writing of the size fails.
@@ -130,9 +130,10 @@ public class SnappyCompressorOutputStream extends CompressorOutputStream<OutputS
     /**
      * Constructor providing full control over the underlying LZ77 compressor.
      *
-     * @param out               the outputstream to write compressed data to.
+     * @param out              the output stream to write compressed data to.
      * @param uncompressedSize the uncompressed size of data.
-     * @param params           the parameters to use by the compressor - note that the format itself imposes some limits like a maximum match length of 64 bytes.
+     * @param params           the parameters to use by the compressor - note that the format itself imposes some limits like a maximum match length of 64
+     *                         bytes.
      * @throws IOException if writing of the size fails.
      */
     public SnappyCompressorOutputStream(final OutputStream out, final long uncompressedSize, final Parameters params) throws IOException {

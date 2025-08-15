@@ -384,8 +384,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     /**
      * Creates a new ZIP OutputStream writing to a File. Will use random access if possible.
      *
-     * @param file the file to ZIP to
-     * @throws IOException on error
+     * @param file the file to ZIP to.
+     * @throws IOException on error.
      */
     public ZipArchiveOutputStream(final File file) throws IOException {
         this(file.toPath());
@@ -404,10 +404,10 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * known before the actual entry data is written.
      * </p>
      *
-     * @param file         the file that will become the last part of the split archive
+     * @param file         the file that will become the last part of the split archive.
      * @param zipSplitSize maximum size of a single part of the split archive created by this stream. Must be between 64kB and about 4GB.
-     * @throws IOException              on error
-     * @throws IllegalArgumentException if zipSplitSize is not in the required range
+     * @throws IOException              on error.
+     * @throws IllegalArgumentException if zipSplitSize is not in the required range.
      * @since 1.20
      */
     public ZipArchiveOutputStream(final File file, final long zipSplitSize) throws IOException {
@@ -417,7 +417,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     /**
      * Creates a new ZIP OutputStream filtering the underlying stream.
      *
-     * @param out the outputstream to zip
+     * @param out the output stream to zip.
      */
     public ZipArchiveOutputStream(final OutputStream out) {
         this.out = out;
@@ -437,10 +437,10 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * known before the actual entry data is written.
      * </p>
      *
-     * @param path         the path to the file that will become the last part of the split archive
+     * @param path         the path to the file that will become the last part of the split archive.
      * @param zipSplitSize maximum size of a single part of the split archive created by this stream. Must be between 64kB and about 4GB.
-     * @throws IOException              on error
-     * @throws IllegalArgumentException if zipSplitSize is not in the required range
+     * @throws IOException              on error.
+     * @throws IllegalArgumentException if zipSplitSize is not in the required range.
      * @since 1.22
      */
     public ZipArchiveOutputStream(final Path path, final long zipSplitSize) throws IOException {
@@ -453,9 +453,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     /**
      * Creates a new ZIP OutputStream writing to a Path. Will use random access if possible.
      *
-     * @param file    the file to ZIP to
+     * @param file    the file to ZIP to.
      * @param options options specifying how the file is opened.
-     * @throws IOException on error
+     * @throws IOException on error.
      * @since 1.21
      */
     public ZipArchiveOutputStream(final Path file, final OpenOption... options) throws IOException {
@@ -472,7 +472,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} allows you to write to an in-memory archive using random access.
      * </p>
      *
-     * @param channel the channel to ZIP to
+     * @param channel the channel to ZIP to.
      * @since 1.13
      */
     public ZipArchiveOutputStream(final SeekableByteChannel channel) {
@@ -492,9 +492,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * The entry is put and closed immediately.
      * </p>
      *
-     * @param entry     The archive entry to add
+     * @param entry     The archive entry to add.
      * @param rawStream The raw input stream of a different entry. May be compressed/encrypted.
-     * @throws IOException If copying fails
+     * @throws IOException If copying fails.
      */
     public void addRawArchiveEntry(final ZipArchiveEntry entry, final InputStream rawStream) throws IOException {
         final ZipArchiveEntry ae = new ZipArchiveEntry(entry);
@@ -580,7 +580,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     /**
      * Writes all necessary data for this entry.
      *
-     * @throws IOException            on error
+     * @throws IOException            on error.
      * @throws Zip64RequiredException if the entry's uncompressed or compressed size exceeds 4 GByte and {@link #setUseZip64} is {@link Zip64Mode#Never}.
      */
     @Override
@@ -602,7 +602,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * Writes all necessary data for this entry.
      *
      * @param phased This entry is second phase of a 2-phase ZIP creation, size, compressed size and CRC are known in ZipArchiveEntry
-     * @throws IOException            on error
+     * @throws IOException            on error.
      * @throws Zip64RequiredException if the entry's uncompressed or compressed size exceeds 4 GByte and {@link #setUseZip64} is {@link Zip64Mode#Never}.
      */
     private void closeCopiedEntry(final boolean phased) throws IOException {
@@ -704,10 +704,10 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     /**
      * Writes the central file header entry.
      *
-     * @param ze            the entry to write
-     * @param name          The encoded name
-     * @param entryMetaData meta data for this file
-     * @throws IOException on error
+     * @param ze            the entry to write.
+     * @param name          The encoded name.
+     * @param entryMetaData meta data for this file.
+     * @throws IOException on error.
      */
     private byte[] createCentralFileHeader(final ZipArchiveEntry ze, final ByteBuffer name, final EntryMetaData entryMetaData, final boolean needsZip64Extra)
             throws IOException {
@@ -896,7 +896,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     /**
      * Writes next block of compressed data to the output stream.
      *
-     * @throws IOException on error
+     * @throws IOException on error.
      */
     protected final void deflate() throws IOException {
         streamCompressor.deflate();
@@ -992,7 +992,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     /**
      * Returns the total number of bytes written to this stream.
      *
-     * @return the number of written bytes
+     * @return the number of written bytes.
      * @since 1.22
      */
     @Override
@@ -1142,7 +1142,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * {@link #putArchiveEntry(ZipArchiveEntry)}.
      * </p>
      *
-     * @return true if seekable
+     * @return true if seekable.
      */
     public boolean isSeekable() {
         return out instanceof RandomAccessOutputStream;
@@ -1173,7 +1173,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     /**
      * {@inheritDoc}
      *
-     * @throws ClassCastException     if entry is not an instance of ZipArchiveEntry
+     * @throws ClassCastException     if entry is not an instance of ZipArchiveEntry.
      * @throws Zip64RequiredException if the entry's uncompressed or compressed size is known to exceed 4 GByte and {@link #setUseZip64} is
      *                                {@link Zip64Mode#Never}.
      */
@@ -1186,9 +1186,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * Writes the headers for an archive entry to the output stream. The caller must then write the content to the stream and call {@link #closeArchiveEntry()}
      * to complete the process.
      *
-     * @param archiveEntry The archiveEntry
-     * @param phased       If true size, compressedSize and CRC required to be known up-front in the archiveEntry
-     * @throws ClassCastException     if entry is not an instance of ZipArchiveEntry
+     * @param archiveEntry The archiveEntry.
+     * @param phased       If true size, compressedSize and CRC required to be known up-front in the archiveEntry.
+     * @throws ClassCastException     if entry is not an instance of ZipArchiveEntry.
      * @throws Zip64RequiredException if the entry's uncompressed or compressed size is known to exceed 4 GByte and {@link #setUseZip64} is
      *                                {@link Zip64Mode#Never}.
      */
@@ -1295,7 +1295,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     /**
      * Sets the file comment.
      *
-     * @param comment the comment
+     * @param comment the comment.
      */
     public void setComment(final String comment) {
         this.comment = comment;
@@ -1565,10 +1565,10 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     /**
      * Writes bytes to ZIP entry.
      *
-     * @param b      the byte array to write
-     * @param offset the start position to write from
-     * @param length the number of bytes to write
-     * @throws IOException on error
+     * @param b      the byte array to write.
+     * @param offset the start position to write from.
+     * @param length the number of bytes to write.
+     * @throws IOException on error.
      */
     @Override
     public void write(final byte[] b, final int offset, final int length) throws IOException {
@@ -1583,7 +1583,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     /**
      * Writes the &quot;End of central dir record&quot;.
      *
-     * @throws IOException            on error
+     * @throws IOException            on error.
      * @throws Zip64RequiredException if the archive's size exceeds 4 GByte or there are more than 65535 entries inside the archive and
      *                                {@link #setUseZip64(Zip64Mode)} is {@link Zip64Mode#Never}.
      */
@@ -1647,8 +1647,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     /**
      * Writes the central file header entry.
      *
-     * @param ze the entry to write
-     * @throws IOException            on error
+     * @param ze the entry to write.
+     * @throws IOException            on error.
      * @throws Zip64RequiredException if the archive's size exceeds 4 GByte and {@link #setUseZip64(Zip64Mode)} is {@link Zip64Mode#Never}.
      */
     protected void writeCentralFileHeader(final ZipArchiveEntry ze) throws IOException {
@@ -1659,8 +1659,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     /**
      * Writes bytes to output or random access file.
      *
-     * @param data the byte array to write
-     * @throws IOException on error
+     * @param data the byte array to write.
+     * @throws IOException on error.
      */
     private void writeCounted(final byte[] data) throws IOException {
         streamCompressor.writeCounted(data);
@@ -1669,8 +1669,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     /**
      * Writes the data descriptor entry.
      *
-     * @param ze the entry to write
-     * @throws IOException on error
+     * @param ze the entry to write.
+     * @throws IOException on error.
      */
     protected void writeDataDescriptor(final ZipArchiveEntry ze) throws IOException {
         if (!usesDataDescriptor(ze.getMethod(), false)) {
@@ -1688,10 +1688,10 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     }
 
     /**
-     * Writes the local file header entry
+     * Writes the local file header entry.
      *
-     * @param ze the entry to write
-     * @throws IOException on error
+     * @param ze the entry to write.
+     * @throws IOException on error.
      */
     protected void writeLocalFileHeader(final ZipArchiveEntry ze) throws IOException {
         writeLocalFileHeader(ze, false);
@@ -1724,8 +1724,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     /**
      * Writes bytes to output or random access file.
      *
-     * @param data the byte array to write
-     * @throws IOException on error
+     * @param data the byte array to write.
+     * @throws IOException on error.
      */
     protected final void writeOut(final byte[] data) throws IOException {
         streamCompressor.writeOut(data, 0, data.length);
@@ -1734,10 +1734,10 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     /**
      * Writes bytes to output or random access file.
      *
-     * @param data   the byte array to write
-     * @param offset the start position to write from
-     * @param length the number of bytes to write
-     * @throws IOException on error
+     * @param data   the byte array to write.
+     * @param offset the start position to write from.
+     * @param length the number of bytes to write.
+     * @throws IOException on error.
      */
     protected final void writeOut(final byte[] data, final int offset, final int length) throws IOException {
         streamCompressor.writeOut(data, offset, length);
@@ -1746,8 +1746,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     /**
      * Writes preamble data. For most of the time, this is used to make self-extracting zips.
      *
-     * @param preamble data to write
-     * @throws IOException if an entry already exists
+     * @param preamble data to write.
+     * @throws IOException if an entry already exists.
      * @since 1.21
      */
     public void writePreamble(final byte[] preamble) throws IOException {
@@ -1757,10 +1757,10 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     /**
      * Writes preamble data. For most of the time, this is used to make self-extracting zips.
      *
-     * @param preamble data to write
-     * @param offset   the start offset in the data
-     * @param length   the number of bytes to write
-     * @throws IOException if an entry already exists
+     * @param preamble data to write.
+     * @param offset   the start offset in the data.
+     * @param length   the number of bytes to write.
+     * @throws IOException if an entry already exists.
      * @since 1.21
      */
     public void writePreamble(final byte[] preamble, final int offset, final int length) throws IOException {
@@ -1773,7 +1773,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     /**
      * Writes the &quot;ZIP64 End of central dir record&quot; and &quot;ZIP64 End of central dir locator&quot;.
      *
-     * @throws IOException on error
+     * @throws IOException on error.
      * @since 1.3
      */
     protected void writeZip64CentralDirectory() throws IOException {
