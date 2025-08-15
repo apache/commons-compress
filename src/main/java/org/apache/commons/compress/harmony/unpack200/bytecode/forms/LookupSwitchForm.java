@@ -41,13 +41,13 @@ public class LookupSwitchForm extends SwitchForm {
 
     @Override
     public void setByteCodeOperands(final ByteCode byteCode, final OperandManager operandManager, final int codeLength) throws Pack200Exception {
-        final int caseCount = Pack200Exception.checkIntArray(operandManager.nextCaseCount());
+        final int caseCount = operandManager.nextCaseCount();
         final int defaultPc = operandManager.nextLabel();
-        final int[] caseValues = new int[caseCount];
+        final int[] caseValues = new int[Pack200Exception.checkIntArray(caseCount)];
         Arrays.setAll(caseValues, i -> operandManager.nextCaseValues());
-        final int[] casePcs = new int[caseCount];
+        final int[] casePcs = new int[Pack200Exception.checkIntArray(caseCount)];
         Arrays.setAll(casePcs, i -> operandManager.nextLabel());
-        final int[] labelsArray = new int[caseCount + 1];
+        final int[] labelsArray = new int[Pack200Exception.checkIntArray(caseCount + 1)];
         labelsArray[0] = defaultPc;
         System.arraycopy(casePcs, 0, labelsArray, 1, caseCount + 1 - 1);
         byteCode.setByteCodeTargets(labelsArray);
@@ -67,7 +67,7 @@ public class LookupSwitchForm extends SwitchForm {
         final int rewriteSize = 1 + padLength + 4 // defaultbytes
                 + 4 // npairs
                 + 4 * caseValues.length + 4 * casePcs.length;
-        final int[] newRewrite = new int[rewriteSize];
+        final int[] newRewrite = new int[Pack200Exception.checkIntArray(rewriteSize)];
         int rewriteIndex = 0;
         // Fill in what we can now
         // opcode
