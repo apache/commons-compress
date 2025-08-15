@@ -24,6 +24,8 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
 
 /**
  * This class implements the byte code form for those bytecodes which have label references (and only label references).
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
 public class LabelForm extends ByteCodeForm {
 

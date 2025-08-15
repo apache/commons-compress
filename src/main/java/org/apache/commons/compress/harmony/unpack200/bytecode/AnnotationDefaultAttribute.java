@@ -24,7 +24,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * AnnotationDefault class file attribute
+ * AnnotationDefault class file attribute.
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
 public class AnnotationDefaultAttribute extends AnnotationsAttribute {
 

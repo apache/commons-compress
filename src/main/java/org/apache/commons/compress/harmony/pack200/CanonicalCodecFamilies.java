@@ -20,6 +20,8 @@ package org.apache.commons.compress.harmony.pack200;
 
 /**
  * Sets of codecs that share characteristics. Mainly used for different effort compression heuristics in BandSet.
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
 public class CanonicalCodecFamilies {
 

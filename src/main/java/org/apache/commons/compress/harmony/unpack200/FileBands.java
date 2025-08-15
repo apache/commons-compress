@@ -29,6 +29,8 @@ import org.apache.commons.compress.utils.IOUtils;
  * Parses the file band headers (not including the actual bits themselves). At the end of this parse call, the input stream will be positioned at the start of
  * the file_bits themselves, and there will be Sum(file_size) bits remaining in the stream with BYTE1 compression. A decent implementation will probably just
  * stream the bytes out to the reconstituted Jar rather than caching them.
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
 public class FileBands extends BandSet {
 

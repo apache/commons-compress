@@ -25,6 +25,8 @@ import org.objectweb.asm.Label;
 /**
  * NewAttribute extends {@code Attribute} and manages unknown attributes encountered by ASM that have had a layout definition given to pack200 (for example via
  * one of the -C, -M, -F or -D command line options)
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
 public class NewAttribute extends Attribute {
     /**

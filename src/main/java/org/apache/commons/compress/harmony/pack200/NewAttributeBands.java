@@ -36,6 +36,8 @@ import org.objectweb.asm.Label;
 /**
  * Sets of bands relating to a non-predefined attribute that has had a layout definition given to pack200 (for example via one of the -C, -M, -F or -D command
  * line options)
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
 public class NewAttributeBands extends BandSet {
 

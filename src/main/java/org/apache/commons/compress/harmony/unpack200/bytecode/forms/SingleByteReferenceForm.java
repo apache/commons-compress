@@ -24,6 +24,8 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
 
 /**
  * Some bytecodes (such as (a)ldc, fldc and ildc) have single-byte references to the class pool. This class is the abstract superclass of those classes.
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
 public abstract class SingleByteReferenceForm extends ReferenceForm {
 

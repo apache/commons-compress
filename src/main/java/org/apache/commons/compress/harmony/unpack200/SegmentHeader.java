@@ -28,7 +28,9 @@ import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.utils.IOUtils;
 
 /**
- * SegmentHeader is the header band of a {@link Segment}
+ * SegmentHeader is the header band of a {@link Segment}.
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
 public class SegmentHeader {
 

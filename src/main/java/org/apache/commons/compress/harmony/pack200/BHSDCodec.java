@@ -59,6 +59,8 @@ import java.util.List;
  * value. Those that start with U ({@link #UDELTA5}, {@link #UNSIGNED5}) are unsigned; otherwise, in most cases, they are signed. The presence of the word Delta
  * ({@link #DELTA5}, {@link #UDELTA5}) indicates a delta encoding is used.
  * </p>
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
 public final class BHSDCodec extends Codec {
 

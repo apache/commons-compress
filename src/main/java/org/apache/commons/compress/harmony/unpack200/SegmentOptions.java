@@ -24,6 +24,8 @@ import org.apache.commons.compress.harmony.pack200.Pack200Exception;
  * Stores the combinations of bit flags that can be used in the segment header options. Whilst this could be defined in {@link Segment}, it's cleaner to pull it
  * out into a separate class, not least because methods can then be used to determine the semantic meaning of the flags. In languages with a pre-processor,
  * these may be defined by macros that do bitflag manipulation instead.
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
 public class SegmentOptions {
 

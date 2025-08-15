@@ -26,6 +26,8 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
 
 /**
  * Abstract superclass of those classes which look up init methods (these are class specific methods). They use getInitMethodPoolEntry to find the methods.
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
 public abstract class InitMethodReferenceForm extends ClassSpecificReferenceForm {
 

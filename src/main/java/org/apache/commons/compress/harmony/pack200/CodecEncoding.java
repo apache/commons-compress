@@ -27,6 +27,8 @@ import java.util.Map;
 
 /**
  * CodecEncoding is used to get the right Codec for a given meta-encoding.
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
 public class CodecEncoding {
 

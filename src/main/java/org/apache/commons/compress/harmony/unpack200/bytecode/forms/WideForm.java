@@ -23,6 +23,8 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
 
 /**
  * This class implements the byte code form for the wide instruction. Unlike other instructions, it can take multiple forms, depending on what is being widened.
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
 public class WideForm extends VariableInstructionForm {
 

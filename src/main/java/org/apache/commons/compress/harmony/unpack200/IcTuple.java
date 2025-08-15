@@ -29,6 +29,8 @@ import java.util.Objects;
  * F is the flags<br>
  * C2 is the outer class name, or null if it can be inferred from C<br>
  * N is the inner class name, or null if it can be inferred from C<br>
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
 public class IcTuple {
 

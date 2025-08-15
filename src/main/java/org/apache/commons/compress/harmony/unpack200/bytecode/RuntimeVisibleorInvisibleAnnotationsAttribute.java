@@ -27,6 +27,8 @@ import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 
 /**
  * Annotations class file attribute, either a RuntimeVisibleAnnotations attribute or a RuntimeInvisibleAnnotations attribute.
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
 public class RuntimeVisibleorInvisibleAnnotationsAttribute extends AnnotationsAttribute {
 

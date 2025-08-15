@@ -24,6 +24,8 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
 /**
  * This class implements references to fields defined in the current class, which is set by this class in the OperandManager. Pack200 allows the current class
  * to be inferred from context; this class tracks previous field reference classes to allow this.
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
 public class ThisFieldRefForm extends ClassSpecificReferenceForm {
 

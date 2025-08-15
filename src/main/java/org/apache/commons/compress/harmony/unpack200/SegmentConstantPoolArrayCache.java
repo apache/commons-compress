@@ -31,6 +31,8 @@ import java.util.List;
  * Because the arrays only grow (never shrink or change) we can use the last known size as a way to determine if the array has changed.
  *
  * Note that this cache must be synchronized externally if it is shared.
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
 public class SegmentConstantPoolArrayCache {
 

@@ -30,6 +30,8 @@ import org.objectweb.asm.Label;
 
 /**
  * Bytecode bands (corresponds to the {@code bc_bands} set of bands in the pack200 specification)
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
 public class BcBands extends BandSet {
 

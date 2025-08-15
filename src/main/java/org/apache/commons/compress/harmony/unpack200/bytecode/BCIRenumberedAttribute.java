@@ -27,6 +27,8 @@ import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 
 /**
  * Abstract superclass for attributes that have some part encoded with Byte Code Injection (BCI) renumbering.
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
 public abstract class BCIRenumberedAttribute extends Attribute {
 

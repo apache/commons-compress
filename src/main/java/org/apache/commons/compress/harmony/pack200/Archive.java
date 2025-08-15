@@ -32,6 +32,8 @@ import java.util.zip.ZipEntry;
 /**
  * Main entry point to pack200 and represents a packed archive. An archive is constructed with either a {@link JarInputStream} and an output stream or a
  * {@link JarFile} as input and an OutputStream. Options can be set, then {@link #pack()} is called, to pack the Jar file into a pack200 archive.
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
 public class Archive {
 

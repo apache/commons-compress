@@ -23,6 +23,8 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.CodeAttribute;
 
 /**
  * Switch instruction form.
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
 public abstract class SwitchForm extends VariableInstructionForm {
 
@@ -48,7 +50,6 @@ public abstract class SwitchForm extends VariableInstructionForm {
         final int[] originalTargets = byteCode.getByteCodeTargets();
         final int numberOfLabels = originalTargets.length;
         final int[] replacementTargets = new int[numberOfLabels];
-
         final int sourceIndex = byteCode.getByteCodeIndex();
         final int sourceValue = codeAttribute.byteCodeOffsets.get(sourceIndex).intValue();
         for (int index = 0; index < numberOfLabels; index++) {

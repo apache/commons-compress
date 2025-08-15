@@ -23,6 +23,8 @@ import java.util.Arrays;
 /**
  * IntList is based on {@link java.util.ArrayList}, but is written specifically for ints in order to reduce boxing and unboxing to Integers, reduce the memory
  * required and improve performance of pack200.
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
 public class IntList {
 

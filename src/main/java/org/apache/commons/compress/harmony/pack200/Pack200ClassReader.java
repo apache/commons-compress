@@ -22,6 +22,8 @@ import org.objectweb.asm.ClassReader;
 
 /**
  * Wrapper for ClassReader that enables pack200 to obtain extra class file information
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
 public class Pack200ClassReader extends ClassReader {
 

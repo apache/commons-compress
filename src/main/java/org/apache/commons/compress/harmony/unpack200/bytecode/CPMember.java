@@ -26,6 +26,8 @@ import java.util.Objects;
 
 /**
  * Superclass for member constant pool entries, such as fields or methods.
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
 public class CPMember extends ClassFileEntry {
 

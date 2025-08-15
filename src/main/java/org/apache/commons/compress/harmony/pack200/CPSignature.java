@@ -22,6 +22,8 @@ import java.util.List;
 
 /**
  * Constant pool entry for a signature.
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
 public class CPSignature extends ConstantPoolEntry implements Comparable {
 

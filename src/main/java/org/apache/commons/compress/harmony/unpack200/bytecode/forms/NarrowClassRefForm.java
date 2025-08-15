@@ -24,6 +24,8 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
 
 /**
  * This class is used for representations of cldc and cldc_w. In these cases, a narrow class ref has one byte and a wide class ref has two bytes.
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
 public class NarrowClassRefForm extends ClassRefForm {
 

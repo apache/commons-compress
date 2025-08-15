@@ -22,6 +22,8 @@ package org.apache.commons.compress.harmony.pack200;
  * Abstract superclass for constant pool constant entries such as numbers or Strings.
  *
  * @param <T> The CPConstant subclass.
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
 public abstract class CPConstant<T extends CPConstant<T>> extends ConstantPoolEntry implements Comparable<T> {
 

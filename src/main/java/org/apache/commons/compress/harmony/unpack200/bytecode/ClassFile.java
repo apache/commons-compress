@@ -23,6 +23,8 @@ import java.io.IOException;
 
 /**
  * ClassFile is used to represent and write out Java class files.
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
 public class ClassFile {
 

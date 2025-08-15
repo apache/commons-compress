@@ -40,6 +40,8 @@ import org.apache.commons.io.input.BoundedInputStream;
 /**
  * Archive is the main entry point to unpack200. An archive is constructed with either two file names, a pack file and an output file name or an input stream
  * and an output streams. Then {@code unpack()} is called, to unpack the pack200 archive.
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
 public class Archive {
 

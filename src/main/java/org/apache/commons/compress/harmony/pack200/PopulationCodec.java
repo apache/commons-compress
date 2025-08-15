@@ -25,6 +25,8 @@ import java.util.Arrays;
 /**
  * A PopulationCodec is a Codec that is well suited to encoding data that shows statistical or repetitive patterns, containing for example a few numbers which
  * are repeated a lot throughout the set, but not necessarily sequentially.
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
 public class PopulationCodec extends Codec {
 

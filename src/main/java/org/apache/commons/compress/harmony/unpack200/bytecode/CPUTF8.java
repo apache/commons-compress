@@ -25,6 +25,8 @@ import java.util.Objects;
 
 /**
  * UTF8 constant pool entry, used for storing long Strings.
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
 public class CPUTF8 extends ConstantPoolEntry {
 

@@ -22,6 +22,8 @@ import java.util.Objects;
 
 /**
  * Abstract superclass for constant pool constant entries such as numbers or Strings
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
 public abstract class CPConstant extends ConstantPoolEntry {
 

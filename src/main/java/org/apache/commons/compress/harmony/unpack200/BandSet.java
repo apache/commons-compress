@@ -42,6 +42,8 @@ import org.apache.commons.lang3.ArrayUtils;
 
 /**
  * Abstract superclass for a set of bands.
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
 public abstract class BandSet {
 

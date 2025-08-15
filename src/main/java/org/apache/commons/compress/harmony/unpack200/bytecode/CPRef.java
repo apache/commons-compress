@@ -24,6 +24,8 @@ import java.util.Objects;
 
 /**
  * Abstract superclass for reference constant pool entries, such as a method or field reference.
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
 public abstract class CPRef extends ConstantPoolEntry {
 

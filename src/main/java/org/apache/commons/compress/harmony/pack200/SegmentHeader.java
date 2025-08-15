@@ -23,6 +23,8 @@ import java.io.OutputStream;
 
 /**
  * SegmentHeader is the header band of a {@link Segment}. Corresponds to {@code segment_header} in the pack200 specification.
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
 public class SegmentHeader extends BandSet {
 

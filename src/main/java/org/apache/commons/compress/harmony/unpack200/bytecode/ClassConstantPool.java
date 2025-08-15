@@ -31,7 +31,9 @@ import java.util.TreeSet;
 import org.apache.commons.compress.harmony.unpack200.Segment;
 
 /**
- * The Class constant pool
+ * The Class constant pool.
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
 public class ClassConstantPool {
 

@@ -27,6 +27,8 @@ import org.apache.commons.compress.archivers.ArchiveException;
 
 /**
  * Signals a problem with a Pack200 coding or decoding issue.
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
 public class Pack200Exception extends CompressException {
 

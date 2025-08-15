@@ -25,6 +25,8 @@ import java.util.Arrays;
 /**
  * A run codec is a grouping of two nested codecs; K values are decoded from the first codec, and the remaining codes are decoded from the remaining codec. Note
  * that since this codec maintains state, the instances are not reusable.
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
 public class RunCodec extends Codec {
 

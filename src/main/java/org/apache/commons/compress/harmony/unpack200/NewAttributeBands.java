@@ -45,6 +45,8 @@ import org.apache.commons.compress.utils.ParsingUtils;
 
 /**
  * Sets of bands relating to a non-predefined attribute
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
 public class NewAttributeBands extends BandSet {
 

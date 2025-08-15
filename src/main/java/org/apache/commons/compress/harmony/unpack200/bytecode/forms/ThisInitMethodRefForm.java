@@ -22,6 +22,8 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
 
 /**
  * This class is used to determine which init method should be called, based on the last current class reference.
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
 public class ThisInitMethodRefForm extends InitMethodReferenceForm {
 

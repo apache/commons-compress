@@ -22,7 +22,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 /**
- * Line number table
+ * Line number table.
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
 public class LineNumberTableAttribute extends BCIRenumberedAttribute {
 

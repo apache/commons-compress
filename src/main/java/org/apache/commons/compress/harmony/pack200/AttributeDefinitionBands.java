@@ -30,6 +30,8 @@ import org.objectweb.asm.Attribute;
 
 /**
  * Attribute Definition bands define how any unknown attributes should be read by the decompressor.
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
 public class AttributeDefinitionBands extends BandSet {
 

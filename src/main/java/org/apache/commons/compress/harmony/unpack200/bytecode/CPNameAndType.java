@@ -26,6 +26,8 @@ import org.apache.commons.compress.harmony.unpack200.SegmentUtils;
 
 /**
  * Name and Type pair constant pool entry.
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
 public class CPNameAndType extends ConstantPoolEntry {
 

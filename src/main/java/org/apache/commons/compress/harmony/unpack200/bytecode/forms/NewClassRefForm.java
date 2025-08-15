@@ -28,6 +28,8 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
 /**
  * This class is an extension of the ClassRefForm. It has two purposes: 1. To keep track of the last type used in a new() instruction in the current class. 2.
  * To allow the sender to create instances of either a specified class (which then becomes the new class) or the last used new class.
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
 public class NewClassRefForm extends ClassRefForm {
 

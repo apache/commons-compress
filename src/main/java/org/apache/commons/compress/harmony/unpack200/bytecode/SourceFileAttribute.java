@@ -24,6 +24,8 @@ import java.util.Objects;
 
 /**
  * Source file class file attribute
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
 public class SourceFileAttribute extends Attribute {
 

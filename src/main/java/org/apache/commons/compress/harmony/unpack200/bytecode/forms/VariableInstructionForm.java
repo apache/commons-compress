@@ -21,6 +21,8 @@ package org.apache.commons.compress.harmony.unpack200.bytecode.forms;
 /**
  * This abstract class implements the common code for instructions which have variable lengths. This is currently the *switch instructions and some wide (_w)
  * instructions.
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
 public abstract class VariableInstructionForm extends ByteCodeForm {
 
