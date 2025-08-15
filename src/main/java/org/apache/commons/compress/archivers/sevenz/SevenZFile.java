@@ -915,20 +915,20 @@ public class SevenZFile implements Closeable {
     private void calculateStreamMap(final Archive archive) throws IOException {
         int nextFolderPackStreamIndex = 0;
         final int numFolders = ArrayUtils.getLength(archive.folders);
-        final int[] folderFirstPackStreamIndex = new int[numFolders];
+        final int[] folderFirstPackStreamIndex = new int[checkIntArray(numFolders)];
         for (int i = 0; i < numFolders; i++) {
             folderFirstPackStreamIndex[i] = nextFolderPackStreamIndex;
             nextFolderPackStreamIndex = ArchiveException.addExact(nextFolderPackStreamIndex, archive.folders[i].packedStreams.length);
         }
         long nextPackStreamOffset = 0;
         final int numPackSizes = archive.packSizes.length;
-        final long[] packStreamOffsets = new long[numPackSizes];
+        final long[] packStreamOffsets = new long[checkLongArray(numPackSizes)];
         for (int i = 0; i < numPackSizes; i++) {
             packStreamOffsets[i] = nextPackStreamOffset;
             nextPackStreamOffset = ArchiveException.addExact(nextPackStreamOffset, archive.packSizes[i]);
         }
-        final int[] folderFirstFileIndex = new int[numFolders];
-        final int[] fileFolderIndex = new int[archive.files.length];
+        final int[] folderFirstFileIndex = new int[checkIntArray(numFolders)];
+        final int[] fileFolderIndex = new int[checkIntArray(archive.files.length)];
         int nextFolderIndex = 0;
         int nextFolderUnpackStreamIndex = 0;
         for (int i = 0; i < archive.files.length; i++) {
@@ -960,8 +960,19 @@ public class SevenZFile implements Closeable {
         archive.streamMap = new StreamMap(folderFirstPackStreamIndex, packStreamOffsets, folderFirstFileIndex, fileFolderIndex);
     }
 
-    private void checkEntryIsInitialized(final Map<Integer, SevenZArchiveEntry> archiveEntries, final int index) {
-        archiveEntries.computeIfAbsent(index, i -> new SevenZArchiveEntry());
+    int checkByteArray(final int size) throws MemoryLimitException {
+        MemoryLimitException.checkKiB(bytesToKiB(size * Byte.BYTES), maxMemoryLimitKiB);
+        return size;
+    }
+
+    int checkIntArray(final int size) throws MemoryLimitException {
+        MemoryLimitException.checkKiB(bytesToKiB(size * Integer.BYTES), maxMemoryLimitKiB);
+        return size;
+    }
+
+    int checkLongArray(final int size) throws MemoryLimitException {
+        MemoryLimitException.checkKiB(bytesToKiB(size * Long.BYTES), maxMemoryLimitKiB);
+        return size;
     }
 
     /**
@@ -982,6 +993,10 @@ public class SevenZFile implements Closeable {
                 password = null;
             }
         }
+    }
+
+    private void computeIfAbsent(final Map<Integer, SevenZArchiveEntry> archiveEntries, final int index) {
+        archiveEntries.computeIfAbsent(index, i -> new SevenZArchiveEntry());
     }
 
     private InputStream getCurrentStream() throws IOException {
@@ -1232,8 +1247,7 @@ public class SevenZFile implements Closeable {
         long nid = readUint64(input);
         while (nid != NID.kEnd) {
             final int propertySize = readUint64ToIntExact(input);
-            MemoryLimitException.checkKiB(bytesToKiB(propertySize), maxMemoryLimitKiB);
-            final byte[] property = new byte[propertySize];
+            final byte[] property = new byte[checkByteArray(propertySize)];
             get(input, property);
             nid = readUint64(input);
         }
@@ -1334,7 +1348,7 @@ public class SevenZFile implements Closeable {
                 int nextName = 0;
                 for (int i = 0; i < namesLength; i += 2) {
                     if (names[i] == 0 && names[i + 1] == 0) {
-                        checkEntryIsInitialized(fileMap, nextFile);
+                        computeIfAbsent(fileMap, nextFile);
                         fileMap.get(nextFile).setName(new String(names, nextName, i - nextName, UTF_16LE));
                         nextName = i + 2;
                         nextFile++;
@@ -1349,7 +1363,7 @@ public class SevenZFile implements Closeable {
                 final BitSet timesDefined = readAllOrBits(header, numFilesInt);
                 /* final int external = */ getUnsignedByte(header);
                 for (int i = 0; i < numFilesInt; i++) {
-                    checkEntryIsInitialized(fileMap, i);
+                    computeIfAbsent(fileMap, i);
                     final SevenZArchiveEntry entryAtIndex = fileMap.get(i);
                     entryAtIndex.setHasCreationDate(timesDefined.get(i));
                     if (entryAtIndex.getHasCreationDate()) {
@@ -1362,7 +1376,7 @@ public class SevenZFile implements Closeable {
                 final BitSet timesDefined = readAllOrBits(header, numFilesInt);
                 /* final int external = */ getUnsignedByte(header);
                 for (int i = 0; i < numFilesInt; i++) {
-                    checkEntryIsInitialized(fileMap, i);
+                    computeIfAbsent(fileMap, i);
                     final SevenZArchiveEntry entryAtIndex = fileMap.get(i);
                     entryAtIndex.setHasAccessDate(timesDefined.get(i));
                     if (entryAtIndex.getHasAccessDate()) {
@@ -1375,7 +1389,7 @@ public class SevenZFile implements Closeable {
                 final BitSet timesDefined = readAllOrBits(header, numFilesInt);
                 /* final int external = */ getUnsignedByte(header);
                 for (int i = 0; i < numFilesInt; i++) {
-                    checkEntryIsInitialized(fileMap, i);
+                    computeIfAbsent(fileMap, i);
                     final SevenZArchiveEntry entryAtIndex = fileMap.get(i);
                     entryAtIndex.setHasLastModifiedDate(timesDefined.get(i));
                     if (entryAtIndex.getHasLastModifiedDate()) {
@@ -1388,7 +1402,7 @@ public class SevenZFile implements Closeable {
                 final BitSet attributesDefined = readAllOrBits(header, numFilesInt);
                 /* final int external = */ getUnsignedByte(header);
                 for (int i = 0; i < numFilesInt; i++) {
-                    checkEntryIsInitialized(fileMap, i);
+                    computeIfAbsent(fileMap, i);
                     final SevenZArchiveEntry entryAtIndex = fileMap.get(i);
                     entryAtIndex.setHasWindowsAttributes(attributesDefined.get(i));
                     if (entryAtIndex.getHasWindowsAttributes()) {
@@ -1471,8 +1485,7 @@ public class SevenZFile implements Closeable {
             byte[] properties = null;
             if (hasAttributes) {
                 final long propertiesSize = readUint64(header);
-                MemoryLimitException.checkKiB(bytesToKiB(propertiesSize), maxMemoryLimitKiB);
-                properties = new byte[ArchiveException.toIntExact(propertiesSize)];
+                properties = new byte[checkByteArray(ArchiveException.toIntExact(propertiesSize))];
                 get(header, properties);
             }
             // would need to keep looping as above:
@@ -1588,7 +1601,7 @@ public class SevenZFile implements Closeable {
         final int numPackStreamsInt = readUint64ToIntExact(header);
         int nid = getUnsignedByte(header);
         if (nid == NID.kSize) {
-            archive.packSizes = new long[numPackStreamsInt];
+            archive.packSizes = new long[checkLongArray(numPackStreamsInt)];
             for (int i = 0; i < archive.packSizes.length; i++) {
                 archive.packSizes[i] = readUint64(header);
             }
@@ -1596,7 +1609,7 @@ public class SevenZFile implements Closeable {
         }
         if (nid == NID.kCRC) {
             archive.packCrcsDefined = readAllOrBits(header, numPackStreamsInt);
-            archive.packCrcs = new long[numPackStreamsInt];
+            archive.packCrcs = new long[checkLongArray(numPackStreamsInt)];
             for (int i = 0; i < numPackStreamsInt; i++) {
                 if (archive.packCrcsDefined.get(i)) {
                     archive.packCrcs[i] = 0xffffFFFFL & getInt(header);
@@ -1695,7 +1708,7 @@ public class SevenZFile implements Closeable {
         }
         if (nid == NID.kCRC) {
             final BitSet hasMissingCrc = readAllOrBits(header, numDigests);
-            final long[] missingCrcs = new long[numDigests];
+            final long[] missingCrcs = new long[checkLongArray(numDigests)];
             for (int i = 0; i < numDigests; i++) {
                 if (hasMissingCrc.get(i)) {
                     missingCrcs[i] = 0xffffFFFFL & getInt(header);
