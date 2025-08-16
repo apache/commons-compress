@@ -32,10 +32,14 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
  */
 public abstract class ByteCodeForm {
 
+    private static final int BC_MAX = 256;
+
     protected static final boolean WIDENED = true;
 
-    protected static final ByteCodeForm[] byteCodeArray = new ByteCodeForm[256];
-    protected static final Map<String, ByteCodeForm> byteCodesByName = new HashMap<>(256);
+    protected static final ByteCodeForm[] byteCodeArray = new ByteCodeForm[BC_MAX];
+
+    protected static final Map<String, ByteCodeForm> byteCodesByName = new HashMap<>(BC_MAX);
+
     static {
         byteCodeArray[0] = new NoArgumentForm(0, "nop");
         byteCodeArray[1] = new NoArgumentForm(1, "aconst_null");
