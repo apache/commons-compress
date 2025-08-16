@@ -63,7 +63,7 @@ final class Folder {
      */
     int numUnpackSubStreams;
 
-    int findBindPairForInStream(final int index) {
+    int findBindPairForInStream(final long index) {
         if (bindPairs != null) {
             for (int i = 0; i < bindPairs.length; i++) {
                 if (bindPairs[i].inIndex == index) {

@@ -1507,8 +1507,8 @@ public class SevenZFile implements Closeable {
         final int numPackedStreamsInt = (int) numPackedStreams;
         final long[] packedStreams = new long[numPackedStreamsInt];
         if (numPackedStreams == 1) {
-            int i;
-            for (i = 0; i < (int) totalInStreams; i++) {
+            long i;
+            for (i = 0; i < totalInStreams; i++) {
                 if (folder.findBindPairForInStream(i) < 0) {
                     break;
                 }
