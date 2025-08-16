@@ -77,9 +77,9 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.archivers.ar.ArArchiveInputStream.read(byte[], int, int) now throws ArchiveException instead of ArithmeticException.</action>
       <action type="fix" dev="pkarwasz" due-to="Tyler Nighswander">Simplify handling of special AR records in ArArchiveInputStream.</action>
       <!-- FIX unpack200 -->      
-      <action type="fix" dev="ggregory" due-to="Gary Gregory, Stanislav Fort">org.apache.commons.compress.harmony.unpack200 now throws Pack200Exception, IllegalArgumentException, and IllegalStateException instead of Error.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory, Stanislav Fort">org.apache.commons.compress.harmony.unpack200 now throws Pack200Exception, IllegalArgumentException, and IllegalStateException instead of other runtime exceptions and Error.</action>
       <!-- FIX pack200 -->      
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.harmony.pack200 now throws Pack200Exception, IllegalArgumentException, and IllegalStateException instead of Error.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.harmony.pack200 now throws Pack200Exception, IllegalArgumentException, IllegalStateException, instead of Error.</action>
       <!-- FIX cpio -->      
       <action type="fix" dev="ggregory" due-to="Stan, Gary Gregory">org.apache.commons.compress.archivers.cpio.CpioArchiveEntry now throws ArchiveException instead of Arithmetic exception.</action>
       <action type="fix" dev="ggregory" due-to="Stan, Gary Gregory">org.apache.commons.compress.archivers.cpio.CpioArchiveInputStream.getNextEntry() now throws a MemoryLimitException instead of OutOfMemoryError when it can't process input greater than available memory.</action>

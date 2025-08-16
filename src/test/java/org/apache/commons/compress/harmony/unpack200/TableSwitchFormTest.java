@@ -24,16 +24,16 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.harmony.unpack200.bytecode.ByteCode;
 import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
-import org.apache.commons.compress.harmony.unpack200.bytecode.forms.LookupSwitchForm;
+import org.apache.commons.compress.harmony.unpack200.bytecode.forms.TableSwitchForm;
 import org.junit.jupiter.api.Test;
 
 /**
- * Tests {@link LookupSwitchForm}.
+ * Tests {@link TableSwitchForm}.
  */
-class LookupSwitchFormTest {
+class TableSwitchFormTest {
 
     /**
-     * Run with {@copde -Xmx64m} too get a Pack200Exception(MemoryLimitException).
+     * Run with {@code -Xmx64m} to get a Pack200Exception(MemoryLimitException).
      *
      * @throws Pack200Exception
      */
@@ -43,13 +43,14 @@ class LookupSwitchFormTest {
         final int[] caseCount = { large };
         // Provide a dummy label for the defaultPc branch taken before the allocation.
         final int[] labels = { 0 };
+        final int[] caseValues = { 0 }; // TableSwitch needs at least one case value.
         final int[] empty = {};
         // The OperandManager requires all 21 band arrays.
         // Most can be empty for this test.
-        final OperandManager om = new OperandManager(caseCount, empty, empty, empty, empty, labels, empty, empty, empty, empty, empty, empty, empty, empty,
+        final OperandManager om = new OperandManager(caseCount, caseValues, empty, empty, empty, labels, empty, empty, empty, empty, empty, empty, empty, empty,
                 empty, empty, empty, empty, empty, empty, empty);
-        final ByteCode bc = ByteCode.getByteCode(171); // lookupswitch
-        // Run with -Xmx64m too get a Pack200Exception(MemoryLimitException).
-        assertThrows(Exception.class, () -> new LookupSwitchForm(171, "lookupswitch").setByteCodeOperands(bc, om, 0));
+        final ByteCode bc = ByteCode.getByteCode(170); // tableswitch
+        // Run with -Xmx64m to get a Pack200Exception(MemoryLimitException).
+        assertThrows(Exception.class, () -> new TableSwitchForm(170, "tableswitch").setByteCodeOperands(bc, om, 0));
     }
 }
