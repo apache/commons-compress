@@ -975,6 +975,11 @@ public class SevenZFile implements Closeable {
         return size;
     }
 
+    int checkObjectArray(final int size) throws MemoryLimitException {
+        MemoryLimitException.checkKiB(bytesToKiB(size * 4), maxMemoryLimitKiB); // assume compressed pointer
+        return size;
+    }
+
     /**
      * Closes the archive.
      *
@@ -1498,14 +1503,14 @@ public class SevenZFile implements Closeable {
         folder.totalInputStreams = totalInStreams;
         folder.totalOutputStreams = totalOutStreams;
         final long numBindPairs = totalOutStreams - 1;
-        final BindPair[] bindPairs = new BindPair[(int) numBindPairs];
+        final BindPair[] bindPairs = new BindPair[checkObjectArray(ArchiveException.toIntExact(numBindPairs))];
         for (int i = 0; i < bindPairs.length; i++) {
             bindPairs[i] = new BindPair(readUint64(header), readUint64(header));
         }
         folder.bindPairs = bindPairs;
         final long numPackedStreams = totalInStreams - numBindPairs;
-        final int numPackedStreamsInt = (int) numPackedStreams;
-        final long[] packedStreams = new long[numPackedStreamsInt];
+        final int numPackedStreamsInt = ArchiveException.toIntExact(numPackedStreams);
+        final long[] packedStreams = new long[checkObjectArray(numPackedStreamsInt)];
         if (numPackedStreams == 1) {
             long i;
             for (i = 0; i < totalInStreams; i++) {

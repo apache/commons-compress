@@ -21,6 +21,7 @@ package org.apache.commons.compress.archivers.sevenz;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -50,7 +51,7 @@ class SevenZFolderTest {
     }
 
     @Test
-    void testGetUnpackSizeOne() {
+    void testGetUnpackSizeOne() throws ArchiveException {
         final Folder folder = new Folder();
         folder.totalOutputStreams = 266L;
         final BindPair[] bindPairArray = new BindPair[1];
@@ -62,7 +63,7 @@ class SevenZFolderTest {
     }
 
     @Test
-    void testGetUnpackSizeTwo() {
+    void testGetUnpackSizeTwo() throws ArchiveException {
         final Folder folder = new Folder();
         assertEquals(0L, folder.getUnpackSize());
     }

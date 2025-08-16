@@ -74,7 +74,7 @@ final class Folder {
         return -1;
     }
 
-    int findBindPairForOutStream(final int index) {
+    int findBindPairForOutStream(final long index) {
         if (bindPairs != null) {
             for (int i = 0; i < bindPairs.length; i++) {
                 if (bindPairs[i].outIndex == index) {
@@ -97,25 +97,26 @@ final class Folder {
             return Collections.emptyList();
         }
         final LinkedList<Coder> list = new LinkedList<>();
-        int current = (int) packedStreams[0]; // more that 2^31 coders?
+        long current = packedStreams[0]; // more that size int coders?
         while (current >= 0 && current < coders.length) {
-            if (list.contains(coders[current])) {
+            final Coder curCoder = coders[ArchiveException.toIntExact(current)];
+            if (list.contains(curCoder)) {
                 throw new ArchiveException("Folder uses the same coder more than once in coder chain");
             }
-            list.addLast(coders[current]);
+            list.addLast(curCoder);
             final int pair = findBindPairForOutStream(current);
-            current = pair != -1 ? (int) bindPairs[pair].inIndex : -1;
+            current = pair != -1 ? bindPairs[pair].inIndex : -1;
         }
         return list;
     }
 
-    long getUnpackSize() {
+    long getUnpackSize() throws ArchiveException {
         if (totalOutputStreams == 0) {
             return 0;
         }
-        for (int i = (int) totalOutputStreams - 1; i >= 0; i--) {
+        for (long i = totalOutputStreams - 1; i >= 0; i--) {
             if (findBindPairForOutStream(i) < 0) {
-                return unpackSizes[i];
+                return unpackSizes[ArchiveException.toIntExact(i)];
             }
         }
         return 0;
