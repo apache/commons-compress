@@ -75,9 +75,8 @@ public class LookupSwitchForm extends SwitchForm {
         // opcode
         newRewrite[rewriteIndex++] = byteCode.getOpcode();
         // padding
-        for (int index = 0; index < padLength; index++) {
-            newRewrite[rewriteIndex++] = 0;
-        }
+        Arrays.fill(newRewrite, rewriteIndex, rewriteIndex + padLength, 0);
+        rewriteIndex += padLength;
         // defaultbyte
         // This gets overwritten by fixUpByteCodeTargets
         newRewrite[rewriteIndex++] = -1;
