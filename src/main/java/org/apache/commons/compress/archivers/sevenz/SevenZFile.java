@@ -1346,7 +1346,7 @@ public class SevenZFile implements Closeable {
             case NID.kName: {
                 /* final int external = */ getUnsignedByte(header);
                 MemoryLimitException.checkKiB(bytesToKiB(size - 1), maxMemoryLimitKiB);
-                final byte[] names = new byte[ArchiveException.toIntExact(size - 1)];
+                final byte[] names = new byte[checkByteArray(ArchiveException.toIntExact(size - 1))];
                 final int namesLength = names.length;
                 get(header, names);
                 int nextFile = 0;
@@ -1465,7 +1465,7 @@ public class SevenZFile implements Closeable {
     private Folder readFolder(final ByteBuffer header) throws IOException {
         final Folder folder = new Folder();
         final int numCoders = readUint64ToIntExact(header);
-        final Coder[] coders = new Coder[numCoders];
+        final Coder[] coders = new Coder[checkObjectArray(numCoders)];
         long totalInStreams = 0;
         long totalOutStreams = 0;
         for (int i = 0; i < coders.length; i++) {
@@ -1743,7 +1743,7 @@ public class SevenZFile implements Closeable {
     private void readUnpackInfo(final ByteBuffer header, final Archive archive) throws IOException {
         int nid = getUnsignedByte(header);
         final int numFoldersInt = readUint64ToIntExact(header);
-        final Folder[] folders = new Folder[numFoldersInt];
+        final Folder[] folders = new Folder[checkObjectArray(numFoldersInt)];
         archive.folders = folders;
         /* final int external = */ getUnsignedByte(header);
         for (int i = 0; i < numFoldersInt; i++) {
