@@ -99,7 +99,6 @@ public class OperandManager {
         this.bcFieldRef = bcFieldRef;
         this.bcMethodRef = bcMethodRef;
         this.bcIMethodRef = bcIMethodRef;
-
         this.bcThisField = bcThisField;
         this.bcSuperField = bcSuperField;
         this.bcThisMethod = bcThisMethod;
@@ -221,15 +220,15 @@ public class OperandManager {
         currentClass = string;
     }
 
-    public void setNewClass(final String string) {
-        newClass = string;
+    public void setNewClass(final String newClass) {
+        this.newClass = newClass;
     }
 
     public void setSegment(final Segment segment) {
         this.segment = segment;
     }
 
-    public void setSuperClass(final String string) {
-        superClass = string;
+    public void setSuperClass(final String superClass) {
+        this.superClass = superClass;
     }
 }
