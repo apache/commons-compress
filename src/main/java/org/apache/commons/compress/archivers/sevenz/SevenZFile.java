@@ -1942,7 +1942,7 @@ public class SevenZFile implements Closeable {
         stats.numberOfEntriesWithStream = stats.numberOfEntries - Math.max(emptyStreams, 0);
     }
 
-    private int sanityCheckFolder(final ByteBuffer header, final ArchiveStatistics stats) throws IOException {
+    private long sanityCheckFolder(final ByteBuffer header, final ArchiveStatistics stats) throws IOException {
         final int numCoders = toNonNegativeInt("numCoders", readUint64(header));
         if (numCoders == 0) {
             throw new ArchiveException("Folder without coders");
@@ -2010,7 +2010,7 @@ public class SevenZFile implements Closeable {
                 }
             }
         }
-        return (int) totalOutStreams;
+        return totalOutStreams;
     }
 
     private void sanityCheckPackInfo(final ByteBuffer header, final ArchiveStatistics stats) throws IOException {
@@ -2126,7 +2126,7 @@ public class SevenZFile implements Closeable {
         if (external != 0) {
             throw new ArchiveException("External unsupported");
         }
-        final List<Integer> numberOfOutputStreamsPerFolder = new LinkedList<>();
+        final List<Long> numberOfOutputStreamsPerFolder = new LinkedList<>();
         for (int i = 0; i < stats.numberOfFolders; i++) {
             numberOfOutputStreamsPerFolder.add(sanityCheckFolder(header, stats));
         }
@@ -2139,8 +2139,8 @@ public class SevenZFile implements Closeable {
         if (nid != NID.kCodersUnpackSize) {
             throw new ArchiveException("Expected kCodersUnpackSize, got %s", nid);
         }
-        for (final int numberOfOutputStreams : numberOfOutputStreamsPerFolder) {
-            for (int i = 0; i < numberOfOutputStreams; i++) {
+        for (final long numberOfOutputStreams : numberOfOutputStreamsPerFolder) {
+            for (long i = 0; i < numberOfOutputStreams; i++) {
                 final long unpackSize = readUint64(header);
                 if (unpackSize < 0) {
                     throw new IllegalArgumentException("Negative unpackSize");
