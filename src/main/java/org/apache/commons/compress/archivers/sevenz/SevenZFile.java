@@ -1751,8 +1751,7 @@ public class SevenZFile implements Closeable {
         }
         nid = getUnsignedByte(header);
         for (final Folder folder : folders) {
-            toNonNegativeInt("totalOutputStreams", folder.totalOutputStreams);
-            folder.unpackSizes = new long[(int) folder.totalOutputStreams];
+            folder.unpackSizes = new long[checkLongArray(toNonNegativeInt("totalOutputStreams", folder.totalOutputStreams))];
             for (int i = 0; i < folder.totalOutputStreams; i++) {
                 folder.unpackSizes[i] = readUint64(header);
             }
