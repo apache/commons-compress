@@ -98,7 +98,7 @@ public class CircularBuffer {
      * @param value the value to put.
      */
     public void put(final int value) {
-        if(bytesAvailable == size) {
+        if (bytesAvailable == size) {
             throw new IllegalStateException("Buffer overflow: Cannot write to a full buffer");
         }
 
