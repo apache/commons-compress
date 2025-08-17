@@ -47,7 +47,7 @@ class CircularBufferTest {
 
     @Test
     void testPutAndGet2() {
-        CircularBuffer buffer = new CircularBuffer(8);
+        final CircularBuffer buffer = new CircularBuffer(8);
 
         // Nothing to read
         assertFalse(buffer.available());
@@ -74,14 +74,14 @@ class CircularBufferTest {
 
     @Test
     void testPutAndGetWrappingAround() {
-        CircularBuffer buffer = new CircularBuffer(4);
+        final CircularBuffer buffer = new CircularBuffer(4);
 
         // Nothing to read
         assertFalse(buffer.available());
         assertEquals(-1, buffer.get());
 
         // Write two bytes and read them in a loop making the buffer wrap around several times
-        for (int i=0;i<8;i++) {
+        for (int i = 0; i < 8; i++) {
             buffer.put(i * 2);
             buffer.put(i * 2 + 1);
 
@@ -95,7 +95,7 @@ class CircularBufferTest {
 
     @Test
     void testPutOverflow() {
-        CircularBuffer buffer = new CircularBuffer(4);
+        final CircularBuffer buffer = new CircularBuffer(4);
 
         // Write more bytes than the buffer can hold
         buffer.put(0x01);
@@ -148,7 +148,7 @@ class CircularBufferTest {
 
     @Test
     void testCopy2() {
-        CircularBuffer buffer = new CircularBuffer(16);
+        final CircularBuffer buffer = new CircularBuffer(16);
 
         // Write some bytes
         buffer.put(0x01);
@@ -171,7 +171,7 @@ class CircularBufferTest {
 
     @Test
     void testCopy3() {
-        CircularBuffer buffer = new CircularBuffer(16);
+        final CircularBuffer buffer = new CircularBuffer(16);
 
         // Write some bytes
         buffer.put(0x01);
@@ -194,7 +194,7 @@ class CircularBufferTest {
 
     @Test
     void testCopy4() {
-        CircularBuffer buffer = new CircularBuffer(6);
+        final CircularBuffer buffer = new CircularBuffer(6);
 
         // Write some bytes
         buffer.put(0x01);
@@ -230,7 +230,7 @@ class CircularBufferTest {
 
     @Test
     void testCopyRunLengthEncoding1() {
-        CircularBuffer buffer = new CircularBuffer(16);
+        final CircularBuffer buffer = new CircularBuffer(16);
 
         // Write two bytes
         buffer.put(0x01);
@@ -256,7 +256,7 @@ class CircularBufferTest {
 
     @Test
     void testCopyDistanceInvalid() {
-        CircularBuffer buffer = new CircularBuffer(4);
+        final CircularBuffer buffer = new CircularBuffer(4);
 
         // Write some bytes
         buffer.put(0x01);
@@ -272,7 +272,7 @@ class CircularBufferTest {
 
     @Test
     void testCopyDistanceExceedingBufferSize() {
-        CircularBuffer buffer = new CircularBuffer(4);
+        final CircularBuffer buffer = new CircularBuffer(4);
 
         // Write some bytes
         buffer.put(0x01);
@@ -290,7 +290,7 @@ class CircularBufferTest {
 
     @Test
     void testCopyCausingBufferOverflow() {
-        CircularBuffer buffer = new CircularBuffer(4);
+        final CircularBuffer buffer = new CircularBuffer(4);
 
         // Write some bytes
         buffer.put(0x01);

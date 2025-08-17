@@ -43,6 +43,7 @@ import org.apache.commons.compress.archivers.arj.ArjArchiveInputStream;
 import org.apache.commons.compress.archivers.cpio.CpioArchiveInputStream;
 import org.apache.commons.compress.archivers.dump.DumpArchiveInputStream;
 import org.apache.commons.compress.archivers.jar.JarArchiveInputStream;
+import org.apache.commons.compress.archivers.lha.LhaArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.io.input.BrokenInputStream;
@@ -96,6 +97,7 @@ class ArchiveStreamFactoryTest extends AbstractTest {
      */
     private static final String ARJ_DEFAULT;
     private static final String DUMP_DEFAULT;
+    private static final String LHA_DEFAULT = getCharsetName(new LhaArchiveInputStream(null));
     private static final String ZIP_DEFAULT = getCharsetName(new ZipArchiveInputStream(null));
     private static final String CPIO_DEFAULT = getCharsetName(new CpioArchiveInputStream(null));
     private static final String TAR_DEFAULT = getCharsetName(new TarArchiveInputStream(null));
@@ -137,6 +139,12 @@ class ArchiveStreamFactoryTest extends AbstractTest {
             new TestData("bla.dump", ArchiveStreamFactory.DUMP, false, StandardCharsets.US_ASCII.name(), FACTORY_ASCII, "charsetName"),
             new TestData("bla.dump", ArchiveStreamFactory.DUMP, false, StandardCharsets.UTF_8.name(), FACTORY_SET_UTF8, "charsetName"),
             new TestData("bla.dump", ArchiveStreamFactory.DUMP, false, StandardCharsets.US_ASCII.name(), FACTORY_SET_ASCII, "charsetName"),
+
+            new TestData("bla.lha", ArchiveStreamFactory.LHA, false, LHA_DEFAULT, FACTORY, "charsetName"),
+            new TestData("bla.lha", ArchiveStreamFactory.LHA, false, StandardCharsets.UTF_8.name(), FACTORY_UTF8, "charsetName"),
+            new TestData("bla.lha", ArchiveStreamFactory.LHA, false, StandardCharsets.US_ASCII.name(), FACTORY_ASCII, "charsetName"),
+            new TestData("bla.lha", ArchiveStreamFactory.LHA, false, StandardCharsets.UTF_8.name(), FACTORY_SET_UTF8, "charsetName"),
+            new TestData("bla.lha", ArchiveStreamFactory.LHA, false, StandardCharsets.US_ASCII.name(), FACTORY_SET_ASCII, "charsetName"),
 
             new TestData("bla.tar", ArchiveStreamFactory.TAR, true, TAR_DEFAULT, FACTORY, "charsetName"),
             new TestData("bla.tar", ArchiveStreamFactory.TAR, true, StandardCharsets.UTF_8.name(), FACTORY_UTF8, "charsetName"),
@@ -260,7 +268,7 @@ class ArchiveStreamFactoryTest extends AbstractTest {
         for (final String extension : new String[] { ArchiveStreamFactory.AR, ArchiveStreamFactory.ARJ, ArchiveStreamFactory.CPIO, ArchiveStreamFactory.DUMP,
                 // Compress doesn't know how to detect JARs, see COMPRESS-91
                 // ArchiveStreamFactory.JAR,
-                ArchiveStreamFactory.SEVEN_Z, ArchiveStreamFactory.TAR, ArchiveStreamFactory.ZIP }) {
+                ArchiveStreamFactory.LHA, ArchiveStreamFactory.SEVEN_Z, ArchiveStreamFactory.TAR, ArchiveStreamFactory.ZIP }) {
             assertEquals(extension, detect("bla." + extension));
         }
 
