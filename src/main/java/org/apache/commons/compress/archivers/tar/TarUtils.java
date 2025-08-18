@@ -649,21 +649,21 @@ public class TarUtils {
         long sparseHeadersCount = readResult[0];
         if (sparseHeadersCount < 0) {
             // overflow while reading number?
-            throw new ArchiveException("Corrupted TAR archive. Negative value in sparse headers block");
+            throw new ArchiveException("Corrupted TAR archive: Negative value in sparse headers block.");
         }
         bytesRead += readResult[1];
         while (sparseHeadersCount-- > 0) {
             readResult = readLineOfNumberForPax1x(inputStream);
             final long sparseOffset = readResult[0];
             if (sparseOffset < 0) {
-                throw new ArchiveException("Corrupted TAR archive. Sparse header block offset contains negative value");
+                throw new ArchiveException("Corrupted TAR archive: Sparse header block offset contains negative value.");
             }
             bytesRead += readResult[1];
 
             readResult = readLineOfNumberForPax1x(inputStream);
             final long sparseNumbytes = readResult[0];
             if (sparseNumbytes < 0) {
-                throw new ArchiveException("Corrupted TAR archive. Sparse header block numbytes contains negative value");
+                throw new ArchiveException("Corrupted TAR archive: Sparse header block numbytes contains negative value.");
             }
             bytesRead += readResult[1];
             sparseHeaders.add(new TarArchiveStructSparse(sparseOffset, sparseNumbytes));
@@ -763,17 +763,17 @@ public class TarUtils {
                             if (restLen <= 1) { // only NL
                                 headers.remove(keyword);
                             } else if (headerSize >= 0 && restLen > headerSize - totalRead) {
-                                throw new ArchiveException("Paxheader value size %,d exceeds size of header record", restLen);
+                                throw new ArchiveException("PAX header value size %,d exceeds size of header record.", restLen);
                             } else {
                                 final byte[] rest = IOUtils.readRange(inputStream, restLen);
                                 final int got = rest.length;
                                 if (got != restLen) {
-                                    throw new ArchiveException("Failed to read Paxheader. Expected %,d bytes, read %,d", restLen, got);
+                                    throw new ArchiveException("Failed to read PAX header: Expected %,d bytes, read %,d.", restLen, got);
                                 }
                                 totalRead += restLen;
                                 // Drop trailing NL
                                 if (rest[restLen - 1] != '\n') {
-                                    throw new ArchiveException("Failed to read Paxheader.Value should end with a newline");
+                                    throw new ArchiveException("Failed to read PAX header: Value should end with a newline.");
                                 }
                                 final String value = new String(rest, 0, restLen - 1, StandardCharsets.UTF_8);
                                 headers.put(keyword, value);
@@ -786,21 +786,22 @@ public class TarUtils {
                                     try {
                                         offset = Long.valueOf(value);
                                     } catch (final NumberFormatException ex) {
-                                        throw new ArchiveException("Failed to read Paxheader. Offset %s contains a non-numeric value", TarGnuSparseKeys.OFFSET);
+                                        throw new ArchiveException("Failed to read PAX header: Offset %s contains a non-numeric value.",
+                                                TarGnuSparseKeys.OFFSET);
                                     }
                                     if (offset < 0) {
-                                        throw new ArchiveException("Failed to read Paxheader. Offset %s contains negative value", TarGnuSparseKeys.OFFSET);
+                                        throw new ArchiveException("Failed to read PAX header: Offset %s contains negative value.", TarGnuSparseKeys.OFFSET);
                                     }
                                 }
                                 // for 0.0 PAX Headers
                                 if (keyword.equals(TarGnuSparseKeys.NUMBYTES)) {
                                     if (offset == null) {
-                                        throw new ArchiveException("Failed to read Paxheader. %s is expected before GNU.sparse.numbytes shows up.",
+                                        throw new ArchiveException("Failed to read PAX header: %s is expected before GNU.sparse.numbytes shows up.",
                                                 TarGnuSparseKeys.OFFSET);
                                     }
                                     final long numbytes = ParsingUtils.parseLongValue(value);
                                     if (numbytes < 0) {
-                                        throw new ArchiveException("Failed to read Paxheader. %s contains negative value", TarGnuSparseKeys.NUMBYTES);
+                                        throw new ArchiveException("Failed to read PAX header: %s contains negative value.", TarGnuSparseKeys.NUMBYTES);
                                     }
                                     sparseHeaders.add(new TarArchiveStructSparse(offset, numbytes));
                                     offset = null;
@@ -814,7 +815,7 @@ public class TarUtils {
                 }
                 // COMPRESS-530 : throw if we encounter a non-number while reading length
                 if (!isAsciiDigit(ch)) {
-                    throw new ArchiveException("Failed to read Paxheader. Encountered a non-number while reading length");
+                    throw new ArchiveException("Failed to read PAX header: Encountered a non-number while reading length.");
                 }
                 len *= 10;
                 len += ch - '0';
@@ -859,10 +860,10 @@ public class TarUtils {
         while ((number = inputStream.read()) != '\n') {
             bytesRead += 1;
             if (number == -1) {
-                throw new ArchiveException("Unexpected EOF when reading parse information of 1.X PAX format");
+                throw new ArchiveException("Unexpected EOF when reading parse information of 1.X PAX format.");
             }
             if (!isAsciiDigit(number)) {
-                throw new ArchiveException("Corrupted TAR archive. Non-numeric value in sparse headers block");
+                throw new ArchiveException("Corrupted TAR archive: Non-numeric value in sparse headers block.");
             }
             result = result * 10 + (number - '0');
         }
@@ -908,15 +909,15 @@ public class TarUtils {
                 final TarArchiveStructSparse sparseHeader = parseSparse(buffer,
                         offset + i * (TarConstants.SPARSE_OFFSET_LEN + TarConstants.SPARSE_NUMBYTES_LEN));
                 if (sparseHeader.getOffset() < 0) {
-                    throw new ArchiveException("Corrupted TAR archive, sparse entry with negative offset");
+                    throw new ArchiveException("Corrupted TAR archive: Sparse entry with negative offset.");
                 }
                 if (sparseHeader.getNumbytes() < 0) {
-                    throw new ArchiveException("Corrupted TAR archive, sparse entry with negative numbytes");
+                    throw new ArchiveException("Corrupted TAR archive: sparse entry with negative numbytes.");
                 }
                 sparseHeaders.add(sparseHeader);
             } catch (final IllegalArgumentException e) {
                 // thrown internally by parseOctalOrBinary
-                throw new ArchiveException("Corrupted TAR archive, sparse entry is invalid", (Throwable) e);
+                throw new ArchiveException("Corrupted TAR archive: Sparse entry is invalid.", (Throwable) e);
             }
         }
         return Collections.unmodifiableList(sparseHeaders);
