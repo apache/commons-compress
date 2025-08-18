@@ -543,11 +543,15 @@ public class TarUtils {
      * @throws IllegalArgumentException if the trailing space/NUL is missing or if an invalid byte is detected.
      */
     public static long parseOctal(final byte[] buffer, final int offset, final int length) {
+        return parseOctal(buffer, offset, length, "parseOctal()");
+    }
+
+    static long parseOctal(final byte[] buffer, final int offset, final int length, final String context) {
         long result = 0;
         int end = offset + length;
         int start = offset;
         if (length < 2) {
-            throw new IllegalArgumentException("Length " + length + " must be at least 2");
+            throw new IllegalArgumentException(context + ": Length " + length + " must be at least 2");
         }
         if (buffer[start] == 0) {
             return 0L;
@@ -572,7 +576,7 @@ public class TarUtils {
             final byte currentByte = buffer[start];
             // CheckStyle:MagicNumber OFF
             if (!isOctalDigit(currentByte)) {
-                throw new IllegalArgumentException(exceptionMessage(buffer, offset, length, start, currentByte));
+                throw new IllegalArgumentException(context + ": " + exceptionMessage(buffer, offset, length, start, currentByte));
             }
             result = (result << 3) + (currentByte - '0'); // convert from ASCII
             // CheckStyle:MagicNumber ON
@@ -594,7 +598,7 @@ public class TarUtils {
      */
     public static long parseOctalOrBinary(final byte[] buffer, final int offset, final int length) {
         if ((buffer[offset] & 0x80) == 0) {
-            return parseOctal(buffer, offset, length);
+            return parseOctal(buffer, offset, length, "parseOctalOrBinary()");
         }
         final boolean negative = buffer[offset] == (byte) 0xff;
         if (length < 9) {
@@ -939,7 +943,7 @@ public class TarUtils {
     public static boolean verifyCheckSum(final byte[] header) {
         final long storedSum;
         try {
-            storedSum = parseOctal(header, TarConstants.CHKSUM_OFFSET, TarConstants.CHKSUMLEN);
+            storedSum = parseOctal(header, TarConstants.CHKSUM_OFFSET, TarConstants.CHKSUMLEN, "verifyCheckSum()");
         } catch (final Exception e) {
             return false;
         }
