@@ -461,4 +461,17 @@ public final class TarTest extends AbstractTest {
             Files.copy(in, newTempFile(entry.getName()).toPath());
         }
     }
+
+    @Test
+    void testTarUnarchiveInvalidChecksum() throws Exception {
+        final File input = getFile("bla_corrupt_checksum.tar");
+        try (InputStream is = Files.newInputStream(input.toPath());
+                TarArchiveInputStream in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("tar", is)) {
+            // only the first entry was manually corrupted
+            final TarArchiveEntry entry = in.getNextEntry();
+            assertFalse(entry.isCheckSumOK());
+            final TarArchiveEntry entry2 = in.getNextEntry();
+            assertTrue(entry2.isCheckSumOK());
+        }
+    }
 }

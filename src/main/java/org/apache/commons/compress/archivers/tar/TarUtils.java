@@ -937,7 +937,12 @@ public class TarUtils {
      * @since 1.5
      */
     public static boolean verifyCheckSum(final byte[] header) {
-        final long storedSum = parseOctal(header, TarConstants.CHKSUM_OFFSET, TarConstants.CHKSUMLEN);
+        final long storedSum;
+        try {
+            storedSum = parseOctal(header, TarConstants.CHKSUM_OFFSET, TarConstants.CHKSUMLEN);
+        } catch (final Exception e) {
+            return false;
+        }
         long unsignedSum = 0;
         long signedSum = 0;
         for (int i = 0; i < header.length; i++) {
