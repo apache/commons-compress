@@ -1563,7 +1563,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
                 offset += SPARSELEN_GNU;
                 isExtended = TarUtils.parseBoolean(header, offset);
                 offset += ISEXTENDEDLEN_GNU;
-                realSize = TarUtils.parseOctal(header, offset, REALSIZELEN_GNU);
+                realSize = TarUtils.parseOctal(header, offset, REALSIZELEN_GNU, "parseUstarHeaderBlock()");
                 break;
             }
             // Star format (Schily tar)

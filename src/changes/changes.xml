@@ -57,6 +57,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.archivers.sevenz.DeltaDecoder.encode(OutputStream, Object) looses the underlying exception when throwing its IOException subclass.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.archivers.sevenz.AES256SHA256Decoder now enforces the CPP source k_NumCyclesPower_Supported_MAX = 24 limit.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Don't loose precision while reading folders from a SevenZFile.</action>
+      <action type="fix" dev="ggregory" due-to="Roel van Dijk, Gary Gregory">Improve some exception messages in TarUtils and TarArchiveEntry.</action>
       <!-- FIX bzip2 -->      
       <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream constructors now throws CompressorException instead of ArrayIndexOutOfBoundsException.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream throws CompressorException (an IOException subclass) instead of IOException when it encounters formatting problems.</action>
