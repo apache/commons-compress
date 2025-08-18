@@ -89,7 +89,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.archivers.cpio.CpioArchiveInputStream.readOldBinaryEntry(boolean) now throws ArchiveException instead of Arithmetic exception.</action>
       <!-- FIX gzip -->
       <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.compressors.gzip.GzipParameters.setOperatingSystem(int) now throws CompressorException on illegal input.</action>
-      <action type="fix" issue="COMPRESS-705" dev="ggregory" due-to="Mario Fredenhagen, Gary Gregory">GZip IOException: Extra subfield lenght exceeds remaining bytes in extra field; use new option org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream.Builder.setIgnoreExtraField(boolean).</action>
+      <action type="fix" issue="COMPRESS-705" dev="ggregory" due-to="Mario Fredenhagen, Gary Gregory">GZip IOException: Extra subfield length exceeds remaining bytes in extra field; use new option org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream.Builder.setIgnoreExtraField(boolean).</action>
       <!-- FIX snappy -->
       <action type="fix" dev="ggregory" due-to="Stanislav Fort, Gary Gregory">Fix for when a valid raw Snappy stream with uncompressed size > 2 GiB used to decompress and then fail at physical EOF with a “Premature end of stream” exception instead of completing cleanly.</action>
       <!-- FIX general -->      
