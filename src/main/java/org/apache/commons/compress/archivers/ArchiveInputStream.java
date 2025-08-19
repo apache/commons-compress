@@ -110,10 +110,9 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
      *
      * @param inputStream the underlying input stream, or {@code null} if this instance is to be created without an underlying stream.
      * @param charset charset.
-     * @since 1.26.0
+     * @since 1.29.0
      */
-    // This will be protected once subclasses use builders.
-    private ArchiveInputStream(final InputStream inputStream, final Charset charset) {
+    protected ArchiveInputStream(final InputStream inputStream, final Charset charset) {
         super(inputStream);
         this.charset = Charsets.toCharset(charset);
     }
