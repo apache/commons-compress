@@ -6,6 +6,7 @@ target
 .vscode
 *.iml
 *~
+.DS_Store
 /.externalToolBuilders/
 /maven-eclipse.xml
 /.java-version
