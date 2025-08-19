@@ -63,6 +63,7 @@ import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.function.IOConsumer;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -150,9 +151,13 @@ class TarArchiveInputStreamTest extends AbstractTest {
             final List<Future<?>> tasks = IntStream.range(0, 200).mapToObj(index -> executorService.submit(() -> {
                 TarArchiveEntry tarEntry = null;
                 try (InputStream inputStream = getClass().getResourceAsStream(localPath);
-                     TarArchiveInputStream tarInputStream = new TarArchiveInputStream(
-                             bufferInputStream ? new BufferedInputStream(new GZIPInputStream(inputStream)) : new GZIPInputStream(inputStream),
-                             TarConstants.DEFAULT_RCDSIZE * factor, TarConstants.DEFAULT_RCDSIZE)) {
+                     // @formatter:off
+                     TarArchiveInputStream tarInputStream = TarArchiveInputStream.builder()
+                             .setInputStream(bufferInputStream ? new BufferedInputStream(new GZIPInputStream(inputStream)) : new GZIPInputStream(inputStream))
+                             .setBlockSize(TarConstants.DEFAULT_RCDSIZE * factor)
+                             .setRecordSize(TarConstants.DEFAULT_RCDSIZE)
+                             .get()) {
+                    // @formatter:on
                     while ((tarEntry = tarInputStream.getNextEntry()) != null) {
                         assertNotNull(tarEntry);
                     }
@@ -277,11 +282,49 @@ class TarArchiveInputStreamTest extends AbstractTest {
      * Depending on your setup, this test may need a small stack size {@code -Xss256k}.
      */
     @Test
-    void testGetNextTarEntry() throws IOException {
+    void testGetNextEntry() throws IOException {
         try (TarArchiveInputStream inputStream = new TarArchiveInputStream(
                 Files.newInputStream(Paths.get("src/test/resources/org/apache/commons/compress/tar/getNextTarEntry.bin")))) {
             final AtomicLong count = new AtomicLong();
             final TarArchiveEntry entry = inputStream.getNextEntry();
+            assertNull(entry.getCreationTime());
+            assertNull(entry.getLastAccessTime());
+            assertEquals(new Date(0), entry.getLastModifiedDate());
+            assertEquals(FileTime.fromMillis(0), entry.getLastModifiedTime());
+            assertNull(entry.getStatusChangeTime());
+            assertEquals(-1, entry.getDataOffset());
+            assertEquals(0, entry.getDevMajor());
+            assertEquals(0, entry.getDevMinor());
+            assertEquals(0, entry.getDirectoryEntries().length);
+            assertEquals(0, entry.getExtraPaxHeaders().size());
+            assertEquals(0, entry.getOrderedSparseHeaders().size());
+            assertEquals(0, entry.getSparseHeaders().size());
+            assertNull(entry.getFile());
+            assertNull(entry.getPath());
+            assertEquals("", entry.getGroupName());
+            assertEquals(0x1ff, entry.getMode());
+            assertEquals("", entry.getName());
+            assertEquals(0, entry.getRealSize());
+            assertEquals(0, entry.getSize());
+            assertEquals("", entry.getUserName());
+            assertEquals("", entry.getLinkName());
+            assertEquals(0x30, entry.getLinkFlag());
+            assertEquals(0, entry.getLongGroupId());
+            assertEquals(0, entry.getLongUserId());
+            inputStream.forEach(e -> count.incrementAndGet());
+            assertEquals(0, count.get());
+        }
+    }
+
+    /**
+     * Depending on your setup, this test may need a small stack size {@code -Xss256k}.
+     */
+    @Test
+    void testGetNextTarEntryDeprecated() throws IOException {
+        try (TarArchiveInputStream inputStream = new TarArchiveInputStream(
+                Files.newInputStream(Paths.get("src/test/resources/org/apache/commons/compress/tar/getNextTarEntry.bin")))) {
+            final AtomicLong count = new AtomicLong();
+            final TarArchiveEntry entry = inputStream.getNextTarEntry();
             assertNull(entry.getCreationTime());
             assertNull(entry.getLastAccessTime());
             assertEquals(new Date(0), entry.getLastModifiedDate());
@@ -344,6 +387,15 @@ class TarArchiveInputStreamTest extends AbstractTest {
         try (InputStream in = newInputStream("COMPRESS-529-fail.tar");
                 TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
             assertThrows(ArchiveException.class, () -> archive.getNextEntry());
+        }
+    }
+
+    @Test
+    @Disabled
+    void testChecksum() throws IOException {
+        try (InputStream in = newInputStream("org/apache/commons/compress/COMPRESS-707/COMPRESS-707.tar");
+                TarArchiveInputStream archive = TarArchiveInputStream.builder().setInputStream(in).setLenient(true).get()) {
+            archive.getNextEntry();
         }
     }
 

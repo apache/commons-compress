@@ -39,8 +39,10 @@ import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
+import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.io.build.AbstractStreamBuilder;
 import org.apache.commons.io.input.BoundedInputStream;
 
 /**
@@ -51,12 +53,95 @@ import org.apache.commons.io.input.BoundedInputStream;
  */
 public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
 
+    // @formatter:off
+    /**
+     * Builds a new {@link GzipCompressorInputStream}.
+     *
+     * <p>
+     * For example:
+     * </p>
+     * <pre>{@code
+     * TarArchiveInputStream s = TarArchiveInputStream.builder()
+     *   .setPath(path)
+     *   .setLenient(true)
+     *   .setFileNameCharset(StandardCharsets.UTF_8)
+     *   .get();}
+     * </pre>
+     *
+     * @see #get()
+     * @since 1.29.0
+     */
+    // @formatter:on
+    public static class Builder extends AbstractStreamBuilder<TarArchiveInputStream, Builder> {
+
+        private int blockSize = TarConstants.DEFAULT_BLKSIZE;
+        private int recordSize = TarConstants.DEFAULT_RCDSIZE;
+        private boolean lenient;
+
+        /**
+         * Constructs a new instance.
+         */
+        public Builder() {
+            // empty
+        }
+
+        @Override
+        public TarArchiveInputStream get() throws IOException {
+            return new TarArchiveInputStream(this);
+        }
+
+        /**
+         * Sets the block size.
+         *
+         * @param blockSize the block size.
+         * @return {@code this} instance.
+         */
+        public Builder setBlockSize(final int blockSize) {
+            this.blockSize = blockSize;
+            return this;
+        }
+
+        /**
+         * Set whether illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
+         * {@link TarArchiveEntry#UNKNOWN}. When set to false such illegal fields cause an exception instead.
+         *
+         * @param lenient whether illegal values throw exceptions.
+         * @return {@code this} instance.
+         */
+        public Builder setLenient(final boolean lenient) {
+            this.lenient = lenient;
+            return this;
+        }
+
+        /**
+         * Sets the record size.
+         *
+         * @param recordSize the record size.
+         * @return {@code this} instance.
+         */
+        public Builder setRecordSize(final int recordSize) {
+            this.recordSize = recordSize;
+            return this;
+        }
+
+    }
+
     /**
      * IBM AIX <a href=""https://www.ibm.com/docs/sv/aix/7.2.0?topic=files-tarh-file">tar.h</a>: "This field is terminated with a space only."
      */
     private static final String VERSION_AIX = "0 ";
 
     private static final int SMALL_BUFFER_SIZE = 256;
+
+    /**
+     * Creates a new builder.
+     *
+     * @return a new builder.
+     * @since 1.29.0
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
 
     /**
      * Checks if the signature matches what is expected for a tar file.
@@ -128,6 +213,15 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
     private final List<TarArchiveStructSparse> globalSparseHeaders = new ArrayList<>();
 
     private final boolean lenient;
+
+    @SuppressWarnings("resource") // caller closes.
+    private TarArchiveInputStream(final Builder builder) throws IOException {
+        super(builder.getInputStream(), builder.getCharset());
+        this.zipEncoding = ZipEncodingHelper.getZipEncoding(builder.getCharset());
+        this.recordBuffer = new byte[builder.recordSize];
+        this.blockSize = builder.blockSize;
+        this.lenient = builder.lenient;
+    }
 
     /**
      * Constructs a new instance.
