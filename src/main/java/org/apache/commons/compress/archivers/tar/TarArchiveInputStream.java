@@ -233,13 +233,15 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
     }
 
     /**
-     * Constructs a new instance.
+     * Constructs a new instance with default values.
      *
      * @param inputStream the input stream to use.
      * @param lenient     when set to true illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
      *                    {@link TarArchiveEntry#UNKNOWN}. When set to false such illegal fields cause an exception instead.
      * @since 1.19
+     * @deprecated Use {@link #builder()} to configure and {@link Builder#get() get()} a {@link Builder}.
      */
+    @Deprecated
     public TarArchiveInputStream(final InputStream inputStream, final boolean lenient) {
         this(inputStream, TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, null, lenient);
     }
@@ -249,7 +251,9 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      *
      * @param inputStream the input stream to use.
      * @param blockSize   the block size to use.
+     * @deprecated Use {@link #builder()} to configure and {@link Builder#get() get()} a {@link Builder}.
      */
+    @Deprecated
     public TarArchiveInputStream(final InputStream inputStream, final int blockSize) {
         this(inputStream, blockSize, TarConstants.DEFAULT_RCDSIZE);
     }
@@ -260,7 +264,9 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      * @param inputStream the input stream to use.
      * @param blockSize   the block size to use.
      * @param recordSize  the record size to use.
+     * @deprecated Use {@link #builder()} to configure and {@link Builder#get() get()} a {@link Builder}.
      */
+    @Deprecated
     public TarArchiveInputStream(final InputStream inputStream, final int blockSize, final int recordSize) {
         this(inputStream, blockSize, recordSize, null);
     }
@@ -273,7 +279,9 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      * @param recordSize  the record size to use.
      * @param encoding    name of the encoding to use for file names.
      * @since 1.4
+     * @deprecated Use {@link #builder()} to configure and {@link Builder#get() get()} a {@link Builder}.
      */
+    @Deprecated
     public TarArchiveInputStream(final InputStream inputStream, final int blockSize, final int recordSize, final String encoding) {
         this(inputStream, blockSize, recordSize, encoding, false);
     }
@@ -288,7 +296,9 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      * @param lenient     when set to true illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
      *                    {@link TarArchiveEntry#UNKNOWN}. When set to false such illegal fields cause an exception instead.
      * @since 1.19
+     * @deprecated Use {@link #builder()} to configure and {@link Builder#get() get()} a {@link Builder}.
      */
+    @Deprecated
     public TarArchiveInputStream(final InputStream inputStream, final int blockSize, final int recordSize, final String encoding, final boolean lenient) {
         super(inputStream, encoding);
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
@@ -304,7 +314,9 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      * @param blockSize   the block size to use.
      * @param encoding    name of the encoding to use for file names.
      * @since 1.4
+     * @deprecated Use {@link #builder()} to configure and {@link Builder#get() get()} a {@link Builder}.
      */
+    @Deprecated
     public TarArchiveInputStream(final InputStream inputStream, final int blockSize, final String encoding) {
         this(inputStream, blockSize, TarConstants.DEFAULT_RCDSIZE, encoding);
     }
@@ -315,7 +327,9 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      * @param inputStream the input stream to use.
      * @param encoding    name of the encoding to use for file names.
      * @since 1.4
+     * @deprecated Use {@link #builder()} to configure and {@link Builder#get() get()} a {@link Builder}.
      */
+    @Deprecated
     public TarArchiveInputStream(final InputStream inputStream, final String encoding) {
         this(inputStream, TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, encoding);
     }
