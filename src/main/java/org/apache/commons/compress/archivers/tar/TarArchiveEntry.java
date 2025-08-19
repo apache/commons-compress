@@ -326,7 +326,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     private FileTime birthTime;
 
     /** If the header checksum is reasonably correct. */
-    private boolean checkSumOK;
+    private boolean checkSumOk;
 
     /** The entry's link flag. */
     private byte linkFlag;
@@ -1136,7 +1136,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * @since 1.5
      */
     public boolean isCheckSumOK() {
-        return checkSumOK;
+        return checkSumOk;
     }
 
     /**
@@ -1498,7 +1498,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         offset += SIZELEN;
         mTime = FileTimes.fromUnixTime(parseOctalOrBinary(header, offset, MODTIMELEN, lenient));
         offset += MODTIMELEN;
-        checkSumOK = TarUtils.verifyCheckSum(header);
+        checkSumOk = TarUtils.verifyCheckSum(header);
         offset += CHKSUMLEN;
         linkFlag = header[offset++];
         linkName = oldStyle ? TarUtils.parseName(header, offset, NAMELEN) : TarUtils.parseName(header, offset, NAMELEN, encoding);
