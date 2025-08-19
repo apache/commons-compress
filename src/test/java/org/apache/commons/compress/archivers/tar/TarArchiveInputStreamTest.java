@@ -63,7 +63,6 @@ import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.function.IOConsumer;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -91,6 +90,17 @@ class TarArchiveInputStreamTest extends AbstractTest {
     @SuppressWarnings("resource") // Caller closes
     private TarArchiveInputStream getTestStream(final String name) {
         return new TarArchiveInputStream(TarArchiveInputStreamTest.class.getResourceAsStream(name));
+    }
+
+    @Test
+    void testChecksumOnly4Byte() throws IOException {
+        try (InputStream in = newInputStream("org/apache/commons/compress/COMPRESS-707/COMPRESS-707-lenient.tar");
+                TarArchiveInputStream archive = TarArchiveInputStream.builder().setInputStream(in).setLenient(true).get()) {
+            final TarArchiveEntry nextEntry = archive.getNextEntry();
+            assertNotNull(nextEntry);
+            assertEquals("hi-gary.txt", nextEntry.getName());
+            assertTrue(nextEntry.isCheckSumOK());
+        }
     }
 
     @Test
@@ -387,15 +397,6 @@ class TarArchiveInputStreamTest extends AbstractTest {
         try (InputStream in = newInputStream("COMPRESS-529-fail.tar");
                 TarArchiveInputStream archive = new TarArchiveInputStream(in)) {
             assertThrows(ArchiveException.class, () -> archive.getNextEntry());
-        }
-    }
-
-    @Test
-    @Disabled
-    void testChecksum() throws IOException {
-        try (InputStream in = newInputStream("org/apache/commons/compress/COMPRESS-707/COMPRESS-707.tar");
-                TarArchiveInputStream archive = TarArchiveInputStream.builder().setInputStream(in).setLenient(true).get()) {
-            archive.getNextEntry();
         }
     }
 

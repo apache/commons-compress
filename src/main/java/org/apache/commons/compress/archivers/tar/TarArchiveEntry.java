@@ -1132,7 +1132,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * Tests whether this entry's checksum status.
      *
      * @return if the header checksum is reasonably correct
-     * @see TarUtils#verifyCheckSum(byte[])
+     * @see TarUtils#verifyCheckSum(byte[], boolean)
      * @since 1.5
      */
     public boolean isCheckSumOK() {
@@ -1498,7 +1498,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         offset += SIZELEN;
         mTime = FileTimes.fromUnixTime(parseOctalOrBinary(header, offset, MODTIMELEN, lenient));
         offset += MODTIMELEN;
-        checkSumOk = TarUtils.verifyCheckSum(header);
+        checkSumOk = TarUtils.verifyCheckSum(header, lenient);
         offset += CHKSUMLEN;
         linkFlag = header[offset++];
         linkName = oldStyle ? TarUtils.parseName(header, offset, NAMELEN) : TarUtils.parseName(header, offset, NAMELEN, encoding);
@@ -1563,7 +1563,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
                 offset += SPARSELEN_GNU;
                 isExtended = TarUtils.parseBoolean(header, offset);
                 offset += ISEXTENDEDLEN_GNU;
-                realSize = TarUtils.parseOctal(header, offset, REALSIZELEN_GNU, "parseUstarHeaderBlock()");
+                realSize = TarUtils.parseOctal(header, offset, REALSIZELEN_GNU, "parseUstarHeaderBlock()", false);
                 break;
             }
             // Star format (Schily tar)

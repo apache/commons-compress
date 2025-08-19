@@ -556,7 +556,7 @@ class TarUtilsTest extends AbstractTest {
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        assertTrue(TarUtils.verifyCheckSum(valid));
+        assertTrue(TarUtils.verifyCheckSum(valid, false));
 
         final byte[] compress117 = { // from COMPRESS-117
                 (byte) 0x37, (byte) 0x7a, (byte) 0x43, (byte) 0x2e, (byte) 0x74, (byte) 0x78, (byte) 0x74, (byte) 0x00, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -575,7 +575,7 @@ class TarUtilsTest extends AbstractTest {
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, };
-        assertTrue(TarUtils.verifyCheckSum(compress117));
+        assertTrue(TarUtils.verifyCheckSum(compress117, false));
 
         final byte[] invalid = { // from the testAIFF.aif file in Tika
                 70, 79, 82, 77, 0, 0, 15, 46, 65, 73, 70, 70, 67, 79, 77, 77, 0, 0, 0, 18, 0, 2, 0, 0, 3, -64, 0, 16, 64, 14, -84, 68, 0, 0, 0, 0, 0, 0, 83, 83,
@@ -590,7 +590,7 @@ class TarUtilsTest extends AbstractTest {
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, -1, -2, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, -1, -1, 0, 0, 0, 0, -1, -1, 0, 2, -1, -2, 0, 2, -1, -2, 0,
                 2, -1, -1, 0, 0, 0, 0, -1, -1, 0, 1, -1, -1, 0, 1, -1, -1, 0, 1, -1, -1, 0, 1, -1, -1, 0, 1, 0, 0, 0, 0, -1, -1, 0, 2, -1, -2, 0, 1, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 1, -1, -1, 0, 0, 0, 0, -1, -1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 };
-        assertFalse(TarUtils.verifyCheckSum(invalid));
+        assertFalse(TarUtils.verifyCheckSum(invalid, false));
     }
 
     @Test

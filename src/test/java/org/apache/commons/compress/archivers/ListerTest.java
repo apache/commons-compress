@@ -32,13 +32,13 @@ import org.junit.jupiter.params.provider.MethodSource;
 class ListerTest {
 
     /**
-     * Creates a stream of paths of test fixtures with file names that don't end with {@code "-fail"} for specific file extensions.
+     * Creates a stream of paths of test fixtures with file names that don't end with {@code "-fail"} or {@code "-lenient"} for specific file extensions.
      *
      * @return a stream of paths.
      * @throws IOException if an I/O error is thrown.
      */
     public static Stream<Path> getFixtures() throws IOException {
-        return PathUtils.walk(Paths.get("src/test/resources"), new RegexFileFilter("^(?!.*(-fail)).*\\.(tar|ar|arj|apk|dump)$"), 10, false);
+        return PathUtils.walk(Paths.get("src/test/resources"), new RegexFileFilter("^(?!.*(-fail|-lenient)).*\\.(tar|ar|arj|apk|dump)$"), 10, false);
     }
 
     @ParameterizedTest
