@@ -44,7 +44,7 @@ public abstract class CPRef extends ConstantPoolEntry {
      * @param className   TODO
      * @param descriptor  TODO
      * @param globalIndex index in CpBands
-     * @throws NullPointerException if descriptor or className is null
+     * @throws NullPointerException if descriptor or className is {@code null}
      */
     public CPRef(final byte type, final CPClass className, final CPNameAndType descriptor, final int globalIndex) {
         super(type, globalIndex);

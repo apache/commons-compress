@@ -112,8 +112,8 @@ public class MemoryLimitException extends CompressException {
      *
      * @param memoryNeededKiB The memory needed in kibibytes (KiB).
      * @param memoryLimitKiB  The memory limit in kibibytes (KiB).
-     * @param cause           The cause (which is saved for later retrieval by the {@link #getCause()} method). (A null value is permitted, and indicates that
-     *                        the cause is nonexistent or unknown.)
+     * @param cause           The cause (which is saved for later retrieval by the {@link #getCause()} method).
+     *                        A {@code null} value is permitted, and indicates that the cause is nonexistent or unknown.
      * @deprecated Use {@link #MemoryLimitException(long, int, Throwable)}.
      */
     @Deprecated
@@ -128,8 +128,8 @@ public class MemoryLimitException extends CompressException {
      *
      * @param memoryNeededKiB The memory needed in kibibytes (KiB).
      * @param memoryLimitKiB  The memory limit in kibibytes (KiB).
-     * @param cause           The cause (which is saved for later retrieval by the {@link #getCause()} method). (A null value is permitted, and indicates that
-     *                        the cause is nonexistent or unknown.)
+     * @param cause           The cause (which is saved for later retrieval by the {@link #getCause()} method).
+     *                        A {@code null} value is permitted, and indicates that the cause is nonexistent or unknown.
      */
     public MemoryLimitException(final long memoryNeededKiB, final int memoryLimitKiB, final Throwable cause) {
         super(buildMessage(memoryNeededKiB, memoryLimitKiB, KIB, MAXIMUM), cause);

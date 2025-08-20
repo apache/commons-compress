@@ -45,7 +45,7 @@ public class CPMember extends ClassFileEntry {
      * @param descriptor TODO
      * @param flags      TODO
      * @param attributes TODO
-     * @throws NullPointerException if name or descriptor is null
+     * @throws NullPointerException if name or descriptor is {@code null}
      */
     public CPMember(final CPUTF8 name, final CPUTF8 descriptor, final long flags, final List<Attribute> attributes) {
         this.name = Objects.requireNonNull(name, "name");
