@@ -106,7 +106,7 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream<ZstdOutpu
          * </p>
          *
          * @param chainLog the size of the multi-probe search table, as a power of 2.
-         * @return this instance.
+         * @return {@code this} instance.
          * @see ZstdConstants#ZSTD_CHAINLOG_MIN
          * @see ZstdConstants#ZSTD_CHAINLOG_MAX
          * @see <a href="https://facebook.github.io/zstd/zstd_manual.html#Chapter5">Zstd manual Chapter5</a>
@@ -124,7 +124,7 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream<ZstdOutpu
          * </p>
          *
          * @param checksum Whether a 32-bits checksum of content is written at end of frame.
-         * @return this instance.
+         * @return {@code this} instance.
          * @see <a href="https://facebook.github.io/zstd/zstd_manual.html#Chapter5">Zstd manual Chapter5</a>
          * @see <a href="https://github.com/facebook/zstd/blob/dev/lib/zstd.h">zstd.h</a>
          */
@@ -144,7 +144,7 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream<ZstdOutpu
          * </p>
          *
          * @param closeFrameOnFlush whether to close the frame on flush.
-         * @return this instance.
+         * @return {@code this} instance.
          * @see <a href="https://facebook.github.io/zstd/zstd_manual.html#Chapter5">Zstd manual Chapter5</a>
          * @see <a href="https://github.com/facebook/zstd/blob/dev/lib/zstd.h">zstd.h</a>
          */
@@ -168,7 +168,7 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream<ZstdOutpu
          * </ul>
          *
          * @param dict The dictionary buffer.
-         * @return this instance.
+         * @return {@code this} instance.
          * @see <a href="https://facebook.github.io/zstd/zstd_manual.html#Chapter12">Zstd manual Chapter12</a>
          * @see <a href="https://github.com/facebook/zstd/blob/dev/lib/zstd.h">zstd.h</a>
          */
@@ -189,7 +189,7 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream<ZstdOutpu
          * </p>
          *
          * @param hashLog Size of the initial probe table, as a power of 2.
-         * @return this instance.
+         * @return {@code this} instance.
          * @see ZstdConstants#ZSTD_HASHLOG_MIN
          * @see ZstdConstants#ZSTD_HASHLOG_MAX
          * @see <a href="https://facebook.github.io/zstd/zstd_manual.html#Chapter5">Zstd manual Chapter5</a>
@@ -214,7 +214,7 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream<ZstdOutpu
          * </p>
          *
          * @param jobSize Size of a compression job.
-         * @return this instance.
+         * @return {@code this} instance.
          * @see <a href="https://facebook.github.io/zstd/zstd_manual.html#Chapter5">Zstd manual Chapter5</a>
          * @see <a href="https://github.com/facebook/zstd/blob/dev/lib/compress/zstdmt_compress.h">zstdmt_compress.h</a>
          */
@@ -237,7 +237,7 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream<ZstdOutpu
          * </ul>
          *
          * @param level The compression level, from 0 to 9, where the default is {@link ZstdConstants#ZSTD_CLEVEL_DEFAULT}.
-         * @return this instance
+         * @return {@code this} instance
          * @see ZstdConstants#ZSTD_CLEVEL_DEFAULT
          * @see ZstdConstants#ZSTD_CLEVEL_MIN
          * @see ZstdConstants#ZSTD_CLEVEL_MAX
@@ -262,7 +262,7 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream<ZstdOutpu
          * </p>
          *
          * @param minMatch minimum match size for long distance matcher.
-         * @return this instance.
+         * @return {@code this} instance.
          * @see <a href="https://facebook.github.io/zstd/zstd_manual.html#Chapter5">Zstd manual Chapter5</a>
          * @see <a href="https://github.com/facebook/zstd/blob/dev/lib/zstd.h">zstd.h</a>
          */
@@ -307,7 +307,7 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream<ZstdOutpu
          * </p>
          *
          * @param overlapLog the overlap size, as a fraction of window size.
-         * @return this instance.
+         * @return {@code this} instance.
          * @see <a href="https://facebook.github.io/zstd/zstd_manual.html#Chapter5">Zstd manual Chapter5</a>
          * @see <a href="https://github.com/facebook/zstd/blob/dev/lib/zstd.h">zstd.h</a>
          */
@@ -326,7 +326,7 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream<ZstdOutpu
          * </p>
          *
          * @param searchLog number of search attempts, as a power of 2.
-         * @return this instance.
+         * @return {@code this} instance.
          * @see ZstdConstants#ZSTD_SEARCHLOG_MIN
          * @see ZstdConstants#ZSTD_SEARCHLOG_MAX
          * @see <a href="https://facebook.github.io/zstd/zstd_manual.html#Chapter5">Zstd manual Chapter5</a>
@@ -358,7 +358,7 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream<ZstdOutpu
          * </ul>
          *
          * @param strategy the {@code ZSTD_strategy} from the C enum definition.
-         * @return this instance.
+         * @return {@code this} instance.
          * @see <a href="https://facebook.github.io/zstd/zstd_manual.html#Chapter5">Zstd manual Chapter5</a>
          * @see <a href="https://github.com/facebook/zstd/blob/dev/lib/zstd.h">zstd.h</a>
          */
@@ -388,7 +388,7 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream<ZstdOutpu
          * </p>
          *
          * @param targetLength a value that depends on the strategy, see {@code ZSTD_c_targetLength}.
-         * @return this instance.
+         * @return {@code this} instance.
          * @see <a href="https://facebook.github.io/zstd/zstd_manual.html#Chapter5">Zstd manual Chapter5</a>
          * @see <a href="https://github.com/facebook/zstd/blob/dev/lib/zstd.h">zstd.h</a>
          */
@@ -412,7 +412,7 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream<ZstdOutpu
          * </p>
          *
          * @param windowLog maximum allowed back-reference distance, expressed as power of 2.
-         * @return this instance.
+         * @return {@code this} instance.
          * @see ZstdConstants#ZSTD_WINDOWLOG_MIN
          * @see ZstdConstants#ZSTD_WINDOWLOG_MAX
          * @see <a href="https://facebook.github.io/zstd/zstd_manual.html#Chapter5">Zstd manual Chapter5</a>
@@ -439,7 +439,7 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream<ZstdOutpu
          * </p>
          *
          * @param workers How many threads will be spawned to compress in parallel.
-         * @return this instance.
+         * @return {@code this} instance.
          * @see <a href="https://facebook.github.io/zstd/zstd_manual.html#Chapter5">Zstd manual Chapter5</a>
          * @see <a href="https://github.com/facebook/zstd/blob/dev/lib/zstd.h">zstd.h</a>
          */

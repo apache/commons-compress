@@ -131,7 +131,7 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
          * Sets whether we should allow decompressing multiple members.
          *
          * @param decompressConcatenated whether we should allow decompressing multiple members.
-         * @return this instance.
+         * @return {@code this} instance.
          */
         public Builder setDecompressConcatenated(final boolean decompressConcatenated) {
             this.decompressConcatenated = decompressConcatenated;
@@ -149,7 +149,7 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
          * </p>
          *
          * @param fileNameCharset the Charset to use for writing file names and comments, null maps to {@link GzipUtils#GZIP_ENCODING}.
-         * @return this instance.
+         * @return {@code this} instance.
          */
         public Builder setFileNameCharset(final Charset fileNameCharset) {
             this.fileNameCharset = fileNameCharset;
@@ -160,7 +160,7 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
          * Sets whether to ignore extra fields. To best comply with gzip, this defaults to true.
          *
          * @param ignoreExtraFields whether to ignore extra fields.
-         * @return this instance.
+         * @return {@code this} instance.
          * @since 1.29.0
          */
         public Builder setIgnoreExtraField(final boolean ignoreExtraFields) {
@@ -178,7 +178,7 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
          * </p>
          *
          * @param onMemberEnd The consumer.
-         * @return this instance.
+         * @return {@code this} instance.
          * @see GzipCompressorInputStream#getMetaData()
          */
         public Builder setOnMemberEnd(final IOConsumer<GzipCompressorInputStream> onMemberEnd) {
@@ -196,7 +196,7 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
          * </p>
          *
          * @param onMemberStart The consumer.
-         * @return this instance.
+         * @return {@code this} instance.
          * @see GzipCompressorInputStream#getMetaData()
          */
         public Builder setOnMemberStart(final IOConsumer<GzipCompressorInputStream> onMemberStart) {

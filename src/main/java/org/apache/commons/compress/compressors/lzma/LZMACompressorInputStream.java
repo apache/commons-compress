@@ -69,7 +69,7 @@ public class LZMACompressorInputStream extends CompressorInputStream implements 
          *
          * @param memoryLimitKiB Sets a working memory threshold in kibibytes (KiB). Processing throws MemoryLimitException if memory use is above this
          *                       threshold.
-         * @return this instance.
+         * @return {@code this} instance.
          */
         public Builder setMemoryLimitKiB(final int memoryLimitKiB) {
             this.memoryLimitKiB = memoryLimitKiB;

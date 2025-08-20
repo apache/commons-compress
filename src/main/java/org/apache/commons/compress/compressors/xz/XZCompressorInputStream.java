@@ -88,7 +88,7 @@ public class XZCompressorInputStream extends CompressorInputStream implements In
          *
          * @param decompressConcatenated if true, decompress until the end of the input; if false, stop after the first .xz stream and leave the input position
          *                               to point to the next byte after the .xz stream
-         * @return this instance.
+         * @return {@code this} instance.
          */
         public Builder setDecompressConcatenated(final boolean decompressConcatenated) {
             this.decompressConcatenated = decompressConcatenated;
@@ -101,7 +101,7 @@ public class XZCompressorInputStream extends CompressorInputStream implements In
          *
          * @param memoryLimitKiB The memory limit used when reading blocks. The memory usage limit is expressed in kibibytes (KiB) or {@code -1} to impose no
          *                       memory usage limit. If the estimated memory limit is exceeded on {@link #read()}, a {@link MemoryLimitException} is thrown.
-         * @return this instance.
+         * @return {@code this} instance.
          */
         public Builder setMemoryLimitKiB(final int memoryLimitKiB) {
             this.memoryLimitKiB = memoryLimitKiB;

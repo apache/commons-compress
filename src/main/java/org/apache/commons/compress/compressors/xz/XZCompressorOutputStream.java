@@ -93,7 +93,7 @@ public class XZCompressorOutputStream extends CompressorOutputStream<XZOutputStr
          * </p>
          *
          * @param lzma2Options LZMA options.
-         * @return this instance.
+         * @return {@code this} instance.
          */
         public Builder setLzma2Options(final LZMA2Options lzma2Options) {
             this.lzma2Options = lzma2Options != null ? lzma2Options : new LZMA2Options();
