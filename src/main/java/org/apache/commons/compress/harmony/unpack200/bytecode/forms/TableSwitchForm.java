@@ -52,6 +52,8 @@ public class TableSwitchForm extends SwitchForm {
         final int caseCount = operandManager.nextCaseCount();
         final int defaultPc = operandManager.nextLabel();
         final int caseValue = operandManager.nextCaseValues();
+        // Check all at once here for all arrays in this method to account for failures seen in GH CI.
+        Pack200Exception.checkIntArray(caseCount * 6); // yeah, might overflow.
         final int[] casePcs = new int[Pack200Exception.checkIntArray(caseCount)];
         Arrays.setAll(casePcs, i -> operandManager.nextLabel());
         final int[] labelsArray = new int[Pack200Exception.checkIntArray(caseCount + 1)];
@@ -99,7 +101,7 @@ public class TableSwitchForm extends SwitchForm {
         rewriteIndex += 4;
         // jump offsets
         // The case_pcs will get overwritten by fixUpByteCodeTargets
-        Arrays.fill(newRewrite, rewriteIndex, rewriteIndex + (caseCount * 4), -1);
+        Arrays.fill(newRewrite, rewriteIndex, rewriteIndex + caseCount * 4, -1);
         byteCode.setRewrite(newRewrite);
     }
 }
