@@ -45,6 +45,8 @@ public class LookupSwitchForm extends SwitchForm {
     public void setByteCodeOperands(final ByteCode byteCode, final OperandManager operandManager, final int codeLength) throws Pack200Exception {
         final int caseCount = operandManager.nextCaseCount();
         final int defaultPc = operandManager.nextLabel();
+        // Check all at once here for all arrays in this method to account for failures seen in GH CI.
+        Pack200Exception.checkIntArray(caseCount * 5); // yeah, might overflow.
         final int[] caseValues = new int[Pack200Exception.checkIntArray(caseCount)];
         Arrays.setAll(caseValues, i -> operandManager.nextCaseValues());
         final int[] casePcs = new int[Pack200Exception.checkIntArray(caseCount)];
