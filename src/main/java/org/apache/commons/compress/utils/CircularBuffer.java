@@ -24,7 +24,7 @@ package org.apache.commons.compress.utils;
  *
  * @since 1.29.0
  */
-public class CircularBuffer {
+public final class CircularBuffer {
 
     /** Size of the buffer */
     private final int size;
@@ -64,12 +64,9 @@ public class CircularBuffer {
     public void copy(final int distance, final int length) {
         if (distance < 1) {
             throw new IllegalArgumentException("Distance must be at least 1");
-        }
-
-        if (distance > size) {
+        } else if (distance > size) {
             throw new IllegalArgumentException("Distance exceeds buffer size");
         }
-
         final int pos1 = writeIndex - distance;
         final int pos2 = pos1 + length;
         for (int i = pos1; i < pos2; i++) {
@@ -101,7 +98,6 @@ public class CircularBuffer {
         if (bytesAvailable == size) {
             throw new IllegalStateException("Buffer overflow: Cannot write to a full buffer");
         }
-
         buffer[writeIndex] = (byte) value;
         writeIndex = (writeIndex + 1) % size;
         bytesAvailable++;
