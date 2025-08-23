@@ -1116,96 +1116,96 @@ class LhaArchiveInputStreamTest extends AbstractTest {
     @Test
     void testParseExtendedHeaderCommon() throws IOException {
         try (LhaArchiveInputStream archive = new LhaArchiveInputStream(new ByteArrayInputStream(new byte[0]))) {
-            final LhaArchiveEntry entry = new LhaArchiveEntry();
-            archive.parseExtendedHeader(toByteBuffer(0x00, 0x22, 0x33, 0x00, 0x00), entry);
-            assertEquals(0x3322, entry.getHeaderCrc());
+            final LhaArchiveEntry.Builder entryBuilder = LhaArchiveEntry.builder();
+            archive.parseExtendedHeader(toByteBuffer(0x00, 0x22, 0x33, 0x00, 0x00), entryBuilder);
+            assertEquals(0x3322, entryBuilder.get().getHeaderCrc());
         }
     }
 
     @Test
     void testParseExtendedHeaderFilename() throws IOException {
         try (LhaArchiveInputStream archive = new LhaArchiveInputStream(new ByteArrayInputStream(new byte[0]))) {
-            final LhaArchiveEntry entry = new LhaArchiveEntry();
-            archive.parseExtendedHeader(toByteBuffer(0x01, 't', 'e', 's', 't', '.', 't', 'x', 't', 0x00, 0x00), entry);
-            assertEquals("test.txt", entry.getName());
+            final LhaArchiveEntry.Builder entryBuilder = LhaArchiveEntry.builder();
+            archive.parseExtendedHeader(toByteBuffer(0x01, 't', 'e', 's', 't', '.', 't', 'x', 't', 0x00, 0x00), entryBuilder);
+            assertEquals("test.txt", entryBuilder.get().getName());
         }
     }
 
     @Test
     void testParseExtendedHeaderDirectoryName() throws IOException {
         try (LhaArchiveInputStream archive = new LhaArchiveInputStream(new ByteArrayInputStream(new byte[0]), null, '/')) {
-            final LhaArchiveEntry entry = new LhaArchiveEntry();
-            archive.parseExtendedHeader(toByteBuffer(0x02, 'd', 'i', 'r', '1', 0xff, 0x00, 0x00), entry);
-            assertEquals("dir1/", entry.getName());
+            final LhaArchiveEntry.Builder entryBuilder = LhaArchiveEntry.builder();
+            archive.parseExtendedHeader(toByteBuffer(0x02, 'd', 'i', 'r', '1', 0xff, 0x00, 0x00), entryBuilder);
+            assertEquals("dir1/", entryBuilder.get().getName());
         }
     }
 
     @Test
     void testParseExtendedHeaderFilenameAndDirectoryName() throws IOException {
         try (LhaArchiveInputStream archive = new LhaArchiveInputStream(new ByteArrayInputStream(new byte[0]), null, '/')) {
-            LhaArchiveEntry entry;
+            LhaArchiveEntry.Builder entryBuilder;
 
             // Test filename and directory name order
-            entry = new LhaArchiveEntry();
-            archive.parseExtendedHeader(toByteBuffer(0x01, 't', 'e', 's', 't', '.', 't', 'x', 't', 0x00, 0x00), entry);
-            archive.parseExtendedHeader(toByteBuffer(0x02, 'd', 'i', 'r', '1', 0xff, 0x00, 0x00), entry);
-            assertEquals("dir1/test.txt", entry.getName());
+            entryBuilder = LhaArchiveEntry.builder();
+            archive.parseExtendedHeader(toByteBuffer(0x01, 't', 'e', 's', 't', '.', 't', 'x', 't', 0x00, 0x00), entryBuilder);
+            archive.parseExtendedHeader(toByteBuffer(0x02, 'd', 'i', 'r', '1', 0xff, 0x00, 0x00), entryBuilder);
+            assertEquals("dir1/test.txt", entryBuilder.get().getName());
 
             // Test filename and directory name order, no trailing slash
-            entry = new LhaArchiveEntry();
-            archive.parseExtendedHeader(toByteBuffer(0x01, 't', 'e', 's', 't', '.', 't', 'x', 't', 0x00, 0x00), entry);
-            archive.parseExtendedHeader(toByteBuffer(0x02, 'd', 'i', 'r', '1', 0x00, 0x00), entry);
-            assertEquals("dir1/test.txt", entry.getName());
+            entryBuilder = LhaArchiveEntry.builder();
+            archive.parseExtendedHeader(toByteBuffer(0x01, 't', 'e', 's', 't', '.', 't', 'x', 't', 0x00, 0x00), entryBuilder);
+            archive.parseExtendedHeader(toByteBuffer(0x02, 'd', 'i', 'r', '1', 0x00, 0x00), entryBuilder);
+            assertEquals("dir1/test.txt", entryBuilder.get().getName());
 
             // Test directory name and filename order
-            entry = new LhaArchiveEntry();
-            archive.parseExtendedHeader(toByteBuffer(0x02, 'd', 'i', 'r', '1', 0xff, 0x00, 0x00), entry);
-            archive.parseExtendedHeader(toByteBuffer(0x01, 't', 'e', 's', 't', '.', 't', 'x', 't', 0x00, 0x00), entry);
-            assertEquals("dir1/test.txt", entry.getName());
+            entryBuilder = LhaArchiveEntry.builder();
+            archive.parseExtendedHeader(toByteBuffer(0x02, 'd', 'i', 'r', '1', 0xff, 0x00, 0x00), entryBuilder);
+            archive.parseExtendedHeader(toByteBuffer(0x01, 't', 'e', 's', 't', '.', 't', 'x', 't', 0x00, 0x00), entryBuilder);
+            assertEquals("dir1/test.txt", entryBuilder.get().getName());
 
             // Test directory name and filename order, no trailing slash
-            entry = new LhaArchiveEntry();
-            archive.parseExtendedHeader(toByteBuffer(0x02, 'd', 'i', 'r', '1', 0x00, 0x00), entry);
-            archive.parseExtendedHeader(toByteBuffer(0x01, 't', 'e', 's', 't', '.', 't', 'x', 't', 0x00, 0x00), entry);
-            assertEquals("dir1/test.txt", entry.getName());
+            entryBuilder = LhaArchiveEntry.builder();
+            archive.parseExtendedHeader(toByteBuffer(0x02, 'd', 'i', 'r', '1', 0x00, 0x00), entryBuilder);
+            archive.parseExtendedHeader(toByteBuffer(0x01, 't', 'e', 's', 't', '.', 't', 'x', 't', 0x00, 0x00), entryBuilder);
+            assertEquals("dir1/test.txt", entryBuilder.get().getName());
         }
     }
 
     @Test
     void testParseExtendedHeaderUnixPermission() throws IOException {
         try (LhaArchiveInputStream archive = new LhaArchiveInputStream(new ByteArrayInputStream(new byte[0]))) {
-            final LhaArchiveEntry entry = new LhaArchiveEntry();
-            archive.parseExtendedHeader(toByteBuffer(0x50, 0xa4, 0x81, 0x00, 0x00), entry);
-            assertEquals(0x81a4, entry.getUnixPermissionMode());
-            assertEquals(0100644, entry.getUnixPermissionMode());
+            final LhaArchiveEntry.Builder entryBuilder = LhaArchiveEntry.builder();
+            archive.parseExtendedHeader(toByteBuffer(0x50, 0xa4, 0x81, 0x00, 0x00), entryBuilder);
+            assertEquals(0x81a4, entryBuilder.get().getUnixPermissionMode());
+            assertEquals(0100644, entryBuilder.get().getUnixPermissionMode());
         }
     }
 
     @Test
     void testParseExtendedHeaderUnixUidGid() throws IOException {
         try (LhaArchiveInputStream archive = new LhaArchiveInputStream(new ByteArrayInputStream(new byte[0]))) {
-            final LhaArchiveEntry entry = new LhaArchiveEntry();
-            archive.parseExtendedHeader(toByteBuffer(0x51, 0x14, 0x00, 0xf5, 0x01, 0x00, 0x00), entry);
-            assertEquals(0x0014, entry.getUnixGroupId());
-            assertEquals(0x01f5, entry.getUnixUserId());
+            final LhaArchiveEntry.Builder entryBuilder = LhaArchiveEntry.builder();
+            archive.parseExtendedHeader(toByteBuffer(0x51, 0x14, 0x00, 0xf5, 0x01, 0x00, 0x00), entryBuilder);
+            assertEquals(0x0014, entryBuilder.get().getUnixGroupId());
+            assertEquals(0x01f5, entryBuilder.get().getUnixUserId());
         }
     }
 
     @Test
     void testParseExtendedHeaderUnixTimestamp() throws IOException {
         try (LhaArchiveInputStream archive = new LhaArchiveInputStream(new ByteArrayInputStream(new byte[0]))) {
-            final LhaArchiveEntry entry = new LhaArchiveEntry();
-            archive.parseExtendedHeader(toByteBuffer(0x54, 0x5c, 0x73, 0x9c, 0x68, 0x00, 0x00), entry);
-            assertEquals(0x689c735cL, entry.getLastModifiedDate().getTime() / 1000);
+            final LhaArchiveEntry.Builder entryBuilder = LhaArchiveEntry.builder();
+            archive.parseExtendedHeader(toByteBuffer(0x54, 0x5c, 0x73, 0x9c, 0x68, 0x00, 0x00), entryBuilder);
+            assertEquals(0x689c735cL, entryBuilder.get().getLastModifiedDate().getTime() / 1000);
         }
     }
 
     @Test
     void testParseExtendedHeaderMSdosFileAttributes() throws IOException {
         try (LhaArchiveInputStream archive = new LhaArchiveInputStream(new ByteArrayInputStream(new byte[0]))) {
-            final LhaArchiveEntry entry = new LhaArchiveEntry();
-            archive.parseExtendedHeader(toByteBuffer(0x40, 0x10, 0x00, 0x00), entry);
-            assertEquals(0x10, entry.getMsdosFileAttributes());
+            final LhaArchiveEntry.Builder entryBuilder = LhaArchiveEntry.builder();
+            archive.parseExtendedHeader(toByteBuffer(0x40, 0x10, 0x00, 0x00), entryBuilder);
+            assertEquals(0x10, entryBuilder.get().getMsdosFileAttributes());
         }
     }
 

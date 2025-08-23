@@ -258,23 +258,25 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
 
         final int headerChecksum = Byte.toUnsignedInt(buffer.get(HEADER_LEVEL_0_OFFSET_HEADER_CHECKSUM));
 
-        final LhaArchiveEntry entry = new LhaArchiveEntry();
-        entry.setCompressionMethod(getCompressionMethod(buffer));
-        entry.setCompressedSize(Integer.toUnsignedLong(buffer.getInt(HEADER_LEVEL_0_OFFSET_COMPRESSED_SIZE)));
-        entry.setSize(Integer.toUnsignedLong(buffer.getInt(HEADER_LEVEL_0_OFFSET_ORIGINAL_SIZE)));
-        entry.setLastModifiedDate(new Date(ZipUtil.dosToJavaTime(Integer.toUnsignedLong(buffer.getInt(HEADER_LEVEL_0_OFFSET_LAST_MODIFIED_DATE_TIME)))));
+        final String compressionMethod = getCompressionMethod(buffer);
+
+        final LhaArchiveEntry.Builder entryBuilder = new LhaArchiveEntry.Builder()
+            .setCompressionMethod(compressionMethod)
+            .setCompressedSize(Integer.toUnsignedLong(buffer.getInt(HEADER_LEVEL_0_OFFSET_COMPRESSED_SIZE)))
+            .setSize(Integer.toUnsignedLong(buffer.getInt(HEADER_LEVEL_0_OFFSET_ORIGINAL_SIZE)))
+            .setLastModifiedDate(new Date(ZipUtil.dosToJavaTime(Integer.toUnsignedLong(buffer.getInt(HEADER_LEVEL_0_OFFSET_LAST_MODIFIED_DATE_TIME)))));
 
         final int filenameLength = Byte.toUnsignedInt(buffer.get(HEADER_LEVEL_0_OFFSET_FILENAME_LENGTH));
         buffer.position(HEADER_LEVEL_0_OFFSET_FILENAME);
-        entry.setName(getPathname(buffer, filenameLength));
-
-        entry.setDirectory(isDirectory(entry.getCompressionMethod()));
-
-        entry.setCrcValue(Short.toUnsignedInt(buffer.getShort()));
+        entryBuilder.setFilename(getPathname(buffer, filenameLength))
+            .setDirectory(isDirectory(compressionMethod))
+            .setCrcValue(Short.toUnsignedInt(buffer.getShort()));
 
         if (calculateHeaderChecksum(buffer) != headerChecksum) {
             throw new ArchiveException("Invalid header level 0 checksum");
         }
+
+        final LhaArchiveEntry entry = entryBuilder.get();
 
         prepareDecompression(entry);
 
@@ -298,20 +300,20 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
 
         final int baseHeaderChecksum = Byte.toUnsignedInt(buffer.get(HEADER_LEVEL_1_OFFSET_BASE_HEADER_CHECKSUM));
 
-        final LhaArchiveEntry entry = new LhaArchiveEntry();
-        entry.setCompressionMethod(getCompressionMethod(buffer));
+        final String compressionMethod = getCompressionMethod(buffer);
         long skipSize = Integer.toUnsignedLong(buffer.getInt(HEADER_LEVEL_1_OFFSET_SKIP_SIZE));
-        entry.setSize(Integer.toUnsignedLong(buffer.getInt(HEADER_LEVEL_1_OFFSET_ORIGINAL_SIZE)));
-        entry.setLastModifiedDate(new Date(ZipUtil.dosToJavaTime(Integer.toUnsignedLong(buffer.getInt(HEADER_LEVEL_1_OFFSET_LAST_MODIFIED_DATE_TIME)))));
+
+        final LhaArchiveEntry.Builder entryBuilder = new LhaArchiveEntry.Builder()
+            .setCompressionMethod(compressionMethod)
+            .setSize(Integer.toUnsignedLong(buffer.getInt(HEADER_LEVEL_1_OFFSET_ORIGINAL_SIZE)))
+            .setLastModifiedDate(new Date(ZipUtil.dosToJavaTime(Integer.toUnsignedLong(buffer.getInt(HEADER_LEVEL_1_OFFSET_LAST_MODIFIED_DATE_TIME)))));
 
         final int filenameLength = Byte.toUnsignedInt(buffer.get(HEADER_LEVEL_1_OFFSET_FILENAME_LENGTH));
         buffer.position(HEADER_LEVEL_1_OFFSET_FILENAME);
-        entry.setName(getPathname(buffer, filenameLength));
-
-        entry.setDirectory(isDirectory(entry.getCompressionMethod()));
-
-        entry.setCrcValue(Short.toUnsignedInt(buffer.getShort()));
-        entry.setOsId(Byte.toUnsignedInt(buffer.get()));
+        entryBuilder.setFilename(getPathname(buffer, filenameLength))
+            .setDirectory(isDirectory(compressionMethod))
+            .setCrcValue(Short.toUnsignedInt(buffer.getShort()))
+            .setOsId(Byte.toUnsignedInt(buffer.get()));
 
         if (calculateHeaderChecksum(buffer) != baseHeaderChecksum) {
             throw new ArchiveException("Invalid header level 1 checksum");
@@ -327,14 +329,16 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
             final ByteBuffer extendedHeaderBuffer = readExtendedHeader(nextHeaderSize);
             skipSize -= nextHeaderSize;
 
-            parseExtendedHeader(extendedHeaderBuffer, entry);
+            parseExtendedHeader(extendedHeaderBuffer, entryBuilder);
 
             headerParts.add(extendedHeaderBuffer);
 
             nextHeaderSize = Short.toUnsignedInt(extendedHeaderBuffer.getShort(extendedHeaderBuffer.limit() - 2));
         }
 
-        entry.setCompressedSize(skipSize);
+        entryBuilder.setCompressedSize(skipSize);
+
+        final LhaArchiveEntry entry = entryBuilder.get();
 
         if (entry.getHeaderCrc() != null) {
             // Calculate CRC16 of full header
@@ -364,15 +368,16 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
 
         buffer = readRemainingHeaderData(buffer, headerSize);
 
-        final LhaArchiveEntry entry = new LhaArchiveEntry();
-        entry.setCompressionMethod(getCompressionMethod(buffer));
-        entry.setCompressedSize(Integer.toUnsignedLong(buffer.getInt(HEADER_LEVEL_2_OFFSET_COMPRESSED_SIZE)));
-        entry.setSize(Integer.toUnsignedLong(buffer.getInt(HEADER_LEVEL_2_OFFSET_ORIGINAL_SIZE)));
-        entry.setLastModifiedDate(new Date(Integer.toUnsignedLong(buffer.getInt(HEADER_LEVEL_2_OFFSET_LAST_MODIFIED_DATE_TIME)) * 1000));
-        entry.setName("");
-        entry.setDirectory(isDirectory(entry.getCompressionMethod()));
-        entry.setCrcValue(Short.toUnsignedInt(buffer.getShort(HEADER_LEVEL_2_OFFSET_CRC)));
-        entry.setOsId(Byte.toUnsignedInt(buffer.get(HEADER_LEVEL_2_OFFSET_OS_ID)));
+        final String compressionMethod = getCompressionMethod(buffer);
+
+        final LhaArchiveEntry.Builder entryBuilder = new LhaArchiveEntry.Builder()
+            .setCompressionMethod(compressionMethod)
+            .setCompressedSize(Integer.toUnsignedLong(buffer.getInt(HEADER_LEVEL_2_OFFSET_COMPRESSED_SIZE)))
+            .setSize(Integer.toUnsignedLong(buffer.getInt(HEADER_LEVEL_2_OFFSET_ORIGINAL_SIZE)))
+            .setLastModifiedDate(new Date(Integer.toUnsignedLong(buffer.getInt(HEADER_LEVEL_2_OFFSET_LAST_MODIFIED_DATE_TIME)) * 1000))
+            .setDirectory(isDirectory(compressionMethod))
+            .setCrcValue(Short.toUnsignedInt(buffer.getShort(HEADER_LEVEL_2_OFFSET_CRC)))
+            .setOsId(Byte.toUnsignedInt(buffer.get(HEADER_LEVEL_2_OFFSET_OS_ID)));
 
         int extendedHeaderOffset = HEADER_LEVEL_2_OFFSET_FIRST_EXTENDED_HEADER_SIZE;
         int nextHeaderSize = Short.toUnsignedInt(buffer.getShort(extendedHeaderOffset));
@@ -382,10 +387,12 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
 
             extendedHeaderOffset += nextHeaderSize;
 
-            parseExtendedHeader(extendedHeaderBuffer, entry);
+            parseExtendedHeader(extendedHeaderBuffer, entryBuilder);
 
             nextHeaderSize = Short.toUnsignedInt(extendedHeaderBuffer.getShort(extendedHeaderBuffer.limit() - 2));
         }
+
+        final LhaArchiveEntry entry = entryBuilder.get();
 
         if (entry.getHeaderCrc() != null) {
             // Calculate CRC16 of full header
@@ -515,17 +522,17 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
      * Parse the extended header and set the values in the provided entry.
      *
      * @param extendedHeaderBuffer the buffer containing the extended header
-     * @param entry the entry to set the values in
+     * @param entryBuilder the entry builder to set the values in
      * @throws IOException
      */
-    protected void parseExtendedHeader(final ByteBuffer extendedHeaderBuffer, final LhaArchiveEntry entry) throws IOException {
+    protected void parseExtendedHeader(final ByteBuffer extendedHeaderBuffer, final LhaArchiveEntry.Builder entryBuilder) throws IOException {
         final int extendedHeaderType = Byte.toUnsignedInt(extendedHeaderBuffer.get());
         if (extendedHeaderType == EXTENDED_HEADER_TYPE_COMMON) {
             // Common header
             final int crcPos = extendedHeaderBuffer.position(); // Save the current position to be able to set the header CRC later
 
             // Header CRC
-            entry.setHeaderCrc(Short.toUnsignedInt(extendedHeaderBuffer.getShort()));
+            entryBuilder.setHeaderCrc(Short.toUnsignedInt(extendedHeaderBuffer.getShort()));
 
             // Set header CRC to zero to be able to later compute the CRC of the full header
             extendedHeaderBuffer.putShort(crcPos, (short) 0);
@@ -533,49 +540,31 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
             // File name header
             final int filenameLength = extendedHeaderBuffer.limit() - extendedHeaderBuffer.position() - 2;
             final String filename = getPathname(extendedHeaderBuffer, filenameLength);
-            if (entry.getName() == null || "".equals(entry.getName())) {
-                entry.setName(filename);
-            } else {
-                final StringBuilder entryNameBuilder = new StringBuilder(entry.getName());
-                if (entryNameBuilder.charAt(entryNameBuilder.length() - 1) != fileSeparatorChar) {
-                    // If the entry name does not end with a file separator, append it
-                    entryNameBuilder.append(fileSeparatorChar);
-                }
-
-                entryNameBuilder.append(filename);
-
-                entry.setName(entryNameBuilder.toString());
-            }
+            entryBuilder.setFilename(filename);
         } else if (extendedHeaderType == EXTENDED_HEADER_TYPE_DIRECTORY_NAME) {
             // Directory name header
             final int directoryNameLength = extendedHeaderBuffer.limit() - extendedHeaderBuffer.position() - 2;
             final String directoryName = getPathname(extendedHeaderBuffer, directoryNameLength);
-            if (entry.getName() == null || "".equals(entry.getName())) {
-                entry.setName(directoryName);
+            if (directoryName.charAt(directoryName.length() - 1) != fileSeparatorChar) {
+                // If the directory name does not end with a file separator, append it
+                entryBuilder.setDirectoryName(directoryName + fileSeparatorChar);
             } else {
-                final StringBuilder entryNameBuilder = new StringBuilder(directoryName);
-                if (entryNameBuilder.charAt(entryNameBuilder.length() - 1) != fileSeparatorChar) {
-                    // If the directory name does not end with a file separator, append it
-                    entryNameBuilder.append(fileSeparatorChar);
-                }
-
-                entryNameBuilder.append(entry.getName());
-
-                entry.setName(entryNameBuilder.toString());
+                entryBuilder.setDirectoryName(directoryName);
             }
+
         } else if (extendedHeaderType == EXTENDED_HEADER_TYPE_MSDOS_FILE_ATTRIBUTES) {
             // MS-DOS file attributes
-            entry.setMsdosFileAttributes(Short.toUnsignedInt(extendedHeaderBuffer.getShort()));
+            entryBuilder.setMsdosFileAttributes(Short.toUnsignedInt(extendedHeaderBuffer.getShort()));
         } else if (extendedHeaderType == EXTENDED_HEADER_TYPE_UNIX_PERMISSION) {
             // UNIX file permission
-            entry.setUnixPermissionMode(Short.toUnsignedInt(extendedHeaderBuffer.getShort()));
+            entryBuilder.setUnixPermissionMode(Short.toUnsignedInt(extendedHeaderBuffer.getShort()));
         } else if (extendedHeaderType == EXTENDED_HEADER_TYPE_UNIX_UID_GID) {
             // UNIX group/user ID
-            entry.setUnixGroupId(Short.toUnsignedInt(extendedHeaderBuffer.getShort()));
-            entry.setUnixUserId(Short.toUnsignedInt(extendedHeaderBuffer.getShort()));
+            entryBuilder.setUnixGroupId(Short.toUnsignedInt(extendedHeaderBuffer.getShort()));
+            entryBuilder.setUnixUserId(Short.toUnsignedInt(extendedHeaderBuffer.getShort()));
         } else if (extendedHeaderType == EXTENDED_HEADER_TYPE_UNIX_TIMESTAMP) {
             // UNIX last modified time
-            entry.setLastModifiedDate(new Date(Integer.toUnsignedLong(extendedHeaderBuffer.getInt()) * 1000));
+            entryBuilder.setLastModifiedDate(new Date(Integer.toUnsignedLong(extendedHeaderBuffer.getInt()) * 1000));
         }
 
         // Ignore unknown extended header
