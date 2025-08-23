@@ -211,7 +211,7 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
             throw new CompressorException("Code length table has invalid size (%d > %d)", numCodeLengths, MAX_NUMBER_OF_COMMAND_DECODING_CODE_LENGTHS);
         } else if (numCodeLengths == 0) {
             // If numCodeLengths is zero, we read a single code length of COMMAND_DECODING_LENGTH_BITS bits and use as root of the tree
-            return new BinaryTree(new int[] { readBits(COMMAND_DECODING_LENGTH_BITS) });
+            return new BinaryTree(readBits(COMMAND_DECODING_LENGTH_BITS));
         } else {
             // Read all code lengths
             final int[] codeLengths = new int[numCodeLengths];
@@ -269,7 +269,7 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
             throw new CompressorException("Code length table has invalid size (%d > %d)", numCodeLengths, getMaxNumberOfCommands());
         } else if (numCodeLengths == 0) {
             // If numCodeLengths is zero, we read a single code length of COMMAND_TREE_LENGTH_BITS bits and use as root of the tree
-            return new BinaryTree(new int[] { readBits(COMMAND_TREE_LENGTH_BITS) });
+            return new BinaryTree(readBits(COMMAND_TREE_LENGTH_BITS));
         } else {
             // Read all code lengths
             final int[] codeLengths = new int[numCodeLengths];
@@ -310,7 +310,7 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
             throw new CompressorException("Code length table has invalid size (%d > %d)", numCodeLengths, getDistanceCodeSize());
         } else if (numCodeLengths == 0) {
             // If numCodeLengths is zero, we read a single code length of getDistanceBits() bits and use as root of the tree
-            return new BinaryTree(new int[] { readBits(getDistanceBits()) });
+            return new BinaryTree(readBits(getDistanceBits()));
         } else {
             // Read all code lengths
             final int[] codeLengths = new int[numCodeLengths];

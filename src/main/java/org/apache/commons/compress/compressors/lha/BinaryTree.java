@@ -55,7 +55,7 @@ class BinaryTree {
      *
      * @param array the array to build the binary tree from
      */
-    BinaryTree(final int[] array) {
+    BinaryTree(final int... array) {
         if (array.length == 1) {
             // Tree only contains a single value, which is the root node value
             this.tree = new int[] { array[0] };

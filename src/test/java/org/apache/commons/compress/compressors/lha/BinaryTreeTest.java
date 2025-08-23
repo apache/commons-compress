@@ -33,11 +33,8 @@ import org.junit.jupiter.api.Test;
 class BinaryTreeTest {
     @Test
     void testTree1() throws Exception {
-        final int[] length = new int[] { 4 };
-        //                        Value: 0
-
         // Special case where the single array value is the root node value
-        final BinaryTree tree = new BinaryTree(length);
+        final BinaryTree tree = new BinaryTree(4);
 
         assertEquals(4, tree.read(createBitInputStream())); // Nothing to read, just return the root value
     }
@@ -224,9 +221,7 @@ class BinaryTreeTest {
     @Test
     void testCheckMaxDepth() throws Exception {
         try {
-            final int[] length = new int[] { 1, 17 };
-
-            new BinaryTree(length);
+            new BinaryTree(1, 17);
             fail("Expected IllegalArgumentException for depth > 16");
         } catch (IllegalArgumentException e) {
             assertEquals("Depth must not be negative and not bigger than 16 but is 17", e.getMessage());
