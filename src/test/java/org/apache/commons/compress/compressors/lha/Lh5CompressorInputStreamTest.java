@@ -40,7 +40,7 @@ class Lh5CompressorInputStreamTest extends AbstractTest {
             assertEquals(8192, in.getDictionarySize());
             assertEquals(13, in.getDictionaryBits());
             assertEquals(4, in.getDistanceBits());
-            assertEquals(14, in.getDistanceCodeSize());
+            assertEquals(14, in.getMaxNumberOfDistanceCodes());
             assertEquals(256, in.getMaxMatchLength());
             assertEquals(510, in.getMaxNumberOfCommands());
         }

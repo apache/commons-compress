@@ -408,7 +408,7 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
     }
 
     /**
-     * Get the compression method from the header. It is always located at the same offset for all header levels.
+     * Gets the compression method from the header. It is always located at the same offset for all header levels.
      *
      * @param buffer the buffer containing the header data
      * @return compression method, e.g. -lh5-
@@ -436,7 +436,7 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
     }
 
     /**
-     * Get the pathname from the current position in the provided buffer. Any 0xFF bytes
+     * Gets the pathname from the current position in the provided buffer. Any 0xFF bytes
      * and '\' chars will be converted into the configured file path separator char.
      * Any leading file path separator char will be removed to avoid extracting to
      * absolute locations.
@@ -571,7 +571,7 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
     }
 
     /**
-     * Check if the compression method is a directory entry.
+     * Tests whether the compression method is a directory entry.
      *
      * @param compressionMethod the compression method
      * @return true if the compression method is a directory entry, false otherwise

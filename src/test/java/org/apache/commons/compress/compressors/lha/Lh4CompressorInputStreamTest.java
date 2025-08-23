@@ -40,7 +40,7 @@ class Lh4CompressorInputStreamTest extends AbstractTest {
             assertEquals(12, in.getDictionaryBits());
             assertEquals(4096, in.getDictionarySize());
             assertEquals(4, in.getDistanceBits());
-            assertEquals(14, in.getDistanceCodeSize());
+            assertEquals(14, in.getMaxNumberOfDistanceCodes());
             assertEquals(256, in.getMaxMatchLength());
             assertEquals(510, in.getMaxNumberOfCommands());
         }

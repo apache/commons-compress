@@ -33,27 +33,41 @@ import org.apache.commons.io.input.CloseShieldInputStream;
 /**
  * This is an implementation of a static Huffman compressor input stream for LHA files that
  * supports lh4, lh5, lh6 and lh7 compression methods.
- *
- * This implementation is based on the documentation that can be found at
- * https://github.com/jca02266/lha/blob/master/Hacking_of_LHa
  */
 abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorInputStream implements InputStreamStatistics {
-    // Constants for command tree decoding
-    private static final int COMMAND_DECODING_LENGTH_BITS = 5; // Number of bits used to encode the command decoding tree length
-    private static final int MAX_NUMBER_OF_COMMAND_DECODING_CODE_LENGTHS = 19; // Maximum number of codes in the command decoding tree
-
-    // Constants for command tree
-    private static final int COMMAND_TREE_LENGTH_BITS = 9; // Number of bits used to encode the command tree length
-
-    // Constants for code length
-    private static final int CODE_LENGTH_BITS = 3; // Number of bits used to encode the code length
+    /**
+     *  Number of bits used to encode the command decoding tree length.
+     */
+    private static final int COMMAND_DECODING_LENGTH_BITS = 5;
+    /**
+     * Maximum number of codes in the command decoding tree.
+     */
+    private static final int MAX_NUMBER_OF_COMMAND_DECODING_CODE_LENGTHS = 19;
+    /**
+     * Number of bits used to encode the command tree length.
+     */
+    private static final int COMMAND_TREE_LENGTH_BITS = 9;
+    /**
+     * Number of literal codes (0-255).
+     */
+    private static final int NUMBER_OF_LITERAL_CODES = 0x100;
+    /**
+     * Number of bits used to encode the code length.
+     */
+    private static final int CODE_LENGTH_BITS = 3;
     private static final int MAX_CODE_LENGTH = 16;
 
     private BitInputStream bin;
     private CircularBuffer buffer;
     private int blockSize;
-    private BinaryTree commandTree; // Command is either a literal or a copy command
-    private BinaryTree distanceTree; // Distance is the offset to copy from the sliding dictionary
+    /**
+     * Command is either a literal or a copy command.
+     */
+    private BinaryTree commandTree;
+    /**
+     * Distance is the offset to copy from the sliding dictionary.
+     */
+    private BinaryTree distanceTree;
 
     /**
      * Constructs a new CompressorInputStream which decompresses bytes read from the specified stream.
@@ -82,7 +96,7 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
     }
 
     /**
-     * Get the threshold for copying data from the sliding dictionary. This is the minimum
+     * Gets the threshold for copying data from the sliding dictionary. This is the minimum
      * possible number of bytes that will be part of a copy command.
      *
      * @return the copy threshold
@@ -92,14 +106,14 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
     }
 
     /**
-     * Get the number of bits used for the dictionary size.
+     * Gets the number of bits used for the dictionary size.
      *
      * @return the number of bits used for the dictionary size
      */
     protected abstract int getDictionaryBits();
 
     /**
-     * Get the size of the dictionary.
+     * Gets the size of the dictionary.
      *
      * @return the size of the dictionary
      */
@@ -108,18 +122,23 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
     }
 
     /**
-     * Get the number of bits used for the distance.
+     * Gets the number of bits used for the distance.
      *
      * @return the number of bits used for the distance
      */
     protected abstract int getDistanceBits();
 
-    protected int getDistanceCodeSize() {
+    /**
+     * Gets the maximum number of distance codes in the distance tree.
+     *
+     * @return the maximum number of distance codes
+     */
+    protected int getMaxNumberOfDistanceCodes() {
         return getDictionaryBits() + 1;
     }
 
     /**
-     * Get the maximum match length for the copy command.
+     * Gets the maximum match length for the copy command.
      *
      * @return the maximum match length
      */
@@ -128,13 +147,13 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
     }
 
     /**
-     * Get the maximum number of commands in the command tree.
+     * Gets the maximum number of commands in the command tree.
      * This is 256 literals (0-255) and 254 copy lengths combinations (3-256).
      *
      * @return the maximum number of commands
      */
     protected int getMaxNumberOfCommands() {
-        return 256 + getMaxMatchLength() - getCopyThreshold() + 1;
+        return NUMBER_OF_LITERAL_CODES + getMaxMatchLength() - getCopyThreshold() + 1;
     }
 
     @Override
@@ -306,8 +325,8 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
         // Number of code lengths to read
         final int numCodeLengths = readBits(getDistanceBits());
 
-        if (numCodeLengths > getDistanceCodeSize()) {
-            throw new CompressorException("Code length table has invalid size (%d > %d)", numCodeLengths, getDistanceCodeSize());
+        if (numCodeLengths > getMaxNumberOfDistanceCodes()) {
+            throw new CompressorException("Code length table has invalid size (%d > %d)", numCodeLengths, getMaxNumberOfDistanceCodes());
         } else if (numCodeLengths == 0) {
             // If numCodeLengths is zero, we read a single code length of getDistanceBits() bits and use as root of the tree
             return new BinaryTree(readBits(getDistanceBits()));
