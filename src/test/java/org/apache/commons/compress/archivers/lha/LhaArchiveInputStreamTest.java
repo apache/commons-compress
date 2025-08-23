@@ -177,12 +177,12 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(52, entry.getCompressedSize());
             assertEquals("-lh5-", entry.getCompressionMethod());
             assertEquals(0x6496, entry.getCrcValue());
-            assertFalse(entry.getOsId().isPresent());
-            assertFalse(entry.getUnixPermissionMode().isPresent());
-            assertFalse(entry.getUnixGroupId().isPresent());
-            assertFalse(entry.getUnixUserId().isPresent());
-            assertFalse(entry.getMsdosFileAttributes().isPresent());
-            assertFalse(entry.getHeaderCrc().isPresent());
+            assertNull(entry.getOsId());
+            assertNull(entry.getUnixPermissionMode());
+            assertNull(entry.getUnixGroupId());
+            assertNull(entry.getUnixUserId());
+            assertNull(entry.getMsdosFileAttributes());
+            assertNull(entry.getHeaderCrc());
 
             // No more entries expected
             assertNull(archive.getNextEntry());
@@ -274,12 +274,12 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(0, entry.getCompressedSize());
             assertEquals("-lhd-", entry.getCompressionMethod());
             assertEquals(0x0000, entry.getCrcValue());
-            assertFalse(entry.getOsId().isPresent());
-            assertFalse(entry.getUnixPermissionMode().isPresent());
-            assertFalse(entry.getUnixGroupId().isPresent());
-            assertFalse(entry.getUnixUserId().isPresent());
-            assertFalse(entry.getMsdosFileAttributes().isPresent());
-            assertFalse(entry.getHeaderCrc().isPresent());
+            assertNull(entry.getOsId());
+            assertNull(entry.getUnixPermissionMode());
+            assertNull(entry.getUnixGroupId());
+            assertNull(entry.getUnixUserId());
+            assertNull(entry.getMsdosFileAttributes());
+            assertNull(entry.getHeaderCrc());
 
             // Check directory entry
             entry = archive.getNextEntry();
@@ -292,12 +292,12 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(0, entry.getCompressedSize());
             assertEquals("-lhd-", entry.getCompressionMethod());
             assertEquals(0x0000, entry.getCrcValue());
-            assertFalse(entry.getOsId().isPresent());
-            assertFalse(entry.getUnixPermissionMode().isPresent());
-            assertFalse(entry.getUnixGroupId().isPresent());
-            assertFalse(entry.getUnixUserId().isPresent());
-            assertFalse(entry.getMsdosFileAttributes().isPresent());
-            assertFalse(entry.getHeaderCrc().isPresent());
+            assertNull(entry.getOsId());
+            assertNull(entry.getUnixPermissionMode());
+            assertNull(entry.getUnixGroupId());
+            assertNull(entry.getUnixUserId());
+            assertNull(entry.getMsdosFileAttributes());
+            assertNull(entry.getHeaderCrc());
 
             // Check file entry
             entry = archive.getNextEntry();
@@ -310,12 +310,12 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(13, entry.getCompressedSize());
             assertEquals("-lh0-", entry.getCompressionMethod());
             assertEquals(0x7757, entry.getCrcValue());
-            assertFalse(entry.getOsId().isPresent());
-            assertFalse(entry.getUnixPermissionMode().isPresent());
-            assertFalse(entry.getUnixGroupId().isPresent());
-            assertFalse(entry.getUnixUserId().isPresent());
-            assertFalse(entry.getMsdosFileAttributes().isPresent());
-            assertFalse(entry.getHeaderCrc().isPresent());
+            assertNull(entry.getOsId());
+            assertNull(entry.getUnixPermissionMode());
+            assertNull(entry.getUnixGroupId());
+            assertNull(entry.getUnixUserId());
+            assertNull(entry.getMsdosFileAttributes());
+            assertNull(entry.getHeaderCrc());
 
             // Check directory entry
             entry = archive.getNextEntry();
@@ -328,12 +328,12 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(0, entry.getCompressedSize());
             assertEquals("-lhd-", entry.getCompressionMethod());
             assertEquals(0x0000, entry.getCrcValue());
-            assertFalse(entry.getOsId().isPresent());
-            assertFalse(entry.getUnixPermissionMode().isPresent());
-            assertFalse(entry.getUnixGroupId().isPresent());
-            assertFalse(entry.getUnixUserId().isPresent());
-            assertFalse(entry.getMsdosFileAttributes().isPresent());
-            assertFalse(entry.getHeaderCrc().isPresent());
+            assertNull(entry.getOsId());
+            assertNull(entry.getUnixPermissionMode());
+            assertNull(entry.getUnixGroupId());
+            assertNull(entry.getUnixUserId());
+            assertNull(entry.getMsdosFileAttributes());
+            assertNull(entry.getHeaderCrc());
 
             // Check file entry
             entry = archive.getNextEntry();
@@ -346,12 +346,12 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(13, entry.getCompressedSize());
             assertEquals("-lh0-", entry.getCompressionMethod());
             assertEquals(0x7757, entry.getCrcValue());
-            assertFalse(entry.getOsId().isPresent());
-            assertFalse(entry.getUnixPermissionMode().isPresent());
-            assertFalse(entry.getUnixGroupId().isPresent());
-            assertFalse(entry.getUnixUserId().isPresent());
-            assertFalse(entry.getMsdosFileAttributes().isPresent());
-            assertFalse(entry.getHeaderCrc().isPresent());
+            assertNull(entry.getOsId());
+            assertNull(entry.getUnixPermissionMode());
+            assertNull(entry.getUnixGroupId());
+            assertNull(entry.getUnixUserId());
+            assertNull(entry.getMsdosFileAttributes());
+            assertNull(entry.getHeaderCrc());
 
             // No more entries expected
             assertNull(archive.getNextEntry());
@@ -375,12 +375,12 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(0, entry.getCompressedSize());
             assertEquals("-lhd-", entry.getCompressionMethod());
             assertEquals(0x0000, entry.getCrcValue());
-            assertFalse(entry.getOsId().isPresent());
-            assertFalse(entry.getUnixPermissionMode().isPresent());
-            assertFalse(entry.getUnixGroupId().isPresent());
-            assertFalse(entry.getUnixUserId().isPresent());
-            assertFalse(entry.getMsdosFileAttributes().isPresent());
-            assertFalse(entry.getHeaderCrc().isPresent());
+            assertNull(entry.getOsId());
+            assertNull(entry.getUnixPermissionMode());
+            assertNull(entry.getUnixGroupId());
+            assertNull(entry.getUnixUserId());
+            assertNull(entry.getMsdosFileAttributes());
+            assertNull(entry.getHeaderCrc());
 
             // Check directory entry
             entry = archive.getNextEntry();
@@ -393,12 +393,12 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(0, entry.getCompressedSize());
             assertEquals("-lhd-", entry.getCompressionMethod());
             assertEquals(0x0000, entry.getCrcValue());
-            assertFalse(entry.getOsId().isPresent());
-            assertFalse(entry.getUnixPermissionMode().isPresent());
-            assertFalse(entry.getUnixGroupId().isPresent());
-            assertFalse(entry.getUnixUserId().isPresent());
-            assertFalse(entry.getMsdosFileAttributes().isPresent());
-            assertFalse(entry.getHeaderCrc().isPresent());
+            assertNull(entry.getOsId());
+            assertNull(entry.getUnixPermissionMode());
+            assertNull(entry.getUnixGroupId());
+            assertNull(entry.getUnixUserId());
+            assertNull(entry.getMsdosFileAttributes());
+            assertNull(entry.getHeaderCrc());
 
             // Check file entry
             entry = archive.getNextEntry();
@@ -411,12 +411,12 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(14, entry.getCompressedSize());
             assertEquals("-lh0-", entry.getCompressionMethod());
             assertEquals(0xc9b4, entry.getCrcValue());
-            assertFalse(entry.getOsId().isPresent());
-            assertFalse(entry.getUnixPermissionMode().isPresent());
-            assertFalse(entry.getUnixGroupId().isPresent());
-            assertFalse(entry.getUnixUserId().isPresent());
-            assertFalse(entry.getMsdosFileAttributes().isPresent());
-            assertFalse(entry.getHeaderCrc().isPresent());
+            assertNull(entry.getOsId());
+            assertNull(entry.getUnixPermissionMode());
+            assertNull(entry.getUnixGroupId());
+            assertNull(entry.getUnixUserId());
+            assertNull(entry.getMsdosFileAttributes());
+            assertNull(entry.getHeaderCrc());
 
             // Check directory entry
             entry = archive.getNextEntry();
@@ -429,12 +429,12 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(0, entry.getCompressedSize());
             assertEquals("-lhd-", entry.getCompressionMethod());
             assertEquals(0x0000, entry.getCrcValue());
-            assertFalse(entry.getOsId().isPresent());
-            assertFalse(entry.getUnixPermissionMode().isPresent());
-            assertFalse(entry.getUnixGroupId().isPresent());
-            assertFalse(entry.getUnixUserId().isPresent());
-            assertFalse(entry.getMsdosFileAttributes().isPresent());
-            assertFalse(entry.getHeaderCrc().isPresent());
+            assertNull(entry.getOsId());
+            assertNull(entry.getUnixPermissionMode());
+            assertNull(entry.getUnixGroupId());
+            assertNull(entry.getUnixUserId());
+            assertNull(entry.getMsdosFileAttributes());
+            assertNull(entry.getHeaderCrc());
 
             // Check file entry
             entry = archive.getNextEntry();
@@ -447,12 +447,12 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(14, entry.getCompressedSize());
             assertEquals("-lh0-", entry.getCompressionMethod());
             assertEquals(0xc9b4, entry.getCrcValue());
-            assertFalse(entry.getOsId().isPresent());
-            assertFalse(entry.getUnixPermissionMode().isPresent());
-            assertFalse(entry.getUnixGroupId().isPresent());
-            assertFalse(entry.getUnixUserId().isPresent());
-            assertFalse(entry.getMsdosFileAttributes().isPresent());
-            assertFalse(entry.getHeaderCrc().isPresent());
+            assertNull(entry.getOsId());
+            assertNull(entry.getUnixPermissionMode());
+            assertNull(entry.getUnixGroupId());
+            assertNull(entry.getUnixUserId());
+            assertNull(entry.getMsdosFileAttributes());
+            assertNull(entry.getHeaderCrc());
 
             // No more entries expected
             assertNull(archive.getNextEntry());
@@ -473,12 +473,12 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(52, entry.getCompressedSize());
             assertEquals("-lh5-", entry.getCompressionMethod());
             assertEquals(0x6496, entry.getCrcValue());
-            assertEquals(85, entry.getOsId().get());
-            assertEquals(0100644, entry.getUnixPermissionMode().get());
-            assertEquals(20, entry.getUnixGroupId().get());
-            assertEquals(501, entry.getUnixUserId().get());
-            assertFalse(entry.getMsdosFileAttributes().isPresent());
-            assertFalse(entry.getHeaderCrc().isPresent());
+            assertEquals(85, entry.getOsId());
+            assertEquals(0100644, entry.getUnixPermissionMode());
+            assertEquals(20, entry.getUnixGroupId());
+            assertEquals(501, entry.getUnixUserId());
+            assertNull(entry.getMsdosFileAttributes());
+            assertNull(entry.getHeaderCrc());
 
             // No more entries expected
             assertNull(archive.getNextEntry());
@@ -503,12 +503,12 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(0, entry.getCompressedSize());
             assertEquals("-lhd-", entry.getCompressionMethod());
             assertEquals(0x0000, entry.getCrcValue());
-            assertEquals(77, entry.getOsId().get());
-            assertFalse(entry.getUnixPermissionMode().isPresent());
-            assertFalse(entry.getUnixGroupId().isPresent());
-            assertFalse(entry.getUnixUserId().isPresent());
-            assertEquals(0x0010, entry.getMsdosFileAttributes().get());
-            assertEquals(0xb772, entry.getHeaderCrc().get());
+            assertEquals(77, entry.getOsId());
+            assertNull(entry.getUnixPermissionMode());
+            assertNull(entry.getUnixGroupId());
+            assertNull(entry.getUnixUserId());
+            assertEquals(0x0010, entry.getMsdosFileAttributes());
+            assertEquals(0xb772, entry.getHeaderCrc());
 
             // Check file entry
             entry = archive.getNextEntry();
@@ -521,12 +521,12 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(14, entry.getCompressedSize());
             assertEquals("-lh0-", entry.getCompressionMethod());
             assertEquals(0xc9b4, entry.getCrcValue());
-            assertEquals(77, entry.getOsId().get());
-            assertFalse(entry.getUnixPermissionMode().isPresent());
-            assertFalse(entry.getUnixGroupId().isPresent());
-            assertFalse(entry.getUnixUserId().isPresent());
-            assertFalse(entry.getMsdosFileAttributes().isPresent());
-            assertEquals(0x9b71, entry.getHeaderCrc().get());
+            assertEquals(77, entry.getOsId());
+            assertNull(entry.getUnixPermissionMode());
+            assertNull(entry.getUnixGroupId());
+            assertNull(entry.getUnixUserId());
+            assertNull(entry.getMsdosFileAttributes());
+            assertEquals(0x9b71, entry.getHeaderCrc());
 
             // No more entries expected
             assertNull(archive.getNextEntry());
@@ -594,12 +594,12 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(0, entry.getCompressedSize());
             assertEquals("-lhd-", entry.getCompressionMethod());
             assertEquals(0x0000, entry.getCrcValue());
-            assertEquals(85, entry.getOsId().get());
-            assertEquals(040755, entry.getUnixPermissionMode().get());
-            assertEquals(20, entry.getUnixGroupId().get());
-            assertEquals(501, entry.getUnixUserId().get());
-            assertFalse(entry.getMsdosFileAttributes().isPresent());
-            assertFalse(entry.getHeaderCrc().isPresent());
+            assertEquals(85, entry.getOsId());
+            assertEquals(040755, entry.getUnixPermissionMode());
+            assertEquals(20, entry.getUnixGroupId());
+            assertEquals(501, entry.getUnixUserId());
+            assertNull(entry.getMsdosFileAttributes());
+            assertNull(entry.getHeaderCrc());
 
             // Check directory entry
             entry = archive.getNextEntry();
@@ -612,12 +612,12 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(0, entry.getCompressedSize());
             assertEquals("-lhd-", entry.getCompressionMethod());
             assertEquals(0x0000, entry.getCrcValue());
-            assertEquals(85, entry.getOsId().get());
-            assertEquals(040755, entry.getUnixPermissionMode().get());
-            assertEquals(20, entry.getUnixGroupId().get());
-            assertEquals(501, entry.getUnixUserId().get());
-            assertFalse(entry.getMsdosFileAttributes().isPresent());
-            assertFalse(entry.getHeaderCrc().isPresent());
+            assertEquals(85, entry.getOsId());
+            assertEquals(040755, entry.getUnixPermissionMode());
+            assertEquals(20, entry.getUnixGroupId());
+            assertEquals(501, entry.getUnixUserId());
+            assertNull(entry.getMsdosFileAttributes());
+            assertNull(entry.getHeaderCrc());
 
             // Check file entry
             entry = archive.getNextEntry();
@@ -630,12 +630,12 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(13, entry.getCompressedSize());
             assertEquals("-lh0-", entry.getCompressionMethod());
             assertEquals(0x7757, entry.getCrcValue());
-            assertEquals(85, entry.getOsId().get());
-            assertEquals(0100644, entry.getUnixPermissionMode().get());
-            assertEquals(20, entry.getUnixGroupId().get());
-            assertEquals(501, entry.getUnixUserId().get());
-            assertFalse(entry.getMsdosFileAttributes().isPresent());
-            assertFalse(entry.getHeaderCrc().isPresent());
+            assertEquals(85, entry.getOsId());
+            assertEquals(0100644, entry.getUnixPermissionMode());
+            assertEquals(20, entry.getUnixGroupId());
+            assertEquals(501, entry.getUnixUserId());
+            assertNull(entry.getMsdosFileAttributes());
+            assertNull(entry.getHeaderCrc());
 
             // Check directory entry
             entry = archive.getNextEntry();
@@ -648,12 +648,12 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(0, entry.getCompressedSize());
             assertEquals("-lhd-", entry.getCompressionMethod());
             assertEquals(0x0000, entry.getCrcValue());
-            assertEquals(85, entry.getOsId().get());
-            assertEquals(040755, entry.getUnixPermissionMode().get());
-            assertEquals(20, entry.getUnixGroupId().get());
-            assertEquals(501, entry.getUnixUserId().get());
-            assertFalse(entry.getMsdosFileAttributes().isPresent());
-            assertFalse(entry.getHeaderCrc().isPresent());
+            assertEquals(85, entry.getOsId());
+            assertEquals(040755, entry.getUnixPermissionMode());
+            assertEquals(20, entry.getUnixGroupId());
+            assertEquals(501, entry.getUnixUserId());
+            assertNull(entry.getMsdosFileAttributes());
+            assertNull(entry.getHeaderCrc());
 
             // Check file entry
             entry = archive.getNextEntry();
@@ -666,12 +666,12 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(13, entry.getCompressedSize());
             assertEquals("-lh0-", entry.getCompressionMethod());
             assertEquals(0x7757, entry.getCrcValue());
-            assertEquals(85, entry.getOsId().get());
-            assertEquals(0100644, entry.getUnixPermissionMode().get());
-            assertEquals(20, entry.getUnixGroupId().get());
-            assertEquals(501, entry.getUnixUserId().get());
-            assertFalse(entry.getMsdosFileAttributes().isPresent());
-            assertFalse(entry.getHeaderCrc().isPresent());
+            assertEquals(85, entry.getOsId());
+            assertEquals(0100644, entry.getUnixPermissionMode());
+            assertEquals(20, entry.getUnixGroupId());
+            assertEquals(501, entry.getUnixUserId());
+            assertNull(entry.getMsdosFileAttributes());
+            assertNull(entry.getHeaderCrc());
 
             // No more entries expected
             assertNull(archive.getNextEntry());
@@ -695,12 +695,12 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(0, entry.getCompressedSize());
             assertEquals("-lhd-", entry.getCompressionMethod());
             assertEquals(0x0000, entry.getCrcValue());
-            assertEquals(77, entry.getOsId().get());
-            assertFalse(entry.getUnixPermissionMode().isPresent());
-            assertFalse(entry.getUnixGroupId().isPresent());
-            assertFalse(entry.getUnixUserId().isPresent());
-            assertEquals(0x0010, entry.getMsdosFileAttributes().get());
-            assertEquals(0xd458, entry.getHeaderCrc().get());
+            assertEquals(77, entry.getOsId());
+            assertNull(entry.getUnixPermissionMode());
+            assertNull(entry.getUnixGroupId());
+            assertNull(entry.getUnixUserId());
+            assertEquals(0x0010, entry.getMsdosFileAttributes());
+            assertEquals(0xd458, entry.getHeaderCrc());
 
             // Check directory entry
             entry = archive.getNextEntry();
@@ -713,12 +713,12 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(0, entry.getCompressedSize());
             assertEquals("-lhd-", entry.getCompressionMethod());
             assertEquals(0x0000, entry.getCrcValue());
-            assertEquals(77, entry.getOsId().get());
-            assertFalse(entry.getUnixPermissionMode().isPresent());
-            assertFalse(entry.getUnixGroupId().isPresent());
-            assertFalse(entry.getUnixUserId().isPresent());
-            assertEquals(0x0010, entry.getMsdosFileAttributes().get());
-            assertEquals(0x40de, entry.getHeaderCrc().get());
+            assertEquals(77, entry.getOsId());
+            assertNull(entry.getUnixPermissionMode());
+            assertNull(entry.getUnixGroupId());
+            assertNull(entry.getUnixUserId());
+            assertEquals(0x0010, entry.getMsdosFileAttributes());
+            assertEquals(0x40de, entry.getHeaderCrc());
 
             // Check file entry
             entry = archive.getNextEntry();
@@ -731,12 +731,12 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(14, entry.getCompressedSize());
             assertEquals("-lh0-", entry.getCompressionMethod());
             assertEquals(0xc9b4, entry.getCrcValue());
-            assertEquals(77, entry.getOsId().get());
-            assertFalse(entry.getUnixPermissionMode().isPresent());
-            assertFalse(entry.getUnixGroupId().isPresent());
-            assertFalse(entry.getUnixUserId().isPresent());
-            assertFalse(entry.getMsdosFileAttributes().isPresent());
-            assertEquals(0x34b0, entry.getHeaderCrc().get());
+            assertEquals(77, entry.getOsId());
+            assertNull(entry.getUnixPermissionMode());
+            assertNull(entry.getUnixGroupId());
+            assertNull(entry.getUnixUserId());
+            assertNull(entry.getMsdosFileAttributes());
+            assertEquals(0x34b0, entry.getHeaderCrc());
 
             // Check directory entry
             entry = archive.getNextEntry();
@@ -749,12 +749,12 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(0, entry.getCompressedSize());
             assertEquals("-lhd-", entry.getCompressionMethod());
             assertEquals(0x0000, entry.getCrcValue());
-            assertEquals(77, entry.getOsId().get());
-            assertFalse(entry.getUnixPermissionMode().isPresent());
-            assertFalse(entry.getUnixGroupId().isPresent());
-            assertFalse(entry.getUnixUserId().isPresent());
-            assertEquals(0x0010, entry.getMsdosFileAttributes().get());
-            assertEquals(0x21b2, entry.getHeaderCrc().get());
+            assertEquals(77, entry.getOsId());
+            assertNull(entry.getUnixPermissionMode());
+            assertNull(entry.getUnixGroupId());
+            assertNull(entry.getUnixUserId());
+            assertEquals(0x0010, entry.getMsdosFileAttributes());
+            assertEquals(0x21b2, entry.getHeaderCrc());
 
             // Check file entry
             entry = archive.getNextEntry();
@@ -767,12 +767,12 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(14, entry.getCompressedSize());
             assertEquals("-lh0-", entry.getCompressionMethod());
             assertEquals(0xc9b4, entry.getCrcValue());
-            assertEquals(77, entry.getOsId().get());
-            assertFalse(entry.getUnixPermissionMode().isPresent());
-            assertFalse(entry.getUnixGroupId().isPresent());
-            assertFalse(entry.getUnixUserId().isPresent());
-            assertFalse(entry.getMsdosFileAttributes().isPresent());
-            assertEquals(0x8f0c, entry.getHeaderCrc().get());
+            assertEquals(77, entry.getOsId());
+            assertNull(entry.getUnixPermissionMode());
+            assertNull(entry.getUnixGroupId());
+            assertNull(entry.getUnixUserId());
+            assertNull(entry.getMsdosFileAttributes());
+            assertEquals(0x8f0c, entry.getHeaderCrc());
 
             // No more entries expected
             assertNull(archive.getNextEntry());
@@ -793,12 +793,12 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(52, entry.getCompressedSize());
             assertEquals("-lh5-", entry.getCompressionMethod());
             assertEquals(0x6496, entry.getCrcValue());
-            assertEquals(85, entry.getOsId().get());
-            assertEquals(0100644, entry.getUnixPermissionMode().get());
-            assertEquals(20, entry.getUnixGroupId().get());
-            assertEquals(501, entry.getUnixUserId().get());
-            assertFalse(entry.getMsdosFileAttributes().isPresent());
-            assertEquals(0x01a5, entry.getHeaderCrc().get());
+            assertEquals(85, entry.getOsId());
+            assertEquals(0100644, entry.getUnixPermissionMode());
+            assertEquals(20, entry.getUnixGroupId());
+            assertEquals(501, entry.getUnixUserId());
+            assertNull(entry.getMsdosFileAttributes());
+            assertEquals(0x01a5, entry.getHeaderCrc());
 
             // No more entries expected
             assertNull(archive.getNextEntry());
@@ -854,12 +854,12 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(14, entry.getCompressedSize());
             assertEquals("-lh0-", entry.getCompressionMethod());
             assertEquals(0xc9b4, entry.getCrcValue());
-            assertEquals(65, entry.getOsId().get());
-            assertFalse(entry.getUnixPermissionMode().isPresent());
-            assertFalse(entry.getUnixGroupId().isPresent());
-            assertFalse(entry.getUnixUserId().isPresent());
-            assertFalse(entry.getMsdosFileAttributes().isPresent());
-            assertEquals(0xe1a5, entry.getHeaderCrc().get());
+            assertEquals(65, entry.getOsId());
+            assertNull(entry.getUnixPermissionMode());
+            assertNull(entry.getUnixGroupId());
+            assertNull(entry.getUnixUserId());
+            assertNull(entry.getMsdosFileAttributes());
+            assertEquals(0xe1a5, entry.getHeaderCrc());
 
             // Check file entry
             entry = archive.getNextEntry();
@@ -872,12 +872,12 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(14, entry.getCompressedSize());
             assertEquals("-lh0-", entry.getCompressionMethod());
             assertEquals(0xc9b4, entry.getCrcValue());
-            assertEquals(65, entry.getOsId().get());
-            assertFalse(entry.getUnixPermissionMode().isPresent());
-            assertFalse(entry.getUnixGroupId().isPresent());
-            assertFalse(entry.getUnixUserId().isPresent());
-            assertFalse(entry.getMsdosFileAttributes().isPresent());
-            assertEquals(0xd6b0, entry.getHeaderCrc().get());
+            assertEquals(65, entry.getOsId());
+            assertNull(entry.getUnixPermissionMode());
+            assertNull(entry.getUnixGroupId());
+            assertNull(entry.getUnixUserId());
+            assertNull(entry.getMsdosFileAttributes());
+            assertEquals(0xd6b0, entry.getHeaderCrc());
 
             // No more entries expected
             assertNull(archive.getNextEntry());
@@ -901,12 +901,12 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(0, entry.getCompressedSize());
             assertEquals("-lhd-", entry.getCompressionMethod());
             assertEquals(0x0000, entry.getCrcValue());
-            assertEquals(85, entry.getOsId().get());
-            assertEquals(040755, entry.getUnixPermissionMode().get());
-            assertEquals(20, entry.getUnixGroupId().get());
-            assertEquals(501, entry.getUnixUserId().get());
-            assertFalse(entry.getMsdosFileAttributes().isPresent());
-            assertEquals(0xf3f7, entry.getHeaderCrc().get());
+            assertEquals(85, entry.getOsId());
+            assertEquals(040755, entry.getUnixPermissionMode());
+            assertEquals(20, entry.getUnixGroupId());
+            assertEquals(501, entry.getUnixUserId());
+            assertNull(entry.getMsdosFileAttributes());
+            assertEquals(0xf3f7, entry.getHeaderCrc());
 
             // Check directory entry
             entry = archive.getNextEntry();
@@ -919,12 +919,12 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(0, entry.getCompressedSize());
             assertEquals("-lhd-", entry.getCompressionMethod());
             assertEquals(0x0000, entry.getCrcValue());
-            assertEquals(85, entry.getOsId().get());
-            assertEquals(040755, entry.getUnixPermissionMode().get());
-            assertEquals(20, entry.getUnixGroupId().get());
-            assertEquals(501, entry.getUnixUserId().get());
-            assertFalse(entry.getMsdosFileAttributes().isPresent());
-            assertEquals(0x50d3, entry.getHeaderCrc().get());
+            assertEquals(85, entry.getOsId());
+            assertEquals(040755, entry.getUnixPermissionMode());
+            assertEquals(20, entry.getUnixGroupId());
+            assertEquals(501, entry.getUnixUserId());
+            assertNull(entry.getMsdosFileAttributes());
+            assertEquals(0x50d3, entry.getHeaderCrc());
 
             // Check file entry
             entry = archive.getNextEntry();
@@ -937,12 +937,12 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(13, entry.getCompressedSize());
             assertEquals("-lh0-", entry.getCompressionMethod());
             assertEquals(0x7757, entry.getCrcValue());
-            assertEquals(85, entry.getOsId().get());
-            assertEquals(0100644, entry.getUnixPermissionMode().get());
-            assertEquals(20, entry.getUnixGroupId().get());
-            assertEquals(501, entry.getUnixUserId().get());
-            assertFalse(entry.getMsdosFileAttributes().isPresent());
-            assertEquals(0x589e, entry.getHeaderCrc().get());
+            assertEquals(85, entry.getOsId());
+            assertEquals(0100644, entry.getUnixPermissionMode());
+            assertEquals(20, entry.getUnixGroupId());
+            assertEquals(501, entry.getUnixUserId());
+            assertNull(entry.getMsdosFileAttributes());
+            assertEquals(0x589e, entry.getHeaderCrc());
 
             // Check directory entry
             entry = archive.getNextEntry();
@@ -955,12 +955,12 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(0, entry.getCompressedSize());
             assertEquals("-lhd-", entry.getCompressionMethod());
             assertEquals(0x0000, entry.getCrcValue());
-            assertEquals(85, entry.getOsId().get());
-            assertEquals(040755, entry.getUnixPermissionMode().get());
-            assertEquals(20, entry.getUnixGroupId().get());
-            assertEquals(501, entry.getUnixUserId().get());
-            assertFalse(entry.getMsdosFileAttributes().isPresent());
-            assertEquals(0x126d, entry.getHeaderCrc().get());
+            assertEquals(85, entry.getOsId());
+            assertEquals(040755, entry.getUnixPermissionMode());
+            assertEquals(20, entry.getUnixGroupId());
+            assertEquals(501, entry.getUnixUserId());
+            assertNull(entry.getMsdosFileAttributes());
+            assertEquals(0x126d, entry.getHeaderCrc());
 
             // Check file entry
             entry = archive.getNextEntry();
@@ -973,12 +973,12 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(13, entry.getCompressedSize());
             assertEquals("-lh0-", entry.getCompressionMethod());
             assertEquals(0x7757, entry.getCrcValue());
-            assertEquals(85, entry.getOsId().get());
-            assertEquals(0100644, entry.getUnixPermissionMode().get());
-            assertEquals(20, entry.getUnixGroupId().get());
-            assertEquals(501, entry.getUnixUserId().get());
-            assertFalse(entry.getMsdosFileAttributes().isPresent());
-            assertEquals(0xdbdd, entry.getHeaderCrc().get());
+            assertEquals(85, entry.getOsId());
+            assertEquals(0100644, entry.getUnixPermissionMode());
+            assertEquals(20, entry.getUnixGroupId());
+            assertEquals(501, entry.getUnixUserId());
+            assertNull(entry.getMsdosFileAttributes());
+            assertEquals(0xdbdd, entry.getHeaderCrc());
 
             // No more entries expected
             assertNull(archive.getNextEntry());
@@ -1002,12 +1002,12 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(0, entry.getCompressedSize());
             assertEquals("-lhd-", entry.getCompressionMethod());
             assertEquals(0x0000, entry.getCrcValue());
-            assertEquals(77, entry.getOsId().get());
-            assertFalse(entry.getUnixPermissionMode().isPresent());
-            assertFalse(entry.getUnixGroupId().isPresent());
-            assertFalse(entry.getUnixUserId().isPresent());
-            assertEquals(0x0010, entry.getMsdosFileAttributes().get());
-            assertEquals(0x496a, entry.getHeaderCrc().get());
+            assertEquals(77, entry.getOsId());
+            assertNull(entry.getUnixPermissionMode());
+            assertNull(entry.getUnixGroupId());
+            assertNull(entry.getUnixUserId());
+            assertEquals(0x0010, entry.getMsdosFileAttributes());
+            assertEquals(0x496a, entry.getHeaderCrc());
 
             // Check directory entry
             entry = archive.getNextEntry();
@@ -1020,12 +1020,12 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(0, entry.getCompressedSize());
             assertEquals("-lhd-", entry.getCompressionMethod());
             assertEquals(0x0000, entry.getCrcValue());
-            assertEquals(77, entry.getOsId().get());
-            assertFalse(entry.getUnixPermissionMode().isPresent());
-            assertFalse(entry.getUnixGroupId().isPresent());
-            assertFalse(entry.getUnixUserId().isPresent());
-            assertEquals(0x0010, entry.getMsdosFileAttributes().get());
-            assertEquals(0xebe7, entry.getHeaderCrc().get());
+            assertEquals(77, entry.getOsId());
+            assertNull(entry.getUnixPermissionMode());
+            assertNull(entry.getUnixGroupId());
+            assertNull(entry.getUnixUserId());
+            assertEquals(0x0010, entry.getMsdosFileAttributes());
+            assertEquals(0xebe7, entry.getHeaderCrc());
 
             // Check file entry
             entry = archive.getNextEntry();
@@ -1038,12 +1038,12 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(14, entry.getCompressedSize());
             assertEquals("-lh0-", entry.getCompressionMethod());
             assertEquals(0xc9b4, entry.getCrcValue());
-            assertEquals(77, entry.getOsId().get());
-            assertFalse(entry.getUnixPermissionMode().isPresent());
-            assertFalse(entry.getUnixGroupId().isPresent());
-            assertFalse(entry.getUnixUserId().isPresent());
-            assertFalse(entry.getMsdosFileAttributes().isPresent());
-            assertEquals(0x214a, entry.getHeaderCrc().get());
+            assertEquals(77, entry.getOsId());
+            assertNull(entry.getUnixPermissionMode());
+            assertNull(entry.getUnixGroupId());
+            assertNull(entry.getUnixUserId());
+            assertNull(entry.getMsdosFileAttributes());
+            assertEquals(0x214a, entry.getHeaderCrc());
 
             // Check directory entry
             entry = archive.getNextEntry();
@@ -1056,12 +1056,12 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(0, entry.getCompressedSize());
             assertEquals("-lhd-", entry.getCompressionMethod());
             assertEquals(0x0000, entry.getCrcValue());
-            assertEquals(77, entry.getOsId().get());
-            assertFalse(entry.getUnixPermissionMode().isPresent());
-            assertFalse(entry.getUnixGroupId().isPresent());
-            assertFalse(entry.getUnixUserId().isPresent());
-            assertEquals(0x0010, entry.getMsdosFileAttributes().get());
-            assertEquals(0x74ca, entry.getHeaderCrc().get());
+            assertEquals(77, entry.getOsId());
+            assertNull(entry.getUnixPermissionMode());
+            assertNull(entry.getUnixGroupId());
+            assertNull(entry.getUnixUserId());
+            assertEquals(0x0010, entry.getMsdosFileAttributes());
+            assertEquals(0x74ca, entry.getHeaderCrc());
 
             // Check file entry
             entry = archive.getNextEntry();
@@ -1074,12 +1074,12 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(14, entry.getCompressedSize());
             assertEquals("-lh0-", entry.getCompressionMethod());
             assertEquals(0xc9b4, entry.getCrcValue());
-            assertEquals(77, entry.getOsId().get());
-            assertFalse(entry.getUnixPermissionMode().isPresent());
-            assertFalse(entry.getUnixGroupId().isPresent());
-            assertFalse(entry.getUnixUserId().isPresent());
-            assertFalse(entry.getMsdosFileAttributes().isPresent());
-            assertEquals(0x165f, entry.getHeaderCrc().get());
+            assertEquals(77, entry.getOsId());
+            assertNull(entry.getUnixPermissionMode());
+            assertNull(entry.getUnixGroupId());
+            assertNull(entry.getUnixUserId());
+            assertNull(entry.getMsdosFileAttributes());
+            assertEquals(0x165f, entry.getHeaderCrc());
 
             // No more entries expected
             assertNull(archive.getNextEntry());
@@ -1101,12 +1101,12 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(14, entry.getCompressedSize());
             assertEquals("-lh0-", entry.getCompressionMethod());
             assertEquals(0xc9b4, entry.getCrcValue());
-            assertEquals(77, entry.getOsId().get());
-            assertFalse(entry.getUnixPermissionMode().isPresent());
-            assertFalse(entry.getUnixGroupId().isPresent());
-            assertFalse(entry.getUnixUserId().isPresent());
-            assertEquals(0x0021, entry.getMsdosFileAttributes().get());
-            assertEquals(0x14bb, entry.getHeaderCrc().get());
+            assertEquals(77, entry.getOsId());
+            assertNull(entry.getUnixPermissionMode());
+            assertNull(entry.getUnixGroupId());
+            assertNull(entry.getUnixUserId());
+            assertEquals(0x0021, entry.getMsdosFileAttributes());
+            assertEquals(0x14bb, entry.getHeaderCrc());
 
             // No more entries expected
             assertNull(archive.getNextEntry());
@@ -1118,7 +1118,7 @@ class LhaArchiveInputStreamTest extends AbstractTest {
         try (LhaArchiveInputStream archive = new LhaArchiveInputStream(new ByteArrayInputStream(new byte[0]))) {
             final LhaArchiveEntry entry = new LhaArchiveEntry();
             archive.parseExtendedHeader(toByteBuffer(0x00, 0x22, 0x33, 0x00, 0x00), entry);
-            assertEquals(0x3322, entry.getHeaderCrc().get());
+            assertEquals(0x3322, entry.getHeaderCrc());
         }
     }
 
@@ -1176,8 +1176,8 @@ class LhaArchiveInputStreamTest extends AbstractTest {
         try (LhaArchiveInputStream archive = new LhaArchiveInputStream(new ByteArrayInputStream(new byte[0]))) {
             final LhaArchiveEntry entry = new LhaArchiveEntry();
             archive.parseExtendedHeader(toByteBuffer(0x50, 0xa4, 0x81, 0x00, 0x00), entry);
-            assertEquals(0x81a4, entry.getUnixPermissionMode().get());
-            assertEquals(0100644, entry.getUnixPermissionMode().get());
+            assertEquals(0x81a4, entry.getUnixPermissionMode());
+            assertEquals(0100644, entry.getUnixPermissionMode());
         }
     }
 
@@ -1186,8 +1186,8 @@ class LhaArchiveInputStreamTest extends AbstractTest {
         try (LhaArchiveInputStream archive = new LhaArchiveInputStream(new ByteArrayInputStream(new byte[0]))) {
             final LhaArchiveEntry entry = new LhaArchiveEntry();
             archive.parseExtendedHeader(toByteBuffer(0x51, 0x14, 0x00, 0xf5, 0x01, 0x00, 0x00), entry);
-            assertEquals(0x0014, entry.getUnixGroupId().get());
-            assertEquals(0x01f5, entry.getUnixUserId().get());
+            assertEquals(0x0014, entry.getUnixGroupId());
+            assertEquals(0x01f5, entry.getUnixUserId());
         }
     }
 
@@ -1205,7 +1205,7 @@ class LhaArchiveInputStreamTest extends AbstractTest {
         try (LhaArchiveInputStream archive = new LhaArchiveInputStream(new ByteArrayInputStream(new byte[0]))) {
             final LhaArchiveEntry entry = new LhaArchiveEntry();
             archive.parseExtendedHeader(toByteBuffer(0x40, 0x10, 0x00, 0x00), entry);
-            assertEquals(0x10, entry.getMsdosFileAttributes().get());
+            assertEquals(0x10, entry.getMsdosFileAttributes());
         }
     }
 

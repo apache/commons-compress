@@ -29,7 +29,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
@@ -312,7 +311,7 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
         entry.setDirectory(isDirectory(entry.getCompressionMethod()));
 
         entry.setCrcValue(Short.toUnsignedInt(buffer.getShort()));
-        entry.setOsId(Optional.of(Byte.toUnsignedInt(buffer.get())));
+        entry.setOsId(Byte.toUnsignedInt(buffer.get()));
 
         if (calculateHeaderChecksum(buffer) != baseHeaderChecksum) {
             throw new ArchiveException("Invalid header level 1 checksum");
@@ -337,11 +336,11 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
 
         entry.setCompressedSize(skipSize);
 
-        if (entry.getHeaderCrc().isPresent()) {
+        if (entry.getHeaderCrc() != null) {
             // Calculate CRC16 of full header
             final long headerCrc = calculateCRC16(headerParts.toArray(new ByteBuffer[headerParts.size()]));
-            if (headerCrc != entry.getHeaderCrc().get()) {
-                throw new ArchiveException("Invalid header CRC expected=0x%04x found=0x%04x", headerCrc, entry.getHeaderCrc().get());
+            if (headerCrc != entry.getHeaderCrc()) {
+                throw new ArchiveException("Invalid header CRC expected=0x%04x found=0x%04x", headerCrc, entry.getHeaderCrc());
             }
         }
 
@@ -373,7 +372,7 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
         entry.setName("");
         entry.setDirectory(isDirectory(entry.getCompressionMethod()));
         entry.setCrcValue(Short.toUnsignedInt(buffer.getShort(HEADER_LEVEL_2_OFFSET_CRC)));
-        entry.setOsId(Optional.of(Byte.toUnsignedInt(buffer.get(HEADER_LEVEL_2_OFFSET_OS_ID))));
+        entry.setOsId(Byte.toUnsignedInt(buffer.get(HEADER_LEVEL_2_OFFSET_OS_ID)));
 
         int extendedHeaderOffset = HEADER_LEVEL_2_OFFSET_FIRST_EXTENDED_HEADER_SIZE;
         int nextHeaderSize = Short.toUnsignedInt(buffer.getShort(extendedHeaderOffset));
@@ -388,11 +387,11 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
             nextHeaderSize = Short.toUnsignedInt(extendedHeaderBuffer.getShort(extendedHeaderBuffer.limit() - 2));
         }
 
-        if (entry.getHeaderCrc().isPresent()) {
+        if (entry.getHeaderCrc() != null) {
             // Calculate CRC16 of full header
             final long headerCrc = calculateCRC16(buffer);
-            if (headerCrc != entry.getHeaderCrc().get()) {
-                throw new ArchiveException("Invalid header CRC expected=0x%04x found=0x%04x", headerCrc, entry.getHeaderCrc().get());
+            if (headerCrc != entry.getHeaderCrc()) {
+                throw new ArchiveException("Invalid header CRC expected=0x%04x found=0x%04x", headerCrc, entry.getHeaderCrc());
             }
         }
 
@@ -526,7 +525,7 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
             final int crcPos = extendedHeaderBuffer.position(); // Save the current position to be able to set the header CRC later
 
             // Header CRC
-            entry.setHeaderCrc(Optional.of(Short.toUnsignedInt(extendedHeaderBuffer.getShort())));
+            entry.setHeaderCrc(Short.toUnsignedInt(extendedHeaderBuffer.getShort()));
 
             // Set header CRC to zero to be able to later compute the CRC of the full header
             extendedHeaderBuffer.putShort(crcPos, (short) 0);
@@ -566,14 +565,14 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
             }
         } else if (extendedHeaderType == EXTENDED_HEADER_TYPE_MSDOS_FILE_ATTRIBUTES) {
             // MS-DOS file attributes
-            entry.setMsdosFileAttributes(Optional.of(Short.toUnsignedInt(extendedHeaderBuffer.getShort())));
+            entry.setMsdosFileAttributes(Short.toUnsignedInt(extendedHeaderBuffer.getShort()));
         } else if (extendedHeaderType == EXTENDED_HEADER_TYPE_UNIX_PERMISSION) {
             // UNIX file permission
-            entry.setUnixPermissionMode(Optional.of(Short.toUnsignedInt(extendedHeaderBuffer.getShort())));
+            entry.setUnixPermissionMode(Short.toUnsignedInt(extendedHeaderBuffer.getShort()));
         } else if (extendedHeaderType == EXTENDED_HEADER_TYPE_UNIX_UID_GID) {
             // UNIX group/user ID
-            entry.setUnixGroupId(Optional.of(Short.toUnsignedInt(extendedHeaderBuffer.getShort())));
-            entry.setUnixUserId(Optional.of(Short.toUnsignedInt(extendedHeaderBuffer.getShort())));
+            entry.setUnixGroupId(Short.toUnsignedInt(extendedHeaderBuffer.getShort()));
+            entry.setUnixUserId(Short.toUnsignedInt(extendedHeaderBuffer.getShort()));
         } else if (extendedHeaderType == EXTENDED_HEADER_TYPE_UNIX_TIMESTAMP) {
             // UNIX last modified time
             entry.setLastModifiedDate(new Date(Integer.toUnsignedLong(extendedHeaderBuffer.getInt()) * 1000));
