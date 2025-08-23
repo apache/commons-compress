@@ -180,7 +180,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
     /**
      * Constant (value {@value}) used to identify the LHA archive format.
      * Not supported as an output stream type.
-     * @since 1.29
+     * @since 1.29.0
      */
     public static final String LHA = "lha";
 

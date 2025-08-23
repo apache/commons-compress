@@ -27,7 +27,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 /**
  * Represents an entry in a LHA archive.
  *
- * @since 1.29
+ * @since 1.29.0
  */
 public class LhaArchiveEntry implements ArchiveEntry {
     private String name;

@@ -22,7 +22,7 @@ package org.apache.commons.compress.utils;
 /**
  * Circular byte buffer.
  *
- * @since 1.29
+ * @since 1.29.0
  */
 public class CircularBuffer {
 
