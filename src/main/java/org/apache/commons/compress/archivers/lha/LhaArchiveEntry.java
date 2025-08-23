@@ -30,21 +30,37 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * @since 1.29.0
  */
 public class LhaArchiveEntry implements ArchiveEntry {
-    private String name;
-    private boolean directory;
-    private long size;
-    private Date lastModifiedDate;
-    private long compressedSize;
-    private String compressionMethod;
-    private int crcValue;
-    private Integer osId;
-    private Integer unixPermissionMode;
-    private Integer unixUserId;
-    private Integer unixGroupId;
-    private Integer msdosFileAttributes;
-    private Integer headerCrc;
+    private final String name;
+    private final boolean directory;
+    private final long size;
+    private final Date lastModifiedDate;
+    private final long compressedSize;
+    private final String compressionMethod;
+    private final int crcValue;
+    private final Integer osId;
+    private final Integer unixPermissionMode;
+    private final Integer unixUserId;
+    private final Integer unixGroupId;
+    private final Integer msdosFileAttributes;
+    private final Integer headerCrc;
 
-    public LhaArchiveEntry() {
+    LhaArchiveEntry(String name, boolean directory, long size, Date lastModifiedDate,
+            long compressedSize, String compressionMethod, int crcValue, Integer osId,
+            Integer unixPermissionMode, Integer unixUserId, Integer unixGroupId,
+            Integer msdosFileAttributes, Integer headerCrc) {
+        this.name = name;
+        this.directory = directory;
+        this.size = size;
+        this.lastModifiedDate = lastModifiedDate;
+        this.compressedSize = compressedSize;
+        this.compressionMethod = compressionMethod;
+        this.crcValue = crcValue;
+        this.osId = osId;
+        this.unixPermissionMode = unixPermissionMode;
+        this.unixUserId = unixUserId;
+        this.unixGroupId = unixGroupId;
+        this.msdosFileAttributes = msdosFileAttributes;
+        this.headerCrc = headerCrc;
     }
 
     @Override
@@ -77,13 +93,13 @@ public class LhaArchiveEntry implements ArchiveEntry {
         return sb.append("]").toString();
     }
 
+    static Builder builder() {
+        return new Builder();
+    }
+
     @Override
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     @Override
@@ -91,34 +107,18 @@ public class LhaArchiveEntry implements ArchiveEntry {
         return size;
     }
 
-    public void setSize(long size) {
-        this.size = size;
-    }
-
     @Override
     public Date getLastModifiedDate() {
         return lastModifiedDate;
     }
 
-    public void setLastModifiedDate(Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
-    }
-
     /**
-     * Returns the compressed size of this entry.
+     * Gets the compressed size of this entry.
      *
      * @return the compressed size
      */
     public long getCompressedSize() {
         return compressedSize;
-    }
-
-    public void setCompressedSize(long compressedSize) {
-        this.compressedSize = compressedSize;
-    }
-
-    public void setDirectory(boolean directory) {
-        this.directory = directory;
     }
 
     @Override
@@ -127,7 +127,7 @@ public class LhaArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Returns the compression method of this entry.
+     * Gets the compression method of this entry.
      *
      * @return the compression method
      */
@@ -135,12 +135,8 @@ public class LhaArchiveEntry implements ArchiveEntry {
         return compressionMethod;
     }
 
-    public void setCompressionMethod(String compressionMethod) {
-        this.compressionMethod = compressionMethod;
-    }
-
     /**
-     * Returns the CRC-16 checksum of the uncompressed data of this entry.
+     * Gets the CRC-16 checksum of the uncompressed data of this entry.
      *
      * @return CRC-16 checksum of the uncompressed data
      */
@@ -148,12 +144,8 @@ public class LhaArchiveEntry implements ArchiveEntry {
         return crcValue;
     }
 
-    public void setCrcValue(int crc) {
-        this.crcValue = crc;
-    }
-
     /**
-     * Returns the operating system id if available for this entry.
+     * Gets the operating system id if available for this entry.
      *
      * @return operating system id if available
      */
@@ -161,36 +153,35 @@ public class LhaArchiveEntry implements ArchiveEntry {
         return osId;
     }
 
-    public void setOsId(Integer osId) {
-        this.osId = osId;
-    }
-
+    /**
+     * Gets the Unix permission mode if available for this entry.
+     *
+     * @return Unix permission mode or null if not available
+     */
     public Integer getUnixPermissionMode() {
         return unixPermissionMode;
     }
 
-    public void setUnixPermissionMode(Integer unixPermissionMode) {
-        this.unixPermissionMode = unixPermissionMode;
-    }
-
+    /**
+     * Gets the Unix user id if available for this entry.
+     *
+     * @return Unix user id or null if not available
+     */
     public Integer getUnixUserId() {
         return unixUserId;
     }
 
-    public void setUnixUserId(Integer unixUserId) {
-        this.unixUserId = unixUserId;
-    }
-
+    /**
+     * Gets the Unix group id if available for this entry.
+     *
+     * @return Unix group id or null if not available
+     */
     public Integer getUnixGroupId() {
         return unixGroupId;
     }
 
-    public void setUnixGroupId(Integer unixGroupId) {
-        this.unixGroupId = unixGroupId;
-    }
-
     /**
-     * Returns the MS-DOS file attributes if available for this entry.
+     * Gets the MS-DOS file attributes if available for this entry.
      *
      * @return MS-DOS file attributes if available
      */
@@ -198,18 +189,126 @@ public class LhaArchiveEntry implements ArchiveEntry {
         return msdosFileAttributes;
     }
 
-    public void setMsdosFileAttributes(Integer msdosFileAttributes) {
-        this.msdosFileAttributes = msdosFileAttributes;
-    }
-
     /**
-     * Don't expose the header CRC publicly, as it is of no interest to most users.
+     * Gets the header CRC if available for this entry.
+     *
+     * This method is package private, as it is of no interest to most users.
+     *
+     * @return header CRC or null if not available
      */
     Integer getHeaderCrc() {
         return headerCrc;
     }
 
-    void setHeaderCrc(Integer headerCrc) {
-        this.headerCrc = headerCrc;
+    static class Builder {
+        private String filename;
+        private String directoryName;
+        private boolean directory;
+        private long size;
+        private Date lastModifiedDate;
+        private long compressedSize;
+        private String compressionMethod;
+        private int crcValue;
+        private Integer osId;
+        private Integer unixPermissionMode;
+        private Integer unixUserId;
+        private Integer unixGroupId;
+        private Integer msdosFileAttributes;
+        private Integer headerCrc;
+
+        Builder() {
+        }
+
+        LhaArchiveEntry get() {
+            final String name = new StringBuilder()
+                .append(directoryName == null ? "" : directoryName)
+                .append(filename == null ? "" : filename)
+                .toString();
+
+            return new LhaArchiveEntry(
+                    name,
+                    directory,
+                    size,
+                    lastModifiedDate,
+                    compressedSize,
+                    compressionMethod,
+                    crcValue,
+                    osId,
+                    unixPermissionMode,
+                    unixUserId,
+                    unixGroupId,
+                    msdosFileAttributes,
+                    headerCrc);
+        }
+
+        Builder setFilename(String filenName) {
+            this.filename = filenName;
+            return this;
+        }
+
+        Builder setDirectoryName(String directoryName) {
+            this.directoryName = directoryName;
+            return this;
+        }
+
+        Builder setDirectory(boolean directory) {
+            this.directory = directory;
+            return this;
+        }
+
+        Builder setSize(long size) {
+            this.size = size;
+            return this;
+        }
+
+        Builder setLastModifiedDate(Date lastModifiedDate) {
+            this.lastModifiedDate = lastModifiedDate;
+            return this;
+        }
+
+        Builder setCompressedSize(long compressedSize) {
+            this.compressedSize = compressedSize;
+            return this;
+        }
+
+        Builder setCompressionMethod(String compressionMethod) {
+            this.compressionMethod = compressionMethod;
+            return this;
+        }
+
+        Builder setCrcValue(int crcValue) {
+            this.crcValue = crcValue;
+            return this;
+        }
+
+        Builder setOsId(Integer osId) {
+            this.osId = osId;
+            return this;
+        }
+
+        Builder setUnixPermissionMode(Integer unixPermissionMode) {
+            this.unixPermissionMode = unixPermissionMode;
+            return this;
+        }
+
+        Builder setUnixUserId(Integer unixUserId) {
+            this.unixUserId = unixUserId;
+            return this;
+        }
+
+        Builder setUnixGroupId(Integer unixGroupId) {
+            this.unixGroupId = unixGroupId;
+            return this;
+        }
+
+        Builder setMsdosFileAttributes(Integer msdosFileAttributes) {
+            this.msdosFileAttributes = msdosFileAttributes;
+            return this;
+        }
+
+        Builder setHeaderCrc(Integer headerCrc) {
+            this.headerCrc = headerCrc;
+            return this;
+        }
     }
 }
