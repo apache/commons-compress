@@ -25,7 +25,7 @@ import java.io.InputStream;
 /**
  * Decompressor for lh6. It has a dictionary size of 32768 bytes.
  *
- * @since 1.29
+ * @since 1.29.0
  */
 public class Lh6CompressorInputStream extends AbstractLhStaticHuffmanCompressorInputStream {
     public Lh6CompressorInputStream(final InputStream in) throws IOException {
