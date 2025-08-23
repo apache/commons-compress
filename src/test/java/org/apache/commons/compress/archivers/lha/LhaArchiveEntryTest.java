@@ -22,7 +22,6 @@ package org.apache.commons.compress.archivers.lha;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Date;
-import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
@@ -52,12 +51,12 @@ class LhaArchiveEntryTest {
         entry.setCompressedSize(52);
         entry.setCompressionMethod("-lh5-");
         entry.setCrcValue(0x6496);
-        entry.setOsId(Optional.of(85));
-        entry.setUnixPermissionMode(Optional.of(0100644));
-        entry.setUnixGroupId(Optional.of(20));
-        entry.setUnixUserId(Optional.of(501));
-        entry.setMsdosFileAttributes(Optional.of(0x0010));
-        entry.setHeaderCrc(Optional.of(0xb772));
+        entry.setOsId(85);
+        entry.setUnixPermissionMode(0100644);
+        entry.setUnixGroupId(20);
+        entry.setUnixUserId(501);
+        entry.setMsdosFileAttributes(0x0010);
+        entry.setHeaderCrc(0xb772);
 
         assertEquals(
                 "LhaArchiveEntry[name=dir1/test1.txt,directory=false,size=57,lastModifiedDate=2025-08-03T16:02:22Z,compressedSize=52," +

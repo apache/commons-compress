@@ -21,7 +21,6 @@ package org.apache.commons.compress.archivers.lha;
 
 import java.time.ZoneOffset;
 import java.util.Date;
-import java.util.Optional;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 
@@ -38,12 +37,12 @@ public class LhaArchiveEntry implements ArchiveEntry {
     private long compressedSize;
     private String compressionMethod;
     private int crcValue;
-    private Optional<Integer> osId = Optional.empty();
-    private Optional<Integer> unixPermissionMode = Optional.empty();
-    private Optional<Integer> unixUserId = Optional.empty();
-    private Optional<Integer> unixGroupId = Optional.empty();
-    private Optional<Integer> msdosFileAttributes = Optional.empty();
-    private Optional<Integer> headerCrc = Optional.empty();
+    private Integer osId;
+    private Integer unixPermissionMode;
+    private Integer unixUserId;
+    private Integer unixGroupId;
+    private Integer msdosFileAttributes;
+    private Integer headerCrc;
 
     public LhaArchiveEntry() {
     }
@@ -59,20 +58,20 @@ public class LhaArchiveEntry implements ArchiveEntry {
                 .append(",compressionMethod=").append(compressionMethod)
                 .append(",crcValue=").append(String.format("0x%04x", crcValue));
 
-        if (osId.isPresent()) {
-            sb.append(",osId=").append(osId.get());
+        if (osId != null) {
+            sb.append(",osId=").append(osId);
         }
 
-        if (unixPermissionMode.isPresent()) {
-            sb.append(",unixPermissionMode=").append(String.format("%03o", unixPermissionMode.get()));
+        if (unixPermissionMode != null) {
+            sb.append(",unixPermissionMode=").append(String.format("%03o", unixPermissionMode));
         }
 
-        if (msdosFileAttributes.isPresent()) {
-            sb.append(",msdosFileAttributes=").append(String.format("%04x", msdosFileAttributes.get()));
+        if (msdosFileAttributes != null) {
+            sb.append(",msdosFileAttributes=").append(String.format("%04x", msdosFileAttributes));
         }
 
-        if (headerCrc.isPresent()) {
-            sb.append(",headerCrc=").append(String.format("0x%04x", headerCrc.get()));
+        if (headerCrc != null) {
+            sb.append(",headerCrc=").append(String.format("0x%04x", headerCrc));
         }
 
         return sb.append("]").toString();
@@ -158,35 +157,35 @@ public class LhaArchiveEntry implements ArchiveEntry {
      *
      * @return operating system id if available
      */
-    public Optional<Integer> getOsId() {
+    public Integer getOsId() {
         return osId;
     }
 
-    public void setOsId(Optional<Integer> osId) {
+    public void setOsId(Integer osId) {
         this.osId = osId;
     }
 
-    public Optional<Integer> getUnixPermissionMode() {
+    public Integer getUnixPermissionMode() {
         return unixPermissionMode;
     }
 
-    public void setUnixPermissionMode(Optional<Integer> unixPermissionMode) {
+    public void setUnixPermissionMode(Integer unixPermissionMode) {
         this.unixPermissionMode = unixPermissionMode;
     }
 
-    public Optional<Integer> getUnixUserId() {
+    public Integer getUnixUserId() {
         return unixUserId;
     }
 
-    public void setUnixUserId(Optional<Integer> unixUserId) {
+    public void setUnixUserId(Integer unixUserId) {
         this.unixUserId = unixUserId;
     }
 
-    public Optional<Integer> getUnixGroupId() {
+    public Integer getUnixGroupId() {
         return unixGroupId;
     }
 
-    public void setUnixGroupId(Optional<Integer> unixGroupId) {
+    public void setUnixGroupId(Integer unixGroupId) {
         this.unixGroupId = unixGroupId;
     }
 
@@ -195,22 +194,22 @@ public class LhaArchiveEntry implements ArchiveEntry {
      *
      * @return MS-DOS file attributes if available
      */
-    public Optional<Integer> getMsdosFileAttributes() {
+    public Integer getMsdosFileAttributes() {
         return msdosFileAttributes;
     }
 
-    public void setMsdosFileAttributes(Optional<Integer> msdosFileAttributes) {
+    public void setMsdosFileAttributes(Integer msdosFileAttributes) {
         this.msdosFileAttributes = msdosFileAttributes;
     }
 
     /**
      * Don't expose the header CRC publicly, as it is of no interest to most users.
      */
-    Optional<Integer> getHeaderCrc() {
+    Integer getHeaderCrc() {
         return headerCrc;
     }
 
-    void setHeaderCrc(Optional<Integer> headerCrc) {
+    void setHeaderCrc(Integer headerCrc) {
         this.headerCrc = headerCrc;
     }
 }
