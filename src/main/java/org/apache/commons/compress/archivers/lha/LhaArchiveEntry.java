@@ -147,7 +147,7 @@ public class LhaArchiveEntry implements ArchiveEntry {
     /**
      * Gets the operating system id if available for this entry.
      *
-     * @return operating system id if available
+     * @return operating system id or null if not available
      */
     public Integer getOsId() {
         return osId;
@@ -183,7 +183,7 @@ public class LhaArchiveEntry implements ArchiveEntry {
     /**
      * Gets the MS-DOS file attributes if available for this entry.
      *
-     * @return MS-DOS file attributes if available
+     * @return MS-DOS file attributes or null if not available
      */
     public Integer getMsdosFileAttributes() {
         return msdosFileAttributes;

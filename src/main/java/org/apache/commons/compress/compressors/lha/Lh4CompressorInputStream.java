@@ -43,7 +43,7 @@ public class Lh4CompressorInputStream extends AbstractLhStaticHuffmanCompressorI
     }
 
     @Override
-    protected int getDistanceCodeSize() {
+    protected int getMaxNumberOfDistanceCodes() {
         return getDictionaryBits() + 2;
     }
 }
