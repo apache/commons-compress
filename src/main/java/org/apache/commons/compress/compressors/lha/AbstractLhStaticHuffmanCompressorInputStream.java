@@ -205,13 +205,13 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
      */
     protected BinaryTree readCommandDecodingTree() throws IOException {
         // Number of code lengths to read
-        final int numCodeLengths = (int) bin.readBits(COMMAND_DECODING_LENGTH_BITS);
+        final int numCodeLengths = readBits(COMMAND_DECODING_LENGTH_BITS);
 
         if (numCodeLengths > MAX_NUMBER_OF_COMMAND_DECODING_CODE_LENGTHS) {
             throw new CompressorException("Code length table has invalid size (%d > %d)", numCodeLengths, MAX_NUMBER_OF_COMMAND_DECODING_CODE_LENGTHS);
         } else if (numCodeLengths == 0) {
             // If numCodeLengths is zero, we read a single code length of COMMAND_DECODING_LENGTH_BITS bits and use as root of the tree
-            return new BinaryTree(new int[] { (int) bin.readBits(COMMAND_DECODING_LENGTH_BITS) });
+            return new BinaryTree(new int[] { readBits(COMMAND_DECODING_LENGTH_BITS) });
         } else {
             // Read all code lengths
             final int[] codeLengths = new int[numCodeLengths];
@@ -220,7 +220,7 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
 
                 if (index == 2) {
                     // After reading the first three code lengths, we read a 2-bit skip range
-                    index += (int) bin.readBits(2);
+                    index += readBits(2);
                 }
             }
 
@@ -236,15 +236,19 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
      * @throws IOException if an I/O error occurs
      */
     protected int readCodeLength() throws IOException {
-        int len = (int) bin.readBits(CODE_LENGTH_BITS);
+        int len = readBits(CODE_LENGTH_BITS);
         if (len == 0x07) {
-            // Count the number of following consecutive one bits
-            while (bin.readBit() == 1) {
-                if (len == MAX_CODE_LENGTH) {
+            int bit = bin.readBit();
+            while (bit == 1) {
+                if (++len > MAX_CODE_LENGTH) {
                     throw new CompressorException("Code length overflow");
                 }
 
-                len++;
+                bit = bin.readBit();
+            }
+
+            if (bit == -1) {
+                throw new CompressorException("Unexpected end of stream");
             }
         }
 
@@ -259,13 +263,13 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
      * @throws IOException if an I/O error occurs
      */
     protected BinaryTree readCommandTree(final BinaryTree commandDecodingTree) throws IOException {
-        final int numCodeLengths = (int) bin.readBits(COMMAND_TREE_LENGTH_BITS);
+        final int numCodeLengths = readBits(COMMAND_TREE_LENGTH_BITS);
 
         if (numCodeLengths > getMaxNumberOfCommands()) {
             throw new CompressorException("Code length table has invalid size (%d > %d)", numCodeLengths, getMaxNumberOfCommands());
         } else if (numCodeLengths == 0) {
             // If numCodeLengths is zero, we read a single code length of COMMAND_TREE_LENGTH_BITS bits and use as root of the tree
-            return new BinaryTree(new int[] { (int) bin.readBits(COMMAND_TREE_LENGTH_BITS) });
+            return new BinaryTree(new int[] { readBits(COMMAND_TREE_LENGTH_BITS) });
         } else {
             // Read all code lengths
             final int[] codeLengths = new int[numCodeLengths];
@@ -278,10 +282,10 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
                     index++;
                 } else if (codeOrSkipRange == 1) {
                     // Skip a range of code lengths, read 4 bits to determine how many to skip
-                    index += (int) bin.readBits(4) + 3;
+                    index += readBits(4) + 3;
                 } else if (codeOrSkipRange == 2) {
                     // Skip a range of code lengths, read 9 bits to determine how many to skip
-                    index += (int) bin.readBits(9) + 20;
+                    index += readBits(9) + 20;
                 } else {
                     // Subtract 2 from the codeOrSkipRange to get the code length
                     codeLengths[index++] = codeOrSkipRange - 2;
@@ -300,13 +304,13 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
      */
     private BinaryTree readDistanceTree() throws IOException {
         // Number of code lengths to read
-        final int numCodeLengths = (int) bin.readBits(getDistanceBits());
+        final int numCodeLengths = readBits(getDistanceBits());
 
         if (numCodeLengths > getDistanceCodeSize()) {
             throw new CompressorException("Code length table has invalid size (%d > %d)", numCodeLengths, getDistanceCodeSize());
         } else if (numCodeLengths == 0) {
             // If numCodeLengths is zero, we read a single code length of getDistanceBits() bits and use as root of the tree
-            return new BinaryTree(new int[] { (int) bin.readBits(getDistanceBits()) });
+            return new BinaryTree(new int[] { readBits(getDistanceBits()) });
         } else {
             // Read all code lengths
             final int[] codeLengths = new int[numCodeLengths];
@@ -334,11 +338,28 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
             return bits;
         } else {
             // Bits minus one is the number of bits to read for the distance
-            final int value = (int) bin.readBits(bits - 1);
+            final int value = readBits(bits - 1);
 
             // Add the implicit bit (1 << (bits - 1)) to the value read from the stream giving the distance.
             // E.g. if bits is 6, we read 5 bits giving value 8 and then we add 32 giving a distance of 40.
             return value | (1 << (bits - 1));
         }
+    }
+
+    /**
+     * Read the specified number of bits from the underlying stream throwing CompressorException
+     * if the end of the stream is reached before reading the requested number of bits.
+     *
+     * @param count the number of bits to read
+     * @return the bits concatenated as an int using the stream's byte order
+     * @throws IOException if an I/O error occurs.
+     */
+    private int readBits(final int count) throws IOException {
+        final long value = bin.readBits(count);
+        if (value < 0) {
+            throw new CompressorException("Unexpected end of stream");
+        }
+
+        return (int) value;
     }
 }
