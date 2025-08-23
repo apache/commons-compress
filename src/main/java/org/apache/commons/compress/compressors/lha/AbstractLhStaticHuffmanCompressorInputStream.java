@@ -202,7 +202,9 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
         this.blockSize--;
 
         final int command = commandTree.read(bin);
-        if (command < 0x100) {
+        if (command == -1) {
+            throw new CompressorException("Unexpected end of stream");
+        } else if (command < 0x100) {
             // Literal command, just write the byte to the buffer
             buffer.put(command);
         } else {
@@ -296,7 +298,9 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
             for (int index = 0; index < numCodeLengths;) {
                 final int codeOrSkipRange = commandDecodingTree.read(bin);
 
-                if (codeOrSkipRange == 0) {
+                if (codeOrSkipRange == -1) {
+                    throw new CompressorException("Unexpected end of stream");
+                } else if (codeOrSkipRange == 0) {
                     // Skip one code length
                     index++;
                 } else if (codeOrSkipRange == 1) {
@@ -351,8 +355,9 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
     private int readDistance() throws IOException {
         // Determine the number of bits to read for the distance by reading an entry from the distance tree
         final int bits = distanceTree.read(bin);
-
-        if (bits == 0 || bits == 1) {
+        if (bits == -1) {
+            throw new CompressorException("Unexpected end of stream");
+        } else if (bits == 0 || bits == 1) {
             // This is effectively run length encoding
             return bits;
         } else {
