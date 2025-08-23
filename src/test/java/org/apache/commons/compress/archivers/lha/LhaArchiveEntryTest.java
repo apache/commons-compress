@@ -28,14 +28,15 @@ import org.junit.jupiter.api.Test;
 class LhaArchiveEntryTest {
     @Test
     void testToStringMinimal() {
-        final LhaArchiveEntry entry = new LhaArchiveEntry();
-        entry.setName("test1.txt");
-        entry.setDirectory(false);
-        entry.setSize(57);
-        entry.setLastModifiedDate(new Date(1754236942000L)); // 2025-08-03T16:02:22Z
-        entry.setCompressedSize(52);
-        entry.setCompressionMethod("-lh5-");
-        entry.setCrcValue(0x6496);
+        final LhaArchiveEntry entry = LhaArchiveEntry.builder()
+            .setFilename("test1.txt")
+            .setDirectory(false)
+            .setSize(57)
+            .setLastModifiedDate(new Date(1754236942000L)) // 2025-08-03T16:02:22Z
+            .setCompressedSize(52)
+            .setCompressionMethod("-lh5-")
+            .setCrcValue(0x6496)
+            .get();
 
         assertEquals("LhaArchiveEntry[name=test1.txt,directory=false,size=57,lastModifiedDate=2025-08-03T16:02:22Z,compressedSize=52," +
                 "compressionMethod=-lh5-,crcValue=0x6496]", entry.toString());
@@ -43,20 +44,22 @@ class LhaArchiveEntryTest {
 
     @Test
     void testToStringAllFields() {
-        final LhaArchiveEntry entry = new LhaArchiveEntry();
-        entry.setName("dir1/test1.txt");
-        entry.setDirectory(false);
-        entry.setSize(57);
-        entry.setLastModifiedDate(new Date(1754236942000L)); // 2025-08-03T16:02:22Z
-        entry.setCompressedSize(52);
-        entry.setCompressionMethod("-lh5-");
-        entry.setCrcValue(0x6496);
-        entry.setOsId(85);
-        entry.setUnixPermissionMode(0100644);
-        entry.setUnixGroupId(20);
-        entry.setUnixUserId(501);
-        entry.setMsdosFileAttributes(0x0010);
-        entry.setHeaderCrc(0xb772);
+        final LhaArchiveEntry entry = LhaArchiveEntry.builder()
+            .setFilename("test1.txt")
+            .setDirectoryName("dir1/")
+            .setDirectory(false)
+            .setSize(57)
+            .setLastModifiedDate(new Date(1754236942000L)) // 2025-08-03T16:02:22Z
+            .setCompressedSize(52)
+            .setCompressionMethod("-lh5-")
+            .setCrcValue(0x6496)
+            .setOsId(85)
+            .setUnixPermissionMode(0100644)
+            .setUnixGroupId(20)
+            .setUnixUserId(501)
+            .setMsdosFileAttributes(0x0010)
+            .setHeaderCrc(0xb772)
+            .get();
 
         assertEquals(
                 "LhaArchiveEntry[name=dir1/test1.txt,directory=false,size=57,lastModifiedDate=2025-08-03T16:02:22Z,compressedSize=52," +
