@@ -49,7 +49,7 @@ import org.apache.commons.io.input.ChecksumInputStream;
  * http://dangan.g.dgdg.jp/en/Content/Program/Java/jLHA/Notes/Notes.html
  *
  * @NotThreadSafe
- * @since 1.29
+ * @since 1.29.0
  */
 public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
     // Fields that are the same across all header levels
