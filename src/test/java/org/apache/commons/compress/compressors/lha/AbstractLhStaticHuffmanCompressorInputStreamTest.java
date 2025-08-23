@@ -97,6 +97,18 @@ class AbstractLhStaticHuffmanCompressorInputStreamTest {
     }
 
     @Test
+    void testReadCommandTreeUnexpectedEndOfStream() throws IOException {
+        try {
+            createLh5CompressorInputStream(
+                0b00000000, 0b01111111 // 9 bits length (0x00) and only 8 bits instead of expected 9 bits which will cause an unexpected end of stream
+            ).readCommandTree(new BinaryTree(new int [] { 0 }));
+            fail("Expected CompressorException for unexpected end of stream");
+        } catch (CompressorException e) {
+            assertEquals("Unexpected end of stream", e.getMessage());
+        }
+    }
+
+    @Test
     void testReadCodeLength() throws IOException {
         assertEquals(0, createLh5CompressorInputStream(0x00, 0x00).readCodeLength());  // 0000 0000  0000 0000
         assertEquals(1, createLh5CompressorInputStream(0x20, 0x00).readCodeLength());  // 0010 0000  0000 0000
@@ -117,10 +129,20 @@ class AbstractLhStaticHuffmanCompressorInputStreamTest {
         assertEquals(16, createLh5CompressorInputStream(0xff, 0xf0).readCodeLength()); // 1111 1111  1111 0000
 
         try {
-            assertEquals(17, createLh5CompressorInputStream(0xff, 0xf8).readCodeLength()); // 1111 1111  1111 1000
+            createLh5CompressorInputStream(0xff, 0xf8).readCodeLength(); // 1111 1111  1111 1000
             fail("Expected CompressorException for code length overflow");
         } catch (CompressorException e) {
             assertEquals("Code length overflow", e.getMessage());
+        }
+    }
+
+    @Test
+    void testReadCodeLengthUnexpectedEndOfStream() throws IOException {
+        try {
+            createLh5CompressorInputStream(0xff).readCodeLength(); // 1111 1111  EOF
+            fail("Expected CompressorException for unexpected end of stream");
+        } catch (CompressorException e) {
+            assertEquals("Unexpected end of stream", e.getMessage());
         }
     }
 
