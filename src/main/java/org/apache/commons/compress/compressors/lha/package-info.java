@@ -18,6 +18,6 @@
  */
 
 /**
- * Provides stream classes for decompressing streams found in LHA archives.
+ * Provides stream classes for decompressing streams found in <a href="https://en.wikipedia.org/wiki/LHA_(file_format)">LHA</a> archives.
  */
 package org.apache.commons.compress.compressors.lha;
