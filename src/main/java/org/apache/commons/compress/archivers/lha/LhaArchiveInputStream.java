@@ -215,8 +215,8 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
     protected LhaArchiveEntry readHeader() throws IOException {
         // Header level is not known yet. Read the minimum length header.
         final byte[] buffer = new byte[HEADER_GENERIC_MINIMUM_HEADER_LENGTH];
-        final int len = in.read(buffer);
-        if (len == -1) {
+        final int len = IOUtils.read(in, buffer);
+        if (len == 0) {
             // EOF
             return null;
         } else if (len == 1 && buffer[0] == 0) {
@@ -486,7 +486,7 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
      */
     private ByteBuffer readRemainingHeaderData(final ByteBuffer currentHeader, final int headerSize) throws IOException {
         final byte[] remainingData = new byte[headerSize - currentHeader.capacity()];
-        final int len = in.read(remainingData);
+        final int len = IOUtils.read(in, remainingData);
         if (len != remainingData.length) {
             throw new ArchiveException("Error reading remaining header");
         }
@@ -503,7 +503,7 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
      */
     private ByteBuffer readExtendedHeader(final int headerSize) throws IOException {
         final byte[] extensionHeader = new byte[headerSize];
-        final int len = in.read(extensionHeader);
+        final int len = IOUtils.read(in, extensionHeader);
         if (len != extensionHeader.length) {
             throw new ArchiveException("Error reading extended header");
         }
