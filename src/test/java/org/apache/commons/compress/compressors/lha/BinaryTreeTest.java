@@ -152,35 +152,41 @@ class BinaryTreeTest {
 
     @Test
     void testTree10() throws Exception {
-        // Maximum length of 510 entries
-        final int[] length = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 9, 0, 0, 0,
-                0, 13, 8, 0, 0, 0, 0, 8, 9, 9, 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 8, 8, 0, 0, 0, 9, 0, 9, 13, 11, 11, 10, 10, 10, 10, 9, 13, 11, 10, 11,
-                10, 10, 10, 13, 11, 10, 9, 13, 13, 10, 0, 13, 0, 10, 0, 13, 0, 0, 0, 7, 8, 8, 7, 6, 8, 8, 8, 7, 10, 9, 7, 7, 7, 7, 8, 11, 7, 6, 7, 7, 9,
-                8, 10, 8, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                4, 4, 4, 5, 5, 6, 7, 7, 7, 7, 8, 11, 10, 10, 12, 12, 0, 12, 12, 13, 0, 0, 0, 0, 0, 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 };
+        // Maximum length of 510 entries for command tree and maximum supported depth of 16
+        final int[] length = new int[] { 4, 7, 7, 8, 7, 9, 8, 9, 7, 10, 8, 10, 7, 10, 8, 10, 7, 9, 8, 9, 8, 10, 8, 12, 8, 10, 9, 11, 9, 9, 8, 10, 6, 9,
+                7, 9, 8, 10, 8, 11, 7, 9, 8, 9, 8, 9, 8, 9, 7, 9, 8, 8, 8, 10, 9, 11, 8, 9, 8, 10, 8, 9, 8, 9, 7, 7, 7, 8, 8, 8, 8, 9, 7, 8, 7, 9, 8, 9,
+                8, 8, 8, 10, 7, 7, 8, 8, 8, 9, 8, 9, 8, 9, 9, 10, 9, 10, 7, 8, 9, 9, 8, 7, 7, 7, 8, 8, 9, 8, 8, 9, 8, 8, 8, 11, 8, 9, 8, 8, 9, 10, 9, 9,
+                8, 10, 8, 10, 9, 9, 7, 9, 9, 10, 9, 10, 9, 9, 9, 10, 9, 11, 10, 11, 9, 10, 8, 10, 9, 11, 9, 10, 10, 12, 9, 11, 9, 12, 10, 14, 10, 14, 10,
+                11, 10, 11, 9, 11, 10, 12, 9, 11, 10, 11, 9, 10, 10, 11, 9, 11, 10, 12, 10, 13, 11, 13, 10, 11, 10, 13, 10, 15, 10, 14, 8, 10, 9, 10, 9,
+                10, 10, 11, 9, 11, 10, 12, 10, 13, 10, 13, 9, 11, 9, 11, 9, 12, 9, 11, 9, 10, 9, 12, 9, 11, 9, 9, 9, 10, 8, 10, 9, 11, 9, 10, 9, 10, 9,
+                10, 9, 10, 9, 11, 8, 10, 9, 10, 9, 10, 9, 11, 9, 10, 8, 10, 8, 10, 9, 7, 3, 4, 5, 5, 6, 7, 7, 7, 8, 8, 9, 9, 9, 9, 10, 10, 11, 11, 11,
+                10, 11, 12, 11, 12, 12, 12, 12, 13, 13, 13, 14, 12, 14, 13, 16, 14, 16, 13, 15, 14, 13, 15, 14, 15, 14, 15, 14, 14, 0, 14, 15, 14, 0,
+                14, 0, 0, 0, 0, 0, 0, 0, 15, 0, 15, 0, 0, 15, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                13, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 15, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 15, 10 };
 
         final BinaryTree tree = new BinaryTree(length);
 
-        assertEquals(509, tree.read(createBitInputStream(0x00, 0x00))); // 0xxx xxxx  xxxx xxxx
-        assertEquals(256, tree.read(createBitInputStream(0x80, 0x00))); // 1000 xxxx  xxxx xxxx
-        assertEquals(257, tree.read(createBitInputStream(0x90, 0x00))); // 1001 xxxx  xxxx xxxx
-        assertEquals(258, tree.read(createBitInputStream(0xa0, 0x00))); // 1010 xxxx  xxxx xxxx
-        assertEquals(259, tree.read(createBitInputStream(0xb0, 0x00))); // 1011 0xxx  xxxx xxxx
-        assertEquals(260, tree.read(createBitInputStream(0xb8, 0x00))); // 1011 1xxx  xxxx xxxx
-        assertEquals(101, tree.read(createBitInputStream(0xc0, 0x00))); // 1100 00xx  xxxx xxxx
-        assertEquals(115, tree.read(createBitInputStream(0xc4, 0x00))); // 1100 01xx  xxxx xxxx
+        assertEquals(256, tree.read(createBitInputStream(0x00, 0x00))); // 000x xxxx  xxxx xxxx
+        assertEquals(0, tree.read(createBitInputStream(0x20, 0x00)));   // 0010 xxxx  xxxx xxxx
+        assertEquals(257, tree.read(createBitInputStream(0x30, 0x00))); // 0011 xxxx  xxxx xxxx
+        assertEquals(258, tree.read(createBitInputStream(0x40, 0x00))); // 0100 0xxx  xxxx xxxx
+        assertEquals(259, tree.read(createBitInputStream(0x48, 0x00))); // 0100 1xxx  xxxx xxxx
+        assertEquals(32, tree.read(createBitInputStream(0x50, 0x00)));  // 0101 00xx  xxxx xxxx
+        assertEquals(260, tree.read(createBitInputStream(0x54, 0x00))); // 0101 01xx  xxxx xxxx
 
-        assertEquals(93, tree.read(createBitInputStream(0xff, 0xe0)));  // 1111 1111  1110 0xxx
-        assertEquals(122, tree.read(createBitInputStream(0xff, 0xe8))); // 1111 1111  1110 1xxx
-        assertEquals(275, tree.read(createBitInputStream(0xff, 0xf0))); // 1111 1111  1111 0xxx
-        assertEquals(283, tree.read(createBitInputStream(0xff, 0xf8))); // 1111 1111  1111 1xxx
+        assertEquals(226, tree.read(createBitInputStream(0xbd, 0x00))); // 1011 1101  xxxx xxxx
+        assertEquals(240, tree.read(createBitInputStream(0xbe, 0x00))); // 1011 1110  xxxx xxxx
+
+        assertEquals(163, tree.read(createBitInputStream(0xfb, 0xa0))); // 1111 1011  101x xxxx
+        assertEquals(165, tree.read(createBitInputStream(0xfb, 0xc0))); // 1111 1011  110x xxxx
+
+        assertEquals(499, tree.read(createBitInputStream(0xff, 0xfa))); // 1111 1111  1111 101x
+        assertEquals(508, tree.read(createBitInputStream(0xff, 0xfc))); // 1111 1111  1111 110x
+        assertEquals(290, tree.read(createBitInputStream(0xff, 0xfe))); // 1111 1111  1111 1110
+        assertEquals(292, tree.read(createBitInputStream(0xff, 0xff))); // 1111 1111  1111 1111
     }
 
     @Test
