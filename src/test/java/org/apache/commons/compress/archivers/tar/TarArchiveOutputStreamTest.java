@@ -51,6 +51,7 @@ import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.NullOutputStream;
 import org.apache.commons.lang3.ArrayFill;
+import org.apache.commons.lang3.time.TimeZones;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -254,7 +255,7 @@ class TarArchiveOutputStreamTest extends AbstractTest {
                 1024 + TarConstants.NAMELEN + TarConstants.MODELEN + TarConstants.UIDLEN + TarConstants.GIDLEN + TarConstants.SIZELEN, 12, UTF_8));
         try (TarArchiveInputStream tin = new TarArchiveInputStream(new ByteArrayInputStream(data))) {
             final TarArchiveEntry e = tin.getNextTarEntry();
-            final Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+            final Calendar cal = Calendar.getInstance(TimeZones.GMT);
             cal.set(1969, 11, 31, 23, 59, 59);
             cal.set(Calendar.MILLISECOND, 0);
             assertEquals(cal.getTime(), e.getLastModifiedDate());
@@ -279,7 +280,7 @@ class TarArchiveOutputStreamTest extends AbstractTest {
         assertEquals((byte) 0xff, data[TarConstants.NAMELEN + TarConstants.MODELEN + TarConstants.UIDLEN + TarConstants.GIDLEN + TarConstants.SIZELEN]);
         try (TarArchiveInputStream tin = new TarArchiveInputStream(new ByteArrayInputStream(data))) {
             final TarArchiveEntry e = tin.getNextTarEntry();
-            final Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+            final Calendar cal = Calendar.getInstance(TimeZones.GMT);
             cal.set(1969, 11, 31, 23, 59, 59);
             cal.set(Calendar.MILLISECOND, 0);
             assertEquals(cal.getTime(), e.getLastModifiedDate());
