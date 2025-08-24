@@ -68,6 +68,22 @@ public class Pack200Exception extends CompressException {
     }
 
     /**
+     * Throws a MemoryLimitException if the request couldn't allocate an {@code int} array of the given size.
+     *
+     * @param size The requested array size.
+     * @param count How many arrays to request.
+     * @throws Pack200Exception Thrown if the request is greater than the max.
+     * @since 1.29.0
+     */
+    public static void checkIntArray(final int size, final int count) throws Pack200Exception {
+        try {
+            checkIntArray(Math.multiplyExact(size, count));
+        } catch (final ArithmeticException e) {
+            throw new Pack200Exception("No room to allocate %,d int arrays of length %,d", size, count);
+        }
+    }
+
+    /**
      * Constructs an {@code Pack200Exception} with the specified detail message.
      *
      * @param message The detail message (which is saved for later retrieval by the {@link #getMessage()} method)
