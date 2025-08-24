@@ -50,6 +50,14 @@ public class Pack200Exception extends CompressException {
         return addExact(x, y, E_FUNCTION);
     }
 
+    /**
+     * Throws a MemoryLimitException if the request couldn't allocate an {@code int} array of the given size.
+     *
+     * @param size The requested array size.
+     * @return The request.
+     * @throws Pack200Exception Thrown if the request is greater than the max.
+     * @since 1.29.0
+     */
     public static int checkIntArray(final int size) throws Pack200Exception {
         try {
             MemoryLimitException.checkBytes((long) Integer.BYTES * size, Runtime.getRuntime().maxMemory());
