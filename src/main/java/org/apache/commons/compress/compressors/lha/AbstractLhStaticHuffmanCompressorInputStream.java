@@ -204,13 +204,13 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
         final int command = commandTree.read(bin);
         if (command == -1) {
             throw new CompressorException("Unexpected end of stream");
-        } else if (command < 0x100) {
+        } else if (command < NUMBER_OF_LITERAL_CODES) {
             // Literal command, just write the byte to the buffer
             buffer.put(command);
         } else {
             // Copy command, read the distance and calculate the length from the command
             final int distance = readDistance();
-            final int length = command - 0x100 + getCopyThreshold();
+            final int length = command - NUMBER_OF_LITERAL_CODES + getCopyThreshold();
 
             // Copy the data from the sliding dictionary and add to the buffer
             buffer.copy(distance + 1, length);
