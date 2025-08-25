@@ -34,6 +34,21 @@ public class Pack200CompressorInputStreamTest {
 
     /*
      * Bad input detected in org.apache.commons.compress.harmony.unpack200.CpBands.parseCpUtf8(InputStream).
+     *
+     * An {@link IOException} wraps an {@link ArrayIndexOutOfBoundsException}.
+     */
+    @Test
+    public void testBandSet_decodeBandInt() throws IOException {
+        final byte[] input = Base64.getDecoder().decode("yv7QDQeWZxAEDXNJEBAuEBAQAQAAAABDAIAQEC8Q7RAQEPYAAAD/////ARAQCgoKCgo0CgoKCgoKCgoKCgoKJwAAAAoKLf4"
+                + "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAQEAcQQQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAPD+/v7+/v7+/v7+"
+                + "/v7+/v7+/////wEAAAAAAAAAAAAAAAAQ//7+JZAoDQc=");
+        assertThrows(IOException.class, () -> new Pack200CompressorInputStream(new ByteArrayInputStream(input)));
+    }
+
+    /*
+     * Bad input detected in org.apache.commons.compress.harmony.unpack200.CpBands.parseCpUtf8(InputStream).
+     *
+     * An {@link IOException} wraps an {@link StringIndexOutOfBoundsException}.
      */
     @Test
     public void testCpBands_parseCpUtf8() throws IOException {
