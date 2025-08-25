@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
@@ -47,6 +48,8 @@ import org.apache.commons.io.output.ByteArrayOutputStream;
  */
 // CheckStyle:HideUtilityClassConstructorCheck OFF (bc)
 public class TarUtils {
+
+    private static final Pattern HEADER_STRINGS_PATTERN = Pattern.compile(",");
 
     private static final BigInteger NEG_1_BIG_INT = BigInteger.valueOf(-1);
 
@@ -458,7 +461,7 @@ public class TarUtils {
      */
     protected static List<TarArchiveStructSparse> parseFromPAX01SparseHeaders(final String sparseMap) throws IOException {
         final List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
-        final String[] sparseHeaderStrings = sparseMap.split(",");
+        final String[] sparseHeaderStrings = HEADER_STRINGS_PATTERN.split(sparseMap);
         if (sparseHeaderStrings.length % 2 == 1) {
             throw new ArchiveException("Corrupted TAR archive. Bad format in GNU.sparse.map PAX Header");
         }
