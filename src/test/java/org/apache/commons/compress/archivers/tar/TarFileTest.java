@@ -44,6 +44,7 @@ import java.util.zip.GZIPInputStream;
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.time.TimeZones;
 import org.junit.jupiter.api.Test;
 
 import shaded.org.apache.commons.lang3.StringUtils;
@@ -55,7 +56,7 @@ class TarFileTest extends AbstractTest {
             final TarArchiveEntry entry = tarFile.getEntries().get(0);
             assertEquals("foo", entry.getName());
             assertEquals(TarConstants.LF_NORMAL, entry.getLinkFlag());
-            final Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("GMT"));
+            final Calendar cal = Calendar.getInstance(TimeZones.GMT);
             cal.set(1969, 11, 31, 23, 59, 59);
             cal.set(Calendar.MILLISECOND, 0);
             assertEquals(cal.getTime(), entry.getLastModifiedDate());
