@@ -28,12 +28,12 @@ import java.util.Base64;
 import org.junit.jupiter.api.Test;
 
 /**
- * Test {@link Pack200CompressorInputStream}.
+ * Tests {@link Pack200CompressorInputStream}.
  */
 public class Pack200CompressorInputStreamTest {
 
     /*
-     * Bad input detected in org.apache.commons.compress.harmony.unpack200.CpBands.parseCpUtf8(InputStream).
+     * Tests bad input detected in org.apache.commons.compress.harmony.unpack200.CpBands.parseCpUtf8(InputStream).
      *
      * An {@link IOException} wraps an {@link ArrayIndexOutOfBoundsException}.
      */
@@ -46,13 +46,26 @@ public class Pack200CompressorInputStreamTest {
     }
 
     /*
-     * Bad input detected in org.apache.commons.compress.harmony.unpack200.CpBands.parseCpUtf8(InputStream).
+     * Tests bad input detected in org.apache.commons.compress.harmony.unpack200.CpBands.parseCpUtf8(InputStream).
      *
      * An {@link IOException} wraps an {@link StringIndexOutOfBoundsException}.
      */
     @Test
     public void testCpBands_parseCpUtf8() throws IOException {
         final byte[] input = Base64.getDecoder().decode("yv7QDQeWEAMDAwMDAxAAAAAQKhAQEBAQKAYGBgYGBgYAECoQEBAQECj//5j/");
+        assertThrows(IOException.class, () -> new Pack200CompressorInputStream(new ByteArrayInputStream(input)));
+    }
+
+    /*
+     * Tests bad input detected in org.apache.commons.compress.harmony.pack200.PopulationCodec.decodeInts(int, InputStream).
+     *
+     * An {@link IOException} wraps an {@link ArrayIndexOutOfBoundsException}.
+     */
+    @Test
+    public void testPopulationCodec_decodeInts() throws IOException {
+        final byte[] input = Base64.getDecoder().decode("yv7QDQeWgYGBgYGBgYGBgYGBhYUwhYWFhYV6enp6enp6hYWFhYWFhYWFhYWFhYWFhY2FhYWFhYWFh4WFhYWFhYVAhYWFhX2F"
+                + "hYWFhYWFjoWFhY2FhYWFhYWFhYWFhYqFhYUHlmcQEBArEBAQLhAQEBAQEBCTATeTk5OTk5OTk5N1fJMrEBAQEBD2AAAAzQAAAAEAAgAA+wAHlmcQEBAAACsAJQAAAAAAAAAAAA"
+                + "AAAAAAAAAAAAAAAAAAAAAAAAAAAP7///+AAAAAAAAAAAAAAAAAAAAAAAAAAAAA/v///xAQLhAQEBAQEAAAsw==");
         assertThrows(IOException.class, () -> new Pack200CompressorInputStream(new ByteArrayInputStream(input)));
     }
 }
