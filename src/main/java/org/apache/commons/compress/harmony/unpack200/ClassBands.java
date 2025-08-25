@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -151,7 +152,7 @@ public class ClassBands extends BandSet {
         }
         for (int i = 0; i < 26; i++) {
             if ((layoutsUsed & 1 << i) != 0) {
-                final AttributeLayout layout = attrMap.getAttributeLayout(i, context);
+                final AttributeLayout layout = Objects.requireNonNull(attrMap.getAttributeLayout(i, context), "layout");
                 callCount += layout.numBackwardsCallables();
             }
         }

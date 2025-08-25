@@ -64,6 +64,18 @@ public class Pack200CompressorInputStreamTest {
     }
 
     /**
+     * Tests bad input detected in {@code org.apache.commons.compress.harmony.unpack200.ClassBands.getCallCount(int[][], long[][], int)}.
+     *
+     * An {@link IOException} wraps an {@link NullPointerException}.
+     */
+    @Test
+    public void testClassBands_getCallCount() {
+        assertThrowsIOException("yv7QDQeWEBAQEBAQEBAQEBAAAAAAEAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+                + "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+                + "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA////////////////////////////////////////EBAQEBAQKA0H");
+    }
+
+    /**
      * Tests bad input detected in {@code org.apache.commons.compress.harmony.unpack200.CpBands.cpUTF8Value(int)}.
      *
      * An {@link IOException} wraps an {@link ArrayIndexOutOfBoundsException}.
