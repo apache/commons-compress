@@ -32,40 +32,53 @@ import org.junit.jupiter.api.Test;
  */
 public class Pack200CompressorInputStreamTest {
 
+    private void assertThrowsIOException(final String inputBase64) {
+        assertThrows(IOException.class, () -> new Pack200CompressorInputStream(new ByteArrayInputStream(Base64.getDecoder().decode(inputBase64))));
+    }
+
     /*
      * Tests bad input detected in org.apache.commons.compress.harmony.unpack200.CpBands.parseCpUtf8(InputStream).
      *
      * An {@link IOException} wraps an {@link ArrayIndexOutOfBoundsException}.
      */
     @Test
-    public void testBandSet_decodeBandInt() throws IOException {
-        final byte[] input = Base64.getDecoder().decode("yv7QDQeWZxAEDXNJEBAuEBAQAQAAAABDAIAQEC8Q7RAQEPYAAAD/////ARAQCgoKCgo0CgoKCgoKCgoKCgoKJwAAAAoKLf4"
+    public void testBandSet_decodeBandInt() {
+        assertThrowsIOException("yv7QDQeWZxAEDXNJEBAuEBAQAQAAAABDAIAQEC8Q7RAQEPYAAAD/////ARAQCgoKCgo0CgoKCgoKCgoKCgoKJwAAAAoKLf4"
                 + "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAQEAcQQQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAPD+/v7+/v7+/v7+"
                 + "/v7+/v7+/////wEAAAAAAAAAAAAAAAAQ//7+JZAoDQc=");
-        assertThrows(IOException.class, () -> new Pack200CompressorInputStream(new ByteArrayInputStream(input)));
     }
 
     /*
-     * Tests bad input detected in org.apache.commons.compress.harmony.unpack200.CpBands.parseCpUtf8(InputStream).
+     * Tests bad input detected in {@code org.apache.commons.compress.harmony.unpack200.CpBands.parseCpUtf8(InputStream)}.
      *
      * An {@link IOException} wraps an {@link StringIndexOutOfBoundsException}.
      */
     @Test
-    public void testCpBands_parseCpUtf8() throws IOException {
-        final byte[] input = Base64.getDecoder().decode("yv7QDQeWEAMDAwMDAxAAAAAQKhAQEBAQKAYGBgYGBgYAECoQEBAQECj//5j/");
-        assertThrows(IOException.class, () -> new Pack200CompressorInputStream(new ByteArrayInputStream(input)));
+    public void testCpBands_parseCpUtf8() {
+        assertThrowsIOException("yv7QDQeWEAMDAwMDAxAAAAAQKhAQEBAQKAYGBgYGBgYAECoQEBAQECj//5j/");
     }
 
     /*
-     * Tests bad input detected in org.apache.commons.compress.harmony.pack200.PopulationCodec.decodeInts(int, InputStream).
+     * Tests bad input detected in {@code org.apache.commons.compress.harmony.pack200.PopulationCodec.decodeInts(int, InputStream)}.
      *
      * An {@link IOException} wraps an {@link ArrayIndexOutOfBoundsException}.
      */
     @Test
-    public void testPopulationCodec_decodeInts() throws IOException {
-        final byte[] input = Base64.getDecoder().decode("yv7QDQeWgYGBgYGBgYGBgYGBhYUwhYWFhYV6enp6enp6hYWFhYWFhYWFhYWFhYWFhY2FhYWFhYWFh4WFhYWFhYVAhYWFhX2F"
+    public void testPopulationCodec_decodeInts() {
+        assertThrowsIOException("yv7QDQeWgYGBgYGBgYGBgYGBhYUwhYWFhYV6enp6enp6hYWFhYWFhYWFhYWFhYWFhY2FhYWFhYWFh4WFhYWFhYVAhYWFhX2F"
                 + "hYWFhYWFjoWFhY2FhYWFhYWFhYWFhYqFhYUHlmcQEBArEBAQLhAQEBAQEBCTATeTk5OTk5OTk5N1fJMrEBAQEBD2AAAAzQAAAAEAAgAA+wAHlmcQEBAAACsAJQAAAAAAAAAAAA"
                 + "AAAAAAAAAAAAAAAAAAAAAAAAAAAP7///+AAAAAAAAAAAAAAAAAAAAAAAAAAAAA/v///xAQLhAQEBAQEAAAsw==");
-        assertThrows(IOException.class, () -> new Pack200CompressorInputStream(new ByteArrayInputStream(input)));
+    }
+
+    /*
+     * Tests bad input detected in {@code org.apache.commons.compress.harmony.pack200.PopulationCodec.decodeInts(int, InputStream)}.
+     *
+     * An {@link IOException} wraps an {@link ArrayIndexOutOfBoundsException}.
+     */
+    @Test
+    public void testRunCodec_decodeInts() {
+        assertThrowsIOException("yv7QDQeWgYGBgYGBgYGBgYGBhYUwhYWFhYV6enp6enp6hYWFhYWFhYWFhYWFhYWFhYWFhYWFhYWFh4WFhYWFhYWFhYWFhYWF"
+                + "hYWFhYWFjoWFjYWFhYWFhYWFhYWFhYWFhYUHlmcQEBArEBAQLhAQEBAQEBCTATeTk5OTk5OTk5N1fJMrEBAQEBD2AAAA/////wEAAgAA+wBaB9ANB5ZnEBAQKxAQEC4QEBAQEB"
+                + "AQkwE3k5OTk5OTk5OTdXyTk3qKbP0AAAAAALM=");
     }
 }
