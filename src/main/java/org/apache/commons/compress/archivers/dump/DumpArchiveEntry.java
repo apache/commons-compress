@@ -952,18 +952,4 @@ public class DumpArchiveEntry implements ArchiveEntry {
         return getName();
     }
 
-    /**
-     * Update entry with information from next tape segment header.
-     */
-    void update(final byte[] buffer) {
-        header.volume = DumpArchiveUtil.convert32(buffer, 16);
-        header.count = DumpArchiveUtil.convert32(buffer, 160);
-        header.holes = 0;
-        for (int i = 0; i < 512 && i < header.count; i++) {
-            if (buffer[164 + i] == 0) {
-                header.holes++;
-            }
-        }
-        System.arraycopy(buffer, 164, header.cdata, 0, 512);
-    }
 }

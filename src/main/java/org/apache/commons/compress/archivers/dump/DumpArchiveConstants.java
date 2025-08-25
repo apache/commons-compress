@@ -135,14 +135,31 @@ public final class DumpArchiveConstants {
     public static final int TP_SIZE = 1024;
 
     /**
-     * NTREC value {@value}.
+     * Minimum number of kilobytes per record: {@value}.
+     */
+    public static final int MIN_NTREC = 1;
+
+    /**
+     * Default number of kilobytes per record: {@value}.
      */
     public static final int NTREC = 10;
 
     /**
-     * HIGH_DENSITY_NTREC value {@value}.
+     * Number of kilobytes per record for high density tapes: {@value}.
      */
     public static final int HIGH_DENSITY_NTREC = 32;
+
+    /**
+     * Maximum number of kilobytes per record: {@value}.
+     * <p>
+     *     This limit matches the one used by the Linux ext2/3/4 dump/restore utilities.
+     *     For more details, see the
+     *     <a href="https://dump.sourceforge.io/">Linux dump/restore utilities documentation</a>
+     *     and the
+     *     <a href="https://manpages.debian.org/unstable/dump/dump.8.en.html#b,">dump(8) man page</a>.
+     * </p>
+     */
+    public static final int MAX_NTREC = 1024;
 
     /**
      * OFS_MAGIC value {@value}.

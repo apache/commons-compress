@@ -18,6 +18,9 @@
  */
 package org.apache.commons.compress.archivers.dump;
 
+import static org.apache.commons.compress.archivers.dump.DumpArchiveConstants.TP_SIZE;
+import static org.apache.commons.compress.archivers.dump.DumpArchiveTestFactory.createSegment;
+import static org.apache.commons.compress.archivers.dump.DumpArchiveTestFactory.createSummary;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -26,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -39,6 +43,8 @@ import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.Timeout.ThreadMode;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class DumpArchiveInputStreamTest extends AbstractTest {
 
@@ -140,4 +146,40 @@ class DumpArchiveInputStreamTest extends AbstractTest {
         }
     }
 
+    @ParameterizedTest
+    @ValueSource(ints = {1, 10, 32, 1024})
+    void checkSupportedRecordSizes(final int ntrec) throws Exception {
+        try (InputStream is = createArchive(ntrec);
+                DumpArchiveInputStream dump = new DumpArchiveInputStream(is)) {
+            final DumpArchiveSummary summary = dump.getSummary();
+            assertNotNull(summary);
+            assertEquals(ntrec, summary.getNTRec());
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {Integer.MIN_VALUE, -1, 0, 1025, Integer.MAX_VALUE})
+    void checkUnsupportedRecordSizes(final int ntrec) throws Exception {
+        try (InputStream is = createArchive(ntrec)) {
+            final ArchiveException ex = assertThrows(ArchiveException.class, () -> new DumpArchiveInputStream(is));
+            assertInstanceOf(ArchiveException.class, ex.getCause());
+            assertTrue(
+                    ex.getMessage().contains(Integer.toString(ntrec)),
+                    "message should contain the invalid ntrec value");
+        }
+    }
+
+    private InputStream createArchive(final int ntrec) {
+        final byte[] dump = new byte[Math.max(ntrec + 1, 3) * TP_SIZE];
+        int offset = 0;
+        // summary
+        System.arraycopy(createSummary(ntrec), 0, dump, offset, TP_SIZE);
+        offset += TP_SIZE;
+        // CLRI segment
+        System.arraycopy(createSegment(DumpArchiveConstants.SEGMENT_TYPE.CLRI), 0, dump, offset, TP_SIZE);
+        offset += TP_SIZE;
+        // BITS segment
+        System.arraycopy(createSegment(DumpArchiveConstants.SEGMENT_TYPE.BITS), 0, dump, offset, TP_SIZE);
+        return new ByteArrayInputStream(dump);
+    }
 }
