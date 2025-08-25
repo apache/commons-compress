@@ -38,7 +38,6 @@ import java.nio.file.Path;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.compress.AbstractTest;

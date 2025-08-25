@@ -18,6 +18,9 @@
  */
 package org.apache.commons.compress.archivers.dump;
 
+import static org.apache.commons.compress.archivers.dump.DumpArchiveConstants.MAX_NTREC;
+import static org.apache.commons.compress.archivers.dump.DumpArchiveConstants.MIN_NTREC;
+
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,7 +28,6 @@ import java.util.Arrays;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
-import org.apache.commons.compress.MemoryLimitException;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.utils.IOUtils;
 
@@ -285,16 +287,13 @@ final class TapeInputStream extends FilterInputStream {
      * @throws IOException there was an error reading additional blocks.
      * @throws IOException recsPerBlock is smaller than 1.
      */
-    public void resetBlockSize(final int recsPerBlock, final boolean isCompressed) throws IOException {
+    void resetBlockSize(final int recsPerBlock, final boolean isCompressed) throws IOException {
         this.isCompressed = isCompressed;
-        if (recsPerBlock < 1) {
-            throw new ArchiveException("Block with %,d records found, must be at least 1", recsPerBlock);
+        if (recsPerBlock < MIN_NTREC || recsPerBlock > MAX_NTREC) {
+            throw new ArchiveException(
+                    "Invalid DUMP block size: %d KiB (expected between %d and %d)", recsPerBlock, MIN_NTREC, MAX_NTREC);
         }
-        MemoryLimitException.checkKiB(recsPerBlock, Runtime.getRuntime().maxMemory());
         blockSize = RECORD_SIZE * recsPerBlock;
-        if (blockSize < 1) {
-            throw new ArchiveException("Block size cannot be less than or equal to 0: %,d", blockSize);
-        }
         // save first block in case we need it again
         final byte[] oldBuffer = blockBuffer;
         // read rest of new block
