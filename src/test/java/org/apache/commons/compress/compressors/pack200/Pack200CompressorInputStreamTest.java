@@ -49,6 +49,16 @@ public class Pack200CompressorInputStreamTest {
     }
 
     /**
+     * Tests bad input detected in {@code org.apache.commons.compress.harmony.unpack200.BandSet.getReferences(int[], String[])}.
+     *
+     * An {@link IOException} wraps an {@link ArrayIndexOutOfBoundsException}.
+     */
+    @Test
+    public void testBandSet_getReferences() {
+        assertThrowsIOException("yv7QDQeWAgICAgMCAgICAv////8CAgAAAAINAAAAAAAAAAAAAAAAAAAAAAAAAAAAgBAC");
+    }
+
+    /**
      * Tests bad input detected in {@code org.apache.commons.compress.harmony.unpack200.CpBands.cpUTF8Value(int)}.
      *
      * An {@link IOException} wraps an {@link ArrayIndexOutOfBoundsException}.
@@ -99,7 +109,6 @@ public class Pack200CompressorInputStreamTest {
                         + "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKCgoKCgoKCgAAAAAAAlLGQAAAAAAAAAAAAAAAAAAAAAAA"
                         + "AAAAAAAAAAAAAvAAAAEOcQEBAQEBAQEBAQECgNBw==");
     }
-
     /**
      * Tests bad input detected in {@code org.apache.commons.compress.harmony.unpack200.CpBands.parseCpUtf8(InputStream)}.
      *
