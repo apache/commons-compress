@@ -170,7 +170,7 @@ class DumpArchiveInputStreamTest extends AbstractTest {
     }
 
     private InputStream createArchive(final int ntrec) {
-        final byte[] dump = new byte[Math.max(ntrec + 1, 3) * TP_SIZE];
+        final byte[] dump = new byte[1024 * TP_SIZE];
         int offset = 0;
         // summary
         System.arraycopy(createSummary(ntrec), 0, dump, offset, TP_SIZE);
