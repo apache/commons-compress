@@ -36,7 +36,7 @@ public class Pack200CompressorInputStreamTest {
         assertThrows(IOException.class, () -> new Pack200CompressorInputStream(new ByteArrayInputStream(Base64.getDecoder().decode(inputBase64))));
     }
 
-    /*
+    /**
      * Tests bad input detected in org.apache.commons.compress.harmony.unpack200.CpBands.parseCpUtf8(InputStream).
      *
      * An {@link IOException} wraps an {@link ArrayIndexOutOfBoundsException}.
@@ -48,7 +48,7 @@ public class Pack200CompressorInputStreamTest {
                 + "/v7+/v7+/////wEAAAAAAAAAAAAAAAAQ//7+JZAoDQc=");
     }
 
-    /*
+    /**
      * Tests bad input detected in {@code org.apache.commons.compress.harmony.unpack200.CpBands.parseCpUtf8(InputStream)}.
      *
      * An {@link IOException} wraps an {@link StringIndexOutOfBoundsException}.
@@ -58,7 +58,7 @@ public class Pack200CompressorInputStreamTest {
         assertThrowsIOException("yv7QDQeWEAMDAwMDAxAAAAAQKhAQEBAQKAYGBgYGBgYAECoQEBAQECj//5j/");
     }
 
-    /*
+    /**
      * Tests bad input detected in {@code org.apache.commons.compress.harmony.pack200.PopulationCodec.decodeInts(int, InputStream)}.
      *
      * An {@link IOException} wraps an {@link ArrayIndexOutOfBoundsException}.
@@ -70,7 +70,7 @@ public class Pack200CompressorInputStreamTest {
                 + "AAAAAAAAAAAAAAAAAAAAAAAAAAAP7///+AAAAAAAAAAAAAAAAAAAAAAAAAAAAA/v///xAQLhAQEBAQEAAAsw==");
     }
 
-    /*
+    /**
      * Tests bad input detected in {@code org.apache.commons.compress.harmony.pack200.PopulationCodec.decodeInts(int, InputStream)}.
      *
      * An {@link IOException} wraps an {@link ArrayIndexOutOfBoundsException}.
