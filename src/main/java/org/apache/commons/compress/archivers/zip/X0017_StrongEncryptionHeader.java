@@ -48,7 +48,7 @@ import java.util.zip.ZipException;
  * <ul>
  * <li>0x0007 - reserved for future use
  * <li>0x000F - reserved for future use
- * <li>0x0100 - Indicates non-OAEP key wrapping was used. If this this field is set, the version needed to extract must be at least 61. This means OAEP key
+ * <li>0x0100 - Indicates non-OAEP key wrapping was used. If this field is set, the version needed to extract must be at least 61. This means OAEP key
  * wrapping is not used when generating a Master Session Key using ErdData.
  * <li>0x4000 - ErdData must be decrypted using 3DES-168, otherwise use the same algorithm used for encrypting the file contents.
  * <li>0x8000 - reserved for future use

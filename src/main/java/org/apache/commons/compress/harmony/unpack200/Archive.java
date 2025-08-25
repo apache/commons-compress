@@ -73,7 +73,7 @@ public class Archive {
      * Creates an Archive with streams for the input and output files. Note: If you use this method then calling {@link #setRemovePackFile(boolean)} will have
      * no effect.
      *
-     * @param inputStream  the input stream, preferably a {@link BoundedInputStream}. The bound can the the file size.
+     * @param inputStream  the input stream, preferably a {@link BoundedInputStream}. The bound can the file size.
      * @param outputStream the JAR output stream.
      * @throws IOException if an I/O error occurs
      */
