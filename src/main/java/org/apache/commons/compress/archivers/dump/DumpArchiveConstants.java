@@ -136,9 +136,8 @@ public final class DumpArchiveConstants {
 
     /**
      * Minimum number of kilobytes per record: {@value}.
-     * @since 1.29.0
      */
-    public static final int MIN_NTREC = 1;
+    static final int MIN_NTREC = 1;
 
     /**
      * Default number of kilobytes per record: {@value}.
@@ -159,9 +158,8 @@ public final class DumpArchiveConstants {
      *     and the
      *     <a href="https://manpages.debian.org/unstable/dump/dump.8.en.html#b,">dump(8) man page</a>.
      * </p>
-     * @since 1.29.0
      */
-    public static final int MAX_NTREC = 1024;
+    static final int MAX_NTREC = 1024;
 
     /**
      * OFS_MAGIC value {@value}.
