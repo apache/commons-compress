@@ -152,8 +152,7 @@ public class DumpArchiveSummary {
     /**
      * Gets the number of records per tape block.
      * <p>
-     *     This is typically either {@value DumpArchiveConstants#NTREC} (for standard density tapes) or
-     *     {@value DumpArchiveConstants#HIGH_DENSITY_NTREC} (for high density tapes).
+     *     This is typically either 10 (for standard density tapes) or 32 (for high density tapes).
      * </p>
      * @return the number of records per tape block
      */
