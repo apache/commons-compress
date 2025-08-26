@@ -35,8 +35,8 @@ public class Pack200CompressorInputStreamTest {
 
     @BeforeEach
     void beforeAll() {
-        final Runtime runtime = Runtime.getRuntime();
-        System.out.printf("freeMemory %,d, maxMemory %,d, totalMemory %,d%n", runtime.freeMemory(), runtime.maxMemory(), runtime.totalMemory());
+        // final Runtime runtime = Runtime.getRuntime();
+        // System.out.printf("freeMemory %,d, maxMemory %,d, totalMemory %,d%n", runtime.freeMemory(), runtime.maxMemory(), runtime.totalMemory());
     }
 
     private void assertThrowsIOException(final String inputBase64) {
