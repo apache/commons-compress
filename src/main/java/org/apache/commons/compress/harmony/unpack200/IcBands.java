@@ -174,7 +174,6 @@ public class IcBands extends BandSet {
                 icName[i] = cpUTF8[icNameInts[i] - 1];
             }
         }
-
         // Construct IC tuples
         icAll = new IcTuple[icThisClass.length];
         int index = 0;
@@ -203,21 +202,17 @@ public class IcBands extends BandSet {
         thisClassToTuple = new HashMap<>(allTuples.length);
         outerClassToTuples = new HashMap<>(allTuples.length);
         for (final IcTuple tuple : allTuples) {
-
             // generate mapping thisClassString -> IcTuple
             // presumably this relation is 1:1
             //
             final Object result = thisClassToTuple.put(tuple.thisClassString(), tuple);
             if (result != null) {
-                throw new Error("Collision detected in <thisClassString, IcTuple> mapping. There are at least two inner clases with the same name.");
+                throw new Pack200Exception("Collision detected in <thisClassString, IcTuple> mapping. There are at least two inner clases with the same name.");
             }
-
             // generate mapping outerClassString -> IcTuple
             // this relation is 1:M
-
             // If it's not anon and the outer is not anon, it could be relevant
             if (!tuple.isAnonymous() && !tuple.outerIsAnonymous() || tuple.nestedExplicitFlagSet()) {
-
                 // add tuple to corresponding bucket
                 final String key = tuple.outerClassString();
                 outerClassToTuples.computeIfAbsent(key, k -> new ArrayList<>()).add(tuple);

@@ -84,6 +84,24 @@ public class Pack200Exception extends CompressException {
     }
 
     /**
+     * Throws a Pack200Exception if the given object is null.
+     *
+     * @param <T>     The object type.
+     * @param obj     The object to test.
+     * @param message The message format (which is saved for later retrieval by the {@link #getMessage()} method).
+     * @param args    the format arguments to use.
+     * @return The given object.
+     * @throws Pack200Exception Thrown if {@code obj} is null.
+     * @since 1.29.0
+     */
+    public static <T> T requireNonNull(final T obj, final String message, final Object... args) throws Pack200Exception {
+        if (obj == null) {
+            throw new Pack200Exception(message, args);
+        }
+        return obj;
+    }
+
+    /**
      * Constructs an {@code Pack200Exception} with the specified detail message.
      *
      * @param message The detail message (which is saved for later retrieval by the {@link #getMessage()} method)

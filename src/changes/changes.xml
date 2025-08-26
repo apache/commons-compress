@@ -103,6 +103,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.archivers.ArchiveException.ArchiveException(String, Object...).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.compressors.CompressorException.CompressorException(String, Object...).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.harmony.pack200.Pack200Exception.Pack200Exception(String, Object...).</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.harmony.pack200.Pack200Exception.requireNonNull(T, String, Object...).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.MemoryLimitException.checkBytes(int, long).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.MemoryLimitException.checkKiB(long, long).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.archivers.ArchiveException.addExact(int, int).</action>
