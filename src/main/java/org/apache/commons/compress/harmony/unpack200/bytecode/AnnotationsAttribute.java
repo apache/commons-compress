@@ -127,6 +127,9 @@ public abstract class AnnotationsAttribute extends Attribute {
      */
     public static class ElementValue {
 
+        /** Size in bytes of an instance. */
+        public static final int BYTES = 8 + 8 + Integer.BYTES + Integer.BYTES;
+
         private final Object value;
         private final int tag;
 

@@ -60,11 +60,11 @@ public class Pack200Exception extends CompressException {
      */
     public static int checkIntArray(final int size) throws Pack200Exception {
         try {
-            MemoryLimitException.checkBytes((long) Integer.BYTES * size, Runtime.getRuntime().maxMemory());
-        } catch (final MemoryLimitException e) {
+            MemoryLimitException.checkBytes(Math.multiplyExact(Integer.BYTES, size), Runtime.getRuntime().maxMemory());
+            return size;
+        } catch (final MemoryLimitException | ArithmeticException e) {
             throw new Pack200Exception(e);
         }
-        return size;
     }
 
     /**
@@ -72,14 +72,33 @@ public class Pack200Exception extends CompressException {
      *
      * @param size The requested array size.
      * @param count How many arrays to request.
+     * @return The input count.
      * @throws Pack200Exception Thrown if the request is greater than the max.
      * @since 1.29.0
      */
-    public static void checkIntArray(final int size, final int count) throws Pack200Exception {
+    public static int checkIntArray(final int size, final int count) throws Pack200Exception {
         try {
-            checkIntArray(Math.multiplyExact(size, count));
+            return checkIntArray(Math.multiplyExact(size, count));
         } catch (final ArithmeticException e) {
-            throw new Pack200Exception("No room to allocate %,d int arrays of length %,d", size, count);
+            throw new Pack200Exception("Can't allocate %,d int arrays of length %,d.", size, count);
+        }
+    }
+
+    /**
+     * Throws a MemoryLimitException if the request couldn't allocate an {@code Object} array of the given size.
+     *
+     * @param size The requested array size.
+     * @param objSize The object size.
+     * @return The array size.
+     * @throws Pack200Exception Thrown if the request is greater than the max.
+     * @since 1.29.0
+     */
+    public static int checkObjectArray(final int size, final int objSize) throws Pack200Exception {
+        try {
+            MemoryLimitException.checkBytes(Math.multiplyExact(size, objSize), Runtime.getRuntime().maxMemory());
+            return size;
+        } catch (final MemoryLimitException | ArithmeticException e) {
+            throw new Pack200Exception("Can't allocate %,d Objects of size %,d.", size, objSize);
         }
     }
 

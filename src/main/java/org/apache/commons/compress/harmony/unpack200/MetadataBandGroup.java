@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.harmony.unpack200.bytecode.AnnotationDefaultAttribute;
 import org.apache.commons.compress.harmony.unpack200.bytecode.AnnotationsAttribute.Annotation;
 import org.apache.commons.compress.harmony.unpack200.bytecode.AnnotationsAttribute.ElementValue;
@@ -131,8 +132,9 @@ public class MetadataBandGroup {
      * @param numPairs      Number of pairs, matches the lengths of {@code elementNames} and {@code elementValues} in the new Annotation.
      * @param type          Type.
      * @param namesIterator Iterates names to create pairs.
+     * @throws Pack200Exception Thrown on a format error.
      */
-    private Annotation getAnnotation(final CPUTF8 type, final int pairCount, final Iterator<CPUTF8> namesIterator) {
+    private Annotation getAnnotation(final CPUTF8 type, final int pairCount, final Iterator<CPUTF8> namesIterator) throws Pack200Exception {
         final CPUTF8[] elementNames = new CPUTF8[pairCount];
         final ElementValue[] elementValues = new ElementValue[pairCount];
         for (int j = 0; j < elementNames.length; j++) {
@@ -143,13 +145,16 @@ public class MetadataBandGroup {
         return new Annotation(pairCount, type, elementNames, elementValues);
     }
 
-    private Attribute getAttribute(final int numAnnotations, final CPUTF8[] types, final int[] pairCounts, final Iterator<CPUTF8> namesIterator) {
+    private Attribute getAttribute(final int numAnnotations, final CPUTF8[] types, final int[] pairCounts, final Iterator<CPUTF8> namesIterator)
+            throws Pack200Exception {
         final Annotation[] annotations = new Annotation[numAnnotations];
-        Arrays.setAll(annotations, i -> getAnnotation(types[i], pairCounts[i], namesIterator));
+        for (int i = 0; i < annotations.length; i++) {
+            annotations[i] = getAnnotation(types[i], pairCounts[i], namesIterator);
+        }
         return new RuntimeVisibleorInvisibleAnnotationsAttribute(type.equals("RVA") ? rvaUTF8 : riaUTF8, annotations);
     }
 
-    public List<Attribute> getAttributes() {
+    public List<Attribute> getAttributes() throws Pack200Exception {
         // TODO: Optimize iterators!
         if (attributes == null) {
             attributes = new ArrayList<>();
@@ -190,7 +195,7 @@ public class MetadataBandGroup {
         return attributes;
     }
 
-    private Object getNextValue(final int t) {
+    private Object getNextValue(final int t) throws Pack200Exception {
         switch (t) {
         case 'B':
         case 'C':
@@ -215,7 +220,7 @@ public class MetadataBandGroup {
             return cases_RU[cases_RU_Index++];
         case '[':
             final int arraySize = casearray_N[casearray_N_Index++];
-            final ElementValue[] nestedArray = new ElementValue[arraySize];
+            final ElementValue[] nestedArray = new ElementValue[Pack200Exception.checkObjectArray(arraySize, ElementValue.BYTES)];
             for (int i = 0; i < arraySize; i++) {
                 final int nextT = T[T_index++];
                 nestedArray[i] = new ElementValue(nextT, getNextValue(nextT));
@@ -230,13 +235,15 @@ public class MetadataBandGroup {
         return null;
     }
 
-    private Attribute getParameterAttribute(final int numParameters, final Iterator<CPUTF8> namesIterator) {
+    private Attribute getParameterAttribute(final int numParameters, final Iterator<CPUTF8> namesIterator) throws Pack200Exception {
         final ParameterAnnotation[] parameterAnnotations = new ParameterAnnotation[numParameters];
         for (int i = 0; i < numParameters; i++) {
             final int numAnnotations = anno_N[anno_N_Index++];
             final int[] pairCounts = pair_N[pair_N_Index++];
             final Annotation[] annotations = new Annotation[numAnnotations];
-            Arrays.setAll(annotations, j -> getAnnotation(type_RS[anno_N_Index - 1][j], pairCounts[j], namesIterator));
+            for (int j = 0; j < annotations.length; j++) {
+                annotations[j] = getAnnotation(type_RS[anno_N_Index - 1][j], pairCounts[j], namesIterator);
+            }
             parameterAnnotations[i] = new ParameterAnnotation(annotations);
         }
         return new RuntimeVisibleorInvisibleParameterAnnotationsAttribute(type.equals("RVPA") ? rvpaUTF8 : ripaUTF8, parameterAnnotations);
