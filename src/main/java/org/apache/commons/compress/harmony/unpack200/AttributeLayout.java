@@ -287,6 +287,7 @@ public class AttributeLayout implements IMatcher {
      * @throws Pack200Exception Cannot have an unnamed layout.
      */
     public AttributeLayout(final String name, final int context, final String layout, final int index, final boolean isDefault) throws Pack200Exception {
+        Pack200Exception.requireNonNull(layout, "layout");
         this.index = index;
         this.context = context;
         if (index >= 0) {
@@ -296,9 +297,6 @@ public class AttributeLayout implements IMatcher {
         }
         if (context != CONTEXT_CLASS && context != CONTEXT_CODE && context != CONTEXT_FIELD && context != CONTEXT_METHOD) {
             throw new Pack200Exception("Attribute context out of range: %d", context);
-        }
-        if (layout == null) {
-            throw new Pack200Exception("Cannot have a null layout");
         }
         if (StringUtils.isEmpty(name)) {
             throw new Pack200Exception("Cannot have an unnamed layout");

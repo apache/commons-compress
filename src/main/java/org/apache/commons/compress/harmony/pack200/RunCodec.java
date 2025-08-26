@@ -39,12 +39,9 @@ public class RunCodec extends Codec {
         if (k <= 0) {
             throw new Pack200Exception("Cannot have a RunCodec for a negative number of numbers");
         }
-        if (aCodec == null || bCodec == null) {
-            throw new Pack200Exception("Must supply both codecs for a RunCodec");
-        }
         this.k = k;
-        this.aCodec = aCodec;
-        this.bCodec = bCodec;
+        this.aCodec = Pack200Exception.requireNonNull(aCodec, "aCodec");
+        this.bCodec = Pack200Exception.requireNonNull(bCodec, "bCodec");
     }
 
     @Override
