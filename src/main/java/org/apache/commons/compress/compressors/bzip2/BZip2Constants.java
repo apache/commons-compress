@@ -35,9 +35,19 @@ interface BZip2Constants {
     int MAX_ALPHA_SIZE = 258;
 
     /**
-     * Constant {@value}.
+     * Maximum allowed length of a Huffman code in BZip2.
+     * <p>
+     *     In the original bzip2 C implementation, a defensive limit of 23 is set to prevent buffer overflows
+     *     (see <a href="https://github.com/libarchive/bzip2/blob/master/bzlib_private.h">{@code bzip_private.h}</a>).
+     *     However, the actual enforced maximum during decompression is 20
+     *     (see <a href="https://github.com/libarchive/bzip2/blob/master/decompress.c">BZ2_decompress in {@code decompress.c}</a>),
+     *     and since version 1.0.6, compression uses a maximum of 17.
+     * </p>
+     * <p>
+     *     The Java implementation does not require the higher defensive limit, so this constant is set to the true maximum of 20.
+     * </p>
      */
-    int MAX_CODE_LEN = 23;
+    int MAX_CODE_LEN = 20;
 
     /**
      * Constant {@value}.

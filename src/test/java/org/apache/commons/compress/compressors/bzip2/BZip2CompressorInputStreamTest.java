@@ -18,6 +18,7 @@
  */
 package org.apache.commons.compress.compressors.bzip2;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -35,6 +36,7 @@ import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.compressors.CompressorException;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream.Data;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
@@ -148,5 +150,21 @@ class BZip2CompressorInputStreamTest extends AbstractTest {
             assertEquals(-1, in.read());
             assertEquals(-1, in.read());
         }
+    }
+
+    @Test
+    void testCreateHuffmanDecodingTablesWithLargeAlphaSize() {
+        final Data data = new Data(1);
+        // Use a codeLengths array with length equal to MAX_ALPHA_SIZE (258) to test array bounds.
+        final char[] codeLengths = new char[258];
+        for (int i = 0; i < codeLengths.length; i++) {
+            // Use all code lengths within valid range [1, 20]
+            codeLengths[i] = (char) ((i % 20) + 1);
+        }
+        data.temp_charArray2d[0] = codeLengths;
+        assertDoesNotThrow(
+                () -> BZip2CompressorInputStream.createHuffmanDecodingTables(codeLengths.length, 1, data),
+                "createHuffmanDecodingTables should not throw for valid codeLengths array of MAX_ALPHA_SIZE");
+        assertEquals(data.minLens[0], 1, "Minimum code length should be 1");
     }
 }

@@ -42,7 +42,8 @@ import org.apache.commons.io.input.CloseShieldInputStream;
  */
 public class BZip2CompressorInputStream extends CompressorInputStream implements BZip2Constants, InputStreamStatistics {
 
-    private static final class Data {
+    // package private for testing
+    static final class Data {
 
         // (with blockSize 900k)
         final boolean[] inUse = new boolean[256]; // 256 byte
@@ -56,8 +57,10 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
          */
         final int[] unzftab = new int[256]; // 1024 byte
 
-        final int[][] limit = new int[N_GROUPS][MAX_ALPHA_SIZE]; // 6192 byte
-        final int[][] base = new int[N_GROUPS][MAX_ALPHA_SIZE]; // 6192 byte
+        // Needs indexes from 0 to MAX_CODE_LEN inclusive.
+        final int[][] limit = new int[N_GROUPS][MAX_CODE_LEN + 1];
+        // Needs indexes from 0 to MAX_CODE_LEN + 1 inclusive.
+        final int[][] base = new int[N_GROUPS][MAX_CODE_LEN + 2];
         final int[][] perm = new int[N_GROUPS][MAX_ALPHA_SIZE]; // 6192 byte
         final int[] minLens = new int[N_GROUPS]; // 24 byte
 
@@ -157,7 +160,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
      * Called by createHuffmanDecodingTables() exclusively.
      */
     private static void hbCreateDecodeTables(final int[] limit, final int[] base, final int[] perm, final char[] length, final int minLen, final int maxLen,
-            final int alphaSize) throws IOException {
+            final int alphaSize) {
         for (int i = minLen, pp = 0; i <= maxLen; i++) {
             for (int j = 0; j < alphaSize; j++) {
                 if (length[j] == i) {
@@ -171,7 +174,6 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         }
         for (int i = 0; i < alphaSize; i++) {
             final int len = length[i] + 1;
-            checkBounds(len, MAX_ALPHA_SIZE, "length");
             base[len]++;
         }
         for (int i = 1, b = base[0]; i < MAX_CODE_LEN; i++) {
@@ -298,8 +300,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     /**
      * Called by recvDecodingTables() exclusively.
      */
-    private void createHuffmanDecodingTables(final int alphaSize, final int nGroups) throws IOException {
-        final Data dataShadow = this.data;
+    static void createHuffmanDecodingTables(final int alphaSize, final int nGroups, final Data dataShadow) throws IOException {
         final char[][] len = dataShadow.temp_charArray2d;
         final int[] minLens = dataShadow.minLens;
         final int[][] limit = dataShadow.limit;
@@ -307,8 +308,8 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         final int[][] perm = dataShadow.perm;
 
         for (int t = 0; t < nGroups; t++) {
-            int minLen = 32;
-            int maxLen = 0;
+            int minLen = MAX_CODE_LEN;
+            int maxLen = 1;
             final char[] len_t = len[t];
             for (int i = alphaSize; --i >= 0;) {
                 final char lent = len_t[i];
@@ -751,12 +752,17 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
                 while (bsGetBit(bin)) {
                     curr += bsGetBit(bin) ? -1 : 1;
                 }
+                // Same condition as in bzip2
+                if (curr < 1 || curr > MAX_CODE_LEN) {
+                    throw new CompressorException(
+                            "Corrupted input, code length value out of range [%d, %d]: %d", 1, MAX_CODE_LEN, curr);
+                }
                 len_t[i] = (char) curr;
             }
         }
 
         // finally create the Huffman tables
-        createHuffmanDecodingTables(alphaSize, nGroups);
+        createHuffmanDecodingTables(alphaSize, nGroups, dataShadow);
     }
 
     private int setupBlock() throws IOException {
