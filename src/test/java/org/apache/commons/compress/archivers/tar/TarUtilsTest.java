@@ -22,6 +22,7 @@ package org.apache.commons.compress.archivers.tar;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -45,7 +46,6 @@ import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.io.input.NullInputStream;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -668,9 +668,12 @@ class TarUtilsTest extends AbstractTest {
     }
 
     static Stream<Arguments> readLongNameHandlesLimits() {
+        final String empty = "";
         final String ntfsLongName = createNtfsLongNameByUtf16Units(32767);
         final String posixLongName = createPosixLongNameByUtf8Bytes(4095);
         return Stream.of(
+                Arguments.of("Empty", empty, utf8Bytes(empty)),
+                Arguments.of("Empty (padded)", empty, paddedUtf8Bytes(empty)),
                 Arguments.of("NTFS", ntfsLongName, utf8Bytes(ntfsLongName)),
                 Arguments.of("NTFS (padded)", ntfsLongName, paddedUtf8Bytes(ntfsLongName)),
                 Arguments.of("POSIX", posixLongName, utf8Bytes(posixLongName)),
@@ -695,19 +698,30 @@ class TarUtilsTest extends AbstractTest {
         }
     }
 
-    @Test
-    @DisplayName("readLongName throws ArchiveException on truncation")
-    void readLongNameThrowsOnTruncation() throws IOException {
+    static Stream<Arguments> readLongNameThrowsOnTruncation() {
+        return Stream.of(
+                Arguments.of(Integer.MAX_VALUE, "truncated long name"),
+                Arguments.of(Long.MAX_VALUE, "invalid long name"));
+    }
+
+    @ParameterizedTest(name = "readLongName of {0} bytes throws ArchiveException")
+    @MethodSource
+    void readLongNameThrowsOnTruncation(final long size, final CharSequence expectedMessage) throws IOException {
         final TarArchiveEntry entry = new TarArchiveEntry("test");
-        entry.setSize(Integer.MAX_VALUE); // absurdly large so any finite stream truncates
+        entry.setSize(size); // absurdly large so any finite stream truncates
         try (InputStream in = new NullInputStream()) {
             final ArchiveException ex = assertThrows(
                     ArchiveException.class,
                     () -> TarUtils.readLongName(in, TarUtils.DEFAULT_ENCODING, entry),
-                    "Expected ArchiveException due to truncated long name, but no exception was thrown");
+                    "Expected ArchiveExcepti" + "on due to truncated long name, but no exception was thrown");
+            final String actualMessage = StringUtils.toRootLowerCase(ex.getMessage());
+            assertNotNull(actualMessage, "Exception message should not be null");
             assertTrue(
-                    ex.getMessage() != null && ex.getMessage().toLowerCase().contains("truncated long name"),
-                    () -> "Expected exception message to contain 'truncated long name', but got: " + ex.getMessage());
+                    actualMessage.contains(expectedMessage),
+                    () -> "Expected exception message to contain '" + expectedMessage + "', but got: " + actualMessage);
+            assertTrue(
+                    actualMessage.contains(Long.toString(size)),
+                    () -> "Expected exception message to mention '" + size + "', but got: " + actualMessage);
         }
     }
 }
