@@ -31,17 +31,25 @@ import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.ByteUtils;
+import org.apache.commons.io.input.NullInputStream;
+import org.apache.commons.lang3.StringUtils;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 class TarUtilsTest extends AbstractTest {
 
@@ -599,4 +607,107 @@ class TarUtilsTest extends AbstractTest {
         assertEquals(-3601L, TarUtils.parseOctalOrBinary(b, 0, 8));
     }
 
+    /**
+     * Builds an NTFS-style path (\\?\C:\...) up to a target total UTF-16 length, respecting 255-unit segments.
+     */
+    private static String createNtfsLongNameByUtf16Units(final int totalUnits) {
+        final String prefix = "\\\\?\\C:\\";
+        final String extension = ".txt";
+
+        // U+2605 BLACK STAR (BMP, 1 UTF-16 unit, 3 UTF-8 bytes) => lets us pack 255 units per segment easily
+        final String segment = StringUtils.repeat("★", 255);
+        assertEquals(255, segment.length(), "Segment length should be 255 UTF-16 code units");
+
+        final StringBuilder sb = new StringBuilder(prefix);
+        while (sb.length() + extension.length() < totalUnits) {
+            sb.append(segment).append('\\');
+        }
+
+        // Trim to exact totalUnits (UTF-16 units), then append extension
+        sb.setLength(totalUnits - extension.length());
+        sb.append(extension);
+        assertEquals(totalUnits, sb.length(), "Final length should be " + totalUnits + " UTF-16 code units");
+        return sb.toString();
+    }
+
+    /**
+     * Builds a POSIX-style path (rooted at `/`) up to a target total *byte* length in UTF-8, 255 bytes/segment.
+     */
+    private static String createPosixLongNameByUtf8Bytes(final int totalBytes) {
+        final String extension = ".txt";
+        // U+2605 BLACK STAR (BMP, 1 UTF-16 unit, 3 UTF-8 bytes) => 85 * 3 UTF-8 bytes = 255 bytes
+        final String segment = StringUtils.repeat("★", 85);
+        assertEquals(255, utf8Len(segment), "Segment length should be 255 bytes in UTF-8");
+
+        final StringBuilder sb = new StringBuilder();
+        int count = totalBytes / 256; // how many full 256-byte chunks can we fit?
+        while (count-- > 0) {
+            sb.append(segment).append('/');
+        }
+        count = totalBytes - utf8Len(sb) - utf8Len(extension);
+        while (count-- > 0) {
+            sb.append('a');
+        }
+        sb.append(extension);
+        assertEquals(totalBytes, utf8Len(sb), "Final length should be " + totalBytes + " bytes in UTF-8");
+        return sb.toString();
+    }
+
+    private static int utf8Len(final CharSequence s) {
+        return s.toString().getBytes(UTF_8).length;
+    }
+
+    private static byte[] utf8Bytes(final String s) {
+        return s.getBytes(UTF_8);
+    }
+
+    private static byte[] paddedUtf8Bytes(final String s) {
+        final int blockSize = 1024;
+        final byte[] bytes = s.getBytes(UTF_8);
+        return Arrays.copyOf(bytes, ((bytes.length + blockSize - 1) / blockSize) * blockSize);
+    }
+
+    static Stream<Arguments> readLongNameHandlesLimits() {
+        final String ntfsLongName = createNtfsLongNameByUtf16Units(32767);
+        final String posixLongName = createPosixLongNameByUtf8Bytes(4095);
+        return Stream.of(
+                Arguments.of("NTFS", ntfsLongName, utf8Bytes(ntfsLongName)),
+                Arguments.of("NTFS (padded)", ntfsLongName, paddedUtf8Bytes(ntfsLongName)),
+                Arguments.of("POSIX", posixLongName, utf8Bytes(posixLongName)),
+                Arguments.of("POSIX (padded)", posixLongName, paddedUtf8Bytes(posixLongName)));
+    }
+
+    @ParameterizedTest(name = "{0} long name is read correctly")
+    @MethodSource
+    void readLongNameHandlesLimits(final String kind, final String expectedName, final byte[] data) throws IOException {
+        final TarArchiveEntry entry = new TarArchiveEntry("test");
+        entry.setSize(data.length);
+        // Lets add a trailing "garbage" to ensure we only read what we should
+        final byte[] dataWithGarbage = Arrays.copyOf(data, data.length + 1024);
+        Arrays.fill(dataWithGarbage, data.length, dataWithGarbage.length, (byte) 0xFF);
+
+        try (InputStream in = new ByteArrayInputStream(dataWithGarbage)) {
+            final String actualName = TarUtils.readLongName(in, ZipEncodingHelper.getZipEncoding(UTF_8), entry);
+            assertEquals(
+                    expectedName,
+                    actualName,
+                    () -> String.format("[%s] The long name read does not match the expected value.", kind));
+        }
+    }
+
+    @Test
+    @DisplayName("readLongName throws ArchiveException on truncation")
+    void readLongNameThrowsOnTruncation() throws IOException {
+        final TarArchiveEntry entry = new TarArchiveEntry("test");
+        entry.setSize(Integer.MAX_VALUE); // absurdly large so any finite stream truncates
+        try (InputStream in = new NullInputStream()) {
+            final ArchiveException ex = assertThrows(
+                    ArchiveException.class,
+                    () -> TarUtils.readLongName(in, TarUtils.DEFAULT_ENCODING, entry),
+                    "Expected ArchiveException due to truncated long name, but no exception was thrown");
+            assertTrue(
+                    ex.getMessage() != null && ex.getMessage().toLowerCase().contains("truncated long name"),
+                    () -> "Expected exception message to contain 'truncated long name', but got: " + ex.getMessage());
+        }
+    }
 }
