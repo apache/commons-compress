@@ -298,9 +298,15 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     }
 
     /**
-     * Called by recvDecodingTables() exclusively.
+     * Builds the Huffman decoding tables for use by {@code recvDecodingTables()}.
+     *
+     * @param alphaSize the alphabet size, guaranteed by the caller to be in the range [2, 258]
+     *                  (RUNA, RUNB, 255 byte values, and EOB).
+     * @param nGroups   the number of Huffman coding groups, guaranteed by the caller to be in the range [0, 6].
+     * @param dataShadow the data structure into which the tables are built; requires
+     *                   {@code temp_charArray2d} to be initialized.
      */
-    static void createHuffmanDecodingTables(final int alphaSize, final int nGroups, final Data dataShadow) throws IOException {
+    static void createHuffmanDecodingTables(final int alphaSize, final int nGroups, final Data dataShadow) {
         final char[][] len = dataShadow.temp_charArray2d;
         final int[] minLens = dataShadow.minLens;
         final int[][] limit = dataShadow.limit;
@@ -308,10 +314,10 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         final int[][] perm = dataShadow.perm;
 
         for (int t = 0; t < nGroups; t++) {
-            int minLen = MAX_CODE_LEN;
-            int maxLen = 1;
             final char[] len_t = len[t];
-            for (int i = alphaSize; --i >= 0;) {
+            int minLen = len_t[0];
+            int maxLen = len_t[0];
+            for (int i = 1; i < alphaSize; i++) {
                 final char lent = len_t[i];
                 if (lent > maxLen) {
                     maxLen = lent;
