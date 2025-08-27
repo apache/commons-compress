@@ -174,7 +174,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         }
         // Ensure the arrays were not reused.
         Arrays.fill(base, 0);
-        Arrays.fill(limit, 0);
+        Arrays.fill(limit, minLen, maxLen + 1, 0);
         // Compute histogram of code lengths, shifted by 1.
         for (int i = 0; i < alphaSize; i++) {
             final int len = length[i] + 1;
