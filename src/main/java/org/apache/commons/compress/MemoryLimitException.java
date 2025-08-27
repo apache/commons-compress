@@ -53,9 +53,9 @@ public class MemoryLimitException extends CompressException {
     /**
      * Throws a MemoryLimitException if the request is greater than the max.
      *
-     * @param request The request.
-     * @param max     The max.
-     * @return The request.
+     * @param request The request in bytes.
+     * @param max     The max in bytes.
+     * @return The request in bytes.
      * @throws MemoryLimitException Thrown if the request is greater than the max.
      * @since 1.29.0
      */
@@ -67,9 +67,9 @@ public class MemoryLimitException extends CompressException {
     /**
      * Throws a MemoryLimitException if the request is greater than the max.
      *
-     * @param request The request.
-     * @param max     The max.
-     * @return The request.
+     * @param request The request in bytes.
+     * @param max     The max in bytes.
+     * @return The request in bytes.
      * @throws MemoryLimitException Thrown if the request is greater than the max.
      * @since 1.29.0
      */
@@ -81,9 +81,9 @@ public class MemoryLimitException extends CompressException {
     /**
      * Throws a MemoryLimitException if the request is greater than the max.
      *
-     * @param request The request.
-     * @param max     The max.
-     * @return The request.
+     * @param request The request in KiB.
+     * @param max     The max in KiB.
+     * @return The request in KiB.
      * @throws MemoryLimitException Thrown if the request is greater than the max.
      * @since 1.29.0
      */
