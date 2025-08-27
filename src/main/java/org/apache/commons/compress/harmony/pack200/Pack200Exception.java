@@ -95,7 +95,7 @@ public class Pack200Exception extends CompressException {
      */
     public static int checkObjectArray(final int size, final int objSize) throws Pack200Exception {
         try {
-            MemoryLimitException.checkBytes(Math.multiplyExact(size, objSize), Runtime.getRuntime().totalMemory());
+            MemoryLimitException.checkBytes(Math.multiplyExact(size, objSize), Runtime.getRuntime().freeMemory());
             return size;
         } catch (final MemoryLimitException | ArithmeticException e) {
             throw new Pack200Exception("Can't allocate %,d Objects of size %,d.", size, objSize);
