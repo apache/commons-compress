@@ -842,7 +842,7 @@ public class NewAttributeBands extends BandSet {
         final char[] digits = new char[length];
         final int read = stream.read(digits);
         if (read != digits.length) {
-            throw new IOException("Error reading from the input stream");
+            throw new Pack200Exception("Error reading from the input stream");
         }
         return ParsingUtils.parseIntValue((negative ? "-" : "") + new String(digits));
     }

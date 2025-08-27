@@ -86,7 +86,7 @@ public class FileBands extends BandSet {
             fileBits[i] = IOUtils.readRange(in, size);
             final int read = fileBits[i].length;
             if (size != 0 && read < size) {
-                throw new IOException("Expected to read " + size + " bytes but read " + read);
+                throw new Pack200Exception("Expected to read " + size + " bytes but read " + read);
             }
         }
     }

@@ -82,7 +82,7 @@ public class Pack200PackerAdapter extends Pack200Adapter implements Packer {
         try {
             new Archive(file, out, options).pack();
         } catch (final Pack200Exception e) {
-            throw new IOException("Failed to pack Jar:" + e);
+            throw new Pack200Exception("Failed to pack Jar:" + e);
         }
         completed(1);
     }
@@ -98,7 +98,7 @@ public class Pack200PackerAdapter extends Pack200Adapter implements Packer {
         try {
             new Archive(in, out, options).pack();
         } catch (final Pack200Exception e) {
-            throw new IOException("Failed to pack Jar:" + e);
+            throw new Pack200Exception("Failed to pack Jar:" + e);
         }
         completed(1);
         in.close();

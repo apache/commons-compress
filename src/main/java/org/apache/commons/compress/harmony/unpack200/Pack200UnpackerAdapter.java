@@ -194,7 +194,7 @@ public class Pack200UnpackerAdapter extends Pack200Adapter implements Unpacker {
         try {
             new Archive(in, out).unpack();
         } catch (final Pack200Exception | RuntimeException e) {
-            throw new IOException("Failed to unpack JAR: " + e, e);
+            throw new Pack200Exception("Failed to unpack JAR: " + e, e);
         }
         completed(1);
     }

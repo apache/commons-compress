@@ -157,7 +157,7 @@ public abstract class BandSet {
         int index = 0;
         for (int i = 0; i < result.length; i++) {
             if (counts[i] > twoDResult.length) {
-                throw new IOException("Counts value exceeds length of twoDResult");
+                throw new Pack200Exception("Counts value exceeds length of twoDResult");
             }
             result[i] = new int[counts[i]];
             for (int j = 0; j < result[i].length; j++) {

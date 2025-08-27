@@ -489,7 +489,7 @@ public class CpBands extends BandSet {
     private void parseCpUtf8(final InputStream in) throws IOException, Pack200Exception {
         final int cpUTF8Count = header.getCpUTF8Count();
         if (cpUTF8Count <= 0) {
-            throw new IOException("cpUTF8Count value must be greater than 0");
+            throw new Pack200Exception("cpUTF8Count value must be greater than 0");
         }
         final int[] prefix = decodeBandInt("cpUTF8Prefix", in, Codec.DELTA5, cpUTF8Count - 2);
         int charCount = 0;
