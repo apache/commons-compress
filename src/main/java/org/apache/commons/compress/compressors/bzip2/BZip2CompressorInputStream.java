@@ -47,7 +47,8 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
 
         // (with blockSize 900k)
         final boolean[] inUse = new boolean[256]; // 256 byte
-        private int inUseCount;
+        // Always equal to the number of true values in inUse[] plus 2.
+        private int inUseCount = 2;
 
         final byte[] seqToUnseq = new byte[256]; // 256 byte
         final byte[] selector = new byte[MAX_SELECTORS]; // 18002 byte
