@@ -898,9 +898,7 @@ public class TarUtils {
                 .setMaxCount(size)
                 .setPropagateClose(false)
                 .get();
-        final UnsynchronizedByteArrayOutputStream outputStream = UnsynchronizedByteArrayOutputStream.builder()
-                .setBufferSize(org.apache.commons.io.IOUtils.DEFAULT_BUFFER_SIZE)
-                .get();
+        final UnsynchronizedByteArrayOutputStream outputStream = UnsynchronizedByteArrayOutputStream.builder().get();
         final long read = org.apache.commons.io.IOUtils.copyLarge(boundedInput, outputStream);
         if (read != size) {
             throw new ArchiveException("Truncated long name entry: expected %,d bytes, read %,d bytes.", size, read);
