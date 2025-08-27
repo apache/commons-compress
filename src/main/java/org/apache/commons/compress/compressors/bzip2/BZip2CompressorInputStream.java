@@ -47,6 +47,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
 
         // (with blockSize 900k)
         final boolean[] inUse = new boolean[256]; // 256 byte
+        private int inUseCount;
 
         final byte[] seqToUnseq = new byte[256]; // 256 byte
         final byte[] selector = new byte[MAX_SELECTORS]; // 18002 byte
@@ -222,7 +223,6 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
 
     private boolean blockRandomised;
     private final CRC crc = new CRC();
-    private int nInUse;
     private BitInputStream bin;
     private final boolean decompressConcatenated;
     private int currentState = START_BLOCK_STATE;
@@ -342,8 +342,8 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     private void getAndMoveToFrontDecode() throws IOException {
         final BitInputStream bin = this.bin;
         this.origPtr = bsR(bin, 24);
-        recvDecodingTables();
         final Data dataShadow = this.data;
+        recvDecodingTables(bin, dataShadow);
         final byte[] ll8 = dataShadow.ll8;
         final int[] unzftab = dataShadow.unzftab;
         final byte[] selector = dataShadow.selector;
@@ -364,7 +364,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         }
         int groupNo = 0;
         int groupPos = G_SIZE - 1;
-        final int eob = this.nInUse + 1;
+        final int eob = dataShadow.inUseCount + 1;
         int nextSym = getAndMoveToFrontDecode0();
         int lastShadow = -1;
         int zt = selector[groupNo] & 0xff;
@@ -574,9 +574,9 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         this.currentState = START_BLOCK_STATE;
     }
 
-    private void makeMaps() {
-        final boolean[] inUse = this.data.inUse;
-        final byte[] seqToUnseq = this.data.seqToUnseq;
+    private static void makeMaps(final Data data) throws IOException {
+        final boolean[] inUse = data.inUse;
+        final byte[] seqToUnseq = data.seqToUnseq;
 
         int nInUseShadow = 0;
 
@@ -586,7 +586,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
             }
         }
 
-        this.nInUse = nInUseShadow;
+        data.inUseCount = nInUseShadow;
     }
 
     @Override
@@ -669,9 +669,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         return (int) b;
     }
 
-    private void recvDecodingTables() throws IOException {
-        final BitInputStream bin = this.bin;
-        final Data dataShadow = this.data;
+    static void recvDecodingTables(final BitInputStream bin, final Data dataShadow) throws IOException {
         final boolean[] inUse = dataShadow.inUse;
         final byte[] pos = dataShadow.recvDecodingTables_pos;
         final byte[] selector = dataShadow.selector;
@@ -698,8 +696,8 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
             }
         }
 
-        makeMaps();
-        final int alphaSize = this.nInUse + 2;
+        makeMaps(dataShadow);
+        final int alphaSize = dataShadow.inUseCount + 2;
         /* Now the selectors */
         final int nGroups = bsR(bin, 3);
         final int selectors = bsR(bin, 15);
