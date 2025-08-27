@@ -50,14 +50,17 @@ final class SubStreamsInfo {
             // 2 long arrays, just count the longs
             alloc = Math.multiplyExact(intExactCount, Long.BYTES * 2);
             // one BitSet [boolean, long[], int]. just count the long array
-            final int sizeOfBitSet = Math.multiplyExact(Long.BYTES, ((intExactCount - 1) >> 6) + 1);
+            final int sizeOfBitSet = Math.multiplyExact(Long.BYTES, (intExactCount - 1 >> 6) + 1);
             alloc = Math.addExact(alloc, Math.multiplyExact(intExactCount, sizeOfBitSet));
-            // check
-        } catch (ArithmeticException e) {
+        } catch (final ArithmeticException e) {
             throw new CompressException("Cannot create allocation request for a SubStreamsInfo of totalUnpackStreams %,d, maxMemoryLimitKiB %,d: %s",
                     totalUnpackStreams, maxMemoryLimitKiB, e);
         }
-        MemoryLimitException.checkKiB(SevenZFile.bytesToKiB(alloc), maxMemoryLimitKiB);
+        if (Runtime.getRuntime().freeMemory() > 128_000_000L) {
+            // Avoid false positives. 
+            // Not a reliable check in old VMs or in low memory VMs.
+            MemoryLimitException.checkKiB(SevenZFile.bytesToKiB(alloc), maxMemoryLimitKiB);
+        }
         this.hasCrc = new BitSet(intExactCount);
         this.crcs = new long[intExactCount];
         this.unpackSizes = new long[intExactCount];
