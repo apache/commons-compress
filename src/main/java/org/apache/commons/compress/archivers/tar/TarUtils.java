@@ -890,7 +890,7 @@ public class TarUtils {
         final long size = entry.getSize();
         // The encoding requires a byte array, whose size must be a positive int.
         if (size > Integer.MAX_VALUE) {
-            throw new ArchiveException("Invalid long name entry: size %d exceeds maximum allowed.", entry.getSize());
+            throw new ArchiveException("Invalid long name entry: size %,d exceeds maximum allowed.", entry.getSize());
         }
         // Read the long name incrementally to limit memory allocation in case of a corrupted entry.
         final BoundedInputStream boundedInput = BoundedInputStream.builder()
@@ -903,7 +903,7 @@ public class TarUtils {
                 .get();
         final long read = org.apache.commons.io.IOUtils.copyLarge(boundedInput, outputStream);
         if (read != size) {
-            throw new ArchiveException("Truncated long name entry: expected %d bytes, read %d bytes.", size, read);
+            throw new ArchiveException("Truncated long name entry: expected %,d bytes, read %,d bytes.", size, read);
         }
         final byte[] name = outputStream.toByteArray();
         int length = name.length;

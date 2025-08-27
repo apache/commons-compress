@@ -720,7 +720,7 @@ class TarUtilsTest extends AbstractTest {
                     actualMessage.contains(expectedMessage),
                     () -> "Expected exception message to contain '" + expectedMessage + "', but got: " + actualMessage);
             assertTrue(
-                    actualMessage.contains(Long.toString(size)),
+                    actualMessage.contains(String.format("%,d", size)),
                     () -> "Expected exception message to mention '" + size + "', but got: " + actualMessage);
         }
     }
