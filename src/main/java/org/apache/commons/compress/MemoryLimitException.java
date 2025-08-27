@@ -27,8 +27,8 @@ package org.apache.commons.compress;
  */
 public class MemoryLimitException extends CompressException {
 
-    private static final String LABEL = "free memory";
-    private static final String MAXIMUM = "free";
+    private static final String LABEL = "total memory";
+    private static final String MAXIMUM = "total";
     private static final String BYTES = "bytes";
     private static final String KIB = "KiB";
     private static final long serialVersionUID = 1L;
@@ -92,7 +92,7 @@ public class MemoryLimitException extends CompressException {
     }
 
     private static long newObjectMemory() {
-        return Runtime.getRuntime().freeMemory();
+        return Runtime.getRuntime().totalMemory();
     }
 
     /** A long instead of int to account for overflow in corrupt files. */

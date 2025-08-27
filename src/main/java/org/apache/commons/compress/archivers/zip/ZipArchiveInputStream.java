@@ -378,7 +378,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
         final int cacheable = offset + lastRead - expectedDDLen - 3;
         if (cacheable > 0) {
             final int request = (bos.size() + cacheable) * 2;
-            MemoryLimitException.checkBytes(request + 2 * 1024 * 1024, Runtime.getRuntime().freeMemory()); // 2 MB headroom
+            MemoryLimitException.checkBytes(request + 2 * 1024 * 1024, Runtime.getRuntime().totalMemory()); // 2 MB headroom
             bos.write(buf.array(), 0, cacheable);
             System.arraycopy(buf.array(), cacheable, buf.array(), 0, expectedDDLen + 3);
             offset = expectedDDLen + 3;
