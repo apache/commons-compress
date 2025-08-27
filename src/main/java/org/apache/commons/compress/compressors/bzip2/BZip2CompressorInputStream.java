@@ -182,7 +182,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         }
         // Compute cumulative counts: base[len] = # of codes with length < len.
         // In other terms: base[len] = index of the first code in the `perm` table.
-        for (int len = 1; len <= MAX_CODE_LEN + 1; len++) {
+        for (int len = 1; len < base.length; len++) {
             base[len] += base[len - 1];
         }
         // Compute the last code for each length.
@@ -381,7 +381,8 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         int nextSym = getAndMoveToFrontDecode0();
         int lastShadow = -1;
         int zt = selector[groupNo] & 0xff;
-        checkBounds(zt, N_GROUPS, "zt");
+        // All arrays have the same length
+        checkBounds(zt, base.length, "zt");
         int[] base_zt = base[zt];
         int[] limit_zt = limit[zt];
         int[] perm_zt = perm[zt];
@@ -399,9 +400,10 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
                     }
                     if (groupPos == 0) {
                         groupPos = G_SIZE - 1;
-                        checkBounds(++groupNo, MAX_SELECTORS, "groupNo");
+                        checkBounds(++groupNo, selector.length, "groupNo");
                         zt = selector[groupNo] & 0xff;
-                        checkBounds(zt, N_GROUPS, "zt");
+                        // All arrays have the same length
+                        checkBounds(zt, base.length, "zt");
                         base_zt = base[zt];
                         limit_zt = limit[zt];
                         perm_zt = perm[zt];
@@ -410,19 +412,19 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
                         groupPos--;
                     }
                     int zn = minLens_zt;
-                    checkBounds(zn, MAX_ALPHA_SIZE, "zn");
+                    checkBounds(zn, limit_zt.length, "zn");
                     int zvec = bsR(bin, zn);
                     while (zvec > limit_zt[zn]) {
-                        checkBounds(++zn, MAX_ALPHA_SIZE, "zn");
+                        checkBounds(++zn, limit_zt.length, "zn");
                         zvec = zvec << 1 | bsR(bin, 1);
                     }
                     final int tmp = zvec - base_zt[zn];
-                    checkBounds(tmp, MAX_ALPHA_SIZE, "zvec");
+                    checkBounds(tmp, perm_zt.length, "zvec");
                     nextSym = perm_zt[tmp];
                 }
                 checkBounds(s, this.data.ll8.length, "s");
                 final int yy0 = yy[0];
-                checkBounds(yy0, 256, "yy");
+                checkBounds(yy0, seqToUnseq.length, "yy");
                 final byte ch = seqToUnseq[yy0];
                 unzftab[ch & 0xff] += s + 1;
                 final int from = ++lastShadow;
@@ -436,9 +438,9 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
                 if (++lastShadow >= limitLast) {
                     throw new CompressorException("Block overrun in MTF, %,d exceeds %,d", lastShadow, limitLast);
                 }
-                checkBounds(nextSym, 256 + 1, "nextSym");
+                checkBounds(nextSym - 1, yy.length, "nextSym");
                 final char tmp = yy[nextSym - 1];
-                checkBounds(tmp, 256, "yy");
+                checkBounds(tmp, seqToUnseq.length, "yy");
                 unzftab[seqToUnseq[tmp] & 0xff]++;
                 ll8[lastShadow] = seqToUnseq[tmp];
                 /*
@@ -454,9 +456,10 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
                 yy[0] = tmp;
                 if (groupPos == 0) {
                     groupPos = G_SIZE - 1;
-                    checkBounds(++groupNo, MAX_SELECTORS, "groupNo");
+                    checkBounds(++groupNo, selector.length, "groupNo");
                     zt = selector[groupNo] & 0xff;
-                    checkBounds(zt, N_GROUPS, "zt");
+                    // All arrays have the same length
+                    checkBounds(zt, base.length, "zt");
                     base_zt = base[zt];
                     limit_zt = limit[zt];
                     perm_zt = perm[zt];
@@ -465,14 +468,14 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
                     groupPos--;
                 }
                 int zn = minLens_zt;
-                checkBounds(zn, MAX_ALPHA_SIZE, "zn");
+                checkBounds(zn, limit_zt.length, "zn");
                 int zvec = bsR(bin, zn);
                 while (zvec > limit_zt[zn]) {
-                    checkBounds(++zn, MAX_ALPHA_SIZE, "zn");
+                    checkBounds(++zn, limit_zt.length, "zn");
                     zvec = zvec << 1 | bsR(bin, 1);
                 }
                 final int idx = zvec - base_zt[zn];
-                checkBounds(idx, MAX_ALPHA_SIZE, "zvec");
+                checkBounds(idx, perm_zt.length, "zvec");
                 nextSym = perm_zt[idx];
             }
         }
@@ -482,17 +485,17 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     private int getAndMoveToFrontDecode0() throws IOException {
         final Data dataShadow = this.data;
         final int zt = dataShadow.selector[0] & 0xff;
-        checkBounds(zt, N_GROUPS, "zt");
+        checkBounds(zt, dataShadow.limit.length, "zt");
         final int[] limit_zt = dataShadow.limit[zt];
         int zn = dataShadow.minLens[zt];
-        checkBounds(zn, MAX_ALPHA_SIZE, "zn");
+        checkBounds(zn, limit_zt.length, "zn");
         int zvec = bsR(bin, zn);
         while (zvec > limit_zt[zn]) {
-            checkBounds(++zn, MAX_ALPHA_SIZE, "zn");
+            checkBounds(++zn, limit_zt.length, "zn");
             zvec = zvec << 1 | bsR(bin, 1);
         }
         final int tmp = zvec - dataShadow.base[zt][zn];
-        checkBounds(tmp, MAX_ALPHA_SIZE, "zvec");
+        checkBounds(tmp, dataShadow.perm.length, "zvec");
         return dataShadow.perm[zt][tmp];
     }
 
@@ -783,6 +786,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
 
         final int[] cftab = this.data.cftab;
         final int ttLen = this.last + 1;
+        // tt has size at least ttLen
         final int[] tt = this.data.initTT(ttLen);
         final byte[] ll8 = this.data.ll8;
         cftab[0] = 0;
