@@ -39,7 +39,9 @@ import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.ParsingUtils;
+import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.apache.commons.io.output.UnsynchronizedByteArrayOutputStream;
 
 /**
  * This class provides static utility methods to work with byte streams.
@@ -886,22 +888,30 @@ public class TarUtils {
      * @throws IOException if an I/O error occurs or the entry is truncated.
      * @throws ArchiveException if the entry size is invalid.
      */
-    private static String readLongName(final InputStream input, final ZipEncoding encoding, final TarArchiveEntry entry)
+    static String readLongName(final InputStream input, final ZipEncoding encoding, final TarArchiveEntry entry)
             throws IOException {
         final long size = entry.getSize();
+        // The encoding requires a byte array, whose size must be a positive int.
         if (size > Integer.MAX_VALUE) {
-            throw new ArchiveException("Invalid long name size: " + entry.getSize());
+            throw new ArchiveException("Invalid long name entry: size %,d exceeds maximum allowed.", entry.getSize());
         }
-        final int sizeInt = (int) size;
-        final byte[] buffer = new byte[sizeInt];
-        if (IOUtils.readFully(input, buffer, 0, sizeInt) < sizeInt) {
-            throw new ArchiveException("TAR entry is truncated.");
+        // Read the long name incrementally to limit memory allocation in case of a corrupted entry.
+        final BoundedInputStream boundedInput = BoundedInputStream.builder()
+                .setInputStream(input)
+                .setMaxCount(size)
+                .setPropagateClose(false)
+                .get();
+        final UnsynchronizedByteArrayOutputStream outputStream = UnsynchronizedByteArrayOutputStream.builder().get();
+        final long read = org.apache.commons.io.IOUtils.copyLarge(boundedInput, outputStream);
+        if (read != size) {
+            throw new ArchiveException("Truncated long name entry: expected %,d bytes, read %,d bytes.", size, read);
         }
-        int length = buffer.length;
-        while (length > 0 && buffer[length - 1] == 0) {
+        final byte[] name = outputStream.toByteArray();
+        int length = name.length;
+        while (length > 0 && name[length - 1] == 0) {
             length--;
         }
-        return encoding.decode(Arrays.copyOf(buffer, length));
+        return encoding.decode(Arrays.copyOf(name, length));
     }
 
     /**
