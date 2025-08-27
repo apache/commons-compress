@@ -667,7 +667,7 @@ class TarUtilsTest extends AbstractTest {
         return Arrays.copyOf(bytes, ((bytes.length + blockSize - 1) / blockSize) * blockSize);
     }
 
-    static Stream<Arguments> readLongNameHandlesLimits() {
+    static Stream<Arguments> testReadLongNameHandlesLimits() {
         final String empty = "";
         final String ntfsLongName = createNtfsLongNameByUtf16Units(32767);
         final String posixLongName = createPosixLongNameByUtf8Bytes(4095);
@@ -682,7 +682,7 @@ class TarUtilsTest extends AbstractTest {
 
     @ParameterizedTest(name = "{0} long name is read correctly")
     @MethodSource
-    void readLongNameHandlesLimits(final String kind, final String expectedName, final byte[] data) throws IOException {
+    void testReadLongNameHandlesLimits(final String kind, final String expectedName, final byte[] data) throws IOException {
         final TarArchiveEntry entry = new TarArchiveEntry("test");
         entry.setSize(data.length);
         // Lets add a trailing "garbage" to ensure we only read what we should
@@ -698,7 +698,7 @@ class TarUtilsTest extends AbstractTest {
         }
     }
 
-    static Stream<Arguments> readLongNameThrowsOnTruncation() {
+    static Stream<Arguments> testReadLongNameThrowsOnTruncation() {
         return Stream.of(
                 Arguments.of(Integer.MAX_VALUE, "truncated long name"),
                 Arguments.of(Long.MAX_VALUE, "invalid long name"));
@@ -706,14 +706,14 @@ class TarUtilsTest extends AbstractTest {
 
     @ParameterizedTest(name = "readLongName of {0} bytes throws ArchiveException")
     @MethodSource
-    void readLongNameThrowsOnTruncation(final long size, final CharSequence expectedMessage) throws IOException {
+    void testReadLongNameThrowsOnTruncation(final long size, final CharSequence expectedMessage) throws IOException {
         final TarArchiveEntry entry = new TarArchiveEntry("test");
         entry.setSize(size); // absurdly large so any finite stream truncates
         try (InputStream in = new NullInputStream()) {
             final ArchiveException ex = assertThrows(
                     ArchiveException.class,
                     () -> TarUtils.readLongName(in, TarUtils.DEFAULT_ENCODING, entry),
-                    "Expected ArchiveExcepti" + "on due to truncated long name, but no exception was thrown");
+                    "Expected ArchiveException due to truncated long name, but no exception was thrown");
             final String actualMessage = StringUtils.toRootLowerCase(ex.getMessage());
             assertNotNull(actualMessage, "Exception message should not be null");
             assertTrue(
