@@ -46,50 +46,50 @@ The <action> type attribute can be add,update,fix,remove.
       <!-- FIX -->
       <!-- FIX sevenz -->      
       <action type="fix" issue="COMPRESS-702" dev="ggregory" due-to="Zhang Di, Lastoneee">Performance issue in SevenZFile #681.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">Fix kilobyte to kibibyte conversion in org.apache.commons.compress.archivers.sevenz.SevenZFile.ArchiveStatistics.assertValidity(int).</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">Fix kilobyte to kibibyte conversion in org.apache.commons.compress.archivers.sevenz.SevenZFile.ArchiveStatistics.toString().</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">Fix kilobyte to kibibyte conversion in org.apache.commons.compress.archivers.sevenz.SevenZFile.Builder.setMaxMemoryLimitKb(int).</action>
-      <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">org.apache.commons.compress.archivers.sevenz.SevenZFile now throws an ArchiveException if a result overflows a long (or an int, depending on the context).</action>
-      <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">org.apache.commons.compress.archivers.sevenz.SevenZFile.Builder.get() now throws an ArchiveException instead of an IllegalArgumentException.</action>
-      <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">Fix format string in org.apache.commons.compress.archivers.sevenz.SevenZFile.assertFitsIntoNonNegativeInt(String, long).</action>
-      <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory, Stanislav Fort">org.apache.commons.compress.archivers.sevenz.SevenZFile now throws a MemoryLimitException (an IOException subclass) instead of an OutOfMemoryError.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.archivers.sevenz.DeltaDecoder.encode(OutputStream, Object) looses the underlying exception when throwing its IOException subclass.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.archivers.sevenz.AES256SHA256Decoder now enforces the CPP source k_NumCyclesPower_Supported_MAX = 24 limit.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">Fix kilobyte to kibibyte conversion in SevenZFile.ArchiveStatistics.assertValidity(int).</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">Fix kilobyte to kibibyte conversion in SevenZFile.ArchiveStatistics.toString().</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">Fix kilobyte to kibibyte conversion in SevenZFile.Builder.setMaxMemoryLimitKb(int).</action>
+      <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">SevenZFile now throws an ArchiveException if a result overflows a long (or an int, depending on the context).</action>
+      <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">SevenZFile.Builder.get() now throws an ArchiveException instead of an IllegalArgumentException.</action>
+      <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">Fix format string in SevenZFile.assertFitsIntoNonNegativeInt(String, long).</action>
+      <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory, Stanislav Fort">SevenZFile now throws a MemoryLimitException (an IOException subclass) instead of an OutOfMemoryError.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">DeltaDecoder.encode(OutputStream, Object) looses the underlying exception when throwing its IOException subclass.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">AES256SHA256Decoder now enforces the CPP source k_NumCyclesPower_Supported_MAX = 24 limit.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Don't loose precision while reading folders from a SevenZFile.</action>
       <action type="fix" dev="ggregory" due-to="Roel van Dijk, Gary Gregory">Improve some exception messages in TarUtils and TarArchiveEntry.</action>
       <!-- FIX bzip2 -->      
-      <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">BZip2 input streams now throw CompressorException (a subclass of IOException) for invalid or corrupted data, providing more specific error reporting.</action>
+      <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">BZip2CompressorInputStream now throw CompressorException (a subclass of IOException) for invalid or corrupted data, providing more specific error reporting.</action>
       <action type="fix" dev="pkarwasz" due-to="Tyler Nighswander, Piotr P. Karwasz">BZip2 input streams treat Huffman codes longer than 20 bits as corrupted data, matching the behavior of the reference implementation.</action>
       <!-- FIX dump -->      
       <action type="fix" dev="pkarwasz" due-to="Tyler Nighswander">Align DUMP archive block size with Linux `dump` utility.</action>
-      <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">org.apache.commons.compress.archivers.dump.DumpArchiveInputStream.getNextEntry() throws an ArchiveException instead of ArrayIndexOutOfBoundsException.</action>
+      <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">DumpArchiveInputStream.getNextEntry() throws an ArchiveException instead of ArrayIndexOutOfBoundsException.</action>
       <!-- FIX zip -->      
-      <action type="fix" dev="ggregory" due-to="Dominik Stadler, Gary Gregory" issue="COMPRESS-598">org.apache.commons.compress.archivers.zip.ZipArchiveInputStream.read(byte[], int, int) now throws an IOException instead of a NullPointerException.</action>
-      <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">org.apache.commons.compress.archivers.zip.ZipFile.createBoundedInputStream(long, long) now throws an ArchiveException instead of IllegalArgumentException.</action>
-      <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">org.apache.commons.compress.archivers.zip.ZipFile.getContentBeforeFirstLocalFileHeader() now throws an ArchiveException instead of IllegalArgumentException.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.archivers.zip.ExplodingInputStream now throws ArchiveException instead of ArithmeticException.</action>
-      <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">org.apache.commons.compress.archivers.zip.ZipArchiveInputStream.read() now throws an IOException instead of java.lang.ArrayIndexOutOfBoundsException.</action>
-      <action type="fix" dev="ggregory" due-to="Stanislav Fort, Gary Gregory">org.apache.commons.compress.archivers.zip.ZipArchiveInputStream now throws an MemoryLimitException instead of ArchiveException, or OutOfMemoryError when running with low memory settings set on the command line.</action>
+      <action type="fix" dev="ggregory" due-to="Dominik Stadler, Gary Gregory" issue="COMPRESS-598">ZipArchiveInputStream.read(byte[], int, int) now throws an IOException instead of a NullPointerException.</action>
+      <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">ZipFile.createBoundedInputStream(long, long) now throws an ArchiveException instead of IllegalArgumentException.</action>
+      <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">ZipFile.getContentBeforeFirstLocalFileHeader() now throws an ArchiveException instead of IllegalArgumentException.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">ExplodingInputStream now throws ArchiveException instead of ArithmeticException.</action>
+      <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">ZipArchiveInputStream.read() now throws an IOException instead of java.lang.ArrayIndexOutOfBoundsException.</action>
+      <action type="fix" dev="ggregory" due-to="Stanislav Fort, Gary Gregory">ZipArchiveInputStream now throws an MemoryLimitException instead of ArchiveException, or OutOfMemoryError when running with low memory settings set on the command line.</action>
       <!-- FIX tar -->      
       <action type="fix" dev="pkarwasz" due-to="Tyler Nighswander, Piotr P. Karwasz, Gary Gregory">>Uniform handling of special tar records in TarFile and TarArchiveInputStream.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory, Stanislav Fort">TarArchiveOutputStream now throws a IllegalArgumentException instead of an OutOfMemoryError.</action>
       <action type="fix" dev="ggregory" issue="COMPRESS-707" due-to="Gary Gregory, Roel van Dijk">TarUtils.verifyCheckSum() throws an Exception when checksum could not be parsed.</action>
       <!-- FIX ar -->      
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.archivers.ar.ArArchiveInputStream.readGNUStringTable(byte[], int, int) now provides a better exception message, wrapping the underlying exception.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.archivers.ar.ArArchiveInputStream.read(byte[], int, int) now throws ArchiveException instead of ArithmeticException.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">ArArchiveInputStream.readGNUStringTable(byte[], int, int) now provides a better exception message, wrapping the underlying exception.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">ArArchiveInputStream.read(byte[], int, int) now throws ArchiveException instead of ArithmeticException.</action>
       <action type="fix" dev="pkarwasz" due-to="Tyler Nighswander">Simplify handling of special AR records in ArArchiveInputStream.</action>
       <!-- FIX unpack200 -->      
       <action type="fix" dev="ggregory" due-to="Gary Gregory, Stanislav Fort">org.apache.commons.compress.harmony.unpack200 now throws Pack200Exception, IllegalArgumentException, and IllegalStateException instead of other runtime exceptions and Error.</action>
       <!-- FIX pack200 -->      
       <action type="fix" dev="ggregory" due-to="Gary Gregory, Igor Morgenstern">org.apache.commons.compress.harmony.pack200 now throws Pack200Exception, IllegalArgumentException, IllegalStateException, instead of other runtime exceptions and Error.</action>
       <!-- FIX cpio -->      
-      <action type="fix" dev="ggregory" due-to="Stan, Gary Gregory">org.apache.commons.compress.archivers.cpio.CpioArchiveEntry now throws ArchiveException instead of Arithmetic exception.</action>
-      <action type="fix" dev="ggregory" due-to="Stan, Gary Gregory">org.apache.commons.compress.archivers.cpio.CpioArchiveInputStream.getNextEntry() now throws a MemoryLimitException instead of OutOfMemoryError when it can't process input greater than available memory.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.archivers.cpio.CpioArchiveInputStream.readOldAsciiEntry(boolean) now throws ArchiveException instead of Arithmetic exception.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.archivers.cpio.CpioArchiveInputStream.readOldBinaryEntry(boolean) now throws ArchiveException instead of Arithmetic exception.</action>
+      <action type="fix" dev="ggregory" due-to="Stan, Gary Gregory">CpioArchiveEntry now throws ArchiveException instead of Arithmetic exception.</action>
+      <action type="fix" dev="ggregory" due-to="Stan, Gary Gregory">CpioArchiveInputStream.getNextEntry() now throws a MemoryLimitException instead of OutOfMemoryError when it can't process input greater than available memory.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">CpioArchiveInputStream.readOldAsciiEntry(boolean) now throws ArchiveException instead of Arithmetic exception.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">CpioArchiveInputStream.readOldBinaryEntry(boolean) now throws ArchiveException instead of Arithmetic exception.</action>
       <!-- FIX gzip -->
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.compressors.gzip.GzipParameters.setOperatingSystem(int) now throws CompressorException on illegal input.</action>
-      <action type="fix" issue="COMPRESS-705" dev="ggregory" due-to="Mario Fredenhagen, Gary Gregory">GZip IOException: Extra subfield length exceeds remaining bytes in extra field; use new option org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream.Builder.setIgnoreExtraField(boolean).</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">GzipParameters.setOperatingSystem(int) now throws CompressorException on illegal input.</action>
+      <action type="fix" issue="COMPRESS-705" dev="ggregory" due-to="Mario Fredenhagen, Gary Gregory">GZip IOException: Extra subfield length exceeds remaining bytes in extra field; use new option GzipCompressorInputStream.Builder.setIgnoreExtraField(boolean).</action>
       <!-- FIX snappy -->
       <action type="fix" dev="ggregory" due-to="Stanislav Fort, Gary Gregory">Fix for when a valid raw Snappy stream with uncompressed size > 2 GiB used to decompress and then fail at physical EOF with a “Premature end of stream” exception instead of completing cleanly.</action>
       <!-- FIX general -->      
@@ -98,25 +98,25 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Classes in org.apache.commons.compress.compressors now throw a subclass of IOException called CompressorException instead of IOException when a formatting problem is found.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Normalize exception message sentences to start with a capital letter.</action>
       <!-- ADD -->
-      <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.MemoryLimitException.MemoryLimitException(long, long).</action>
-      <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.CompressException.CompressException(String, Object...).</action>
-      <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.archivers.ArchiveException.ArchiveException(String, Object...).</action>
-      <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.compressors.CompressorException.CompressorException(String, Object...).</action>
-      <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.harmony.pack200.Pack200Exception.Pack200Exception(String, Object...).</action>
-      <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.harmony.pack200.Pack200Exception.requireNonNull(T, String, Object...).</action>
-      <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.MemoryLimitException.checkBytes(int, long).</action>
-      <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.MemoryLimitException.checkKiB(long, long).</action>
-      <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.archivers.ArchiveException.addExact(int, int).</action>
-      <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.archivers.ArchiveException.addExact(int, long).</action>
-      <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.archivers.ArchiveException.addExact(long, long).</action>
-      <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.archivers.ArchiveException.toIntExact(long).</action>
-      <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.CompressException.addExact(int, long).</action>
-      <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.harmony.pack200.Pack200Exception.addExact(int, long).</action>
-      <action type="add" issue="COMPRESS-705" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream.Builder.setIgnoreExtraField(boolean).</action>
-      <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.compressors.snappy.SnappyCompressorInputStream.getUncompressedSize() and deprecate getSize().</action>
-      <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.archivers.ArchiveInputStream.ArchiveInputStream(InputStream, Charset) as a public constructor, it was private.</action>
-      <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.archivers.tar.TarArchiveInputStream.builder().</action>
-      <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.archivers.tar.TarArchiveInputStream.Builder and deprecate all but one constructor.</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Add MemoryLimitException.MemoryLimitException(long, long).</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Add CompressException.CompressException(String, Object...).</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Add ArchiveException.ArchiveException(String, Object...).</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Add CompressorException.CompressorException(String, Object...).</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Add Pack200Exception.Pack200Exception(String, Object...).</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Add Pack200Exception.requireNonNull(T, String, Object...).</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Add MemoryLimitException.checkBytes(int, long).</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Add MemoryLimitException.checkKiB(long, long).</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Add ArchiveException.addExact(int, int).</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Add ArchiveException.addExact(int, long).</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Add ArchiveException.addExact(long, long).</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Add ArchiveException.toIntExact(long).</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Add CompressException.addExact(int, long).</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Add Pack200Exception.addExact(int, long).</action>
+      <action type="add" issue="COMPRESS-705" dev="ggregory" due-to="Gary Gregory">Add GzipCompressorInputStream.Builder.setIgnoreExtraField(boolean).</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Add SnappyCompressorInputStream.getUncompressedSize() and deprecate getSize().</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Add ArchiveInputStream.ArchiveInputStream(InputStream, Charset) as a public constructor, it was private.</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Add TarArchiveInputStream.builder().</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Add TarArchiveInputStream.Builder and deprecate all but one constructor.</action>
       <!-- UPDATE -->
       <action type="update" dev="ggregory" due-to="Gary Gregory">Bump org.apache.commons:commons-parent from 85 to 87.</action>
     </release>
@@ -161,12 +161,12 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.harmony.unpack200.bytecode.forms.MultiANewArrayForm.setByteCodeOperands(ByteCode, OperandManager, int) now throws Pack200Exception instead of Error on some bad inputs and states.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.harmony.unpack200.bytecode.forms.NewClassRefForm.setByteCodeOperands(ByteCode, OperandManager, int) now throws Pack200Exception instead of Error on some bad inputs and states.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.harmony.unpack200.bytecode.forms.ReferenceForm.setByteCodeOperands(ByteCode, OperandManager, int) now throws Pack200Exception instead of Error on some bad inputs and states.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">Deprecate org.apache.commons.compress.harmony.pack200.CanonicalCodecFamilies.CanonicalCodecFamilies().</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">Deprecate CanonicalCodecFamilies.CanonicalCodecFamilies().</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Deprecate FileNameUtils#getBaseName(Path).</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Deprecate FileNameUtils#getExtension(Path).</action>
       <action type="fix" dev="ggregory" due-to="Alexis Jehan, Gary Gregory">org.apache.commons.compress.harmony.unpack200.Archive.unpack() should not log to system out (the console).</action>
       <action type="fix" dev="Sebb" due-to="aSemy">[site] Fix minor zip docs type: remove extraneous 'a' #665.</action>
-      <action type="fix" dev="ggregory" due-to="Zaki, Gary Gregory">Throw a better exception in org.apache.commons.compress.archivers.sevenz.SevenZFile.readFilesInfo(ByteBuffer, Archive).</action>
+      <action type="fix" dev="ggregory" due-to="Zaki, Gary Gregory">Throw a better exception in SevenZFile.readFilesInfo(ByteBuffer, Archive).</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">MemoryLimitException now extends CompressException instead of IOException (CompressException extends IOException).</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">DumpArchiveException now extends ArchiveException instead of IOException (ArchiveException extends CompressException).</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">PasswordRequiredException now extends CompressException instead of IOException (CompressException extends IOException).</action>
@@ -199,7 +199,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="add" issue="COMPRESS-692" dev="ggregory" due-to="Mehmet Karaman, Andrey Loskutov, Gary Gregory">Add support for zstd compression in zip archives.</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add support for XZ compression in ZIP archives.</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory" issue="COMPRESS-695">Add ZipArchiveInputStream.createZstdInputStream(InputStream) to provide a different InputStream implementation for Zstandard (Zstd) #649.</action>
-      <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.harmony.pack200.Pack200Exception.Pack200Exception(String, Throwable).</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Add Pack200Exception.Pack200Exception(String, Throwable).</action>
       <action type="add" issue="COMPRESS-697" dev="ggregory" due-to="Fredrik Kjellberg, Gary Gregory">Move BitStream.nextBit() method to BitInputStream #663.</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.compressors.lzma.LZMACompressorInputStream.builder/Builder().</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.compressors.lzma.LZMACompressorOutputStream.builder/Builder().</action>
@@ -211,7 +211,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.compressors.CompressorException as the root for all custom exceptions ArchiveException and CompressorException.</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add ArchiveException.ArchiveException(String, Throwable).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add ArchiveException.ArchiveException(Throwable).</action>
-      <action type="add" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry.isEmptyStream().</action>
+      <action type="add" dev="ggregory" due-to="Gary Gregory">Add SevenZArchiveEntry.isEmptyStream().</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add generics for org.apache.commons.compress.compressors.CompressorStreamProvider.createCompressorOutputStream(String, T).</action>
       <!-- UPDATE -->
       <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory, sebb">Bump org.apache.commons:commons-parent from 72 to 85 #563, #567, #574, #582, #587, #595, #668.</action>
@@ -273,7 +273,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory">ArArchiveOutputStream implicit narrowing conversion in compound assignment.</action>
       <action type="fix" issue="COMPRESS-679" dev="ggregory" due-to="Mikaël MECHOULAM, Gary Gregory">Regression on parallel processing of 7zip files.</action>
       <action type="fix" issue="COMPRESS-675" dev="ggregory" due-to="Tim Allison, Gary Gregory">Regression in pack200's Archive class -- underlying InputStream is now closed.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">Avoid NullPointerException in java.nio.channels.spi.AbstractInterruptibleChannel.close() when calling org.apache.commons.compress.archivers.zip.FileRandomAccessOutputStream.close().</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">Avoid NullPointerException in java.nio.channels.spi.AbstractInterruptibleChannel.close() when calling FileRandomAccessOutputStream.close().</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Fix SpotBugs NP_NULL_PARAM_DEREF in Sets.newHashSet().</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Private class' method PackingLogger.setVerbose(boolean) should be private.</action>
       <!-- UPDATE -->
@@ -437,13 +437,13 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Una, Gary Gregory, Jochen Wiedmann, quaternary, Bruno P. Kinoshita">pack200: Fix FileBands misusing InputStream#read(byte[]) #360.</action>      
       <action type="fix" issue="COMPRESS-641" dev="ggregory" due-to="XenoAmess, Gary Gregory, Bruno P. Kinoshita">Add TarArchiveEntry.getLinkFlag() #365.</action>
       <action type="fix" issue="COMPRESS-642" dev="ggregory" due-to="Anton Klarén, Gary Gregory">Integer overflow ArithmeticException in TarArchiveOutputStream #368.</action>
-      <action type="fix" issue="COMPRESS-502" dev="ggregory" due-to="Dominik Stadler, Stefan Bodewig, Gary Gregory">org.apache.commons.compress.archivers.zip.ZipFile.finalize() should not write to std err.</action>
+      <action type="fix" issue="COMPRESS-502" dev="ggregory" due-to="Dominik Stadler, Stefan Bodewig, Gary Gregory">ZipFile.finalize() should not write to std err.</action>
       <!-- ADD -->
       <action type="add" issue="COMPRESS-614" dev="ggregory" due-to="Andre Brait, Gary Gregory">Use FileTime for time fields in SevenZipArchiveEntry #256.</action>
       <action type="add" issue="COMPRESS-621" dev="ggregory" due-to="Glavo">Fix calculation the offset of the first ZIP central directory entry #334.</action>
       <action type="add" issue="COMPRESS-633" dev="ggregory" due-to="Daniel Santos, Bruno P. Kinoshita, Gary Gregory">Add encryption support for SevenZ #332.</action>
       <action type="add" issue="COMPRESS-613" dev="ggregory" due-to="Andre Brait, Gary Gregory, Bruno P. Kinoshita">Support for extra time data in Zip archives #345.</action>      
-      <action type="add" issue="COMPRESS-621" dev="ggregory" due-to="Gary Gregory">Add org.apache.commons.compress.archivers.zip.DefaultBackingStoreSupplier to write to a custom folder instead of the default temporary folder.</action>
+      <action type="add" issue="COMPRESS-621" dev="ggregory" due-to="Gary Gregory">Add DefaultBackingStoreSupplier to write to a custom folder instead of the default temporary folder.</action>
       <action type="add" issue="COMPRESS-600" dev="ggregory" due-to="Gary Gregory, Pascal Davoust">Add capability to configure Deflater strategy in GzipCompressorOutputStream: GzipParameters.setDeflateStrategy(int).</action>
       <!-- REMOVE -->
       <action type="remove" dev="ggregory" due-to="Gary Gregory">Remove BZip2CompressorOutputStream.finalize() which only wrote to std err.</action>
@@ -531,13 +531,13 @@ The <action> type attribute can be add,update,fix,remove.
         OutOfMemoryError on malformed pack200 input (attributes).
       </action>
       <action issue="COMPRESS-628" type="fix" dev="ggregory" due-to="Andrii Hudz, Gary Gregory">
-        OutOfMemoryError on malformed pack200 input (org.apache.commons.compress.harmony.pack200.NewAttributeBands.readNextUnionCase).
+        OutOfMemoryError on malformed pack200 input (NewAttributeBands.readNextUnionCase).
       </action>
       <action issue="COMPRESS-628" type="fix" dev="ggregory" due-to="Gary Gregory">
         OutOfMemoryError on malformed unpack200 input (org.apache.commons.compress.harmony.unpack200.NewAttributeBands.readNextUnionCase).
       </action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">
-        Some input streams are not closed in org.apache.commons.compress.harmony.pack200.PackingUtils.
+        Some input streams are not closed in PackingUtils.
       </action>
       <action issue="COMPRESS-627" type="fix" dev="ggregory" due-to="anatawa12, Gary Gregory">
         Pack200 causes a 'archive.3E' error if it’s not in the system class loader.
@@ -589,10 +589,10 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="update" issue="COMPRESS-582" dev="ggregory" due-to="Alex Landau, Stephan, Gary Gregory">
         Bump Pack200 packages from ASM 3.2 to 9.2 #216. 
         Breaks binary compatibility in the internals of the pack200 implementation:
-        - org.apache.commons.compress.harmony.pack200.Segment
-        - org.apache.commons.compress.harmony.pack200.SegmentMethodVisitor
-        - org.apache.commons.compress.harmony.pack200.SegmentAnnotationVisitor
-        - org.apache.commons.compress.harmony.pack200.SegmentFieldVisitor
+        - Segment
+        - SegmentMethodVisitor
+        - SegmentAnnotationVisitor
+        - SegmentFieldVisitor
       </action>
       <action type="update" dev="kinow" due-to="Dependabot">
         Bump asm from 9.2 to 9.4 #279, #322.
@@ -1873,7 +1873,7 @@ This also changes the superclass of ZCompressorInputStream.
               due-to="Kristian Rosenvold">
         Added support for parallel compression. This low-level API allows
         a client to build a ZIP/jar file by using the class
-        org.apache.commons.compress.archivers.zip.ParallelScatterZipCreator.
+        ParallelScatterZipCreator.
 
         Zip documentation updated with further notes about parallel features.
 
