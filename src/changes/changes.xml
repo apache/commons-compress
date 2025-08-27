@@ -58,8 +58,8 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Don't loose precision while reading folders from a SevenZFile.</action>
       <action type="fix" dev="ggregory" due-to="Roel van Dijk, Gary Gregory">Improve some exception messages in TarUtils and TarArchiveEntry.</action>
       <!-- FIX bzip2 -->      
-      <action type="fix" dev="pkarwasz" due-to="Tyler Nighswander, Piotr P. Karwasz, Gary Gregory">Enforce 20-bit Huffman code-length limit consistently in BZip2.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream throws CompressorException (an IOException subclass) instead of IOException when it encounters formatting problems.</action>
+      <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">BZip2 input streams now throw CompressorException (a subclass of IOException) for invalid or corrupted data, providing more specific error reporting.</action>
+      <action type="fix" dev="pkarwasz" due-to="Tyler Nighswander, Piotr P. Karwasz">BZip2 input streams treat Huffman codes longer than 20 bits as corrupted data, matching the behavior of the reference implementation.</action>
       <!-- FIX dump -->      
       <action type="fix" dev="pkarwasz" due-to="Tyler Nighswander">Align DUMP archive block size with Linux `dump` utility.</action>
       <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">org.apache.commons.compress.archivers.dump.DumpArchiveInputStream.getNextEntry() throws an ArchiveException instead of ArrayIndexOutOfBoundsException.</action>
