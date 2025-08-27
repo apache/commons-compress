@@ -33,14 +33,14 @@ import org.junit.jupiter.api.Test;
  */
 public class Pack200CompressorInputStreamTest {
 
+    private void assertThrowsIOException(final String inputBase64) {
+        assertThrows(IOException.class, () -> new Pack200CompressorInputStream(new ByteArrayInputStream(Base64.getDecoder().decode(inputBase64))));
+    }
+
     @BeforeEach
     void beforeAll() {
         // final Runtime runtime = Runtime.getRuntime();
         // System.out.printf("freeMemory %,d, maxMemory %,d, totalMemory %,d%n", runtime.freeMemory(), runtime.maxMemory(), runtime.totalMemory());
-    }
-
-    private void assertThrowsIOException(final String inputBase64) {
-        assertThrows(IOException.class, () -> new Pack200CompressorInputStream(new ByteArrayInputStream(Base64.getDecoder().decode(inputBase64))));
     }
 
     /**

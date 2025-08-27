@@ -26,16 +26,8 @@ final class DumpArchiveTestFactory {
     private static final int NTREC_OFFSET = 896;
     private static final int SEGMENT_TYPE_OFFSET = 0;
 
-    static byte[] createSummary(final int ntrec) {
-        final byte[] buffer = new byte[DumpArchiveConstants.TP_SIZE];
-        // magic
-        convert32(DumpArchiveConstants.NFS_MAGIC, buffer, MAGIC_OFFSET);
-        // ntrec
-        convert32(ntrec, buffer, NTREC_OFFSET);
-        // checksum
-        final int checksum = DumpArchiveUtil.calculateChecksum(buffer);
-        convert32(checksum, buffer, CHECKSUM_OFFSET);
-        return buffer;
+    private static void convert32(final long value, final byte[] buffer, final int offset) {
+        ByteUtils.toLittleEndian(buffer, value, offset, 4);
     }
 
     static byte[] createSegment(final DumpArchiveConstants.SEGMENT_TYPE segmentType) {
@@ -50,8 +42,16 @@ final class DumpArchiveTestFactory {
         return buffer;
     }
 
-    private static void convert32(final long value, final byte[] buffer, final int offset) {
-        ByteUtils.toLittleEndian(buffer, value, offset, 4);
+    static byte[] createSummary(final int ntrec) {
+        final byte[] buffer = new byte[DumpArchiveConstants.TP_SIZE];
+        // magic
+        convert32(DumpArchiveConstants.NFS_MAGIC, buffer, MAGIC_OFFSET);
+        // ntrec
+        convert32(ntrec, buffer, NTREC_OFFSET);
+        // checksum
+        final int checksum = DumpArchiveUtil.calculateChecksum(buffer);
+        convert32(checksum, buffer, CHECKSUM_OFFSET);
+        return buffer;
     }
 
     private DumpArchiveTestFactory() {

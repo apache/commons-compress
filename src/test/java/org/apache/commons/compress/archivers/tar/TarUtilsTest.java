@@ -53,6 +53,84 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 class TarUtilsTest extends AbstractTest {
 
+    /**
+     * Builds an NTFS-style path (\\?\C:\...) up to a target total UTF-16 length, respecting 255-unit segments.
+     */
+    private static String createNtfsLongNameByUtf16Units(final int totalUnits) {
+        final String prefix = "\\\\?\\C:\\";
+        final String extension = ".txt";
+
+        // U+2605 BLACK STAR (BMP, 1 UTF-16 unit, 3 UTF-8 bytes) => lets us pack 255 units per segment easily
+        final String segment = StringUtils.repeat("★", 255) + '\\';
+
+        final StringBuilder sb = new StringBuilder(prefix);
+        while (sb.length() + extension.length() < totalUnits) {
+            sb.append(segment);
+        }
+
+        // Trim to exact totalUnits (UTF-16 units), then append extension
+        sb.setLength(totalUnits - extension.length());
+        sb.append(extension);
+        assertEquals(totalUnits, sb.length(), "Final length should be " + totalUnits + " UTF-16 code units");
+        return sb.toString();
+    }
+
+    /**
+     * Builds a POSIX-style path (rooted at `/`) up to a target total *byte* length in UTF-8, 255 bytes/segment.
+     */
+    private static String createPosixLongNameByUtf8Bytes(final int totalBytes) {
+        final String extension = ".txt";
+        // U+2605 BLACK STAR (BMP, 1 UTF-16 unit, 3 UTF-8 bytes) => 85 * 3 UTF-8 bytes = 255 bytes
+        final String segment = StringUtils.repeat("★", 85) + '/';
+        assertEquals(256, utf8Len(segment), "Segment length with separator should be 256 bytes in UTF-8");
+
+        final StringBuilder sb = new StringBuilder();
+        int count = totalBytes / 256; // how many full 256-byte chunks can we fit?
+        while (count-- > 0) {
+            sb.append(segment);
+        }
+        count = totalBytes - utf8Len(sb) - utf8Len(extension);
+        while (count-- > 0) {
+            sb.append('a');
+        }
+        sb.append(extension);
+        assertEquals(totalBytes, utf8Len(sb), "Final length should be " + totalBytes + " bytes in UTF-8");
+        return sb.toString();
+    }
+
+    private static byte[] paddedUtf8Bytes(final String s) {
+        final int blockSize = 1024;
+        final byte[] bytes = s.getBytes(UTF_8);
+        return Arrays.copyOf(bytes, ((bytes.length + blockSize - 1) / blockSize) * blockSize);
+    }
+
+    static Stream<Arguments> testReadLongNameHandlesLimits() {
+        final String empty = "";
+        final String ntfsLongName = createNtfsLongNameByUtf16Units(32767);
+        final String posixLongName = createPosixLongNameByUtf8Bytes(4095);
+        return Stream.of(
+                Arguments.of("Empty", empty, utf8Bytes(empty)),
+                Arguments.of("Empty (padded)", empty, paddedUtf8Bytes(empty)),
+                Arguments.of("NTFS", ntfsLongName, utf8Bytes(ntfsLongName)),
+                Arguments.of("NTFS (padded)", ntfsLongName, paddedUtf8Bytes(ntfsLongName)),
+                Arguments.of("POSIX", posixLongName, utf8Bytes(posixLongName)),
+                Arguments.of("POSIX (padded)", posixLongName, paddedUtf8Bytes(posixLongName)));
+    }
+
+    static Stream<Arguments> testReadLongNameThrowsOnTruncation() {
+        return Stream.of(
+                Arguments.of(Integer.MAX_VALUE, "truncated long name"),
+                Arguments.of(Long.MAX_VALUE, "invalid long name"));
+    }
+
+    private static byte[] utf8Bytes(final String s) {
+        return s.getBytes(UTF_8);
+    }
+
+    private static int utf8Len(final CharSequence s) {
+        return s.toString().getBytes(UTF_8).length;
+    }
+
     private void checkName(final String string) {
         final byte[] buff = new byte[100];
         final int len = TarUtils.formatNameBytes(string, buff, 0, buff.length);
@@ -322,6 +400,45 @@ class TarUtilsTest extends AbstractTest {
     void testPaxHeaderEntryWithEmptyValueRemovesKey() throws Exception {
         final Map<String, String> headers = TarUtils.parsePaxHeaders(new ByteArrayInputStream("11 foo=bar\n7 foo=\n".getBytes(UTF_8)), null, new HashMap<>());
         assertEquals(0, headers.size());
+    }
+
+    @ParameterizedTest(name = "{0} long name is read correctly")
+    @MethodSource
+    void testReadLongNameHandlesLimits(final String kind, final String expectedName, final byte[] data) throws IOException {
+        final TarArchiveEntry entry = new TarArchiveEntry("test");
+        entry.setSize(data.length);
+        // Lets add a trailing "garbage" to ensure we only read what we should
+        final byte[] dataWithGarbage = Arrays.copyOf(data, data.length + 1024);
+        Arrays.fill(dataWithGarbage, data.length, dataWithGarbage.length, (byte) 0xFF);
+
+        try (InputStream in = new ByteArrayInputStream(dataWithGarbage)) {
+            final String actualName = TarUtils.readLongName(in, ZipEncodingHelper.getZipEncoding(UTF_8), entry);
+            assertEquals(
+                    expectedName,
+                    actualName,
+                    () -> String.format("[%s] The long name read does not match the expected value.", kind));
+        }
+    }
+
+    @ParameterizedTest(name = "readLongName of {0} bytes throws ArchiveException")
+    @MethodSource
+    void testReadLongNameThrowsOnTruncation(final long size, final CharSequence expectedMessage) throws IOException {
+        final TarArchiveEntry entry = new TarArchiveEntry("test");
+        entry.setSize(size); // absurdly large so any finite stream truncates
+        try (InputStream in = new NullInputStream()) {
+            final ArchiveException ex = assertThrows(
+                    ArchiveException.class,
+                    () -> TarUtils.readLongName(in, TarUtils.DEFAULT_ENCODING, entry),
+                    "Expected ArchiveException due to truncated long name, but no exception was thrown");
+            final String actualMessage = StringUtils.toRootLowerCase(ex.getMessage());
+            assertNotNull(actualMessage, "Exception message should not be null");
+            assertTrue(
+                    actualMessage.contains(expectedMessage),
+                    () -> "Expected exception message to contain '" + expectedMessage + "', but got: " + actualMessage);
+            assertTrue(
+                    actualMessage.contains(String.format("%,d", size)),
+                    () -> "Expected exception message to mention '" + size + "', but got: " + actualMessage);
+        }
     }
 
     @Test
@@ -605,122 +722,5 @@ class TarUtilsTest extends AbstractTest {
     void testWriteNegativeBinary8Byte() {
         final byte[] b = { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xf1, (byte) 0xef, };
         assertEquals(-3601L, TarUtils.parseOctalOrBinary(b, 0, 8));
-    }
-
-    /**
-     * Builds an NTFS-style path (\\?\C:\...) up to a target total UTF-16 length, respecting 255-unit segments.
-     */
-    private static String createNtfsLongNameByUtf16Units(final int totalUnits) {
-        final String prefix = "\\\\?\\C:\\";
-        final String extension = ".txt";
-
-        // U+2605 BLACK STAR (BMP, 1 UTF-16 unit, 3 UTF-8 bytes) => lets us pack 255 units per segment easily
-        final String segment = StringUtils.repeat("★", 255) + '\\';
-
-        final StringBuilder sb = new StringBuilder(prefix);
-        while (sb.length() + extension.length() < totalUnits) {
-            sb.append(segment);
-        }
-
-        // Trim to exact totalUnits (UTF-16 units), then append extension
-        sb.setLength(totalUnits - extension.length());
-        sb.append(extension);
-        assertEquals(totalUnits, sb.length(), "Final length should be " + totalUnits + " UTF-16 code units");
-        return sb.toString();
-    }
-
-    /**
-     * Builds a POSIX-style path (rooted at `/`) up to a target total *byte* length in UTF-8, 255 bytes/segment.
-     */
-    private static String createPosixLongNameByUtf8Bytes(final int totalBytes) {
-        final String extension = ".txt";
-        // U+2605 BLACK STAR (BMP, 1 UTF-16 unit, 3 UTF-8 bytes) => 85 * 3 UTF-8 bytes = 255 bytes
-        final String segment = StringUtils.repeat("★", 85) + '/';
-        assertEquals(256, utf8Len(segment), "Segment length with separator should be 256 bytes in UTF-8");
-
-        final StringBuilder sb = new StringBuilder();
-        int count = totalBytes / 256; // how many full 256-byte chunks can we fit?
-        while (count-- > 0) {
-            sb.append(segment);
-        }
-        count = totalBytes - utf8Len(sb) - utf8Len(extension);
-        while (count-- > 0) {
-            sb.append('a');
-        }
-        sb.append(extension);
-        assertEquals(totalBytes, utf8Len(sb), "Final length should be " + totalBytes + " bytes in UTF-8");
-        return sb.toString();
-    }
-
-    private static int utf8Len(final CharSequence s) {
-        return s.toString().getBytes(UTF_8).length;
-    }
-
-    private static byte[] utf8Bytes(final String s) {
-        return s.getBytes(UTF_8);
-    }
-
-    private static byte[] paddedUtf8Bytes(final String s) {
-        final int blockSize = 1024;
-        final byte[] bytes = s.getBytes(UTF_8);
-        return Arrays.copyOf(bytes, ((bytes.length + blockSize - 1) / blockSize) * blockSize);
-    }
-
-    static Stream<Arguments> testReadLongNameHandlesLimits() {
-        final String empty = "";
-        final String ntfsLongName = createNtfsLongNameByUtf16Units(32767);
-        final String posixLongName = createPosixLongNameByUtf8Bytes(4095);
-        return Stream.of(
-                Arguments.of("Empty", empty, utf8Bytes(empty)),
-                Arguments.of("Empty (padded)", empty, paddedUtf8Bytes(empty)),
-                Arguments.of("NTFS", ntfsLongName, utf8Bytes(ntfsLongName)),
-                Arguments.of("NTFS (padded)", ntfsLongName, paddedUtf8Bytes(ntfsLongName)),
-                Arguments.of("POSIX", posixLongName, utf8Bytes(posixLongName)),
-                Arguments.of("POSIX (padded)", posixLongName, paddedUtf8Bytes(posixLongName)));
-    }
-
-    @ParameterizedTest(name = "{0} long name is read correctly")
-    @MethodSource
-    void testReadLongNameHandlesLimits(final String kind, final String expectedName, final byte[] data) throws IOException {
-        final TarArchiveEntry entry = new TarArchiveEntry("test");
-        entry.setSize(data.length);
-        // Lets add a trailing "garbage" to ensure we only read what we should
-        final byte[] dataWithGarbage = Arrays.copyOf(data, data.length + 1024);
-        Arrays.fill(dataWithGarbage, data.length, dataWithGarbage.length, (byte) 0xFF);
-
-        try (InputStream in = new ByteArrayInputStream(dataWithGarbage)) {
-            final String actualName = TarUtils.readLongName(in, ZipEncodingHelper.getZipEncoding(UTF_8), entry);
-            assertEquals(
-                    expectedName,
-                    actualName,
-                    () -> String.format("[%s] The long name read does not match the expected value.", kind));
-        }
-    }
-
-    static Stream<Arguments> testReadLongNameThrowsOnTruncation() {
-        return Stream.of(
-                Arguments.of(Integer.MAX_VALUE, "truncated long name"),
-                Arguments.of(Long.MAX_VALUE, "invalid long name"));
-    }
-
-    @ParameterizedTest(name = "readLongName of {0} bytes throws ArchiveException")
-    @MethodSource
-    void testReadLongNameThrowsOnTruncation(final long size, final CharSequence expectedMessage) throws IOException {
-        final TarArchiveEntry entry = new TarArchiveEntry("test");
-        entry.setSize(size); // absurdly large so any finite stream truncates
-        try (InputStream in = new NullInputStream()) {
-            final ArchiveException ex = assertThrows(
-                    ArchiveException.class,
-                    () -> TarUtils.readLongName(in, TarUtils.DEFAULT_ENCODING, entry),
-                    "Expected ArchiveException due to truncated long name, but no exception was thrown");
-            final String actualMessage = StringUtils.toRootLowerCase(ex.getMessage());
-            assertNotNull(actualMessage, "Exception message should not be null");
-            assertTrue(
-                    actualMessage.contains(expectedMessage),
-                    () -> "Expected exception message to contain '" + expectedMessage + "', but got: " + actualMessage);
-            assertTrue(
-                    actualMessage.contains(String.format("%,d", size)),
-                    () -> "Expected exception message to mention '" + size + "', but got: " + actualMessage);
-        }
     }
 }
