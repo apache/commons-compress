@@ -54,15 +54,22 @@ import javax.crypto.Cipher;
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.MemoryLimitException;
 import org.apache.commons.compress.PasswordRequiredException;
+import org.apache.commons.compress.RuntimeMemory;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.utils.MultiReadOnlySeekableByteChannel;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.ChecksumInputStream;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class SevenZFileTest extends AbstractTest {
     private static final String TEST2_CONTENT = "<?xml version = '1.0'?>\r\n<!DOCTYPE connections>\r\n<meinxml>\r\n\t<leer />\r\n</meinxml>\n";
+
+    @BeforeEach
+    void beforeAll() {
+        RuntimeMemory.println();
+    }
 
     private static boolean isStrongCryptoAvailable() throws NoSuchAlgorithmException {
         return Cipher.getMaxAllowedKeyLength("AES/ECB/PKCS5Padding") >= 256;
