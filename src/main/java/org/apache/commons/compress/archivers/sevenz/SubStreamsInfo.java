@@ -16,12 +16,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.commons.compress.archivers.sevenz;
 
 import java.util.BitSet;
 
 import org.apache.commons.compress.CompressException;
-import org.apache.commons.compress.MemoryLimitException;
 
 /**
  * Properties for non-empty files.
@@ -32,12 +32,10 @@ final class SubStreamsInfo {
      * Unpacked size of each unpacked stream.
      */
     final long[] unpackSizes;
-
     /**
      * Whether CRC is present for each unpacked stream.
      */
     final BitSet hasCrc;
-
     /**
      * CRCs of unpacked streams, if present.
      */
@@ -56,11 +54,9 @@ final class SubStreamsInfo {
             throw new CompressException("Cannot create allocation request for a SubStreamsInfo of totalUnpackStreams %,d, maxMemoryLimitKiB %,d: %s",
                     totalUnpackStreams, maxMemoryLimitKiB, e);
         }
-        if (Runtime.getRuntime().freeMemory() > 128_000_000L) {
-            // Avoid false positives.
-            // Not a reliable check in old VMs or in low memory VMs.
-            MemoryLimitException.checkKiB(SevenZFile.bytesToKiB(alloc), maxMemoryLimitKiB);
-        }
+        // Avoid false positives.
+        // Not a reliable check in old VMs or in low memory VMs.
+        // MemoryLimitException.checkKiB(SevenZFile.bytesToKiB(alloc), maxMemoryLimitKiB);
         this.hasCrc = new BitSet(intExactCount);
         this.crcs = new long[intExactCount];
         this.unpackSizes = new long[intExactCount];
