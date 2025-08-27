@@ -60,7 +60,7 @@ public class Pack200Exception extends CompressException {
      */
     public static int checkIntArray(final int size) throws Pack200Exception {
         try {
-            MemoryLimitException.checkBytes(Math.multiplyExact(Integer.BYTES, size), Runtime.getRuntime().maxMemory());
+            MemoryLimitException.checkBytes(Math.multiplyExact(Integer.BYTES, size), Runtime.getRuntime().freeMemory());
             return size;
         } catch (final MemoryLimitException | ArithmeticException e) {
             throw new Pack200Exception(e);

@@ -27,7 +27,8 @@ package org.apache.commons.compress;
  */
 public class MemoryLimitException extends CompressException {
 
-    private static final String MAXIMUM = "maximum";
+    private static final String LABEL = "free memory";
+    private static final String MAXIMUM = "free";
     private static final String BYTES = "bytes";
     private static final String KIB = "KiB";
     private static final long serialVersionUID = 1L;
@@ -59,7 +60,7 @@ public class MemoryLimitException extends CompressException {
      * @since 1.29.0
      */
     public static int checkBytes(final int request, final long max) throws MemoryLimitException {
-        check(request, max, maxMemory(), "max memory", BYTES);
+        check(request, max, newObjectMemory(), LABEL, BYTES);
         return request;
     }
 
@@ -73,7 +74,7 @@ public class MemoryLimitException extends CompressException {
      * @since 1.29.0
      */
     public static long checkBytes(final long request, final long max) throws MemoryLimitException {
-        check(request, max, maxMemory(), "max memory", BYTES);
+        check(request, max, newObjectMemory(), LABEL, BYTES);
         return request;
     }
 
@@ -87,15 +88,16 @@ public class MemoryLimitException extends CompressException {
      * @since 1.29.0
      */
     public static long checkKiB(final long request, final long max) throws MemoryLimitException {
-        return check(request, max, maxMemory() / 1024, "max memory", KIB);
+        return check(request, max, newObjectMemory() / 1024, LABEL, KIB);
     }
 
-    private static long maxMemory() {
-        return Runtime.getRuntime().maxMemory();
+    private static long newObjectMemory() {
+        return Runtime.getRuntime().freeMemory();
     }
 
     /** A long instead of int to account for overflow in corrupt files. */
     private final long memoryNeededKiB;
+
     /** A long instead of int to account for overflow in corrupt files. */
     private final long memoryLimitKiB;
 
