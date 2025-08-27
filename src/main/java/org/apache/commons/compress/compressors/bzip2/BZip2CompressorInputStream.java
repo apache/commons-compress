@@ -159,6 +159,9 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
 
     /**
      * Called by createHuffmanDecodingTables() exclusively.
+     *
+     * @param minLen minimum code length in the range [1, {@value MAX_CODE_LEN}] guaranteed by the caller.
+     * @param maxLen maximum code length in the range [1, {@value MAX_CODE_LEN}] guaranteed by the caller.
      */
     private static void hbCreateDecodeTables(final int[] limit, final int[] base, final int[] perm, final char[] length, final int minLen, final int maxLen,
             final int alphaSize) {
@@ -169,27 +172,31 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
                 }
             }
         }
-        for (int i = MAX_CODE_LEN; --i > 0;) {
-            base[i] = 0;
-            limit[i] = 0;
-        }
+        // Ensure the arrays were not reused.
+        Arrays.fill(base, 0);
+        Arrays.fill(limit, 0);
+        // Compute histogram of code lengths, shifted by 1.
         for (int i = 0; i < alphaSize; i++) {
             final int len = length[i] + 1;
             base[len]++;
         }
-        for (int i = 1, b = base[0]; i < MAX_CODE_LEN; i++) {
-            b += base[i];
-            base[i] = b;
+        // Compute cumulative counts: base[len] = # of codes with length < len.
+        // In other terms: base[len] = index of the first code in the `perm` table.
+        for (int len = 1; len <= MAX_CODE_LEN + 1; len++) {
+            base[len] += base[len - 1];
         }
-        for (int i = minLen, vec = 0, b = base[i]; i <= maxLen; i++) {
-            final int nb = base[i + 1];
-            vec += nb - b;
-            b = nb;
-            limit[i] = vec - 1;
+        // Compute the last code for each length.
+        int vec = 0;
+        for (int len = minLen; len <= maxLen; len++) {
+            // increment by the number of length `len` codes
+            vec += base[len + 1] - base[len];
+            // vec is now the last code of length `len` + 1
+            limit[len] = vec - 1;
             vec <<= 1;
         }
-        for (int i = minLen + 1; i <= maxLen; i++) {
-            base[i] = (limit[i - 1] + 1 << 1) - base[i];
+        // Compute the bias between code value and table index.
+        for (int len = minLen; len <= maxLen; len++) {
+            base[len] = (limit[len - 1] + 1 << 1) - base[len];
         }
     }
 

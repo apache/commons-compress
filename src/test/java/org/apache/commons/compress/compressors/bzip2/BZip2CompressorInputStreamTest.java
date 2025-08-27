@@ -168,7 +168,7 @@ class BZip2CompressorInputStreamTest extends AbstractTest {
         final char[] codeLengths = new char[258];
         for (int i = 0; i < codeLengths.length; i++) {
             // Use all code lengths within valid range [1, 20]
-            codeLengths[i] = (char) ((i % 20) + 1);
+            codeLengths[i] = (char) ((i % MAX_CODE_LEN) + 1);
         }
         data.temp_charArray2d[0] = codeLengths;
         assertDoesNotThrow(
