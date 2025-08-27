@@ -28,19 +28,24 @@ package org.apache.commons.compress;
 public class MemoryLimitException extends CompressException {
 
     private static final String LABEL = "total memory";
-    private static final String MAXIMUM = "total";
+    private static final String MAXIMUM = "maxium";
     private static final String BYTES = "bytes";
     private static final String KIB = "KiB";
     private static final long serialVersionUID = 1L;
 
-    private static String buildMessage(final long memoryNeeded, final long memoryLimit, final String scale, final String boundary) {
-        return String.format("%,d %s of memory requested; %s is %,d %s. If the file is not corrupt, consider increasing the memory limit.", memoryNeeded,
-                scale, boundary, memoryLimit, scale);
+    private static long availMemory() {
+        return Runtime.getRuntime().totalMemory();
     }
 
-    private static long check(final long request, final long max, final long memory, final String memoryType, final String scale) throws MemoryLimitException {
-        check(request, max, scale, MAXIMUM);
-        check(request, memory, scale, memoryType);
+    private static String buildMessage(final long memoryNeeded, final long memoryLimit, final String scale, final String boundary) {
+        return String.format("%,d %s of memory requested; %s is %,d %s. If the file is not corrupt, consider increasing the memory limit.", memoryNeeded, scale,
+                boundary, memoryLimit, scale);
+    }
+
+    private static long check(final long request, final long softMax, final long hardMax, final String memoryType, final String scale)
+            throws MemoryLimitException {
+        check(request, softMax, scale, MAXIMUM);
+        check(request, hardMax, scale, memoryType);
         return request;
     }
 
@@ -60,7 +65,7 @@ public class MemoryLimitException extends CompressException {
      * @since 1.29.0
      */
     public static int checkBytes(final int request, final long max) throws MemoryLimitException {
-        check(request, max, newObjectMemory(), LABEL, BYTES);
+        check(request, max, availMemory(), LABEL, BYTES);
         return request;
     }
 
@@ -74,7 +79,7 @@ public class MemoryLimitException extends CompressException {
      * @since 1.29.0
      */
     public static long checkBytes(final long request, final long max) throws MemoryLimitException {
-        check(request, max, newObjectMemory(), LABEL, BYTES);
+        check(request, max, availMemory(), LABEL, BYTES);
         return request;
     }
 
@@ -88,77 +93,72 @@ public class MemoryLimitException extends CompressException {
      * @since 1.29.0
      */
     public static long checkKiB(final long request, final long max) throws MemoryLimitException {
-        return check(request, max, newObjectMemory() / 1024, LABEL, KIB);
-    }
-
-    private static long newObjectMemory() {
-        return Runtime.getRuntime().totalMemory();
+        return check(request, max, availMemory() / 1024, LABEL, KIB);
     }
 
     /** A long instead of int to account for overflow in corrupt files. */
-    private final long memoryNeededKiB;
-
+    private final long memoryRequestKiB;
     /** A long instead of int to account for overflow in corrupt files. */
     private final long memoryLimitKiB;
 
     /**
      * Constructs a new instance.
      *
-     * @param memoryNeededKiB The memory needed in kibibytes (KiB).
-     * @param memoryLimitKiB  The memory limit in kibibytes (KiB).
+     * @param memoryRequestKiB The memory needed in kibibytes (KiB).
+     * @param memoryLimitKiB   The memory limit in kibibytes (KiB).
      */
-    public MemoryLimitException(final long memoryNeededKiB, final int memoryLimitKiB) {
-        super(buildMessage(memoryNeededKiB, memoryLimitKiB, KIB, MAXIMUM));
-        this.memoryNeededKiB = memoryNeededKiB;
+    public MemoryLimitException(final long memoryRequestKiB, final int memoryLimitKiB) {
+        super(buildMessage(memoryRequestKiB, memoryLimitKiB, KIB, MAXIMUM));
+        this.memoryRequestKiB = memoryRequestKiB;
         this.memoryLimitKiB = memoryLimitKiB;
     }
 
     /**
      * Constructs a new instance.
      *
-     * @param memoryNeededKiB The memory needed in kibibytes (KiB).
-     * @param memoryLimitKiB  The memory limit in kibibytes (KiB).
-     * @param cause           The cause (which is saved for later retrieval by the {@link #getCause()} method). (A null value is permitted, and indicates that
-     *                        the cause is nonexistent or unknown.)
+     * @param memoryRequestKiB The memory needed in kibibytes (KiB).
+     * @param memoryLimitKiB   The memory limit in kibibytes (KiB).
+     * @param cause            The cause (which is saved for later retrieval by the {@link #getCause()} method). (A null value is permitted, and indicates that
+     *                         the cause is nonexistent or unknown.)
      * @deprecated Use {@link #MemoryLimitException(long, int, Throwable)}.
      */
     @Deprecated
-    public MemoryLimitException(final long memoryNeededKiB, final int memoryLimitKiB, final Exception cause) {
-        super(buildMessage(memoryNeededKiB, memoryLimitKiB, KIB, MAXIMUM), cause);
-        this.memoryNeededKiB = memoryNeededKiB;
+    public MemoryLimitException(final long memoryRequestKiB, final int memoryLimitKiB, final Exception cause) {
+        super(buildMessage(memoryRequestKiB, memoryLimitKiB, KIB, MAXIMUM), cause);
+        this.memoryRequestKiB = memoryRequestKiB;
         this.memoryLimitKiB = memoryLimitKiB;
     }
 
     /**
      * Constructs a new instance.
      *
-     * @param memoryNeededKiB The memory needed in kibibytes (KiB).
-     * @param memoryLimitKiB  The memory limit in kibibytes (KiB).
-     * @param cause           The cause (which is saved for later retrieval by the {@link #getCause()} method). (A null value is permitted, and indicates that
-     *                        the cause is nonexistent or unknown.)
+     * @param memoryRequestKiB The memory needed in kibibytes (KiB).
+     * @param memoryLimitKiB   The memory limit in kibibytes (KiB).
+     * @param cause            The cause (which is saved for later retrieval by the {@link #getCause()} method). (A null value is permitted, and indicates that
+     *                         the cause is nonexistent or unknown.)
      */
-    public MemoryLimitException(final long memoryNeededKiB, final int memoryLimitKiB, final Throwable cause) {
-        super(buildMessage(memoryNeededKiB, memoryLimitKiB, KIB, MAXIMUM), cause);
-        this.memoryNeededKiB = memoryNeededKiB;
+    public MemoryLimitException(final long memoryRequestKiB, final int memoryLimitKiB, final Throwable cause) {
+        super(buildMessage(memoryRequestKiB, memoryLimitKiB, KIB, MAXIMUM), cause);
+        this.memoryRequestKiB = memoryRequestKiB;
         this.memoryLimitKiB = memoryLimitKiB;
     }
 
     /**
      * Constructs a new instance.
      *
-     * @param memoryNeededKiB The memory needed in kibibytes (KiB).
+     * @param memoryRequestKiB The memory needed in kibibytes (KiB).
      * @param memoryLimitKiB  The memory limit in kibibytes (KiB).
      * @since 1.29.0
      */
-    public MemoryLimitException(final long memoryNeededKiB, final long memoryLimitKiB) {
-        super(buildMessage(memoryNeededKiB, memoryLimitKiB, KIB, MAXIMUM));
-        this.memoryNeededKiB = memoryNeededKiB;
+    public MemoryLimitException(final long memoryRequestKiB, final long memoryLimitKiB) {
+        super(buildMessage(memoryRequestKiB, memoryLimitKiB, KIB, MAXIMUM));
+        this.memoryRequestKiB = memoryRequestKiB;
         this.memoryLimitKiB = memoryLimitKiB;
     }
 
-    private MemoryLimitException(final long memoryNeededKiB, final long memoryLimitKiB, final String scale, final String boundary) {
-        super(buildMessage(memoryNeededKiB, memoryLimitKiB, scale, boundary));
-        this.memoryNeededKiB = memoryNeededKiB;
+    private MemoryLimitException(final long memoryRequestKiB, final long memoryLimitKiB, final String scale, final String boundary) {
+        super(buildMessage(memoryRequestKiB, memoryLimitKiB, scale, boundary));
+        this.memoryRequestKiB = memoryRequestKiB;
         this.memoryLimitKiB = memoryLimitKiB;
     }
 
@@ -186,6 +186,6 @@ public class MemoryLimitException extends CompressException {
      * @return the memory needed in kibibytes (KiB).
      */
     public long getMemoryNeededInKb() {
-        return memoryNeededKiB;
+        return memoryRequestKiB;
     }
 }
