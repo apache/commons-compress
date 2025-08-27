@@ -615,12 +615,11 @@ class TarUtilsTest extends AbstractTest {
         final String extension = ".txt";
 
         // U+2605 BLACK STAR (BMP, 1 UTF-16 unit, 3 UTF-8 bytes) => lets us pack 255 units per segment easily
-        final String segment = StringUtils.repeat("★", 255);
-        assertEquals(255, segment.length(), "Segment length should be 255 UTF-16 code units");
+        final String segment = StringUtils.repeat("★", 255) + '\\';
 
         final StringBuilder sb = new StringBuilder(prefix);
         while (sb.length() + extension.length() < totalUnits) {
-            sb.append(segment).append('\\');
+            sb.append(segment);
         }
 
         // Trim to exact totalUnits (UTF-16 units), then append extension
@@ -636,13 +635,13 @@ class TarUtilsTest extends AbstractTest {
     private static String createPosixLongNameByUtf8Bytes(final int totalBytes) {
         final String extension = ".txt";
         // U+2605 BLACK STAR (BMP, 1 UTF-16 unit, 3 UTF-8 bytes) => 85 * 3 UTF-8 bytes = 255 bytes
-        final String segment = StringUtils.repeat("★", 85);
-        assertEquals(255, utf8Len(segment), "Segment length should be 255 bytes in UTF-8");
+        final String segment = StringUtils.repeat("★", 85) + '/';
+        assertEquals(256, utf8Len(segment), "Segment length with separator should be 256 bytes in UTF-8");
 
         final StringBuilder sb = new StringBuilder();
         int count = totalBytes / 256; // how many full 256-byte chunks can we fit?
         while (count-- > 0) {
-            sb.append(segment).append('/');
+            sb.append(segment);
         }
         count = totalBytes - utf8Len(sb) - utf8Len(extension);
         while (count-- > 0) {
