@@ -20,6 +20,7 @@ package org.apache.commons.compress.archivers.sevenz;
 
 import java.util.BitSet;
 
+import org.apache.commons.compress.CompressException;
 import org.apache.commons.compress.MemoryLimitException;
 
 /**
@@ -42,11 +43,23 @@ final class SubStreamsInfo {
      */
     final long[] crcs;
 
-    SubStreamsInfo(final long totalUnpackStreams, final int maxMemoryLimitKiB) throws MemoryLimitException {
+    SubStreamsInfo(final long totalUnpackStreams, final int maxMemoryLimitKiB) throws CompressException {
         final int intExactCount = Math.toIntExact(totalUnpackStreams);
-        MemoryLimitException.checkKiB(SevenZFile.kbToKiB(Math.multiplyExact(intExactCount, 3L)), maxMemoryLimitKiB);
-        this.unpackSizes = new long[intExactCount];
+        int alloc;
+        try {
+            // 2 long arrays, just count the longs
+            alloc = Math.multiplyExact(intExactCount, Long.BYTES * 2);
+            // one BitSet [boolean, long[], int]. just count the long array
+            final int sizeOfBitSet = Math.multiplyExact(Long.BYTES, ((intExactCount - 1) >> 6) + 1);
+            alloc = Math.addExact(alloc, Math.multiplyExact(intExactCount, sizeOfBitSet));
+            // check
+        } catch (ArithmeticException e) {
+            throw new CompressException("Cannot create allocation request for a SubStreamsInfo of totalUnpackStreams %,d, maxMemoryLimitKiB %,d: %s",
+                    totalUnpackStreams, maxMemoryLimitKiB, e);
+        }
+        MemoryLimitException.checkKiB(SevenZFile.bytesToKiB(alloc), maxMemoryLimitKiB);
         this.hasCrc = new BitSet(intExactCount);
         this.crcs = new long[intExactCount];
+        this.unpackSizes = new long[intExactCount];
     }
 }

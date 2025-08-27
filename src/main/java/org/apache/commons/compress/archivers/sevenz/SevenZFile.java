@@ -359,7 +359,7 @@ public class SevenZFile implements Closeable {
         return new Builder();
     }
 
-    private static long bytesToKiB(final long bytes) {
+    static long bytesToKiB(final long bytes) {
         return bytes / 1024;
     }
 
