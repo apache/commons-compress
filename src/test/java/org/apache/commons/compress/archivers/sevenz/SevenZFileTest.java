@@ -840,7 +840,7 @@ class SevenZFileTest extends AbstractTest {
             SevenZArchiveEntry entry = sevenZFile.getNextEntry();
             while (entry != null) {
                 if (entry.hasStream()) {
-                    final byte[] content = new byte[(int) entry.getSize()];
+                    final byte[] content = new byte[Math.toIntExact(entry.getSize())];
                     sevenZFile.read(content);
                 }
                 entry = sevenZFile.getNextEntry();
