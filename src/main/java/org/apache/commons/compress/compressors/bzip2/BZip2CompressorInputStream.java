@@ -195,7 +195,9 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
             vec <<= 1;
         }
         // Compute the bias between code value and table index.
-        for (int len = minLen; len <= maxLen; len++) {
+        // base[minLen] cannot be computed using this rule, since limit[minLen - 1] does not exist,
+        // but has already the correct value 0.
+        for (int len = minLen + 1; len <= maxLen; len++) {
             base[len] = (limit[len - 1] + 1 << 1) - base[len];
         }
     }
@@ -495,7 +497,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
             zvec = zvec << 1 | bsR(bin, 1);
         }
         final int tmp = zvec - dataShadow.base[zt][zn];
-        checkBounds(tmp, dataShadow.perm.length, "zvec");
+        checkBounds(tmp, dataShadow.perm[zt].length, "zvec");
         return dataShadow.perm[zt][tmp];
     }
 
