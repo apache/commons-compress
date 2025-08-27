@@ -25,7 +25,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Base64;
 
-import org.apache.commons.compress.RuntimeMemory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -40,7 +39,7 @@ public class Pack200CompressorInputStreamTest {
 
     @BeforeEach
     void beforeAll() {
-        RuntimeMemory.println();
+        // RuntimeMemory.println();
     }
 
     /**
