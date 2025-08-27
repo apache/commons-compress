@@ -66,11 +66,6 @@ import org.junit.jupiter.api.Test;
 class SevenZFileTest extends AbstractTest {
     private static final String TEST2_CONTENT = "<?xml version = '1.0'?>\r\n<!DOCTYPE connections>\r\n<meinxml>\r\n\t<leer />\r\n</meinxml>\n";
 
-    @BeforeEach
-    void beforeAll() {
-        RuntimeMemory.println();
-    }
-
     private static boolean isStrongCryptoAvailable() throws NoSuchAlgorithmException {
         return Cipher.getMaxAllowedKeyLength("AES/ECB/PKCS5Padding") >= 256;
     }
@@ -95,6 +90,11 @@ class SevenZFileTest extends AbstractTest {
                 SevenZArchiveEntry::getLastModifiedDate);
         assertDate(entry, access, SevenZArchiveEntry::getHasAccessDate, SevenZArchiveEntry::getAccessTime, SevenZArchiveEntry::getAccessDate);
         assertDate(entry, creation, SevenZArchiveEntry::getHasCreationDate, SevenZArchiveEntry::getCreationTime, SevenZArchiveEntry::getCreationDate);
+    }
+
+    @BeforeEach
+    void beforeAll() {
+        RuntimeMemory.println();
     }
 
     private void checkHelloWorld(final String fileName) throws Exception {

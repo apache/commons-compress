@@ -62,6 +62,63 @@ class BZip2CompressorInputStreamTest extends AbstractTest {
         }
     }
 
+    /**
+     * Builds a minimal bitstream for recvDecodingTables():
+     * <ul>
+     *     <li>Uses only one symbol 'A' (0x41).</li>
+     *     <li>Number of groups: 2 (minimum).</li>
+     *     <li>Number of selectors: 3.</li>
+     *     <li>Selectors: all three encode j=1 (unary "10").</li>
+     *     <li>Huffman code lengths for 2 groups over alphabet size 3 (RUNA, RUNB, EOB) are all equal to {@code codeLength}.</li>
+     * </ul>
+     * <p>
+     *     <strong>Note:</strong> The values are chosen to keep everything byte-aligned.
+     * </p>
+     * @param codeLength the code length to use for each symbol in each group; must be in [0, 31]
+     */
+    private BitInputStream prepareDecodingTables(final int codeLength) {
+        assertTrue(0 <= codeLength && codeLength <= 31, "codeLength must be between 0 and 31");
+
+        final ByteArrayOutputStream stream = new ByteArrayOutputStream();
+
+        // Upper nibbles in use: set only upper nibble 4
+        stream.write(0b0000_1000);
+        stream.write(0b0000_0000);
+
+        // Lower nibbles of upper nibble 4: set only lower nibble 1
+        stream.write(0b0100_0000);
+        stream.write(0b0000_0000);
+
+        // Groups/selectors (24 bits total, byte-aligned)
+        // nGroups = 2 (3 bits), nSelectors = 3 (15 bits), selectors: 10 10 10
+        stream.write(0b010_00000); // nGroups (3 bits) + high 5 bits of nSelectors
+        stream.write(0b00000000); // middle 8 bits of nSelectors
+        stream.write(0b11_10_10_10); // low 2 bits of nSelectors + selectors (3 x 2 bits)
+
+        // Huffman tables: two groups, three symbols each
+        // startLen (5 bits) followed by 3x '0' (done) => one byte: codeLength << 3
+        stream.write(codeLength << 3);
+        stream.write(codeLength << 3);
+
+        return new BitInputStream(new ByteArrayInputStream(stream.toByteArray()), ByteOrder.BIG_ENDIAN);
+    }
+
+    @Test
+    void testCreateHuffmanDecodingTablesWithLargeAlphaSize() {
+        final Data data = new Data(1);
+        // Use a codeLengths array with length equal to MAX_ALPHA_SIZE (258) to test array bounds.
+        final char[] codeLengths = new char[258];
+        for (int i = 0; i < codeLengths.length; i++) {
+            // Use all code lengths within valid range [1, 20]
+            codeLengths[i] = (char) ((i % MAX_CODE_LEN) + 1);
+        }
+        data.temp_charArray2d[0] = codeLengths;
+        assertDoesNotThrow(
+                () -> BZip2CompressorInputStream.createHuffmanDecodingTables(codeLengths.length, 1, data),
+                "createHuffmanDecodingTables should not throw for valid codeLengths array of MAX_ALPHA_SIZE");
+        assertEquals(data.minLens[0], 1, "Minimum code length should be 1");
+    }
+
     @Test
     void testHbCreateDecodeTables() throws IOException {
         assertThrows(CompressorException.class, () -> new BZip2CompressorInputStream(
@@ -108,6 +165,45 @@ class BZip2CompressorInputStreamTest extends AbstractTest {
             assertEquals(1024, bzipIn.read(buffer, 0, 1024));
             assertEquals(0, bzipIn.read(buffer, 1024, 0));
             assertEquals(1024, bzipIn.read(buffer, 0, 1024));
+        }
+    }
+
+    @ParameterizedTest(name = "code length {0} -> must be rejected")
+    @ValueSource(ints = {MIN_CODE_LEN - 1, MAX_CODE_LEN + 1})
+    void testRecvDecodingTablesWithOutOfRangeCodeLength(final int codeLength) throws IOException {
+        try (BitInputStream tables = prepareDecodingTables(codeLength)) {
+            final Data data = new Data(1);
+
+            final CompressorException ex = assertThrows(
+                    CompressorException.class,
+                    () -> BZip2CompressorInputStream.recvDecodingTables(tables, data),
+                    "Expected CompressorException for invalid code length " + codeLength);
+
+            final String msg = ex.getMessage();
+            assertNotNull(msg, "Exception message must not be null");
+            assertTrue(msg.toLowerCase().contains("code length"), "Message should mention 'code length'");
+            assertTrue(
+                    msg.contains("[" + MIN_CODE_LEN + ", " + MAX_CODE_LEN + "]"),
+                    "Message should mention valid range [" + MIN_CODE_LEN + ", " + MAX_CODE_LEN + "]");
+            assertTrue(
+                    msg.contains(Integer.toString(codeLength)),
+                    "Message should include the offending value " + codeLength);
+        }
+    }
+
+    @ParameterizedTest(name = "code length {0} -> accepted and stored")
+    @ValueSource(ints = {MIN_CODE_LEN, MAX_CODE_LEN})
+    void testRecvDecodingTablesWithValidCodeLength(final int codeLength) throws IOException {
+        try (BitInputStream tables = prepareDecodingTables(codeLength)) {
+            final Data data = new Data(1);
+
+            assertDoesNotThrow(
+                    () -> BZip2CompressorInputStream.recvDecodingTables(tables, data),
+                    "Should accept code length " + codeLength + " within [" + MIN_CODE_LEN + ", " + MAX_CODE_LEN + "]");
+
+            // We encoded 2 Huffman groups; both minLens should equal the encoded codeLength
+            assertEquals(codeLength, data.minLens[0], "Group 0 min code length mismatch");
+            assertEquals(codeLength, data.minLens[1], "Group 1 min code length mismatch");
         }
     }
 
@@ -158,102 +254,6 @@ class BZip2CompressorInputStreamTest extends AbstractTest {
             assertEquals(-1, in.read());
             assertEquals(-1, in.read());
         }
-    }
-
-    @Test
-    void testCreateHuffmanDecodingTablesWithLargeAlphaSize() {
-        final Data data = new Data(1);
-        // Use a codeLengths array with length equal to MAX_ALPHA_SIZE (258) to test array bounds.
-        final char[] codeLengths = new char[258];
-        for (int i = 0; i < codeLengths.length; i++) {
-            // Use all code lengths within valid range [1, 20]
-            codeLengths[i] = (char) ((i % MAX_CODE_LEN) + 1);
-        }
-        data.temp_charArray2d[0] = codeLengths;
-        assertDoesNotThrow(
-                () -> BZip2CompressorInputStream.createHuffmanDecodingTables(codeLengths.length, 1, data),
-                "createHuffmanDecodingTables should not throw for valid codeLengths array of MAX_ALPHA_SIZE");
-        assertEquals(data.minLens[0], 1, "Minimum code length should be 1");
-    }
-
-    @ParameterizedTest(name = "code length {0} -> must be rejected")
-    @ValueSource(ints = {MIN_CODE_LEN - 1, MAX_CODE_LEN + 1})
-    void testRecvDecodingTablesWithOutOfRangeCodeLength(final int codeLength) throws IOException {
-        try (BitInputStream tables = prepareDecodingTables(codeLength)) {
-            final Data data = new Data(1);
-
-            final CompressorException ex = assertThrows(
-                    CompressorException.class,
-                    () -> BZip2CompressorInputStream.recvDecodingTables(tables, data),
-                    "Expected CompressorException for invalid code length " + codeLength);
-
-            final String msg = ex.getMessage();
-            assertNotNull(msg, "Exception message must not be null");
-            assertTrue(msg.toLowerCase().contains("code length"), "Message should mention 'code length'");
-            assertTrue(
-                    msg.contains("[" + MIN_CODE_LEN + ", " + MAX_CODE_LEN + "]"),
-                    "Message should mention valid range [" + MIN_CODE_LEN + ", " + MAX_CODE_LEN + "]");
-            assertTrue(
-                    msg.contains(Integer.toString(codeLength)),
-                    "Message should include the offending value " + codeLength);
-        }
-    }
-
-    @ParameterizedTest(name = "code length {0} -> accepted and stored")
-    @ValueSource(ints = {MIN_CODE_LEN, MAX_CODE_LEN})
-    void testRecvDecodingTablesWithValidCodeLength(final int codeLength) throws IOException {
-        try (BitInputStream tables = prepareDecodingTables(codeLength)) {
-            final Data data = new Data(1);
-
-            assertDoesNotThrow(
-                    () -> BZip2CompressorInputStream.recvDecodingTables(tables, data),
-                    "Should accept code length " + codeLength + " within [" + MIN_CODE_LEN + ", " + MAX_CODE_LEN + "]");
-
-            // We encoded 2 Huffman groups; both minLens should equal the encoded codeLength
-            assertEquals(codeLength, data.minLens[0], "Group 0 min code length mismatch");
-            assertEquals(codeLength, data.minLens[1], "Group 1 min code length mismatch");
-        }
-    }
-
-    /**
-     * Builds a minimal bitstream for recvDecodingTables():
-     * <ul>
-     *     <li>Uses only one symbol 'A' (0x41).</li>
-     *     <li>Number of groups: 2 (minimum).</li>
-     *     <li>Number of selectors: 3.</li>
-     *     <li>Selectors: all three encode j=1 (unary "10").</li>
-     *     <li>Huffman code lengths for 2 groups over alphabet size 3 (RUNA, RUNB, EOB) are all equal to {@code codeLength}.</li>
-     * </ul>
-     * <p>
-     *     <strong>Note:</strong> The values are chosen to keep everything byte-aligned.
-     * </p>
-     * @param codeLength the code length to use for each symbol in each group; must be in [0, 31]
-     */
-    private BitInputStream prepareDecodingTables(final int codeLength) {
-        assertTrue(0 <= codeLength && codeLength <= 31, "codeLength must be between 0 and 31");
-
-        final ByteArrayOutputStream stream = new ByteArrayOutputStream();
-
-        // Upper nibbles in use: set only upper nibble 4
-        stream.write(0b0000_1000);
-        stream.write(0b0000_0000);
-
-        // Lower nibbles of upper nibble 4: set only lower nibble 1
-        stream.write(0b0100_0000);
-        stream.write(0b0000_0000);
-
-        // Groups/selectors (24 bits total, byte-aligned)
-        // nGroups = 2 (3 bits), nSelectors = 3 (15 bits), selectors: 10 10 10
-        stream.write(0b010_00000); // nGroups (3 bits) + high 5 bits of nSelectors
-        stream.write(0b00000000); // middle 8 bits of nSelectors
-        stream.write(0b11_10_10_10); // low 2 bits of nSelectors + selectors (3 x 2 bits)
-
-        // Huffman tables: two groups, three symbols each
-        // startLen (5 bits) followed by 3x '0' (done) => one byte: codeLength << 3
-        stream.write(codeLength << 3);
-        stream.write(codeLength << 3);
-
-        return new BitInputStream(new ByteArrayInputStream(stream.toByteArray()), ByteOrder.BIG_ENDIAN);
     }
 
 }

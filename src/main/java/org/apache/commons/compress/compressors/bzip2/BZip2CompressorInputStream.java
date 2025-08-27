@@ -159,6 +159,40 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     }
 
     /**
+     * Builds the Huffman decoding tables for use by {@code recvDecodingTables()}.
+     *
+     * @param alphaSize the alphabet size, guaranteed by the caller to be in the range [2, 258]
+     *                  (RUNA, RUNB, 255 byte values, and EOB).
+     * @param nGroups   the number of Huffman coding groups, guaranteed by the caller to be in the range [0, 6].
+     * @param dataShadow the data structure into which the tables are built; requires
+     *                   {@code temp_charArray2d} to be initialized.
+     */
+    static void createHuffmanDecodingTables(final int alphaSize, final int nGroups, final Data dataShadow) {
+        final char[][] len = dataShadow.temp_charArray2d;
+        final int[] minLens = dataShadow.minLens;
+        final int[][] limit = dataShadow.limit;
+        final int[][] base = dataShadow.base;
+        final int[][] perm = dataShadow.perm;
+
+        for (int t = 0; t < nGroups; t++) {
+            final char[] len_t = len[t];
+            int minLen = len_t[0];
+            int maxLen = len_t[0];
+            for (int i = 1; i < alphaSize; i++) {
+                final char lent = len_t[i];
+                if (lent > maxLen) {
+                    maxLen = lent;
+                }
+                if (lent < minLen) {
+                    minLen = lent;
+                }
+            }
+            hbCreateDecodeTables(limit[t], base[t], perm[t], len[t], minLen, maxLen, alphaSize);
+            minLens[t] = minLen;
+        }
+    }
+
+    /**
      * Called by createHuffmanDecodingTables() exclusively.
      *
      * @param minLen minimum code length in the range [1, {@value MAX_CODE_LEN}] guaranteed by the caller.
@@ -203,6 +237,21 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         }
     }
 
+    private static void makeMaps(final Data data) throws IOException {
+        final boolean[] inUse = data.inUse;
+        final byte[] seqToUnseq = data.seqToUnseq;
+
+        int nInUseShadow = 0;
+
+        for (int i = 0; i < 256; i++) {
+            if (inUse[i]) {
+                seqToUnseq[nInUseShadow++] = (byte) i;
+            }
+        }
+
+        data.inUseCount = nInUseShadow;
+    }
+
     /**
      * Checks if the signature matches what is expected for a bzip2 file.
      *
@@ -214,12 +263,106 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     public static boolean matches(final byte[] signature, final int length) {
         return length >= 3 && signature[0] == 'B' && signature[1] == 'Z' && signature[2] == 'h';
     }
+    static void recvDecodingTables(final BitInputStream bin, final Data dataShadow) throws IOException {
+        final boolean[] inUse = dataShadow.inUse;
+        final byte[] pos = dataShadow.recvDecodingTables_pos;
+        final byte[] selector = dataShadow.selector;
+        final byte[] selectorMtf = dataShadow.selectorMtf;
+
+        int inUse16 = 0;
+
+        /* Receive the mapping table */
+        for (int i = 0; i < 16; i++) {
+            if (bsGetBit(bin)) {
+                inUse16 |= 1 << i;
+            }
+        }
+
+        Arrays.fill(inUse, false);
+        for (int i = 0; i < 16; i++) {
+            if ((inUse16 & 1 << i) != 0) {
+                final int i16 = i << 4;
+                for (int j = 0; j < 16; j++) {
+                    if (bsGetBit(bin)) {
+                        inUse[i16 + j] = true;
+                    }
+                }
+            }
+        }
+
+        makeMaps(dataShadow);
+        final int alphaSize = dataShadow.inUseCount + 2;
+        /* Now the selectors */
+        final int nGroups = bsR(bin, 3);
+        final int selectors = bsR(bin, 15);
+        if (selectors < 0) {
+            throw new CompressorException("Corrupted input, nSelectors value negative");
+        }
+        checkBounds(alphaSize, MAX_ALPHA_SIZE + 1, "alphaSize");
+        checkBounds(nGroups, N_GROUPS + 1, "nGroups");
+
+        // Don't fail on nSelectors overflowing boundaries but discard the values in overflow
+        // See https://gnu.wildebeest.org/blog/mjw/2019/08/02/bzip2-and-the-cve-that-wasnt/
+        // and https://sourceware.org/ml/bzip2-devel/2019-q3/msg00007.html
+
+        for (int i = 0; i < selectors; i++) {
+            int j = 0;
+            while (bsGetBit(bin)) {
+                j++;
+            }
+            if (i < MAX_SELECTORS) {
+                selectorMtf[i] = (byte) j;
+            }
+        }
+        final int nSelectors = Math.min(selectors, MAX_SELECTORS);
+
+        /* Undo the MTF values for the selectors. */
+        for (int v = nGroups; --v >= 0;) {
+            pos[v] = (byte) v;
+        }
+
+        for (int i = 0; i < nSelectors; i++) {
+            int v = selectorMtf[i] & 0xff;
+            checkBounds(v, N_GROUPS, "selectorMtf");
+            final byte tmp = pos[v];
+            while (v > 0) {
+                // nearly all times v is zero, 4 in most other cases
+                pos[v] = pos[v - 1];
+                v--;
+            }
+            pos[0] = tmp;
+            selector[i] = tmp;
+        }
+
+        final char[][] len = dataShadow.temp_charArray2d;
+
+        /* Now the coding tables */
+        for (int t = 0; t < nGroups; t++) {
+            int curr = bsR(bin, 5);
+            final char[] len_t = len[t];
+            for (int i = 0; i < alphaSize; i++) {
+                while (bsGetBit(bin)) {
+                    curr += bsGetBit(bin) ? -1 : 1;
+                }
+                // Same condition as in bzip2
+                if (curr < 1 || curr > MAX_CODE_LEN) {
+                    throw new CompressorException(
+                            "Corrupted input, code length value out of range [%d, %d]: %d", 1, MAX_CODE_LEN, curr);
+                }
+                len_t[i] = (char) curr;
+            }
+        }
+
+        // finally create the Huffman tables
+        createHuffmanDecodingTables(alphaSize, nGroups, dataShadow);
+    }
+
+    // Variables used by setup* methods exclusively
 
     /**
      * Index of the last char in the block, so the block size == last + 1.
      */
     private int last;
-
     /**
      * Index in zptr[] of original string after sorting.
      */
@@ -228,9 +371,6 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
      * always: in the range 0 .. 9. The current block size is 100000 * this number.
      */
     private int blockSize100k;
-
-    // Variables used by setup* methods exclusively
-
     private boolean blockRandomised;
     private final CRC crc = new CRC();
     private BitInputStream bin;
@@ -245,8 +385,11 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     private int su_i2;
     private int su_j2;
     private int su_rNToGo;
+
     private int su_rTPos;
+
     private int su_tPos;
+
     private char su_z;
 
     /**
@@ -305,40 +448,6 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         // Look for the next .bz2 stream if decompressing
         // concatenated files.
         return !decompressConcatenated || !init(false);
-    }
-
-    /**
-     * Builds the Huffman decoding tables for use by {@code recvDecodingTables()}.
-     *
-     * @param alphaSize the alphabet size, guaranteed by the caller to be in the range [2, 258]
-     *                  (RUNA, RUNB, 255 byte values, and EOB).
-     * @param nGroups   the number of Huffman coding groups, guaranteed by the caller to be in the range [0, 6].
-     * @param dataShadow the data structure into which the tables are built; requires
-     *                   {@code temp_charArray2d} to be initialized.
-     */
-    static void createHuffmanDecodingTables(final int alphaSize, final int nGroups, final Data dataShadow) {
-        final char[][] len = dataShadow.temp_charArray2d;
-        final int[] minLens = dataShadow.minLens;
-        final int[][] limit = dataShadow.limit;
-        final int[][] base = dataShadow.base;
-        final int[][] perm = dataShadow.perm;
-
-        for (int t = 0; t < nGroups; t++) {
-            final char[] len_t = len[t];
-            int minLen = len_t[0];
-            int maxLen = len_t[0];
-            for (int i = 1; i < alphaSize; i++) {
-                final char lent = len_t[i];
-                if (lent > maxLen) {
-                    maxLen = lent;
-                }
-                if (lent < minLen) {
-                    minLen = lent;
-                }
-            }
-            hbCreateDecodeTables(limit[t], base[t], perm[t], len[t], minLen, maxLen, alphaSize);
-            minLens[t] = minLen;
-        }
     }
 
     private void endBlock() throws IOException {
@@ -593,21 +702,6 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         this.currentState = START_BLOCK_STATE;
     }
 
-    private static void makeMaps(final Data data) throws IOException {
-        final boolean[] inUse = data.inUse;
-        final byte[] seqToUnseq = data.seqToUnseq;
-
-        int nInUseShadow = 0;
-
-        for (int i = 0; i < 256; i++) {
-            if (inUse[i]) {
-                seqToUnseq[nInUseShadow++] = (byte) i;
-            }
-        }
-
-        data.inUseCount = nInUseShadow;
-    }
-
     @Override
     public int read() throws IOException {
         if (this.bin != null) {
@@ -686,100 +780,6 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     private int readNextByte(final BitInputStream in) throws IOException {
         final long b = in.readBits(8);
         return (int) b;
-    }
-
-    static void recvDecodingTables(final BitInputStream bin, final Data dataShadow) throws IOException {
-        final boolean[] inUse = dataShadow.inUse;
-        final byte[] pos = dataShadow.recvDecodingTables_pos;
-        final byte[] selector = dataShadow.selector;
-        final byte[] selectorMtf = dataShadow.selectorMtf;
-
-        int inUse16 = 0;
-
-        /* Receive the mapping table */
-        for (int i = 0; i < 16; i++) {
-            if (bsGetBit(bin)) {
-                inUse16 |= 1 << i;
-            }
-        }
-
-        Arrays.fill(inUse, false);
-        for (int i = 0; i < 16; i++) {
-            if ((inUse16 & 1 << i) != 0) {
-                final int i16 = i << 4;
-                for (int j = 0; j < 16; j++) {
-                    if (bsGetBit(bin)) {
-                        inUse[i16 + j] = true;
-                    }
-                }
-            }
-        }
-
-        makeMaps(dataShadow);
-        final int alphaSize = dataShadow.inUseCount + 2;
-        /* Now the selectors */
-        final int nGroups = bsR(bin, 3);
-        final int selectors = bsR(bin, 15);
-        if (selectors < 0) {
-            throw new CompressorException("Corrupted input, nSelectors value negative");
-        }
-        checkBounds(alphaSize, MAX_ALPHA_SIZE + 1, "alphaSize");
-        checkBounds(nGroups, N_GROUPS + 1, "nGroups");
-
-        // Don't fail on nSelectors overflowing boundaries but discard the values in overflow
-        // See https://gnu.wildebeest.org/blog/mjw/2019/08/02/bzip2-and-the-cve-that-wasnt/
-        // and https://sourceware.org/ml/bzip2-devel/2019-q3/msg00007.html
-
-        for (int i = 0; i < selectors; i++) {
-            int j = 0;
-            while (bsGetBit(bin)) {
-                j++;
-            }
-            if (i < MAX_SELECTORS) {
-                selectorMtf[i] = (byte) j;
-            }
-        }
-        final int nSelectors = Math.min(selectors, MAX_SELECTORS);
-
-        /* Undo the MTF values for the selectors. */
-        for (int v = nGroups; --v >= 0;) {
-            pos[v] = (byte) v;
-        }
-
-        for (int i = 0; i < nSelectors; i++) {
-            int v = selectorMtf[i] & 0xff;
-            checkBounds(v, N_GROUPS, "selectorMtf");
-            final byte tmp = pos[v];
-            while (v > 0) {
-                // nearly all times v is zero, 4 in most other cases
-                pos[v] = pos[v - 1];
-                v--;
-            }
-            pos[0] = tmp;
-            selector[i] = tmp;
-        }
-
-        final char[][] len = dataShadow.temp_charArray2d;
-
-        /* Now the coding tables */
-        for (int t = 0; t < nGroups; t++) {
-            int curr = bsR(bin, 5);
-            final char[] len_t = len[t];
-            for (int i = 0; i < alphaSize; i++) {
-                while (bsGetBit(bin)) {
-                    curr += bsGetBit(bin) ? -1 : 1;
-                }
-                // Same condition as in bzip2
-                if (curr < 1 || curr > MAX_CODE_LEN) {
-                    throw new CompressorException(
-                            "Corrupted input, code length value out of range [%d, %d]: %d", 1, MAX_CODE_LEN, curr);
-                }
-                len_t[i] = (char) curr;
-            }
-        }
-
-        // finally create the Huffman tables
-        createHuffmanDecodingTables(alphaSize, nGroups, dataShadow);
     }
 
     private int setupBlock() throws IOException {
