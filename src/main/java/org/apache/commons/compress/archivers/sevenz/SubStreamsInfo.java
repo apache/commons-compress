@@ -57,7 +57,7 @@ final class SubStreamsInfo {
                     totalUnpackStreams, maxMemoryLimitKiB, e);
         }
         if (Runtime.getRuntime().freeMemory() > 128_000_000L) {
-            // Avoid false positives. 
+            // Avoid false positives.
             // Not a reliable check in old VMs or in low memory VMs.
             MemoryLimitException.checkKiB(SevenZFile.bytesToKiB(alloc), maxMemoryLimitKiB);
         }
