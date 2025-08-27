@@ -18,7 +18,6 @@
  */
 package org.apache.commons.compress.compressors.bzip2;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -189,15 +188,14 @@ class BZip2CompressorInputStreamTest extends AbstractTest {
                     "Expected CompressorException for invalid code length " + codeLength);
 
             final String msg = ex.getMessage();
-            assertAll(
-                    () -> assertNotNull(msg, "Exception message must not be null"),
-                    () -> assertTrue(msg.toLowerCase().contains("code length"), "Message should mention 'code length'"),
-                    () -> assertTrue(
-                            msg.contains("[" + MIN_CODE_LEN + ", " + MAX_CODE_LEN + "]"),
-                            "Message should mention valid range [" + MIN_CODE_LEN + ", " + MAX_CODE_LEN + "]"),
-                    () -> assertTrue(
-                            msg.contains(Integer.toString(codeLength)),
-                            "Message should include the offending value " + codeLength));
+            assertNotNull(msg, "Exception message must not be null");
+            assertTrue(msg.toLowerCase().contains("code length"), "Message should mention 'code length'");
+            assertTrue(
+                    msg.contains("[" + MIN_CODE_LEN + ", " + MAX_CODE_LEN + "]"),
+                    "Message should mention valid range [" + MIN_CODE_LEN + ", " + MAX_CODE_LEN + "]");
+            assertTrue(
+                    msg.contains(Integer.toString(codeLength)),
+                    "Message should include the offending value " + codeLength);
         }
     }
 
@@ -212,9 +210,8 @@ class BZip2CompressorInputStreamTest extends AbstractTest {
                     "Should accept code length " + codeLength + " within [" + MIN_CODE_LEN + ", " + MAX_CODE_LEN + "]");
 
             // We encoded 2 Huffman groups; both minLens should equal the encoded codeLength
-            assertAll(
-                    () -> assertEquals(codeLength, data.minLens[0], "Group 0 min code length mismatch"),
-                    () -> assertEquals(codeLength, data.minLens[1], "Group 1 min code length mismatch"));
+            assertEquals(codeLength, data.minLens[0], "Group 0 min code length mismatch");
+            assertEquals(codeLength, data.minLens[1], "Group 1 min code length mismatch");
         }
     }
 
