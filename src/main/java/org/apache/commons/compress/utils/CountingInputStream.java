@@ -34,7 +34,7 @@ public class CountingInputStream extends FilterInputStream {
     private long bytesRead;
 
     /**
-     * Creates a {@code CountingInputStream} by assigning the argument {@code in} to the field {@code this.in} so as to remember it for later use.
+     * Creates a {@code CountingInputStream} by assigning the argument {@code in} to the field {@code this.in} to remember it for later use.
      *
      * @param in the underlying input stream, or {@code null} if this instance is to be created without an underlying stream.
      */

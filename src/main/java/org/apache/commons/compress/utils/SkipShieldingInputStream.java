@@ -27,7 +27,7 @@ import java.io.InputStream;
  *
  * <p>
  * Some implementations of {@link InputStream} implement {@link InputStream#skip} in a way that throws an exception if the stream is not seekable -
- * {@link System#in System.in} is known to behave that way. For such a stream it is impossible to invoke skip at all and you have to read from the stream (and
+ * {@link System#in System.in} is known to behave that way. For such a stream it is impossible to invoke skip at all, and you have to read from the stream (and
  * discard the data read) instead. Skipping is potentially much faster than reading so we do want to invoke {@code skip} when possible. We provide this class so
  * you can wrap your own {@link InputStream} in it if you encounter problems with {@code skip} throwing an exception.
  * </p>
