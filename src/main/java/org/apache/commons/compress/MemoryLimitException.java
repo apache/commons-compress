@@ -34,7 +34,7 @@ public class MemoryLimitException extends CompressException {
     private static final long serialVersionUID = 1L;
 
     private static String buildMessage(final long memoryNeeded, final long memoryLimit, final String scale, final String boundary) {
-        return String.format("%,d %s of memory requested; %s set is %,d %s. If the file is not corrupt, consider increasing the memory limit.", memoryNeeded,
+        return String.format("%,d %s of memory requested; %s is %,d %s. If the file is not corrupt, consider increasing the memory limit.", memoryNeeded,
                 scale, boundary, memoryLimit, scale);
     }
 
