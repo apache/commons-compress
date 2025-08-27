@@ -27,8 +27,8 @@ import java.util.Objects;
  *
  * C is the fully qualified class name<br>
  * F is the flags<br>
- * C2 is the outer class name, or null if it can be inferred from C<br>
- * N is the inner class name, or null if it can be inferred from C<br>
+ * C2 is the outer class name, or {@code null} if it can be inferred from C<br>
+ * N is the inner class name, or {@code null} if it can be inferred from C<br>
  *
  * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
@@ -70,8 +70,8 @@ public class IcTuple {
      * @param C2      TODO
      * @param N       TODO
      * @param cIndex  the index of C in cpClass
-     * @param c2Index the index of C2 in cpClass, or -1 if C2 is null
-     * @param nIndex  the index of N in cpUTF8, or -1 if N is null
+     * @param c2Index the index of C2 in cpClass, or {@code -1} if C2 is {@code null}
+     * @param nIndex  the index of N in cpUTF8, or {@code -1} if N is {@code null}
      * @param tIndex  TODO
      */
     public IcTuple(final String C, final int F, final String C2, final String N, final int cIndex, final int c2Index, final int nIndex, final int tIndex) {

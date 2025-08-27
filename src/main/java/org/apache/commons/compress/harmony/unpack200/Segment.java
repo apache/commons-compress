@@ -320,8 +320,8 @@ public class Segment {
      *
      * @param icLocal    IcTuple[] array of local transmitted tuples
      * @param icRelevant IcTuple[] array of relevant tuples
-     * @return List of tuples to be stored. If ic_local is null or empty, the values returned may not be correct. The caller will have to determine if this is
-     *         the case.
+     * @return List of tuples to be stored. If ic_local is {@code null} or empty, the values returned may not be correct.
+     *         The caller will have to determine if this is the case.
      */
     private List<IcTuple> computeIcStored(final IcTuple[] icLocal, final IcTuple[] icRelevant) {
         final List<IcTuple> result = new ArrayList<>(icRelevant.length);

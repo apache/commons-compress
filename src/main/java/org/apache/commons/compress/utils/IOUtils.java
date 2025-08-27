@@ -56,7 +56,7 @@ public final class IOUtils {
     /**
      * Closes the given Closeable and swallows any IOException that may occur.
      *
-     * @param c Closeable to close, can be null.
+     * @param c Closeable to close, can be {@code null}.
      * @since 1.7
      * @deprecated Use {@link org.apache.commons.io.IOUtils#closeQuietly(Closeable)}.
      */
@@ -130,8 +130,8 @@ public final class IOUtils {
      * Copies part of the content of a InputStream into an OutputStream
      *
      * @param input      the InputStream to copy.
-     * @param length        maximum amount of bytes to copy.
-     * @param output     the target, may be null to simulate output to dev/null on Linux and NUL on Windows.
+     * @param length     maximum amount of bytes to copy.
+     * @param output     the target, may be {@code null} to simulate output to dev/null on Linux and NUL on Windows.
      * @param bufferSize the buffer size to use, must be bigger than 0.
      * @return the number of bytes copied.
      * @throws IOException Thrown if an I/O error occurs.
@@ -229,7 +229,7 @@ public final class IOUtils {
      * @param input the {@code InputStream} to read from.
      * @param length   maximum amount of bytes to copy.
      * @return the requested byte array.
-     * @throws NullPointerException if the input is null.
+     * @throws NullPointerException if the input is {@code null}.
      * @throws IOException Thrown if an I/O error occurs.
      * @since 1.21
      */
@@ -245,7 +245,7 @@ public final class IOUtils {
      * @param input the {@code ReadableByteChannel} to read from.
      * @param length   maximum amount of bytes to copy.
      * @return the requested byte array.
-     * @throws NullPointerException if the input is null.
+     * @throws NullPointerException if the input is {@code null}.
      * @throws IOException Thrown if an I/O error occurs.
      * @since 1.21
      */
@@ -290,8 +290,8 @@ public final class IOUtils {
      *
      * @param input the {@code InputStream} to read from.
      * @return the requested byte array.
-     * @throws NullPointerException Thrown if the input is null.
-     * @throws IOException          Thrown if an I/O error occurs or reads more than {@link Integer#MAX_VALUE} occurs
+     * @throws NullPointerException Thrown if the input is {@code null}.
+     * @throws IOException          Thrown if an I/O error occurs or reads more than {@link Integer#MAX_VALUE} occurs.
      * @since 1.5
      * @deprecated Use {@link org.apache.commons.io.IOUtils#toByteArray(InputStream)}.
      */
