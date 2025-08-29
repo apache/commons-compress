@@ -31,7 +31,7 @@ import java.util.Arrays;
 
 import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
-import org.apache.commons.compress.compressors.alg.HuffmanDecoder;
+import org.apache.commons.compress.compressors.support.HuffmanDecoder;
 import org.apache.commons.compress.utils.BitInputStream;
 import org.apache.commons.compress.utils.InputStreamStatistics;
 import org.apache.commons.io.input.CloseShieldInputStream;

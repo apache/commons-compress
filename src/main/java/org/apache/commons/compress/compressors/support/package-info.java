@@ -20,4 +20,4 @@
  * Algorithms reused by various compressors.
  * @since 1.29.0
  */
-package org.apache.commons.compress.compressors.alg;
+package org.apache.commons.compress.compressors.support;

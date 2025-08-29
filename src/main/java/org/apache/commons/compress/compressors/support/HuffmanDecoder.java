@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.commons.compress.compressors.alg;
+package org.apache.commons.compress.compressors.support;
 
 import java.io.EOFException;
 import java.io.IOException;

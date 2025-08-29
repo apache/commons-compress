@@ -30,7 +30,7 @@ import java.io.InputStream;
 import java.nio.ByteOrder;
 import java.util.Arrays;
 
-import org.apache.commons.compress.compressors.alg.HuffmanDecoder;
+import org.apache.commons.compress.compressors.support.HuffmanDecoder;
 import org.apache.commons.compress.utils.BitInputStream;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.ExactMath;
