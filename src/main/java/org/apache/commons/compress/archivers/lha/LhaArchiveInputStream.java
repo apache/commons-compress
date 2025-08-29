@@ -135,7 +135,7 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
      * @param charsetName the charset used for file names in the archive. May be {@code null} to use US-ASCII as default.
      * @param fileSeparatorChar the character used to separate file path elements
      */
-    public LhaArchiveInputStream(final InputStream inputStream, final String charsetName, final char fileSeparatorChar) {
+    LhaArchiveInputStream(final InputStream inputStream, final String charsetName, final char fileSeparatorChar) {
         super(inputStream, charsetName == null ? StandardCharsets.US_ASCII.name() : charsetName);
         this.fileSeparatorChar = fileSeparatorChar;
     }
@@ -212,7 +212,7 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
      * @return the next header entry, or null if there are no more entries
      * @throws IOException
      */
-    protected LhaArchiveEntry readHeader() throws IOException {
+    LhaArchiveEntry readHeader() throws IOException {
         // Header level is not known yet. Read the minimum length header.
         final byte[] buffer = new byte[HEADER_GENERIC_MINIMUM_HEADER_LENGTH];
         final int len = IOUtils.read(in, buffer);
@@ -248,7 +248,7 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
      * @return the LhaArchiveEntry read from the buffer
      * @throws IOException
      */
-    protected LhaArchiveEntry readHeaderLevel0(ByteBuffer buffer) throws IOException {
+    LhaArchiveEntry readHeaderLevel0(ByteBuffer buffer) throws IOException {
         final int headerSize = Byte.toUnsignedInt(buffer.get(HEADER_LEVEL_0_OFFSET_HEADER_SIZE));
         if (headerSize < HEADER_GENERIC_MINIMUM_HEADER_LENGTH) {
             throw new ArchiveException("Invalid header level 0 length: %d", headerSize);
@@ -290,7 +290,7 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
      * @return the LhaArchiveEntry read from the buffer
      * @throws IOException
      */
-    protected LhaArchiveEntry readHeaderLevel1(ByteBuffer buffer) throws IOException {
+    LhaArchiveEntry readHeaderLevel1(ByteBuffer buffer) throws IOException {
         final int baseHeaderSize = Byte.toUnsignedInt(buffer.get(HEADER_LEVEL_1_OFFSET_BASE_HEADER_SIZE));
         if (baseHeaderSize < HEADER_GENERIC_MINIMUM_HEADER_LENGTH) {
             throw new ArchiveException("Invalid header level 1 length: %d", baseHeaderSize);
@@ -360,7 +360,7 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
      * @return the LhaArchiveEntry read from the buffer
      * @throws IOException
      */
-    protected LhaArchiveEntry readHeaderLevel2(ByteBuffer buffer) throws IOException {
+    LhaArchiveEntry readHeaderLevel2(ByteBuffer buffer) throws IOException {
         final int headerSize = Short.toUnsignedInt(buffer.getShort(HEADER_LEVEL_2_OFFSET_HEADER_SIZE));
         if (headerSize < HEADER_GENERIC_MINIMUM_HEADER_LENGTH) {
             throw new ArchiveException("Invalid header level 2 length: %d", headerSize);
@@ -414,7 +414,7 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
      * @return compression method, e.g. -lh5-
      * @throws ArchiveException if the compression method is invalid
      */
-    protected static String getCompressionMethod(final ByteBuffer buffer) throws ArchiveException {
+    static String getCompressionMethod(final ByteBuffer buffer) throws ArchiveException {
         final byte[] compressionMethodBuffer = new byte[5];
         byteBufferGet(buffer, HEADER_GENERIC_OFFSET_COMPRESSION_METHOD, compressionMethodBuffer);
 
@@ -445,7 +445,7 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
      * @param pathnameLength the length of the pathname
      * @return pathname
      */
-    protected String getPathname(final ByteBuffer buffer, final int pathnameLength) {
+    String getPathname(final ByteBuffer buffer, final int pathnameLength) {
         final byte[] pathnameBuffer = new byte[pathnameLength];
         buffer.get(pathnameBuffer);
 
@@ -525,7 +525,7 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
      * @param entryBuilder the entry builder to set the values in
      * @throws IOException
      */
-    protected void parseExtendedHeader(final ByteBuffer extendedHeaderBuffer, final LhaArchiveEntry.Builder entryBuilder) throws IOException {
+    void parseExtendedHeader(final ByteBuffer extendedHeaderBuffer, final LhaArchiveEntry.Builder entryBuilder) throws IOException {
         final int extendedHeaderType = Byte.toUnsignedInt(extendedHeaderBuffer.get());
         if (extendedHeaderType == EXTENDED_HEADER_TYPE_COMMON) {
             // Common header
