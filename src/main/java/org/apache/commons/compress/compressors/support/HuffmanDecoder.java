@@ -83,7 +83,7 @@ public final class HuffmanDecoder {
      *
      * @param codeLengths    code length per symbol; {@code 0} means the symbol is not used; not {@code null}
      * @throws NullPointerException     if {@code codeLengths} is {@code null}
-     * @throws IllegalArgumentException if any code length is out of range [0, {@value #MAX_SUPPORTED_CODE_LENGTH}]
+     * @throws IllegalArgumentException if any code length is out of range [0, 30]
      */
     public HuffmanDecoder(final int[] codeLengths) {
         this(codeLengths, codeLengths.length, 0, MAX_SUPPORTED_CODE_LENGTH);
@@ -105,8 +105,7 @@ public final class HuffmanDecoder {
      * @param maxCodeLength  maximum allowed code length present in {@code codeLengths}
      * @throws NullPointerException     if {@code codeLengths} is {@code null}
      * @throws IllegalArgumentException if {@code codeLengthSize} is out of range, if any code length is out of range
-     *                                 or if {@code maxCodeLength} exceeds the implementation limit
-     *                                 ({@value #MAX_SUPPORTED_CODE_LENGTH})
+     *                                 or if {@code maxCodeLength} exceeds the implementation limit (30)
      */
     public HuffmanDecoder(
             final int[] codeLengths, final int codeLengthSize, final int minCodeLength, final int maxCodeLength)
