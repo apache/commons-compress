@@ -20,8 +20,10 @@ package org.apache.commons.compress.compressors.alg;
 
 import java.io.EOFException;
 import java.io.IOException;
+import java.nio.ByteOrder;
 import java.util.Objects;
 
+import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.utils.BitInputStream;
 
 /**
@@ -73,18 +75,38 @@ public final class HuffmanDecoder {
     /**
      * Constructs a decoder from canonical code lengths.
      * <p>
-     * The {@code codeLengths} array provides, for each symbol index {@code i} in
-     * {@code [0, codeLengthSize)}, the length (in bits) of that symbol's code. A value of
-     * {@code 0} marks an unused symbol. All non-zero lengths must be {@code <= maxCodeLength} and
-     * the set of lengths must satisfy Kraft's equality (i.e., define a complete prefix code).
+     * The {@code codeLengths} array provides, for each symbol index {@code i} in {@code [0, codeLengthSize)},
+     * the length (in bits) of that symbol's code.
+     * A value of {@code 0} marks an unused symbol.
+     * All non-zero lengths must be {@code <= maxCodeLength}.
      * </p>
      *
      * @param codeLengths    code length per symbol; {@code 0} means the symbol is not used; not {@code null}
-     * @param codeLengthSize number of symbols to read from {@code codeLengths} (must be {@code > 0}
-     *                       and {@code <= codeLengths.length})
+     * @throws NullPointerException     if {@code codeLengths} is {@code null}
+     * @throws IllegalArgumentException if any code length is out of range [0, {@value #MAX_SUPPORTED_CODE_LENGTH}]
+     */
+    public HuffmanDecoder(final int[] codeLengths) {
+        this(codeLengths, codeLengths.length, 0, MAX_SUPPORTED_CODE_LENGTH);
+    }
+
+    /**
+     * Constructs a decoder from canonical code lengths.
+     * <p>
+     * The {@code codeLengths} array provides, for each symbol index {@code i} in {@code [0, codeLengthSize)},
+     * the length (in bits) of that symbol's code.
+     * A value of {@code 0} marks an unused symbol.
+     * All non-zero lengths must be {@code <= maxCodeLength}.
+     * </p>
+     *
+     * @param codeLengths    code length per symbol; {@code 0} means the symbol is not used; not {@code null}
+     * @param codeLengthSize number of symbols to read from {@code codeLengths}
+     *                       (must be {@code > 0} and {@code <= codeLengths.length})
      * @param minCodeLength  minimum allowed code length present in {@code codeLengths}
      * @param maxCodeLength  maximum allowed code length present in {@code codeLengths}
-     * @throws IllegalArgumentException if any argument is invalid
+     * @throws NullPointerException     if {@code codeLengths} is {@code null}
+     * @throws IllegalArgumentException if {@code codeLengthSize} is out of range, if any code length is out of range
+     *                                 or if {@code maxCodeLength} exceeds the implementation limit
+     *                                 ({@value #MAX_SUPPORTED_CODE_LENGTH})
      */
     public HuffmanDecoder(
             final int[] codeLengths, final int codeLengthSize, final int minCodeLength, final int maxCodeLength)
@@ -186,6 +208,9 @@ public final class HuffmanDecoder {
         //    Adjust offsets to point to the last element of each length
         for (int symbol = 0; symbol < codeLengthSize; symbol++) {
             final int len = codeLengths[symbol];
+            if (len == 0) {
+                continue;
+            }
             sorted[++offset[len]] = symbol;
         }
 
@@ -215,14 +240,22 @@ public final class HuffmanDecoder {
         int len = minLength;
         int code = readBitsFully(in, len);
         while (len <= maxLength && code > limit[len]) {
-            final int b = readBitsFully(in, 1);
+            final int b = readBit(in);
             code = (code << 1) | b;
             len++;
         }
         if (len > maxLength) {
-            throw new IOException("Invalid Huffman code: " + code);
+            throw new CompressorException("Invalid Huffman code: " + code);
         }
         return sorted[code - bias[len]];
+    }
+
+    private static int readBit(final BitInputStream in) throws IOException {
+        final int bit = in.readBit();
+        if (bit < 0) {
+            throw new EOFException("Truncated Huffman bitstream");
+        }
+        return bit;
     }
 
     private static int readBitsFully(final BitInputStream in, final int numBits) throws IOException {
@@ -230,6 +263,7 @@ public final class HuffmanDecoder {
         if (code < 0) {
             throw new EOFException("Truncated Huffman bitstream");
         }
-        return code;
+        // Adjust for bit order
+        return in.getByteOrder() == ByteOrder.BIG_ENDIAN ? code : Integer.reverse(code) >>> (32 - numBits);
     }
 }

@@ -18,6 +18,6 @@
  */
 package org.apache.commons.compress.compressors.deflate64;
 
-enum HuffmanState {
+enum Deflate64State {
     INITIAL, STORED, DYNAMIC_CODES, FIXED_CODES
 }
