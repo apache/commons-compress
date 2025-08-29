@@ -33,12 +33,12 @@ public class Lh7CompressorInputStream extends AbstractLhStaticHuffmanCompressorI
     }
 
     @Override
-    protected int getDictionaryBits() {
+    int getDictionaryBits() {
         return 16;
     }
 
     @Override
-    protected int getDistanceBits() {
+    int getDistanceBits() {
         return 5;
     }
 }

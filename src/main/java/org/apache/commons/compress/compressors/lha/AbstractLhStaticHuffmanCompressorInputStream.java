@@ -101,7 +101,7 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
      *
      * @return the copy threshold
      */
-    protected int getCopyThreshold() {
+    int getCopyThreshold() {
         return 3;
     }
 
@@ -110,14 +110,14 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
      *
      * @return the number of bits used for the dictionary size
      */
-    protected abstract int getDictionaryBits();
+    abstract int getDictionaryBits();
 
     /**
      * Gets the size of the dictionary.
      *
      * @return the size of the dictionary
      */
-    protected int getDictionarySize() {
+    int getDictionarySize() {
         return 1 << getDictionaryBits();
     }
 
@@ -126,14 +126,14 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
      *
      * @return the number of bits used for the distance
      */
-    protected abstract int getDistanceBits();
+    abstract int getDistanceBits();
 
     /**
      * Gets the maximum number of distance codes in the distance tree.
      *
      * @return the maximum number of distance codes
      */
-    protected int getMaxNumberOfDistanceCodes() {
+    int getMaxNumberOfDistanceCodes() {
         return getDictionaryBits() + 1;
     }
 
@@ -142,7 +142,7 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
      *
      * @return the maximum match length
      */
-    protected int getMaxMatchLength() {
+    int getMaxMatchLength() {
         return 256;
     }
 
@@ -152,7 +152,7 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
      *
      * @return the maximum number of commands
      */
-    protected int getMaxNumberOfCommands() {
+    int getMaxNumberOfCommands() {
         return NUMBER_OF_LITERAL_CODES + getMaxMatchLength() - getCopyThreshold() + 1;
     }
 
@@ -224,7 +224,7 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
      * @return the command decoding tree
      * @throws IOException if an I/O error occurs
      */
-    protected BinaryTree readCommandDecodingTree() throws IOException {
+    BinaryTree readCommandDecodingTree() throws IOException {
         // Number of code lengths to read
         final int numCodeLengths = readBits(COMMAND_DECODING_LENGTH_BITS);
 
@@ -256,7 +256,7 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
      * @return code length
      * @throws IOException if an I/O error occurs
      */
-    protected int readCodeLength() throws IOException {
+    int readCodeLength() throws IOException {
         int len = readBits(CODE_LENGTH_BITS);
         if (len == 0x07) {
             int bit = bin.readBit();
@@ -283,7 +283,7 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
      * @return the command tree
      * @throws IOException if an I/O error occurs
      */
-    protected BinaryTree readCommandTree(final BinaryTree commandDecodingTree) throws IOException {
+    BinaryTree readCommandTree(final BinaryTree commandDecodingTree) throws IOException {
         final int numCodeLengths = readBits(COMMAND_TREE_LENGTH_BITS);
 
         if (numCodeLengths > getMaxNumberOfCommands()) {
