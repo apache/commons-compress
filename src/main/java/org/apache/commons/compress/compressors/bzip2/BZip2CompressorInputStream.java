@@ -264,7 +264,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
                 while (bsGetBit(bin)) {
                     curr += bsGetBit(bin) ? -1 : 1;
                 }
-                codeLengths[i] = (char) curr;
+                codeLengths[i] = curr;
             }
             try {
                 // Same limits as in the reference C implementation of bzip2
