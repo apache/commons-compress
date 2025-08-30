@@ -120,6 +120,19 @@ public class IntList {
         throw new IndexOutOfBoundsException("" + location);
     }
 
+
+
+    private int calculateIncrement(final int size, final int required) {
+        int increment = size / 2;
+        if (required > increment) {
+            increment = required;
+        }
+        if (increment < 12) {
+            increment = 12;
+        }
+        return increment;
+    }
+
     private void growAtEnd(final int required) {
         final int size = lastIndex - firstIndex;
         if (firstIndex >= required - (array.length - lastIndex)) {
@@ -130,13 +143,7 @@ public class IntList {
             firstIndex = 0;
             lastIndex = newLast;
         } else {
-            int increment = size / 2;
-            if (required > increment) {
-                increment = required;
-            }
-            if (increment < 12) {
-                increment = 12;
-            }
+            int increment = calculateIncrement(size, required);
             final int[] newArray = new int[size + increment];
             if (size > 0) {
                 System.arraycopy(array, firstIndex, newArray, 0, size);
@@ -157,13 +164,7 @@ public class IntList {
             firstIndex = newFirst;
             lastIndex = array.length;
         } else {
-            int increment = size / 2;
-            if (required > increment) {
-                increment = required;
-            }
-            if (increment < 12) {
-                increment = 12;
-            }
+            int increment = calculateIncrement(size, required);
             final int[] newArray = new int[size + increment];
             if (size > 0) {
                 System.arraycopy(array, firstIndex, newArray, newArray.length - size, size);
@@ -174,15 +175,10 @@ public class IntList {
         }
     }
 
+
     private void growForInsert(final int location, final int required) {
         final int size = lastIndex - firstIndex;
-        int increment = size / 2;
-        if (required > increment) {
-            increment = required;
-        }
-        if (increment < 12) {
-            increment = 12;
-        }
+        int increment = calculateIncrement(size, required);
         final int[] newArray = new int[size + increment];
         final int newFirst = increment - required;
         // Copy elements after location to the new array skipping inserted
