@@ -17,7 +17,7 @@
  * under the License.
  */
 package org.apache.commons.compress.harmony.pack200;
-
+import org.apache.commons.lang3.math.NumberUtils;
 import java.util.Arrays;
 
 /**
@@ -122,7 +122,7 @@ public class IntList {
 
 
 
-    private int calculateIncrement(final int size, final int required) {
+    private static int calculateIncrement(final int size, final int required) {
         return NumberUtils.max(size / 2, required, 12);
     }
 
