@@ -123,14 +123,7 @@ public class IntList {
 
 
     private int calculateIncrement(final int size, final int required) {
-        int increment = size / 2;
-        if (required > increment) {
-            increment = required;
-        }
-        if (increment < 12) {
-            increment = 12;
-        }
-        return increment;
+        return NumberUtils.max(size / 2, required, 12);
     }
 
     private void growAtEnd(final int required) {
