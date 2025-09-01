@@ -122,8 +122,6 @@ public class IntList {
         throw new IndexOutOfBoundsException("" + location);
     }
 
-
-
     private static int calculateIncrement(final int size, final int required) {
         return NumberUtils.max(size / 2, required, 12);
     }
