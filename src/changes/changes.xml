@@ -119,6 +119,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add TarArchiveInputStream.Builder and deprecate all but one constructor.</action>
       <!-- UPDATE -->
       <action type="update" dev="ggregory" due-to="Gary Gregory">Bump org.apache.commons:commons-parent from 85 to 87.</action>
+      <action type="update" dev="ppkarwasz" due-to="Raeps">Extract duplicate code in org.apache.commons.compress.harmony.pack200.IntList.</action>
     </release>
     <release version="1.28.0" date="2025-07-26" description="This is a feature and maintenance release. Java 8 or later is required.">
       <!-- FIX -->
