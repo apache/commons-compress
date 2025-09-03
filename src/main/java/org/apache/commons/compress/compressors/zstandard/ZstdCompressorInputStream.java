@@ -28,6 +28,7 @@ import org.apache.commons.io.input.BoundedInputStream;
 
 import com.github.luben.zstd.BufferPool;
 import com.github.luben.zstd.ZstdInputStream;
+import org.apache.commons.io.input.CloseShieldInputStream;
 
 /**
  * {@link CompressorInputStream} implementation to decode Zstandard encoded stream.
@@ -53,7 +54,8 @@ public class ZstdCompressorInputStream extends CompressorInputStream implements 
      * @throws IOException if an I/O error occurs.
      */
     public ZstdCompressorInputStream(final InputStream in) throws IOException {
-        this.decIS = new ZstdInputStream(countingStream = BoundedInputStream.builder().setInputStream(in).get());
+        CloseShieldInputStream closeShieldInputStream = CloseShieldInputStream.wrap(in);
+        this.decIS = new ZstdInputStream(countingStream = BoundedInputStream.builder().setInputStream(closeShieldInputStream).get());
     }
 
     /**
@@ -65,7 +67,8 @@ public class ZstdCompressorInputStream extends CompressorInputStream implements 
      * @throws IOException if an I/O error occurs.
      */
     public ZstdCompressorInputStream(final InputStream in, final BufferPool bufferPool) throws IOException {
-        this.decIS = new ZstdInputStream(countingStream = BoundedInputStream.builder().setInputStream(in).get(), bufferPool);
+        CloseShieldInputStream closeShieldInputStream = CloseShieldInputStream.wrap(in);
+        this.decIS = new ZstdInputStream(countingStream = BoundedInputStream.builder().setInputStream(closeShieldInputStream).get(), bufferPool);
     }
 
     @Override
