@@ -345,7 +345,7 @@ public final class ExtraField implements Iterable<SubField> {
         for (final SubField f : subFields) {
             ba[pos++] = f.si1;
             ba[pos++] = f.si2;
-            ba[pos++] = (byte) (f.payload.length & 0xff); // little endian expected
+            ba[pos++] = (byte) (f.payload.length & 0xff); // little-endian expected
             ba[pos++] = (byte) (f.payload.length >>> 8);
             System.arraycopy(f.payload, 0, ba, pos, f.payload.length);
             pos += f.payload.length;
