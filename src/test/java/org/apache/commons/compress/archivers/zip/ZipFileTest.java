@@ -36,6 +36,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.FileInputStream;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -56,6 +57,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 
 import org.apache.commons.compress.AbstractTest;
+import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
@@ -237,6 +239,26 @@ class ZipFileTest extends AbstractTest {
     @AfterEach
     public void tearDownClose() {
         ZipFile.closeQuietly(zf);
+    }
+
+    @Test
+    void testZstdInputStreamErrorCloseWhenGc() throws Exception  {
+        final File archive = getFile("COMPRESS-692/compress-692.zip");
+        for (int i =0; i< 500;i++) {
+            try (FileInputStream fileInputStream = new FileInputStream(archive);
+                 ZipArchiveInputStream zipArchiveInputStream = new ZipArchiveInputStream(fileInputStream)){
+                ArchiveEntry entry;
+                while ((entry = zipArchiveInputStream.getNextEntry()) != null) {
+                    if (entry.isDirectory()) {
+                        continue;
+                    }
+                    System.gc();
+                    IOUtils.toByteArray(zipArchiveInputStream);
+                }
+            } catch (IOException e) {
+                fail("testZstdInputStreamErrorCloseWhenGc error, test error at batch " + (i+1), e);
+            }
+        }
     }
 
     @Test
