@@ -45,10 +45,39 @@ public class BitInputStream implements Closeable {
     private int bitsCachedSize;
 
     /**
-     * Constructor taking an InputStream and its bit arrangement.
+     * Constructs a {@code BitInputStream} that reads individual bits from the
+     * given {@link InputStream}, interpreting them according to the specified
+     * bit ordering.
      *
-     * @param in        the InputStream.
-     * @param byteOrder the bit arrangement across byte boundaries, either BIG_ENDIAN (aaaaabbb bb000000) or LITTLE_ENDIAN (bbbaaaaa 000000bb).
+     * <p>The bit ordering determines how consecutive bits are packed into bytes:</p>
+     *
+     * <ul>
+     *   <li>{@link ByteOrder#BIG_ENDIAN} (most significant bit first):
+     *     <p>Bits are read from the high (bit&nbsp;7) to the low (bit&nbsp;0)
+     *     position of each byte.</p>
+     *
+     *     <pre>{@code
+     *         byte 0                     byte 1
+     *   bit    7  6  5  4  3  2  1  0  |  7  6  5  4  3  2  1  0
+     *         a4 a3 a2 a1 a0 b4 b3 b2    b1 b0  0  0  0  0  0  0
+     *     }</pre>
+     *   </li>
+     *
+     *   <li>{@link ByteOrder#LITTLE_ENDIAN} (least significant bit first):
+     *     <p>Bits are read from the low (bit&nbsp;0) to the high (bit&nbsp;7)
+     *     position of each byte.</p>
+     *
+     *     <pre>{@code
+     *         byte 0                     byte 1
+     *   bit    7  6  5  4  3  2  1  0  |  7  6  5  4  3  2  1  0
+     *         b2 b1 b0 a4 a3 a2 a1 a0     0  0  0  0  0 b4 b3 b2
+     *     }</pre>
+     *   </li>
+     * </ul>
+     *
+     * @param in        the underlying input stream providing the bytes
+     * @param byteOrder determines whether bits are read MSB-first ({@link ByteOrder#BIG_ENDIAN})
+     *                  or LSB-first ({@link ByteOrder#LITTLE_ENDIAN})
      */
     public BitInputStream(final InputStream in, final ByteOrder byteOrder) {
         this.in = org.apache.commons.io.input.BoundedInputStream.builder().setInputStream(in).asSupplier().get();
@@ -210,4 +239,13 @@ public class BitInputStream implements Closeable {
         return bitsOut;
     }
 
+    /**
+     * Returns the bit order used by this stream.
+     *
+     * @return the bit ordering: {@link ByteOrder#BIG_ENDIAN} (MSB-first) or {@link ByteOrder#LITTLE_ENDIAN} (LSB-first).
+     * @see #BitInputStream(InputStream, ByteOrder)
+     */
+    public ByteOrder getByteOrder() {
+        return byteOrder;
+    }
 }
