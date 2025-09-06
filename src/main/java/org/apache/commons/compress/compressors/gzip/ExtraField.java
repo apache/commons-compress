@@ -133,7 +133,7 @@ public final class ExtraField implements Iterable<SubField> {
         }
 
         /**
-         * The 2 character ISO-8859-1 string made from the si1 and si2 bytes of the sub field id.
+         * The 2 character ISO-8859-1 string made from the si1 and si2 bytes of the subfield id.
          *
          * @return Two character ID.
          */
@@ -165,7 +165,7 @@ public final class ExtraField implements Iterable<SubField> {
     private static final byte[] ZERO_BYTES = {};
 
     /**
-     * Converts {@code XLEN} length bytes of "extra field" into an new instance.
+     * Converts {@code XLEN} length bytes of "extra field" into a new instance.
      * <p>
      * The bytes for the {@code XLEN} field is not included in the input.
      * </p>

@@ -71,7 +71,7 @@ public class FileNameUtils {
     /**
      * Gets the extension (i.e. the part after the last ".") of a file.
      * <p>
-     * Will return an empty string if the file name doesn't contain any dots. Only the last segment of a the file name is consulted - i.e. all leading
+     * Will return an empty string if the file name doesn't contain any dots. Only the last segment of the file name is consulted - i.e. all leading
      * directories of the {@code file name} parameter are skipped.
      * </p>
      *
@@ -88,7 +88,7 @@ public class FileNameUtils {
     /**
      * Gets the extension (i.e. the part after the last ".") of a file.
      * <p>
-     * Will return an empty string if the file name doesn't contain any dots. Only the last segment of a the file name is consulted - i.e. all leading
+     * Will return an empty string if the file name doesn't contain any dots. Only the last segment of the file name is consulted - i.e. all leading
      * directories of the {@code fileName} parameter are skipped.
      * </p>
      *

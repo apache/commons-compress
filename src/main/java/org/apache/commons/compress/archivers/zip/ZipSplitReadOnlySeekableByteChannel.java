@@ -246,8 +246,8 @@ public class ZipSplitReadOnlySeekableByteChannel extends MultiReadOnlySeekableBy
      * Concatenates the given channels.
      *
      * <p>
-     * The channels should be add in ascending order, for example z01, z02, ... z99, ZIP please note that the .zip file is the last segment and should be added
-     * as the last one in the channels
+     * The channels should be added in ascending order, for example z01, z02, ... z99, ZIP.
+     * Please note that the .zip file is the last segment and should be added as the last one in the channels.
      * </p>
      *
      * @param channels the channels to concatenate

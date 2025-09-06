@@ -48,7 +48,7 @@ public class Pack200Utils {
      * </p>
      *
      * <p>
-     * Note this methods implicitly sets the segment length to -1.
+     * Note: this method implicitly sets the segment length to -1.
      * </p>
      *
      * @param jar the JAR archive to normalize
@@ -72,7 +72,7 @@ public class Pack200Utils {
      * </p>
      *
      * <p>
-     * Note this methods implicitly sets the segment length to -1.
+     * Note: this method implicitly sets the segment length to -1.
      * </p>
      *
      * @param from the JAR archive to normalize

@@ -608,7 +608,7 @@ jarOutput.write(contentOfEntry);
 jarOutput.closeArchiveEntry();
 ]]></source>
 
-        <p>Reading entries from an jar archive:</p>
+        <p>Reading entries from a jar archive:</p>
 <source><![CDATA[
 JarArchiveEntry entry = jarInput.getNextJarEntry();
 byte[] content = new byte[entry.getSize()];
@@ -631,7 +631,7 @@ LOOP UNTIL entry.getSize() HAS BEEN READ {
           ZLIB compressed archives and can not write archives at
           all.</p>
 
-        <p>Reading entries from an dump archive:</p>
+        <p>Reading entries from a dump archive:</p>
 <source><![CDATA[
 DumpArchiveEntry entry = dumpInput.getNextDumpEntry();
 byte[] content = new byte[entry.getSize()];
@@ -661,7 +661,7 @@ tarOutput.write(contentOfEntry);
 tarOutput.closeArchiveEntry();
 ]]></source>
 
-        <p>Reading entries from an tar archive:</p>
+        <p>Reading entries from a tar archive:</p>
 <source><![CDATA[
 TarArchiveEntry entry = tarInput.getNextTarEntry();
 byte[] content = new byte[entry.getSize()];
@@ -693,7 +693,7 @@ zipOutput.closeArchiveEntry();
           than the one using an <code>OutputStream</code> or the
           factory method in <code>ArchiveStreamFactory</code>.</p>
 
-        <p>Reading entries from an zip archive:</p>
+        <p>Reading entries from a zip archive:</p>
 <source><![CDATA[
 ZipArchiveEntry entry = zipInput.getNextZipEntry();
 byte[] content = new byte[entry.getSize()];
@@ -702,7 +702,7 @@ LOOP UNTIL entry.getSize() HAS BEEN READ {
 }
 ]]></source>
 
-        <p>Reading entries from an zip archive using the
+        <p>Reading entries from a zip archive using the
           recommended <code>ZipFile</code> class:</p>
 <source><![CDATA[
 ZipArchiveEntry entry = zipFile.getEntry(name);
