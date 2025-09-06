@@ -48,7 +48,7 @@ class Lh6CompressorInputStreamTest extends AbstractTest {
 
     @Test
     void testDecompress() throws IOException {
-        try (LhaArchiveInputStream archive = new LhaArchiveInputStream(newInputStream("test-macos-l0-lh6.lha"))) {
+        try (LhaArchiveInputStream archive = LhaArchiveInputStream .builder().setInputStream(newInputStream("test-macos-l0-lh6.lha")).get()) {
             // Check entry
             final LhaArchiveEntry entry = archive.getNextEntry();
             assertNotNull(entry);

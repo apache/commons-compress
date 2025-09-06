@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
@@ -38,6 +39,7 @@ import org.apache.commons.compress.compressors.lha.Lh4CompressorInputStream;
 import org.apache.commons.compress.compressors.lha.Lh5CompressorInputStream;
 import org.apache.commons.compress.compressors.lha.Lh6CompressorInputStream;
 import org.apache.commons.compress.compressors.lha.Lh7CompressorInputStream;
+import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.io.input.ChecksumInputStream;
@@ -52,6 +54,94 @@ import org.apache.commons.io.input.ChecksumInputStream;
  * @since 1.29.0
  */
 public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
+
+    // @formatter:off
+    /**
+     * Builds a new {@link LhaArchiveInputStream}.
+     *
+     * <p>
+     * For example:
+     * </p>
+     * <pre>{@code
+     * LhaArchiveInputStream s = LhaArchiveInputStream.builder()
+     *   .setInputStream(archiveInputStream)
+     *   .setCharset(StandardCharsets.UTF_8)
+     *   .get();}
+     * </pre>
+     */
+    // @formatter:on
+    public static class Builder {
+
+        /**
+         * The InputStream to read the archive data from.
+         */
+        private InputStream inputStream;
+
+        /**
+         * The default Charset.
+         */
+        private Charset charsetDefault = StandardCharsets.US_ASCII;
+
+        /**
+         * The Charset, defaults to {@link StandardCharsets#US_ASCII}.
+         */
+        private Charset charset = charsetDefault;
+
+        /**
+         * The file separator char, defaults to {@link File#separatorChar}.
+         */
+        private char fileSeparatorChar = File.separatorChar;
+
+        /**
+         * Constructs a new instance.
+         */
+        private Builder() {
+            // empty
+        }
+
+        /**
+         * Gets a new LhaArchiveInputStream.
+         *
+         * @return a new LhaArchiveInputStream.
+         */
+        public LhaArchiveInputStream get() {
+            return new LhaArchiveInputStream(this.inputStream, this.charset, this.fileSeparatorChar);
+        }
+
+        /**
+         * Sets the InputStream to read the archive data from.
+         *
+         * @param inputStream the InputStream.
+         * @return {@code this} instance.
+         */
+        public Builder setInputStream(final InputStream inputStream) {
+            this.inputStream = inputStream;
+            return this;
+        }
+
+        /**
+         * Sets the Charset.
+         *
+         * @param charset the Charset, null resets to the default {@link StandardCharsets#US_ASCII}.
+         * @return {@code this} instance.
+         */
+        public Builder setCharset(final Charset charset) {
+            this.charset = Charsets.toCharset(charset, charsetDefault);
+            return this;
+        }
+
+        /**
+         * Sets the file separator char. Package private for testing.
+         *
+         * @param fileSeparatorChar the file separator char, defaults to {@link File#separatorChar}.
+         * @return {@code this} instance.
+         */
+        Builder setFileSeparatorChar(final char fileSeparatorChar) {
+            this.fileSeparatorChar = fileSeparatorChar;
+            return this;
+        }
+    }
+
     // Fields that are the same across all header levels
     private static final int HEADER_GENERIC_MINIMUM_HEADER_LENGTH = 22;
     private static final int HEADER_GENERIC_OFFSET_COMPRESSION_METHOD = 2;
@@ -110,33 +200,16 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
     private InputStream currentDecompressedStream;
 
     /**
-     * Constructs the LhaArchiveInputStream, taking ownership of the inputStream that is passed in.
+     * Creates a new builder.
      *
-     * @param inputStream the underlying stream, whose ownership is taken
+     * @return a new builder.
      */
-    public LhaArchiveInputStream(final InputStream inputStream) {
-        this(inputStream, null);
+    public static Builder builder() {
+        return new Builder();
     }
 
-    /**
-     * Constructs the LhaArchiveInputStream, taking ownership of the inputStream that is passed in.
-     *
-     * @param inputStream the underlying stream, whose ownership is taken
-     * @param charsetName the charset used for file names in the archive. May be {@code null} to use US-ASCII as default.
-     */
-    public LhaArchiveInputStream(final InputStream inputStream, final String charsetName) {
-        this(inputStream, charsetName, File.separatorChar);
-    }
-
-    /**
-     * Constructs the LhaArchiveInputStream, taking ownership of the inputStream that is passed in.
-     *
-     * @param inputStream the underlying stream, whose ownership is taken
-     * @param charsetName the charset used for file names in the archive. May be {@code null} to use US-ASCII as default.
-     * @param fileSeparatorChar the character used to separate file path elements
-     */
-    LhaArchiveInputStream(final InputStream inputStream, final String charsetName, final char fileSeparatorChar) {
-        super(inputStream, charsetName == null ? StandardCharsets.US_ASCII.name() : charsetName);
+    private LhaArchiveInputStream(final InputStream inputStream, final Charset charset, final char fileSeparatorChar) {
+        super(inputStream, charset);
         this.fileSeparatorChar = fileSeparatorChar;
     }
 

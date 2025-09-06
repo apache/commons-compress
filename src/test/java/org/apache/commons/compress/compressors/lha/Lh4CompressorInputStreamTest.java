@@ -49,7 +49,7 @@ class Lh4CompressorInputStreamTest extends AbstractTest {
     @Test
     void testDecompress() throws IOException {
         // This file was created using LhA 1.38 on Amiga
-        try (LhaArchiveInputStream archive = new LhaArchiveInputStream(newInputStream("test-amiga-l0-lh4.lha"))) {
+        try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(newInputStream("test-amiga-l0-lh4.lha")).get()) {
             // Check entry
             final LhaArchiveEntry entry = archive.getNextEntry();
             assertNotNull(entry);

@@ -462,10 +462,11 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
                 return (I) arjBuilder.get();
             }
             if (LHA.equalsIgnoreCase(archiverName)) {
+                final LhaArchiveInputStream.Builder lhaBuilder = LhaArchiveInputStream.builder().setInputStream(in);
                 if (actualEncoding != null) {
-                    return (I) new LhaArchiveInputStream(in, actualEncoding);
+                    lhaBuilder.setCharset(actualEncoding);
                 }
-                return (I) new LhaArchiveInputStream(in);
+                return (I) lhaBuilder.get();
             }
             if (ZIP.equalsIgnoreCase(archiverName)) {
                 final ZipArchiveInputStream.Builder zipBuilder = ZipArchiveInputStream.builder().setInputStream(in);
