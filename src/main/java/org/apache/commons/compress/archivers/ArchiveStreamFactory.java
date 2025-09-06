@@ -46,6 +46,7 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.Sets;
+import org.apache.commons.io.Charsets;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -463,9 +464,9 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
             }
             if (LHA.equalsIgnoreCase(archiverName)) {
                 if (actualEncoding != null) {
-                    return (I) new LhaArchiveInputStream(in, actualEncoding);
+                    return (I) LhaArchiveInputStream.builder().setInputStream(in).setCharset(Charsets.toCharset(actualEncoding)).get();
                 }
-                return (I) new LhaArchiveInputStream(in);
+                return (I) LhaArchiveInputStream.builder().setInputStream(in).get();
             }
             if (ZIP.equalsIgnoreCase(archiverName)) {
                 final ZipArchiveInputStream.Builder zipBuilder = ZipArchiveInputStream.builder().setInputStream(in);
