@@ -185,6 +185,22 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
     private static final int EXTENDED_HEADER_TYPE_UNIX_UID_GID = 0x51;
     private static final int EXTENDED_HEADER_TYPE_UNIX_TIMESTAMP = 0x54;
 
+    /**
+     * Length in bytes of the next extended header size field.
+     */
+    private static final int EXTENDED_HEADER_NEXT_HEADER_SIZE_LENGTH = 2;
+
+    /**
+     * Minimum extended header length.
+     */
+    private static final int MIN_EXTENDED_HEADER_LENGTH = 3;
+
+    private static final int EXTENDED_HEADER_TYPE_COMMON_MIN_PAYLOAD_LENGTH = 2;
+    private static final int EXTENDED_HEADER_TYPE_MSDOS_FILE_ATTRIBUTES_PAYLOAD_LENGTH = 2;
+    private static final int EXTENDED_HEADER_TYPE_UNIX_PERMISSION_PAYLOAD_LENGTH = 2;
+    private static final int EXTENDED_HEADER_TYPE_UNIX_UID_GID_PAYLOAD_LENGTH = 4;
+    private static final int EXTENDED_HEADER_TYPE_UNIX_TIMESTAMP_PAYLOAD_LENGTH = 4;
+
     // Compression methods
     private static final String COMPRESSION_METHOD_DIRECTORY = "-lhd-"; // Directory entry
     private static final String COMPRESSION_METHOD_LH0 = "-lh0-";
@@ -528,6 +544,10 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
         // Check pathname length to ensure we don't allocate too much memory
         if (pathnameLength > MAX_PATHNAME_LENGTH) {
             throw new ArchiveException("Pathname is longer than the maximum allowed (%d > %d)", pathnameLength, MAX_PATHNAME_LENGTH);
+        } else if (pathnameLength < 0) {
+            throw new ArchiveException("Pathname length is negative");
+        } else if (pathnameLength > (buffer.limit() - buffer.position())) {
+            throw new ArchiveException("Invalid pathname length");
         }
 
         final byte[] pathnameBuffer = new byte[pathnameLength];
@@ -610,9 +630,18 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
      * @throws IOException
      */
     void parseExtendedHeader(final ByteBuffer extendedHeaderBuffer, final LhaArchiveEntry.Builder entryBuilder) throws IOException {
+        final int extendedHeaderLength = extendedHeaderBuffer.limit() - extendedHeaderBuffer.position();
+        if (extendedHeaderLength < MIN_EXTENDED_HEADER_LENGTH) {
+            throw new ArchiveException("Invalid extended header length");
+        }
+
         final int extendedHeaderType = Byte.toUnsignedInt(extendedHeaderBuffer.get());
         if (extendedHeaderType == EXTENDED_HEADER_TYPE_COMMON) {
             // Common header
+            if (extendedHeaderLength < (MIN_EXTENDED_HEADER_LENGTH + EXTENDED_HEADER_TYPE_COMMON_MIN_PAYLOAD_LENGTH)) {
+                throw new ArchiveException("Invalid extended header length");
+            }
+
             final int crcPos = extendedHeaderBuffer.position(); // Save the current position to be able to set the header CRC later
 
             // Header CRC
@@ -622,14 +651,14 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
             extendedHeaderBuffer.putShort(crcPos, (short) 0);
         } else if (extendedHeaderType == EXTENDED_HEADER_TYPE_FILENAME) {
             // File name header
-            final int filenameLength = extendedHeaderBuffer.limit() - extendedHeaderBuffer.position() - 2;
+            final int filenameLength = extendedHeaderBuffer.limit() - extendedHeaderBuffer.position() - EXTENDED_HEADER_NEXT_HEADER_SIZE_LENGTH;
             final String filename = getPathname(extendedHeaderBuffer, filenameLength);
             entryBuilder.setFilename(filename);
         } else if (extendedHeaderType == EXTENDED_HEADER_TYPE_DIRECTORY_NAME) {
             // Directory name header
-            final int directoryNameLength = extendedHeaderBuffer.limit() - extendedHeaderBuffer.position() - 2;
+            final int directoryNameLength = extendedHeaderBuffer.limit() - extendedHeaderBuffer.position() - EXTENDED_HEADER_NEXT_HEADER_SIZE_LENGTH;
             final String directoryName = getPathname(extendedHeaderBuffer, directoryNameLength);
-            if (directoryName.charAt(directoryName.length() - 1) != fileSeparatorChar) {
+            if (directoryName.length() > 0 && directoryName.charAt(directoryName.length() - 1) != fileSeparatorChar) {
                 // If the directory name does not end with a file separator, append it
                 entryBuilder.setDirectoryName(directoryName + fileSeparatorChar);
             } else {
@@ -638,16 +667,32 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
 
         } else if (extendedHeaderType == EXTENDED_HEADER_TYPE_MSDOS_FILE_ATTRIBUTES) {
             // MS-DOS file attributes
+            if (extendedHeaderLength != (MIN_EXTENDED_HEADER_LENGTH + EXTENDED_HEADER_TYPE_MSDOS_FILE_ATTRIBUTES_PAYLOAD_LENGTH)) {
+                throw new ArchiveException("Invalid extended header length");
+            }
+
             entryBuilder.setMsdosFileAttributes(Short.toUnsignedInt(extendedHeaderBuffer.getShort()));
         } else if (extendedHeaderType == EXTENDED_HEADER_TYPE_UNIX_PERMISSION) {
             // UNIX file permission
+            if (extendedHeaderLength != (MIN_EXTENDED_HEADER_LENGTH + EXTENDED_HEADER_TYPE_UNIX_PERMISSION_PAYLOAD_LENGTH)) {
+                throw new ArchiveException("Invalid extended header length");
+            }
+
             entryBuilder.setUnixPermissionMode(Short.toUnsignedInt(extendedHeaderBuffer.getShort()));
         } else if (extendedHeaderType == EXTENDED_HEADER_TYPE_UNIX_UID_GID) {
             // UNIX group/user ID
+            if (extendedHeaderLength != (MIN_EXTENDED_HEADER_LENGTH + EXTENDED_HEADER_TYPE_UNIX_UID_GID_PAYLOAD_LENGTH)) {
+                throw new ArchiveException("Invalid extended header length");
+            }
+
             entryBuilder.setUnixGroupId(Short.toUnsignedInt(extendedHeaderBuffer.getShort()));
             entryBuilder.setUnixUserId(Short.toUnsignedInt(extendedHeaderBuffer.getShort()));
         } else if (extendedHeaderType == EXTENDED_HEADER_TYPE_UNIX_TIMESTAMP) {
             // UNIX last modified time
+            if (extendedHeaderLength != (MIN_EXTENDED_HEADER_LENGTH + EXTENDED_HEADER_TYPE_UNIX_TIMESTAMP_PAYLOAD_LENGTH)) {
+                throw new ArchiveException("Invalid extended header length");
+            }
+
             entryBuilder.setLastModifiedDate(new Date(Integer.toUnsignedLong(extendedHeaderBuffer.getInt()) * 1000));
         }
 
