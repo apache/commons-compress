@@ -228,9 +228,29 @@ class BinaryTreeTest {
     void testCheckMaxDepth() throws Exception {
         try {
             new BinaryTree(1, 17);
-            fail("Expected IllegalArgumentException for depth > 16");
-        } catch (IllegalArgumentException e) {
-            assertEquals("Depth must not be negative and not bigger than 16 but is 17", e.getMessage());
+            fail("Expected CompressorException for depth > 16");
+        } catch (CompressorException e) {
+            assertEquals("Tree depth must not be negative and not bigger than 16 but is 17", e.getMessage());
+        }
+    }
+
+    @Test
+    void testTooManyLeafNodes() throws Exception {
+        try {
+            new BinaryTree(0, 2, 1, 2, 2);
+            fail("Expected CompressorException for too many leaf nodes");
+        } catch (CompressorException e) {
+            assertEquals("Tree contains too many leaf nodes for depth 2", e.getMessage());
+        }
+    }
+
+    @Test
+    void testNoLeafNodes() throws Exception {
+        try {
+            new BinaryTree(0, 0, 0, 0, 0);
+            fail("Expected CompressorException for no leaf nodes");
+        } catch (CompressorException e) {
+            assertEquals("Tree contains no leaf nodes", e.getMessage());
         }
     }
 

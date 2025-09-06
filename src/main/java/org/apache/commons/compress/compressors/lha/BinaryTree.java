@@ -54,8 +54,9 @@ class BinaryTree {
      * be read from the bit stream when the read method is called, as there are no children to traverse.
      *
      * @param array the array to build the binary tree from
+     * @throws CompressorException if the tree is invalid
      */
-    BinaryTree(final int... array) {
+    BinaryTree(final int... array) throws CompressorException {
         if (array.length == 1) {
             // Tree only contains a single value, which is the root node value
             this.tree = new int[] { array[0] };
@@ -64,6 +65,9 @@ class BinaryTree {
 
         // Determine the maximum depth of the tree from the input array
         final int maxDepth = Arrays.stream(array).max().getAsInt();
+        if (maxDepth == 0) {
+            throw new CompressorException("Tree contains no leaf nodes");
+        }
 
         // Allocate binary tree with enough space for all nodes
         this.tree = initTree(maxDepth);
@@ -82,6 +86,10 @@ class BinaryTree {
             // Add leaf nodes for values with the current depth
             for (int value = 0; value < array.length; value++) {
                 if (array[value] == currentDepth) {
+                    if (numNodesAtCurrentDepth == maxNodesAtCurrentDepth) {
+                        throw new CompressorException("Tree contains too many leaf nodes for depth %d", currentDepth);
+                    }
+
                     this.tree[treePos++] = value; // Add leaf (value) node
                     numNodesAtCurrentDepth++;
                 }
@@ -109,10 +117,11 @@ class BinaryTree {
      *
      * @param depth the depth of the tree, must be between 0 and 16 (inclusive)
      * @return an array representing the binary tree, initialized with UNDEFINED values
+     * @throws CompressorException for invalid depth
      */
-    private int[] initTree(final int depth) {
+    private int[] initTree(final int depth) throws CompressorException {
         if (depth < 0 || depth > 16) {
-            throw new IllegalArgumentException("Depth must not be negative and not bigger than 16 but is " + depth);
+            throw new CompressorException("Tree depth must not be negative and not bigger than 16 but is " + depth);
         }
 
         final int arraySize = depth == 0 ? 1 : (int) ((1L << depth + 1) - 1); // Depth 0 has only a single node (the root)
