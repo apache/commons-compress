@@ -1412,6 +1412,19 @@ class LhaArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
+    void testGetPathnameTooLong() throws IOException, UnsupportedEncodingException {
+        try (LhaArchiveInputStream is = LhaArchiveInputStream.builder().setInputStream(newEmptyInputStream()).get()) {
+            try {
+                final byte[] pathname = new byte[4097];
+                is.getPathname(ByteBuffer.wrap(pathname), pathname.length);
+                fail("Expected ArchiveException when pathname is longer than the maximum allowed");
+            } catch (ArchiveException e) {
+                assertEquals("Pathname is longer than the maximum allowed (4097 > 4096)", e.getMessage());
+            }
+        }
+    }
+
+    @Test
     void testGetPathnameWindowsFileSeparatorCharIso88591() throws IOException, UnsupportedEncodingException {
         try (LhaArchiveInputStream is = LhaArchiveInputStream.builder()
                 .setInputStream(newEmptyInputStream())
@@ -1436,7 +1449,7 @@ class LhaArchiveInputStreamTest extends AbstractTest {
         return ByteBuffer.wrap(toByteArray(data)).order(ByteOrder.LITTLE_ENDIAN);
     }
 
-    private String getPathname(final LhaArchiveInputStream is, final int... filepathBuffer) throws UnsupportedEncodingException {
+    private String getPathname(final LhaArchiveInputStream is, final int... filepathBuffer) throws ArchiveException, UnsupportedEncodingException {
         return is.getPathname(ByteBuffer.wrap(toByteArray(filepathBuffer)), filepathBuffer.length);
     }
 
