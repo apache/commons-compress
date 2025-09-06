@@ -194,6 +194,11 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
     private static final String COMPRESSION_METHOD_LH7 = "-lh7-";
     private static final String COMPRESSION_METHOD_LZ4 = "-lz4-";
 
+    /**
+     * Maximum length of a pathname.
+     */
+    private static final int MAX_PATHNAME_LENGTH = 4096;
+
     private final char fileSeparatorChar;
     private LhaArchiveEntry currentEntry;
     private InputStream currentCompressedStream;
@@ -517,8 +522,14 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
      * @param buffer the buffer where to get the pathname from
      * @param pathnameLength the length of the pathname
      * @return pathname
+     * @throws ArchiveException if the pathname is too long
      */
-    String getPathname(final ByteBuffer buffer, final int pathnameLength) {
+    String getPathname(final ByteBuffer buffer, final int pathnameLength) throws ArchiveException {
+        // Check pathname length to ensure we don't allocate too much memory
+        if (pathnameLength > MAX_PATHNAME_LENGTH) {
+            throw new ArchiveException("Pathname is longer than the maximum allowed (%d > %d)", pathnameLength, MAX_PATHNAME_LENGTH);
+        }
+
         final byte[] pathnameBuffer = new byte[pathnameLength];
         buffer.get(pathnameBuffer);
 
