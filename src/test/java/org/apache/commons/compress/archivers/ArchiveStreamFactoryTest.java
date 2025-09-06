@@ -97,7 +97,7 @@ class ArchiveStreamFactoryTest extends AbstractTest {
      */
     private static final String ARJ_DEFAULT;
     private static final String DUMP_DEFAULT;
-    private static final String LHA_DEFAULT = getCharsetName(new LhaArchiveInputStream(null));
+    private static final String LHA_DEFAULT = getCharsetName(LhaArchiveInputStream.builder().get());
     private static final String ZIP_DEFAULT = getCharsetName(new ZipArchiveInputStream(null));
     private static final String CPIO_DEFAULT = getCharsetName(new CpioArchiveInputStream(null));
     private static final String TAR_DEFAULT = getCharsetName(new TarArchiveInputStream(null));
