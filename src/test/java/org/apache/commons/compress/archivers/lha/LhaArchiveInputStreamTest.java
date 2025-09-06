@@ -1166,20 +1166,51 @@ class LhaArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
+    void testParseExtendedHeaderTooShort() throws IOException {
+        try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(newEmptyInputStream()).get()) {
+            final LhaArchiveEntry.Builder entryBuilder = LhaArchiveEntry.builder();
+            try {
+                archive.parseExtendedHeader(toByteBuffer(0x00, 0x00), entryBuilder);
+                fail("Expected ArchiveException for invalid extended header length");
+            } catch (ArchiveException e) {
+                assertEquals("Invalid extended header length", e.getMessage());
+            }
+        }
+    }
+
+    @Test
     void testParseExtendedHeaderCommon() throws IOException {
         try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(newEmptyInputStream()).get()) {
+            // Valid
             final LhaArchiveEntry.Builder entryBuilder = LhaArchiveEntry.builder();
             archive.parseExtendedHeader(toByteBuffer(0x00, 0x22, 0x33, 0x00, 0x00), entryBuilder);
             assertEquals(0x3322, entryBuilder.get().getHeaderCrc());
+
+            // Invalid length
+            try {
+                archive.parseExtendedHeader(toByteBuffer(0x00, 0x22, 0x00, 0x00), entryBuilder);
+                fail("Expected ArchiveException for invalid extended header length");
+            } catch (ArchiveException e) {
+                assertEquals("Invalid extended header length", e.getMessage());
+            }
         }
     }
 
     @Test
     void testParseExtendedHeaderFilename() throws IOException {
         try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(newEmptyInputStream()).get()) {
+            // Valid
             final LhaArchiveEntry.Builder entryBuilder = LhaArchiveEntry.builder();
             archive.parseExtendedHeader(toByteBuffer(0x01, 't', 'e', 's', 't', '.', 't', 'x', 't', 0x00, 0x00), entryBuilder);
             assertEquals("test.txt", entryBuilder.get().getName());
+
+            // Invalid length
+            try {
+                archive.parseExtendedHeader(toByteBuffer(0x01, 0x00), entryBuilder);
+                fail("Expected ArchiveException for invalid extended header length");
+            } catch (ArchiveException e) {
+                assertEquals("Invalid extended header length", e.getMessage());
+            }
         }
     }
 
@@ -1190,9 +1221,18 @@ class LhaArchiveInputStreamTest extends AbstractTest {
                 .setFileSeparatorChar('/')
                 .get()) {
 
+            // Valid
             final LhaArchiveEntry.Builder entryBuilder = LhaArchiveEntry.builder();
             archive.parseExtendedHeader(toByteBuffer(0x02, 'd', 'i', 'r', '1', 0xff, 0x00, 0x00), entryBuilder);
             assertEquals("dir1/", entryBuilder.get().getName());
+
+            // Invalid length
+            try {
+                archive.parseExtendedHeader(toByteBuffer(0x02, 0x00), entryBuilder);
+                fail("Expected ArchiveException for invalid extended header length");
+            } catch (ArchiveException e) {
+                assertEquals("Invalid extended header length", e.getMessage());
+            }
         }
     }
 
@@ -1228,44 +1268,86 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             archive.parseExtendedHeader(toByteBuffer(0x02, 'd', 'i', 'r', '1', 0x00, 0x00), entryBuilder);
             archive.parseExtendedHeader(toByteBuffer(0x01, 't', 'e', 's', 't', '.', 't', 'x', 't', 0x00, 0x00), entryBuilder);
             assertEquals("dir1/test.txt", entryBuilder.get().getName());
+
+            // Test empty directory name, no trailing slash
+            entryBuilder = LhaArchiveEntry.builder();
+            archive.parseExtendedHeader(toByteBuffer(0x02, 0x00, 0x00), entryBuilder);
+            archive.parseExtendedHeader(toByteBuffer(0x01, 't', 'e', 's', 't', '.', 't', 'x', 't', 0x00, 0x00), entryBuilder);
+            assertEquals("test.txt", entryBuilder.get().getName());
         }
     }
 
     @Test
     void testParseExtendedHeaderUnixPermission() throws IOException {
         try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(newEmptyInputStream()).get()) {
+            // Valid
             final LhaArchiveEntry.Builder entryBuilder = LhaArchiveEntry.builder();
             archive.parseExtendedHeader(toByteBuffer(0x50, 0xa4, 0x81, 0x00, 0x00), entryBuilder);
             assertEquals(0x81a4, entryBuilder.get().getUnixPermissionMode());
             assertEquals(0100644, entryBuilder.get().getUnixPermissionMode());
+
+            // Invalid length
+            try {
+                archive.parseExtendedHeader(toByteBuffer(0x50, 0xa4, 0x00, 0x00), entryBuilder);
+                fail("Expected ArchiveException for invalid extended header length");
+            } catch (ArchiveException e) {
+                assertEquals("Invalid extended header length", e.getMessage());
+            }
         }
     }
 
     @Test
     void testParseExtendedHeaderUnixUidGid() throws IOException {
         try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(newEmptyInputStream()).get()) {
+            // Valid
             final LhaArchiveEntry.Builder entryBuilder = LhaArchiveEntry.builder();
             archive.parseExtendedHeader(toByteBuffer(0x51, 0x14, 0x00, 0xf5, 0x01, 0x00, 0x00), entryBuilder);
             assertEquals(0x0014, entryBuilder.get().getUnixGroupId());
             assertEquals(0x01f5, entryBuilder.get().getUnixUserId());
+
+            // Invalid length
+            try {
+                archive.parseExtendedHeader(toByteBuffer(0x51, 0x14, 0x00, 0xf5, 0x00, 0x00), entryBuilder);
+                fail("Expected ArchiveException for invalid extended header length");
+            } catch (ArchiveException e) {
+                assertEquals("Invalid extended header length", e.getMessage());
+            }
         }
     }
 
     @Test
     void testParseExtendedHeaderUnixTimestamp() throws IOException {
         try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(newEmptyInputStream()).get()) {
+            // Valid
             final LhaArchiveEntry.Builder entryBuilder = LhaArchiveEntry.builder();
             archive.parseExtendedHeader(toByteBuffer(0x54, 0x5c, 0x73, 0x9c, 0x68, 0x00, 0x00), entryBuilder);
             assertEquals(0x689c735cL, entryBuilder.get().getLastModifiedDate().getTime() / 1000);
+
+            // Invalid length
+            try {
+                archive.parseExtendedHeader(toByteBuffer(0x54, 0x5c, 0x73, 0x9c, 0x00, 0x00), entryBuilder);
+                fail("Expected ArchiveException for invalid extended header length");
+            } catch (ArchiveException e) {
+                assertEquals("Invalid extended header length", e.getMessage());
+            }
         }
     }
 
     @Test
     void testParseExtendedHeaderMSdosFileAttributes() throws IOException {
         try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(newEmptyInputStream()).get()) {
+            // Valid
             final LhaArchiveEntry.Builder entryBuilder = LhaArchiveEntry.builder();
-            archive.parseExtendedHeader(toByteBuffer(0x40, 0x10, 0x00, 0x00), entryBuilder);
+            archive.parseExtendedHeader(toByteBuffer(0x40, 0x10, 0x00, 0x00, 0x00), entryBuilder);
             assertEquals(0x10, entryBuilder.get().getMsdosFileAttributes());
+
+            // Invalid length
+            try {
+                archive.parseExtendedHeader(toByteBuffer(0x40, 0x10, 0x00, 0x00), entryBuilder);
+                fail("Expected ArchiveException for invalid extended header length");
+            } catch (ArchiveException e) {
+                assertEquals("Invalid extended header length", e.getMessage());
+            }
         }
     }
 
@@ -1373,6 +1455,9 @@ class LhaArchiveInputStreamTest extends AbstractTest {
     @Test
     void testGetPathnameUnixFileSeparatorCharDefaultEncoding() throws IOException, UnsupportedEncodingException {
         try (LhaArchiveInputStream is = LhaArchiveInputStream.builder().setInputStream(newEmptyInputStream()).setFileSeparatorChar('/').get()) {
+            assertEquals("", getPathname(is));
+            assertEquals("", getPathname(is, 0xff));
+            assertEquals("a", getPathname(is, 'a'));
             assertEquals("folder/", getPathname(is, 'f', 'o', 'l', 'd', 'e', 'r', 0xff));
             assertEquals("folder/file.txt", getPathname(is, 'f', 'o', 'l', 'd', 'e', 'r', 0xff, 'f', 'i', 'l', 'e', '.', 't', 'x', 't'));
             assertEquals("folder/file.txt", getPathname(is, 0xff, 'f', 'o', 'l', 'd', 'e', 'r', 0xff, 'f', 'i', 'l', 'e', '.', 't', 'x', 't'));
@@ -1412,6 +1497,18 @@ class LhaArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
+    void testGetPathnameNegativeLength() throws IOException, UnsupportedEncodingException {
+        try (LhaArchiveInputStream is = LhaArchiveInputStream.builder().setInputStream(newEmptyInputStream()).get()) {
+            try {
+                is.getPathname(ByteBuffer.wrap(new byte[0]), -1);
+                fail("Expected ArchiveException when pathname length is negative");
+            } catch (ArchiveException e) {
+                assertEquals("Pathname length is negative", e.getMessage());
+            }
+        }
+    }
+
+    @Test
     void testGetPathnameTooLong() throws IOException, UnsupportedEncodingException {
         try (LhaArchiveInputStream is = LhaArchiveInputStream.builder().setInputStream(newEmptyInputStream()).get()) {
             try {
@@ -1420,6 +1517,19 @@ class LhaArchiveInputStreamTest extends AbstractTest {
                 fail("Expected ArchiveException when pathname is longer than the maximum allowed");
             } catch (ArchiveException e) {
                 assertEquals("Pathname is longer than the maximum allowed (4097 > 4096)", e.getMessage());
+            }
+        }
+    }
+
+    @Test
+    void testGetPathnameInvalidLength() throws IOException, UnsupportedEncodingException {
+        try (LhaArchiveInputStream is = LhaArchiveInputStream.builder().setInputStream(newEmptyInputStream()).get()) {
+            try {
+                final byte[] pathname = new byte[] { 'a', 'b', 'c' };
+                is.getPathname(ByteBuffer.wrap(pathname), pathname.length + 1);
+                fail("Expected ArchiveException for invalid pathname length");
+            } catch (ArchiveException e) {
+                assertEquals("Invalid pathname length", e.getMessage());
             }
         }
     }
