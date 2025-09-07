@@ -343,12 +343,13 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
      * @throws IOException
      */
     LhaArchiveEntry readHeaderLevel0(ByteBuffer buffer) throws IOException {
-        final int headerSize = Byte.toUnsignedInt(buffer.get(HEADER_LEVEL_0_OFFSET_HEADER_SIZE));
+        // Add two to the header size as the first two bytes are not included
+        final int headerSize = Byte.toUnsignedInt(buffer.get(HEADER_LEVEL_0_OFFSET_HEADER_SIZE)) + 2;
         if (headerSize < HEADER_GENERIC_MINIMUM_HEADER_LENGTH) {
             throw new ArchiveException("Invalid header level 0 length: %d", headerSize);
         }
 
-        buffer = readRemainingHeaderData(buffer, headerSize + 2); // Header size is not including the first two bytes of the header
+        buffer = readRemainingHeaderData(buffer, headerSize);
 
         final int headerChecksum = Byte.toUnsignedInt(buffer.get(HEADER_LEVEL_0_OFFSET_HEADER_CHECKSUM));
 
@@ -361,6 +362,12 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
             .setLastModifiedDate(new Date(ZipUtil.dosToJavaTime(Integer.toUnsignedLong(buffer.getInt(HEADER_LEVEL_0_OFFSET_LAST_MODIFIED_DATE_TIME)))));
 
         final int filenameLength = Byte.toUnsignedInt(buffer.get(HEADER_LEVEL_0_OFFSET_FILENAME_LENGTH));
+
+        // Make sure the filename is not overflowing into the CRC field
+        if (filenameLength > (headerSize - HEADER_LEVEL_0_OFFSET_FILENAME - 2)) {
+            throw new ArchiveException("Invalid pathname length");
+        }
+
         buffer.position(HEADER_LEVEL_0_OFFSET_FILENAME);
         entryBuilder.setFilename(getPathname(buffer, filenameLength))
             .setDirectory(isDirectory(compressionMethod))
@@ -385,12 +392,13 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
      * @throws IOException
      */
     LhaArchiveEntry readHeaderLevel1(ByteBuffer buffer) throws IOException {
-        final int baseHeaderSize = Byte.toUnsignedInt(buffer.get(HEADER_LEVEL_1_OFFSET_BASE_HEADER_SIZE));
+        // Add two to the header size as the first two bytes are not included
+        final int baseHeaderSize = Byte.toUnsignedInt(buffer.get(HEADER_LEVEL_1_OFFSET_BASE_HEADER_SIZE)) + 2;
         if (baseHeaderSize < HEADER_GENERIC_MINIMUM_HEADER_LENGTH) {
             throw new ArchiveException("Invalid header level 1 length: %d", baseHeaderSize);
         }
 
-        buffer = readRemainingHeaderData(buffer, baseHeaderSize + 2);
+        buffer = readRemainingHeaderData(buffer, baseHeaderSize);
 
         final int baseHeaderChecksum = Byte.toUnsignedInt(buffer.get(HEADER_LEVEL_1_OFFSET_BASE_HEADER_CHECKSUM));
 
@@ -403,6 +411,14 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
             .setLastModifiedDate(new Date(ZipUtil.dosToJavaTime(Integer.toUnsignedLong(buffer.getInt(HEADER_LEVEL_1_OFFSET_LAST_MODIFIED_DATE_TIME)))));
 
         final int filenameLength = Byte.toUnsignedInt(buffer.get(HEADER_LEVEL_1_OFFSET_FILENAME_LENGTH));
+
+        // Make sure the filename is not overflowing into the CRC, OS ID and first extended header length fields.
+        // This check is not bulletproof because there might also be an extended area after the filename that
+        // we cannot detect for corrupt archives.
+        if (filenameLength > (baseHeaderSize - HEADER_LEVEL_1_OFFSET_FILENAME - 5)) {
+            throw new ArchiveException("Invalid pathname length");
+        }
+
         buffer.position(HEADER_LEVEL_1_OFFSET_FILENAME);
         entryBuilder.setFilename(getPathname(buffer, filenameLength))
             .setDirectory(isDirectory(compressionMethod))
@@ -418,16 +434,17 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
         final List<ByteBuffer> headerParts = new ArrayList<>();
         headerParts.add(buffer);
 
-        int nextHeaderSize = Short.toUnsignedInt(buffer.getShort());
-        while (nextHeaderSize > 0) {
-            final ByteBuffer extendedHeaderBuffer = readExtendedHeader(nextHeaderSize);
-            skipSize -= nextHeaderSize;
+        buffer.position(baseHeaderSize - 2); // First extended header length is at the end of the base header
+        int extendedHeaderSize = Short.toUnsignedInt(buffer.getShort());
+        while (extendedHeaderSize > 0) {
+            final ByteBuffer extendedHeaderBuffer = readExtendedHeader(extendedHeaderSize);
+            skipSize -= extendedHeaderSize;
 
             parseExtendedHeader(extendedHeaderBuffer, entryBuilder);
 
             headerParts.add(extendedHeaderBuffer);
 
-            nextHeaderSize = Short.toUnsignedInt(extendedHeaderBuffer.getShort(extendedHeaderBuffer.limit() - 2));
+            extendedHeaderSize = Short.toUnsignedInt(extendedHeaderBuffer.getShort(extendedHeaderBuffer.limit() - 2));
         }
 
         entryBuilder.setCompressedSize(skipSize);
@@ -473,17 +490,21 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
             .setCrcValue(Short.toUnsignedInt(buffer.getShort(HEADER_LEVEL_2_OFFSET_CRC)))
             .setOsId(Byte.toUnsignedInt(buffer.get(HEADER_LEVEL_2_OFFSET_OS_ID)));
 
-        int extendedHeaderOffset = HEADER_LEVEL_2_OFFSET_FIRST_EXTENDED_HEADER_SIZE;
-        int nextHeaderSize = Short.toUnsignedInt(buffer.getShort(extendedHeaderOffset));
-        while (nextHeaderSize > 0) {
-            // Create new ByteBuffer as a slice from the full header. Set limit to the extended header length.
-            final ByteBuffer extendedHeaderBuffer = byteBufferSlice(buffer, extendedHeaderOffset + 2, nextHeaderSize).order(ByteOrder.LITTLE_ENDIAN);
+        int extendedHeaderSize = Short.toUnsignedInt(buffer.getShort(HEADER_LEVEL_2_OFFSET_FIRST_EXTENDED_HEADER_SIZE));
+        int extendedHeaderOffset = HEADER_LEVEL_2_OFFSET_FIRST_EXTENDED_HEADER_SIZE + 2;
+        while (extendedHeaderSize > 0) {
+            if ((extendedHeaderOffset + extendedHeaderSize) > buffer.limit()) {
+                throw new ArchiveException("Invalid extended header length");
+            }
 
-            extendedHeaderOffset += nextHeaderSize;
+            // Create new ByteBuffer as a slice from the full header. Set limit to the extended header length.
+            final ByteBuffer extendedHeaderBuffer = byteBufferSlice(buffer, extendedHeaderOffset, extendedHeaderSize).order(ByteOrder.LITTLE_ENDIAN);
+
+            extendedHeaderOffset += extendedHeaderSize;
 
             parseExtendedHeader(extendedHeaderBuffer, entryBuilder);
 
-            nextHeaderSize = Short.toUnsignedInt(extendedHeaderBuffer.getShort(extendedHeaderBuffer.limit() - 2));
+            extendedHeaderSize = Short.toUnsignedInt(extendedHeaderBuffer.getShort(extendedHeaderBuffer.limit() - 2));
         }
 
         final LhaArchiveEntry entry = entryBuilder.get();
