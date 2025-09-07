@@ -254,7 +254,7 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             archive.getNextEntry();
             fail("Expected ArchiveException for invalid header length");
         } catch (ArchiveException e) {
-            assertEquals("Invalid header level 0 length: 16", e.getMessage());
+            assertEquals("Invalid header level 0 length: 18", e.getMessage());
         }
     }
 
@@ -269,6 +269,20 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             fail("Expected ArchiveException for invalid header checksum");
         } catch (ArchiveException e) {
             assertEquals("Invalid header level 0 checksum", e.getMessage());
+        }
+    }
+
+    @Test
+    void testInvalidHeaderLevel0FilenameLength() throws IOException {
+        final byte[] data = toByteArray(VALID_HEADER_LEVEL_0_FILE);
+
+        data[21] = 22; // Change the length of the filename
+
+        try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(new ByteArrayInputStream(data)).get()) {
+            archive.getNextEntry();
+            fail("Expected ArchiveException for invalid filename");
+        } catch (ArchiveException e) {
+            assertEquals("Invalid pathname length", e.getMessage());
         }
     }
 
@@ -571,7 +585,7 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             archive.getNextEntry();
             fail("Expected ArchiveException for invalid header length");
         } catch (ArchiveException e) {
-            assertEquals("Invalid header level 1 length: 16", e.getMessage());
+            assertEquals("Invalid header level 1 length: 18", e.getMessage());
         }
     }
 
@@ -602,6 +616,20 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             fail("Expected ArchiveException for invalid header checksum");
         } catch (ArchiveException e) {
             assertEquals("Invalid header CRC expected=0xb772 found=0x2233", e.getMessage());
+        }
+    }
+
+    @Test
+    void testInvalidHeaderLevel1FilenameLength() throws IOException {
+        final byte[] data = toByteArray(VALID_HEADER_LEVEL_1_FILE);
+
+        data[21] = 10; // Change the length of the filename
+
+        try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(new ByteArrayInputStream(data)).get()) {
+            archive.getNextEntry();
+            fail("Expected ArchiveException for invalid filename");
+        } catch (ArchiveException e) {
+            assertEquals("Invalid pathname length", e.getMessage());
         }
     }
 
