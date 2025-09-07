@@ -496,6 +496,33 @@ class LhaArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
+    void testParseHeaderLevel0Larc() throws IOException {
+        // This archive was created using LArc 3.33 on MS-DOS
+        try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(newInputStream("test-msdos-l0-lz4.lzs")).get()) {
+            // Check file entry
+            final LhaArchiveEntry entry = archive.getNextEntry();
+            assertNotNull(entry);
+            assertEquals("TEST1.TXT", entry.getName());
+            assertFalse(entry.isDirectory());
+            assertEquals(14, entry.getSize());
+            assertEquals(1757247072000L, convertSystemTimeZoneDateToUTC(entry.getLastModifiedDate()).toInstant().toEpochMilli());
+            assertEquals(ZonedDateTime.parse("2025-09-07T12:11:12Z"), convertSystemTimeZoneDateToUTC(entry.getLastModifiedDate()));
+            assertEquals(14, entry.getCompressedSize());
+            assertEquals("-lz4-", entry.getCompressionMethod());
+            assertEquals(0xc9b4, entry.getCrcValue());
+            assertNull(entry.getOsId());
+            assertNull(entry.getUnixPermissionMode());
+            assertNull(entry.getUnixGroupId());
+            assertNull(entry.getUnixUserId());
+            assertNull(entry.getMsdosFileAttributes());
+            assertNull(entry.getHeaderCrc());
+
+            // No more entries expected
+            assertNull(archive.getNextEntry());
+        }
+    }
+
+    @Test
     void testParseHeaderLevel1File() throws IOException {
         try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder()
                 .setInputStream(new ByteArrayInputStream(toByteArray(VALID_HEADER_LEVEL_1_FILE)))
@@ -1440,6 +1467,16 @@ class LhaArchiveInputStreamTest extends AbstractTest {
         try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(newInputStream("test-macos-l0-lh7.lha")).get()) {
             final List<String> files = new ArrayList<>();
             files.add("lorem-ipsum.txt");
+            checkArchiveContent(archive, files);
+        }
+    }
+
+    @Test
+    void testDecompressLz4() throws Exception {
+        // This archive was created using LArc 3.33 on MS-DOS
+        try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(newInputStream("test-msdos-l0-lz4.lzs")).get()) {
+            final List<String> files = new ArrayList<>();
+            files.add("TEST1.TXT");
             checkArchiveContent(archive, files);
         }
     }
