@@ -86,8 +86,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
         /**
          * Creates a new {@code BoundedInputStream} that wraps the given input stream and limits it to a certain size.
          *
-         * @param in  The wrapped input stream
-         * @param max The maximum number of bytes to return
+         * @param in  The wrapped input stream.
+         * @param max The maximum number of bytes to return.
          */
         BoundCountInputStream(final InputStream in, final long max) {
             super(in, max);
@@ -184,13 +184,13 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     private static final int LFH_LEN = 30;
     /*
      * local file header signature WORD version needed to extract SHORT general purpose bit flag SHORT compression method SHORT last mod file time SHORT last
-     * mod file date SHORT CRC-32 WORD compressed size WORD uncompressed size WORD file name length SHORT extra field length SHORT
+     * mod file date SHORT CRC-32 WORD compressed size WORD uncompressed size WORD file name length SHORT extra field length SHORT.
      */
     private static final int CFH_LEN = 46;
     /*
      * central file header signature WORD version made by SHORT version needed to extract SHORT general purpose bit flag SHORT compression method SHORT last mod
      * file time SHORT last mod file date SHORT CRC-32 WORD compressed size WORD uncompressed size WORD file name length SHORT extra field length SHORT file
-     * comment length SHORT disk number start SHORT internal file attributes SHORT external file attributes WORD relative offset of local header WORD
+     * comment length SHORT disk number start SHORT internal file attributes SHORT external file attributes WORD relative offset of local header WORD.
      */
     private static final long TWO_EXP_32 = ZIP64_MAGIC + 1;
     private static final String USE_ZIPFILE_INSTEAD_OF_STREAM_DISCLAIMER = " while reading a stored entry using data descriptor. Either the archive is broken"
@@ -206,9 +206,9 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     /**
      * Checks if the signature matches what is expected for a ZIP file. Does not currently handle self-extracting ZIPs which may have arbitrary leading content.
      *
-     * @param buffer the bytes to check
-     * @param length the number of bytes to check
-     * @return true, if this stream is a ZIP archive stream, false otherwise
+     * @param buffer the bytes to check.
+     * @param length the number of bytes to check.
+     * @return true, if this stream is a ZIP archive stream, false otherwise.
      */
     public static boolean matches(final byte[] buffer, final int length) {
         if (length < ZipArchiveOutputStream.LFH_SIG.length) {
@@ -250,7 +250,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     private final boolean allowStoredEntriesWithDataDescriptor;
     /** Count decompressed bytes for current entry */
     private long uncompressedCount;
-    /** Whether the stream will try to skip the ZIP split signature(08074B50) at the beginning **/
+    /** Whether the stream will try to skip the ZIP split signature(08074B50) at the beginning. **/
     private final boolean skipSplitSig;
     /** Cached buffers - must only be used locally in the class (COMPRESS-172 - reduce garbage collection). */
     private final byte[] lfhBuf = new byte[LFH_LEN];
@@ -265,19 +265,19 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     // private Function<ZipShort, ZipExtraField> extraFieldSupport;
 
     /**
-     * Constructs an instance using UTF-8 encoding
+     * Constructs an instance using UTF-8 encoding.
      *
-     * @param inputStream the stream to wrap
+     * @param inputStream the stream to wrap.
      */
     public ZipArchiveInputStream(final InputStream inputStream) {
         this(inputStream, StandardCharsets.UTF_8.name());
     }
 
     /**
-     * Constructs an instance using the specified encoding
+     * Constructs an instance using the specified encoding.
      *
-     * @param inputStream the stream to wrap
-     * @param encoding    the encoding to use for file names, use null for the platform's default encoding
+     * @param inputStream the stream to wrap.
+     * @param encoding    the encoding to use for file names, use null for the platform's default encoding.
      * @since 1.5
      */
     public ZipArchiveInputStream(final InputStream inputStream, final String encoding) {
@@ -285,10 +285,10 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     }
 
     /**
-     * Constructs an instance using the specified encoding
+     * Constructs an instance using the specified encoding.
      *
-     * @param inputStream           the stream to wrap
-     * @param encoding              the encoding to use for file names, use null for the platform's default encoding
+     * @param inputStream           the stream to wrap.
+     * @param encoding              the encoding to use for file names, use null for the platform's default encoding.
      * @param useUnicodeExtraFields whether to use InfoZIP Unicode Extra Fields (if present) to set the file names.
      */
     public ZipArchiveInputStream(final InputStream inputStream, final String encoding, final boolean useUnicodeExtraFields) {
@@ -296,12 +296,12 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     }
 
     /**
-     * Constructs an instance using the specified encoding
+     * Constructs an instance using the specified encoding.
      *
-     * @param inputStream                          the stream to wrap
-     * @param encoding                             the encoding to use for file names, use null for the platform's default encoding
+     * @param inputStream                          the stream to wrap.
+     * @param encoding                             the encoding to use for file names, use null for the platform's default encoding.
      * @param useUnicodeExtraFields                whether to use InfoZIP Unicode Extra Fields (if present) to set the file names.
-     * @param allowStoredEntriesWithDataDescriptor whether the stream will try to read STORED entries that use a data descriptor
+     * @param allowStoredEntriesWithDataDescriptor whether the stream will try to read STORED entries that use a data descriptor.
      * @since 1.1
      */
     public ZipArchiveInputStream(final InputStream inputStream, final String encoding, final boolean useUnicodeExtraFields,
@@ -310,12 +310,12 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     }
 
     /**
-     * Constructs an instance using the specified encoding
+     * Constructs an instance using the specified encoding.
      *
-     * @param inputStream                          the stream to wrap
-     * @param encoding                             the encoding to use for file names, use null for the platform's default encoding
+     * @param inputStream                          the stream to wrap.
+     * @param encoding                             the encoding to use for file names, use null for the platform's default encoding.
      * @param useUnicodeExtraFields                whether to use InfoZIP Unicode Extra Fields (if present) to set the file names.
-     * @param allowStoredEntriesWithDataDescriptor whether the stream will try to read STORED entries that use a data descriptor
+     * @param allowStoredEntriesWithDataDescriptor whether the stream will try to read STORED entries that use a data descriptor.
      * @param skipSplitSig                         Whether the stream will try to skip the zip split signature(08074B50) at the beginning. You will need to set
      *                                             this to true if you want to read a split archive.
      * @since 1.20
@@ -429,7 +429,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
      * the uncompression process is completed and the end position of the stream is adjusted based on the result of that process.
      * </p>
      *
-     * @throws IOException if an error occurs
+     * @throws IOException if an error occurs.
      */
     private void closeEntry() throws IOException {
         if (closed) {
@@ -485,7 +485,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
      * If the compressed size of the current entry is included in the entry header and there are any outstanding bytes in the underlying stream, then this
      * returns true.
      *
-     * @return true, if current entry is determined to have outstanding bytes, false otherwise
+     * @return true, if current entry is determined to have outstanding bytes, false otherwise.
      */
     private boolean currentEntryHasOutstandingBytes() {
         return current.bytesReadFromStream <= current.entry.getCompressedSize() && !current.hasDataDescriptor;
@@ -761,7 +761,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
      * </p>
      *
      * @param suspectLocalFileHeader the bytes read from the underlying stream in the expectation that they would hold the local file header of the next entry.
-     * @return true if this looks like an APK signing block
+     * @return true if this looks like an APK signing block.
      * @see <a href="https://source.android.com/security/apksigning/v2">https://source.android.com/security/apksigning/v2</a>
      */
     private boolean isApkSigningBlock(final byte[] suspectLocalFileHeader) throws IOException {
