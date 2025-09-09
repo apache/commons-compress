@@ -24,7 +24,7 @@ import java.io.OutputStream;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import org.apache.commons.compress.utils.ByteUtils;
+import org.apache.commons.lang3.ArrayUtils;
 
 /**
  * Abstracts a base Codec class.
@@ -78,7 +78,7 @@ abstract class AbstractCoder {
      * @throws IOException Optionally thrown by subclassses.
      */
     byte[] getOptionsAsProperties(final Object options) throws IOException {
-        return ByteUtils.EMPTY_BYTE_ARRAY;
+        return ArrayUtils.EMPTY_BYTE_ARRAY;
     }
 
     /**

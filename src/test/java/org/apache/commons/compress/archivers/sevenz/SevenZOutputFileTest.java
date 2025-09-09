@@ -44,9 +44,9 @@ import java.util.Iterator;
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.PasswordRequiredException;
 import org.apache.commons.compress.archivers.ArchiveException;
-import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.apache.commons.compress.utils.TimeUtilsTest;
+import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.Test;
 import org.tukaani.xz.LZMA2Options;
 
@@ -277,7 +277,7 @@ class SevenZOutputFileTest extends AbstractTest {
             entry.setCreationDate(creationDate);
             entry.setAccessTime(accessTime);
             outArchive.putArchiveEntry(entry);
-            outArchive.write(ByteUtils.EMPTY_BYTE_ARRAY);
+            outArchive.write(ArrayUtils.EMPTY_BYTE_ARRAY);
             outArchive.closeArchiveEntry();
 
             entry = new SevenZArchiveEntry();
@@ -285,7 +285,7 @@ class SevenZOutputFileTest extends AbstractTest {
             entry.setCreationDate(creationDate);
             entry.setAccessTime(accessTime);
             outArchive.putArchiveEntry(entry);
-            outArchive.write(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY));
+            outArchive.write(new ByteArrayInputStream(ArrayUtils.EMPTY_BYTE_ARRAY));
             outArchive.closeArchiveEntry();
 
             entry = new SevenZArchiveEntry();

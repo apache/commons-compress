@@ -26,6 +26,8 @@ import java.nio.channels.SeekableByteChannel;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 /**
  * A {@link SeekableByteChannel} implementation that wraps a byte[].
  * <p>
@@ -50,7 +52,7 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
      * Constructs a new instance using a default empty buffer.
      */
     public SeekableInMemoryByteChannel() {
-        this(ByteUtils.EMPTY_BYTE_ARRAY);
+        this(ArrayUtils.EMPTY_BYTE_ARRAY);
     }
 
     /**

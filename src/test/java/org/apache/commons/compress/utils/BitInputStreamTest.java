@@ -25,6 +25,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.ByteOrder;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.Test;
 
 class BitInputStreamTest {
@@ -200,7 +201,7 @@ class BitInputStreamTest {
 
     @Test
     void testReadingOneBitFromEmptyStream() throws Exception {
-        try (BitInputStream bis = new BitInputStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY), ByteOrder.LITTLE_ENDIAN)) {
+        try (BitInputStream bis = new BitInputStream(new ByteArrayInputStream(ArrayUtils.EMPTY_BYTE_ARRAY), ByteOrder.LITTLE_ENDIAN)) {
             assertEquals(-1, bis.readBit(), "next bit");
             assertEquals(-1, bis.readBit(), "next bit");
             assertEquals(-1, bis.readBit(), "next bit");

@@ -44,8 +44,8 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 import org.apache.commons.compress.archivers.tar.TarConstants;
 import org.apache.commons.compress.archivers.tar.TarFile;
-import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.Test;
 
 import shaded.org.apache.commons.lang3.StringUtils;
@@ -135,7 +135,7 @@ public final class TarTest extends AbstractTest {
             assertEquals(TarConstants.LF_DIR, directoryEntry.getLinkFlag());
             assertTrue(directoryEntry.isDirectory());
             final byte[] directoryRead = IOUtils.toByteArray(in);
-            assertArrayEquals(ByteUtils.EMPTY_BYTE_ARRAY, directoryRead);
+            assertArrayEquals(ArrayUtils.EMPTY_BYTE_ARRAY, directoryRead);
         }
     }
 
@@ -353,7 +353,7 @@ public final class TarTest extends AbstractTest {
             assertTrue(directoryEntry.isDirectory());
             try (InputStream directoryStream = tarFile.getInputStream(directoryEntry)) {
                 final byte[] directoryRead = IOUtils.toByteArray(directoryStream);
-                assertArrayEquals(ByteUtils.EMPTY_BYTE_ARRAY, directoryRead);
+                assertArrayEquals(ArrayUtils.EMPTY_BYTE_ARRAY, directoryRead);
             }
         }
     }

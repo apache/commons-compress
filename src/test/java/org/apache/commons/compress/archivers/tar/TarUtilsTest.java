@@ -43,8 +43,8 @@ import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
-import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.io.input.NullInputStream;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -273,7 +273,7 @@ class TarUtilsTest extends AbstractTest {
 
     @Test
     void testParseOctalInvalid() {
-        final byte[] buffer1 = ByteUtils.EMPTY_BYTE_ARRAY;
+        final byte[] buffer1 = ArrayUtils.EMPTY_BYTE_ARRAY;
         assertThrows(IllegalArgumentException.class, () -> TarUtils.parseOctal(buffer1, 0, buffer1.length),
                 "Expected IllegalArgumentException - should be at least 2 bytes long");
 

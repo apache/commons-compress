@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 /**
  * Utility methods for reading and writing bytes.
  *
@@ -114,8 +116,10 @@ public final class ByteUtils {
      * Empty array.
      *
      * @since 1.21
+     * @deprecated Use {@link ArrayUtils#EMPTY_BYTE_ARRAY}.
      */
-    public static final byte[] EMPTY_BYTE_ARRAY = {};
+    @Deprecated
+    public static final byte[] EMPTY_BYTE_ARRAY = ArrayUtils.EMPTY_BYTE_ARRAY;
 
     private static void checkReadLength(final int length) {
         if (length > 8) {

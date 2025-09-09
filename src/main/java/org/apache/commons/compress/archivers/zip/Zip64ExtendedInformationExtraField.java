@@ -23,7 +23,7 @@ import static org.apache.commons.compress.archivers.zip.ZipConstants.WORD;
 
 import java.util.zip.ZipException;
 
-import org.apache.commons.compress.utils.ByteUtils;
+import org.apache.commons.lang3.ArrayUtils;
 
 /**
  * Holds size and other extended information for entries that use Zip64 features.
@@ -162,7 +162,7 @@ public class Zip64ExtendedInformationExtraField implements ZipExtraField {
             addSizes(data);
             return data;
         }
-        return ByteUtils.EMPTY_BYTE_ARRAY;
+        return ArrayUtils.EMPTY_BYTE_ARRAY;
     }
 
     @Override

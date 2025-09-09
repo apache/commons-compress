@@ -57,11 +57,11 @@ import java.util.zip.ZipException;
 
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveException;
-import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.function.IORunnable;
 import org.apache.commons.lang3.ArrayFill;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.junit.Assume;
 import org.junit.jupiter.api.AfterEach;
@@ -129,7 +129,7 @@ class ZipFileTest extends AbstractTest {
             final byte[] bytes = new byte[0x40000];
             final int read = stream.read(bytes);
             if (read < 0) {
-                full = ByteUtils.EMPTY_BYTE_ARRAY;
+                full = ArrayUtils.EMPTY_BYTE_ARRAY;
             } else {
                 full = readStreamRest(bytes, read, stream);
             }
@@ -141,7 +141,7 @@ class ZipFileTest extends AbstractTest {
             final byte[] full;
             final int single = stream.read();
             if (single < 0) {
-                full = ByteUtils.EMPTY_BYTE_ARRAY;
+                full = ArrayUtils.EMPTY_BYTE_ARRAY;
             } else {
                 final byte[] big = new byte[0x40000];
                 big[0] = (byte) single;
@@ -973,7 +973,7 @@ class ZipFileTest extends AbstractTest {
     void testThrowsExceptionWhenWritingPreamble() throws IOException {
         try (ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(new ByteArrayOutputStream())) {
             outputStream.putArchiveEntry(new ZipArchiveEntry());
-            assertThrows(IllegalStateException.class, () -> outputStream.writePreamble(ByteUtils.EMPTY_BYTE_ARRAY));
+            assertThrows(IllegalStateException.class, () -> outputStream.writePreamble(ArrayUtils.EMPTY_BYTE_ARRAY));
             outputStream.closeArchiveEntry();
         }
     }

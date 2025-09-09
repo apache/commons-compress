@@ -53,10 +53,10 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
-import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.function.IOConsumer;
 import org.apache.commons.lang3.ArrayFill;
+import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -212,14 +212,14 @@ class ZipArchiveInputStreamTest extends AbstractTest {
 
     @Test
     void testGetCompressedCountEmptyZip() throws IOException {
-        try (ZipArchiveInputStream zin = new ZipArchiveInputStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY))) {
+        try (ZipArchiveInputStream zin = new ZipArchiveInputStream(new ByteArrayInputStream(ArrayUtils.EMPTY_BYTE_ARRAY))) {
             assertEquals(-1, zin.getCompressedCount());
         }
     }
 
     @Test
     void testGetFirstEntryEmptyZip() throws IOException {
-        try (ZipArchiveInputStream zin = new ZipArchiveInputStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY))) {
+        try (ZipArchiveInputStream zin = new ZipArchiveInputStream(new ByteArrayInputStream(ArrayUtils.EMPTY_BYTE_ARRAY))) {
             final ZipArchiveEntry entry = zin.getNextEntry();
             assertNull(entry);
         }
@@ -235,7 +235,7 @@ class ZipArchiveInputStreamTest extends AbstractTest {
 
     @Test
     void testGetUncompressedCountEmptyZip() throws IOException {
-        try (ZipArchiveInputStream zin = new ZipArchiveInputStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY))) {
+        try (ZipArchiveInputStream zin = new ZipArchiveInputStream(new ByteArrayInputStream(ArrayUtils.EMPTY_BYTE_ARRAY))) {
             assertEquals(0, zin.getUncompressedCount());
         }
     }
@@ -338,7 +338,7 @@ class ZipArchiveInputStreamTest extends AbstractTest {
     @Test
     void testProperlyMarksEntriesAsUnreadableIfUncompressedSizeIsUnknown() throws Exception {
         // we never read any data
-        try (ZipArchiveInputStream zis = new ZipArchiveInputStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY))) {
+        try (ZipArchiveInputStream zis = new ZipArchiveInputStream(new ByteArrayInputStream(ArrayUtils.EMPTY_BYTE_ARRAY))) {
             final ZipArchiveEntry e = new ZipArchiveEntry("test");
             e.setMethod(ZipMethod.DEFLATED.getCode());
             assertTrue(zis.canReadEntryData(e));
