@@ -94,7 +94,7 @@ class SevenZFileTest extends AbstractTest {
 
     @BeforeEach
     void beforeAll() {
-        RuntimeMemory.println();
+        // RuntimeMemory.println();
     }
 
     private void checkHelloWorld(final String fileName) throws Exception {
