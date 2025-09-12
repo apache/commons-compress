@@ -28,6 +28,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -81,19 +82,23 @@ public abstract class AbstractTest extends AbstractTempDirTest {
     }
 
     public static File getFile(final String path) throws IOException {
-        final URL url = AbstractTest.class.getClassLoader().getResource(path);
-        if (url == null) {
-            throw new FileNotFoundException("couldn't find " + path);
-        }
-        try {
-            return new File(url.toURI());
-        } catch (final URISyntaxException ex) {
-            throw new IOException(ex);
-        }
+        return new File(getURI(path));
     }
 
     public static Path getPath(final String path) throws IOException {
         return getFile(path).toPath();
+    }
+
+    public static URI getURI(final String resourceName) throws IOException {
+        final URL url = AbstractTest.class.getClassLoader().getResource(resourceName);
+        if (url == null) {
+            throw new FileNotFoundException("couldn't find " + resourceName);
+        }
+        try {
+            return url.toURI();
+        } catch (final URISyntaxException ex) {
+            throw new IOException(ex);
+        }
     }
 
     public static InputStream newInputStream(final String path) throws IOException {

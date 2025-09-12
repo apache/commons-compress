@@ -120,7 +120,7 @@ public final class CpioTest extends AbstractTest {
             tos.closeArchiveEntry();
         }
         final CpioArchiveEntry entryOut;
-        try (CpioArchiveInputStream tis = new CpioArchiveInputStream(Files.newInputStream(archive.toPath()))) {
+        try (CpioArchiveInputStream tis = CpioArchiveInputStream.builder().setFile(archive).get()) {
             entryOut = tis.getNextCPIOEntry();
         }
         assertNotNull(entryOut);
@@ -144,7 +144,7 @@ public final class CpioTest extends AbstractTest {
             tos.closeArchiveEntry();
         }
         final CpioArchiveEntry out;
-        try (CpioArchiveInputStream tis = new CpioArchiveInputStream(Files.newInputStream(archive.toPath()))) {
+        try (CpioArchiveInputStream tis = CpioArchiveInputStream.builder().setFile(archive).get()) {
             out = tis.getNextCPIOEntry();
         }
         assertNotNull(out);
@@ -168,7 +168,7 @@ public final class CpioTest extends AbstractTest {
             tos.closeArchiveEntry();
         }
         final CpioArchiveEntry out;
-        try (CpioArchiveInputStream tis = new CpioArchiveInputStream(Files.newInputStream(archive.toPath()))) {
+        try (CpioArchiveInputStream tis = CpioArchiveInputStream.builder().setFile(archive).get()) {
             out = tis.getNextCPIOEntry();
         }
         assertNotNull(out);
@@ -189,7 +189,7 @@ public final class CpioTest extends AbstractTest {
             tos.closeArchiveEntry();
         }
         final CpioArchiveEntry out;
-        try (CpioArchiveInputStream tis = new CpioArchiveInputStream(Files.newInputStream(archive.toPath()))) {
+        try (CpioArchiveInputStream tis = CpioArchiveInputStream.builder().setFile(archive).get()) {
             out = tis.getNextCPIOEntry();
         }
         assertNotNull(out);
@@ -220,7 +220,7 @@ public final class CpioTest extends AbstractTest {
             tos.closeArchiveEntry();
         }
         final CpioArchiveEntry entry;
-        try (CpioArchiveInputStream tis = new CpioArchiveInputStream(Files.newInputStream(archive.toPath()))) {
+        try (CpioArchiveInputStream tis = CpioArchiveInputStream.builder().setFile(archive).get()) {
             entry = tis.getNextEntry();
             assertEquals(nameLink, IOUtils.toString(tis, charset));
         }

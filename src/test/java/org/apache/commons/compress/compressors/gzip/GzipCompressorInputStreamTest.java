@@ -101,7 +101,7 @@ class GzipCompressorInputStreamTest {
             assertEquals("Helm", gis.getMetaData().getComment());
             assertEquals(41, gis.getMetaData().getExtraFieldXlen());
             final List<String> fileNames = new ArrayList<>();
-            try (TarArchiveInputStream tar = new TarArchiveInputStream(gis)) {
+            try (TarArchiveInputStream tar = TarArchiveInputStream.builder().setInputStream(gis).get()) {
                 TarArchiveEntry entry;
                 while ((entry = tar.getNextEntry()) != null) {
                     fileNames.add(entry.getName());

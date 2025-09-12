@@ -180,7 +180,7 @@ public final class ArTest extends AbstractTest {
         }
         //
         final ArArchiveEntry out;
-        try (ArArchiveInputStream ais = new ArArchiveInputStream(Files.newInputStream(archive.toPath()))) {
+        try (ArArchiveInputStream ais = ArArchiveInputStream.builder().setFile(archive).get()) {
             out = ais.getNextEntry();
         }
         assertNotNull(out);
@@ -201,7 +201,7 @@ public final class ArTest extends AbstractTest {
             aos.closeArchiveEntry();
         }
         final ArArchiveEntry out;
-        try (ArArchiveInputStream ais = new ArArchiveInputStream(Files.newInputStream(archive.toPath()))) {
+        try (ArArchiveInputStream ais = ArArchiveInputStream.builder().setFile(archive).get()) {
             out = ais.getNextEntry();
         }
         assertNotNull(out);
@@ -223,7 +223,7 @@ public final class ArTest extends AbstractTest {
             aos.closeArchiveEntry();
         }
         final ArArchiveEntry out;
-        try (ArArchiveInputStream ais = new ArArchiveInputStream(Files.newInputStream(archive.toPath()))) {
+        try (ArArchiveInputStream ais = ArArchiveInputStream.builder().setFile(archive).get()) {
             out = ais.getNextEntry();
         }
         assertNotNull(out);
@@ -248,7 +248,7 @@ public final class ArTest extends AbstractTest {
             aos.closeArchiveEntry();
         }
         final ArArchiveEntry out;
-        try (ArArchiveInputStream ais = new ArArchiveInputStream(Files.newInputStream(archive.toPath()))) {
+        try (ArArchiveInputStream ais = ArArchiveInputStream.builder().setFile(archive).get()) {
             out = ais.getNextEntry();
         }
         assertNotNull(out);
@@ -273,7 +273,7 @@ public final class ArTest extends AbstractTest {
             aos.closeArchiveEntry();
         }
         final ArArchiveEntry out;
-        try (ArArchiveInputStream ais = new ArArchiveInputStream(Files.newInputStream(archive.toPath()))) {
+        try (ArArchiveInputStream ais = ArArchiveInputStream.builder().setFile(archive).get()) {
             out = ais.getNextEntry();
         }
         assertNotNull(out);

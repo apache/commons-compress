@@ -152,8 +152,8 @@ public class Zip64SupportIT {
     }
 
     private static void read100KFilesImpl(final File f) throws IOException {
-        try (InputStream fin = Files.newInputStream(f.toPath());
-                ZipArchiveInputStream zin = new ZipArchiveInputStream(fin)) {
+        try (ZipArchiveInputStream zin =
+                ZipArchiveInputStream.builder().setFile(f).get()) {
             int files = 0;
             ZipArchiveEntry zae;
             while ((zae = zin.getNextZipEntry()) != null) {
@@ -182,8 +182,8 @@ public class Zip64SupportIT {
     }
 
     private static void read5GBOfZerosImpl(final File f, final String expectedName) throws IOException {
-        try (InputStream fin = Files.newInputStream(f.toPath());
-                ZipArchiveInputStream zin = new ZipArchiveInputStream(fin)) {
+        try (ZipArchiveInputStream zin =
+                ZipArchiveInputStream.builder().setFile(f).get()) {
             ZipArchiveEntry zae = zin.getNextZipEntry();
             while (zae.isDirectory()) {
                 zae = zin.getNextZipEntry();

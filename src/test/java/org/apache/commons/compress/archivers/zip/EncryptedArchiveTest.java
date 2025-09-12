@@ -19,16 +19,14 @@
 
 package org.apache.commons.compress.archivers.zip;
 
-import static org.apache.commons.compress.AbstractTest.getFile;
+import static org.apache.commons.compress.AbstractTest.getURI;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 
 import org.junit.jupiter.api.Test;
 
@@ -36,8 +34,9 @@ class EncryptedArchiveTest {
 
     @Test
     void testReadPasswordEncryptedEntryViaStream() throws IOException {
-        final File file = getFile("password-encrypted.zip");
-        try (ZipArchiveInputStream zin = new ZipArchiveInputStream(Files.newInputStream(file.toPath()))) {
+        try (ZipArchiveInputStream zin = ZipArchiveInputStream.builder()
+                .setURI(getURI("password-encrypted.zip"))
+                .get()) {
             final ZipArchiveEntry zae = zin.getNextZipEntry();
             assertEquals("LICENSE.txt", zae.getName());
             assertTrue(zae.getGeneralPurposeBit().usesEncryption());
@@ -53,7 +52,7 @@ class EncryptedArchiveTest {
 
     @Test
     void testReadPasswordEncryptedEntryViaZipFile() throws IOException {
-        try (ZipFile zf = ZipFile.builder().setFile(getFile("password-encrypted.zip")).get()) {
+        try (ZipFile zf = ZipFile.builder().setURI(getURI("password-encrypted.zip")).get()) {
             final ZipArchiveEntry zae = zf.getEntry("LICENSE.txt");
             assertTrue(zae.getGeneralPurposeBit().usesEncryption());
             assertFalse(zae.getGeneralPurposeBit().usesStrongEncryption());

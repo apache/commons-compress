@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.Objects;
 
 import org.apache.commons.io.Charsets;
+import org.apache.commons.io.build.AbstractStreamBuilder;
 import org.apache.commons.io.function.IOConsumer;
 import org.apache.commons.io.function.IOIterator;
 import org.apache.commons.io.input.NullInputStream;
@@ -86,6 +87,20 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
             return null;
         }
 
+    }
+
+    /**
+     * Generic builder for ArchiveInputStream instances.
+     *
+     * @param <T> The type of {@link ArchiveInputStream} to build.
+     * @param <B> The type of the concrete Builder.
+     * @since 1.29.0
+     */
+    public abstract static class Builder<T extends ArchiveInputStream<?>, B extends Builder<T, B>> extends AbstractStreamBuilder<T, B> {
+
+        protected Builder() {
+            // empty
+        }
     }
 
     private static final int BYTE_MASK = 0xFF;
@@ -294,4 +309,5 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
     public synchronized void reset() throws IOException {
         // noop
     }
+
 }

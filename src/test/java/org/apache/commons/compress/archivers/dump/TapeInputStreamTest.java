@@ -22,9 +22,6 @@ package org.apache.commons.compress.archivers.dump;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.CompressException;
@@ -44,13 +41,14 @@ class TapeInputStreamTest extends AbstractTest {
     }
 
     @Test
-    void testResetBlockSizeBadSignature() throws IOException {
-        assertThrows(ArchiveException.class,
-                () -> new DumpArchiveInputStream(Files.newInputStream(Paths.get("src/test/resources/org/apache/commons/compress/dump/resetBlockSize.bin"))));
+    void testResetBlockSizeBadSignature() {
+        assertThrows(ArchiveException.class, () -> DumpArchiveInputStream.builder()
+                .setURI(getURI("org/apache/commons/compress/dump/resetBlockSize.bin"))
+                .get());
     }
 
     @ParameterizedTest
-    @ValueSource(ints = { Integer.MAX_VALUE / 1000, Integer.MAX_VALUE })
+    @ValueSource(ints = {Integer.MAX_VALUE / 1000, Integer.MAX_VALUE})
     void testResetBlockSizeMemoryLimit(final int recsPerBlock) throws Exception {
         try (TapeInputStream tapeInputStream = new TapeInputStream(new ByteArrayInputStream(new byte[1]))) {
             // CompressException works from both the Maven command line and within Eclipse

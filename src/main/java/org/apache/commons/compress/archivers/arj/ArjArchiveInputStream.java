@@ -46,6 +46,31 @@ import org.apache.commons.io.input.ChecksumInputStream;
  */
 public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
 
+    /**
+     * Builds a new {@link ArjArchiveInputStream}.
+     * <p>
+     *     For example:
+     * </p>
+     * <pre>{@code
+     * ArjArchiveInputStream in = ArjArchiveInputStream.builder()
+     *     .setPath(inputPath)
+     *     .setCharset(StandardCharsets.UTF_8)
+     *     .get();
+     * }</pre>
+     * @since 1.29.0
+     */
+    public static final class Builder extends ArchiveInputStream.Builder<ArjArchiveInputStream, Builder> {
+
+        private Builder() {
+            setCharset(ENCODING_NAME);
+        }
+
+        @Override
+        public ArjArchiveInputStream get() throws IOException {
+            return new ArjArchiveInputStream(this);
+        }
+    }
+
     private static final String ENCODING_NAME = "CP437";
     private static final int ARJ_MAGIC_1 = 0x60;
     private static final int ARJ_MAGIC_2 = 0xEA;
@@ -61,6 +86,16 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
         return length >= 2 && (0xff & signature[0]) == ARJ_MAGIC_1 && (0xff & signature[1]) == ARJ_MAGIC_2;
     }
 
+    /**
+     * Creates a new builder.
+     *
+     * @return A new builder
+     * @since 1.29.0
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
+
     private final DataInputStream dis;
     private final MainHeader mainHeader;
     private LocalFileHeader currentLocalFileHeader;
@@ -73,7 +108,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
      * @throws ArchiveException if an exception occurs while reading
      */
     public ArjArchiveInputStream(final InputStream inputStream) throws ArchiveException {
-        this(inputStream, ENCODING_NAME);
+        this(inputStream, builder());
     }
 
     /**
@@ -84,8 +119,16 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
      * @throws ArchiveException if an exception occurs while reading
      */
     public ArjArchiveInputStream(final InputStream inputStream, final String charsetName) throws ArchiveException {
-        super(inputStream, charsetName);
-        in = dis = new DataInputStream(inputStream);
+        this(inputStream, builder().setCharset(charsetName));
+    }
+
+    private ArjArchiveInputStream(final Builder builder) throws IOException {
+        this(builder.getInputStream(), builder);
+    }
+
+    private ArjArchiveInputStream(final InputStream inputStream, final Builder builder) throws ArchiveException {
+        super(new DataInputStream(inputStream), builder.getCharset());
+        dis = (DataInputStream) in;
         try {
             mainHeader = readMainHeader();
             if ((mainHeader.arjFlags & MainHeader.Flags.GARBLED) != 0) {

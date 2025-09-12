@@ -24,7 +24,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -69,7 +68,7 @@ class Compress678Test {
             arOut.write(data);
             arOut.closeArchiveEntry();
         }
-        try (ArArchiveInputStream arIn = new ArArchiveInputStream(new FileInputStream(file))) {
+        try (ArArchiveInputStream arIn = ArArchiveInputStream.builder().setFile(file).get()) {
             final ArArchiveEntry entry = arIn.getNextEntry();
             assertEquals(fileName, entry.getName());
             // Fix
@@ -120,7 +119,7 @@ class Compress678Test {
             arOut.write(data);
             arOut.closeArchiveEntry();
         }
-        try (ArArchiveInputStream arIn = new ArArchiveInputStream(new FileInputStream(file))) {
+        try (ArArchiveInputStream arIn = ArArchiveInputStream.builder().setFile(file).get()) {
             final ArArchiveEntry entry = arIn.getNextEntry();
             assertEquals(name1, entry.getName());
             assertNotNull(arIn.getNextEntry());

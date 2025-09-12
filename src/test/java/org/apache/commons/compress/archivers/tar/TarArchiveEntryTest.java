@@ -30,7 +30,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -100,7 +99,7 @@ class TarArchiveEntryTest implements TarConstants {
         assertNotEquals(0, entry.getExtraPaxHeaders().size(), "should have extra headers before clear");
         entry.clearExtraPaxHeaders();
         assertEquals(0, entry.getExtraPaxHeaders().size(), "extra headers should be empty after clear");
-        try (TarArchiveInputStream tis = new TarArchiveInputStream(new ByteArrayInputStream(bos.toByteArray()))) {
+        try (TarArchiveInputStream tis = TarArchiveInputStream.builder().setByteArray(bos.toByteArray()).get()) {
             entry = tis.getNextTarEntry();
             assertNotNull(entry, "couldn't get entry");
 
@@ -304,7 +303,7 @@ class TarArchiveEntryTest implements TarConstants {
             tos.write('W');
             tos.closeArchiveEntry();
         }
-        try (TarArchiveInputStream tis = new TarArchiveInputStream(new ByteArrayInputStream(bos.toByteArray()))) {
+        try (TarArchiveInputStream tis = TarArchiveInputStream.builder().setByteArray(bos.toByteArray()).get()) {
             final TarArchiveEntry entry = tis.getNextTarEntry();
             assertNotNull(entry, "couldn't get entry");
 
@@ -351,7 +350,7 @@ class TarArchiveEntryTest implements TarConstants {
             tos.write('W');
             tos.closeArchiveEntry();
         }
-        try (TarArchiveInputStream tis = new TarArchiveInputStream(new ByteArrayInputStream(bos.toByteArray()))) {
+        try (TarArchiveInputStream tis = TarArchiveInputStream.builder().setByteArray(bos.toByteArray()).get()) {
             final TarArchiveEntry entry = tis.getNextTarEntry();
             assertNotNull(entry, "couldn't get entry");
 
@@ -383,7 +382,7 @@ class TarArchiveEntryTest implements TarConstants {
             tos.write('W');
             tos.closeArchiveEntry();
         }
-        try (TarArchiveInputStream tis = new TarArchiveInputStream(new ByteArrayInputStream(bos.toByteArray()))) {
+        try (TarArchiveInputStream tis = TarArchiveInputStream.builder().setByteArray(bos.toByteArray()).get()) {
             final TarArchiveEntry entry = tis.getNextTarEntry();
             assertNotNull(entry, "couldn't get entry");
 
@@ -414,7 +413,7 @@ class TarArchiveEntryTest implements TarConstants {
             tos.write('W');
             tos.closeArchiveEntry();
         }
-        try (TarArchiveInputStream tis = new TarArchiveInputStream(new ByteArrayInputStream(bos.toByteArray()))) {
+        try (TarArchiveInputStream tis = TarArchiveInputStream.builder().setByteArray(bos.toByteArray()).get()) {
             final TarArchiveEntry entry = tis.getNextTarEntry();
             assertNotNull(entry, "couldn't get entry");
 
@@ -460,7 +459,7 @@ class TarArchiveEntryTest implements TarConstants {
                 tout.write(new byte[] { '!' });
                 tout.closeArchiveEntry();
             }
-            try (TarArchiveInputStream tin = new TarArchiveInputStream(Files.newInputStream(f.toPath()))) {
+            try (TarArchiveInputStream tin = TarArchiveInputStream.builder().setFile(f).get()) {
                 // tin.setDebug(true);
                 entry = tin.getNextTarEntry();
                 assertNotNull(entry);

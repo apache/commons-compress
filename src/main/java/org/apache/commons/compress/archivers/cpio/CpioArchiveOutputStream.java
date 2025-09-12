@@ -116,7 +116,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
      * @param format The format of the stream
      */
     public CpioArchiveOutputStream(final OutputStream out, final short format) {
-        this(out, format, BLOCK_SIZE, CpioUtil.DEFAULT_CHARSET_NAME);
+        this(out, format, BLOCK_SIZE, CpioUtil.DEFAULT_CHARSET.name());
     }
 
     /**
@@ -128,7 +128,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
      * @since 1.1
      */
     public CpioArchiveOutputStream(final OutputStream out, final short format, final int blockSize) {
-        this(out, format, blockSize, CpioUtil.DEFAULT_CHARSET_NAME);
+        this(out, format, blockSize, CpioUtil.DEFAULT_CHARSET.name());
     }
 
     /**

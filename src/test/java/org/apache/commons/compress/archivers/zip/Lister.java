@@ -19,7 +19,6 @@
 
 package org.apache.commons.compress.archivers.zip;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -70,14 +69,16 @@ public final class Lister {
             usage();
         }
         if (cl.useStream) {
-            try (BufferedInputStream fs = new BufferedInputStream(Files.newInputStream(f.toPath()))) {
-                final ZipArchiveInputStream zs = new ZipArchiveInputStream(fs, cl.encoding, true, cl.allowStoredEntriesWithDataDescriptor);
-                for (ArchiveEntry entry = zs.getNextEntry(); entry != null; entry = zs.getNextEntry()) {
-                    final ZipArchiveEntry ze = (ZipArchiveEntry) entry;
-                    list(ze);
-                    if (cl.dir != null) {
-                        extract(cl.dir, ze, zs);
-                    }
+            final ZipArchiveInputStream zs = ZipArchiveInputStream.builder()
+                    .setFile(f)
+                    .setCharset(cl.encoding)
+                    .setAllowStoredEntriesWithDataDescriptor(cl.allowStoredEntriesWithDataDescriptor)
+                    .get();
+            for (ArchiveEntry entry = zs.getNextEntry(); entry != null; entry = zs.getNextEntry()) {
+                final ZipArchiveEntry ze = (ZipArchiveEntry) entry;
+                list(ze);
+                if (cl.dir != null) {
+                    extract(cl.dir, ze, zs);
                 }
             }
         } else {
