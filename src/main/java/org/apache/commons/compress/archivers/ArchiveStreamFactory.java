@@ -465,10 +465,11 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
                 return (I) cpioBuilder.get();
             }
             if (DUMP.equalsIgnoreCase(archiverName)) {
+                final DumpArchiveInputStream.Builder dumpBuilder = DumpArchiveInputStream.builder().setInputStream(in);
                 if (actualEncoding != null) {
-                    return (I) new DumpArchiveInputStream(in, actualEncoding);
+                    dumpBuilder.setCharset(actualEncoding);
                 }
-                return (I) new DumpArchiveInputStream(in);
+                return (I) dumpBuilder.get();
             }
             if (SEVEN_Z.equalsIgnoreCase(archiverName)) {
                 throw new StreamingNotSupportedException(SEVEN_Z);

@@ -111,7 +111,8 @@ class ArchiveStreamFactoryTest extends AbstractTest {
         }
         ARJ_DEFAULT = dflt;
         dflt = UNKNOWN;
-        try (DumpArchiveInputStream inputStream = new DumpArchiveInputStream(newInputStream("bla.dump"))) {
+        try (DumpArchiveInputStream inputStream =
+                DumpArchiveInputStream.builder().setURI(getURI("bla.dump")).get()) {
             dflt = getCharsetName(inputStream);
         } catch (final Exception e) {
             e.printStackTrace();
