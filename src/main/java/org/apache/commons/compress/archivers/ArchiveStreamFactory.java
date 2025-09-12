@@ -440,10 +440,11 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
                 return (I) arjBuilder.get();
             }
             if (ZIP.equalsIgnoreCase(archiverName)) {
+                final ZipArchiveInputStream.Builder zipBuilder = ZipArchiveInputStream.builder().setInputStream(in);
                 if (actualEncoding != null) {
-                    return (I) new ZipArchiveInputStream(in, actualEncoding);
+                    zipBuilder.setCharset(actualEncoding);
                 }
-                return (I) new ZipArchiveInputStream(in);
+                return (I) zipBuilder.get();
             }
             if (TAR.equalsIgnoreCase(archiverName)) {
                 if (actualEncoding != null) {
@@ -452,10 +453,12 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
                 return (I) new TarArchiveInputStream(in);
             }
             if (JAR.equalsIgnoreCase(archiverName) || APK.equalsIgnoreCase(archiverName)) {
+                final JarArchiveInputStream.Builder jarBuilder =
+                        JarArchiveInputStream.jarInputStreamBuilder().setInputStream(in);
                 if (actualEncoding != null) {
-                    return (I) new JarArchiveInputStream(in, actualEncoding);
+                    jarBuilder.setCharset(actualEncoding);
                 }
-                return (I) new JarArchiveInputStream(in);
+                return (I) jarBuilder.get();
             }
             if (CPIO.equalsIgnoreCase(archiverName)) {
                 final CpioArchiveInputStream.Builder cpioBuilder = CpioArchiveInputStream.builder().setInputStream(in);
