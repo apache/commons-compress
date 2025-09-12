@@ -89,7 +89,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         /**
          * Sets the block size of the archive.
          * <p>
-         *     Default value is {@value CpioConstants#BLOCK_SIZE}.
+         *     Default value is {@link CpioConstants#BLOCK_SIZE}.
          * </p>
          *
          * @param blockSize The block size must be bigger than 0
