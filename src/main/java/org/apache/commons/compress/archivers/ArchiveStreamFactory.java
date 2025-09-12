@@ -433,10 +433,11 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
                 return (I) ArArchiveInputStream.builder().setInputStream(in).get();
             }
             if (ARJ.equalsIgnoreCase(archiverName)) {
+                final ArjArchiveInputStream.Builder arjBuilder = ArjArchiveInputStream.builder().setInputStream(in);
                 if (actualEncoding != null) {
-                    return (I) new ArjArchiveInputStream(in, actualEncoding);
+                    arjBuilder.setCharset(actualEncoding);
                 }
-                return (I) new ArjArchiveInputStream(in);
+                return (I) arjBuilder.get();
             }
             if (ZIP.equalsIgnoreCase(archiverName)) {
                 if (actualEncoding != null) {

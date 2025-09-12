@@ -104,7 +104,7 @@ class ArchiveStreamFactoryTest extends AbstractTest {
     static {
         String dflt;
         dflt = UNKNOWN;
-        try (ArjArchiveInputStream inputStream = new ArjArchiveInputStream(newInputStream("bla.arj"))) {
+        try (ArjArchiveInputStream inputStream = ArjArchiveInputStream.builder().setURI(getURI("bla.arj")).get()) {
             dflt = getCharsetName(inputStream);
         } catch (final Exception e) {
             e.printStackTrace();
