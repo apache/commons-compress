@@ -24,9 +24,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.BufferedInputStream;
-import java.io.InputStream;
-import java.nio.file.Files;
 import java.nio.file.attribute.FileTime;
 import java.time.Instant;
 
@@ -49,8 +46,7 @@ public class FileTimesIT extends AbstractTest {
     @Test
     void testReadTimeFromTarEpax() throws Exception {
         final String file = "COMPRESS-612/test-times-epax-folder.tar";
-        try (InputStream in = new BufferedInputStream(Files.newInputStream(getPath(file)));
-                TarArchiveInputStream tin = new TarArchiveInputStream(in)) {
+        try (TarArchiveInputStream tin = TarArchiveInputStream.builder().setURI(getURI(file)).get()) {
             TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
@@ -79,8 +75,7 @@ public class FileTimesIT extends AbstractTest {
     @Test
     void testReadTimeFromTarExustar() throws Exception {
         final String file = "COMPRESS-612/test-times-exustar-folder.tar";
-        try (InputStream in = new BufferedInputStream(Files.newInputStream(getPath(file)));
-                TarArchiveInputStream tin = new TarArchiveInputStream(in)) {
+        try (TarArchiveInputStream tin = TarArchiveInputStream.builder().setURI(getURI(file)).get()) {
             TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
             assertEquals("test/", e.getName());
@@ -109,8 +104,7 @@ public class FileTimesIT extends AbstractTest {
     @Test
     void testReadTimeFromTarGnu() throws Exception {
         final String file = "COMPRESS-612/test-times-gnu.tar";
-        try (InputStream in = new BufferedInputStream(Files.newInputStream(getPath(file)));
-                TarArchiveInputStream tin = new TarArchiveInputStream(in)) {
+        try (TarArchiveInputStream tin = TarArchiveInputStream.builder().setURI(getURI(file)).get()) {
             final TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
@@ -127,8 +121,7 @@ public class FileTimesIT extends AbstractTest {
     @Test
     void testReadTimeFromTarGnuIncremental() throws Exception {
         final String file = "COMPRESS-612/test-times-gnu-incremental.tar";
-        try (InputStream in = new BufferedInputStream(Files.newInputStream(getPath(file)));
-                TarArchiveInputStream tin = new TarArchiveInputStream(in)) {
+        try (TarArchiveInputStream tin = TarArchiveInputStream.builder().setURI(getURI(file)).get()) {
             TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
@@ -154,8 +147,7 @@ public class FileTimesIT extends AbstractTest {
     @Test
     void testReadTimeFromTarGnuTar() throws Exception {
         final String file = "COMPRESS-612/test-times-gnutar.tar";
-        try (InputStream in = new BufferedInputStream(Files.newInputStream(getPath(file)));
-                TarArchiveInputStream tin = new TarArchiveInputStream(in)) {
+        try (TarArchiveInputStream tin = TarArchiveInputStream.builder().setURI(getURI(file)).get()) {
             final TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
@@ -171,8 +163,7 @@ public class FileTimesIT extends AbstractTest {
     @Test
     void testReadTimeFromTarOldBsdTar() throws Exception {
         final String file = "COMPRESS-612/test-times-oldbsdtar.tar";
-        try (InputStream in = new BufferedInputStream(Files.newInputStream(getPath(file)));
-                TarArchiveInputStream tin = new TarArchiveInputStream(in)) {
+        try (TarArchiveInputStream tin = TarArchiveInputStream.builder().setURI(getURI(file)).get()) {
             final TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
@@ -189,8 +180,7 @@ public class FileTimesIT extends AbstractTest {
     @Test
     void testReadTimeFromTarOldGnu() throws Exception {
         final String file = "COMPRESS-612/test-times-oldgnu.tar";
-        try (InputStream in = new BufferedInputStream(Files.newInputStream(getPath(file)));
-                TarArchiveInputStream tin = new TarArchiveInputStream(in)) {
+        try (TarArchiveInputStream tin = TarArchiveInputStream.builder().setURI(getURI(file)).get()) {
             final TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
@@ -207,8 +197,7 @@ public class FileTimesIT extends AbstractTest {
     @Test
     void testReadTimeFromTarOldGnuIncremental() throws Exception {
         final String file = "COMPRESS-612/test-times-oldgnu-incremental.tar";
-        try (InputStream in = new BufferedInputStream(Files.newInputStream(getPath(file)));
-                TarArchiveInputStream tin = new TarArchiveInputStream(in)) {
+        try (TarArchiveInputStream tin = TarArchiveInputStream.builder().setURI(getURI(file)).get()) {
             TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
@@ -234,8 +223,7 @@ public class FileTimesIT extends AbstractTest {
     @Test
     void testReadTimeFromTarPax() throws Exception {
         final String file = "COMPRESS-612/test-times-pax-folder.tar";
-        try (InputStream in = new BufferedInputStream(Files.newInputStream(getPath(file)));
-                TarArchiveInputStream tin = new TarArchiveInputStream(in)) {
+        try (TarArchiveInputStream tin = TarArchiveInputStream.builder().setURI(getURI(file)).get()) {
             TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
@@ -265,8 +253,7 @@ public class FileTimesIT extends AbstractTest {
     @Test
     void testReadTimeFromTarPosix() throws Exception {
         final String file = "COMPRESS-612/test-times-posix.tar";
-        try (InputStream in = new BufferedInputStream(Files.newInputStream(getPath(file)));
-                TarArchiveInputStream tin = new TarArchiveInputStream(in)) {
+        try (TarArchiveInputStream tin = TarArchiveInputStream.builder().setURI(getURI(file)).get()) {
             final TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
@@ -283,8 +270,7 @@ public class FileTimesIT extends AbstractTest {
     @Test
     void testReadTimeFromTarPosixLibArchive() throws Exception {
         final String file = "COMPRESS-612/test-times-bsd-folder.tar";
-        try (InputStream in = new BufferedInputStream(Files.newInputStream(getPath(file)));
-                TarArchiveInputStream tin = new TarArchiveInputStream(in)) {
+        try (TarArchiveInputStream tin = TarArchiveInputStream.builder().setURI(getURI(file)).get()) {
             TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
@@ -314,8 +300,7 @@ public class FileTimesIT extends AbstractTest {
     @Test
     void testReadTimeFromTarPosixLinux() throws Exception {
         final String file = "COMPRESS-612/test-times-posix-linux.tar";
-        try (InputStream in = new BufferedInputStream(Files.newInputStream(getPath(file)));
-                TarArchiveInputStream tin = new TarArchiveInputStream(in)) {
+        try (TarArchiveInputStream tin = TarArchiveInputStream.builder().setURI(getURI(file)).get()) {
             final TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
@@ -331,8 +316,7 @@ public class FileTimesIT extends AbstractTest {
     @Test
     void testReadTimeFromTarStarFolder() throws Exception {
         final String file = "COMPRESS-612/test-times-star-folder.tar";
-        try (InputStream in = new BufferedInputStream(Files.newInputStream(getPath(file)));
-                TarArchiveInputStream tin = new TarArchiveInputStream(in)) {
+        try (TarArchiveInputStream tin = TarArchiveInputStream.builder().setURI(getURI(file)).get()) {
             TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
@@ -360,8 +344,7 @@ public class FileTimesIT extends AbstractTest {
     @Test
     void testReadTimeFromTarUstar() throws Exception {
         final String file = "COMPRESS-612/test-times-ustar.tar";
-        try (InputStream in = new BufferedInputStream(Files.newInputStream(getPath(file)));
-                TarArchiveInputStream tin = new TarArchiveInputStream(in)) {
+        try (TarArchiveInputStream tin = TarArchiveInputStream.builder().setURI(getURI(file)).get()) {
             final TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
@@ -377,8 +360,7 @@ public class FileTimesIT extends AbstractTest {
     @Test
     void testReadTimeFromTarV7() throws Exception {
         final String file = "COMPRESS-612/test-times-v7.tar";
-        try (InputStream in = new BufferedInputStream(Files.newInputStream(getPath(file)));
-                TarArchiveInputStream tin = new TarArchiveInputStream(in)) {
+        try (TarArchiveInputStream tin = TarArchiveInputStream.builder().setURI(getURI(file)).get()) {
             final TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
@@ -394,8 +376,7 @@ public class FileTimesIT extends AbstractTest {
     @Test
     void testReadTimeFromTarXstar() throws Exception {
         final String file = "COMPRESS-612/test-times-xstar.tar";
-        try (InputStream in = new BufferedInputStream(Files.newInputStream(getPath(file)));
-                TarArchiveInputStream tin = new TarArchiveInputStream(in)) {
+        try (TarArchiveInputStream tin = TarArchiveInputStream.builder().setURI(getURI(file)).get()) {
             final TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
@@ -411,8 +392,7 @@ public class FileTimesIT extends AbstractTest {
     @Test
     void testReadTimeFromTarXstarFolder() throws Exception {
         final String file = "COMPRESS-612/test-times-xstar-folder.tar";
-        try (InputStream in = new BufferedInputStream(Files.newInputStream(getPath(file)));
-                TarArchiveInputStream tin = new TarArchiveInputStream(in)) {
+        try (TarArchiveInputStream tin = TarArchiveInputStream.builder().setURI(getURI(file)).get()) {
             TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
@@ -440,8 +420,7 @@ public class FileTimesIT extends AbstractTest {
     @Test
     void testReadTimeFromTarXstarIncremental() throws Exception {
         final String file = "COMPRESS-612/test-times-xstar-incremental.tar";
-        try (InputStream in = new BufferedInputStream(Files.newInputStream(getPath(file)));
-                TarArchiveInputStream tin = new TarArchiveInputStream(in)) {
+        try (TarArchiveInputStream tin = TarArchiveInputStream.builder().setURI(getURI(file)).get()) {
             TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
@@ -466,8 +445,7 @@ public class FileTimesIT extends AbstractTest {
     @Test
     void testReadTimeFromTarXustar() throws Exception {
         final String file = "COMPRESS-612/test-times-xustar.tar";
-        try (InputStream in = new BufferedInputStream(Files.newInputStream(getPath(file)));
-                TarArchiveInputStream tin = new TarArchiveInputStream(in)) {
+        try (TarArchiveInputStream tin = TarArchiveInputStream.builder().setURI(getURI(file)).get()) {
             final TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
@@ -483,8 +461,7 @@ public class FileTimesIT extends AbstractTest {
     @Test
     void testReadTimeFromTarXustarFolder() throws Exception {
         final String file = "COMPRESS-612/test-times-xustar-folder.tar";
-        try (InputStream in = new BufferedInputStream(Files.newInputStream(getPath(file)));
-                TarArchiveInputStream tin = new TarArchiveInputStream(in)) {
+        try (TarArchiveInputStream tin = TarArchiveInputStream.builder().setURI(getURI(file)).get()) {
             TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());
@@ -512,8 +489,7 @@ public class FileTimesIT extends AbstractTest {
     @Test
     void testReadTimeFromTarXustarIncremental() throws Exception {
         final String file = "COMPRESS-612/test-times-xustar-incremental.tar";
-        try (InputStream in = new BufferedInputStream(Files.newInputStream(getPath(file)));
-                TarArchiveInputStream tin = new TarArchiveInputStream(in)) {
+        try (TarArchiveInputStream tin = TarArchiveInputStream.builder().setURI(getURI(file)).get()) {
             TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
             assertTrue(e.getExtraPaxHeaders().isEmpty());

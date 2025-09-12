@@ -18,7 +18,6 @@
  */
 package org.apache.commons.compress.archivers;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -270,7 +269,8 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
         }
         // COMPRESS-117
         if (signatureLength >= TAR_HEADER_SIZE) {
-            try (TarArchiveInputStream inputStream = new TarArchiveInputStream(new ByteArrayInputStream(tarHeader))) {
+            try (TarArchiveInputStream inputStream =
+                    TarArchiveInputStream.builder().setByteArray(tarHeader).get()) {
                 // COMPRESS-191 - verify the header checksum
                 TarArchiveEntry entry = inputStream.getNextEntry();
                 // try to find the first non-directory entry within the first 10 entries.
@@ -447,10 +447,11 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
                 return (I) zipBuilder.get();
             }
             if (TAR.equalsIgnoreCase(archiverName)) {
+                final TarArchiveInputStream.Builder tarBuilder = TarArchiveInputStream.builder().setInputStream(in);
                 if (actualEncoding != null) {
-                    return (I) new TarArchiveInputStream(in, actualEncoding);
+                    tarBuilder.setCharset(actualEncoding);
                 }
-                return (I) new TarArchiveInputStream(in);
+                return (I) tarBuilder.get();
             }
             if (JAR.equalsIgnoreCase(archiverName) || APK.equalsIgnoreCase(archiverName)) {
                 final JarArchiveInputStream.Builder jarBuilder =

@@ -197,7 +197,9 @@ public final class DetectArchiverTest extends AbstractTest {
 
     @Test
     void testIcoFileFirstTarArchiveEntry() throws Exception {
-        try (TarArchiveInputStream inputStream = new TarArchiveInputStream(createBufferedInputStream("org/apache/commons/compress/COMPRESS-644/ARW05UP.ICO"))) {
+        try (TarArchiveInputStream inputStream = TarArchiveInputStream.builder()
+                .setURI(getURI("org/apache/commons/compress/COMPRESS-644/ARW05UP.ICO"))
+                .get()) {
             final TarArchiveEntry entry = inputStream.getNextEntry();
             // Find hints that the file is not a TAR file.
             assertNull(entry.getCreationTime());

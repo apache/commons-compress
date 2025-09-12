@@ -33,7 +33,9 @@ class ChainingTest extends AbstractTest {
 
     @Test
     void testTarBzip2() throws Exception {
-        try (TarArchiveInputStream is = new TarArchiveInputStream(new BZip2CompressorInputStream(newInputStream("bla.tar.bz2")))) {
+        try (TarArchiveInputStream is = TarArchiveInputStream.builder()
+                .setInputStream(new BZip2CompressorInputStream(newInputStream("bla.tar.bz2")))
+                .get()) {
             final TarArchiveEntry entry = is.getNextEntry();
             assertNotNull(entry);
             assertEquals("test1.xml", entry.getName());
@@ -43,7 +45,11 @@ class ChainingTest extends AbstractTest {
 
     @Test
     void testTarGzip() throws Exception {
-        try (TarArchiveInputStream is = new TarArchiveInputStream(new GzipCompressorInputStream(newInputStream("bla.tgz")))) {
+        try (TarArchiveInputStream is = TarArchiveInputStream.builder()
+                .setInputStream(GzipCompressorInputStream.builder()
+                        .setURI(getURI("bla.tgz"))
+                        .get())
+                .get()) {
             final TarArchiveEntry entry = is.getNextEntry();
             assertNotNull(entry);
             assertEquals("test1.xml", entry.getName());

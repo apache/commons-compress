@@ -40,7 +40,8 @@ public class BigFilesIT extends AbstractTest {
     private void readFileBiggerThan8GByte(final String name) throws Exception {
         try (InputStream in = new BufferedInputStream(Files.newInputStream(getPath(name)));
                 GzipCompressorInputStream gzin = new GzipCompressorInputStream(in);
-                TarArchiveInputStream tin = new TarArchiveInputStream(gzin)) {
+                TarArchiveInputStream tin =
+                        TarArchiveInputStream.builder().setInputStream(gzin).get()) {
             final TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
             assertEquals(8200L * 1024 * 1024, e.getSize());
@@ -77,7 +78,8 @@ public class BigFilesIT extends AbstractTest {
     void testReadFileHeadersOfArchiveBiggerThan8GByte() throws Exception {
         try (InputStream in = new BufferedInputStream(Files.newInputStream(getPath("8.posix.tar.gz")));
                 GzipCompressorInputStream gzin = new GzipCompressorInputStream(in);
-                TarArchiveInputStream tin = new TarArchiveInputStream(gzin)) {
+                TarArchiveInputStream tin =
+                        TarArchiveInputStream.builder().setInputStream(gzin).get()) {
             final TarArchiveEntry e = tin.getNextTarEntry();
             assertNotNull(e);
             assertNull(tin.getNextTarEntry());
