@@ -65,6 +65,48 @@ import org.apache.commons.compress.utils.ParsingUtils;
 public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry> implements CpioConstants {
 
     /**
+     * Builds a new {@link CpioArchiveInputStream}.
+     * <p>
+     *     For example:
+     * </p>
+     * <pre>{@code
+     * CpioArchiveInputStream in = CpioArchiveInputStream.builder()
+     *     .setBlockSize(1024)
+     *     .setPath(inputPath)
+     *     .setCharset(StandardCharsets.UTF_8)
+     *     .get();
+     * }</pre>
+     * @since 1.29.0
+     */
+    public static final class Builder extends ArchiveInputStream.Builder<CpioArchiveInputStream, Builder> {
+
+        private int blockSize = BLOCK_SIZE;
+
+        private Builder() {
+            setCharset(CpioUtil.DEFAULT_CHARSET);
+        }
+
+        /**
+         * Sets the block size of the archive.
+         * <p>
+         *     Default value is {@value CpioConstants#BLOCK_SIZE}.
+         * </p>
+         *
+         * @param blockSize The block size must be bigger than 0
+         * @return this
+         */
+        public Builder setBlockSize(final int blockSize) {
+            this.blockSize = blockSize;
+            return asThis();
+        }
+
+        @Override
+        public CpioArchiveInputStream get() throws IOException {
+            return new CpioArchiveInputStream(this);
+        }
+    }
+
+    /**
      * Checks if the signature matches one of the following magic values:
      *
      * Strings:
@@ -117,6 +159,16 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         return false;
     }
 
+    /**
+     * Creates a new builder.
+     *
+     * @return A new builder
+     * @since 1.29.0
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
+
     private boolean closed;
 
     private CpioArchiveEntry entry;
@@ -150,7 +202,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
      * @param in The cpio stream
      */
     public CpioArchiveInputStream(final InputStream in) {
-        this(in, BLOCK_SIZE, CpioUtil.DEFAULT_CHARSET_NAME);
+        this(in, builder());
     }
 
     /**
@@ -161,7 +213,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
      * @since 1.5
      */
     public CpioArchiveInputStream(final InputStream in, final int blockSize) {
-        this(in, blockSize, CpioUtil.DEFAULT_CHARSET_NAME);
+        this(in, builder().setBlockSize(blockSize));
     }
 
     /**
@@ -174,13 +226,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
      * @since 1.6
      */
     public CpioArchiveInputStream(final InputStream in, final int blockSize, final String encoding) {
-        super(in, encoding);
-        this.in = in;
-        if (blockSize <= 0) {
-            throw new IllegalArgumentException("blockSize must be bigger than 0");
-        }
-        this.blockSize = blockSize;
-        this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
+        this(in, builder().setBlockSize(blockSize).setCharset(encoding));
     }
 
     /**
@@ -191,7 +237,20 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
      * @since 1.6
      */
     public CpioArchiveInputStream(final InputStream in, final String encoding) {
-        this(in, BLOCK_SIZE, encoding);
+        this(in, builder().setCharset(encoding));
+    }
+
+    private CpioArchiveInputStream(final Builder builder) throws IOException {
+        this(builder.getInputStream(), builder);
+    }
+
+    private CpioArchiveInputStream(final InputStream in, final Builder builder) {
+        super(in, builder.getCharset());
+        if (builder.blockSize <= 0) {
+            throw new IllegalArgumentException("blockSize must be bigger than 0");
+        }
+        this.blockSize = builder.blockSize;
+        this.zipEncoding = ZipEncodingHelper.getZipEncoding(builder.getCharset());
     }
 
     /**

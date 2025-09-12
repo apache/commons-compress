@@ -458,10 +458,11 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
                 return (I) new JarArchiveInputStream(in);
             }
             if (CPIO.equalsIgnoreCase(archiverName)) {
+                final CpioArchiveInputStream.Builder cpioBuilder = CpioArchiveInputStream.builder().setInputStream(in);
                 if (actualEncoding != null) {
-                    return (I) new CpioArchiveInputStream(in, actualEncoding);
+                    cpioBuilder.setCharset(actualEncoding);
                 }
-                return (I) new CpioArchiveInputStream(in);
+                return (I) cpioBuilder.get();
             }
             if (DUMP.equalsIgnoreCase(archiverName)) {
                 if (actualEncoding != null) {
