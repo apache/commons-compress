@@ -45,8 +45,8 @@ import org.apache.commons.compress.archivers.dump.DumpArchiveInputStream;
 import org.apache.commons.compress.archivers.jar.JarArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
-import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.io.input.BrokenInputStream;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -236,7 +236,7 @@ class ArchiveStreamFactoryTest extends AbstractTest {
     @Test
     void testCantRead7zFromStream() throws Exception {
         assertThrows(StreamingNotSupportedException.class, () -> ArchiveStreamFactory.DEFAULT.createArchiveInputStream(ArchiveStreamFactory.SEVEN_Z,
-                new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY)));
+                new ByteArrayInputStream(ArrayUtils.EMPTY_BYTE_ARRAY)));
     }
 
     @Test
@@ -265,7 +265,7 @@ class ArchiveStreamFactoryTest extends AbstractTest {
         }
 
         final ArchiveException e1 = assertThrows(ArchiveException.class,
-                () -> ArchiveStreamFactory.detect(new BufferedInputStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY))),
+                () -> ArchiveStreamFactory.detect(new BufferedInputStream(new ByteArrayInputStream(ArrayUtils.EMPTY_BYTE_ARRAY))),
                 "shouldn't be able to detect empty stream");
         assertEquals("No Archiver found for the stream signature", e1.getMessage());
 

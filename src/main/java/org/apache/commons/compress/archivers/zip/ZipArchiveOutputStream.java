@@ -40,8 +40,8 @@ import java.util.zip.ZipException;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
-import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.io.Charsets;
+import org.apache.commons.lang3.ArrayUtils;
 
 /**
  * Reimplementation of {@link java.util.zip.ZipOutputStream java.util.zip.ZipOutputStream} to handle the extended functionality of this package, especially
@@ -1166,7 +1166,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
         }
 
         if (!entry.hasWritten) {
-            write(ByteUtils.EMPTY_BYTE_ARRAY, 0, 0);
+            write(ArrayUtils.EMPTY_BYTE_ARRAY, 0, 0);
         }
     }
 

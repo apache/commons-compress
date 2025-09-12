@@ -52,7 +52,6 @@ import java.util.zip.CheckedInputStream;
 
 import org.apache.commons.compress.MemoryLimitException;
 import org.apache.commons.compress.archivers.ArchiveException;
-import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
@@ -1006,7 +1005,7 @@ public class SevenZFile implements Closeable {
 
     private InputStream getCurrentStream() throws IOException {
         if (archive.files[currentEntryIndex].getSize() == 0) {
-            return new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY);
+            return new ByteArrayInputStream(ArrayUtils.EMPTY_BYTE_ARRAY);
         }
         if (deferredBlockStreams.isEmpty()) {
             throw new IllegalStateException("No current 7z entry (call getNextEntry() first).");

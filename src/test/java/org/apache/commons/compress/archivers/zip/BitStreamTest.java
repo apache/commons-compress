@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.ByteArrayInputStream;
 
-import org.apache.commons.compress.utils.ByteUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.Test;
 
 class BitStreamTest {
@@ -43,7 +43,7 @@ class BitStreamTest {
 
     @Test
     void testNextByteFromEmptyStream() throws Exception {
-        try (BitStream stream = new BitStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY))) {
+        try (BitStream stream = new BitStream(new ByteArrayInputStream(ArrayUtils.EMPTY_BYTE_ARRAY))) {
             assertEquals(-1, stream.nextByte(), "next byte");
             assertEquals(-1, stream.nextByte(), "next byte");
         }

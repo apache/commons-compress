@@ -37,6 +37,7 @@ import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.input.NullInputStream;
 import org.apache.commons.io.output.NullOutputStream;
+import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.Test;
 
 class IOUtilsTest {
@@ -84,7 +85,7 @@ class IOUtilsTest {
 
     @Test
     void testCopyOnZeroBufferSize() throws IOException {
-        assertEquals(0, IOUtils.copy(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY), new ByteArrayOutputStream(), 0));
+        assertEquals(0, IOUtils.copy(new ByteArrayInputStream(ArrayUtils.EMPTY_BYTE_ARRAY), new ByteArrayOutputStream(), 0));
     }
 
     @Test
@@ -110,9 +111,9 @@ class IOUtilsTest {
     @Test
     void testCopyRangeThrowsOnZeroBufferSize() throws IOException {
         assertThrows(IllegalArgumentException.class,
-                () -> IOUtils.copyRange(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY), 5, new ByteArrayOutputStream(), 0));
-        assertEquals(0, IOUtils.copyRange(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY), 5, new ByteArrayOutputStream(), 1));
-        assertEquals(0, IOUtils.copyRange(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY), 5, null, 1));
+                () -> IOUtils.copyRange(new ByteArrayInputStream(ArrayUtils.EMPTY_BYTE_ARRAY), 5, new ByteArrayOutputStream(), 0));
+        assertEquals(0, IOUtils.copyRange(new ByteArrayInputStream(ArrayUtils.EMPTY_BYTE_ARRAY), 5, new ByteArrayOutputStream(), 1));
+        assertEquals(0, IOUtils.copyRange(new ByteArrayInputStream(ArrayUtils.EMPTY_BYTE_ARRAY), 5, null, 1));
         assertEquals(1, IOUtils.copyRange(new ByteArrayInputStream(new byte[1]), 5, null, 1));
     }
 

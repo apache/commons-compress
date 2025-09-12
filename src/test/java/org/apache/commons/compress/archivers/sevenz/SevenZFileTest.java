@@ -54,7 +54,6 @@ import javax.crypto.Cipher;
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.MemoryLimitException;
 import org.apache.commons.compress.PasswordRequiredException;
-import org.apache.commons.compress.RuntimeMemory;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.utils.MultiReadOnlySeekableByteChannel;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
@@ -94,7 +93,7 @@ class SevenZFileTest extends AbstractTest {
 
     @BeforeEach
     void beforeAll() {
-        RuntimeMemory.println();
+        // RuntimeMemory.println();
     }
 
     private void checkHelloWorld(final String fileName) throws Exception {

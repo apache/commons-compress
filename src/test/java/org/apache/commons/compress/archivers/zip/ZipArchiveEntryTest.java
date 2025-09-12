@@ -36,9 +36,9 @@ import java.util.NoSuchElementException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 
-import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.TimeUtils;
 import org.apache.commons.io.file.attribute.FileTimes;
+import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -61,7 +61,7 @@ class ZipArchiveEntryTest {
         a.setMode(0755);
         final UnrecognizedExtraField u = new UnrecognizedExtraField();
         u.setHeaderId(ExtraFieldUtilsTest.UNRECOGNIZED_HEADER);
-        u.setLocalFileDataData(ByteUtils.EMPTY_BYTE_ARRAY);
+        u.setLocalFileDataData(ArrayUtils.EMPTY_BYTE_ARRAY);
         final UnparseableExtraFieldData x = new UnparseableExtraFieldData();
         final byte[] unparseable = { 0, 0, (byte) 0xff, (byte) 0xff, 0, 0, 0 };
         x.parseFromLocalFileData(unparseable, 0, unparseable.length);
@@ -78,7 +78,7 @@ class ZipArchiveEntryTest {
         a.setMode(0755);
         final UnrecognizedExtraField u = new UnrecognizedExtraField();
         u.setHeaderId(ExtraFieldUtilsTest.UNRECOGNIZED_HEADER);
-        u.setLocalFileDataData(ByteUtils.EMPTY_BYTE_ARRAY);
+        u.setLocalFileDataData(ArrayUtils.EMPTY_BYTE_ARRAY);
 
         final ZipArchiveEntry ze = new ZipArchiveEntry("test/");
         ze.setExtraFields(new ZipExtraField[] { a, u });
@@ -160,7 +160,7 @@ class ZipArchiveEntryTest {
         a.setMode(0755);
         final UnrecognizedExtraField u = new UnrecognizedExtraField();
         u.setHeaderId(ExtraFieldUtilsTest.UNRECOGNIZED_HEADER);
-        u.setLocalFileDataData(ByteUtils.EMPTY_BYTE_ARRAY);
+        u.setLocalFileDataData(ArrayUtils.EMPTY_BYTE_ARRAY);
 
         final ZipArchiveEntry ze = new ZipArchiveEntry("test/");
         ze.setExtraFields(new ZipExtraField[] { a, u });
@@ -206,7 +206,7 @@ class ZipArchiveEntryTest {
         a.setMode(0755);
         final UnrecognizedExtraField u = new UnrecognizedExtraField();
         u.setHeaderId(ExtraFieldUtilsTest.UNRECOGNIZED_HEADER);
-        u.setLocalFileDataData(ByteUtils.EMPTY_BYTE_ARRAY);
+        u.setLocalFileDataData(ArrayUtils.EMPTY_BYTE_ARRAY);
 
         final ZipArchiveEntry ze = new ZipArchiveEntry("test/");
         ze.setExtraFields(new ZipExtraField[] { a, u });

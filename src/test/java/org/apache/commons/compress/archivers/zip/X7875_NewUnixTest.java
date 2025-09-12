@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.zip.ZipException;
 
-import org.apache.commons.compress.utils.ByteUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -80,7 +80,7 @@ class X7875_NewUnixTest {
 
         assertEquals(0, xf.getCentralDirectoryLength().getValue());
         result = xf.getCentralDirectoryData();
-        assertArrayEquals(ByteUtils.EMPTY_BYTE_ARRAY, result);
+        assertArrayEquals(ArrayUtils.EMPTY_BYTE_ARRAY, result);
 
         // And now we re-parse:
         xf.parseFromCentralDirectoryData(result, 0, result.length);
@@ -197,7 +197,7 @@ class X7875_NewUnixTest {
     @Test
     void testTrimLeadingZeroesForceMinLength4() {
         final byte[] NULL = null;
-        final byte[] EMPTY = ByteUtils.EMPTY_BYTE_ARRAY;
+        final byte[] EMPTY = ArrayUtils.EMPTY_BYTE_ARRAY;
         final byte[] ONE_ZERO = { 0 };
         final byte[] TWO_ZEROES = { 0, 0 };
         final byte[] FOUR_ZEROES = { 0, 0, 0, 0 };

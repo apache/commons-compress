@@ -268,7 +268,7 @@ class GzipCompressorOutputStreamTest {
                 "1f8b"         // id1 id2
                 + "08"         // cm
                 + "1e"         // flg(FEXTRA|FNAME|FCOMMENT|FHCRC)
-                + "33445566"   // mtime little endian
+                + "33445566"   // mtime little-endian
                 + "00" + "03"  // xfl os
                 + "0800"       // xlen
                 + "4242"       // sfid
