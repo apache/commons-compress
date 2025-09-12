@@ -1446,7 +1446,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * <ul>
      * <li>mode is Always</li>
      * <li>or we already know it is going to be needed</li>
-     * <li>or the size is unknown and we can ensure it won't hurt other implementations if we add it (i.e. we can erase its usage</li>
+     * <li>or the size is unknown, and we can ensure it won't hurt other implementations if we add it (i.e. we can erase its usage</li>
      * </ul>
      */
     private boolean shouldAddZip64Extra(final ZipArchiveEntry entry, final Zip64Mode mode) {

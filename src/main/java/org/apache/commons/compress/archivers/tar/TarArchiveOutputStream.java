@@ -51,7 +51,7 @@ import org.apache.commons.lang3.StringUtils;
  * <p>
  * tar archives consist of a sequence of records of 512 bytes each that are grouped into blocks. Prior to Apache Commons Compress 1.14 it has been possible to
  * configure a record size different from 512 bytes and arbitrary block sizes. Starting with Compress 1.15 512 is the only valid option for the record size and
- * the block size must be a multiple of 512. Also the default block size changed from 10240 bytes prior to Compress 1.15 to 512 bytes with Compress 1.15.
+ * the block size must be a multiple of 512. Also, the default block size changed from 10240 bytes prior to Compress 1.15 to 512 bytes with Compress 1.15.
  * </p>
  *
  * @NotThreadSafe
@@ -436,8 +436,8 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
      * <p>
      * I.e. if the given name is too long to be written to a plain tar header then
      * <ul>
-     * <li>it creates a pax header who's name is given by the paxHeaderName parameter if longFileMode is POSIX</li>
-     * <li>it creates a GNU longlink entry who's type is given by the linkType parameter if longFileMode is GNU</li>
+     * <li>it creates a pax header whose name is given by the paxHeaderName parameter if longFileMode is POSIX</li>
+     * <li>it creates a GNU longlink entry whose type is given by the linkType parameter if longFileMode is GNU</li>
      * <li>it throws an exception if longFileMode is ERROR</li>
      * <li>it truncates the name if longFileMode is TRUNCATE</li>
      * </ul>
