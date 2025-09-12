@@ -483,6 +483,8 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
                 return archiveStreamProvider.createArchiveInputStream(archiverName, in, actualEncoding);
             }
             throw new ArchiveException("Archiver: %s not found.", archiverName);
+        } catch (final ArchiveException e) {
+            throw e;
         } catch (final IOException e) {
             throw new ArchiveException(
                     "IOException while creating " + archiverName + " input stream: " + e.getMessage(), e);
