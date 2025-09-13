@@ -36,6 +36,7 @@ public interface ArchiveStreamProvider {
      * @param <I>          The {@link ArchiveInputStream} type.
      * @param archiverName the archiver name, i.e. {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#AR},
      *                     {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#ARJ},
+     *                     {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#LHA},
      *                     {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#ZIP},
      *                     {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#TAR},
      *                     {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#JAR},
