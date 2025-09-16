@@ -30,9 +30,13 @@ import org.apache.commons.lang3.math.NumberUtils;
  */
 public class IntList {
 
+    private static int calculateIncrement(final int size, final int required) {
+        return NumberUtils.max(size / 2, required, 12);
+    }
     private int[] array;
     private int firstIndex;
     private int lastIndex;
+
     private int modCount;
 
     /**
@@ -120,10 +124,6 @@ public class IntList {
             return array[firstIndex + location];
         }
         throw new IndexOutOfBoundsException("" + location);
-    }
-
-    private static int calculateIncrement(final int size, final int required) {
-        return NumberUtils.max(size / 2, required, 12);
     }
 
     private void growAtEnd(final int required) {

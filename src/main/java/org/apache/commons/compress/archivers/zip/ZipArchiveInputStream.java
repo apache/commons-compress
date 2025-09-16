@@ -98,16 +98,22 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
         }
 
         /**
-         * Sets whether to use InfoZIP Unicode Extra Fields (if present) to set the file names.
+         * Tests whether the stream should skip the ZIP split signature.
          *
-         * <p>This feature is enabled by default.</p>
-         *
-         * @param useUnicodeExtraFields If {@code true} Unicode Extra Fields should be used.
-         * @return {@code this} instance.
+         * @return {@code true} to skip the ZIP split signature, {@code false} otherwise.
          */
-        public B setUseUnicodeExtraFields(final boolean useUnicodeExtraFields) {
-            this.useUnicodeExtraFields = useUnicodeExtraFields;
-            return asThis();
+        protected boolean isSkipSplitSignature() {
+            return skipSplitSignature;
+        }
+
+        /**
+         * Tests whether the stream attempts to read STORED entries that use a data descriptor.
+         *
+         * @return {@code true} to read STORED entries with data descriptors,
+         *         {@code false} to stop at the compressed size.
+         */
+        protected boolean isSupportStoredEntryDataDescriptor() {
+            return supportStoredEntryDataDescriptor;
         }
 
         /**
@@ -117,6 +123,20 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
          */
         protected boolean isUseUnicodeExtraFields() {
             return useUnicodeExtraFields;
+        }
+
+        /**
+         * Sets whether the stream should skip the ZIP split signature
+         * ({@code 08074B50}) at the beginning of the input.
+         *
+         * <p>Disabled by default.</p>
+         *
+         * @param skipSplitSignature {@code true} to skip the ZIP split signature, {@code false} otherwise.
+         * @return {@code this} instance.
+         */
+        public B setSkipSplitSignature(final boolean skipSplitSignature) {
+            this.skipSplitSignature = skipSplitSignature;
+            return asThis();
         }
 
         /**
@@ -142,62 +162,16 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
         }
 
         /**
-         * Tests whether the stream attempts to read STORED entries that use a data descriptor.
+         * Sets whether to use InfoZIP Unicode Extra Fields (if present) to set the file names.
          *
-         * @return {@code true} to read STORED entries with data descriptors,
-         *         {@code false} to stop at the compressed size.
-         */
-        protected boolean isSupportStoredEntryDataDescriptor() {
-            return supportStoredEntryDataDescriptor;
-        }
-
-        /**
-         * Sets whether the stream should skip the ZIP split signature
-         * ({@code 08074B50}) at the beginning of the input.
+         * <p>This feature is enabled by default.</p>
          *
-         * <p>Disabled by default.</p>
-         *
-         * @param skipSplitSignature {@code true} to skip the ZIP split signature, {@code false} otherwise.
+         * @param useUnicodeExtraFields If {@code true} Unicode Extra Fields should be used.
          * @return {@code this} instance.
          */
-        public B setSkipSplitSignature(final boolean skipSplitSignature) {
-            this.skipSplitSignature = skipSplitSignature;
+        public B setUseUnicodeExtraFields(final boolean useUnicodeExtraFields) {
+            this.useUnicodeExtraFields = useUnicodeExtraFields;
             return asThis();
-        }
-
-        /**
-         * Tests whether the stream should skip the ZIP split signature.
-         *
-         * @return {@code true} to skip the ZIP split signature, {@code false} otherwise.
-         */
-        protected boolean isSkipSplitSignature() {
-            return skipSplitSignature;
-        }
-    }
-
-    /**
-     * Builds a new {@link ZipArchiveInputStream}.
-     * <p>
-     *     For example:
-     * </p>
-     * <pre>{@code
-     * ZipArchiveInputStream in = ZipArchiveInputStream.builder()
-     *     .setPath(inputPath)
-     *     .setCharset(StandardCharsets.UTF_8)
-     *     .setUseUnicodeExtraFields(false)
-     *     .get();
-     * }</pre>
-     * @since 1.29.0
-     */
-    public static final class Builder extends AbstractBuilder<ZipArchiveInputStream, Builder> {
-
-        private Builder() {
-            // empty
-        }
-
-        @Override
-        public ZipArchiveInputStream get() throws IOException {
-            return new ZipArchiveInputStream(this);
         }
     }
 
@@ -251,6 +225,32 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
                 current.bytesReadFromStream += bytesRead;
             }
             return bytesRead;
+        }
+    }
+
+    /**
+     * Builds a new {@link ZipArchiveInputStream}.
+     * <p>
+     *     For example:
+     * </p>
+     * <pre>{@code
+     * ZipArchiveInputStream in = ZipArchiveInputStream.builder()
+     *     .setPath(inputPath)
+     *     .setCharset(StandardCharsets.UTF_8)
+     *     .setUseUnicodeExtraFields(false)
+     *     .get();
+     * }</pre>
+     * @since 1.29.0
+     */
+    public static final class Builder extends AbstractBuilder<ZipArchiveInputStream, Builder> {
+
+        private Builder() {
+            // empty
+        }
+
+        @Override
+        public ZipArchiveInputStream get() throws IOException {
+            return new ZipArchiveInputStream(this);
         }
     }
 
@@ -328,6 +328,16 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     private static final BigInteger LONG_MAX = BigInteger.valueOf(Long.MAX_VALUE);
 
     /**
+     * Creates a new builder.
+     *
+     * @return A new builder
+     * @since 1.29.0
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    /**
      * Checks if the signature matches what is expected for a ZIP file. Does not currently handle self-extracting ZIPs which may have arbitrary leading content.
      *
      * @param buffer the bytes to check.
@@ -342,16 +352,6 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
                 || ArrayUtils.startsWith(buffer, ZipArchiveOutputStream.EOCD_SIG) // empty zip
                 || ArrayUtils.startsWith(buffer, ZipArchiveOutputStream.DD_SIG) // split zip
                 || ArrayUtils.startsWith(buffer, ZipLong.SINGLE_SEGMENT_SPLIT_MARKER.getBytes());
-    }
-
-    /**
-     * Creates a new builder.
-     *
-     * @return A new builder
-     * @since 1.29.0
-     */
-    public static Builder builder() {
-        return new Builder();
     }
 
     /** The ZIP encoding to use for file names and the file comment. */
@@ -399,12 +399,34 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     // private Function<ZipShort, ZipExtraField> extraFieldSupport;
 
     /**
+     * Creates an instance from the given builder.
+     *
+     * @param builder The builder used to configure and create the stream.
+     * @throws IOException If the builder fails to create the underlying {@link InputStream}.
+     * @since 1.29.0
+     */
+    protected ZipArchiveInputStream(final AbstractBuilder<?, ?> builder) throws IOException {
+        this(builder.getInputStream(), builder);
+    }
+
+    /**
      * Constructs an instance using UTF-8 encoding.
      *
      * @param inputStream the stream to wrap.
      */
     public ZipArchiveInputStream(final InputStream inputStream) {
         this(inputStream, builder());
+    }
+
+    private ZipArchiveInputStream(final InputStream inputStream, final AbstractBuilder<?, ?> builder) {
+        super(inputStream, builder.getCharset());
+        this.in = new PushbackInputStream(inputStream, buf.capacity());
+        this.zipEncoding = ZipEncodingHelper.getZipEncoding(builder.getCharset());
+        this.useUnicodeExtraFields = builder.isUseUnicodeExtraFields();
+        this.supportStoredEntryDataDescriptor = builder.isSupportStoredEntryDataDescriptor();
+        this.skipSplitSignature = builder.isSkipSplitSignature();
+        // haven't read anything so far
+        buf.limit(0);
     }
 
     /**
@@ -476,28 +498,6 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
                         .setUseUnicodeExtraFields(useUnicodeExtraFields)
                         .setSupportStoredEntryDataDescriptor(supportStoredEntryDataDescriptor)
                         .setSkipSplitSignature(skipSplitSignature));
-    }
-
-    /**
-     * Creates an instance from the given builder.
-     *
-     * @param builder The builder used to configure and create the stream.
-     * @throws IOException If the builder fails to create the underlying {@link InputStream}.
-     * @since 1.29.0
-     */
-    protected ZipArchiveInputStream(final AbstractBuilder<?, ?> builder) throws IOException {
-        this(builder.getInputStream(), builder);
-    }
-
-    private ZipArchiveInputStream(final InputStream inputStream, final AbstractBuilder<?, ?> builder) {
-        super(inputStream, builder.getCharset());
-        this.in = new PushbackInputStream(inputStream, buf.capacity());
-        this.zipEncoding = ZipEncodingHelper.getZipEncoding(builder.getCharset());
-        this.useUnicodeExtraFields = builder.isUseUnicodeExtraFields();
-        this.supportStoredEntryDataDescriptor = builder.isSupportStoredEntryDataDescriptor();
-        this.skipSplitSignature = builder.isSkipSplitSignature();
-        // haven't read anything so far
-        buf.limit(0);
     }
 
     /**

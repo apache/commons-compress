@@ -86,6 +86,11 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
             setCharset(CpioUtil.DEFAULT_CHARSET);
         }
 
+        @Override
+        public CpioArchiveInputStream get() throws IOException {
+            return new CpioArchiveInputStream(this);
+        }
+
         /**
          * Sets the block size of the archive.
          * <p>
@@ -99,11 +104,16 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
             this.blockSize = blockSize;
             return asThis();
         }
+    }
 
-        @Override
-        public CpioArchiveInputStream get() throws IOException {
-            return new CpioArchiveInputStream(this);
-        }
+    /**
+     * Creates a new builder.
+     *
+     * @return A new builder
+     * @since 1.29.0
+     */
+    public static Builder builder() {
+        return new Builder();
     }
 
     /**
@@ -159,16 +169,6 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         return false;
     }
 
-    /**
-     * Creates a new builder.
-     *
-     * @return A new builder
-     * @since 1.29.0
-     */
-    public static Builder builder() {
-        return new Builder();
-    }
-
     private boolean closed;
 
     private CpioArchiveEntry entry;
@@ -196,6 +196,10 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
      */
     private final ZipEncoding zipEncoding;
 
+    private CpioArchiveInputStream(final Builder builder) throws IOException {
+        this(builder.getInputStream(), builder);
+    }
+
     /**
      * Constructs the cpio input stream with a blocksize of {@link CpioConstants#BLOCK_SIZE BLOCK_SIZE} and expecting ASCII file names.
      *
@@ -203,6 +207,15 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
      */
     public CpioArchiveInputStream(final InputStream in) {
         this(in, builder());
+    }
+
+    private CpioArchiveInputStream(final InputStream in, final Builder builder) {
+        super(in, builder.getCharset());
+        if (builder.blockSize <= 0) {
+            throw new IllegalArgumentException("blockSize must be bigger than 0");
+        }
+        this.blockSize = builder.blockSize;
+        this.zipEncoding = ZipEncodingHelper.getZipEncoding(builder.getCharset());
     }
 
     /**
@@ -238,19 +251,6 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
      */
     public CpioArchiveInputStream(final InputStream in, final String encoding) {
         this(in, builder().setCharset(encoding));
-    }
-
-    private CpioArchiveInputStream(final Builder builder) throws IOException {
-        this(builder.getInputStream(), builder);
-    }
-
-    private CpioArchiveInputStream(final InputStream in, final Builder builder) {
-        super(in, builder.getCharset());
-        if (builder.blockSize <= 0) {
-            throw new IllegalArgumentException("blockSize must be bigger than 0");
-        }
-        this.blockSize = builder.blockSize;
-        this.zipEncoding = ZipEncodingHelper.getZipEncoding(builder.getCharset());
     }
 
     /**

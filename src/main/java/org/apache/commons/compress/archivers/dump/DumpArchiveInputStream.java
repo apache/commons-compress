@@ -74,6 +74,16 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
     private static final String PARENT_PATH_SEGMENT = "..";
 
     /**
+     * Creates a new builder.
+     *
+     * @return A new builder
+     * @since 1.29.0
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    /**
      * Look at the first few bytes of the file to decide if it's a dump archive. With 32 bytes we can look at the magic value, with a full 1k we can verify the
      * checksum.
      *
@@ -94,16 +104,6 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
 
         // this will work in a pinch.
         return DumpArchiveConstants.NFS_MAGIC == DumpArchiveUtil.convert32(buffer, 24);
-    }
-
-    /**
-     * Creates a new builder.
-     *
-     * @return A new builder
-     * @since 1.29.0
-     */
-    public static Builder builder() {
-        return new Builder();
     }
 
     private final DumpArchiveSummary summary;
@@ -137,6 +137,10 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
      */
     private final ZipEncoding zipEncoding;
 
+    private DumpArchiveInputStream(final Builder builder) throws IOException {
+        this(builder.getInputStream(), builder);
+    }
+
     /**
      * Constructor using the platform's default encoding for file names.
      *
@@ -145,22 +149,6 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
      */
     public DumpArchiveInputStream(final InputStream is) throws ArchiveException {
         this(is, builder());
-    }
-
-    /**
-     * Constructs a new instance.
-     *
-     * @param is       stream to read from
-     * @param encoding the encoding to use for file names, use null for the platform's default encoding
-     * @throws ArchiveException on error
-     * @since 1.6
-     */
-    public DumpArchiveInputStream(final InputStream is, final String encoding) throws ArchiveException {
-        this(is, builder().setCharset(encoding));
-    }
-
-    private DumpArchiveInputStream(final Builder builder) throws IOException {
-        this(builder.getInputStream(), builder);
     }
 
     private DumpArchiveInputStream(final InputStream is, final Builder builder) throws ArchiveException {
@@ -206,6 +194,18 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
 
             return p.getOriginalName().compareTo(q.getOriginalName());
         });
+    }
+
+    /**
+     * Constructs a new instance.
+     *
+     * @param is       stream to read from
+     * @param encoding the encoding to use for file names, use null for the platform's default encoding
+     * @throws ArchiveException on error
+     * @since 1.6
+     */
+    public DumpArchiveInputStream(final InputStream is, final String encoding) throws ArchiveException {
+        this(is, builder().setCharset(encoding));
     }
 
     /**

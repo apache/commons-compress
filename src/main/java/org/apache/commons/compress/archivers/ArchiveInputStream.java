@@ -53,6 +53,24 @@ import org.apache.commons.io.input.NullInputStream;
 public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterInputStream {
 
     /**
+     * Generic builder for ArchiveInputStream instances.
+     *
+     * @param <T> The type of {@link ArchiveInputStream} to build.
+     * @param <B> The type of the concrete AbstractBuilder.
+     * @since 1.29.0
+     */
+    public abstract static class AbstractBuilder<T extends ArchiveInputStream<?>, B extends AbstractBuilder<T, B>>
+            extends AbstractStreamBuilder<T, B> {
+
+        /**
+         * Constructs a new instance.
+         */
+        protected AbstractBuilder() {
+            // empty
+        }
+    }
+
+    /**
      * An iterator over a collection of a specific {@link ArchiveEntry} type.
      */
     final class ArchiveEntryIOIterator implements IOIterator<E> {
@@ -87,24 +105,6 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
             return null;
         }
 
-    }
-
-    /**
-     * Generic builder for ArchiveInputStream instances.
-     *
-     * @param <T> The type of {@link ArchiveInputStream} to build.
-     * @param <B> The type of the concrete AbstractBuilder.
-     * @since 1.29.0
-     */
-    public abstract static class AbstractBuilder<T extends ArchiveInputStream<?>, B extends AbstractBuilder<T, B>>
-            extends AbstractStreamBuilder<T, B> {
-
-        /**
-         * Constructs a new instance.
-         */
-        protected AbstractBuilder() {
-            // empty
-        }
     }
 
     private static final int BYTE_MASK = 0xFF;

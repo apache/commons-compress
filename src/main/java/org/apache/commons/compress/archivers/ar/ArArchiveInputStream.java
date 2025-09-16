@@ -83,6 +83,16 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
     private static final Pattern GNU_LONGNAME_PATTERN = Pattern.compile("^/\\d+");
 
     /**
+     * Creates a new builder.
+     *
+     * @return A new builder
+     * @since 1.29.0
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    /**
      * Does the name look like it is a long name (or a name containing spaces) as encoded by BSD ar?
      * <p>
      * From the FreeBSD ar(5) man page:
@@ -137,16 +147,6 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
         return ArrayUtils.startsWith(buffer, ArArchiveEntry.HEADER_BYTES);
     }
 
-    /**
-     * Creates a new builder.
-     *
-     * @return A new builder
-     * @since 1.29.0
-     */
-    public static Builder builder() {
-        return new Builder();
-    }
-
     private boolean closed;
 
     /*
@@ -165,6 +165,10 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
     /** Cached buffer for meta data - must only be used locally in the class (COMPRESS-172 - reduce garbage collection). */
     private final byte[] metaData = new byte[NAME_LEN + LAST_MODIFIED_LEN + USER_ID_LEN + GROUP_ID_LEN + FILE_MODE_LEN + LENGTH_LEN];
 
+    private ArArchiveInputStream(final Builder builder) throws IOException {
+        this(builder.getInputStream(), builder);
+    }
+
     /**
      * Constructs an Ar input stream with the referenced stream
      *
@@ -172,10 +176,6 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
      */
     public ArArchiveInputStream(final InputStream inputStream) {
         this(inputStream, builder());
-    }
-
-    private ArArchiveInputStream(final Builder builder) throws IOException {
-        this(builder.getInputStream(), builder);
     }
 
     private ArArchiveInputStream(final InputStream inputStream, final Builder builder) {

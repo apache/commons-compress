@@ -218,14 +218,6 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
         this(builder.getInputStream(), builder);
     }
 
-    private TarArchiveInputStream(final InputStream inputStream, final Builder builder) {
-        super(inputStream, builder.getCharset());
-        this.zipEncoding = ZipEncodingHelper.getZipEncoding(builder.getCharset());
-        this.recordBuffer = new byte[builder.recordSize];
-        this.blockSize = builder.blockSize;
-        this.lenient = builder.lenient;
-    }
-
     /**
      * Constructs a new instance.
      *
@@ -247,6 +239,14 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
     @Deprecated
     public TarArchiveInputStream(final InputStream inputStream, final boolean lenient) {
         this(inputStream, builder().setLenient(lenient));
+    }
+
+    private TarArchiveInputStream(final InputStream inputStream, final Builder builder) {
+        super(inputStream, builder.getCharset());
+        this.zipEncoding = ZipEncodingHelper.getZipEncoding(builder.getCharset());
+        this.recordBuffer = new byte[builder.recordSize];
+        this.blockSize = builder.blockSize;
+        this.lenient = builder.lenient;
     }
 
     /**

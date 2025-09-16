@@ -68,6 +68,13 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 class TarArchiveInputStreamTest extends AbstractTest {
 
+    @SuppressWarnings("resource") // Caller closes
+    private static TarArchiveInputStream getTestStream(final String name) throws IOException {
+        return TarArchiveInputStream.builder()
+                .setURI(getURI(name))
+                .get();
+    }
+
     private void datePriorToEpoch(final String archive) throws Exception {
         try (TarArchiveInputStream in = getTestStream(archive)) {
             final TarArchiveEntry tae = in.getNextTarEntry();
@@ -84,13 +91,6 @@ class TarArchiveInputStreamTest extends AbstractTest {
     private void getNextEntryUntilIOException(final TarArchiveInputStream archive) {
         // Only on Windows: throws a UnmappableCharacterException
         assertThrows(IOException.class, () -> archive.forEach(IOConsumer.noop()));
-    }
-
-    @SuppressWarnings("resource") // Caller closes
-    private static TarArchiveInputStream getTestStream(final String name) throws IOException {
-        return TarArchiveInputStream.builder()
-                .setURI(getURI(name))
-                .get();
     }
 
     @Test

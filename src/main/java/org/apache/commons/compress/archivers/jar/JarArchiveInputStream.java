@@ -53,6 +53,16 @@ public class JarArchiveInputStream extends ZipArchiveInputStream {
     }
 
     /**
+     * Creates a new builder.
+     *
+     * @return A new builder
+     * @since 1.29.0
+     */
+    public static Builder jarInputStreamBuilder() {
+        return new Builder();
+    }
+
+    /**
      * Checks if the signature matches what is expected for a jar file (in this case it is the same as for a ZIP file).
      *
      * @param signature the bytes to check
@@ -63,14 +73,8 @@ public class JarArchiveInputStream extends ZipArchiveInputStream {
         return ZipArchiveInputStream.matches(signature, length);
     }
 
-    /**
-     * Creates a new builder.
-     *
-     * @return A new builder
-     * @since 1.29.0
-     */
-    public static Builder jarInputStreamBuilder() {
-        return new Builder();
+    private JarArchiveInputStream(final Builder builder) throws IOException {
+        super(builder);
     }
 
     /**
@@ -91,10 +95,6 @@ public class JarArchiveInputStream extends ZipArchiveInputStream {
      */
     public JarArchiveInputStream(final InputStream inputStream, final String encoding) {
         super(inputStream, encoding);
-    }
-
-    private JarArchiveInputStream(final Builder builder) throws IOException {
-        super(builder);
     }
 
     @Override
