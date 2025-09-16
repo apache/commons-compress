@@ -354,7 +354,7 @@ public final class ZipTest extends AbstractTest {
                 InputStream inputStream = Channels.newInputStream(channel);
                 ZipArchiveInputStream splitInputStream = ZipArchiveInputStream.builder()
                         .setInputStream(inputStream)
-                        .setSkipSplitSig(true)
+                        .setSkipSplitSignature(true)
                         .get()) {
 
             ArchiveEntry entry;

@@ -568,13 +568,13 @@ class ZipArchiveInputStreamTest extends AbstractTest {
                 InputStream inputStream = Channels.newInputStream(channel);
                 ZipArchiveInputStream splitInputStream = ZipArchiveInputStream.builder()
                         .setInputStream(inputStream)
-                        .setSkipSplitSig(true)
+                        .setSkipSplitSignature(true)
                         .get()) {
 
             final File fileToCompare = getFile("COMPRESS-477/split_zip_created_by_winrar/zip_to_compare_created_by_winrar.zip");
             try (ZipArchiveInputStream inputStreamToCompare = ZipArchiveInputStream.builder()
                     .setFile(fileToCompare)
-                    .setSkipSplitSig(true)
+                    .setSkipSplitSignature(true)
                     .get()) {
                 ArchiveEntry entry;
                 while ((entry = splitInputStream.getNextEntry()) != null && inputStreamToCompare.getNextEntry() != null) {
@@ -594,7 +594,7 @@ class ZipArchiveInputStreamTest extends AbstractTest {
                 InputStream inputStream = Channels.newInputStream(channel);
                 ZipArchiveInputStream splitInputStream = ZipArchiveInputStream.builder()
                         .setInputStream(inputStream)
-                        .setSkipSplitSig(true)
+                        .setSkipSplitSignature(true)
                         .get()) {
 
             final Path fileToCompare = getPath("COMPRESS-477/split_zip_created_by_zip/zip_to_compare_created_by_zip.zip");
@@ -619,13 +619,13 @@ class ZipArchiveInputStreamTest extends AbstractTest {
                 InputStream inputStream = Channels.newInputStream(channel);
                 ZipArchiveInputStream splitInputStream = ZipArchiveInputStream.builder()
                         .setInputStream(inputStream)
-                        .setSkipSplitSig(true)
+                        .setSkipSplitSignature(true)
                         .get()) {
 
             final Path fileToCompare = getPath("COMPRESS-477/split_zip_created_by_zip/zip_to_compare_created_by_zip_zip64.zip");
             try (ZipArchiveInputStream inputStreamToCompare = ZipArchiveInputStream.builder()
                     .setPath(fileToCompare)
-                    .setSkipSplitSig(true)
+                    .setSkipSplitSignature(true)
                     .get()) {
 
                 ArchiveEntry entry;
@@ -643,7 +643,7 @@ class ZipArchiveInputStreamTest extends AbstractTest {
     void testSplitZipCreatedByZipThrowsException() throws IOException {
         try (ZipArchiveInputStream inputStream = ZipArchiveInputStream.builder()
                 .setURI(getURI("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.z01"))
-                .setSkipSplitSig(true)
+                .setSkipSplitSignature(true)
                 .get()) {
 
             assertThrows(EOFException.class, () -> {

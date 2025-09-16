@@ -88,7 +88,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
             extends ArchiveInputStream.AbstractBuilder<T, B> {
         private boolean useUnicodeExtraFields = true;
         private boolean allowStoredEntriesWithDataDescriptor;
-        private boolean skipSplitSig;
+        private boolean skipSplitSignature;
 
         /**
          * Constructs a new instance.
@@ -157,11 +157,11 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
          *
          * <p>Disabled by default.</p>
          *
-         * @param skipSplitSig {@code true} to skip the ZIP split signature, {@code false} otherwise.
+         * @param skipSplitSignature {@code true} to skip the ZIP split signature, {@code false} otherwise.
          * @return {@code this} instance.
          */
-        public B setSkipSplitSig(final boolean skipSplitSig) {
-            this.skipSplitSig = skipSplitSig;
+        public B setSkipSplitSignature(final boolean skipSplitSignature) {
+            this.skipSplitSignature = skipSplitSignature;
             return asThis();
         }
 
@@ -170,8 +170,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
          *
          * @return {@code true} to skip the ZIP split signature, {@code false} otherwise.
          */
-        protected boolean isSkipSplitSig() {
-            return skipSplitSig;
+        protected boolean isSkipSplitSignature() {
+            return skipSplitSignature;
         }
     }
 
@@ -385,7 +385,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     /** Count decompressed bytes for current entry */
     private long uncompressedCount;
     /** Whether the stream will try to skip the ZIP split signature(08074B50) at the beginning. **/
-    private final boolean skipSplitSig;
+    private final boolean skipSplitSignature;
     /** Cached buffers - must only be used locally in the class (COMPRESS-172 - reduce garbage collection). */
     private final byte[] lfhBuf = new byte[LFH_LEN];
     private final byte[] skipBuf = new byte[1024];
@@ -459,8 +459,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
      * @param encoding                             the encoding to use for file names, use null for the platform's default encoding.
      * @param useUnicodeExtraFields                whether to use InfoZIP Unicode Extra Fields (if present) to set the file names.
      * @param allowStoredEntriesWithDataDescriptor whether the stream will try to read STORED entries that use a data descriptor.
-     * @param skipSplitSig                         Whether the stream will try to skip the zip split signature(08074B50) at the beginning. You will need to set
-     *                                             this to true if you want to read a split archive.
+     * @param skipSplitSignature                   Whether the stream will try to skip the zip split signature(08074B50) at the beginning.
+     *                                             You will need to set this to true if you want to read a split archive.
      * @since 1.20
      */
     public ZipArchiveInputStream(
@@ -468,14 +468,14 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
             final String encoding,
             final boolean useUnicodeExtraFields,
             final boolean allowStoredEntriesWithDataDescriptor,
-            final boolean skipSplitSig) {
+            final boolean skipSplitSignature) {
         this(
                 inputStream,
                 builder()
                         .setCharset(encoding)
                         .setUseUnicodeExtraFields(useUnicodeExtraFields)
                         .setAllowStoredEntriesWithDataDescriptor(allowStoredEntriesWithDataDescriptor)
-                        .setSkipSplitSig(skipSplitSig));
+                        .setSkipSplitSignature(skipSplitSignature));
     }
 
     protected ZipArchiveInputStream(final AbstractBuilder<?, ?> builder) throws IOException {
@@ -488,7 +488,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(builder.getCharset());
         this.useUnicodeExtraFields = builder.isUseUnicodeExtraFields();
         this.allowStoredEntriesWithDataDescriptor = builder.isAllowStoredEntriesWithDataDescriptor();
-        this.skipSplitSig = builder.isSkipSplitSig();
+        this.skipSplitSignature = builder.isSkipSplitSignature();
         // haven't read anything so far
         buf.limit(0);
     }
@@ -1157,10 +1157,10 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
             throw new ZipException("Cannot find zip signature within the file");
         }
         final ZipLong sig = new ZipLong(lfhBuf);
-        if (!skipSplitSig && sig.equals(ZipLong.DD_SIG)) {
+        if (!skipSplitSignature && sig.equals(ZipLong.DD_SIG)) {
             throw new UnsupportedZipFeatureException(UnsupportedZipFeatureException.Feature.SPLITTING);
         }
-        // the split ZIP signature(08074B50) should only be skipped when the skipSplitSig is set
+        // the split ZIP signature(08074B50) should only be skipped when the skipSplitSignature is set
         if (sig.equals(ZipLong.SINGLE_SEGMENT_SPLIT_MARKER) || sig.equals(ZipLong.DD_SIG)) {
             // Just skip over the marker.
             System.arraycopy(lfhBuf, 4, lfhBuf, 0, lfhBuf.length - 4);
