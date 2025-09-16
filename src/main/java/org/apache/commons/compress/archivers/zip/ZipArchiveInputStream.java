@@ -90,29 +90,37 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
         private boolean allowStoredEntriesWithDataDescriptor;
         private boolean skipSplitSig;
 
+        /**
+         * Constructs a new instance.
+         */
         protected AbstractBuilder() {
             setCharset(StandardCharsets.UTF_8);
         }
 
         /**
-         * Controls whether to use InfoZIP Unicode Extra Fields (if present) to set the file names.
+         * Sets whether to use InfoZIP Unicode Extra Fields (if present) to set the file names.
          *
          * <p>This feature is enabled by default.</p>
          *
          * @param useUnicodeExtraFields If {@code true} Unicode Extra Fields should be used.
-         * @return this
+         * @return {@code this} instance.
          */
         public B setUseUnicodeExtraFields(final boolean useUnicodeExtraFields) {
             this.useUnicodeExtraFields = useUnicodeExtraFields;
             return asThis();
         }
 
+        /**
+         * Tests whether to use InfoZIP Unicode Extra Fields (if present) to set the file names.
+         *
+         * @return {@code true} if Unicode Extra Fields should be used.
+         */
         protected boolean isUseUnicodeExtraFields() {
             return useUnicodeExtraFields;
         }
 
         /**
-         * Controls whether the stream attempts to read STORED entries that use a data descriptor.
+         * Sets whether the stream attempts to read STORED entries that use a data descriptor.
          *
          * <p>If set to {@code true}, the stream will not stop reading an entry at the
          * declared compressed size. Instead, it will continue until a data descriptor
@@ -126,32 +134,42 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
          *
          * @param allowStoredEntriesWithDataDescriptor {@code true} to read STORED entries with data descriptors,
          *                                             {@code false} to stop at the compressed size.
-         * @return this
+         * @return {@code this} instance.
          */
-
         public B setAllowStoredEntriesWithDataDescriptor(final boolean allowStoredEntriesWithDataDescriptor) {
             this.allowStoredEntriesWithDataDescriptor = allowStoredEntriesWithDataDescriptor;
             return asThis();
         }
 
+        /**
+         * Tests whether the stream attempts to read STORED entries that use a data descriptor.
+         *
+         * @return {@code true} to read STORED entries with data descriptors,
+         *         {@code false} to stop at the compressed size.
+         */
         protected boolean isAllowStoredEntriesWithDataDescriptor() {
             return allowStoredEntriesWithDataDescriptor;
         }
 
         /**
-         * Configures whether the stream should skip the ZIP split signature
+         * Sets whether the stream should skip the ZIP split signature
          * ({@code 08074B50}) at the beginning of the input.
          *
          * <p>Disabled by default.</p>
          *
-         * @param skipSplitSig {@code true} to skip the ZIP split signature, {@code false} otherwise
-         * @return this
+         * @param skipSplitSig {@code true} to skip the ZIP split signature, {@code false} otherwise.
+         * @return {@code this} instance.
          */
         public B setSkipSplitSig(final boolean skipSplitSig) {
             this.skipSplitSig = skipSplitSig;
             return asThis();
         }
 
+        /**
+         * Tests whether the stream should skip the ZIP split signature.
+         *
+         * @return {@code true} to skip the ZIP split signature, {@code false} otherwise.
+         */
         protected boolean isSkipSplitSig() {
             return skipSplitSig;
         }

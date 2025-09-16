@@ -42,7 +42,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
     /**
      * Builds a new {@link ArArchiveInputStream}.
      * <p>
-     *     For example:
+     * For example:
      * </p>
      * <pre>{@code
      * ArArchiveInputStream in = ArArchiveInputStream.builder()

@@ -89,11 +89,11 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         /**
          * Sets the block size of the archive.
          * <p>
-         *     Default value is {@link CpioConstants#BLOCK_SIZE}.
+         * Default value is {@link CpioConstants#BLOCK_SIZE}.
          * </p>
          *
          * @param blockSize The block size must be bigger than 0
-         * @return this
+         * @return {@code this} instance.
          */
         public Builder setBlockSize(final int blockSize) {
             this.blockSize = blockSize;

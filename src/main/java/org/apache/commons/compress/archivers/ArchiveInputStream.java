@@ -99,6 +99,9 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
     public abstract static class AbstractBuilder<T extends ArchiveInputStream<?>, B extends AbstractBuilder<T, B>>
             extends AbstractStreamBuilder<T, B> {
 
+        /**
+         * Constructs a new instance.
+         */
         protected AbstractBuilder() {
             // empty
         }

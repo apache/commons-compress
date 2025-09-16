@@ -101,7 +101,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
         }
 
         /**
-         * Set whether illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
+         * Sets whether illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
          * {@link TarArchiveEntry#UNKNOWN}. When set to false such illegal fields cause an exception instead.
          *
          * @param lenient whether illegal values throw exceptions.

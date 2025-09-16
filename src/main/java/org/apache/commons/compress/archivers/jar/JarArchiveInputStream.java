@@ -34,7 +34,7 @@ public class JarArchiveInputStream extends ZipArchiveInputStream {
     /**
      * Builds a new {@link JarArchiveInputStream}.
      * <p>
-     *     For example:
+     * For example:
      * </p>
      * <pre>{@code
      * JarArchiveInputStream in = JarArchiveInputStream.builder()
