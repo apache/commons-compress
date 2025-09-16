@@ -39,6 +39,30 @@ import org.apache.commons.lang3.ArrayUtils;
  */
 public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
 
+    /**
+     * Builds a new {@link ArArchiveInputStream}.
+     * <p>
+     * For example:
+     * </p>
+     * <pre>{@code
+     * ArArchiveInputStream in = ArArchiveInputStream.builder()
+     *     .setPath(inputPath)
+     *     .get();
+     * }</pre>
+     * @since 1.29.0
+     */
+    public static final class Builder extends AbstractBuilder<ArArchiveInputStream, Builder> {
+
+        private Builder() {
+            setCharset(StandardCharsets.US_ASCII);
+        }
+
+        @Override
+        public ArArchiveInputStream get() throws IOException {
+            return new ArArchiveInputStream(this);
+        }
+    }
+
     // offsets and length of meta data parts
     private static final int NAME_OFFSET = 0;
     private static final int NAME_LEN = 16;
@@ -113,6 +137,16 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
         return ArrayUtils.startsWith(buffer, ArArchiveEntry.HEADER_BYTES);
     }
 
+    /**
+     * Creates a new builder.
+     *
+     * @return A new builder
+     * @since 1.29.0
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
+
     private boolean closed;
 
     /*
@@ -137,7 +171,15 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
      * @param inputStream the ar input stream
      */
     public ArArchiveInputStream(final InputStream inputStream) {
-        super(inputStream, StandardCharsets.US_ASCII.name());
+        this(inputStream, builder());
+    }
+
+    private ArArchiveInputStream(final Builder builder) throws IOException {
+        this(builder.getInputStream(), builder);
+    }
+
+    private ArArchiveInputStream(final InputStream inputStream, final Builder builder) {
+        super(inputStream, builder.getCharset());
     }
 
     private int asInt(final byte[] byteArray, final int offset, final int len, final boolean treatBlankAsZero) throws IOException {

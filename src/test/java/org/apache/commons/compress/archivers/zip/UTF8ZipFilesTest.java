@@ -31,7 +31,6 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.zip.CRC32;
 
 import org.apache.commons.compress.AbstractTest;
@@ -178,7 +177,11 @@ class UTF8ZipFilesTest extends AbstractTest {
 
     @Test
     void testRawNameReadFromStream() throws IOException {
-        try (ZipArchiveInputStream zi = new ZipArchiveInputStream(newInputStream("utf8-7zip-test.zip"), CP437, false)) {
+        try (ZipArchiveInputStream zi = ZipArchiveInputStream.builder()
+                .setURI(getURI("utf8-7zip-test.zip"))
+                .setCharset(CP437)
+                .setUseUnicodeExtraFields(false)
+                .get()) {
             assertRawNameOfAcsiiTxt(zi.getNextEntry());
         }
     }
@@ -208,7 +211,11 @@ class UTF8ZipFilesTest extends AbstractTest {
 
     @Test
     void testRead7ZipArchiveForStream() throws IOException {
-        try (ZipArchiveInputStream zi = new ZipArchiveInputStream(newInputStream("utf8-7zip-test.zip"), CP437, false)) {
+        try (ZipArchiveInputStream zi = ZipArchiveInputStream.builder()
+                .setURI(getURI("utf8-7zip-test.zip"))
+                .setCharset(CP437)
+                .setUseUnicodeExtraFields(false)
+                .get()) {
             assertEquals(ASCII_TXT, zi.getNextEntry().getName());
             assertEquals(OIL_BARREL_TXT, zi.getNextEntry().getName());
             assertEquals(EURO_FOR_DOLLAR_TXT, zi.getNextEntry().getName());
@@ -235,13 +242,10 @@ class UTF8ZipFilesTest extends AbstractTest {
 
     @Test
     void testReadWinZipArchiveForStream() throws IOException {
-        // fix for test fails on Windows with default charset that is not UTF-8
-        String encoding = null;
-        if (Charset.defaultCharset() != UTF_8) {
-            encoding = UTF_8.name();
-        }
-        try (InputStream archive = newInputStream("utf8-winzip-test.zip");
-                ZipArchiveInputStream zi = new ZipArchiveInputStream(archive, encoding, true)) {
+        try (ZipArchiveInputStream zi = ZipArchiveInputStream.builder()
+                .setURI(getURI("utf8-winzip-test.zip"))
+                .setCharset(UTF_8)
+                .get()) {
             assertEquals(EURO_FOR_DOLLAR_TXT, zi.getNextEntry().getName());
             assertEquals(OIL_BARREL_TXT, zi.getNextEntry().getName());
             assertEquals(ASCII_TXT, zi.getNextEntry().getName());
@@ -253,8 +257,9 @@ class UTF8ZipFilesTest extends AbstractTest {
      */
     @Test
     void testStreamSkipsOverUnicodeExtraFieldWithUnsupportedVersion() throws IOException {
-        try (InputStream archive = newInputStream("COMPRESS-479.zip");
-                ZipArchiveInputStream zi = new ZipArchiveInputStream(archive)) {
+        try (ZipArchiveInputStream zi = ZipArchiveInputStream.builder()
+                .setURI(getURI("COMPRESS-479.zip"))
+                .get()) {
             assertEquals(OIL_BARREL_TXT, zi.getNextEntry().getName());
             assertEquals("%U20AC_for_Dollar.txt", zi.getNextEntry().getName());
             assertEquals(ASCII_TXT, zi.getNextEntry().getName());
@@ -304,7 +309,10 @@ class UTF8ZipFilesTest extends AbstractTest {
     void testZipFileReadsUnicodeFields() throws IOException {
         final File file = createTempFile("unicode-test", ".zip");
         createTestFile(file, StandardCharsets.US_ASCII.name(), false, true);
-        try (ZipArchiveInputStream zi = new ZipArchiveInputStream(Files.newInputStream(file.toPath()), StandardCharsets.US_ASCII.name(), true)) {
+        try (ZipArchiveInputStream zi = ZipArchiveInputStream.builder()
+                .setFile(file)
+                .setCharset(StandardCharsets.US_ASCII)
+                .get()) {
             assertEquals(OIL_BARREL_TXT, zi.getNextEntry().getName());
             assertEquals(EURO_FOR_DOLLAR_TXT, zi.getNextEntry().getName());
             assertEquals(ASCII_TXT, zi.getNextEntry().getName());

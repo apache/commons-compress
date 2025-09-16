@@ -18,7 +18,6 @@
  */
 package org.apache.commons.compress.archivers;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -353,7 +352,10 @@ public final class ZipTest extends AbstractTest {
         final File lastFile = newTempFile("splitZip.zip");
         try (SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile);
                 InputStream inputStream = Channels.newInputStream(channel);
-                ZipArchiveInputStream splitInputStream = new ZipArchiveInputStream(inputStream, UTF_8.toString(), true, false, true)) {
+                ZipArchiveInputStream splitInputStream = ZipArchiveInputStream.builder()
+                        .setInputStream(inputStream)
+                        .setSkipSplitSignature(true)
+                        .get()) {
 
             ArchiveEntry entry;
             final int filesNum = countNonDirectories(directoryToZip);
@@ -653,7 +655,7 @@ public final class ZipTest extends AbstractTest {
      */
     @Test
     void testSkipEntryWithUnsupportedCompressionMethod() throws IOException {
-        try (ZipArchiveInputStream zip = new ZipArchiveInputStream(newInputStream("moby.zip"))) {
+        try (ZipArchiveInputStream zip = ZipArchiveInputStream.builder().setURI(getURI("moby.zip")).get()) {
             final ZipArchiveEntry entry = zip.getNextZipEntry();
             assertEquals(ZipMethod.TOKENIZATION.getCode(), entry.getMethod(), "method");
             assertEquals("README", entry.getName());
@@ -667,12 +669,12 @@ public final class ZipTest extends AbstractTest {
      */
     @Test
     void testSkipsPK00Prefix() throws Exception {
-        final File input = getFile("COMPRESS-208.zip");
         final ArrayList<String> al = new ArrayList<>();
         al.add("test1.xml");
         al.add("test2.xml");
-        try (InputStream fis = Files.newInputStream(input.toPath());
-                ZipArchiveInputStream inputStream = new ZipArchiveInputStream(fis)) {
+        try (ZipArchiveInputStream inputStream = ZipArchiveInputStream.builder()
+                .setURI(getURI("COMPRESS-208.zip"))
+                .get()) {
             checkArchiveContent(inputStream, al);
         }
     }

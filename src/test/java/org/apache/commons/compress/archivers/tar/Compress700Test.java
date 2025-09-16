@@ -27,9 +27,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.attribute.FileTime;
 import java.time.Instant;
 import java.util.Arrays;
@@ -38,19 +35,20 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.junit.jupiter.api.Test;
 
 /**
  * Tests https://issues.apache.org/jira/browse/COMPRESS-699
  */
-class Compress700Test {
+class Compress700Test extends AbstractTest {
 
-    private static final Path PATH = Paths.get("src/test/resources/org/apache/commons/compress/COMPRESS-700/flutter_awesome_buttons-0.1.0.tar");
+    private static final String RESOURCE_NAME = "org/apache/commons/compress/COMPRESS-700/flutter_awesome_buttons-0.1.0.tar";
 
     @Test
     void testFirstTarArchiveEntry() throws Exception {
-        try (TarArchiveInputStream inputStream = new TarArchiveInputStream(new BufferedInputStream(Files.newInputStream(PATH)))) {
+        try (TarArchiveInputStream inputStream = TarArchiveInputStream.builder().setURI(getURI(RESOURCE_NAME)).get()) {
             final TarArchiveEntry entry = inputStream.getNextEntry();
             assertNull(entry.getCreationTime());
             assertEquals(-1, entry.getDataOffset());
@@ -175,7 +173,7 @@ class Compress700Test {
                 new Object[] {9879,  "README.md"},
                 new Object[] {433,   "test/flutter_buttons_test.dart"});
         // @formatter:on
-        try (TarArchiveInputStream inputStream = new TarArchiveInputStream(new BufferedInputStream(Files.newInputStream(PATH)))) {
+        try (TarArchiveInputStream inputStream = TarArchiveInputStream.builder().setURI(getURI(RESOURCE_NAME)).get()) {
             final AtomicInteger i = new AtomicInteger();
             for (final Object[] pair : list) {
                 final TarArchiveEntry entry = inputStream.getNextEntry();
@@ -195,7 +193,7 @@ class Compress700Test {
     //@Ignore
     @Test
     void testTarArchive() throws Exception {
-        try (BufferedInputStream fileInputStream = new BufferedInputStream(Files.newInputStream(PATH))) {
+        try (BufferedInputStream fileInputStream = new BufferedInputStream(newInputStream(RESOURCE_NAME))) {
             assertEquals(ArchiveStreamFactory.TAR, ArchiveStreamFactory.detect(fileInputStream));
         }
     }

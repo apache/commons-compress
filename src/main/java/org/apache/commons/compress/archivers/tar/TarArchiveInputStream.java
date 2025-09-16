@@ -42,7 +42,6 @@ import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.IOUtils;
-import org.apache.commons.io.build.AbstractStreamBuilder;
 import org.apache.commons.io.input.BoundedInputStream;
 
 /**
@@ -72,7 +71,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      * @since 1.29.0
      */
     // @formatter:on
-    public static class Builder extends AbstractStreamBuilder<TarArchiveInputStream, Builder> {
+    public static class Builder extends AbstractBuilder<TarArchiveInputStream, Builder> {
 
         private int blockSize = TarConstants.DEFAULT_BLKSIZE;
         private int recordSize = TarConstants.DEFAULT_RCDSIZE;
@@ -102,7 +101,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
         }
 
         /**
-         * Set whether illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
+         * Sets whether illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
          * {@link TarArchiveEntry#UNKNOWN}. When set to false such illegal fields cause an exception instead.
          *
          * @param lenient whether illegal values throw exceptions.
@@ -216,7 +215,11 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
 
     @SuppressWarnings("resource") // caller closes.
     private TarArchiveInputStream(final Builder builder) throws IOException {
-        super(builder.getInputStream(), builder.getCharset());
+        this(builder.getInputStream(), builder);
+    }
+
+    private TarArchiveInputStream(final InputStream inputStream, final Builder builder) {
+        super(inputStream, builder.getCharset());
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(builder.getCharset());
         this.recordBuffer = new byte[builder.recordSize];
         this.blockSize = builder.blockSize;
@@ -229,7 +232,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      * @param inputStream the input stream to use.
      */
     public TarArchiveInputStream(final InputStream inputStream) {
-        this(inputStream, TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE);
+        this(inputStream, builder());
     }
 
     /**
@@ -243,7 +246,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      */
     @Deprecated
     public TarArchiveInputStream(final InputStream inputStream, final boolean lenient) {
-        this(inputStream, TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, null, lenient);
+        this(inputStream, builder().setLenient(lenient));
     }
 
     /**
@@ -255,7 +258,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      */
     @Deprecated
     public TarArchiveInputStream(final InputStream inputStream, final int blockSize) {
-        this(inputStream, blockSize, TarConstants.DEFAULT_RCDSIZE);
+        this(inputStream, builder().setBlockSize(blockSize));
     }
 
     /**
@@ -268,7 +271,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      */
     @Deprecated
     public TarArchiveInputStream(final InputStream inputStream, final int blockSize, final int recordSize) {
-        this(inputStream, blockSize, recordSize, null);
+        this(inputStream, builder().setBlockSize(blockSize).setRecordSize(recordSize));
     }
 
     /**
@@ -282,8 +285,11 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      * @deprecated Use {@link #builder()} to configure and {@link Builder#get() get()} a {@link Builder}.
      */
     @Deprecated
-    public TarArchiveInputStream(final InputStream inputStream, final int blockSize, final int recordSize, final String encoding) {
-        this(inputStream, blockSize, recordSize, encoding, false);
+    public TarArchiveInputStream(
+            final InputStream inputStream, final int blockSize, final int recordSize, final String encoding) {
+        this(
+                inputStream,
+                builder().setBlockSize(blockSize).setRecordSize(recordSize).setCharset(encoding));
     }
 
     /**
@@ -299,12 +305,19 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      * @deprecated Use {@link #builder()} to configure and {@link Builder#get() get()} a {@link Builder}.
      */
     @Deprecated
-    public TarArchiveInputStream(final InputStream inputStream, final int blockSize, final int recordSize, final String encoding, final boolean lenient) {
-        super(inputStream, encoding);
-        this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
-        this.recordBuffer = new byte[recordSize];
-        this.blockSize = blockSize;
-        this.lenient = lenient;
+    public TarArchiveInputStream(
+            final InputStream inputStream,
+            final int blockSize,
+            final int recordSize,
+            final String encoding,
+            final boolean lenient) {
+        this(
+                inputStream,
+                builder()
+                        .setBlockSize(blockSize)
+                        .setRecordSize(recordSize)
+                        .setCharset(encoding)
+                        .setLenient(lenient));
     }
 
     /**
@@ -318,7 +331,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      */
     @Deprecated
     public TarArchiveInputStream(final InputStream inputStream, final int blockSize, final String encoding) {
-        this(inputStream, blockSize, TarConstants.DEFAULT_RCDSIZE, encoding);
+        this(inputStream, builder().setBlockSize(blockSize).setCharset(encoding));
     }
 
     /**
@@ -331,7 +344,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      */
     @Deprecated
     public TarArchiveInputStream(final InputStream inputStream, final String encoding) {
-        this(inputStream, TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, encoding);
+        this(inputStream, builder().setCharset(encoding));
     }
 
     /**

@@ -25,7 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
@@ -63,8 +62,8 @@ class TarMemoryFileSystemTest {
                 tarOut.closeArchiveEntry();
             }
 
-            try (InputStream input = Files.newInputStream(target);
-                    TarArchiveInputStream tarIn = new TarArchiveInputStream(input)) {
+            try (TarArchiveInputStream tarIn =
+                    TarArchiveInputStream.builder().setPath(target).get()) {
                 final TarArchiveEntry nextTarEntry = tarIn.getNextTarEntry();
 
                 assertEquals(user, nextTarEntry.getUserName());

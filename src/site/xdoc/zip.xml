@@ -193,7 +193,7 @@
         <code>ZipArchiveInputStream</code> support reading streams of
         this type, in the case of <code>ZipArchiveInputStream</code>
         you need to use a constructor where you can set
-        <code>skipSplitSig</code> to true.</p>
+        <code>skipSplitSignature</code> to true.</p>
       </subsection>
 
       <subsection name="Extra Fields">
