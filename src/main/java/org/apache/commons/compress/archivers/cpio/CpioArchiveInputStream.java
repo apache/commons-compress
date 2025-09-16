@@ -225,7 +225,9 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
      * @param in        The cpio stream
      * @param blockSize The block size of the archive.
      * @since 1.5
+     * @deprecated Use {@link #builder()} and {@link Builder}.
      */
+    @Deprecated
     public CpioArchiveInputStream(final InputStream in, final int blockSize) {
         this(in, builder().setBlockSize(blockSize));
     }
@@ -238,7 +240,9 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
      * @param encoding  The encoding of file names to expect - use null for the platform's default.
      * @throws IllegalArgumentException if {@code blockSize} is not bigger than 0
      * @since 1.6
+     * @deprecated Use {@link #builder()} and {@link Builder}.
      */
+    @Deprecated
     public CpioArchiveInputStream(final InputStream in, final int blockSize, final String encoding) {
         this(in, builder().setBlockSize(blockSize).setCharset(encoding));
     }
@@ -249,7 +253,9 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
      * @param in       The cpio stream
      * @param encoding The encoding of file names to expect - use null for the platform's default.
      * @since 1.6
+     * @deprecated Use {@link #builder()} and {@link Builder}.
      */
+    @Deprecated
     public CpioArchiveInputStream(final InputStream in, final String encoding) {
         this(in, builder().setCharset(encoding));
     }

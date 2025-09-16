@@ -204,7 +204,9 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
      * @param encoding the encoding to use for file names, use null for the platform's default encoding
      * @throws ArchiveException on error
      * @since 1.6
+     * @deprecated Use {@link #builder()} and {@link Builder}.
      */
+    @Deprecated
     public DumpArchiveInputStream(final InputStream is, final String encoding) throws ArchiveException {
         this(is, builder().setCharset(encoding));
     }
