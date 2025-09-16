@@ -44,7 +44,7 @@ public final class Lister {
         String archive;
         boolean useStream;
         String encoding;
-        boolean allowStoredEntriesWithDataDescriptor;
+        boolean supportStoredEntryDataDescriptor;
         Path dir;
     }
 
@@ -72,7 +72,7 @@ public final class Lister {
             final ZipArchiveInputStream zs = ZipArchiveInputStream.builder()
                     .setFile(f)
                     .setCharset(cl.encoding)
-                    .setAllowStoredEntriesWithDataDescriptor(cl.allowStoredEntriesWithDataDescriptor)
+                    .setSupportStoredEntryDataDescriptor(cl.supportStoredEntryDataDescriptor)
                     .get();
             for (ArchiveEntry entry = zs.getNextEntry(); entry != null; entry = zs.getNextEntry()) {
                 final ZipArchiveEntry ze = (ZipArchiveEntry) entry;
@@ -117,7 +117,7 @@ public final class Lister {
             } else if (args[i].equals("-stream")) {
                 cl.useStream = true;
             } else if (args[i].equals("+storeddd")) {
-                cl.allowStoredEntriesWithDataDescriptor = true;
+                cl.supportStoredEntryDataDescriptor = true;
             } else if (args[i].equals("-file")) {
                 cl.useStream = false;
             } else if (cl.archive != null) {

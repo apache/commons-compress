@@ -379,7 +379,7 @@ class ZipArchiveInputStreamTest extends AbstractTest {
     void testProperlyReadsStoredEntryWithDataDescriptorWithoutSignature() throws IOException {
         try (ZipArchiveInputStream archive = ZipArchiveInputStream.builder()
                 .setURI(getURI("bla-stored-dd-nosig.zip"))
-                .setAllowStoredEntriesWithDataDescriptor(true)
+                .setSupportStoredEntryDataDescriptor(true)
                 .get()) {
             final ZipArchiveEntry e = archive.getNextZipEntry();
             assertNotNull(e);
@@ -397,7 +397,7 @@ class ZipArchiveInputStreamTest extends AbstractTest {
     void testProperlyReadsStoredEntryWithDataDescriptorWithSignature() throws IOException {
         try (ZipArchiveInputStream archive = ZipArchiveInputStream.builder()
                 .setURI(getURI("bla-stored-dd.zip"))
-                .setAllowStoredEntriesWithDataDescriptor(true)
+                .setSupportStoredEntryDataDescriptor(true)
                 .get()) {
             final ZipArchiveEntry e = archive.getNextZipEntry();
             assertNotNull(e);
@@ -672,7 +672,7 @@ class ZipArchiveInputStreamTest extends AbstractTest {
     void testThrowsIfStoredDDIsDifferentFromLengthRead() throws IOException {
         try (ZipArchiveInputStream archive = ZipArchiveInputStream.builder()
                 .setURI(getURI("bla-stored-dd-contradicts-actualsize.zip"))
-                .setAllowStoredEntriesWithDataDescriptor(true)
+                .setSupportStoredEntryDataDescriptor(true)
                 .get()) {
             final ZipArchiveEntry e = archive.getNextZipEntry();
             assertNotNull(e);
@@ -687,7 +687,7 @@ class ZipArchiveInputStreamTest extends AbstractTest {
     void testThrowsIfStoredDDIsInconsistent() throws IOException {
         try (ZipArchiveInputStream archive = ZipArchiveInputStream.builder()
                 .setURI(getURI("bla-stored-dd-sizes-differ.zip"))
-                .setAllowStoredEntriesWithDataDescriptor(true)
+                .setSupportStoredEntryDataDescriptor(true)
                 .get()) {
             final ZipArchiveEntry e = archive.getNextZipEntry();
             assertNotNull(e);
@@ -868,7 +868,7 @@ class ZipArchiveInputStreamTest extends AbstractTest {
         try (ZipArchiveInputStream zIn = ZipArchiveInputStream.builder()
                 .setURI(getURI("COMPRESS-647/test.zip"))
                 .setUseUnicodeExtraFields(false)
-                .setAllowStoredEntriesWithDataDescriptor(allowStoredEntriesWithDataDescriptor)
+                .setSupportStoredEntryDataDescriptor(allowStoredEntriesWithDataDescriptor)
                 .get()) {
             ZipArchiveEntry zae = zIn.getNextEntry();
             while (zae != null) {
@@ -884,7 +884,7 @@ class ZipArchiveInputStreamTest extends AbstractTest {
         try (InputStream inputStream = forgeZipInputStream();
                 ZipArchiveInputStream zipInputStream = ZipArchiveInputStream.builder()
                         .setInputStream(inputStream)
-                        .setAllowStoredEntriesWithDataDescriptor(true)
+                        .setSupportStoredEntryDataDescriptor(true)
                         .get()) {
             getAllZipEntries(zipInputStream);
         }

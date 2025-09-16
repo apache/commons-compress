@@ -87,7 +87,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     public abstract static class AbstractBuilder<T extends ZipArchiveInputStream, B extends AbstractBuilder<T, B>>
             extends ArchiveInputStream.AbstractBuilder<T, B> {
         private boolean useUnicodeExtraFields = true;
-        private boolean allowStoredEntriesWithDataDescriptor;
+        private boolean supportStoredEntryDataDescriptor;
         private boolean skipSplitSignature;
 
         /**
@@ -120,7 +120,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
         }
 
         /**
-         * Sets whether the stream attempts to read STORED entries that use a data descriptor.
+         * Sets whether the stream supports reading STORED entries that use a data descriptor.
          *
          * <p>If set to {@code true}, the stream will not stop reading an entry at the
          * declared compressed size. Instead, it will continue until a data descriptor
@@ -132,12 +132,12 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
          *
          * <p>This feature is disabled by default.</p>
          *
-         * @param allowStoredEntriesWithDataDescriptor {@code true} to read STORED entries with data descriptors,
-         *                                             {@code false} to stop at the compressed size.
+         * @param supportStoredEntryDataDescriptor {@code true} to support STORED entries with a data descriptor,
+         *                                             {@code false} to stop at the declared compressed size.
          * @return {@code this} instance.
          */
-        public B setAllowStoredEntriesWithDataDescriptor(final boolean allowStoredEntriesWithDataDescriptor) {
-            this.allowStoredEntriesWithDataDescriptor = allowStoredEntriesWithDataDescriptor;
+        public B setSupportStoredEntryDataDescriptor(final boolean supportStoredEntryDataDescriptor) {
+            this.supportStoredEntryDataDescriptor = supportStoredEntryDataDescriptor;
             return asThis();
         }
 
@@ -147,8 +147,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
          * @return {@code true} to read STORED entries with data descriptors,
          *         {@code false} to stop at the compressed size.
          */
-        protected boolean isAllowStoredEntriesWithDataDescriptor() {
-            return allowStoredEntriesWithDataDescriptor;
+        protected boolean isSupportStoredEntryDataDescriptor() {
+            return supportStoredEntryDataDescriptor;
         }
 
         /**
@@ -381,7 +381,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
      * https://github.com/apache/commons-compress/pull/137#issuecomment-690835644
      * </p>
      */
-    private final boolean allowStoredEntriesWithDataDescriptor;
+    private final boolean supportStoredEntryDataDescriptor;
     /** Count decompressed bytes for current entry */
     private long uncompressedCount;
     /** Whether the stream will try to skip the ZIP split signature(08074B50) at the beginning. **/
@@ -433,48 +433,48 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     /**
      * Constructs an instance using the specified encoding.
      *
-     * @param inputStream                          the stream to wrap.
-     * @param encoding                             the encoding to use for file names, use null for the platform's default encoding.
-     * @param useUnicodeExtraFields                whether to use InfoZIP Unicode Extra Fields (if present) to set the file names.
-     * @param allowStoredEntriesWithDataDescriptor whether the stream will try to read STORED entries that use a data descriptor.
+     * @param inputStream                      the stream to wrap.
+     * @param encoding                         the encoding to use for file names, use null for the platform's default encoding.
+     * @param useUnicodeExtraFields            whether to use InfoZIP Unicode Extra Fields (if present) to set the file names.
+     * @param supportStoredEntryDataDescriptor whether the stream will try to read STORED entries that use a data descriptor.
      * @since 1.1
      */
     public ZipArchiveInputStream(
             final InputStream inputStream,
             final String encoding,
             final boolean useUnicodeExtraFields,
-            final boolean allowStoredEntriesWithDataDescriptor) {
+            final boolean supportStoredEntryDataDescriptor) {
         this(
                 inputStream,
                 builder()
                         .setCharset(encoding)
                         .setUseUnicodeExtraFields(useUnicodeExtraFields)
-                        .setAllowStoredEntriesWithDataDescriptor(allowStoredEntriesWithDataDescriptor));
+                        .setSupportStoredEntryDataDescriptor(supportStoredEntryDataDescriptor));
     }
 
     /**
      * Constructs an instance using the specified encoding.
      *
-     * @param inputStream                          the stream to wrap.
-     * @param encoding                             the encoding to use for file names, use null for the platform's default encoding.
-     * @param useUnicodeExtraFields                whether to use InfoZIP Unicode Extra Fields (if present) to set the file names.
-     * @param allowStoredEntriesWithDataDescriptor whether the stream will try to read STORED entries that use a data descriptor.
-     * @param skipSplitSignature                   Whether the stream will try to skip the zip split signature(08074B50) at the beginning.
-     *                                             You will need to set this to true if you want to read a split archive.
+     * @param inputStream                      the stream to wrap.
+     * @param encoding                         the encoding to use for file names, use null for the platform's default encoding.
+     * @param useUnicodeExtraFields            whether to use InfoZIP Unicode Extra Fields (if present) to set the file names.
+     * @param supportStoredEntryDataDescriptor whether the stream will try to read STORED entries that use a data descriptor.
+     * @param skipSplitSignature               Whether the stream will try to skip the zip split signature(08074B50) at the beginning.
+     *                                         You will need to set this to true if you want to read a split archive.
      * @since 1.20
      */
     public ZipArchiveInputStream(
             final InputStream inputStream,
             final String encoding,
             final boolean useUnicodeExtraFields,
-            final boolean allowStoredEntriesWithDataDescriptor,
+            final boolean supportStoredEntryDataDescriptor,
             final boolean skipSplitSignature) {
         this(
                 inputStream,
                 builder()
                         .setCharset(encoding)
                         .setUseUnicodeExtraFields(useUnicodeExtraFields)
-                        .setAllowStoredEntriesWithDataDescriptor(allowStoredEntriesWithDataDescriptor)
+                        .setSupportStoredEntryDataDescriptor(supportStoredEntryDataDescriptor)
                         .setSkipSplitSignature(skipSplitSignature));
     }
 
@@ -487,7 +487,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
         this.in = new PushbackInputStream(inputStream, buf.capacity());
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(builder.getCharset());
         this.useUnicodeExtraFields = builder.isUseUnicodeExtraFields();
-        this.allowStoredEntriesWithDataDescriptor = builder.isAllowStoredEntriesWithDataDescriptor();
+        this.supportStoredEntryDataDescriptor = builder.isSupportStoredEntryDataDescriptor();
         this.skipSplitSignature = builder.isSkipSplitSignature();
         // haven't read anything so far
         buf.limit(0);
@@ -1423,19 +1423,19 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     private boolean supportsCompressedSizeFor(final ZipArchiveEntry entry) {
         final int method = entry.getMethod();
         return entry.getCompressedSize() != ArchiveEntry.SIZE_UNKNOWN || method == ZipEntry.DEFLATED || method == ZipMethod.ENHANCED_DEFLATED.getCode()
-                || entry.getGeneralPurposeBit().usesDataDescriptor() && allowStoredEntriesWithDataDescriptor && method == ZipEntry.STORED
+                || entry.getGeneralPurposeBit().usesDataDescriptor() && supportStoredEntryDataDescriptor && method == ZipEntry.STORED
                 || ZipMethod.isZstd(method) || method == ZipMethod.XZ.getCode();
     }
 
     /**
      * Tests whether this entry requires a data descriptor this library can work with.
      *
-     * @return true if allowStoredEntriesWithDataDescriptor is true, the entry doesn't require any data descriptor or the method is DEFLATED or
+     * @return true if supportStoredEntryDataDescriptor is true, the entry doesn't require any data descriptor or the method is DEFLATED or
      *         ENHANCED_DEFLATED.
      */
     private boolean supportsDataDescriptorFor(final ZipArchiveEntry entry) {
         final int method = entry.getMethod();
-        return !entry.getGeneralPurposeBit().usesDataDescriptor() || allowStoredEntriesWithDataDescriptor && method == ZipEntry.STORED
+        return !entry.getGeneralPurposeBit().usesDataDescriptor() || supportStoredEntryDataDescriptor && method == ZipEntry.STORED
                 || method == ZipEntry.DEFLATED || method == ZipMethod.ENHANCED_DEFLATED.getCode() || ZipMethod.isZstd(method)
                 || method == ZipMethod.XZ.getCode();
     }

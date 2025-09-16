@@ -69,7 +69,7 @@ public class ZipArchiveInputStreamMalformedTest {
         }
         try (ZipArchiveInputStream zis = ZipArchiveInputStream.builder()
                 .setFile(fixture)
-                .setAllowStoredEntriesWithDataDescriptor(true)
+                .setSupportStoredEntryDataDescriptor(true)
                 .get()) {
             zis.getNextEntry();
             assertThrows(CompressException.class, () -> IOUtils.toByteArray(zis));
