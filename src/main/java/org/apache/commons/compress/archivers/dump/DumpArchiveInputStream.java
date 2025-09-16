@@ -59,7 +59,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
      * }</pre>
      * @since 1.29.0
      */
-    public static final class Builder extends ArchiveInputStream.Builder<DumpArchiveInputStream, Builder> {
+    public static final class Builder extends AbstractBuilder<DumpArchiveInputStream, Builder> {
 
         private Builder() {
         }

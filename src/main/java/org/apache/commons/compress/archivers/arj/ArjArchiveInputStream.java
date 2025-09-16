@@ -59,7 +59,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
      * }</pre>
      * @since 1.29.0
      */
-    public static final class Builder extends ArchiveInputStream.Builder<ArjArchiveInputStream, Builder> {
+    public static final class Builder extends AbstractBuilder<ArjArchiveInputStream, Builder> {
 
         private Builder() {
             setCharset(ENCODING_NAME);

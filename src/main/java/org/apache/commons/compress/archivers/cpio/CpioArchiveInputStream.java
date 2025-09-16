@@ -78,7 +78,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
      * }</pre>
      * @since 1.29.0
      */
-    public static final class Builder extends ArchiveInputStream.Builder<CpioArchiveInputStream, Builder> {
+    public static final class Builder extends AbstractBuilder<CpioArchiveInputStream, Builder> {
 
         private int blockSize = BLOCK_SIZE;
 

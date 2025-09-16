@@ -71,7 +71,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      * @since 1.29.0
      */
     // @formatter:on
-    public static class Builder extends ArchiveInputStream.Builder<TarArchiveInputStream, Builder> {
+    public static class Builder extends AbstractBuilder<TarArchiveInputStream, Builder> {
 
         private int blockSize = TarConstants.DEFAULT_BLKSIZE;
         private int recordSize = TarConstants.DEFAULT_RCDSIZE;

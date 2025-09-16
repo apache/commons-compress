@@ -85,7 +85,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
      * @since 1.29.0
      */
     public abstract static class AbstractBuilder<T extends ZipArchiveInputStream, B extends AbstractBuilder<T, B>>
-            extends ArchiveInputStream.Builder<T, B> {
+            extends ArchiveInputStream.AbstractBuilder<T, B> {
         private boolean useUnicodeExtraFields = true;
         private boolean allowStoredEntriesWithDataDescriptor;
         private boolean skipSplitSig;

@@ -93,12 +93,13 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
      * Generic builder for ArchiveInputStream instances.
      *
      * @param <T> The type of {@link ArchiveInputStream} to build.
-     * @param <B> The type of the concrete Builder.
+     * @param <B> The type of the concrete AbstractBuilder.
      * @since 1.29.0
      */
-    public abstract static class Builder<T extends ArchiveInputStream<?>, B extends Builder<T, B>> extends AbstractStreamBuilder<T, B> {
+    public abstract static class AbstractBuilder<T extends ArchiveInputStream<?>, B extends AbstractBuilder<T, B>>
+            extends AbstractStreamBuilder<T, B> {
 
-        protected Builder() {
+        protected AbstractBuilder() {
             // empty
         }
     }

@@ -51,7 +51,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
      * }</pre>
      * @since 1.29.0
      */
-    public static final class Builder extends ArchiveInputStream.Builder<ArArchiveInputStream, Builder> {
+    public static final class Builder extends AbstractBuilder<ArArchiveInputStream, Builder> {
 
         private Builder() {
             setCharset(StandardCharsets.US_ASCII);
