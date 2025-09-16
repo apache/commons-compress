@@ -478,6 +478,13 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
                         .setSkipSplitSignature(skipSplitSignature));
     }
 
+    /**
+     * Creates an instance from the given builder.
+     *
+     * @param builder The builder used to configure and create the stream.
+     * @throws IOException If the builder fails to create the underlying {@link InputStream}.
+     * @since 1.29.0
+     */
     protected ZipArchiveInputStream(final AbstractBuilder<?, ?> builder) throws IOException {
         this(builder.getInputStream(), builder);
     }
