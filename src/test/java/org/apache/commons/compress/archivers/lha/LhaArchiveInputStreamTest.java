@@ -904,13 +904,13 @@ class LhaArchiveInputStreamTest extends AbstractTest {
     void testInvalidHeaderLevel2Length() throws IOException {
         final byte[] data = toByteArray(VALID_HEADER_LEVEL_2_FILE);
 
-        data[0] = 0x10; // Change the first byte to an invalid length
+        data[0] = 25; // Change the first byte to an invalid length
 
         try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(new ByteArrayInputStream(data)).get()) {
             archive.getNextEntry();
             fail("Expected ArchiveException for invalid header length");
         } catch (ArchiveException e) {
-            assertEquals("Invalid header level 2 length: 16", e.getMessage());
+            assertEquals("Invalid header level 2 length: 25", e.getMessage());
         }
     }
 

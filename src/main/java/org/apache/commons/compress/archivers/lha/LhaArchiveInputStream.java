@@ -166,6 +166,7 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
     private static final int HEADER_LEVEL_1_OFFSET_FILENAME = 22;
 
     // Header Level 2
+    private static final int HEADER_LEVEL_2_MINIMUM_HEADER_LENGTH = 26;
     private static final int HEADER_LEVEL_2_OFFSET_HEADER_SIZE = 0;
     private static final int HEADER_LEVEL_2_OFFSET_COMPRESSED_SIZE = 7;
     private static final int HEADER_LEVEL_2_OFFSET_ORIGINAL_SIZE = 11;
@@ -473,7 +474,7 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
      */
     LhaArchiveEntry readHeaderLevel2(ByteBuffer buffer) throws IOException {
         final int headerSize = Short.toUnsignedInt(buffer.getShort(HEADER_LEVEL_2_OFFSET_HEADER_SIZE));
-        if (headerSize < HEADER_GENERIC_MINIMUM_HEADER_LENGTH) {
+        if (headerSize < HEADER_LEVEL_2_MINIMUM_HEADER_LENGTH) {
             throw new ArchiveException("Invalid header level 2 length: %d", headerSize);
         }
 
