@@ -43,6 +43,7 @@ public class JarArchiveInputStream extends ZipArchiveInputStream {
      *     .setUseUnicodeExtraFields(false)
      *     .get();
      * }</pre>
+     *
      * @since 1.29.0
      */
     public static class Builder extends ZipArchiveInputStream.AbstractBuilder<JarArchiveInputStream, Builder> {
@@ -55,7 +56,7 @@ public class JarArchiveInputStream extends ZipArchiveInputStream {
     /**
      * Creates a new builder.
      *
-     * @return A new builder
+     * @return A new builder.
      * @since 1.29.0
      */
     public static Builder jarInputStreamBuilder() {

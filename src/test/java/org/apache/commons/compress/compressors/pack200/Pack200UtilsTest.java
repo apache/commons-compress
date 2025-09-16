@@ -90,8 +90,7 @@ public final class Pack200UtilsTest extends AbstractTest {
         //
         // If you use a zip archive instead of a tar archive you
         // get a different number of bytes read, but still not the expected
-        try (TarArchiveInputStream in =
-                TarArchiveInputStream.builder().setFile(archiveFile).get()) {
+        try (TarArchiveInputStream in = TarArchiveInputStream.builder().setFile(archiveFile).get()) {
             ArchiveEntry entry = in.getNextEntry();
             int entries = 0;
             long count = 0;

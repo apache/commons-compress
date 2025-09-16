@@ -49,6 +49,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
      *     .setPath(inputPath)
      *     .get();
      * }</pre>
+     *
      * @since 1.29.0
      */
     public static final class Builder extends AbstractBuilder<ArArchiveInputStream, Builder> {
@@ -85,7 +86,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
     /**
      * Creates a new builder.
      *
-     * @return A new builder
+     * @return A new builder.
      * @since 1.29.0
      */
     public static Builder builder() {

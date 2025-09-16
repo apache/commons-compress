@@ -57,6 +57,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
      *     .setCharset(StandardCharsets.UTF_8)
      *     .get();
      * }</pre>
+     *
      * @since 1.29.0
      */
     public static final class Builder extends AbstractBuilder<ArjArchiveInputStream, Builder> {
@@ -78,7 +79,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
     /**
      * Creates a new builder.
      *
-     * @return A new builder
+     * @return A new builder.
      * @since 1.29.0
      */
     public static Builder builder() {

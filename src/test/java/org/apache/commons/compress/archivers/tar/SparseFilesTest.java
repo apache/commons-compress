@@ -115,8 +115,7 @@ class SparseFilesTest extends AbstractTest {
     @Test
     void testCompareTarArchiveInputStreamWithTarFile() throws IOException {
         final Path file = getPath("oldgnu_sparse.tar");
-        try (TarArchiveInputStream tarIn =
-                        TarArchiveInputStream.builder().setPath(file).get();
+        try (TarArchiveInputStream tarIn = TarArchiveInputStream.builder().setPath(file).get();
                 TarFile tarFile = new TarFile(file)) {
             assertNotNull(tarIn.getNextTarEntry());
             try (InputStream inputStream = tarFile.getInputStream(tarFile.getEntries().get(0))) {

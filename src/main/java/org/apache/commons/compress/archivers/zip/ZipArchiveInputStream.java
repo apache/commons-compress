@@ -86,6 +86,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
      */
     public abstract static class AbstractBuilder<T extends ZipArchiveInputStream, B extends AbstractBuilder<T, B>>
             extends ArchiveInputStream.AbstractBuilder<T, B> {
+
         private boolean useUnicodeExtraFields = true;
         private boolean supportStoredEntryDataDescriptor;
         private boolean skipSplitSignature;
@@ -240,6 +241,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
      *     .setUseUnicodeExtraFields(false)
      *     .get();
      * }</pre>
+     *
      * @since 1.29.0
      */
     public static final class Builder extends AbstractBuilder<ZipArchiveInputStream, Builder> {
@@ -330,7 +332,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     /**
      * Creates a new builder.
      *
-     * @return A new builder
+     * @return A new builder.
      * @since 1.29.0
      */
     public static Builder builder() {
@@ -447,8 +449,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
      * @param encoding              the encoding to use for file names, use null for the platform's default encoding.
      * @param useUnicodeExtraFields whether to use InfoZIP Unicode Extra Fields (if present) to set the file names.
      */
-    public ZipArchiveInputStream(
-            final InputStream inputStream, final String encoding, final boolean useUnicodeExtraFields) {
+    public ZipArchiveInputStream(final InputStream inputStream, final String encoding, final boolean useUnicodeExtraFields) {
         this(inputStream, builder().setCharset(encoding).setUseUnicodeExtraFields(useUnicodeExtraFields));
     }
 
@@ -466,12 +467,12 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
             final String encoding,
             final boolean useUnicodeExtraFields,
             final boolean supportStoredEntryDataDescriptor) {
-        this(
-                inputStream,
-                builder()
-                        .setCharset(encoding)
-                        .setUseUnicodeExtraFields(useUnicodeExtraFields)
-                        .setSupportStoredEntryDataDescriptor(supportStoredEntryDataDescriptor));
+        // @formatter:off
+        this(inputStream, builder()
+                .setCharset(encoding)
+                .setUseUnicodeExtraFields(useUnicodeExtraFields)
+                .setSupportStoredEntryDataDescriptor(supportStoredEntryDataDescriptor));
+        // @formatter:on
     }
 
     /**
@@ -491,13 +492,13 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
             final boolean useUnicodeExtraFields,
             final boolean supportStoredEntryDataDescriptor,
             final boolean skipSplitSignature) {
-        this(
-                inputStream,
-                builder()
-                        .setCharset(encoding)
-                        .setUseUnicodeExtraFields(useUnicodeExtraFields)
-                        .setSupportStoredEntryDataDescriptor(supportStoredEntryDataDescriptor)
-                        .setSkipSplitSignature(skipSplitSignature));
+        // @formatter:off
+        this(inputStream, builder()
+                .setCharset(encoding)
+                .setUseUnicodeExtraFields(useUnicodeExtraFields)
+                .setSupportStoredEntryDataDescriptor(supportStoredEntryDataDescriptor)
+                .setSkipSplitSignature(skipSplitSignature));
+        // @formatter:on
     }
 
     /**

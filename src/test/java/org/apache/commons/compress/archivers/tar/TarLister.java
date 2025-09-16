@@ -84,8 +84,7 @@ public final class TarLister {
         if (!f.isFile()) {
             System.err.println(f + " doesn't exist or is a directory");
         }
-        TarArchiveInputStream.Builder tarBuilder =
-                TarArchiveInputStream.builder().setFile(f);
+        TarArchiveInputStream.Builder tarBuilder = TarArchiveInputStream.builder().setFile(f);
         if (args.length > 1) {
             tarBuilder = tarBuilder.setCharset(args[1]);
         }

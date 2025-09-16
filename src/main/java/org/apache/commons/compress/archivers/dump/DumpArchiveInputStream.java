@@ -57,6 +57,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
      *     .setPath(inputPath)
      *     .get();
      * }</pre>
+     *
      * @since 1.29.0
      */
     public static final class Builder extends AbstractBuilder<DumpArchiveInputStream, Builder> {
@@ -76,7 +77,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
     /**
      * Creates a new builder.
      *
-     * @return A new builder
+     * @return A new builder.
      * @since 1.29.0
      */
     public static Builder builder() {

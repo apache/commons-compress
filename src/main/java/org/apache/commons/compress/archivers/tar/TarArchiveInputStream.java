@@ -305,19 +305,14 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      * @deprecated Use {@link #builder()} to configure and {@link Builder#get() get()} a {@link Builder}.
      */
     @Deprecated
-    public TarArchiveInputStream(
-            final InputStream inputStream,
-            final int blockSize,
-            final int recordSize,
-            final String encoding,
-            final boolean lenient) {
-        this(
-                inputStream,
-                builder()
-                        .setBlockSize(blockSize)
-                        .setRecordSize(recordSize)
-                        .setCharset(encoding)
-                        .setLenient(lenient));
+    public TarArchiveInputStream(final InputStream inputStream, final int blockSize, final int recordSize, final String encoding, final boolean lenient) {
+        // @formatter:off
+        this(inputStream, builder()
+                .setBlockSize(blockSize)
+                .setRecordSize(recordSize)
+                .setCharset(encoding)
+                .setLenient(lenient));
+        // @formatter:on
     }
 
     /**
