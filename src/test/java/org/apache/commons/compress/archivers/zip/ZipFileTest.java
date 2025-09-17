@@ -33,10 +33,10 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.FileInputStream;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -244,9 +244,9 @@ class ZipFileTest extends AbstractTest {
     @Test
     void testZstdInputStreamErrorCloseWhenGc() throws Exception  {
         final File archive = getFile("COMPRESS-692/compress-692.zip");
-        for (int i = 0; i < 500;i++) {
+        for (int i = 0; i < 500; i++) {
             try (FileInputStream fileInputStream = new FileInputStream(archive);
-                ZipArchiveInputStream zipArchiveInputStream = new ZipArchiveInputStream(fileInputStream)){
+                ZipArchiveInputStream zipArchiveInputStream = new ZipArchiveInputStream(fileInputStream)) {
                 ArchiveEntry entry;
                 while ((entry = zipArchiveInputStream.getNextEntry()) != null) {
                     if (entry.isDirectory()) {
