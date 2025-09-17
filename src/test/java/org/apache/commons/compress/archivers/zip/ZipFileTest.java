@@ -244,9 +244,9 @@ class ZipFileTest extends AbstractTest {
     @Test
     void testZstdInputStreamErrorCloseWhenGc() throws Exception  {
         final File archive = getFile("COMPRESS-692/compress-692.zip");
-        for (int i =0; i< 500;i++) {
+        for (int i = 0; i < 500;i++) {
             try (FileInputStream fileInputStream = new FileInputStream(archive);
-                 ZipArchiveInputStream zipArchiveInputStream = new ZipArchiveInputStream(fileInputStream)){
+                ZipArchiveInputStream zipArchiveInputStream = new ZipArchiveInputStream(fileInputStream)){
                 ArchiveEntry entry;
                 while ((entry = zipArchiveInputStream.getNextEntry()) != null) {
                     if (entry.isDirectory()) {
@@ -256,7 +256,7 @@ class ZipFileTest extends AbstractTest {
                     IOUtils.toByteArray(zipArchiveInputStream);
                 }
             } catch (IOException e) {
-                fail("testZstdInputStreamErrorCloseWhenGc error, test error at batch " + (i+1), e);
+                fail("testZstdInputStreamErrorCloseWhenGc error, test error at batch " + (i + 1), e);
             }
         }
     }
