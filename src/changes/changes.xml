@@ -98,7 +98,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Classes in org.apache.commons.compress.compressors now throw a subclass of IOException called CompressorException instead of IOException when a formatting problem is found.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Normalize exception message sentences to start with a capital letter.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Deprecate ByteUtils.EMPTY_BYTE_ARRAY in favor or ArrayUtils.EMPTY_BYTE_ARRAY.</action>
-      <!-- FIX -->
+      <action type="fix" dev="ggregory" due-to="Martin Wiesner, Gary Gregory">Fix grammar issues and typos #687.</action>
       <!-- ADD -->
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add MemoryLimitException.MemoryLimitException(long, long).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add CompressException.CompressException(String, Object...).</action>
