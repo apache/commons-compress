@@ -60,7 +60,7 @@ public final class ChangeSet<E extends ArchiveEntry> {
      *
      * @param entry   the entry to add
      * @param input   the data stream to add
-     * @param replace indicates the this change should replace existing entries
+     * @param replace indicates this change should replace existing entries
      */
     public void add(final E entry, final InputStream input, final boolean replace) {
         addAddition(new Change<>(entry, input, replace));

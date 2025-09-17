@@ -748,7 +748,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
     /**
      * For sparse tar entries, there are many "holes"(consisting of all 0) in the file. Only the non-zero data is stored in tar files, and they are stored
      * separately. The structure of non-zero data is introduced by the sparse headers using the offset, where a block of non-zero data starts, and numbytes, the
-     * length of the non-zero data block. When reading sparse entries, the actual data is read out with "holes" and non-zero data combined together according to
+     * length of the non-zero data block. When reading sparse entries, the actual data is read out with "holes" and non-zero data combined according to
      * the sparse headers.
      *
      * @param buf       The buffer into which to place bytes read.

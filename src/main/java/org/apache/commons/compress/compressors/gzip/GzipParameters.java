@@ -564,7 +564,7 @@ public class GzipParameters {
      * Sets the extra subfields. Note that a non-null extra will appear in the gzip header regardless of the presence of subfields, while a null extra will not
      * appear at all.
      *
-     * @param extra the series of extra sub fields.
+     * @param extra the series of extra subfields.
      * @since 1.28.0
      */
     public void setExtraField(final ExtraField extra) {

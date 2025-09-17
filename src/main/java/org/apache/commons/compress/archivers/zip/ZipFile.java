@@ -74,7 +74,7 @@ import org.apache.commons.io.input.BoundedInputStream;
  * Replacement for {@link java.util.zip.ZipFile}.
  * <p>
  * This class adds support for file name encodings other than UTF-8 (which is required to work on ZIP files created by native ZIP tools and is able to skip a
- * preamble like the one found in self extracting archives. Furthermore it returns instances of
+ * preamble like the one found in self extracting archives. Furthermore, it returns instances of
  * {@code org.apache.commons.compress.archivers.zip.ZipArchiveEntry} instead of {@link java.util.zip.ZipEntry}.
  * </p>
  * <p>
@@ -123,7 +123,7 @@ public class ZipFile implements Closeable {
      * See {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} to read from an in-memory archive.
      * </p>
      * <p>
-     * By default the central directory record and all local file headers of the archive will be read immediately which may take a considerable amount of time
+     * By default, the central directory record and all local file headers of the archive will be read immediately which may take a considerable amount of time
      * when the archive is big. The {@code ignoreLocalFileHeader} parameter can be set to {@code true} which restricts parsing to the central directory.
      * Unfortunately the local file header may contain information not present inside of the central directory which will not be available when the argument is
      * set to {@code true}. This includes the content of the Unicode extra field, so setting {@code
@@ -221,7 +221,7 @@ public class ZipFile implements Closeable {
          * Sets the factory {@link IOFunction} to create a Zstd {@link InputStream}. Defaults to
          * {@link ZstdCompressorInputStream#ZstdCompressorInputStream(InputStream)}.
          * <p>
-         * Call this method to plugin an alternate Zstd input stream implementation.
+         * Call this method to plug in an alternate Zstd input stream implementation.
          * </p>
          *
          * @param zstdInpStreamFactory the factory {@link IOFunction} to create a Zstd {@link InputStream}; {@code null} resets to the default.
@@ -576,7 +576,7 @@ public class ZipFile implements Closeable {
     }
 
     /**
-     * Searches for the and positions the stream at the start of the &quot;End of central dir record&quot;.
+     * Searches for the end positions the stream at the start of the &quot;End of central dir record&quot;.
      *
      * @return true if it's Zip64 end of central directory or false if it's Zip32
      */
@@ -793,7 +793,7 @@ public class ZipFile implements Closeable {
     /**
      * Opens the given file for reading, assuming the specified encoding for file names.
      * <p>
-     * By default the central directory record and all local file headers of the archive will be read immediately which may take a considerable amount of time
+     * By default, the central directory record and all local file headers of the archive will be read immediately which may take a considerable amount of time
      * when the archive is big. The {@code ignoreLocalFileHeader} parameter can be set to {@code true} which restricts parsing to the central directory.
      * Unfortunately the local file header may contain information not present inside of the central directory which will not be available when the argument is
      * set to {@code true}. This includes the content of the Unicode extra field, so setting {@code
@@ -859,7 +859,7 @@ public class ZipFile implements Closeable {
     /**
      * Opens the given path for reading, assuming the specified encoding for file names.
      * <p>
-     * By default the central directory record and all local file headers of the archive will be read immediately which may take a considerable amount of time
+     * By default, the central directory record and all local file headers of the archive will be read immediately which may take a considerable amount of time
      * when the archive is big. The {@code ignoreLocalFileHeader} parameter can be set to {@code true} which restricts parsing to the central directory.
      * Unfortunately the local file header may contain information not present inside of the central directory which will not be available when the argument is
      * set to {@code true}. This includes the content of the Unicode extra field, so setting {@code
@@ -965,7 +965,7 @@ public class ZipFile implements Closeable {
      * {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} allows you to read from an in-memory archive.
      * </p>
      * <p>
-     * By default the central directory record and all local file headers of the archive will be read immediately which may take a considerable amount of time
+     * By default, the central directory record and all local file headers of the archive will be read immediately which may take a considerable amount of time
      * when the archive is big. The {@code ignoreLocalFileHeader} parameter can be set to {@code true} which restricts parsing to the central directory.
      * Unfortunately the local file header may contain information not present inside of the central directory which will not be available when the argument is
      * set to {@code true}. This includes the content of the Unicode extra field, so setting {@code
