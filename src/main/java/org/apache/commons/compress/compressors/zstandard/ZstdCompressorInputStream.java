@@ -24,11 +24,11 @@ import java.io.InputStream;
 
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.utils.InputStreamStatistics;
+import org.apache.commons.io.input.CloseShieldInputStream;
 import org.apache.commons.io.input.BoundedInputStream;
 
 import com.github.luben.zstd.BufferPool;
 import com.github.luben.zstd.ZstdInputStream;
-import org.apache.commons.io.input.CloseShieldInputStream;
 
 /**
  * {@link CompressorInputStream} implementation to decode Zstandard encoded stream.
@@ -54,7 +54,7 @@ public class ZstdCompressorInputStream extends CompressorInputStream implements 
      * @throws IOException if an I/O error occurs.
      */
     public ZstdCompressorInputStream(final InputStream in) throws IOException {
-        CloseShieldInputStream closeShieldInputStream = CloseShieldInputStream.wrap(in);
+        final CloseShieldInputStream closeShieldInputStream = CloseShieldInputStream.wrap(in);
         this.decIS = new ZstdInputStream(countingStream = BoundedInputStream.builder().setInputStream(closeShieldInputStream).get());
     }
 
