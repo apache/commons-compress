@@ -33,6 +33,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -56,6 +57,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 
 import org.apache.commons.compress.AbstractTest;
+import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.apache.commons.io.IOUtils;
@@ -1068,6 +1070,29 @@ class ZipFileTest extends AbstractTest {
             try (InputStream inputStream = zipFile.getInputStream(entry)) {
                 final byte[] content = IOUtils.toByteArray(inputStream);
                 assertArrayEquals("entry-content\n".getBytes(StandardCharsets.UTF_8), content);
+            }
+        }
+    }
+
+    /*
+     * Tests [COMPRESS-708] ZstdCompressorInputStream closes the InputStream held by ZipArchiveInputStream garbage collection.
+     */
+    @Test
+    void testZstdInputStreamErrorCloseWhenGc() throws Exception {
+        final File archive = getFile("COMPRESS-692/compress-692.zip");
+        for (int i = 0; i < 500; i++) {
+            try (FileInputStream fileInputStream = new FileInputStream(archive);
+                    ZipArchiveInputStream zipArchiveInputStream = new ZipArchiveInputStream(fileInputStream)) {
+                ArchiveEntry entry;
+                while ((entry = zipArchiveInputStream.getNextEntry()) != null) {
+                    if (entry.isDirectory()) {
+                        continue;
+                    }
+                    System.gc();
+                    IOUtils.toByteArray(zipArchiveInputStream);
+                }
+            } catch (final IOException e) {
+                fail("testZstdInputStreamErrorCloseWhenGc error, test error at batch " + (i + 1), e);
             }
         }
     }
