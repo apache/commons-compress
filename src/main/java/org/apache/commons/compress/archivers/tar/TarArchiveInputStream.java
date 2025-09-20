@@ -71,7 +71,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      * @since 1.29.0
      */
     // @formatter:on
-    public static class Builder extends AbstractBuilder<TarArchiveInputStream, Builder> {
+    public static final class Builder extends AbstractBuilder<TarArchiveInputStream, Builder> {
 
         private int blockSize = TarConstants.DEFAULT_BLKSIZE;
         private int recordSize = TarConstants.DEFAULT_RCDSIZE;
@@ -80,7 +80,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
         /**
          * Constructs a new instance.
          */
-        public Builder() {
+        private Builder() {
             // empty
         }
 
@@ -234,7 +234,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      * @param lenient     when set to true illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
      *                    {@link TarArchiveEntry#UNKNOWN}. When set to false such illegal fields cause an exception instead.
      * @since 1.19
-     * @deprecated Use {@link #builder()} to configure and {@link Builder#get() get()} a {@link Builder}.
+     * @deprecated Since 1.29.0, use {@link #builder()}.
      */
     @Deprecated
     public TarArchiveInputStream(final InputStream inputStream, final boolean lenient) {
@@ -254,7 +254,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      *
      * @param inputStream the input stream to use.
      * @param blockSize   the block size to use.
-     * @deprecated Use {@link #builder()} to configure and {@link Builder#get() get()} a {@link Builder}.
+     * @deprecated Since 1.29.0, use {@link #builder()}.
      */
     @Deprecated
     public TarArchiveInputStream(final InputStream inputStream, final int blockSize) {
@@ -267,7 +267,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      * @param inputStream the input stream to use.
      * @param blockSize   the block size to use.
      * @param recordSize  the record size to use.
-     * @deprecated Use {@link #builder()} to configure and {@link Builder#get() get()} a {@link Builder}.
+     * @deprecated Since 1.29.0, use {@link #builder()}.
      */
     @Deprecated
     public TarArchiveInputStream(final InputStream inputStream, final int blockSize, final int recordSize) {
@@ -282,7 +282,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      * @param recordSize  the record size to use.
      * @param encoding    name of the encoding to use for file names.
      * @since 1.4
-     * @deprecated Use {@link #builder()} to configure and {@link Builder#get() get()} a {@link Builder}.
+     * @deprecated Since 1.29.0, use {@link #builder()}.
      */
     @Deprecated
     public TarArchiveInputStream(
@@ -302,7 +302,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      * @param lenient     when set to true illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
      *                    {@link TarArchiveEntry#UNKNOWN}. When set to false such illegal fields cause an exception instead.
      * @since 1.19
-     * @deprecated Use {@link #builder()} to configure and {@link Builder#get() get()} a {@link Builder}.
+     * @deprecated Since 1.29.0, use {@link #builder()}.
      */
     @Deprecated
     public TarArchiveInputStream(final InputStream inputStream, final int blockSize, final int recordSize, final String encoding, final boolean lenient) {
@@ -322,7 +322,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      * @param blockSize   the block size to use.
      * @param encoding    name of the encoding to use for file names.
      * @since 1.4
-     * @deprecated Use {@link #builder()} to configure and {@link Builder#get() get()} a {@link Builder}.
+     * @deprecated Since 1.29.0, use {@link #builder()}.
      */
     @Deprecated
     public TarArchiveInputStream(final InputStream inputStream, final int blockSize, final String encoding) {
@@ -335,7 +335,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      * @param inputStream the input stream to use.
      * @param encoding    name of the encoding to use for file names.
      * @since 1.4
-     * @deprecated Use {@link #builder()} to configure and {@link Builder#get() get()} a {@link Builder}.
+     * @deprecated Since 1.29.0, use {@link #builder()}.
      */
     @Deprecated
     public TarArchiveInputStream(final InputStream inputStream, final String encoding) {

@@ -19,6 +19,7 @@
 
 package org.apache.commons.compress.archivers.zip;
 
+import static org.apache.commons.lang3.reflect.FieldUtils.readDeclaredField;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -26,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -929,6 +931,17 @@ class ZipArchiveInputStreamTest extends AbstractTest {
             assertEquals("file-1.txt", entry.getName());
             final byte[] content = IOUtils.toByteArray(zis);
             assertArrayEquals("entry-content\n".getBytes(StandardCharsets.UTF_8), content);
+        }
+    }
+
+    @Test
+    void testSingleArgumentConstructor() throws Exception {
+        final InputStream inputStream = mock(InputStream.class);
+        try (ZipArchiveInputStream archiveStream = new ZipArchiveInputStream(inputStream)) {
+            assertEquals(StandardCharsets.UTF_8, archiveStream.getCharset());
+            assertEquals(true, readDeclaredField(archiveStream, "useUnicodeExtraFields", true));
+            assertEquals(false, readDeclaredField(archiveStream, "supportStoredEntryDataDescriptor", true));
+            assertEquals(false, readDeclaredField(archiveStream, "skipSplitSignature", true));
         }
     }
 }
