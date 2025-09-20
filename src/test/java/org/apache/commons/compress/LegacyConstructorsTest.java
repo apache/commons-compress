@@ -97,7 +97,7 @@ class LegacyConstructorsTest extends AbstractTest {
         }
     }
 
-    static Stream<Arguments> testTarContructors() {
+    static Stream<Arguments> testTarConstructors() {
         final InputStream inputStream = mock(InputStream.class);
         final String defaultEncoding = Charset.defaultCharset().name();
         final String otherEncoding = "UTF-8".equals(defaultEncoding) ? "US-ASCII" : "UTF-8";
@@ -145,7 +145,7 @@ class LegacyConstructorsTest extends AbstractTest {
 
     @ParameterizedTest
     @MethodSource
-    void testTarContructors(
+    void testTarConstructors(
             TarArchiveInputStream archiveStream,
             InputStream expectedInput,
             int expectedBlockSize,
