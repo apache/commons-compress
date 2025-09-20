@@ -28,7 +28,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.util.Calendar;
 import java.util.TimeZone;
 
@@ -267,4 +269,11 @@ class ArjArchiveInputStreamTest extends AbstractTest {
         }
     }
 
+    @Test
+    void testSingleArgumentConstructor() throws Exception {
+        try (InputStream inputStream = Files.newInputStream(getPath("bla.arj"));
+                ArjArchiveInputStream archiveStream = new ArjArchiveInputStream(inputStream)) {
+            assertEquals(Charset.forName("CP437"), archiveStream.getCharset());
+        }
+    }
 }

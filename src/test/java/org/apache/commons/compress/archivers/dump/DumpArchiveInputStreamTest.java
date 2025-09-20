@@ -31,6 +31,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
@@ -190,6 +192,14 @@ class DumpArchiveInputStreamTest extends AbstractTest {
             IOUtils.toByteArray(archive);
             assertEquals(-1, archive.read());
             assertEquals(-1, archive.read());
+        }
+    }
+
+    @Test
+    void testSingleArgumentConstructor() throws Exception {
+        try (InputStream inputStream = Files.newInputStream(getPath("bla.dump"));
+                DumpArchiveInputStream archiveStream = new DumpArchiveInputStream(inputStream)) {
+            assertEquals(Charset.defaultCharset(), archiveStream.getCharset());
         }
     }
 }

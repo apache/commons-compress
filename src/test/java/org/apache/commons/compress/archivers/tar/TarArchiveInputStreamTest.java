@@ -19,6 +19,8 @@
 
 package org.apache.commons.compress.archivers.tar;
 
+import static org.apache.commons.lang3.reflect.FieldUtils.readDeclaredField;
+import static org.apache.commons.lang3.reflect.FieldUtils.readField;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -28,6 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.mock;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -37,6 +40,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -616,6 +620,18 @@ class TarArchiveInputStreamTest extends AbstractTest {
             assertEquals(new Date(0), tae.getLastModifiedDate());
             assertTrue(tae.isSymbolicLink());
             assertTrue(tae.isCheckSumOK());
+        }
+    }
+
+    @Test
+    void testSingleArgumentConstructor() throws Exception {
+        final InputStream inputStream = mock(InputStream.class);
+        try (TarArchiveInputStream archiveStream = new TarArchiveInputStream(inputStream)) {
+            assertEquals(10240, readDeclaredField(archiveStream, "blockSize", true));
+            final byte[] recordBuffer = (byte[]) readField(archiveStream, "recordBuffer", true);
+            assertEquals(512, recordBuffer.length);
+            assertEquals(Charset.defaultCharset(), archiveStream.getCharset());
+            assertEquals(false, readField(archiveStream, "lenient", true));
         }
     }
 }
