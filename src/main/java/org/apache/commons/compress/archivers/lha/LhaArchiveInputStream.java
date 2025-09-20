@@ -39,7 +39,6 @@ import org.apache.commons.compress.compressors.lha.Lh4CompressorInputStream;
 import org.apache.commons.compress.compressors.lha.Lh5CompressorInputStream;
 import org.apache.commons.compress.compressors.lha.Lh6CompressorInputStream;
 import org.apache.commons.compress.compressors.lha.Lh7CompressorInputStream;
-import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.io.input.ChecksumInputStream;
@@ -55,37 +54,19 @@ import org.apache.commons.io.input.ChecksumInputStream;
  */
 public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
 
-    // @formatter:off
     /**
      * Builds a new {@link LhaArchiveInputStream}.
-     *
      * <p>
      * For example:
      * </p>
      * <pre>{@code
-     * LhaArchiveInputStream s = LhaArchiveInputStream.builder()
-     *   .setInputStream(archiveInputStream)
+     * LhaArchiveInputStream in = LhaArchiveInputStream.builder()
+     *   .setPath(inputPath)
      *   .setCharset(StandardCharsets.UTF_8)
-     *   .get();}
-     * </pre>
+     *   .get();
+     * }</pre>
      */
-    // @formatter:on
-    public static class Builder {
-
-        /**
-         * The InputStream to read the archive data from.
-         */
-        private InputStream inputStream;
-
-        /**
-         * The default Charset.
-         */
-        private Charset charsetDefault = StandardCharsets.US_ASCII;
-
-        /**
-         * The Charset, defaults to {@link StandardCharsets#US_ASCII}.
-         */
-        private Charset charset = charsetDefault;
+    public static class Builder extends AbstractBuilder<LhaArchiveInputStream, Builder> {
 
         /**
          * The file separator char, defaults to {@link File#separatorChar}.
@@ -96,7 +77,7 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
          * Constructs a new instance.
          */
         private Builder() {
-            // empty
+            setCharset(DEFAULT_CHARSET);
         }
 
         /**
@@ -104,30 +85,9 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
          *
          * @return a new LhaArchiveInputStream.
          */
-        public LhaArchiveInputStream get() {
-            return new LhaArchiveInputStream(this.inputStream, this.charset, this.fileSeparatorChar);
-        }
-
-        /**
-         * Sets the InputStream to read the archive data from.
-         *
-         * @param inputStream the InputStream.
-         * @return {@code this} instance.
-         */
-        public Builder setInputStream(final InputStream inputStream) {
-            this.inputStream = inputStream;
-            return this;
-        }
-
-        /**
-         * Sets the Charset.
-         *
-         * @param charset the Charset, null resets to the default {@link StandardCharsets#US_ASCII}.
-         * @return {@code this} instance.
-         */
-        public Builder setCharset(final Charset charset) {
-            this.charset = Charsets.toCharset(charset, charsetDefault);
-            return this;
+        @Override
+        public LhaArchiveInputStream get() throws IOException {
+            return new LhaArchiveInputStream(this);
         }
 
         /**
@@ -216,6 +176,11 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
      */
     private static final int MAX_PATHNAME_LENGTH = 4096;
 
+    /**
+     * Default charset for decoding filenames.
+     */
+    private static final Charset DEFAULT_CHARSET = StandardCharsets.US_ASCII;
+
     private final char fileSeparatorChar;
     private LhaArchiveEntry currentEntry;
     private InputStream currentCompressedStream;
@@ -230,9 +195,9 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
         return new Builder();
     }
 
-    private LhaArchiveInputStream(final InputStream inputStream, final Charset charset, final char fileSeparatorChar) {
-        super(inputStream, charset);
-        this.fileSeparatorChar = fileSeparatorChar;
+    private LhaArchiveInputStream(final Builder builder) throws IOException {
+        super(builder.getInputStream(), builder.getCharset());
+        this.fileSeparatorChar = builder.fileSeparatorChar;
     }
 
     @Override
