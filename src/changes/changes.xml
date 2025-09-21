@@ -101,6 +101,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Martin Wiesner, Gary Gregory">Fix grammar issues and typos #687.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">SeekableInMemoryByteChannel.SeekableInMemoryByteChannel() internal buffer now defaults to IOUtils.DEFAULT_BUFFER_SIZE.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">SeekableInMemoryByteChannel.position(), size(), and truncate() now comply with the SeekableByteChannel contract and throw ClosedChannelException.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">SeekableInMemoryByteChannel.position(long) now throws IllegalArgumentException instead of IOException when the position request is negative, complying with the SeekableByteChannel.position(long) contract.</action>
       <!-- ADD -->
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add MemoryLimitException.MemoryLimitException(long, long).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add CompressException.CompressException(String, Object...).</action>

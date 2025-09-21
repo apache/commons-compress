@@ -124,7 +124,7 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
     public SeekableByteChannel position(final long newPosition) throws IOException {
         ensureOpen();
         if (newPosition < 0L || newPosition > Integer.MAX_VALUE) {
-            throw new IOException("Position must be in range [0.." + Integer.MAX_VALUE + "]");
+            throw new IllegalArgumentException(String.format("Position must be in range [0..%,d]: %,d", Integer.MAX_VALUE, newPosition));
         }
         position = (int) newPosition;
         return this;

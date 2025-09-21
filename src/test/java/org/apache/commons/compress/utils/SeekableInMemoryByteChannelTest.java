@@ -154,7 +154,7 @@ class SeekableInMemoryByteChannelTest {
     @Test
     void testShouldThrowExceptionWhenSettingIncorrectPosition() {
         try (SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel()) {
-            assertThrows(IOException.class, () -> c.position(Integer.MAX_VALUE + 1L));
+            assertThrows(IllegalArgumentException.class, () -> c.position(Integer.MAX_VALUE + 1L));
         }
     }
 
@@ -230,7 +230,7 @@ class SeekableInMemoryByteChannelTest {
     @Test
     void testThrowsIOExceptionWhenPositionIsSetToANegativeValue() throws Exception {
         try (SeekableByteChannel c = new SeekableInMemoryByteChannel()) {
-            assertThrows(IOException.class, () -> c.position(-1));
+            assertThrows(IllegalArgumentException.class, () -> c.position(-1));
         }
     }
 
