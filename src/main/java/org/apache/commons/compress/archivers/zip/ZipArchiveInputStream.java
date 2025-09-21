@@ -437,7 +437,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
      * @param inputStream the stream to wrap.
      * @param encoding    the encoding to use for file names, use null for the platform's default encoding.
      * @since 1.5
-     * @deprecated Use {@link #builder()} and {@link Builder}.
+     * @deprecated Since 1.29.0, use {@link #builder()}.
      */
     @Deprecated
     public ZipArchiveInputStream(final InputStream inputStream, final String encoding) {
@@ -450,7 +450,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
      * @param inputStream           the stream to wrap.
      * @param encoding              the encoding to use for file names, use null for the platform's default encoding.
      * @param useUnicodeExtraFields whether to use InfoZIP Unicode Extra Fields (if present) to set the file names.
-     * @deprecated Use {@link #builder()} and {@link Builder}.
+     * @deprecated Since 1.29.0, use {@link #builder()}.
      */
     @Deprecated
     public ZipArchiveInputStream(final InputStream inputStream, final String encoding, final boolean useUnicodeExtraFields) {
@@ -465,7 +465,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
      * @param useUnicodeExtraFields            whether to use InfoZIP Unicode Extra Fields (if present) to set the file names.
      * @param supportStoredEntryDataDescriptor whether the stream will try to read STORED entries that use a data descriptor.
      * @since 1.1
-     * @deprecated Use {@link #builder()} and {@link Builder}.
+     * @deprecated Since 1.29.0, use {@link #builder()}.
      */
     @Deprecated
     public ZipArchiveInputStream(
@@ -491,7 +491,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
      * @param skipSplitSignature               Whether the stream will try to skip the zip split signature(08074B50) at the beginning.
      *                                         You will need to set this to true if you want to read a split archive.
      * @since 1.20
-     * @deprecated Use {@link #builder()} and {@link Builder}.
+     * @deprecated Since 1.29.0, use {@link #builder()}.
      */
     @Deprecated
     public ZipArchiveInputStream(

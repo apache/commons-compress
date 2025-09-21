@@ -18,11 +18,14 @@
  */
 package org.apache.commons.compress.archivers.cpio;
 
+import static org.apache.commons.lang3.reflect.FieldUtils.readDeclaredField;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.compress.AbstractTest;
@@ -173,4 +176,12 @@ class CpioArchiveInputStreamTest extends AbstractTest {
         }
     }
 
+    @Test
+    void testSingleArgumentConstructor() throws Exception {
+        final InputStream inputStream = mock(InputStream.class);
+        try (CpioArchiveInputStream archiveStream = new CpioArchiveInputStream(inputStream)) {
+            assertEquals(StandardCharsets.US_ASCII, archiveStream.getCharset());
+            assertEquals(512, readDeclaredField(archiveStream, "blockSize", true));
+        }
+    }
 }

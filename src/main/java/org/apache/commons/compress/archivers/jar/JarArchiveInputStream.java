@@ -93,7 +93,7 @@ public class JarArchiveInputStream extends ZipArchiveInputStream {
      * @param inputStream the input stream to wrap
      * @param encoding    the encoding to use
      * @since 1.10
-     * @deprecated Use {@link #builder()} and {@link Builder}.
+     * @deprecated Since 1.29.0, use {@link #jarInputStreamBuilder()}.
      */
     @Deprecated
     public JarArchiveInputStream(final InputStream inputStream, final String encoding) {
