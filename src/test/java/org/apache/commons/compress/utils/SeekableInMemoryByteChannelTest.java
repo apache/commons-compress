@@ -30,7 +30,6 @@ import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -192,7 +191,7 @@ class SeekableInMemoryByteChannelTest {
     }
 
     @Test
-    void testShouldTruncateContentsProperly() {
+    void testShouldTruncateContentsProperly() throws ClosedChannelException {
         // given
         try (SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel(testData)) {
             // when
@@ -363,11 +362,10 @@ class SeekableInMemoryByteChannelTest {
      * <q>ClosedChannelException - If this channel is closed</q>
      */
     @Test
-    @Disabled("we deliberately violate the spec")
     public void throwsClosedChannelExceptionWhenPositionIsReadOnClosedChannel() throws Exception {
         try (SeekableByteChannel c = new SeekableInMemoryByteChannel()) {
             c.close();
-            c.position();
+            assertThrows(ClosedChannelException.class, c::position);
         }
     }
 
@@ -375,11 +373,10 @@ class SeekableInMemoryByteChannelTest {
      * <q>ClosedChannelException - If this channel is closed</q>
      */
     @Test
-    @Disabled("we deliberately violate the spec")
     public void throwsClosedChannelExceptionWhenSizeIsReadOnClosedChannel() throws Exception {
         try (SeekableByteChannel c = new SeekableInMemoryByteChannel()) {
             c.close();
-            c.size();
+            assertThrows(ClosedChannelException.class, c::size);
         }
     }
 
@@ -387,11 +384,10 @@ class SeekableInMemoryByteChannelTest {
      * <q>ClosedChannelException - If this channel is closed</q>
      */
     @Test
-    @Disabled("we deliberately violate the spec")
     public void throwsClosedChannelExceptionWhenTruncateIsCalledOnClosedChannel() throws Exception {
         try (SeekableByteChannel c = new SeekableInMemoryByteChannel()) {
             c.close();
-            c.truncate(0);
+            assertThrows(ClosedChannelException.class, () -> c.truncate(0));
         }
     }
 

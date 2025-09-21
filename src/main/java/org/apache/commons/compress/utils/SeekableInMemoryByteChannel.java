@@ -100,13 +100,23 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
         }
     }
 
+    /**
+     * Like {@link #size()} but never throws {@link ClosedChannelException}.
+     *
+     * @return See {@link #size()}.
+     */
+    public long getSize() {
+        return size;
+    }
+
     @Override
     public boolean isOpen() {
         return !closed.get();
     }
 
     @Override
-    public long position() {
+    public long position() throws ClosedChannelException {
+        ensureOpen();
         return position;
     }
 
@@ -152,12 +162,14 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
     }
 
     @Override
-    public long size() {
+    public long size() throws ClosedChannelException {
+        ensureOpen();
         return size;
     }
 
     @Override
-    public SeekableByteChannel truncate(final long newSize) {
+    public SeekableByteChannel truncate(final long newSize) throws ClosedChannelException {
+        ensureOpen();
         if (newSize < 0L || newSize > Integer.MAX_VALUE) {
             throw new IllegalArgumentException("Size must be range [0.." + Integer.MAX_VALUE + "]");
         }
