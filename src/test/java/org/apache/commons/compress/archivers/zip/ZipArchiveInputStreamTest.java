@@ -509,6 +509,17 @@ class ZipArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
+    void testSingleArgumentConstructor() throws Exception {
+        final InputStream inputStream = mock(InputStream.class);
+        try (ZipArchiveInputStream archiveStream = new ZipArchiveInputStream(inputStream)) {
+            assertEquals(StandardCharsets.UTF_8, archiveStream.getCharset());
+            assertEquals(true, readDeclaredField(archiveStream, "useUnicodeExtraFields", true));
+            assertEquals(false, readDeclaredField(archiveStream, "supportStoredEntryDataDescriptor", true));
+            assertEquals(false, readDeclaredField(archiveStream, "skipSplitSignature", true));
+        }
+    }
+
+    @Test
     void testSingleByteReadConsistentlyReturnsMinusOneAtEofUsingBzip2() throws Exception {
         singleByteReadConsistentlyReturnsMinusOneAtEof(getFile("bzip2-zip.zip"));
     }
@@ -931,17 +942,6 @@ class ZipArchiveInputStreamTest extends AbstractTest {
             assertEquals("file-1.txt", entry.getName());
             final byte[] content = IOUtils.toByteArray(zis);
             assertArrayEquals("entry-content\n".getBytes(StandardCharsets.UTF_8), content);
-        }
-    }
-
-    @Test
-    void testSingleArgumentConstructor() throws Exception {
-        final InputStream inputStream = mock(InputStream.class);
-        try (ZipArchiveInputStream archiveStream = new ZipArchiveInputStream(inputStream)) {
-            assertEquals(StandardCharsets.UTF_8, archiveStream.getCharset());
-            assertEquals(true, readDeclaredField(archiveStream, "useUnicodeExtraFields", true));
-            assertEquals(false, readDeclaredField(archiveStream, "supportStoredEntryDataDescriptor", true));
-            assertEquals(false, readDeclaredField(archiveStream, "skipSplitSignature", true));
         }
     }
 }

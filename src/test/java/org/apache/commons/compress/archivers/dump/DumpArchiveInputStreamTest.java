@@ -185,6 +185,14 @@ class DumpArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
+    void testSingleArgumentConstructor() throws Exception {
+        try (InputStream inputStream = Files.newInputStream(getPath("bla.dump"));
+                DumpArchiveInputStream archiveStream = new DumpArchiveInputStream(inputStream)) {
+            assertEquals(Charset.defaultCharset(), archiveStream.getCharset());
+        }
+    }
+
+    @Test
     void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         try (DumpArchiveInputStream archive =
                 DumpArchiveInputStream.builder().setURI(getURI("bla.dump")).get()) {
@@ -192,14 +200,6 @@ class DumpArchiveInputStreamTest extends AbstractTest {
             IOUtils.toByteArray(archive);
             assertEquals(-1, archive.read());
             assertEquals(-1, archive.read());
-        }
-    }
-
-    @Test
-    void testSingleArgumentConstructor() throws Exception {
-        try (InputStream inputStream = Files.newInputStream(getPath("bla.dump"));
-                DumpArchiveInputStream archiveStream = new DumpArchiveInputStream(inputStream)) {
-            assertEquals(Charset.defaultCharset(), archiveStream.getCharset());
         }
     }
 }

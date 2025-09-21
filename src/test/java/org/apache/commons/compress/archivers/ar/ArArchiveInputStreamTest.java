@@ -220,20 +220,20 @@ class ArArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
+    void testSingleArgumentConstructor() throws Exception {
+        final InputStream inputStream = mock(InputStream.class);
+        try (ArArchiveInputStream archiveStream = new ArArchiveInputStream(inputStream)) {
+            assertEquals(US_ASCII, archiveStream.getCharset());
+        }
+    }
+
+    @Test
     void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         try (ArArchiveInputStream archive = ArArchiveInputStream.builder().setURI(getURI("bla.ar")).get()) {
             assertNotNull(archive.getNextEntry());
             IOUtils.toByteArray(archive);
             assertEquals(-1, archive.read());
             assertEquals(-1, archive.read());
-        }
-    }
-
-    @Test
-    void testSingleArgumentConstructor() throws Exception {
-        final InputStream inputStream = mock(InputStream.class);
-        try (ArArchiveInputStream archiveStream = new ArArchiveInputStream(inputStream)) {
-            assertEquals(US_ASCII, archiveStream.getCharset());
         }
     }
 }

@@ -259,6 +259,14 @@ class ArjArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
+    void testSingleArgumentConstructor() throws Exception {
+        try (InputStream inputStream = Files.newInputStream(getPath("bla.arj"));
+                ArjArchiveInputStream archiveStream = new ArjArchiveInputStream(inputStream)) {
+            assertEquals(Charset.forName("CP437"), archiveStream.getCharset());
+        }
+    }
+
+    @Test
     void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         try (ArjArchiveInputStream archive = ArjArchiveInputStream.builder().setURI(getURI("bla.arj")).get()) {
             assertNotNull(archive.getNextEntry());
@@ -266,14 +274,6 @@ class ArjArchiveInputStreamTest extends AbstractTest {
             assertEquals(-1, archive.read());
             assertEquals(-1, archive.read());
             assertForEach(archive);
-        }
-    }
-
-    @Test
-    void testSingleArgumentConstructor() throws Exception {
-        try (InputStream inputStream = Files.newInputStream(getPath("bla.arj"));
-                ArjArchiveInputStream archiveStream = new ArjArchiveInputStream(inputStream)) {
-            assertEquals(Charset.forName("CP437"), archiveStream.getCharset());
         }
     }
 }

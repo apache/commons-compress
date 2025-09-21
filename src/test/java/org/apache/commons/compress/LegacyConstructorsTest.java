@@ -48,14 +48,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 @SuppressWarnings("deprecation") // testing deprecated code
 class LegacyConstructorsTest extends AbstractTest {
 
-    @Test
-    void testArjConstructor() throws Exception {
-        try (InputStream inputStream = Files.newInputStream(getPath("bla.arj"));
-                ArjArchiveInputStream archiveInputStream = new ArjArchiveInputStream(inputStream, "US-ASCII")) {
-            // Arj wraps the input stream in a DataInputStream
-            assertEquals(inputStream, getNestedInputStream(getNestedInputStream(archiveInputStream)));
-            assertEquals(US_ASCII, archiveInputStream.getCharset());
-        }
+    private static InputStream getNestedInputStream(final InputStream is) throws ReflectiveOperationException {
+        return (InputStream) readField(is, "in", true);
     }
 
     static Stream<Arguments> testCpioConstructors() {
@@ -66,14 +60,43 @@ class LegacyConstructorsTest extends AbstractTest {
                 Arguments.of(new CpioArchiveInputStream(inputStream, "UTF-8"), inputStream, "UTF-8", 512));
     }
 
+    static Stream<Arguments> testTarConstructors() {
+        final InputStream inputStream = mock(InputStream.class);
+        final String defaultEncoding = Charset.defaultCharset().name();
+        final String otherEncoding = "UTF-8".equals(defaultEncoding) ? "US-ASCII" : "UTF-8";
+        return Stream.of(
+                Arguments.of(new TarArchiveInputStream(inputStream, true), inputStream, 10240, 512, defaultEncoding, true),
+                Arguments.of(new TarArchiveInputStream(inputStream, 20480), inputStream, 20480, 512, defaultEncoding, false),
+                Arguments.of(new TarArchiveInputStream(inputStream, 20480, 1024), inputStream, 20480, 1024, defaultEncoding, false),
+                Arguments.of(new TarArchiveInputStream(inputStream, 20480, 1024, otherEncoding), inputStream, 20480, 1024, otherEncoding, false),
+                Arguments.of(new TarArchiveInputStream(inputStream, 20480, 1024, otherEncoding, true), inputStream, 20480, 1024, otherEncoding, true),
+                Arguments.of(new TarArchiveInputStream(inputStream, 20480, otherEncoding), inputStream, 20480, 512, otherEncoding, false),
+                Arguments.of(new TarArchiveInputStream(inputStream, otherEncoding), inputStream, 10240, 512, otherEncoding, false));
+    }
+
+    static Stream<Arguments> testZipConstructors() {
+        final InputStream inputStream = mock(InputStream.class);
+        return Stream.of(
+                Arguments.of(new ZipArchiveInputStream(inputStream, "US-ASCII"), inputStream, "US-ASCII", true, false, false),
+                Arguments.of(new ZipArchiveInputStream(inputStream, "US-ASCII", false), inputStream, "US-ASCII", false, false, false),
+                Arguments.of(new ZipArchiveInputStream(inputStream, "US-ASCII", false, true), inputStream, "US-ASCII", false, true, false),
+                Arguments.of(new ZipArchiveInputStream(inputStream, "US-ASCII", false, true, true), inputStream, "US-ASCII", false, true, true));
+    }
+
+    @Test
+    void testArjConstructor() throws Exception {
+        try (InputStream inputStream = Files.newInputStream(getPath("bla.arj"));
+                ArjArchiveInputStream archiveInputStream = new ArjArchiveInputStream(inputStream, "US-ASCII")) {
+            // Arj wraps the input stream in a DataInputStream
+            assertEquals(inputStream, getNestedInputStream(getNestedInputStream(archiveInputStream)));
+            assertEquals(US_ASCII, archiveInputStream.getCharset());
+        }
+    }
+
     @ParameterizedTest
     @MethodSource
-    void testCpioConstructors(
-            CpioArchiveInputStream archiveStream,
-            InputStream expectedInput,
-            String expectedEncoding,
-            int expectedBlockSize)
-            throws Exception {
+    void testCpioConstructors(final CpioArchiveInputStream archiveStream, final InputStream expectedInput, final String expectedEncoding,
+            final int expectedBlockSize) throws Exception {
         assertEquals(expectedInput, getNestedInputStream(archiveStream));
         assertEquals(Charset.forName(expectedEncoding), archiveStream.getCharset());
         assertEquals(expectedBlockSize, readDeclaredField(archiveStream, "blockSize", true));
@@ -97,62 +120,10 @@ class LegacyConstructorsTest extends AbstractTest {
         }
     }
 
-    static Stream<Arguments> testTarConstructors() {
-        final InputStream inputStream = mock(InputStream.class);
-        final String defaultEncoding = Charset.defaultCharset().name();
-        final String otherEncoding = "UTF-8".equals(defaultEncoding) ? "US-ASCII" : "UTF-8";
-        return Stream.of(
-                Arguments.of(
-                        new TarArchiveInputStream(inputStream, true), inputStream, 10240, 512, defaultEncoding, true),
-                Arguments.of(
-                        new TarArchiveInputStream(inputStream, 20480), inputStream, 20480, 512, defaultEncoding, false),
-                Arguments.of(
-                        new TarArchiveInputStream(inputStream, 20480, 1024),
-                        inputStream,
-                        20480,
-                        1024,
-                        defaultEncoding,
-                        false),
-                Arguments.of(
-                        new TarArchiveInputStream(inputStream, 20480, 1024, otherEncoding),
-                        inputStream,
-                        20480,
-                        1024,
-                        otherEncoding,
-                        false),
-                Arguments.of(
-                        new TarArchiveInputStream(inputStream, 20480, 1024, otherEncoding, true),
-                        inputStream,
-                        20480,
-                        1024,
-                        otherEncoding,
-                        true),
-                Arguments.of(
-                        new TarArchiveInputStream(inputStream, 20480, otherEncoding),
-                        inputStream,
-                        20480,
-                        512,
-                        otherEncoding,
-                        false),
-                Arguments.of(
-                        new TarArchiveInputStream(inputStream, otherEncoding),
-                        inputStream,
-                        10240,
-                        512,
-                        otherEncoding,
-                        false));
-    }
-
     @ParameterizedTest
     @MethodSource
-    void testTarConstructors(
-            TarArchiveInputStream archiveStream,
-            InputStream expectedInput,
-            int expectedBlockSize,
-            int expectedRecordSize,
-            String expectedEncoding,
-            boolean expectedLenient)
-            throws Exception {
+    void testTarConstructors(final TarArchiveInputStream archiveStream, final InputStream expectedInput, final int expectedBlockSize,
+            final int expectedRecordSize, final String expectedEncoding, final boolean expectedLenient) throws Exception {
         assertEquals(expectedInput, getNestedInputStream(archiveStream));
         assertEquals(expectedBlockSize, readDeclaredField(archiveStream, "blockSize", true));
         final byte[] recordBuffer = (byte[]) readField(archiveStream, "recordBuffer", true);
@@ -161,60 +132,16 @@ class LegacyConstructorsTest extends AbstractTest {
         assertEquals(expectedLenient, readField(archiveStream, "lenient", true));
     }
 
-    static Stream<Arguments> testZipConstructors() {
-        final InputStream inputStream = mock(InputStream.class);
-        return Stream.of(
-                Arguments.of(
-                        new ZipArchiveInputStream(inputStream, "US-ASCII"),
-                        inputStream,
-                        "US-ASCII",
-                        true,
-                        false,
-                        false),
-                Arguments.of(
-                        new ZipArchiveInputStream(inputStream, "US-ASCII", false),
-                        inputStream,
-                        "US-ASCII",
-                        false,
-                        false,
-                        false),
-                Arguments.of(
-                        new ZipArchiveInputStream(inputStream, "US-ASCII", false, true),
-                        inputStream,
-                        "US-ASCII",
-                        false,
-                        true,
-                        false),
-                Arguments.of(
-                        new ZipArchiveInputStream(inputStream, "US-ASCII", false, true, true),
-                        inputStream,
-                        "US-ASCII",
-                        false,
-                        true,
-                        true));
-    }
-
     @ParameterizedTest
     @MethodSource
-    void testZipConstructors(
-            ZipArchiveInputStream archiveStream,
-            InputStream expectedInput,
-            String expectedEncoding,
-            boolean expectedUseUnicodeExtraFields,
-            boolean expectedSupportStoredEntryDataDescriptor,
-            boolean expectedSkipSplitSignature)
+    void testZipConstructors(final ZipArchiveInputStream archiveStream, final InputStream expectedInput, final String expectedEncoding,
+            final boolean expectedUseUnicodeExtraFields, final boolean expectedSupportStoredEntryDataDescriptor, final boolean expectedSkipSplitSignature)
             throws Exception {
         // Zip wraps the input stream in a PushbackInputStream
         assertEquals(expectedInput, getNestedInputStream(getNestedInputStream(archiveStream)));
         assertEquals(Charset.forName(expectedEncoding), archiveStream.getCharset());
         assertEquals(expectedUseUnicodeExtraFields, readDeclaredField(archiveStream, "useUnicodeExtraFields", true));
-        assertEquals(
-                expectedSupportStoredEntryDataDescriptor,
-                readDeclaredField(archiveStream, "supportStoredEntryDataDescriptor", true));
+        assertEquals(expectedSupportStoredEntryDataDescriptor, readDeclaredField(archiveStream, "supportStoredEntryDataDescriptor", true));
         assertEquals(expectedSkipSplitSignature, readDeclaredField(archiveStream, "skipSplitSignature", true));
-    }
-
-    private static InputStream getNestedInputStream(InputStream is) throws ReflectiveOperationException {
-        return (InputStream) readField(is, "in", true);
     }
 }

@@ -547,6 +547,18 @@ class TarArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
+    void testSingleArgumentConstructor() throws Exception {
+        final InputStream inputStream = mock(InputStream.class);
+        try (TarArchiveInputStream archiveStream = new TarArchiveInputStream(inputStream)) {
+            assertEquals(10240, readDeclaredField(archiveStream, "blockSize", true));
+            final byte[] recordBuffer = (byte[]) readField(archiveStream, "recordBuffer", true);
+            assertEquals(512, recordBuffer.length);
+            assertEquals(Charset.defaultCharset(), archiveStream.getCharset());
+            assertEquals(false, readField(archiveStream, "lenient", true));
+        }
+    }
+
+    @Test
     void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         try (TarArchiveInputStream archive = getTestStream("bla.tar")) {
             assertNotNull(archive.getNextEntry());
@@ -620,18 +632,6 @@ class TarArchiveInputStreamTest extends AbstractTest {
             assertEquals(new Date(0), tae.getLastModifiedDate());
             assertTrue(tae.isSymbolicLink());
             assertTrue(tae.isCheckSumOK());
-        }
-    }
-
-    @Test
-    void testSingleArgumentConstructor() throws Exception {
-        final InputStream inputStream = mock(InputStream.class);
-        try (TarArchiveInputStream archiveStream = new TarArchiveInputStream(inputStream)) {
-            assertEquals(10240, readDeclaredField(archiveStream, "blockSize", true));
-            final byte[] recordBuffer = (byte[]) readField(archiveStream, "recordBuffer", true);
-            assertEquals(512, recordBuffer.length);
-            assertEquals(Charset.defaultCharset(), archiveStream.getCharset());
-            assertEquals(false, readField(archiveStream, "lenient", true));
         }
     }
 }

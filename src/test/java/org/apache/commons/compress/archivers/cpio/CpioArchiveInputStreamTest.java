@@ -166,6 +166,15 @@ class CpioArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
+    void testSingleArgumentConstructor() throws Exception {
+        final InputStream inputStream = mock(InputStream.class);
+        try (CpioArchiveInputStream archiveStream = new CpioArchiveInputStream(inputStream)) {
+            assertEquals(StandardCharsets.US_ASCII, archiveStream.getCharset());
+            assertEquals(512, readDeclaredField(archiveStream, "blockSize", true));
+        }
+    }
+
+    @Test
     void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         try (CpioArchiveInputStream archive =
                 CpioArchiveInputStream.builder().setURI(getURI("bla.cpio")).get()) {
@@ -173,15 +182,6 @@ class CpioArchiveInputStreamTest extends AbstractTest {
             IOUtils.toByteArray(archive);
             assertEquals(-1, archive.read());
             assertEquals(-1, archive.read());
-        }
-    }
-
-    @Test
-    void testSingleArgumentConstructor() throws Exception {
-        final InputStream inputStream = mock(InputStream.class);
-        try (CpioArchiveInputStream archiveStream = new CpioArchiveInputStream(inputStream)) {
-            assertEquals(StandardCharsets.US_ASCII, archiveStream.getCharset());
-            assertEquals(512, readDeclaredField(archiveStream, "blockSize", true));
         }
     }
 }
