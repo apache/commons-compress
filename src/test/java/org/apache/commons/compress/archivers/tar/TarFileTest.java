@@ -78,6 +78,22 @@ class TarFileTest extends AbstractTest {
     }
 
     @Test
+    void testBuilderSeekableByteChannel() throws IOException {
+        try (SeekableByteChannel channel = Files.newByteChannel(getPath("archive_with_trailer.tar"));
+                TarFile tarfile = TarFile.builder()
+                        .setSeekableByteChannel(channel)
+                        .setBlockSize(TarConstants.DEFAULT_BLKSIZE)
+                        .setRecordSize(TarConstants.DEFAULT_RCDSIZE)
+                        .setLenient(false)
+                        .get()) {
+            final String tarAppendix = "Hello, world!\n";
+            final ByteBuffer buffer = ByteBuffer.allocate(tarAppendix.length());
+            channel.read(buffer);
+            assertEquals(tarAppendix, new String(buffer.array()));
+        }
+    }
+
+    @Test
     void testCompress197() throws IOException {
         try (TarFile tarFile = new TarFile(getPath("COMPRESS-197.tar"))) {
             // noop

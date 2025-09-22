@@ -71,11 +71,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      * @since 1.29.0
      */
     // @formatter:on
-    public static final class Builder extends AbstractBuilder<TarArchiveInputStream, Builder> {
-
-        private int blockSize = TarConstants.DEFAULT_BLKSIZE;
-        private int recordSize = TarConstants.DEFAULT_RCDSIZE;
-        private boolean lenient;
+    public static final class Builder extends AbstractTarBuilder<TarArchiveInputStream, Builder> {
 
         /**
          * Constructs a new instance.
@@ -87,40 +83,6 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
         @Override
         public TarArchiveInputStream get() throws IOException {
             return new TarArchiveInputStream(this);
-        }
-
-        /**
-         * Sets the block size.
-         *
-         * @param blockSize the block size.
-         * @return {@code this} instance.
-         */
-        public Builder setBlockSize(final int blockSize) {
-            this.blockSize = blockSize;
-            return this;
-        }
-
-        /**
-         * Sets whether illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
-         * {@link TarArchiveEntry#UNKNOWN}. When set to false such illegal fields cause an exception instead.
-         *
-         * @param lenient whether illegal values throw exceptions.
-         * @return {@code this} instance.
-         */
-        public Builder setLenient(final boolean lenient) {
-            this.lenient = lenient;
-            return this;
-        }
-
-        /**
-         * Sets the record size.
-         *
-         * @param recordSize the record size.
-         * @return {@code this} instance.
-         */
-        public Builder setRecordSize(final int recordSize) {
-            this.recordSize = recordSize;
-            return this;
         }
 
     }
@@ -244,9 +206,9 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
     private TarArchiveInputStream(final InputStream inputStream, final Builder builder) {
         super(inputStream, builder.getCharset());
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(builder.getCharset());
-        this.recordBuffer = new byte[builder.recordSize];
-        this.blockSize = builder.blockSize;
-        this.lenient = builder.lenient;
+        this.recordBuffer = new byte[builder.getRecordSize()];
+        this.blockSize = builder.getBlockSize();
+        this.lenient = builder.isLenient();
     }
 
     /**
