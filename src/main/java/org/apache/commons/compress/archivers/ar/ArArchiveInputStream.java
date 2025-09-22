@@ -226,7 +226,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
     /*
      * (non-Javadoc)
      *
-     * @see java.io.InputStream#close()
+     * @see InputStream#close()
      */
     @Override
     public void close() throws IOException {
@@ -438,7 +438,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
     /*
      * (non-Javadoc)
      *
-     * @see java.io.InputStream#read(byte[], int, int)
+     * @see InputStream#read(byte[], int, int)
      */
     @Override
     public int read(final byte[] b, final int off, final int len) throws IOException {
