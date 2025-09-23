@@ -70,7 +70,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">ZipArchiveInputStream.read() now throws an IOException instead of java.lang.ArrayIndexOutOfBoundsException.</action>
       <action type="fix" dev="ggregory" due-to="Stanislav Fort, Gary Gregory">ZipArchiveInputStream now throws an MemoryLimitException instead of ArchiveException, or OutOfMemoryError when running with low memory settings set on the command line.</action>
       <action type="fix" dev="ggregory" due-to="YuWeiBoy, Gary Gregory" issue="COMPRESS-708">ZstdCompressorInputStream closes the InputStream held by ZipArchiveInputStream garbage collection.</action>
-      <!-- FIX tar -->      
+      <!-- FIX tar -->
       <action type="fix" dev="pkarwasz" due-to="Tyler Nighswander, Piotr P. Karwasz, Gary Gregory">>Uniform handling of special tar records in TarFile and TarArchiveInputStream.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory, Stanislav Fort">TarArchiveOutputStream now throws a IllegalArgumentException instead of an OutOfMemoryError.</action>
       <action type="fix" dev="ggregory" issue="COMPRESS-707" due-to="Gary Gregory, Roel van Dijk">TarUtils.verifyCheckSum() throws an Exception when checksum could not be parsed.</action>
@@ -123,6 +123,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="add" dev="ggregory" due-to="Gary Gregory, Piotr P. Karwasz">Introduce builders for all ArchiveInputStream implementations and deprecate some constructors.</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">TarFile now implements IOIterable&lt;TarArchiveEntry&gt;.</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add a builder for the TarFile class and deprecate some constructors.</action>
+      <action type="add" dev="pkarwasz" due-to="Piotr P. Karwasz">Introduce an ArchiveFile abstraction to unify the APIs of SevenZFile, TarFile, and ZipFile.</action>
       <!-- UPDATE -->
       <action type="update" dev="ggregory" due-to="Gary Gregory">Bump org.apache.commons:commons-parent from 85 to 88 #707.</action>
       <action type="update" dev="ppkarwasz" due-to="Raeps">Extract duplicate code in org.apache.commons.compress.harmony.pack200.IntList.</action>

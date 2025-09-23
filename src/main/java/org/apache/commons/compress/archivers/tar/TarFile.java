@@ -18,7 +18,6 @@
  */
 package org.apache.commons.compress.archivers.tar;
 
-import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.compress.archivers.ArchiveFile;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
@@ -43,6 +43,7 @@ import org.apache.commons.compress.utils.BoundedSeekableByteChannelInputStream;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.apache.commons.io.function.IOIterable;
 import org.apache.commons.io.function.IOIterator;
+import org.apache.commons.io.function.IOStream;
 import org.apache.commons.io.input.BoundedInputStream;
 
 /**
@@ -50,7 +51,7 @@ import org.apache.commons.io.input.BoundedInputStream;
  *
  * @since 1.21
  */
-public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
+public class TarFile implements ArchiveFile<TarArchiveEntry>, IOIterable<TarArchiveEntry> {
 
     private final class BoundedTarEntryInputStream extends BoundedArchiveInputStream {
 
@@ -448,9 +449,20 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
      * Gets all TAR Archive Entries from the TarFile.
      *
      * @return All entries from the tar file.
+     * @deprecated Since 1.29.0, use {@link #entries()} or {@link #stream()} instead.
      */
+    @Deprecated
     public List<TarArchiveEntry> getEntries() {
         return new ArrayList<>(entries);
+    }
+
+    /**
+     * {@inheritDoc}
+     * @since 1.29.0
+     */
+    @Override
+    public IOStream<? extends TarArchiveEntry> stream() throws IOException {
+        return IOStream.of(entries);
     }
 
     /**
@@ -460,6 +472,7 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
      * @return Input stream of the provided entry.
      * @throws IOException Corrupted TAR archive. Can't read entry.
      */
+    @Override
     public InputStream getInputStream(final TarArchiveEntry entry) throws IOException {
         try {
             return new BoundedTarEntryInputStream(entry, archive);

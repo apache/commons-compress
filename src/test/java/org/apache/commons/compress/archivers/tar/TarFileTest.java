@@ -40,15 +40,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 
-import org.apache.commons.compress.AbstractTest;
+import org.apache.commons.compress.archivers.AbstractArchiveFileTest;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.TimeZones;
 import org.junit.jupiter.api.Test;
 
-import shaded.org.apache.commons.lang3.StringUtils;
-
-class TarFileTest extends AbstractTest {
+class TarFileTest extends AbstractArchiveFileTest<TarArchiveEntry> {
 
     private void datePriorToEpoch(final String archive) throws Exception {
         try (TarFile tarFile = new TarFile(getPath(archive))) {
@@ -378,5 +377,10 @@ class TarFileTest extends AbstractTest {
             assertTrue(entry.isSymbolicLink());
             assertTrue(entry.isCheckSumOK());
         }
+    }
+
+    @Override
+    protected TarFile getArchiveFile() throws Exception {
+        return TarFile.builder().setPath(getPath("bla.tar")).get();
     }
 }
