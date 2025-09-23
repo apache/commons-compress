@@ -238,7 +238,11 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
         this.recordBuffer = ByteBuffer.allocate(this.recordSize);
         this.blockSize = builder.getBlockSize();
         this.lenient = builder.isLenient();
-        forEach(entries::add);
+        // Read all entries eagerly
+        TarArchiveEntry entry;
+        while ((entry = getNextTarEntry()) != null) {
+            entries.add(entry);
+        }
     }
 
     /**
