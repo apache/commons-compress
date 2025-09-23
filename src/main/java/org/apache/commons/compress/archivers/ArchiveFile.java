@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.zip.ZipFile;
 
+import org.apache.commons.io.function.IOIterable;
+import org.apache.commons.io.function.IOIterator;
 import org.apache.commons.io.function.IOStream;
 
 /**
@@ -39,7 +41,7 @@ import org.apache.commons.io.function.IOStream;
  * @param <T> the type of {@link ArchiveEntry} produced by this archive
  * @since 1.29.0
  */
-public interface ArchiveFile<T extends ArchiveEntry> extends Closeable {
+public interface ArchiveFile<T extends ArchiveEntry> extends Closeable, IOIterable<T> {
 
     /**
      * Returns all entries contained in the archive as a list.
@@ -48,9 +50,8 @@ public interface ArchiveFile<T extends ArchiveEntry> extends Closeable {
      * across multiple invocations on the same archive.</p>
      *
      * @return An immutable list of all entries in this archive.
-     * @throws IOException If an I/O error occurs while reading entries.
      */
-    default List<? extends T> entries() throws IOException {
+    default List<? extends T> entries() {
         try (IOStream<? extends T> stream = stream()) {
             return stream.collect(Collectors.toList());
         }
@@ -64,9 +65,8 @@ public interface ArchiveFile<T extends ArchiveEntry> extends Closeable {
      * associated resources.</p>
      *
      * @return A stream of entries in this archive.
-     * @throws IOException If an I/O error occurs while creating the stream.
      */
-    IOStream<? extends T> stream() throws IOException;
+    IOStream<? extends T> stream();
 
     /**
      * Opens an input stream for the specified entry's contents.
@@ -78,5 +78,18 @@ public interface ArchiveFile<T extends ArchiveEntry> extends Closeable {
      * @throws IOException If an I/O error occurs while opening the entry stream.
      */
     InputStream getInputStream(T entry) throws IOException;
+
+    @Override
+    @SuppressWarnings("unchecked")
+    default IOIterator<T> iterator() {
+        return IOIterator.adapt((Iterable<T>) entries());
+    }
+
+    @Override
+    default Iterable<T> unwrap() {
+        // Commons IO 2.21.0:
+        // return asIterable();
+        return null;
+    }
 }
 

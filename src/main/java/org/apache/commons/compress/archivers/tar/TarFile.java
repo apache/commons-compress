@@ -27,7 +27,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -41,8 +40,6 @@ import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.BoundedArchiveInputStream;
 import org.apache.commons.compress.utils.BoundedSeekableByteChannelInputStream;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
-import org.apache.commons.io.function.IOIterable;
-import org.apache.commons.io.function.IOIterator;
 import org.apache.commons.io.function.IOStream;
 import org.apache.commons.io.input.BoundedInputStream;
 
@@ -51,7 +48,7 @@ import org.apache.commons.io.input.BoundedInputStream;
  *
  * @since 1.21
  */
-public class TarFile implements ArchiveFile<TarArchiveEntry>, IOIterable<TarArchiveEntry> {
+public class TarFile implements ArchiveFile<TarArchiveEntry> {
 
     private final class BoundedTarEntryInputStream extends BoundedArchiveInputStream {
 
@@ -461,7 +458,7 @@ public class TarFile implements ArchiveFile<TarArchiveEntry>, IOIterable<TarArch
      * @since 1.29.0
      */
     @Override
-    public IOStream<? extends TarArchiveEntry> stream() throws IOException {
+    public IOStream<? extends TarArchiveEntry> stream() {
         return IOStream.of(entries);
     }
 
@@ -586,38 +583,6 @@ public class TarFile implements ArchiveFile<TarArchiveEntry>, IOIterable<TarArch
         return headerBuf == null || ArchiveUtils.isArrayZero(headerBuf.array(), recordSize);
     }
 
-    @Override
-    public IOIterator<TarArchiveEntry> iterator() {
-        return new IOIterator<TarArchiveEntry>() {
-
-            private TarArchiveEntry next;
-
-            @Override
-            public boolean hasNext() throws IOException {
-                if (next == null) {
-                    next = getNextTarEntry();
-                }
-                return next != null;
-            }
-
-            @Override
-            public TarArchiveEntry next() throws IOException {
-                if (next == null) {
-                    next = getNextTarEntry();
-                }
-                final TarArchiveEntry tmp = next;
-                next = null;
-                return tmp;
-            }
-
-            @Override
-            public Iterator<TarArchiveEntry> unwrap() {
-                return null;
-            }
-
-        };
-    }
-
     /**
      * Adds the sparse chunks from the current entry to the sparse chunks, including any additional sparse entries following the current entry.
      *
@@ -723,12 +688,4 @@ public class TarFile implements ArchiveFile<TarArchiveEntry>, IOIterable<TarArch
             }
         }
     }
-
-    @Override
-    public Iterable<TarArchiveEntry> unwrap() {
-        // Commons IO 2.21.0:
-        // return asIterable();
-        return null;
-    }
-
 }

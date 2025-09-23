@@ -31,6 +31,7 @@ import java.util.List;
 
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.function.IOIterator;
 import org.apache.commons.io.function.IOStream;
 import org.junit.jupiter.api.Test;
 
@@ -106,6 +107,29 @@ public abstract class AbstractArchiveFileTest<T extends ArchiveEntry> extends Ab
                         expected.getLastModifiedDate(),
                         actual.getLastModifiedDate(),
                         "Last modified date of entry " + expected.getName());
+            }
+        }
+    }
+
+    /**
+     * Tests that the iterator returned by {@link ArchiveFile#iterator()} matches the expected entries.
+     */
+    @Test
+    void testIterator() throws Exception {
+        try (ArchiveFile<T> archiveFile = getArchiveFile()) {
+            final IOIterator<T> iterator = archiveFile.iterator();
+            final List<? extends ArchiveEntry> entries = getExpectedEntries();
+            int count = 0;
+            while (iterator.hasNext()) {
+                final ArchiveEntry expected = entries.get(count);
+                final ArchiveEntry actual = iterator.next();
+                assertEquals(expected.getName(), actual.getName(), "Entry name at index " + count);
+                assertEquals(expected.getSize(), actual.getSize(), "Size of entry " + expected.getName());
+                assertEquals(
+                        expected.getLastModifiedDate(),
+                        actual.getLastModifiedDate(),
+                        "Last modified date of entry " + expected.getName());
+                count++;
             }
         }
     }

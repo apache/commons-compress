@@ -1070,7 +1070,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
      * @since 1.29.0
      */
     @Override
-    public IOStream<? extends SevenZArchiveEntry> stream() throws IOException {
+    public IOStream<? extends SevenZArchiveEntry> stream() {
         return IOStream.of(archive.files);
     }
 
