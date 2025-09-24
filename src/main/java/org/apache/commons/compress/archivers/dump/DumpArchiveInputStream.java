@@ -29,10 +29,13 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Stack;
 
+import org.apache.commons.compress.MemoryLimitException;
+import org.apache.commons.compress.archivers.AbstractArchiveBuilder;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
+import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.IOUtils;
 
 /**
@@ -60,7 +63,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
      *
      * @since 1.29.0
      */
-    public static final class Builder extends AbstractBuilder<DumpArchiveInputStream, Builder> {
+    public static final class Builder extends AbstractArchiveBuilder<DumpArchiveInputStream, Builder> {
 
         private Builder() {
         }
@@ -153,7 +156,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
     }
 
     private DumpArchiveInputStream(final InputStream is, final Builder builder) throws ArchiveException {
-        super(is, builder.getCharset());
+        super(is, builder);
         this.raw = new TapeInputStream(is);
         this.hasHitEOF = false;
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(builder.getCharset());
@@ -252,7 +255,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
 
         // is there anything in the queue?
         if (!queue.isEmpty()) {
-            return queue.remove();
+            return checkEntry(queue.remove());
         }
 
         while (entry == null) {
@@ -335,7 +338,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
         entry.setSimpleName(names.get(entry.getIno()).getName());
         entry.setOffset(filepos);
 
-        return entry;
+        return checkEntry(entry);
     }
 
     /**
@@ -547,7 +550,8 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
 
                 final byte type = blockBuffer[i + 6];
 
-                final String name = DumpArchiveUtil.decode(zipEncoding, blockBuffer, i + 8, blockBuffer[i + 7]);
+                final String name =
+                        DumpArchiveUtil.decode(zipEncoding, blockBuffer, i + 8, Byte.toUnsignedInt(blockBuffer[i + 7]));
 
                 if (CURRENT_PATH_SEGMENT.equals(name) || PARENT_PATH_SEGMENT.equals(name)) {
                     // do nothing...
@@ -590,4 +594,8 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
         }
     }
 
+    private DumpArchiveEntry checkEntry(DumpArchiveEntry entry) throws ArchiveException, MemoryLimitException {
+        ArchiveUtils.checkEntryNameLength(entry.getName().length(), getMaxEntryNameLength(), "DUMP");
+        return entry;
+    }
 }

@@ -50,6 +50,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class TarUtilsTest extends AbstractTest {
 
@@ -115,12 +116,6 @@ class TarUtilsTest extends AbstractTest {
                 Arguments.of("NTFS (padded)", ntfsLongName, paddedUtf8Bytes(ntfsLongName)),
                 Arguments.of("POSIX", posixLongName, utf8Bytes(posixLongName)),
                 Arguments.of("POSIX (padded)", posixLongName, paddedUtf8Bytes(posixLongName)));
-    }
-
-    static Stream<Arguments> testReadLongNameThrowsOnTruncation() {
-        return Stream.of(
-                Arguments.of(Integer.MAX_VALUE, "truncated long name"),
-                Arguments.of(Long.MAX_VALUE, "invalid long name"));
     }
 
     private static byte[] utf8Bytes(final String s) {
@@ -413,7 +408,7 @@ class TarUtilsTest extends AbstractTest {
         Arrays.fill(dataWithGarbage, data.length, dataWithGarbage.length, (byte) 0xFF);
 
         try (InputStream in = new ByteArrayInputStream(dataWithGarbage)) {
-            final String actualName = TarUtils.readLongName(in, ZipEncodingHelper.getZipEncoding(UTF_8), entry);
+            final String actualName = TarUtils.readLongName(in, ZipEncodingHelper.getZipEncoding(UTF_8), Integer.MAX_VALUE, entry);
             assertEquals(
                     expectedName,
                     actualName,
@@ -422,20 +417,17 @@ class TarUtilsTest extends AbstractTest {
     }
 
     @ParameterizedTest(name = "readLongName of {0} bytes throws ArchiveException")
-    @MethodSource
-    void testReadLongNameThrowsOnTruncation(final long size, final CharSequence expectedMessage) throws IOException {
+    @ValueSource(longs = { Integer.MAX_VALUE, Long.MAX_VALUE })
+    void testReadLongNameThrowsOnTruncation(final long size) throws IOException {
         final TarArchiveEntry entry = new TarArchiveEntry("test");
         entry.setSize(size); // absurdly large so any finite stream truncates
         try (InputStream in = new NullInputStream()) {
-            final ArchiveException ex = assertThrows(
-                    ArchiveException.class,
-                    () -> TarUtils.readLongName(in, TarUtils.DEFAULT_ENCODING, entry),
-                    "Expected ArchiveException due to truncated long name, but no exception was thrown");
+            final IOException ex = assertThrows(
+                    IOException.class,
+                    () -> TarUtils.readLongName(in, TarUtils.DEFAULT_ENCODING, Integer.MAX_VALUE, entry),
+                    "Expected IOException due to out of range size for Java byte arrays");
             final String actualMessage = StringUtils.toRootLowerCase(ex.getMessage());
             assertNotNull(actualMessage, "Exception message should not be null");
-            assertTrue(
-                    actualMessage.contains(expectedMessage),
-                    () -> "Expected exception message to contain '" + expectedMessage + "', but got: " + actualMessage);
             assertTrue(
                     actualMessage.contains(String.format("%,d", size)),
                     () -> "Expected exception message to mention '" + size + "', but got: " + actualMessage);

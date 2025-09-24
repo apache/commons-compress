@@ -19,6 +19,7 @@
 package org.apache.commons.compress.archivers.tar;
 
 import java.io.Closeable;
+import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -65,7 +66,7 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
         BoundedTarEntryInputStream(final TarArchiveEntry entry, final SeekableByteChannel channel) throws IOException {
             super(entry.getDataOffset(), entry.getRealSize());
             if (channel.size() - entry.getSize() < entry.getDataOffset()) {
-                throw new ArchiveException("Entry size exceeds archive size");
+                throw new EOFException("Truncated TAR archive: entry size exceeds archive size");
             }
             this.entry = entry;
             this.channel = channel;
@@ -84,7 +85,7 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
             }
             if (totalRead == -1) {
                 if (buf.array().length > 0) {
-                    throw new ArchiveException("Truncated TAR archive");
+                    throw new EOFException("Truncated TAR archive");
                 }
                 setAtEOF(true);
             } else {
@@ -233,6 +234,8 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
 
     private final Map<String, List<InputStream>> sparseInputStreams = new HashMap<>();
 
+    private final int maxEntryNameLength;
+
     private TarFile(final Builder builder) throws IOException {
         this.archive = builder.channel != null ? builder.channel : Files.newByteChannel(builder.getPath());
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(builder.getCharset());
@@ -240,6 +243,7 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
         this.recordBuffer = ByteBuffer.allocate(this.recordSize);
         this.blockSize = builder.getBlockSize();
         this.lenient = builder.isLenient();
+        this.maxEntryNameLength = builder.getMaxEntryNameLength();
         forEach(entries::add);
     }
 
@@ -507,7 +511,14 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
             lastWasSpecial = TarUtils.isSpecialTarRecord(currEntry);
             if (lastWasSpecial) {
                 // Handle PAX, GNU long name, or other special records
-                TarUtils.handleSpecialTarRecord(getInputStream(currEntry), zipEncoding, currEntry, paxHeaders, sparseHeaders, globalPaxHeaders,
+                TarUtils.handleSpecialTarRecord(
+                        getInputStream(currEntry),
+                        zipEncoding,
+                        maxEntryNameLength,
+                        currEntry,
+                        paxHeaders,
+                        sparseHeaders,
+                        globalPaxHeaders,
                         globalSparseHeaders);
             }
         } while (lastWasSpecial);

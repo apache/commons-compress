@@ -123,6 +123,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="add" dev="ggregory" due-to="Gary Gregory, Piotr P. Karwasz">Introduce builders for all ArchiveInputStream implementations and deprecate some constructors.</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">TarFile now implements IOIterable&lt;TarArchiveEntry&gt;.</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add a builder for the TarFile class and deprecate some constructors.</action>
+      <action type="add" dev="pkarwasz" due-to="Piotr P. Karwasz">Add a configurable maxEntryNameLength option to all archivers.</action>
       <!-- UPDATE -->
       <action type="update" dev="ggregory" due-to="Gary Gregory">Bump org.apache.commons:commons-parent from 85 to 88 #707.</action>
       <action type="update" dev="ppkarwasz" due-to="Raeps">Extract duplicate code in org.apache.commons.compress.harmony.pack200.IntList.</action>

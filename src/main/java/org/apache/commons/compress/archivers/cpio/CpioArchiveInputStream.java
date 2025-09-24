@@ -22,6 +22,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.commons.compress.archivers.AbstractArchiveBuilder;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
@@ -79,7 +80,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
      *
      * @since 1.29.0
      */
-    public static final class Builder extends AbstractBuilder<CpioArchiveInputStream, Builder> {
+    public static final class Builder extends AbstractArchiveBuilder<CpioArchiveInputStream, Builder> {
 
         private int blockSize = BLOCK_SIZE;
 
@@ -211,7 +212,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
     }
 
     private CpioArchiveInputStream(final InputStream in, final Builder builder) {
-        super(in, builder.getCharset());
+        super(in, builder);
         if (builder.blockSize <= 0) {
             throw new IllegalArgumentException("blockSize must be bigger than 0");
         }
@@ -423,9 +424,10 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         return CpioUtil.byteArray2long(tmp, swapHalfWord);
     }
 
-    private String readCString(final int length) throws IOException {
+    private String readEntryName(int lengthWithNull) throws IOException {
+        final int length = ArchiveUtils.checkEntryNameLength(lengthWithNull - 1, getMaxEntryNameLength(), "CPIO");
         // don't include trailing NUL in file name to decode
-        final byte[] tmpBuffer = readRange(length - 1);
+        final byte[] tmpBuffer = readRange(length);
         if (in.read() == -1) {
             throw new EOFException();
         }
@@ -470,7 +472,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
             throw new ArchiveException("Found illegal entry with negative name length");
         }
         newEntry.setChksum(readAsciiLong(8, 16));
-        final String name = readCString(ArchiveException.toIntExact(namesize));
+        final String name = readEntryName(ArchiveException.toIntExact(namesize));
         newEntry.setName(name);
         if (CpioUtil.fileType(mode) == 0 && !name.equals(CPIO_TRAILER)) {
             throw new ArchiveException(
@@ -504,7 +506,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         if (ret.getSize() < 0) {
             throw new ArchiveException("Found illegal entry with negative length");
         }
-        final String name = readCString(ArchiveException.toIntExact(nameSize));
+        final String name = readEntryName(ArchiveException.toIntExact(nameSize));
         ret.setName(name);
         if (CpioUtil.fileType(mode) == 0 && !name.equals(CPIO_TRAILER)) {
             throw new ArchiveException(
@@ -534,7 +536,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         if (oldEntry.getSize() < 0) {
             throw new ArchiveException("Found illegal entry with negative length");
         }
-        final String name = readCString(ArchiveException.toIntExact(nameSize));
+        final String name = readEntryName(ArchiveException.toIntExact(nameSize));
         oldEntry.setName(name);
         if (CpioUtil.fileType(mode) == 0 && !name.equals(CPIO_TRAILER)) {
             throw new ArchiveException(

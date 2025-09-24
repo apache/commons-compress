@@ -51,12 +51,13 @@ import java.util.zip.CRC32;
 import java.util.zip.CheckedInputStream;
 
 import org.apache.commons.compress.MemoryLimitException;
+import org.apache.commons.compress.archivers.AbstractArchiveBuilder;
 import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.apache.commons.io.build.AbstractOrigin.ByteArrayOrigin;
-import org.apache.commons.io.build.AbstractStreamBuilder;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.io.input.ChecksumInputStream;
 import org.apache.commons.lang3.ArrayUtils;
@@ -178,7 +179,7 @@ public class SevenZFile implements Closeable {
      *
      * @since 1.26.0
      */
-    public static class Builder extends AbstractStreamBuilder<SevenZFile, Builder> {
+    public static class Builder extends AbstractArchiveBuilder<SevenZFile, Builder> {
 
         static final int MEMORY_LIMIT_KIB = Integer.MAX_VALUE;
         static final boolean USE_DEFAULTNAME_FOR_UNNAMED_ENTRIES = false;
@@ -218,7 +219,7 @@ public class SevenZFile implements Closeable {
             }
             final boolean closeOnError = seekableByteChannel != null;
             return new SevenZFile(actualChannel, actualDescription, password, closeOnError, maxMemoryLimitKiB, useDefaultNameForUnnamedEntries,
-                    tryToRecoverBrokenArchives);
+                    tryToRecoverBrokenArchives, getMaxEntryNameLength());
         }
 
         /**
@@ -486,6 +487,8 @@ public class SevenZFile implements Closeable {
 
     private final boolean tryToRecoverBrokenArchives;
 
+    private final int maxEntryNameLength;
+
     /**
      * Reads a file as unencrypted 7z archive.
      *
@@ -677,14 +680,23 @@ public class SevenZFile implements Closeable {
         this(channel, fileName, password, false, SevenZFileOptions.DEFAULT);
     }
 
-    private SevenZFile(final SeekableByteChannel channel, final String fileName, final byte[] password, final boolean closeOnError, final int maxMemoryLimitKiB,
-            final boolean useDefaultNameForUnnamedEntries, final boolean tryToRecoverBrokenArchives) throws IOException {
+    private SevenZFile(
+            final SeekableByteChannel channel,
+            final String fileName,
+            final byte[] password,
+            final boolean closeOnError,
+            final int maxMemoryLimitKiB,
+            final boolean useDefaultNameForUnnamedEntries,
+            final boolean tryToRecoverBrokenArchives,
+            final int maxEntryNameLength)
+            throws IOException {
         boolean succeeded = false;
         this.channel = channel;
         this.fileName = fileName;
         this.maxMemoryLimitKiB = maxMemoryLimitKiB;
         this.useDefaultNameForUnnamedEntries = useDefaultNameForUnnamedEntries;
         this.tryToRecoverBrokenArchives = tryToRecoverBrokenArchives;
+        this.maxEntryNameLength = maxEntryNameLength;
         try {
             archive = readHeaders(password);
             if (password != null) {
@@ -717,7 +729,7 @@ public class SevenZFile implements Closeable {
     private SevenZFile(final SeekableByteChannel channel, final String fileName, final byte[] password, final boolean closeOnError,
             final SevenZFileOptions options) throws IOException {
         this(channel, fileName, password, closeOnError, options.getMaxMemoryLimitInKb(), options.getUseDefaultNameForUnnamedEntries(),
-                options.getTryToRecoverBrokenArchives());
+                options.getTryToRecoverBrokenArchives(), Short.MAX_VALUE);
     }
 
     /**
@@ -1353,7 +1365,10 @@ public class SevenZFile implements Closeable {
                 for (int i = 0; i < namesLength; i += 2) {
                     if (names[i] == 0 && names[i + 1] == 0) {
                         computeIfAbsent(fileMap, nextFile);
-                        fileMap.get(nextFile).setName(new String(names, nextName, i - nextName, UTF_16LE));
+                        // Entry name length in UTF-16LE characters (not bytes)
+                        final int entryNameLength =
+                                ArchiveUtils.checkEntryNameLength((i - nextName) / 2, maxEntryNameLength, "7z");
+                        fileMap.get(nextFile).setName(new String(names, nextName, 2 * entryNameLength, UTF_16LE));
                         nextName = i + 2;
                         nextFile++;
                     }
