@@ -377,7 +377,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
             return type;
         }
 
-        private final int code;
+        public final int code;
 
         TYPE(final int code) {
             this.code = code;

@@ -122,7 +122,7 @@ public final class DumpArchiveConstants {
             return null;
         }
 
-        final int code;
+        public final int code;
 
         SEGMENT_TYPE(final int code) {
             this.code = code;
