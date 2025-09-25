@@ -21,7 +21,10 @@ package org.apache.commons.compress.archivers;
 import org.apache.commons.io.build.AbstractStreamBuilder;
 
 /**
- * Base builder for all archive formats.
+ * Base class for builder pattern implementations of all archive readers.
+ *
+ * <p>Ensures that all {@code ArchiveInputStream} implementations and other
+ * archive handlers expose a consistent set of configuration options.</p>
  *
  * @param <T> The type of archive stream or file to build.
  * @param <B> The type of the concrete builder subclass.
