@@ -62,6 +62,7 @@ The <action> type attribute can be add,update,fix,remove.
       <!-- FIX dump -->      
       <action type="fix" dev="pkarwasz" due-to="Tyler Nighswander">Align DUMP archive block size with Linux `dump` utility.</action>
       <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">DumpArchiveInputStream.getNextEntry() throws an ArchiveException instead of ArrayIndexOutOfBoundsException.</action>
+      <action type="fix" dev="pkarwasz" due-to="Piotr P. Karwasz">Fixed DumpArchiveInputStream to correctly handle file names up to 255 bytes.</action>
       <!-- FIX zip -->      
       <action type="fix" dev="ggregory" due-to="Dominik Stadler, Gary Gregory" issue="COMPRESS-598">ZipArchiveInputStream.read(byte[], int, int) now throws an IOException instead of a NullPointerException.</action>
       <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">ZipFile.createBoundedInputStream(long, long) now throws an ArchiveException instead of IllegalArgumentException.</action>

@@ -22,6 +22,7 @@ import static org.apache.commons.compress.archivers.dump.DumpArchiveConstants.TP
 import static org.apache.commons.compress.archivers.dump.DumpArchiveTestFactory.createSegment;
 import static org.apache.commons.compress.archivers.dump.DumpArchiveTestFactory.createSummary;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -37,8 +38,10 @@ import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.compress.AbstractTest;
+import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.junit.jupiter.api.Timeout.ThreadMode;
@@ -134,6 +137,29 @@ class DumpArchiveInputStreamTest extends AbstractTest {
                 .get()) {
             archive.getNextEntry();
             assertThrows(DumpArchiveException.class, archive::getNextEntry);
+        }
+    }
+
+    @Test
+    void testMaxSegmentLength() throws Exception {
+        try (DumpArchiveInputStream archive = DumpArchiveInputStream.builder()
+                .setURI(getURI("dump/max-segment-length.dump"))
+                .get()) {
+            // Verify that the archive correctly handles file names up to the maximum
+            // supported length of 255 bytes.
+            //
+            // The first entry is the root directory (name = ""), followed by a file
+            // whose name is exactly 255 characters long ("aaaa...a"). This ensures
+            // the implementation can read and preserve file names at the boundary
+            // of the allowed length.
+            ArchiveEntry entry = assertDoesNotThrow(archive::getNextEntry);
+            String entryName = entry.getName();
+            assertEquals("", entryName);
+
+            entry = assertDoesNotThrow(archive::getNextEntry);
+            entryName = entry.getName();
+            assertEquals(255, entryName.length());
+            assertEquals(StringUtils.repeat("a", 255), entryName);
         }
     }
 
