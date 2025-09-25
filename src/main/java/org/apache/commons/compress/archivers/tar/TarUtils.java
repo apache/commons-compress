@@ -48,8 +48,7 @@ import org.apache.commons.io.output.UnsynchronizedByteArrayOutputStream;
  *
  * @Immutable
  */
-// CheckStyle:HideUtilityClassConstructorCheck OFF (bc)
-public class TarUtils {
+public final class TarUtils {
 
     private static final Pattern HEADER_STRINGS_PATTERN = Pattern.compile(",");
 
