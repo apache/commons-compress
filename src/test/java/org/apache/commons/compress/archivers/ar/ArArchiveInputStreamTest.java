@@ -19,17 +19,17 @@
 
 package org.apache.commons.compress.archivers.ar;
 
+import static java.nio.charset.StandardCharsets.US_ASCII;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 
 import java.io.BufferedInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -43,7 +43,9 @@ class ArArchiveInputStreamTest extends AbstractTest {
 
     private void checkLongNameEntry(final String archive) throws Exception {
         try (InputStream fis = newInputStream(archive);
-                ArArchiveInputStream s = new ArArchiveInputStream(new BufferedInputStream(fis))) {
+                ArArchiveInputStream s = ArArchiveInputStream.builder()
+                        .setInputStream(new BufferedInputStream(fis))
+                        .get()) {
             ArchiveEntry e = s.getNextEntry();
             assertEquals("this_is_a_long_file_name.txt", e.getName());
             assertEquals(14, e.getSize());
@@ -62,8 +64,7 @@ class ArArchiveInputStreamTest extends AbstractTest {
 
     @Test
     void testCantReadAfterClose() throws Exception {
-        try (InputStream in = newInputStream("bla.ar");
-                ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
+        try (ArArchiveInputStream archive = ArArchiveInputStream.builder().setURI(getURI("bla.ar")).get()) {
             archive.close();
             assertThrows(IllegalStateException.class, () -> archive.read());
         }
@@ -71,8 +72,7 @@ class ArArchiveInputStreamTest extends AbstractTest {
 
     @Test
     void testCantReadWithoutOpeningAnEntry() throws Exception {
-        try (InputStream in = newInputStream("bla.ar");
-                ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
+        try (ArArchiveInputStream archive = ArArchiveInputStream.builder().setURI(getURI("bla.ar")).get()) {
             assertThrows(IllegalStateException.class, () -> archive.read());
         }
     }
@@ -85,7 +85,9 @@ class ArArchiveInputStreamTest extends AbstractTest {
 
     private void testCompress661(final boolean checkMarkReadReset) throws IOException {
         try (InputStream in = newInputStream("org/apache/commons/compress/COMPRESS-661/testARofText.ar");
-                ArArchiveInputStream archive = new ArArchiveInputStream(new BufferedInputStream(in))) {
+                ArArchiveInputStream archive = ArArchiveInputStream.builder()
+                        .setInputStream(new BufferedInputStream(in))
+                        .get()) {
             assertNotNull(archive.getNextEntry());
             if (checkMarkReadReset && archive.markSupported()) {
                 // mark() shouldn't be supported, but if it would be,
@@ -107,16 +109,18 @@ class ArArchiveInputStreamTest extends AbstractTest {
      */
     @Test
     void testGetNextArEntry() throws IOException {
-        try (ArArchiveInputStream inputStream = new ArArchiveInputStream(
-                Files.newInputStream(Paths.get("src/test/resources/org/apache/commons/compress/ar/getNextArEntry.bin")))) {
+        try (ArArchiveInputStream inputStream = ArArchiveInputStream.builder()
+                .setURI(getURI("org/apache/commons/compress/ar/getNextArEntry.bin"))
+                .get()) {
             assertThrows(EOFException.class, inputStream::getNextEntry);
         }
     }
 
     @Test
     void testInvalidBadTableLength() throws Exception {
-        try (InputStream in = newInputStream("org/apache/commons/compress/ar/number_parsing/bad_table_length_gnu-fail.ar");
-                ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
+        try (ArArchiveInputStream archive = ArArchiveInputStream.builder()
+                .setURI(getURI("org/apache/commons/compress/ar/number_parsing/bad_table_length_gnu-fail.ar"))
+                .get()) {
             assertThrows(IOException.class, archive::getNextEntry);
         }
     }
@@ -125,8 +129,9 @@ class ArArchiveInputStreamTest extends AbstractTest {
     @ValueSource(strings = { "bad_long_namelen_bsd-fail.ar", "bad_long_namelen_gnu1-fail.ar", "bad_long_namelen_gnu2-fail.ar", "bad_long_namelen_gnu3-fail.ar",
             "bad_table_length_gnu-fail.ar" })
     void testInvalidLongNameLength(final String testFileName) throws Exception {
-        try (InputStream in = newInputStream("org/apache/commons/compress/ar/number_parsing/" + testFileName);
-                ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
+        try (ArArchiveInputStream archive = ArArchiveInputStream.builder()
+                .setURI(getURI("org/apache/commons/compress/ar/number_parsing/" + testFileName))
+                .get()) {
             assertThrows(IOException.class, archive::getNextEntry);
         }
     }
@@ -134,8 +139,9 @@ class ArArchiveInputStreamTest extends AbstractTest {
     @ParameterizedTest
     @ValueSource(strings = { "bad_group-fail.ar", "bad_length-fail.ar", "bad_modified-fail.ar", "bad_user-fail.ar" })
     void testInvalidNumericFields(final String testFileName) throws Exception {
-        try (InputStream in = newInputStream("org/apache/commons/compress/ar/number_parsing/" + testFileName);
-                ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
+        try (ArArchiveInputStream archive = ArArchiveInputStream.builder()
+                .setURI(getURI("org/apache/commons/compress/ar/number_parsing/" + testFileName))
+                .get()) {
             assertThrows(IOException.class, archive::getNextEntry);
         }
     }
@@ -143,8 +149,7 @@ class ArArchiveInputStreamTest extends AbstractTest {
     @Test
     void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         final byte[] buf = new byte[2];
-        try (InputStream in = newInputStream("bla.ar");
-                ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
+        try (ArArchiveInputStream archive = ArArchiveInputStream.builder().setURI(getURI("bla.ar")).get()) {
             assertNotNull(archive.getNextEntry());
             IOUtils.toByteArray(archive);
             assertEquals(-1, archive.read(buf));
@@ -173,7 +178,9 @@ class ArArchiveInputStreamTest extends AbstractTest {
                         return fileInputStream.read();
                     }
                 }) {
-            try (ArArchiveInputStream archiveInputStream = new ArArchiveInputStream(simpleInputStream)) {
+            try (ArArchiveInputStream archiveInputStream = ArArchiveInputStream.builder()
+                    .setInputStream(simpleInputStream)
+                    .get()) {
                 final ArArchiveEntry entry1 = archiveInputStream.getNextEntry();
                 assertNotNull(entry1);
                 assertEquals("test1.xml", entry1.getName());
@@ -197,7 +204,9 @@ class ArArchiveInputStreamTest extends AbstractTest {
                         return fileInputStream.read();
                     }
                 }) {
-            try (ArArchiveInputStream archiveInputStream = new ArArchiveInputStream(simpleInputStream)) {
+            try (ArArchiveInputStream archiveInputStream = ArArchiveInputStream.builder()
+                    .setInputStream(simpleInputStream)
+                    .get()) {
                 final ArArchiveEntry entry1 = archiveInputStream.getNextEntry();
                 assertNotNull(entry1);
                 assertEquals("test1.xml", entry1.getName());
@@ -211,14 +220,20 @@ class ArArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
+    void testSingleArgumentConstructor() throws Exception {
+        final InputStream inputStream = mock(InputStream.class);
+        try (ArArchiveInputStream archiveStream = new ArArchiveInputStream(inputStream)) {
+            assertEquals(US_ASCII, archiveStream.getCharset());
+        }
+    }
+
+    @Test
     void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
-        try (InputStream in = newInputStream("bla.ar");
-                ArArchiveInputStream archive = new ArArchiveInputStream(in)) {
+        try (ArArchiveInputStream archive = ArArchiveInputStream.builder().setURI(getURI("bla.ar")).get()) {
             assertNotNull(archive.getNextEntry());
             IOUtils.toByteArray(archive);
             assertEquals(-1, archive.read());
             assertEquals(-1, archive.read());
         }
     }
-
 }

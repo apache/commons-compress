@@ -21,12 +21,10 @@ package org.apache.commons.compress.archivers.zip;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import org.apache.commons.compress.CompressException;
@@ -69,7 +67,10 @@ public class ZipArchiveInputStreamMalformedTest {
                 fos.write(chunk);
             }
         }
-        try (ZipArchiveInputStream zis = new ZipArchiveInputStream(new FileInputStream(fixture), StandardCharsets.UTF_8.name(), true, true)) {
+        try (ZipArchiveInputStream zis = ZipArchiveInputStream.builder()
+                .setFile(fixture)
+                .setSupportStoredEntryDataDescriptor(true)
+                .get()) {
             zis.getNextEntry();
             assertThrows(CompressException.class, () -> IOUtils.toByteArray(zis));
         }

@@ -46,9 +46,45 @@ import org.apache.commons.io.input.ChecksumInputStream;
  */
 public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
 
+    /**
+     * Builds a new {@link ArjArchiveInputStream}.
+     * <p>
+     * For example:
+     * </p>
+     * <pre>{@code
+     * ArjArchiveInputStream in = ArjArchiveInputStream.builder()
+     *     .setPath(inputPath)
+     *     .setCharset(StandardCharsets.UTF_8)
+     *     .get();
+     * }</pre>
+     *
+     * @since 1.29.0
+     */
+    public static final class Builder extends AbstractBuilder<ArjArchiveInputStream, Builder> {
+
+        private Builder() {
+            setCharset(ENCODING_NAME);
+        }
+
+        @Override
+        public ArjArchiveInputStream get() throws IOException {
+            return new ArjArchiveInputStream(this);
+        }
+    }
+
     private static final String ENCODING_NAME = "CP437";
     private static final int ARJ_MAGIC_1 = 0x60;
     private static final int ARJ_MAGIC_2 = 0xEA;
+
+    /**
+     * Creates a new builder.
+     *
+     * @return A new builder.
+     * @since 1.29.0
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
 
     /**
      * Checks if the signature matches what is expected for an arj file.
@@ -66,6 +102,10 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
     private LocalFileHeader currentLocalFileHeader;
     private InputStream currentInputStream;
 
+    private ArjArchiveInputStream(final Builder builder) throws IOException {
+        this(builder.getInputStream(), builder);
+    }
+
     /**
      * Constructs the ArjInputStream, taking ownership of the inputStream that is passed in, and using the CP437 character encoding.
      *
@@ -73,19 +113,12 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
      * @throws ArchiveException if an exception occurs while reading
      */
     public ArjArchiveInputStream(final InputStream inputStream) throws ArchiveException {
-        this(inputStream, ENCODING_NAME);
+        this(inputStream, builder());
     }
 
-    /**
-     * Constructs the ArjInputStream, taking ownership of the inputStream that is passed in.
-     *
-     * @param inputStream the underlying stream, whose ownership is taken
-     * @param charsetName the charset used for file names and comments in the archive. May be {@code null} to use the platform default.
-     * @throws ArchiveException if an exception occurs while reading
-     */
-    public ArjArchiveInputStream(final InputStream inputStream, final String charsetName) throws ArchiveException {
-        super(inputStream, charsetName);
-        in = dis = new DataInputStream(inputStream);
+    private ArjArchiveInputStream(final InputStream inputStream, final Builder builder) throws ArchiveException {
+        super(new DataInputStream(inputStream), builder.getCharset());
+        dis = (DataInputStream) in;
         try {
             mainHeader = readMainHeader();
             if ((mainHeader.arjFlags & MainHeader.Flags.GARBLED) != 0) {
@@ -97,6 +130,19 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
         } catch (final IOException e) {
             throw new ArchiveException(e.getMessage(), (Throwable) e);
         }
+    }
+
+    /**
+     * Constructs the ArjInputStream, taking ownership of the inputStream that is passed in.
+     *
+     * @param inputStream the underlying stream, whose ownership is taken
+     * @param charsetName the charset used for file names and comments in the archive. May be {@code null} to use the platform default.
+     * @throws ArchiveException if an exception occurs while reading
+     * @deprecated Since 1.29.0, use {@link #builder()}.
+     */
+    @Deprecated
+    public ArjArchiveInputStream(final InputStream inputStream, final String charsetName) throws ArchiveException {
+        this(inputStream, builder().setCharset(charsetName));
     }
 
     @Override

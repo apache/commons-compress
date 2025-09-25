@@ -42,7 +42,6 @@ import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.IOUtils;
-import org.apache.commons.io.build.AbstractStreamBuilder;
 import org.apache.commons.io.input.BoundedInputStream;
 
 /**
@@ -72,56 +71,18 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      * @since 1.29.0
      */
     // @formatter:on
-    public static class Builder extends AbstractStreamBuilder<TarArchiveInputStream, Builder> {
-
-        private int blockSize = TarConstants.DEFAULT_BLKSIZE;
-        private int recordSize = TarConstants.DEFAULT_RCDSIZE;
-        private boolean lenient;
+    public static final class Builder extends AbstractTarBuilder<TarArchiveInputStream, Builder> {
 
         /**
          * Constructs a new instance.
          */
-        public Builder() {
+        private Builder() {
             // empty
         }
 
         @Override
         public TarArchiveInputStream get() throws IOException {
             return new TarArchiveInputStream(this);
-        }
-
-        /**
-         * Sets the block size.
-         *
-         * @param blockSize the block size.
-         * @return {@code this} instance.
-         */
-        public Builder setBlockSize(final int blockSize) {
-            this.blockSize = blockSize;
-            return this;
-        }
-
-        /**
-         * Set whether illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
-         * {@link TarArchiveEntry#UNKNOWN}. When set to false such illegal fields cause an exception instead.
-         *
-         * @param lenient whether illegal values throw exceptions.
-         * @return {@code this} instance.
-         */
-        public Builder setLenient(final boolean lenient) {
-            this.lenient = lenient;
-            return this;
-        }
-
-        /**
-         * Sets the record size.
-         *
-         * @param recordSize the record size.
-         * @return {@code this} instance.
-         */
-        public Builder setRecordSize(final int recordSize) {
-            this.recordSize = recordSize;
-            return this;
         }
 
     }
@@ -216,11 +177,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
 
     @SuppressWarnings("resource") // caller closes.
     private TarArchiveInputStream(final Builder builder) throws IOException {
-        super(builder.getInputStream(), builder.getCharset());
-        this.zipEncoding = ZipEncodingHelper.getZipEncoding(builder.getCharset());
-        this.recordBuffer = new byte[builder.recordSize];
-        this.blockSize = builder.blockSize;
-        this.lenient = builder.lenient;
+        this(builder.getInputStream(), builder);
     }
 
     /**
@@ -229,7 +186,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      * @param inputStream the input stream to use.
      */
     public TarArchiveInputStream(final InputStream inputStream) {
-        this(inputStream, TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE);
+        this(inputStream, builder());
     }
 
     /**
@@ -239,11 +196,19 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      * @param lenient     when set to true illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
      *                    {@link TarArchiveEntry#UNKNOWN}. When set to false such illegal fields cause an exception instead.
      * @since 1.19
-     * @deprecated Use {@link #builder()} to configure and {@link Builder#get() get()} a {@link Builder}.
+     * @deprecated Since 1.29.0, use {@link #builder()}.
      */
     @Deprecated
     public TarArchiveInputStream(final InputStream inputStream, final boolean lenient) {
-        this(inputStream, TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, null, lenient);
+        this(inputStream, builder().setLenient(lenient));
+    }
+
+    private TarArchiveInputStream(final InputStream inputStream, final Builder builder) {
+        super(inputStream, builder.getCharset());
+        this.zipEncoding = ZipEncodingHelper.getZipEncoding(builder.getCharset());
+        this.recordBuffer = new byte[builder.getRecordSize()];
+        this.blockSize = builder.getBlockSize();
+        this.lenient = builder.isLenient();
     }
 
     /**
@@ -251,11 +216,11 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      *
      * @param inputStream the input stream to use.
      * @param blockSize   the block size to use.
-     * @deprecated Use {@link #builder()} to configure and {@link Builder#get() get()} a {@link Builder}.
+     * @deprecated Since 1.29.0, use {@link #builder()}.
      */
     @Deprecated
     public TarArchiveInputStream(final InputStream inputStream, final int blockSize) {
-        this(inputStream, blockSize, TarConstants.DEFAULT_RCDSIZE);
+        this(inputStream, builder().setBlockSize(blockSize));
     }
 
     /**
@@ -264,11 +229,11 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      * @param inputStream the input stream to use.
      * @param blockSize   the block size to use.
      * @param recordSize  the record size to use.
-     * @deprecated Use {@link #builder()} to configure and {@link Builder#get() get()} a {@link Builder}.
+     * @deprecated Since 1.29.0, use {@link #builder()}.
      */
     @Deprecated
     public TarArchiveInputStream(final InputStream inputStream, final int blockSize, final int recordSize) {
-        this(inputStream, blockSize, recordSize, null);
+        this(inputStream, builder().setBlockSize(blockSize).setRecordSize(recordSize));
     }
 
     /**
@@ -279,11 +244,14 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      * @param recordSize  the record size to use.
      * @param encoding    name of the encoding to use for file names.
      * @since 1.4
-     * @deprecated Use {@link #builder()} to configure and {@link Builder#get() get()} a {@link Builder}.
+     * @deprecated Since 1.29.0, use {@link #builder()}.
      */
     @Deprecated
-    public TarArchiveInputStream(final InputStream inputStream, final int blockSize, final int recordSize, final String encoding) {
-        this(inputStream, blockSize, recordSize, encoding, false);
+    public TarArchiveInputStream(
+            final InputStream inputStream, final int blockSize, final int recordSize, final String encoding) {
+        this(
+                inputStream,
+                builder().setBlockSize(blockSize).setRecordSize(recordSize).setCharset(encoding));
     }
 
     /**
@@ -296,15 +264,17 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      * @param lenient     when set to true illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
      *                    {@link TarArchiveEntry#UNKNOWN}. When set to false such illegal fields cause an exception instead.
      * @since 1.19
-     * @deprecated Use {@link #builder()} to configure and {@link Builder#get() get()} a {@link Builder}.
+     * @deprecated Since 1.29.0, use {@link #builder()}.
      */
     @Deprecated
     public TarArchiveInputStream(final InputStream inputStream, final int blockSize, final int recordSize, final String encoding, final boolean lenient) {
-        super(inputStream, encoding);
-        this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
-        this.recordBuffer = new byte[recordSize];
-        this.blockSize = blockSize;
-        this.lenient = lenient;
+        // @formatter:off
+        this(inputStream, builder()
+                .setBlockSize(blockSize)
+                .setRecordSize(recordSize)
+                .setCharset(encoding)
+                .setLenient(lenient));
+        // @formatter:on
     }
 
     /**
@@ -314,11 +284,11 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      * @param blockSize   the block size to use.
      * @param encoding    name of the encoding to use for file names.
      * @since 1.4
-     * @deprecated Use {@link #builder()} to configure and {@link Builder#get() get()} a {@link Builder}.
+     * @deprecated Since 1.29.0, use {@link #builder()}.
      */
     @Deprecated
     public TarArchiveInputStream(final InputStream inputStream, final int blockSize, final String encoding) {
-        this(inputStream, blockSize, TarConstants.DEFAULT_RCDSIZE, encoding);
+        this(inputStream, builder().setBlockSize(blockSize).setCharset(encoding));
     }
 
     /**
@@ -327,11 +297,11 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      * @param inputStream the input stream to use.
      * @param encoding    name of the encoding to use for file names.
      * @since 1.4
-     * @deprecated Use {@link #builder()} to configure and {@link Builder#get() get()} a {@link Builder}.
+     * @deprecated Since 1.29.0, use {@link #builder()}.
      */
     @Deprecated
     public TarArchiveInputStream(final InputStream inputStream, final String encoding) {
-        this(inputStream, TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, encoding);
+        this(inputStream, builder().setCharset(encoding));
     }
 
     /**
@@ -740,7 +710,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
     /**
      * For sparse tar entries, there are many "holes"(consisting of all 0) in the file. Only the non-zero data is stored in tar files, and they are stored
      * separately. The structure of non-zero data is introduced by the sparse headers using the offset, where a block of non-zero data starts, and numbytes, the
-     * length of the non-zero data block. When reading sparse entries, the actual data is read out with "holes" and non-zero data combined together according to
+     * length of the non-zero data block. When reading sparse entries, the actual data is read out with "holes" and non-zero data combined according to
      * the sparse headers.
      *
      * @param buf       The buffer into which to place bytes read.

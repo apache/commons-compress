@@ -29,6 +29,7 @@ import java.util.zip.Adler32;
 import java.util.zip.CRC32;
 import java.util.zip.CheckedInputStream;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -138,7 +139,7 @@ class ChecksumCalculatingInputStreamTest {
     @Test
     void testSkipReturningZero() throws IOException {
         final Adler32 adler32 = new Adler32();
-        final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY);
+        final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(ArrayUtils.EMPTY_BYTE_ARRAY);
         try (ChecksumCalculatingInputStream checksumCalculatingInputStream = new ChecksumCalculatingInputStream(adler32, byteArrayInputStream)) {
             final long skipResult = checksumCalculatingInputStream.skip(60L);
             assertEquals(0L, skipResult);
@@ -149,7 +150,7 @@ class ChecksumCalculatingInputStreamTest {
     @Test
     void testSkipReturningZeroSanityCheck() throws IOException {
         final Adler32 adler32 = new Adler32();
-        final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY);
+        final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(ArrayUtils.EMPTY_BYTE_ARRAY);
         try (CheckedInputStream checksumCalculatingInputStream = new CheckedInputStream(byteArrayInputStream, adler32)) {
             final long skipResult = checksumCalculatingInputStream.skip(60L);
             assertEquals(0L, skipResult);

@@ -25,7 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
@@ -53,7 +52,6 @@ class TarMemoryFileSystemTest {
             Files.write(pathSource, "Test".getBytes(UTF_8));
             Files.setAttribute(pathSource, "posix:owner", (UserPrincipal) () -> user);
             Files.setAttribute(pathSource, "posix:group", (GroupPrincipal) () -> group);
-
             final Path target = fileSystem.getPath("original-file.tar");
             try (OutputStream out = Files.newOutputStream(target);
                     ArchiveOutputStream<ArchiveEntry> tarOut = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(ArchiveStreamFactory.TAR, out)) {
@@ -62,11 +60,8 @@ class TarMemoryFileSystemTest {
                 tarOut.write(pathSource);
                 tarOut.closeArchiveEntry();
             }
-
-            try (InputStream input = Files.newInputStream(target);
-                    TarArchiveInputStream tarIn = new TarArchiveInputStream(input)) {
+            try (TarArchiveInputStream tarIn = TarArchiveInputStream.builder().setPath(target).get()) {
                 final TarArchiveEntry nextTarEntry = tarIn.getNextTarEntry();
-
                 assertEquals(user, nextTarEntry.getUserName());
                 assertEquals(group, nextTarEntry.getGroupName());
             }
@@ -96,17 +91,14 @@ class TarMemoryFileSystemTest {
     void testTarToMemoryFileSystem() throws IOException, ArchiveException {
         try (FileSystem fileSystem = MemoryFileSystemBuilder.newLinux().build()) {
             final Path p = fileSystem.getPath("target.tar");
-
             try (OutputStream out = Files.newOutputStream(p);
                     ArchiveOutputStream<ArchiveEntry> tarOut = ArchiveStreamFactory.DEFAULT.createArchiveOutputStream(ArchiveStreamFactory.TAR, out)) {
                 final String content = "Test";
                 final TarArchiveEntry entry = new TarArchiveEntry("test.txt");
                 entry.setSize(content.length());
                 tarOut.putArchiveEntry(entry);
-
                 tarOut.writeUtf8("Test");
                 tarOut.closeArchiveEntry();
-
                 assertTrue(Files.exists(p));
                 assertEquals(Files.size(p), tarOut.getBytesWritten());
             }

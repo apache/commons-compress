@@ -20,6 +20,8 @@ package org.apache.commons.compress.harmony.pack200;
 
 import java.util.Arrays;
 
+import org.apache.commons.lang3.math.NumberUtils;
+
 /**
  * IntList is based on {@link java.util.ArrayList}, but is written specifically for ints in order to reduce boxing and unboxing to Integers, reduce the memory
  * required and improve performance of pack200.
@@ -28,9 +30,13 @@ import java.util.Arrays;
  */
 public class IntList {
 
+    private static int calculateIncrement(final int size, final int required) {
+        return NumberUtils.max(size / 2, required, 12);
+    }
     private int[] array;
     private int firstIndex;
     private int lastIndex;
+
     private int modCount;
 
     /**
@@ -130,13 +136,7 @@ public class IntList {
             firstIndex = 0;
             lastIndex = newLast;
         } else {
-            int increment = size / 2;
-            if (required > increment) {
-                increment = required;
-            }
-            if (increment < 12) {
-                increment = 12;
-            }
+            final int increment = calculateIncrement(size, required);
             final int[] newArray = new int[size + increment];
             if (size > 0) {
                 System.arraycopy(array, firstIndex, newArray, 0, size);
@@ -157,13 +157,7 @@ public class IntList {
             firstIndex = newFirst;
             lastIndex = array.length;
         } else {
-            int increment = size / 2;
-            if (required > increment) {
-                increment = required;
-            }
-            if (increment < 12) {
-                increment = 12;
-            }
+            final int increment = calculateIncrement(size, required);
             final int[] newArray = new int[size + increment];
             if (size > 0) {
                 System.arraycopy(array, firstIndex, newArray, newArray.length - size, size);
@@ -174,15 +168,10 @@ public class IntList {
         }
     }
 
+
     private void growForInsert(final int location, final int required) {
         final int size = lastIndex - firstIndex;
-        int increment = size / 2;
-        if (required > increment) {
-            increment = required;
-        }
-        if (increment < 12) {
-            increment = 12;
-        }
+        final int increment = calculateIncrement(size, required);
         final int[] newArray = new int[size + increment];
         final int newFirst = increment - required;
         // Copy elements after location to the new array skipping inserted

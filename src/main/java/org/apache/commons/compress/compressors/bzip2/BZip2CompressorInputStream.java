@@ -587,7 +587,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     /*
      * (non-Javadoc)
      *
-     * @see java.io.InputStream#read(byte[], int, int)
+     * @see InputStream#read(byte[], int, int)
      */
     @Override
     public int read(final byte[] dest, final int offs, final int len) throws IOException {

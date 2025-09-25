@@ -26,12 +26,17 @@ import java.nio.channels.SeekableByteChannel;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.commons.io.IOUtils;
+
 /**
- * A {@link SeekableByteChannel} implementation that wraps a byte[].
+ * A {@link SeekableByteChannel} implementation that wraps a byte array.
  * <p>
- * When this channel is used for writing an internal buffer grows to accommodate incoming data. The natural size limit is the value of {@link Integer#MAX_VALUE}
- * and it is not possible to {@link #position(long) set the position} or {@link #truncate truncate} to a value bigger than that. Internal buffer can be accessed
- * via {@link SeekableInMemoryByteChannel#array()}.
+ * When this channel is used for writing, an internal buffer grows to accommodate incoming data. The natural size limit is the value of
+ * {@link Integer#MAX_VALUE} and it is not possible to {@link #position(long) set the position} or {@link #truncate truncate} to a value bigger than that. The
+ * raw internal buffer is accessed via {@link SeekableInMemoryByteChannel#array()}.
+ * </p>
+ * <p>
+ * This class never throws {@link ClosedChannelException} because a byte array is not a resource you open or close.
  * </p>
  *
  * @since 1.13
@@ -40,7 +45,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class SeekableInMemoryByteChannel implements SeekableByteChannel {
 
     private static final int NAIVE_RESIZE_LIMIT = Integer.MAX_VALUE >> 1;
-
     private byte[] data;
     private final AtomicBoolean closed = new AtomicBoolean();
     private int position;
@@ -50,14 +54,11 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
      * Constructs a new instance using a default empty buffer.
      */
     public SeekableInMemoryByteChannel() {
-        this(ByteUtils.EMPTY_BYTE_ARRAY);
+        this(IOUtils.DEFAULT_BUFFER_SIZE);
     }
 
     /**
      * Constructs a new instance from a byte array.
-     * <p>
-     * This constructor is intended to be used with pre-allocated buffer or when reading from a given byte array.
-     * </p>
      *
      * @param data input data or pre-allocated array.
      */
@@ -68,9 +69,6 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
 
     /**
      * Constructs a new instance from a size of storage to be allocated.
-     * <p>
-     * Creates a channel and allocates internal storage of a given size.
-     * </p>
      *
      * @param size size of internal buffer to allocate, in bytes.
      */
@@ -79,7 +77,7 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
     }
 
     /**
-     * Obtains the array backing this channel.
+     * Gets the raw byte array backing this channel, <em>this is not a copy</em>.
      * <p>
      * NOTE: The returned buffer is not aligned with containing data, use {@link #size()} to obtain the size of data stored in the buffer.
      * </p>
@@ -101,20 +99,23 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
         }
     }
 
+    /**
+     * Like {@link #size()} but never throws {@link ClosedChannelException}.
+     *
+     * @return See {@link #size()}.
+     */
+    public long getSize() {
+        return size;
+    }
+
     @Override
     public boolean isOpen() {
         return !closed.get();
     }
 
-    /**
-     * Returns this channel's position.
-     * <p>
-     * This method violates the contract of {@link SeekableByteChannel#position()} as it will not throw any exception when invoked on a closed channel. Instead
-     * it will return the position the channel had when close has been called.
-     * </p>
-     */
     @Override
-    public long position() {
+    public long position() throws ClosedChannelException {
+        ensureOpen();
         return position;
     }
 
@@ -122,7 +123,7 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
     public SeekableByteChannel position(final long newPosition) throws IOException {
         ensureOpen();
         if (newPosition < 0L || newPosition > Integer.MAX_VALUE) {
-            throw new IOException("Position must be in range [0.." + Integer.MAX_VALUE + "]");
+            throw new IllegalArgumentException(String.format("Position must be in range [0..%,d]: %,d", Integer.MAX_VALUE, newPosition));
         }
         position = (int) newPosition;
         return this;
@@ -159,28 +160,15 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
         data = Arrays.copyOf(data, len);
     }
 
-    /**
-     * Returns the current size of entity to which this channel is connected.
-     * <p>
-     * This method violates the contract of {@link SeekableByteChannel#size} as it will not throw any exception when invoked on a closed channel. Instead it
-     * will return the size the channel had when close has been called.
-     * </p>
-     */
     @Override
-    public long size() {
+    public long size() throws ClosedChannelException {
+        ensureOpen();
         return size;
     }
 
-    /**
-     * Truncates the entity, to which this channel is connected, to the given size.
-     * <p>
-     * This method violates the contract of {@link SeekableByteChannel#truncate} as it will not throw any exception when invoked on a closed channel.
-     * </p>
-     *
-     * @throws IllegalArgumentException if size is negative or bigger than the maximum of a Java integer
-     */
     @Override
-    public SeekableByteChannel truncate(final long newSize) {
+    public SeekableByteChannel truncate(final long newSize) throws ClosedChannelException {
+        ensureOpen();
         if (newSize < 0L || newSize > Integer.MAX_VALUE) {
             throw new IllegalArgumentException("Size must be range [0.." + Integer.MAX_VALUE + "]");
         }
@@ -214,5 +202,4 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
         }
         return wanted;
     }
-
 }

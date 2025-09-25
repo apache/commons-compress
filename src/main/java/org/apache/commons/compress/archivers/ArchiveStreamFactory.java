@@ -18,7 +18,6 @@
  */
 package org.apache.commons.compress.archivers;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -270,7 +269,8 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
         }
         // COMPRESS-117
         if (signatureLength >= TAR_HEADER_SIZE) {
-            try (TarArchiveInputStream inputStream = new TarArchiveInputStream(new ByteArrayInputStream(tarHeader))) {
+            try (TarArchiveInputStream inputStream =
+                    TarArchiveInputStream.builder().setByteArray(tarHeader).get()) {
                 // COMPRESS-191 - verify the header checksum
                 TarArchiveEntry entry = inputStream.getNextEntry();
                 // try to find the first non-directory entry within the first 10 entries.
@@ -428,53 +428,67 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
         if (in == null) {
             throw new IllegalArgumentException("InputStream must not be null.");
         }
-        if (AR.equalsIgnoreCase(archiverName)) {
-            return (I) new ArArchiveInputStream(in);
-        }
-        if (ARJ.equalsIgnoreCase(archiverName)) {
-            if (actualEncoding != null) {
-                return (I) new ArjArchiveInputStream(in, actualEncoding);
+        try {
+            if (AR.equalsIgnoreCase(archiverName)) {
+                return (I) ArArchiveInputStream.builder().setInputStream(in).get();
             }
-            return (I) new ArjArchiveInputStream(in);
-        }
-        if (ZIP.equalsIgnoreCase(archiverName)) {
-            if (actualEncoding != null) {
-                return (I) new ZipArchiveInputStream(in, actualEncoding);
+            if (ARJ.equalsIgnoreCase(archiverName)) {
+                final ArjArchiveInputStream.Builder arjBuilder = ArjArchiveInputStream.builder().setInputStream(in);
+                if (actualEncoding != null) {
+                    arjBuilder.setCharset(actualEncoding);
+                }
+                return (I) arjBuilder.get();
             }
-            return (I) new ZipArchiveInputStream(in);
-        }
-        if (TAR.equalsIgnoreCase(archiverName)) {
-            if (actualEncoding != null) {
-                return (I) new TarArchiveInputStream(in, actualEncoding);
+            if (ZIP.equalsIgnoreCase(archiverName)) {
+                final ZipArchiveInputStream.Builder zipBuilder = ZipArchiveInputStream.builder().setInputStream(in);
+                if (actualEncoding != null) {
+                    zipBuilder.setCharset(actualEncoding);
+                }
+                return (I) zipBuilder.get();
             }
-            return (I) new TarArchiveInputStream(in);
-        }
-        if (JAR.equalsIgnoreCase(archiverName) || APK.equalsIgnoreCase(archiverName)) {
-            if (actualEncoding != null) {
-                return (I) new JarArchiveInputStream(in, actualEncoding);
+            if (TAR.equalsIgnoreCase(archiverName)) {
+                final TarArchiveInputStream.Builder tarBuilder = TarArchiveInputStream.builder().setInputStream(in);
+                if (actualEncoding != null) {
+                    tarBuilder.setCharset(actualEncoding);
+                }
+                return (I) tarBuilder.get();
             }
-            return (I) new JarArchiveInputStream(in);
-        }
-        if (CPIO.equalsIgnoreCase(archiverName)) {
-            if (actualEncoding != null) {
-                return (I) new CpioArchiveInputStream(in, actualEncoding);
+            if (JAR.equalsIgnoreCase(archiverName) || APK.equalsIgnoreCase(archiverName)) {
+                final JarArchiveInputStream.Builder jarBuilder =
+                        JarArchiveInputStream.jarInputStreamBuilder().setInputStream(in);
+                if (actualEncoding != null) {
+                    jarBuilder.setCharset(actualEncoding);
+                }
+                return (I) jarBuilder.get();
             }
-            return (I) new CpioArchiveInputStream(in);
-        }
-        if (DUMP.equalsIgnoreCase(archiverName)) {
-            if (actualEncoding != null) {
-                return (I) new DumpArchiveInputStream(in, actualEncoding);
+            if (CPIO.equalsIgnoreCase(archiverName)) {
+                final CpioArchiveInputStream.Builder cpioBuilder = CpioArchiveInputStream.builder().setInputStream(in);
+                if (actualEncoding != null) {
+                    cpioBuilder.setCharset(actualEncoding);
+                }
+                return (I) cpioBuilder.get();
             }
-            return (I) new DumpArchiveInputStream(in);
+            if (DUMP.equalsIgnoreCase(archiverName)) {
+                final DumpArchiveInputStream.Builder dumpBuilder = DumpArchiveInputStream.builder().setInputStream(in);
+                if (actualEncoding != null) {
+                    dumpBuilder.setCharset(actualEncoding);
+                }
+                return (I) dumpBuilder.get();
+            }
+            if (SEVEN_Z.equalsIgnoreCase(archiverName)) {
+                throw new StreamingNotSupportedException(SEVEN_Z);
+            }
+            final ArchiveStreamProvider archiveStreamProvider = getArchiveInputStreamProviders().get(toKey(archiverName));
+            if (archiveStreamProvider != null) {
+                return archiveStreamProvider.createArchiveInputStream(archiverName, in, actualEncoding);
+            }
+            throw new ArchiveException("Archiver: %s not found.", archiverName);
+        } catch (final ArchiveException e) {
+            throw e;
+        } catch (final IOException e) {
+            throw new ArchiveException(
+                    "IOException while creating " + archiverName + " input stream: " + e.getMessage(), e);
         }
-        if (SEVEN_Z.equalsIgnoreCase(archiverName)) {
-            throw new StreamingNotSupportedException(SEVEN_Z);
-        }
-        final ArchiveStreamProvider archiveStreamProvider = getArchiveInputStreamProviders().get(toKey(archiverName));
-        if (archiveStreamProvider != null) {
-            return archiveStreamProvider.createArchiveInputStream(archiverName, in, actualEncoding);
-        }
-        throw new ArchiveException("Archiver: %s not found.", archiverName);
     }
 
     /**

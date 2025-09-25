@@ -55,7 +55,7 @@ final class TapeInputStream extends FilterInputStream {
     }
 
     /**
-     * @see java.io.InputStream#available
+     * @see InputStream#available
      */
     @Override
     public int available() throws IOException {
@@ -112,7 +112,7 @@ final class TapeInputStream extends FilterInputStream {
     /**
      * {@inheritDoc}
      *
-     * @see java.io.InputStream#read()
+     * @see InputStream#read()
      */
     @Override
     public int read() throws IOException {

@@ -27,7 +27,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -116,7 +115,7 @@ class SparseFilesTest extends AbstractTest {
     @Test
     void testCompareTarArchiveInputStreamWithTarFile() throws IOException {
         final Path file = getPath("oldgnu_sparse.tar");
-        try (TarArchiveInputStream tarIn = new TarArchiveInputStream(new BufferedInputStream(Files.newInputStream(file)));
+        try (TarArchiveInputStream tarIn = TarArchiveInputStream.builder().setPath(file).get();
                 TarFile tarFile = new TarFile(file)) {
             assertNotNull(tarIn.getNextTarEntry());
             try (InputStream inputStream = tarFile.getInputStream(tarFile.getEntries().get(0))) {
@@ -130,7 +129,7 @@ class SparseFilesTest extends AbstractTest {
     void testExtractExtendedOldGNU() throws IOException, InterruptedException {
         final File file = getFile("oldgnu_extended_sparse.tar");
         try (InputStream sparseFileInputStream = extractTarAndGetInputStream(file, "sparse6");
-                TarArchiveInputStream tin = new TarArchiveInputStream(Files.newInputStream(file.toPath()))) {
+                TarArchiveInputStream tin = TarArchiveInputStream.builder().setFile(file).get()) {
             final TarArchiveEntry ae = tin.getNextTarEntry();
             assertTrue(tin.canReadEntryData(ae));
 
@@ -168,7 +167,7 @@ class SparseFilesTest extends AbstractTest {
         try {
             final File file = getFile("oldgnu_sparse.tar");
             try (InputStream sparseFileInputStream = extractTarAndGetInputStream(file, "sparsefile");
-                    TarArchiveInputStream tin = new TarArchiveInputStream(Files.newInputStream(file.toPath()))) {
+                    TarArchiveInputStream tin = TarArchiveInputStream.builder().setFile(file).get()) {
                 final TarArchiveEntry entry = tin.getNextTarEntry();
                 assertTrue(tin.canReadEntryData(entry));
                 assertArrayEquals(IOUtils.toByteArray(tin), IOUtils.toByteArray(sparseFileInputStream));
@@ -188,7 +187,7 @@ class SparseFilesTest extends AbstractTest {
         assumeFalse(getTarBinaryHelp().startsWith("tar (GNU tar) 1.28"), "This test should be ignored if GNU tar is version 1.28");
 
         final File file = getFile("pax_gnu_sparse.tar");
-        try (TarArchiveInputStream tin = new TarArchiveInputStream(Files.newInputStream(file.toPath()))) {
+        try (TarArchiveInputStream tin = TarArchiveInputStream.builder().setFile(file).get()) {
 
             TarArchiveEntry paxGNUEntry = tin.getNextTarEntry();
             assertTrue(tin.canReadEntryData(paxGNUEntry));
@@ -215,12 +214,12 @@ class SparseFilesTest extends AbstractTest {
     void testExtractSparseTarsOnWindows() throws IOException {
         final File oldGNUSparseTar = getFile("oldgnu_sparse.tar");
         final File paxGNUSparseTar = getFile("pax_gnu_sparse.tar");
-        try (TarArchiveInputStream paxGNUSparseInputStream = new TarArchiveInputStream(Files.newInputStream(paxGNUSparseTar.toPath()))) {
+        try (TarArchiveInputStream paxGNUSparseInputStream = TarArchiveInputStream.builder().setFile(paxGNUSparseTar).get()) {
 
             // compare between old GNU and PAX 0.0
             TarArchiveEntry paxGNUEntry = paxGNUSparseInputStream.getNextTarEntry();
             assertTrue(paxGNUSparseInputStream.canReadEntryData(paxGNUEntry));
-            try (TarArchiveInputStream oldGNUSparseInputStream = new TarArchiveInputStream(Files.newInputStream(oldGNUSparseTar.toPath()))) {
+            try (TarArchiveInputStream oldGNUSparseInputStream = TarArchiveInputStream.builder().setFile(oldGNUSparseTar).get()) {
                 final TarArchiveEntry oldGNUEntry = oldGNUSparseInputStream.getNextTarEntry();
                 assertTrue(oldGNUSparseInputStream.canReadEntryData(oldGNUEntry));
                 assertArrayEquals(IOUtils.toByteArray(oldGNUSparseInputStream), IOUtils.toByteArray(paxGNUSparseInputStream));
@@ -229,7 +228,7 @@ class SparseFilesTest extends AbstractTest {
             // compare between old GNU and PAX 0.1
             paxGNUEntry = paxGNUSparseInputStream.getNextTarEntry();
             assertTrue(paxGNUSparseInputStream.canReadEntryData(paxGNUEntry));
-            try (TarArchiveInputStream oldGNUSparseInputStream = new TarArchiveInputStream(Files.newInputStream(oldGNUSparseTar.toPath()))) {
+            try (TarArchiveInputStream oldGNUSparseInputStream = TarArchiveInputStream.builder().setFile(oldGNUSparseTar).get()) {
                 final TarArchiveEntry oldGNUEntry = oldGNUSparseInputStream.getNextTarEntry();
                 assertTrue(oldGNUSparseInputStream.canReadEntryData(oldGNUEntry));
                 assertArrayEquals(IOUtils.toByteArray(oldGNUSparseInputStream), IOUtils.toByteArray(paxGNUSparseInputStream));
@@ -238,7 +237,7 @@ class SparseFilesTest extends AbstractTest {
             // compare between old GNU and PAX 1.0
             paxGNUEntry = paxGNUSparseInputStream.getNextTarEntry();
             assertTrue(paxGNUSparseInputStream.canReadEntryData(paxGNUEntry));
-            try (TarArchiveInputStream oldGNUSparseInputStream = new TarArchiveInputStream(Files.newInputStream(oldGNUSparseTar.toPath()))) {
+            try (TarArchiveInputStream oldGNUSparseInputStream = TarArchiveInputStream.builder().setFile(oldGNUSparseTar).get()) {
                 final TarArchiveEntry oldGNUEntry = oldGNUSparseInputStream.getNextTarEntry();
                 assertTrue(oldGNUSparseInputStream.canReadEntryData(oldGNUEntry));
                 assertArrayEquals(IOUtils.toByteArray(oldGNUSparseInputStream), IOUtils.toByteArray(paxGNUSparseInputStream));
@@ -248,8 +247,9 @@ class SparseFilesTest extends AbstractTest {
 
     @Test
     void testOldGNU() throws Throwable {
-        final File file = getFile("oldgnu_sparse.tar");
-        try (TarArchiveInputStream tin = new TarArchiveInputStream(Files.newInputStream(file.toPath()))) {
+        try (TarArchiveInputStream tin = TarArchiveInputStream.builder()
+                .setURI(getURI("oldgnu_sparse.tar"))
+                .get()) {
             final TarArchiveEntry ae = tin.getNextTarEntry();
             assertEquals("sparsefile", ae.getName());
             assertEquals(TarConstants.LF_GNUTYPE_SPARSE, ae.getLinkFlag());
@@ -289,8 +289,9 @@ class SparseFilesTest extends AbstractTest {
 
     @Test
     void testPaxGNU() throws Throwable {
-        final File file = getFile("pax_gnu_sparse.tar");
-        try (TarArchiveInputStream tin = new TarArchiveInputStream(Files.newInputStream(file.toPath()))) {
+        try (TarArchiveInputStream tin = TarArchiveInputStream.builder()
+                .setURI(getURI("pax_gnu_sparse.tar"))
+                .get()) {
             assertPaxGNUEntry(tin, "0.0");
             assertPaxGNUEntry(tin, "0.1");
             assertPaxGNUEntry(tin, "1.0");

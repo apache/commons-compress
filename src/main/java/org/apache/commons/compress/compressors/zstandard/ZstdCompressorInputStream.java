@@ -53,7 +53,7 @@ public class ZstdCompressorInputStream extends CompressorInputStream implements 
      * @throws IOException if an I/O error occurs.
      */
     public ZstdCompressorInputStream(final InputStream in) throws IOException {
-        this.decIS = new ZstdInputStream(countingStream = BoundedInputStream.builder().setInputStream(in).get());
+        this.decIS = new ZstdInputStream(countingStream = BoundedInputStream.builder().setInputStream(in).setPropagateClose(false).get());
     }
 
     /**
@@ -65,7 +65,7 @@ public class ZstdCompressorInputStream extends CompressorInputStream implements 
      * @throws IOException if an I/O error occurs.
      */
     public ZstdCompressorInputStream(final InputStream in, final BufferPool bufferPool) throws IOException {
-        this.decIS = new ZstdInputStream(countingStream = BoundedInputStream.builder().setInputStream(in).get(), bufferPool);
+        this.decIS = new ZstdInputStream(countingStream = BoundedInputStream.builder().setInputStream(in).setPropagateClose(false).get(), bufferPool);
     }
 
     @Override

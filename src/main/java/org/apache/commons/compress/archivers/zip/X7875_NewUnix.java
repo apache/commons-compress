@@ -26,7 +26,6 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.zip.ZipException;
 
-import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.lang3.ArrayUtils;
 
 /**
@@ -93,7 +92,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
          *
          * 2.) Fundamentally, ZIP files are about shrinking things, so let's save a few bytes per entry while we can.
          *
-         * 3.) Of all the people creating ZIP files using commons- compress, how many care about Unix UID/GID attributes of the files they store? (for example,
+         * 3.) Of all the people creating ZIP files using commons-compress, how many care about Unix UID/GID attributes of the files they store? (for example,
          * I am probably thinking way too hard about this and no one cares!)
          *
          * 4.) InfoZip's tool, even though it carefully stores every UID/GID for every file zipped on a Unix machine (by default) currently appears unable to
@@ -153,7 +152,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
      */
     @Override
     public byte[] getCentralDirectoryData() {
-        return ByteUtils.EMPTY_BYTE_ARRAY;
+        return ArrayUtils.EMPTY_BYTE_ARRAY;
     }
 
     /**

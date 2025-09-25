@@ -39,6 +39,31 @@ import org.apache.commons.lang3.ArrayUtils;
  */
 public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
 
+    /**
+     * Builds a new {@link ArArchiveInputStream}.
+     * <p>
+     * For example:
+     * </p>
+     * <pre>{@code
+     * ArArchiveInputStream in = ArArchiveInputStream.builder()
+     *     .setPath(inputPath)
+     *     .get();
+     * }</pre>
+     *
+     * @since 1.29.0
+     */
+    public static final class Builder extends AbstractBuilder<ArArchiveInputStream, Builder> {
+
+        private Builder() {
+            setCharset(StandardCharsets.US_ASCII);
+        }
+
+        @Override
+        public ArArchiveInputStream get() throws IOException {
+            return new ArArchiveInputStream(this);
+        }
+    }
+
     // offsets and length of meta data parts
     private static final int NAME_OFFSET = 0;
     private static final int NAME_LEN = 16;
@@ -57,6 +82,16 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
     private static final Pattern BSD_LONGNAME_PATTERN = Pattern.compile("^" + BSD_LONGNAME_PREFIX + "\\d+");
     private static final String GNU_STRING_TABLE_NAME = "//";
     private static final Pattern GNU_LONGNAME_PATTERN = Pattern.compile("^/\\d+");
+
+    /**
+     * Creates a new builder.
+     *
+     * @return A new builder.
+     * @since 1.29.0
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
 
     /**
      * Does the name look like it is a long name (or a name containing spaces) as encoded by BSD ar?
@@ -131,13 +166,21 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
     /** Cached buffer for meta data - must only be used locally in the class (COMPRESS-172 - reduce garbage collection). */
     private final byte[] metaData = new byte[NAME_LEN + LAST_MODIFIED_LEN + USER_ID_LEN + GROUP_ID_LEN + FILE_MODE_LEN + LENGTH_LEN];
 
+    private ArArchiveInputStream(final Builder builder) throws IOException {
+        this(builder.getInputStream(), builder);
+    }
+
     /**
      * Constructs an Ar input stream with the referenced stream
      *
      * @param inputStream the ar input stream
      */
     public ArArchiveInputStream(final InputStream inputStream) {
-        super(inputStream, StandardCharsets.US_ASCII.name());
+        this(inputStream, builder());
+    }
+
+    private ArArchiveInputStream(final InputStream inputStream, final Builder builder) {
+        super(inputStream, builder.getCharset());
     }
 
     private int asInt(final byte[] byteArray, final int offset, final int len, final boolean treatBlankAsZero) throws IOException {
@@ -183,7 +226,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
     /*
      * (non-Javadoc)
      *
-     * @see java.io.InputStream#close()
+     * @see InputStream#close()
      */
     @Override
     public void close() throws IOException {
@@ -395,7 +438,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
     /*
      * (non-Javadoc)
      *
-     * @see java.io.InputStream#read(byte[], int, int)
+     * @see InputStream#read(byte[], int, int)
      */
     @Override
     public int read(final byte[] b, final int off, final int len) throws IOException {

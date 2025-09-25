@@ -19,6 +19,7 @@
 
 package org.apache.commons.compress.archivers.zip;
 
+import static org.apache.commons.lang3.reflect.FieldUtils.readDeclaredField;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -26,13 +27,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,7 +43,6 @@ import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.zip.ZipEntry;
@@ -53,10 +53,10 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
-import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.function.IOConsumer;
 import org.apache.commons.lang3.ArrayFill;
+import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -90,7 +90,7 @@ class ZipArchiveInputStreamTest extends AbstractTest {
     }
 
     private static void nameSource(final String archive, final String entry, int entryNo, final ZipArchiveEntry.NameSource expected) throws Exception {
-        try (ZipArchiveInputStream zis = new ZipArchiveInputStream(Files.newInputStream(getFile(archive).toPath()))) {
+        try (ZipArchiveInputStream zis = ZipArchiveInputStream.builder().setURI(getURI(archive)).get()) {
             ZipArchiveEntry ze;
             do {
                 ze = zis.getNextZipEntry();
@@ -116,7 +116,9 @@ class ZipArchiveInputStreamTest extends AbstractTest {
         ZipArchiveEntry zae = inputStream.getNextZipEntry();
         while (zae != null) {
             if (zae.getName().endsWith(".zip")) {
-                try (ZipArchiveInputStream innerInputStream = new ZipArchiveInputStream(inputStream)) {
+                try (ZipArchiveInputStream innerInputStream = ZipArchiveInputStream.builder()
+                        .setInputStream(inputStream)
+                        .get()) {
                     extractZipInputStream(innerInputStream);
                 }
             }
@@ -181,8 +183,7 @@ class ZipArchiveInputStreamTest extends AbstractTest {
 
     private void multiByteReadConsistentlyReturnsMinusOneAtEof(final File file) throws Exception {
         final byte[] buf = new byte[2];
-        try (InputStream in = newInputStream("bla.zip");
-                ZipArchiveInputStream archive = new ZipArchiveInputStream(in)) {
+        try (ZipArchiveInputStream archive = ZipArchiveInputStream.builder().setFile(file).get()) {
             assertEquals(-1, archive.getCompressedCount());
             assertNotNull(archive.getNextEntry());
             IOUtils.toByteArray(archive);
@@ -192,8 +193,7 @@ class ZipArchiveInputStreamTest extends AbstractTest {
     }
 
     private void singleByteReadConsistentlyReturnsMinusOneAtEof(final File file) throws Exception {
-        try (InputStream in = Files.newInputStream(file.toPath());
-                ZipArchiveInputStream archive = new ZipArchiveInputStream(in)) {
+        try (ZipArchiveInputStream archive = ZipArchiveInputStream.builder().setFile(file).get()) {
             assertNotNull(archive.getNextEntry());
             IOUtils.toByteArray(archive);
             assertEquals(-1, archive.read());
@@ -203,8 +203,9 @@ class ZipArchiveInputStreamTest extends AbstractTest {
 
     @Test
     void testDecompressNextSymbol() throws IOException {
-        try (ZipArchiveInputStream inputStream = new ZipArchiveInputStream(
-                Files.newInputStream(Paths.get("src/test/resources/org/apache/commons/compress/zip/decompressNextSymbol.bin")))) {
+        try (ZipArchiveInputStream inputStream = ZipArchiveInputStream.builder()
+                .setURI(getURI("org/apache/commons/compress/zip/decompressNextSymbol.bin"))
+                .get()) {
             inputStream.getNextEntry();
             assertThrows(IOException.class, inputStream::getNextEntry);
         }
@@ -212,14 +213,14 @@ class ZipArchiveInputStreamTest extends AbstractTest {
 
     @Test
     void testGetCompressedCountEmptyZip() throws IOException {
-        try (ZipArchiveInputStream zin = new ZipArchiveInputStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY))) {
+        try (ZipArchiveInputStream zin = ZipArchiveInputStream.builder().setByteArray(ArrayUtils.EMPTY_BYTE_ARRAY).get()) {
             assertEquals(-1, zin.getCompressedCount());
         }
     }
 
     @Test
     void testGetFirstEntryEmptyZip() throws IOException {
-        try (ZipArchiveInputStream zin = new ZipArchiveInputStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY))) {
+        try (ZipArchiveInputStream zin = ZipArchiveInputStream.builder().setByteArray(ArrayUtils.EMPTY_BYTE_ARRAY).get()) {
             final ZipArchiveEntry entry = zin.getNextEntry();
             assertNull(entry);
         }
@@ -227,15 +228,16 @@ class ZipArchiveInputStreamTest extends AbstractTest {
 
     @Test
     void testGetNextZipEntry() throws IOException {
-        try (ZipArchiveInputStream inputStream = new ZipArchiveInputStream(
-                Files.newInputStream(Paths.get("src/test/resources/org/apache/commons/compress/zip/getNextZipEntry.bin")))) {
+        try (ZipArchiveInputStream inputStream = ZipArchiveInputStream.builder()
+                .setURI(getURI("org/apache/commons/compress/zip/getNextZipEntry.bin"))
+                .get()) {
             assertThrows(IOException.class, () -> inputStream.forEach(IOConsumer.noop()));
         }
     }
 
     @Test
     void testGetUncompressedCountEmptyZip() throws IOException {
-        try (ZipArchiveInputStream zin = new ZipArchiveInputStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY))) {
+        try (ZipArchiveInputStream zin = ZipArchiveInputStream.builder().setByteArray(ArrayUtils.EMPTY_BYTE_ARRAY).get()) {
             assertEquals(0, zin.getUncompressedCount());
         }
     }
@@ -245,7 +247,7 @@ class ZipArchiveInputStreamTest extends AbstractTest {
      */
     @Test
     void testMessageWithCorruptFileName() throws Exception {
-        try (ZipArchiveInputStream in = new ZipArchiveInputStream(newInputStream("COMPRESS-351.zip"))) {
+        try (ZipArchiveInputStream in = ZipArchiveInputStream.builder().setURI(getURI("COMPRESS-351.zip")).get()) {
             final EOFException ex = assertThrows(EOFException.class, () -> in.forEach(IOConsumer.noop()));
             final String m = ex.getMessage();
             assertTrue(m.startsWith("Truncated ZIP entry: ?2016")); // the first character is not printable
@@ -288,8 +290,8 @@ class ZipArchiveInputStreamTest extends AbstractTest {
         // make size much bigger than entry's real size
         Arrays.fill(content, 17, 26, (byte) 0xff);
         final byte[] buf = new byte[2];
-        try (ByteArrayInputStream in = new ByteArrayInputStream(content);
-                ZipArchiveInputStream archive = new ZipArchiveInputStream(in)) {
+        try (ZipArchiveInputStream archive =
+                ZipArchiveInputStream.builder().setByteArray(content).get()) {
             assertNotNull(archive.getNextEntry());
             final IOException ex1 = assertThrows(ArchiveException.class, () -> IOUtils.toByteArray(archive), "expected exception");
             assertEquals("Truncated ZIP file", ex1.getMessage());
@@ -321,8 +323,7 @@ class ZipArchiveInputStreamTest extends AbstractTest {
     @Test
     void testOffsets() throws Exception {
         // mixed.zip contains both inflated and stored files
-        try (InputStream archiveStream = ZipArchiveInputStream.class.getResourceAsStream("/mixed.zip");
-                ZipArchiveInputStream zipStream = new ZipArchiveInputStream(archiveStream)) {
+        try (ZipArchiveInputStream zipStream = ZipArchiveInputStream.builder().setURI(getURI("mixed.zip")).get()) {
             final ZipArchiveEntry inflatedEntry = zipStream.getNextZipEntry();
             assertEquals("inflated.txt", inflatedEntry.getName());
             assertEquals(0x0000, inflatedEntry.getLocalHeaderOffset());
@@ -338,7 +339,9 @@ class ZipArchiveInputStreamTest extends AbstractTest {
     @Test
     void testProperlyMarksEntriesAsUnreadableIfUncompressedSizeIsUnknown() throws Exception {
         // we never read any data
-        try (ZipArchiveInputStream zis = new ZipArchiveInputStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY))) {
+        try (ZipArchiveInputStream zis = ZipArchiveInputStream.builder()
+                .setByteArray(ArrayUtils.EMPTY_BYTE_ARRAY)
+                .get()) {
             final ZipArchiveEntry e = new ZipArchiveEntry("test");
             e.setMethod(ZipMethod.DEFLATED.getCode());
             assertTrue(zis.canReadEntryData(e));
@@ -351,8 +354,7 @@ class ZipArchiveInputStreamTest extends AbstractTest {
 
     @Test
     void testProperlyReadsStoredEntries() throws IOException {
-        try (InputStream fs = newInputStream("bla-stored.zip");
-                ZipArchiveInputStream archive = new ZipArchiveInputStream(fs)) {
+        try (ZipArchiveInputStream archive = ZipArchiveInputStream.builder().setURI(getURI("bla-stored.zip")).get()) {
             ZipArchiveEntry e = archive.getNextZipEntry();
             assertNotNull(e);
             assertEquals("test1.xml", e.getName());
@@ -373,8 +375,10 @@ class ZipArchiveInputStreamTest extends AbstractTest {
 
     @Test
     void testProperlyReadsStoredEntryWithDataDescriptorWithoutSignature() throws IOException {
-        try (InputStream fs = newInputStream("bla-stored-dd-nosig.zip");
-                ZipArchiveInputStream archive = new ZipArchiveInputStream(fs, StandardCharsets.UTF_8.name(), true, true)) {
+        try (ZipArchiveInputStream archive = ZipArchiveInputStream.builder()
+                .setURI(getURI("bla-stored-dd-nosig.zip"))
+                .setSupportStoredEntryDataDescriptor(true)
+                .get()) {
             final ZipArchiveEntry e = archive.getNextZipEntry();
             assertNotNull(e);
             assertEquals("test1.xml", e.getName());
@@ -389,8 +393,10 @@ class ZipArchiveInputStreamTest extends AbstractTest {
 
     @Test
     void testProperlyReadsStoredEntryWithDataDescriptorWithSignature() throws IOException {
-        try (InputStream fs = newInputStream("bla-stored-dd.zip");
-                ZipArchiveInputStream archive = new ZipArchiveInputStream(fs, StandardCharsets.UTF_8.name(), true, true)) {
+        try (ZipArchiveInputStream archive = ZipArchiveInputStream.builder()
+                .setURI(getURI("bla-stored-dd.zip"))
+                .setSupportStoredEntryDataDescriptor(true)
+                .get()) {
             final ZipArchiveEntry e = archive.getNextZipEntry();
             assertNotNull(e);
             assertEquals("test1.xml", e.getName());
@@ -410,7 +416,9 @@ class ZipArchiveInputStreamTest extends AbstractTest {
     void testProperUseOfInflater() throws Exception {
         try (ZipFile zf = ZipFile.builder().setFile(getFile("COMPRESS-189.zip")).get()) {
             final ZipArchiveEntry zae = zf.getEntry("USD0558682-20080101.ZIP");
-            try (ZipArchiveInputStream in = new ZipArchiveInputStream(new BufferedInputStream(zf.getInputStream(zae)))) {
+            try (ZipArchiveInputStream in = ZipArchiveInputStream.builder()
+                    .setInputStream(new BufferedInputStream(zf.getInputStream(zae)))
+                    .get()) {
                 ZipArchiveEntry innerEntry;
                 while ((innerEntry = in.getNextZipEntry()) != null) {
                     if (innerEntry.getName().endsWith("XML")) {
@@ -428,7 +436,7 @@ class ZipArchiveInputStreamTest extends AbstractTest {
     void testReadDeflate64CompressedStream() throws Exception {
         final byte[] orig = readAllBytes("COMPRESS-380/COMPRESS-380-input");
         final File archive = getFile("COMPRESS-380/COMPRESS-380.zip");
-        try (ZipArchiveInputStream zin = new ZipArchiveInputStream(Files.newInputStream(archive.toPath()))) {
+        try (ZipArchiveInputStream zin = ZipArchiveInputStream.builder().setFile(archive).get()) {
             assertNotNull(zin.getNextZipEntry());
             final byte[] fromZip = IOUtils.toByteArray(zin);
             assertArrayEquals(orig, fromZip);
@@ -439,7 +447,7 @@ class ZipArchiveInputStreamTest extends AbstractTest {
     void testReadDeflate64CompressedStreamWithDataDescriptor() throws Exception {
         // this is a copy of bla.jar with META-INF/MANIFEST.MF's method manually changed to ENHANCED_DEFLATED
         final File archive = getFile("COMPRESS-380/COMPRESS-380-dd.zip");
-        try (ZipArchiveInputStream zin = new ZipArchiveInputStream(Files.newInputStream(archive.toPath()))) {
+        try (ZipArchiveInputStream zin = ZipArchiveInputStream.builder().setFile(archive).get()) {
             final ZipArchiveEntry e = zin.getNextZipEntry();
             assertEquals(-1, e.getSize());
             assertEquals(ZipMethod.ENHANCED_DEFLATED.getCode(), e.getMethod());
@@ -457,8 +465,7 @@ class ZipArchiveInputStreamTest extends AbstractTest {
      */
     @Test
     void testReadingOfFirstStoredEntry() throws Exception {
-
-        try (ZipArchiveInputStream in = new ZipArchiveInputStream(newInputStream("COMPRESS-264.zip"))) {
+        try (ZipArchiveInputStream in = ZipArchiveInputStream.builder().setURI(getURI("COMPRESS-264.zip")).get()) {
             final ZipArchiveEntry ze = in.getNextZipEntry();
             assertEquals(5, ze.getSize());
             assertArrayEquals(new byte[] { 'd', 'a', 't', 'a', '\n' }, IOUtils.toByteArray(in));
@@ -467,8 +474,9 @@ class ZipArchiveInputStreamTest extends AbstractTest {
 
     @Test
     void testRejectsStoredEntriesWithDataDescriptorByDefault() throws IOException {
-        try (InputStream fs = newInputStream("bla-stored-dd.zip");
-                ZipArchiveInputStream archive = new ZipArchiveInputStream(fs)) {
+        try (ZipArchiveInputStream archive = ZipArchiveInputStream.builder()
+                .setURI(getURI("bla-stored-dd.zip"))
+                .get()) {
             final ZipArchiveEntry e = archive.getNextZipEntry();
             assertNotNull(e);
             assertEquals("test1.xml", e.getName());
@@ -481,7 +489,7 @@ class ZipArchiveInputStreamTest extends AbstractTest {
     @Test
     void testShouldConsumeArchiveCompletely() throws Exception {
         try (InputStream is = ZipArchiveInputStreamTest.class.getResourceAsStream("/archive_with_trailer.zip");
-                ZipArchiveInputStream zip = new ZipArchiveInputStream(is)) {
+                ZipArchiveInputStream zip = ZipArchiveInputStream.builder().setInputStream(is).get()) {
             getAllZipEntries(zip);
             final byte[] expected = { 'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!', '\n' };
             final byte[] actual = new byte[expected.length];
@@ -495,8 +503,19 @@ class ZipArchiveInputStreamTest extends AbstractTest {
      */
     @Test
     void testShouldReadNestedZip() throws IOException {
-        try (ZipArchiveInputStream in = new ZipArchiveInputStream(newInputStream("COMPRESS-219.zip"))) {
+        try (ZipArchiveInputStream in = ZipArchiveInputStream.builder().setURI(getURI("COMPRESS-219.zip")).get()) {
             extractZipInputStream(in);
+        }
+    }
+
+    @Test
+    void testSingleArgumentConstructor() throws Exception {
+        final InputStream inputStream = mock(InputStream.class);
+        try (ZipArchiveInputStream archiveStream = new ZipArchiveInputStream(inputStream)) {
+            assertEquals(StandardCharsets.UTF_8, archiveStream.getCharset());
+            assertEquals(true, readDeclaredField(archiveStream, "useUnicodeExtraFields", true));
+            assertEquals(false, readDeclaredField(archiveStream, "supportStoredEntryDataDescriptor", true));
+            assertEquals(false, readDeclaredField(archiveStream, "skipSplitSignature", true));
         }
     }
 
@@ -537,8 +556,8 @@ class ZipArchiveInputStreamTest extends AbstractTest {
         for (int i = 17; i < 26; i++) {
             content[i] = (byte) 0xff;
         }
-        try (ByteArrayInputStream in = new ByteArrayInputStream(content);
-                ZipArchiveInputStream archive = new ZipArchiveInputStream(in)) {
+        try (ZipArchiveInputStream archive =
+                ZipArchiveInputStream.builder().setByteArray(content).get()) {
             assertNotNull(archive.getNextEntry());
             final IOException ex1 = assertThrows(ArchiveException.class, () -> IOUtils.toByteArray(archive), "expected exception");
             assertEquals("Truncated ZIP file", ex1.getMessage());
@@ -554,12 +573,16 @@ class ZipArchiveInputStreamTest extends AbstractTest {
         final File lastFile = getFile("COMPRESS-477/split_zip_created_by_winrar/split_zip_created_by_winrar.zip");
         try (SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile);
                 InputStream inputStream = Channels.newInputStream(channel);
-                ZipArchiveInputStream splitInputStream = new ZipArchiveInputStream(inputStream, StandardCharsets.UTF_8.name(), true, false, true)) {
+                ZipArchiveInputStream splitInputStream = ZipArchiveInputStream.builder()
+                        .setInputStream(inputStream)
+                        .setSkipSplitSignature(true)
+                        .get()) {
 
             final File fileToCompare = getFile("COMPRESS-477/split_zip_created_by_winrar/zip_to_compare_created_by_winrar.zip");
-            try (ZipArchiveInputStream inputStreamToCompare = new ZipArchiveInputStream(Files.newInputStream(fileToCompare.toPath()),
-                    StandardCharsets.UTF_8.name(), true, false, true)) {
-
+            try (ZipArchiveInputStream inputStreamToCompare = ZipArchiveInputStream.builder()
+                    .setFile(fileToCompare)
+                    .setSkipSplitSignature(true)
+                    .get()) {
                 ArchiveEntry entry;
                 while ((entry = splitInputStream.getNextEntry()) != null && inputStreamToCompare.getNextEntry() != null) {
                     if (entry.isDirectory()) {
@@ -576,7 +599,10 @@ class ZipArchiveInputStreamTest extends AbstractTest {
         final File lastFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.zip");
         try (SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile);
                 InputStream inputStream = Channels.newInputStream(channel);
-                ZipArchiveInputStream splitInputStream = new ZipArchiveInputStream(inputStream, StandardCharsets.UTF_8.name(), true, false, true)) {
+                ZipArchiveInputStream splitInputStream = ZipArchiveInputStream.builder()
+                        .setInputStream(inputStream)
+                        .setSkipSplitSignature(true)
+                        .get()) {
 
             final Path fileToCompare = getPath("COMPRESS-477/split_zip_created_by_zip/zip_to_compare_created_by_zip.zip");
             try (ZipArchiveInputStream inputStreamToCompare = new ZipArchiveInputStream(Files.newInputStream(fileToCompare), StandardCharsets.UTF_8.name(),
@@ -598,11 +624,16 @@ class ZipArchiveInputStreamTest extends AbstractTest {
         final File lastFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip_zip64.zip");
         try (SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.buildFromLastSplitSegment(lastFile);
                 InputStream inputStream = Channels.newInputStream(channel);
-                ZipArchiveInputStream splitInputStream = new ZipArchiveInputStream(inputStream, StandardCharsets.UTF_8.name(), true, false, true)) {
+                ZipArchiveInputStream splitInputStream = ZipArchiveInputStream.builder()
+                        .setInputStream(inputStream)
+                        .setSkipSplitSignature(true)
+                        .get()) {
 
             final Path fileToCompare = getPath("COMPRESS-477/split_zip_created_by_zip/zip_to_compare_created_by_zip_zip64.zip");
-            try (ZipArchiveInputStream inputStreamToCompare = new ZipArchiveInputStream(Files.newInputStream(fileToCompare), StandardCharsets.UTF_8.name(),
-                    true, false, true)) {
+            try (ZipArchiveInputStream inputStreamToCompare = ZipArchiveInputStream.builder()
+                    .setPath(fileToCompare)
+                    .setSkipSplitSignature(true)
+                    .get()) {
 
                 ArchiveEntry entry;
                 while ((entry = splitInputStream.getNextEntry()) != null && inputStreamToCompare.getNextEntry() != null) {
@@ -617,10 +648,10 @@ class ZipArchiveInputStreamTest extends AbstractTest {
 
     @Test
     void testSplitZipCreatedByZipThrowsException() throws IOException {
-        final File zipSplitFile = getFile("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.z01");
-        try (ZipArchiveInputStream inputStream = new ZipArchiveInputStream(Files.newInputStream(zipSplitFile.toPath()), StandardCharsets.UTF_8.name(), true,
-                false, true)) {
-
+        try (ZipArchiveInputStream inputStream = ZipArchiveInputStream.builder()
+                .setURI(getURI("COMPRESS-477/split_zip_created_by_zip/split_zip_created_by_zip.z01"))
+                .setSkipSplitSignature(true)
+                .get()) {
             assertThrows(EOFException.class, () -> {
                 ArchiveEntry entry = inputStream.getNextEntry();
                 while (entry != null) {
@@ -635,7 +666,9 @@ class ZipArchiveInputStreamTest extends AbstractTest {
      */
     @Test
     void testThrowOnInvalidEntry() throws Exception {
-        try (ZipArchiveInputStream zip = new ZipArchiveInputStream(ZipArchiveInputStreamTest.class.getResourceAsStream("/invalid-zip.zip"))) {
+        try (ZipArchiveInputStream zip = ZipArchiveInputStream.builder()
+                .setURI(getURI("invalid-zip.zip"))
+                .get()) {
             final ZipException expected = assertThrows(ZipException.class, zip::getNextZipEntry, "IOException expected");
             assertTrue(expected.getMessage().contains("Cannot find zip signature"));
         }
@@ -643,8 +676,10 @@ class ZipArchiveInputStreamTest extends AbstractTest {
 
     @Test
     void testThrowsIfStoredDDIsDifferentFromLengthRead() throws IOException {
-        try (InputStream fs = newInputStream("bla-stored-dd-contradicts-actualsize.zip");
-                ZipArchiveInputStream archive = new ZipArchiveInputStream(fs, StandardCharsets.UTF_8.name(), true, true)) {
+        try (ZipArchiveInputStream archive = ZipArchiveInputStream.builder()
+                .setURI(getURI("bla-stored-dd-contradicts-actualsize.zip"))
+                .setSupportStoredEntryDataDescriptor(true)
+                .get()) {
             final ZipArchiveEntry e = archive.getNextZipEntry();
             assertNotNull(e);
             assertEquals("test1.xml", e.getName());
@@ -656,8 +691,10 @@ class ZipArchiveInputStreamTest extends AbstractTest {
 
     @Test
     void testThrowsIfStoredDDIsInconsistent() throws IOException {
-        try (InputStream fs = newInputStream("bla-stored-dd-sizes-differ.zip");
-                ZipArchiveInputStream archive = new ZipArchiveInputStream(fs, StandardCharsets.UTF_8.name(), true, true)) {
+        try (ZipArchiveInputStream archive = ZipArchiveInputStream.builder()
+                .setURI(getURI("bla-stored-dd-sizes-differ.zip"))
+                .setSupportStoredEntryDataDescriptor(true)
+                .get()) {
             final ZipArchiveEntry e = archive.getNextZipEntry();
             assertNotNull(e);
             assertEquals("test1.xml", e.getName());
@@ -689,39 +726,36 @@ class ZipArchiveInputStreamTest extends AbstractTest {
 
     @Test
     void testThrowsIOExceptionIfThereIsCorruptedZip64Extra() throws IOException {
-        try (InputStream fis = newInputStream("COMPRESS-546.zip");
-                ZipArchiveInputStream zipInputStream = new ZipArchiveInputStream(fis)) {
+        try (ZipArchiveInputStream zipInputStream = ZipArchiveInputStream.builder()
+                .setURI(getURI("COMPRESS-546.zip"))
+                .get()) {
             assertThrows(IOException.class, () -> getAllZipEntries(zipInputStream));
         }
     }
 
     @Test
     void testUnshrinkEntry() throws Exception {
-        try (ZipArchiveInputStream in = new ZipArchiveInputStream(newInputStream("SHRUNK.ZIP"))) {
+        try (ZipArchiveInputStream in = ZipArchiveInputStream.builder().setURI(getURI("SHRUNK.ZIP")).get()) {
             ZipArchiveEntry entry = in.getNextZipEntry();
             assertEquals(ZipMethod.UNSHRINKING.getCode(), entry.getMethod(), "method");
             assertTrue(in.canReadEntryData(entry));
-
             try (InputStream original = newInputStream("test1.xml")) {
                 try {
                     assertArrayEquals(IOUtils.toByteArray(original), IOUtils.toByteArray(in));
                 } finally {
                     original.close();
                 }
-
                 entry = in.getNextZipEntry();
                 assertEquals(ZipMethod.UNSHRINKING.getCode(), entry.getMethod(), "method");
                 assertTrue(in.canReadEntryData(entry));
             }
-
             assertArrayEquals(readAllBytes("test2.xml"), IOUtils.toByteArray(in));
         }
     }
 
     @Test
     void testUnzipBZip2CompressedEntry() throws Exception {
-
-        try (ZipArchiveInputStream in = new ZipArchiveInputStream(newInputStream("bzip2-zip.zip"))) {
+        try (ZipArchiveInputStream in = ZipArchiveInputStream.builder().setURI(getURI("bzip2-zip.zip")).get()) {
             final ZipArchiveEntry ze = in.getNextZipEntry();
             assertEquals(42, ze.getSize());
             final byte[] expected = ArrayFill.fill(new byte[42], (byte) 'a');
@@ -734,7 +768,7 @@ class ZipArchiveInputStreamTest extends AbstractTest {
      */
     @Test
     void testWinzipBackSlashWorkaround() throws Exception {
-        try (ZipArchiveInputStream in = new ZipArchiveInputStream(newInputStream("test-winzip.zip"))) {
+        try (ZipArchiveInputStream in = ZipArchiveInputStream.builder().setURI(getURI("test-winzip.zip")).get()) {
             ZipArchiveEntry zae = in.getNextZipEntry();
             zae = in.getNextZipEntry();
             zae = in.getNextZipEntry();
@@ -748,8 +782,9 @@ class ZipArchiveInputStreamTest extends AbstractTest {
     @Test
     void testWithBytesAfterData() throws Exception {
         final int expectedNumEntries = 2;
-        try (InputStream is = ZipArchiveInputStreamTest.class.getResourceAsStream("/archive_with_bytes_after_data.zip");
-                ZipArchiveInputStream zip = new ZipArchiveInputStream(is)) {
+        try (ZipArchiveInputStream zip = ZipArchiveInputStream.builder()
+                .setURI(getURI("archive_with_bytes_after_data.zip"))
+                .get()) {
             int actualNumEntries = 0;
             ZipArchiveEntry zae = zip.getNextZipEntry();
             while (zae != null) {
@@ -785,7 +820,9 @@ class ZipArchiveInputStreamTest extends AbstractTest {
             assertFalse(zipFile.getEntry("original").isUnixSymlink(), "'original' detected but it's not sym link");
         }
         // Doesn't reads the central directory
-        try (ZipArchiveInputStream zipInputStream = new ZipArchiveInputStream(new FileInputStream("target/zipWithLinks.zip"))) {
+        try (ZipArchiveInputStream zipInputStream = ZipArchiveInputStream.builder()
+                .setFile("target/zipWithLinks.zip")
+                .get()) {
             ZipArchiveEntry entry;
             int entriesCount = 0;
             while ((entry = zipInputStream.getNextEntry()) != null) {
@@ -830,8 +867,11 @@ class ZipArchiveInputStreamTest extends AbstractTest {
     @ParameterizedTest
     @ValueSource(booleans = { true, false })
     void testZipInputStream(final boolean allowStoredEntriesWithDataDescriptor) {
-        try (ZipArchiveInputStream zIn = new ZipArchiveInputStream(Files.newInputStream(Paths.get("src/test/resources/COMPRESS-647/test.zip")),
-                StandardCharsets.UTF_8.name(), false, allowStoredEntriesWithDataDescriptor)) {
+        try (ZipArchiveInputStream zIn = ZipArchiveInputStream.builder()
+                .setURI(getURI("COMPRESS-647/test.zip"))
+                .setUseUnicodeExtraFields(false)
+                .setSupportStoredEntryDataDescriptor(allowStoredEntriesWithDataDescriptor)
+                .get()) {
             ZipArchiveEntry zae = zIn.getNextEntry();
             while (zae != null) {
                 zae = zIn.getNextEntry();
@@ -844,15 +884,19 @@ class ZipArchiveInputStreamTest extends AbstractTest {
     @Test
     void testZipUsingStoredWithDDAndNoDDSignature() throws IOException {
         try (InputStream inputStream = forgeZipInputStream();
-                ZipArchiveInputStream zipInputStream = new ZipArchiveInputStream(inputStream, StandardCharsets.UTF_8.name(), true, true)) {
+                ZipArchiveInputStream zipInputStream = ZipArchiveInputStream.builder()
+                        .setInputStream(inputStream)
+                        .setSupportStoredEntryDataDescriptor(true)
+                        .get()) {
             getAllZipEntries(zipInputStream);
         }
     }
 
     @Test
     void testZipWithBadExtraFields() throws IOException {
-        try (InputStream fis = newInputStream("COMPRESS-548.zip");
-                ZipArchiveInputStream zipInputStream = new ZipArchiveInputStream(fis)) {
+        try (ZipArchiveInputStream zipInputStream = ZipArchiveInputStream.builder()
+                .setURI(getURI("COMPRESS-548.zip"))
+                .get()) {
             getAllZipEntries(zipInputStream);
         }
     }
@@ -860,7 +904,6 @@ class ZipArchiveInputStreamTest extends AbstractTest {
     @Test
     void testZipWithLongerBeginningGarbage() throws IOException {
         final Path path = createTempPath("preamble", ".zip");
-
         try (OutputStream fos = Files.newOutputStream(path)) {
             fos.write("#!/usr/bin/env some-program with quite a few arguments to make it longer than the local header\n".getBytes(StandardCharsets.UTF_8));
             try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(fos)) {
@@ -871,9 +914,8 @@ class ZipArchiveInputStreamTest extends AbstractTest {
                 zos.closeArchiveEntry();
             }
         }
-
-        try (InputStream is = Files.newInputStream(path);
-                ZipArchiveInputStream zis = new ZipArchiveInputStream(is)) {
+        try (ZipArchiveInputStream zis =
+                ZipArchiveInputStream.builder().setPath(path).get()) {
             final ZipArchiveEntry entry = zis.getNextEntry();
             assertEquals("file-1.txt", entry.getName());
             final byte[] content = IOUtils.toByteArray(zis);
@@ -884,7 +926,6 @@ class ZipArchiveInputStreamTest extends AbstractTest {
     @Test
     void testZipWithShortBeginningGarbage() throws IOException {
         final Path path = createTempPath("preamble", ".zip");
-
         try (OutputStream fos = Files.newOutputStream(path)) {
             fos.write("#!/usr/bin/unzip\n".getBytes(StandardCharsets.UTF_8));
             try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(fos)) {
@@ -895,9 +936,8 @@ class ZipArchiveInputStreamTest extends AbstractTest {
                 zos.closeArchiveEntry();
             }
         }
-
-        try (InputStream is = Files.newInputStream(path);
-                ZipArchiveInputStream zis = new ZipArchiveInputStream(is)) {
+        try (ZipArchiveInputStream zis =
+                ZipArchiveInputStream.builder().setPath(path).get()) {
             final ZipArchiveEntry entry = zis.getNextEntry();
             assertEquals("file-1.txt", entry.getName());
             final byte[] content = IOUtils.toByteArray(zis);

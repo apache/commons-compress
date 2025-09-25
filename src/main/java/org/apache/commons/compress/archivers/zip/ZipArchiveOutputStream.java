@@ -40,8 +40,8 @@ import java.util.zip.ZipException;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
-import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.io.Charsets;
+import org.apache.commons.lang3.ArrayUtils;
 
 /**
  * Reimplementation of {@link java.util.zip.ZipOutputStream java.util.zip.ZipOutputStream} to handle the extended functionality of this package, especially
@@ -1166,7 +1166,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
         }
 
         if (!entry.hasWritten) {
-            write(ByteUtils.EMPTY_BYTE_ARRAY, 0, 0);
+            write(ArrayUtils.EMPTY_BYTE_ARRAY, 0, 0);
         }
     }
 
@@ -1446,7 +1446,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * <ul>
      * <li>mode is Always</li>
      * <li>or we already know it is going to be needed</li>
-     * <li>or the size is unknown and we can ensure it won't hurt other implementations if we add it (i.e. we can erase its usage</li>
+     * <li>or the size is unknown, and we can ensure it won't hurt other implementations if we add it (i.e. we can erase its usage</li>
      * </ul>
      */
     private boolean shouldAddZip64Extra(final ZipArchiveEntry entry, final Zip64Mode mode) {

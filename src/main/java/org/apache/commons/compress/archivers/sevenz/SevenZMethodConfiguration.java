@@ -37,12 +37,12 @@ import java.util.Objects;
  * <tr>
  * <td>BZIP2</td>
  * <td>Number</td>
- * <td>Block Size - an number between 1 and 9</td>
+ * <td>Block Size - a number between 1 and 9</td>
  * </tr>
  * <tr>
  * <td>DEFLATE</td>
  * <td>Number</td>
- * <td>Compression Level - an number between 1 and 9</td>
+ * <td>Compression Level - a number between 1 and 9</td>
  * </tr>
  * <tr>
  * <td>LZMA2</td>

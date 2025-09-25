@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -187,7 +188,7 @@ class MultiReadOnlySeekableByteChannelTest {
     }
 
     private SeekableByteChannel makeEmpty() {
-        return makeSingle(ByteUtils.EMPTY_BYTE_ARRAY);
+        return makeSingle(ArrayUtils.EMPTY_BYTE_ARRAY);
     }
 
     private SeekableByteChannel makeMulti(final byte[][] arr) {

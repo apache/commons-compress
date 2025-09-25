@@ -28,6 +28,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -35,10 +36,13 @@ import java.util.Map;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
+import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.BoundedArchiveInputStream;
 import org.apache.commons.compress.utils.BoundedSeekableByteChannelInputStream;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
+import org.apache.commons.io.function.IOIterable;
+import org.apache.commons.io.function.IOIterator;
 import org.apache.commons.io.input.BoundedInputStream;
 
 /**
@@ -46,7 +50,7 @@ import org.apache.commons.io.input.BoundedInputStream;
  *
  * @since 1.21
  */
-public class TarFile implements Closeable {
+public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
 
     private final class BoundedTarEntryInputStream extends BoundedArchiveInputStream {
 
@@ -135,6 +139,64 @@ public class TarFile implements Closeable {
         }
     }
 
+    // @formatter:off
+    /**
+     * Builds a new {@link GzipCompressorInputStream}.
+     *
+     * <p>
+     * For example:
+     * </p>
+     * <pre>{@code
+     * TarFile s = TarFile.builder()
+     *   .setPath(path)
+     *   .setLenient(true)
+     *   .setFileNameCharset(StandardCharsets.UTF_8)
+     *   .get();}
+     * </pre>
+     *
+     * @see #get()
+     * @since 1.29.0
+     */
+    // @formatter:on
+    public static final class Builder extends AbstractTarBuilder<TarFile, Builder> {
+
+        private SeekableByteChannel channel;
+
+        /**
+         * Constructs a new instance.
+         */
+        private Builder() {
+            // empty
+        }
+
+        @Override
+        public TarFile get() throws IOException {
+            return new TarFile(this);
+        }
+
+        /**
+         * Sets the SeekableByteChannel.
+         *
+         * @param channel  the SeekableByteChannel.
+         * @return {@code this} instance.
+         */
+        public Builder setSeekableByteChannel(final SeekableByteChannel channel) {
+            this.channel = channel;
+            return asThis();
+        }
+
+    }
+
+    /**
+     * Creates a new builder.
+     *
+     * @return a new builder.
+     * @since 1.29.0
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
+
     private final SeekableByteChannel archive;
 
     /**
@@ -171,12 +233,24 @@ public class TarFile implements Closeable {
 
     private final Map<String, List<InputStream>> sparseInputStreams = new HashMap<>();
 
+    private TarFile(final Builder builder) throws IOException {
+        this.archive = builder.channel != null ? builder.channel : Files.newByteChannel(builder.getPath());
+        this.zipEncoding = ZipEncodingHelper.getZipEncoding(builder.getCharset());
+        this.recordSize = builder.getRecordSize();
+        this.recordBuffer = ByteBuffer.allocate(this.recordSize);
+        this.blockSize = builder.getBlockSize();
+        this.lenient = builder.isLenient();
+        forEach(entries::add);
+    }
+
     /**
      * Constructor for TarFile.
      *
      * @param content the content to use.
      * @throws IOException when reading the tar archive fails.
+     * @deprecated Use {@link #builder()} and {@link Builder}.
      */
+    @Deprecated
     public TarFile(final byte[] content) throws IOException {
         this(new SeekableInMemoryByteChannel(content));
     }
@@ -188,7 +262,9 @@ public class TarFile implements Closeable {
      * @param lenient when set to true illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
      *                {@link TarArchiveEntry#UNKNOWN}. When set to false such illegal fields cause an exception instead.
      * @throws IOException when reading the tar archive fails.
+     * @deprecated Use {@link #builder()} and {@link Builder}.
      */
+    @Deprecated
     public TarFile(final byte[] content, final boolean lenient) throws IOException {
         this(new SeekableInMemoryByteChannel(content), TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, null, lenient);
     }
@@ -199,7 +275,9 @@ public class TarFile implements Closeable {
      * @param content  the content to use.
      * @param encoding the encoding to use.
      * @throws IOException when reading the tar archive fails.
+     * @deprecated Use {@link #builder()} and {@link Builder}.
      */
+    @Deprecated
     public TarFile(final byte[] content, final String encoding) throws IOException {
         this(new SeekableInMemoryByteChannel(content), TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, encoding, false);
     }
@@ -209,7 +287,9 @@ public class TarFile implements Closeable {
      *
      * @param archive the file of the archive to use.
      * @throws IOException when reading the tar archive fails.
+     * @deprecated Use {@link #builder()} and {@link Builder}.
      */
+    @Deprecated
     public TarFile(final File archive) throws IOException {
         this(archive.toPath());
     }
@@ -221,7 +301,9 @@ public class TarFile implements Closeable {
      * @param lenient when set to true illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
      *                {@link TarArchiveEntry#UNKNOWN}. When set to false such illegal fields cause an exception instead.
      * @throws IOException when reading the tar archive fails.
+     * @deprecated Use {@link #builder()} and {@link Builder}.
      */
+    @Deprecated
     public TarFile(final File archive, final boolean lenient) throws IOException {
         this(archive.toPath(), lenient);
     }
@@ -232,7 +314,9 @@ public class TarFile implements Closeable {
      * @param archive  the file of the archive to use.
      * @param encoding the encoding to use.
      * @throws IOException when reading the tar archive fails.
+     * @deprecated Use {@link #builder()} and {@link Builder}.
      */
+    @Deprecated
     public TarFile(final File archive, final String encoding) throws IOException {
         this(archive.toPath(), encoding);
     }
@@ -254,7 +338,9 @@ public class TarFile implements Closeable {
      * @param lenient     when set to true illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
      *                    {@link TarArchiveEntry#UNKNOWN}. When set to false such illegal fields cause an exception instead.
      * @throws IOException when reading the tar archive fails.
+     * @deprecated Use {@link #builder()} and {@link Builder}.
      */
+    @Deprecated
     public TarFile(final Path archivePath, final boolean lenient) throws IOException {
         this(Files.newByteChannel(archivePath), TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, null, lenient);
     }
@@ -265,7 +351,9 @@ public class TarFile implements Closeable {
      * @param archivePath the path of the archive to use.
      * @param encoding    the encoding to use.
      * @throws IOException when reading the tar archive fails.
+     * @deprecated Use {@link #builder()} and {@link Builder}.
      */
+    @Deprecated
     public TarFile(final Path archivePath, final String encoding) throws IOException {
         this(Files.newByteChannel(archivePath), TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, encoding, false);
     }
@@ -275,7 +363,9 @@ public class TarFile implements Closeable {
      *
      * @param content the content to use.
      * @throws IOException when reading the tar archive fails.
+     * @deprecated Use {@link #builder()} and {@link Builder}.
      */
+    @Deprecated
     public TarFile(final SeekableByteChannel content) throws IOException {
         this(content, TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, null, false);
     }
@@ -290,19 +380,12 @@ public class TarFile implements Closeable {
      * @param lenient    when set to true illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
      *                   {@link TarArchiveEntry#UNKNOWN}. When set to false such illegal fields cause an exception instead.
      * @throws IOException when reading the tar archive fails.
+     * @deprecated Use {@link #builder()} and {@link Builder}.
      */
+    @Deprecated
     public TarFile(final SeekableByteChannel archive, final int blockSize, final int recordSize, final String encoding, final boolean lenient)
             throws IOException {
-        this.archive = archive;
-        this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
-        this.recordSize = recordSize;
-        this.recordBuffer = ByteBuffer.allocate(this.recordSize);
-        this.blockSize = blockSize;
-        this.lenient = lenient;
-        TarArchiveEntry entry;
-        while ((entry = getNextTarEntry()) != null) {
-            entries.add(entry);
-        }
+        this(builder().setSeekableByteChannel(archive).setBlockSize(blockSize).setRecordSize(recordSize).setCharset(encoding).setLenient(lenient));
     }
 
     /**
@@ -490,6 +573,38 @@ public class TarFile implements Closeable {
         return headerBuf == null || ArchiveUtils.isArrayZero(headerBuf.array(), recordSize);
     }
 
+    @Override
+    public IOIterator<TarArchiveEntry> iterator() {
+        return new IOIterator<TarArchiveEntry>() {
+
+            private TarArchiveEntry next;
+
+            @Override
+            public boolean hasNext() throws IOException {
+                if (next == null) {
+                    next = getNextTarEntry();
+                }
+                return next != null;
+            }
+
+            @Override
+            public TarArchiveEntry next() throws IOException {
+                if (next == null) {
+                    next = getNextTarEntry();
+                }
+                final TarArchiveEntry tmp = next;
+                next = null;
+                return tmp;
+            }
+
+            @Override
+            public Iterator<TarArchiveEntry> unwrap() {
+                return null;
+            }
+
+        };
+    }
+
     /**
      * Adds the sparse chunks from the current entry to the sparse chunks, including any additional sparse entries following the current entry.
      *
@@ -595,4 +710,12 @@ public class TarFile implements Closeable {
             }
         }
     }
+
+    @Override
+    public Iterable<TarArchiveEntry> unwrap() {
+        // Commons IO 2.21.0:
+        // return asIterable();
+        return null;
+    }
+
 }

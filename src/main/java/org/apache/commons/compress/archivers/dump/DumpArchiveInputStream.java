@@ -47,8 +47,42 @@ import org.apache.commons.compress.utils.IOUtils;
  */
 public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry> {
 
+    /**
+     * Builds a new {@link DumpArchiveInputStream}.
+     * <p>
+     *     For example:
+     * </p>
+     * <pre>{@code
+     * DumpArchiveInputStream in = DumpArchiveInputStream.builder()
+     *     .setPath(inputPath)
+     *     .get();
+     * }</pre>
+     *
+     * @since 1.29.0
+     */
+    public static final class Builder extends AbstractBuilder<DumpArchiveInputStream, Builder> {
+
+        private Builder() {
+        }
+
+        @Override
+        public DumpArchiveInputStream get() throws IOException {
+            return new DumpArchiveInputStream(this);
+        }
+    }
+
     private static final String CURRENT_PATH_SEGMENT = ".";
     private static final String PARENT_PATH_SEGMENT = "..";
+
+    /**
+     * Creates a new builder.
+     *
+     * @return A new builder.
+     * @since 1.29.0
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
 
     /**
      * Look at the first few bytes of the file to decide if it's a dump archive. With 32 bytes we can look at the magic value, with a full 1k we can verify the
@@ -104,6 +138,10 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
      */
     private final ZipEncoding zipEncoding;
 
+    private DumpArchiveInputStream(final Builder builder) throws IOException {
+        this(builder.getInputStream(), builder);
+    }
+
     /**
      * Constructor using the platform's default encoding for file names.
      *
@@ -111,22 +149,14 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
      * @throws ArchiveException on error
      */
     public DumpArchiveInputStream(final InputStream is) throws ArchiveException {
-        this(is, null);
+        this(is, builder());
     }
 
-    /**
-     * Constructs a new instance.
-     *
-     * @param is       stream to read from
-     * @param encoding the encoding to use for file names, use null for the platform's default encoding
-     * @throws ArchiveException on error
-     * @since 1.6
-     */
-    public DumpArchiveInputStream(final InputStream is, final String encoding) throws ArchiveException {
-        super(is, encoding);
+    private DumpArchiveInputStream(final InputStream is, final Builder builder) throws ArchiveException {
+        super(is, builder.getCharset());
         this.raw = new TapeInputStream(is);
         this.hasHitEOF = false;
-        this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
+        this.zipEncoding = ZipEncodingHelper.getZipEncoding(builder.getCharset());
 
         try {
             // read header, verify it's a dump archive.
@@ -165,6 +195,20 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
 
             return p.getOriginalName().compareTo(q.getOriginalName());
         });
+    }
+
+    /**
+     * Constructs a new instance.
+     *
+     * @param is       stream to read from
+     * @param encoding the encoding to use for file names, use null for the platform's default encoding
+     * @throws ArchiveException on error
+     * @since 1.6
+     * @deprecated Since 1.29.0, use {@link #builder()}.
+     */
+    @Deprecated
+    public DumpArchiveInputStream(final InputStream is, final String encoding) throws ArchiveException {
+        this(is, builder().setCharset(encoding));
     }
 
     /**

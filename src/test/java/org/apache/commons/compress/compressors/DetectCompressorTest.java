@@ -43,8 +43,8 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.compressors.pack200.Pack200CompressorInputStream;
 import org.apache.commons.compress.compressors.xz.XZCompressorInputStream;
 import org.apache.commons.compress.compressors.zstandard.ZstdCompressorInputStream;
-import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.io.input.BrokenInputStream;
+import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -240,7 +240,7 @@ public final class DetectCompressorTest {
             assertInstanceOf(ZstdCompressorInputStream.class, zstd);
         }
 
-        assertThrows(CompressorException.class, () -> factory.createCompressorInputStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY)));
+        assertThrows(CompressorException.class, () -> factory.createCompressorInputStream(new ByteArrayInputStream(ArrayUtils.EMPTY_BYTE_ARRAY)));
     }
 
     @Test
@@ -261,7 +261,7 @@ public final class DetectCompressorTest {
         assertEquals(CompressorStreamFactory.LZMA, detect("COMPRESS-382"));
 
         assertThrows(CompressorException.class,
-                () -> CompressorStreamFactory.detect(new BufferedInputStream(new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY))));
+                () -> CompressorStreamFactory.detect(new BufferedInputStream(new ByteArrayInputStream(ArrayUtils.EMPTY_BYTE_ARRAY))));
 
         final IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> CompressorStreamFactory.detect(null),
                 "shouldn't be able to detect null stream");

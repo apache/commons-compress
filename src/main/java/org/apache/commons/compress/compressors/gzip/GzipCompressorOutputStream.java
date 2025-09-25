@@ -190,7 +190,7 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
         out.write(buffer.array());
         crc.update(buffer.array());
         if (extra != null) {
-            out.write(extra.length & 0xff); // little endian
+            out.write(extra.length & 0xff); // little-endian
             out.write(extra.length >>> 8 & 0xff);
             out.write(extra);
             crc.update(extra.length & 0xff);

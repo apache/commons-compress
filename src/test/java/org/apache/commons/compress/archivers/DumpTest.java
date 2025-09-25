@@ -46,8 +46,8 @@ public final class DumpTest extends AbstractTest {
         expected.add("lost+found/");
         expected.add("test1.xml");
         expected.add("test2.xml");
-        try (InputStream is = Files.newInputStream(f.toPath());
-                DumpArchiveInputStream inputStream = new DumpArchiveInputStream(is);) {
+        try (DumpArchiveInputStream inputStream =
+                DumpArchiveInputStream.builder().setFile(f).get()) {
             checkArchiveContent(inputStream, expected);
         }
     }

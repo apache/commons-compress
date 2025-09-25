@@ -23,7 +23,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -71,8 +70,10 @@ class Maven221MultiVolumeTest extends AbstractTest {
     @Test
     void testRead7ZipMultiVolumeArchiveForStream() throws IOException {
 
-        try (InputStream archive = newInputStream("apache-maven-2.2.1.zip.001");
-                ZipArchiveInputStream zi = new ZipArchiveInputStream(archive, null, false)) {
+        try (ZipArchiveInputStream zi = ZipArchiveInputStream.builder()
+                .setURI(getURI("apache-maven-2.2.1.zip.001"))
+                .setUseUnicodeExtraFields(false)
+                .get()) {
 
             // these are the entries that are supposed to be processed correctly without any problems.
             for (final String element : ENTRIES) {

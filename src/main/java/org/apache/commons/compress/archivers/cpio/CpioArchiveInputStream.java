@@ -65,6 +65,59 @@ import org.apache.commons.compress.utils.ParsingUtils;
 public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry> implements CpioConstants {
 
     /**
+     * Builds a new {@link CpioArchiveInputStream}.
+     * <p>
+     *     For example:
+     * </p>
+     * <pre>{@code
+     * CpioArchiveInputStream in = CpioArchiveInputStream.builder()
+     *     .setBlockSize(1024)
+     *     .setPath(inputPath)
+     *     .setCharset(StandardCharsets.UTF_8)
+     *     .get();
+     * }</pre>
+     *
+     * @since 1.29.0
+     */
+    public static final class Builder extends AbstractBuilder<CpioArchiveInputStream, Builder> {
+
+        private int blockSize = BLOCK_SIZE;
+
+        private Builder() {
+            setCharset(CpioUtil.DEFAULT_CHARSET);
+        }
+
+        @Override
+        public CpioArchiveInputStream get() throws IOException {
+            return new CpioArchiveInputStream(this);
+        }
+
+        /**
+         * Sets the block size of the archive.
+         * <p>
+         * Default value is {@link CpioConstants#BLOCK_SIZE}.
+         * </p>
+         *
+         * @param blockSize The block size must be bigger than 0
+         * @return {@code this} instance.
+         */
+        public Builder setBlockSize(final int blockSize) {
+            this.blockSize = blockSize;
+            return asThis();
+        }
+    }
+
+    /**
+     * Creates a new builder.
+     *
+     * @return A new builder.
+     * @since 1.29.0
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    /**
      * Checks if the signature matches one of the following magic values:
      *
      * Strings:
@@ -144,13 +197,26 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
      */
     private final ZipEncoding zipEncoding;
 
+    private CpioArchiveInputStream(final Builder builder) throws IOException {
+        this(builder.getInputStream(), builder);
+    }
+
     /**
      * Constructs the cpio input stream with a blocksize of {@link CpioConstants#BLOCK_SIZE BLOCK_SIZE} and expecting ASCII file names.
      *
      * @param in The cpio stream
      */
     public CpioArchiveInputStream(final InputStream in) {
-        this(in, BLOCK_SIZE, CpioUtil.DEFAULT_CHARSET_NAME);
+        this(in, builder());
+    }
+
+    private CpioArchiveInputStream(final InputStream in, final Builder builder) {
+        super(in, builder.getCharset());
+        if (builder.blockSize <= 0) {
+            throw new IllegalArgumentException("blockSize must be bigger than 0");
+        }
+        this.blockSize = builder.blockSize;
+        this.zipEncoding = ZipEncodingHelper.getZipEncoding(builder.getCharset());
     }
 
     /**
@@ -159,9 +225,11 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
      * @param in        The cpio stream
      * @param blockSize The block size of the archive.
      * @since 1.5
+     * @deprecated Since 1.29.0, use {@link #builder()}.
      */
+    @Deprecated
     public CpioArchiveInputStream(final InputStream in, final int blockSize) {
-        this(in, blockSize, CpioUtil.DEFAULT_CHARSET_NAME);
+        this(in, builder().setBlockSize(blockSize));
     }
 
     /**
@@ -172,15 +240,11 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
      * @param encoding  The encoding of file names to expect - use null for the platform's default.
      * @throws IllegalArgumentException if {@code blockSize} is not bigger than 0
      * @since 1.6
+     * @deprecated Since 1.29.0, use {@link #builder()}.
      */
+    @Deprecated
     public CpioArchiveInputStream(final InputStream in, final int blockSize, final String encoding) {
-        super(in, encoding);
-        this.in = in;
-        if (blockSize <= 0) {
-            throw new IllegalArgumentException("blockSize must be bigger than 0");
-        }
-        this.blockSize = blockSize;
-        this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
+        this(in, builder().setBlockSize(blockSize).setCharset(encoding));
     }
 
     /**
@@ -189,9 +253,11 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
      * @param in       The cpio stream
      * @param encoding The encoding of file names to expect - use null for the platform's default.
      * @since 1.6
+     * @deprecated Since 1.29.0, use {@link #builder()}.
      */
+    @Deprecated
     public CpioArchiveInputStream(final InputStream in, final String encoding) {
-        this(in, BLOCK_SIZE, encoding);
+        this(in, builder().setCharset(encoding));
     }
 
     /**

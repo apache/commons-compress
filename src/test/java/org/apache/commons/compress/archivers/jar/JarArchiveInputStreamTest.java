@@ -16,33 +16,24 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+package org.apache.commons.compress.archivers.jar;
 
-package org.apache.commons.compress.utils;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
 
-import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-/**
- * Re-implements {@link FilterInputStream#close()} to do nothing.
- *
- * @since 1.14
- * @deprecated Use {@link org.apache.commons.io.input.CloseShieldInputStream}.
- */
-@Deprecated
-public class CloseShieldFilterInputStream extends FilterInputStream {
+import org.junit.jupiter.api.Test;
 
-    /**
-     * Creates a {@code CloseShieldFilterInputStream} by assigning the argument {@code in} to the field {@code this.in} to remember it for later use.
-     *
-     * @param in the underlying input stream, or {@code null} if this instance is to be created without an underlying stream.
-     */
-    public CloseShieldFilterInputStream(final InputStream in) {
-        super(in);
-    }
+class JarArchiveInputStreamTest {
 
-    @Override
-    public void close() throws IOException {
-        // NO IMPLEMENTATION.
+    @Test
+    void testSingleArgumentConstructor() throws IOException {
+        final InputStream inputStream = mock(InputStream.class);
+        try (JarArchiveInputStream archiveInputStream = new JarArchiveInputStream(inputStream)) {
+            assertEquals(UTF_8, archiveInputStream.getCharset());
+        }
     }
 }

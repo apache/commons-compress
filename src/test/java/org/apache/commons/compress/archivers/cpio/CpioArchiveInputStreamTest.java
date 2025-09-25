@@ -18,11 +18,12 @@
  */
 package org.apache.commons.compress.archivers.cpio;
 
+import static org.apache.commons.lang3.reflect.FieldUtils.readDeclaredField;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -52,7 +53,8 @@ class CpioArchiveInputStreamTest extends AbstractTest {
         expected.append("<empty/>./test2.xml<?xml version=\"1.0\"?>\n");
         expected.append("<empty/>\n");
         final StringBuilder result = new StringBuilder();
-        try (CpioArchiveInputStream in = new CpioArchiveInputStream(newInputStream("bla.cpio"))) {
+        try (CpioArchiveInputStream in =
+                CpioArchiveInputStream.builder().setURI(getURI("bla.cpio")).get()) {
             CpioArchiveEntry entry;
             while ((entry = in.getNextEntry()) != null) {
                 result.append(entry.getName());
@@ -68,7 +70,9 @@ class CpioArchiveInputStreamTest extends AbstractTest {
     @Test
     void testCpioUnarchiveCreatedByRedlineRpm() throws Exception {
         long count = 0;
-        try (CpioArchiveInputStream in = new CpioArchiveInputStream(newInputStream("redline.cpio"))) {
+        try (CpioArchiveInputStream in = CpioArchiveInputStream.builder()
+                .setURI(getURI("redline.cpio"))
+                .get()) {
             count = consumeEntries(in);
         }
         assertEquals(count, 1);
@@ -77,7 +81,10 @@ class CpioArchiveInputStreamTest extends AbstractTest {
     @Test
     void testCpioUnarchiveMultibyteCharName() throws Exception {
         long count = 0;
-        try (CpioArchiveInputStream in = new CpioArchiveInputStream(newInputStream("COMPRESS-459.cpio"), StandardCharsets.UTF_8.name())) {
+        try (CpioArchiveInputStream in = CpioArchiveInputStream.builder()
+                .setURI(getURI("COMPRESS-459.cpio"))
+                .setCharset(StandardCharsets.UTF_8)
+                .get()) {
             count = consumeEntries(in);
         }
         assertEquals(2, count);
@@ -105,7 +112,7 @@ class CpioArchiveInputStreamTest extends AbstractTest {
         // @formatter:on
         final byte[] data = new byte[header.getBytes(StandardCharsets.US_ASCII).length + 1];
         System.arraycopy(header.getBytes(), 0, data, 0, header.getBytes().length);
-        try (CpioArchiveInputStream cpio = new CpioArchiveInputStream(new ByteArrayInputStream(data))) {
+        try (CpioArchiveInputStream cpio = CpioArchiveInputStream.builder().setByteArray(data).get()) {
             assertThrows(MemoryLimitException.class, () -> cpio.getNextEntry());
         }
     }
@@ -132,15 +139,16 @@ class CpioArchiveInputStreamTest extends AbstractTest {
         // @formatter:on
         final byte[] data = new byte[header.getBytes(StandardCharsets.US_ASCII).length + 1];
         System.arraycopy(header.getBytes(), 0, data, 0, header.getBytes().length);
-        try (CpioArchiveInputStream cpio = new CpioArchiveInputStream(new ByteArrayInputStream(data))) {
+        try (CpioArchiveInputStream cpio = CpioArchiveInputStream.builder().setByteArray(data).get()) {
             assertThrows(ArchiveException.class, () -> cpio.getNextEntry());
         }
     }
 
     @Test
     void testInvalidLongValueInMetadata() throws Exception {
-        try (InputStream in = newInputStream("org/apache/commons/compress/cpio/bad_long_value.cpio");
-             CpioArchiveInputStream archive = new CpioArchiveInputStream(in)) {
+        try (CpioArchiveInputStream archive = CpioArchiveInputStream.builder()
+                .setURI(getURI("org/apache/commons/compress/cpio/bad_long_value.cpio"))
+                .get()) {
             assertThrows(IOException.class, archive::getNextEntry);
         }
     }
@@ -148,8 +156,8 @@ class CpioArchiveInputStreamTest extends AbstractTest {
     @Test
     void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         final byte[] buf = new byte[2];
-        try (InputStream in = newInputStream("bla.cpio");
-                CpioArchiveInputStream archive = new CpioArchiveInputStream(in)) {
+        try (CpioArchiveInputStream archive =
+                     CpioArchiveInputStream.builder().setURI(getURI("bla.cpio")).get()) {
             assertNotNull(archive.getNextEntry());
             IOUtils.toByteArray(archive);
             assertEquals(-1, archive.read(buf));
@@ -158,14 +166,22 @@ class CpioArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
+    void testSingleArgumentConstructor() throws Exception {
+        final InputStream inputStream = mock(InputStream.class);
+        try (CpioArchiveInputStream archiveStream = new CpioArchiveInputStream(inputStream)) {
+            assertEquals(StandardCharsets.US_ASCII, archiveStream.getCharset());
+            assertEquals(512, readDeclaredField(archiveStream, "blockSize", true));
+        }
+    }
+
+    @Test
     void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
-        try (InputStream in = newInputStream("bla.cpio");
-                CpioArchiveInputStream archive = new CpioArchiveInputStream(in)) {
+        try (CpioArchiveInputStream archive =
+                CpioArchiveInputStream.builder().setURI(getURI("bla.cpio")).get()) {
             assertNotNull(archive.getNextEntry());
             IOUtils.toByteArray(archive);
             assertEquals(-1, archive.read());
             assertEquals(-1, archive.read());
         }
     }
-
 }

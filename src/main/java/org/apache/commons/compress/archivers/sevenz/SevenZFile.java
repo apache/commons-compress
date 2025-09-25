@@ -52,7 +52,6 @@ import java.util.zip.CheckedInputStream;
 
 import org.apache.commons.compress.MemoryLimitException;
 import org.apache.commons.compress.archivers.ArchiveException;
-import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
@@ -65,12 +64,12 @@ import org.apache.commons.lang3.ArrayUtils;
 /**
  * Reads a 7z file, using SeekableByteChannel under the covers.
  * <p>
- * The 7z file format is a flexible container that can contain many compression and encryption types, but at the moment only only Copy, LZMA, LZMA2, BZIP2,
+ * The 7z file format is a flexible container that can contain many compression and encryption types, but at the moment only Copy, LZMA, LZMA2, BZIP2,
  * Deflate and AES-256 + SHA-256 are supported.
  * </p>
  * <p>
  * The format is very Windows/Intel specific, so it uses little-endian byte order, doesn't store user/group or permission bits, and represents times using NTFS
- * timestamps (100 nanosecond units since 1 January 1601). Hence the official tools recommend against using it for backup purposes on *nix, and recommend
+ * timestamps (100 nanosecond units since 1 January 1601). Hence, the official tools recommend against using it for backup purposes on *nix, and recommend
  * .tar.7z or .tar.lzma or .tar.xz instead.
  * </p>
  * <p>
@@ -1006,7 +1005,7 @@ public class SevenZFile implements Closeable {
 
     private InputStream getCurrentStream() throws IOException {
         if (archive.files[currentEntryIndex].getSize() == 0) {
-            return new ByteArrayInputStream(ByteUtils.EMPTY_BYTE_ARRAY);
+            return new ByteArrayInputStream(ArrayUtils.EMPTY_BYTE_ARRAY);
         }
         if (deferredBlockStreams.isEmpty()) {
             throw new IllegalStateException("No current 7z entry (call getNextEntry() first).");

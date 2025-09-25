@@ -32,6 +32,38 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 public class JarArchiveInputStream extends ZipArchiveInputStream {
 
     /**
+     * Builds a new {@link JarArchiveInputStream}.
+     * <p>
+     * For example:
+     * </p>
+     * <pre>{@code
+     * JarArchiveInputStream in = JarArchiveInputStream.builder()
+     *     .setPath(inputPath)
+     *     .setCharset(StandardCharsets.UTF_8)
+     *     .setUseUnicodeExtraFields(false)
+     *     .get();
+     * }</pre>
+     *
+     * @since 1.29.0
+     */
+    public static class Builder extends ZipArchiveInputStream.AbstractBuilder<JarArchiveInputStream, Builder> {
+        @Override
+        public JarArchiveInputStream get() throws IOException {
+            return new JarArchiveInputStream(this);
+        }
+    }
+
+    /**
+     * Creates a new builder.
+     *
+     * @return A new builder.
+     * @since 1.29.0
+     */
+    public static Builder jarInputStreamBuilder() {
+        return new Builder();
+    }
+
+    /**
      * Checks if the signature matches what is expected for a jar file (in this case it is the same as for a ZIP file).
      *
      * @param signature the bytes to check
@@ -40,6 +72,10 @@ public class JarArchiveInputStream extends ZipArchiveInputStream {
      */
     public static boolean matches(final byte[] signature, final int length) {
         return ZipArchiveInputStream.matches(signature, length);
+    }
+
+    private JarArchiveInputStream(final Builder builder) throws IOException {
+        super(builder);
     }
 
     /**
@@ -57,7 +93,9 @@ public class JarArchiveInputStream extends ZipArchiveInputStream {
      * @param inputStream the input stream to wrap
      * @param encoding    the encoding to use
      * @since 1.10
+     * @deprecated Since 1.29.0, use {@link #jarInputStreamBuilder()}.
      */
+    @Deprecated
     public JarArchiveInputStream(final InputStream inputStream, final String encoding) {
         super(inputStream, encoding);
     }

@@ -32,9 +32,9 @@ import java.util.Arrays;
 
 import org.apache.commons.compress.compressors.support.HuffmanDecoder;
 import org.apache.commons.compress.utils.BitInputStream;
-import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.ExactMath;
 import org.apache.commons.lang3.ArrayFill;
+import org.apache.commons.lang3.ArrayUtils;
 
 /**
  * TODO This class can't be final because it is mocked by Mockito.
@@ -107,7 +107,7 @@ class Deflate64Decoder implements Closeable {
         private final HuffmanDecoder distanceDecoder;
 
         private int runBufferPos;
-        private byte[] runBuffer = ByteUtils.EMPTY_BYTE_ARRAY;
+        private byte[] runBuffer = ArrayUtils.EMPTY_BYTE_ARRAY;
         private int runBufferLength;
 
         HuffmanCodes(final Deflate64State state, final int[] lengths, final int[] distance) {

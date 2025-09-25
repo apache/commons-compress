@@ -16,9 +16,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.commons.compress.utils;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -28,14 +28,16 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SeekableByteChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class SeekableInMemoryByteChannelTest {
 
-    private final byte[] testData = "Some data".getBytes(UTF_8);
+    private final byte[] testData = "Some data".getBytes(StandardCharsets.UTF_8);
 
     /*
      * <q>If the stream is already closed then invoking this method has no effect.</q>
@@ -54,24 +56,24 @@ class SeekableInMemoryByteChannelTest {
      * <q>Setting the position to a value that is greater than the current size is legal but does not change the size of the entity. A later attempt to read
      * bytes at such a position will immediately return an end-of-file indication</q>
      */
-    @Test
-    void testReadingFromAPositionAfterEndReturnsEOF() throws Exception {
-        try (SeekableByteChannel c = new SeekableInMemoryByteChannel()) {
-            c.position(2);
-            assertEquals(2, c.position());
-            final ByteBuffer readBuffer = ByteBuffer.allocate(5);
-            assertEquals(-1, c.read(readBuffer));
+    @ParameterizedTest
+    @ValueSource(ints = { 0, 1, 2, 3, 4, 5, 6 })
+    void testReadingFromAPositionAfterEndReturnsEOF(final int size) throws Exception {
+        try (SeekableByteChannel c = new SeekableInMemoryByteChannel(size)) {
+            final int position = 2;
+            c.position(position);
+            assertEquals(position, c.position());
+            final int readSize = 5;
+            final ByteBuffer readBuffer = ByteBuffer.allocate(readSize);
+            assertEquals(position >= size ? -1 : size - position, c.read(readBuffer));
         }
     }
 
     @Test
     void testShouldReadContentsProperly() throws IOException {
-        // given
         try (SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel(testData)) {
             final ByteBuffer readBuffer = ByteBuffer.allocate(testData.length);
-            // when
             final int readCount = c.read(readBuffer);
-            // then
             assertEquals(testData.length, readCount);
             assertArrayEquals(testData, readBuffer.array());
             assertEquals(testData.length, c.position());
@@ -80,12 +82,9 @@ class SeekableInMemoryByteChannelTest {
 
     @Test
     void testShouldReadContentsWhenBiggerBufferSupplied() throws IOException {
-        // given
         try (SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel(testData)) {
             final ByteBuffer readBuffer = ByteBuffer.allocate(testData.length + 1);
-            // when
             final int readCount = c.read(readBuffer);
-            // then
             assertEquals(testData.length, readCount);
             assertArrayEquals(testData, Arrays.copyOf(readBuffer.array(), testData.length));
             assertEquals(testData.length, c.position());
@@ -94,28 +93,22 @@ class SeekableInMemoryByteChannelTest {
 
     @Test
     void testShouldReadDataFromSetPosition() throws IOException {
-        // given
         try (SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel(testData)) {
             final ByteBuffer readBuffer = ByteBuffer.allocate(4);
-            // when
             c.position(5L);
             final int readCount = c.read(readBuffer);
-            // then
             assertEquals(4L, readCount);
-            assertEquals("data", new String(readBuffer.array(), UTF_8));
+            assertEquals("data", new String(readBuffer.array(), StandardCharsets.UTF_8));
             assertEquals(testData.length, c.position());
         }
     }
 
     @Test
     void testShouldSetProperPosition() throws IOException {
-        // given
         try (SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel(testData)) {
-            // when
             final long posAtFour = c.position(4L).position();
             final long posAtTheEnd = c.position(testData.length).position();
             final long posPastTheEnd = c.position(testData.length + 1L).position();
-            // then
             assertEquals(4L, posAtFour);
             assertEquals(c.size(), posAtTheEnd);
             assertEquals(testData.length + 1L, posPastTheEnd);
@@ -124,12 +117,9 @@ class SeekableInMemoryByteChannelTest {
 
     @Test
     void testShouldSetProperPositionOnTruncate() throws IOException {
-        // given
         try (SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel(testData)) {
-            // when
             c.position(testData.length);
             c.truncate(4L);
-            // then
             assertEquals(4L, c.position());
             assertEquals(4L, c.size());
         }
@@ -137,13 +127,10 @@ class SeekableInMemoryByteChannelTest {
 
     @Test
     void testShouldSignalEOFWhenPositionAtTheEnd() throws IOException {
-        // given
         try (SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel(testData)) {
             final ByteBuffer readBuffer = ByteBuffer.allocate(testData.length);
-            // when
             c.position(testData.length + 1);
             final int readCount = c.read(readBuffer);
-            // then
             assertEquals(0L, readBuffer.position());
             assertEquals(-1, readCount);
             assertEquals(-1, c.read(readBuffer));
@@ -152,89 +139,67 @@ class SeekableInMemoryByteChannelTest {
 
     @Test
     void testShouldThrowExceptionOnReadingClosedChannel() {
-        // given
         final SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel();
-        // when
         c.close();
         assertThrows(ClosedChannelException.class, () -> c.read(ByteBuffer.allocate(1)));
     }
 
     @Test
     void testShouldThrowExceptionOnWritingToClosedChannel() {
-        // given
         final SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel();
-        // when
         c.close();
         assertThrows(ClosedChannelException.class, () -> c.write(ByteBuffer.allocate(1)));
     }
 
     @Test
     void testShouldThrowExceptionWhenSettingIncorrectPosition() {
-        // given
         try (SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel()) {
-            // when
-            assertThrows(IOException.class, () -> c.position(Integer.MAX_VALUE + 1L));
+            assertThrows(IllegalArgumentException.class, () -> c.position(Integer.MAX_VALUE + 1L));
         }
     }
 
     @Test
     void testShouldThrowExceptionWhenTruncatingToIncorrectSize() {
-        // given
         try (SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel()) {
-            // when
             assertThrows(IllegalArgumentException.class, () -> c.truncate(Integer.MAX_VALUE + 1L));
         }
     }
 
     @Test
-    void testShouldTruncateContentsProperly() {
-        // given
+    void testShouldTruncateContentsProperly() throws ClosedChannelException {
         try (SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel(testData)) {
-            // when
             c.truncate(4);
-            // then
             final byte[] bytes = Arrays.copyOf(c.array(), (int) c.size());
-            assertEquals("Some", new String(bytes, UTF_8));
+            assertEquals("Some", new String(bytes, StandardCharsets.UTF_8));
         }
     }
-
     // Contract Tests added in response to https://issues.apache.org/jira/browse/COMPRESS-499
-
     // https://docs.oracle.com/javase/8/docs/api/java/io/Closeable.html#close()
 
     @Test
     void testShouldWriteDataProperly() throws IOException {
-        // given
         try (SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel()) {
             final ByteBuffer inData = ByteBuffer.wrap(testData);
-            // when
             final int writeCount = c.write(inData);
-            // then
             assertEquals(testData.length, writeCount);
-            assertArrayEquals(testData, Arrays.copyOf(c.array(), (int) c.size()));
             assertEquals(testData.length, c.position());
+            assertArrayEquals(testData, Arrays.copyOf(c.array(), (int) c.position()));
         }
     }
-
     // https://docs.oracle.com/javase/8/docs/api/java/nio/channels/SeekableByteChannel.html#position()
 
     @Test
     void testShouldWriteDataProperlyAfterPositionSet() throws IOException {
-        // given
         try (SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel(testData)) {
             final ByteBuffer inData = ByteBuffer.wrap(testData);
             final ByteBuffer expectedData = ByteBuffer.allocate(testData.length + 5).put(testData, 0, 5).put(testData);
-            // when
             c.position(5L);
             final int writeCount = c.write(inData);
-
-            // then
             assertEquals(testData.length, writeCount);
             assertArrayEquals(expectedData.array(), Arrays.copyOf(c.array(), (int) c.size()));
             assertEquals(testData.length + 5, c.position());
         }
     }
-
     // https://docs.oracle.com/javase/8/docs/api/java/nio/channels/SeekableByteChannel.html#size()
 
     /*
@@ -247,7 +212,6 @@ class SeekableInMemoryByteChannelTest {
             assertThrows(ClosedChannelException.class, () -> c.position(0));
         }
     }
-
     // https://docs.oracle.com/javase/8/docs/api/java/nio/channels/SeekableByteChannel.html#position(long)
 
     /*
@@ -266,7 +230,7 @@ class SeekableInMemoryByteChannelTest {
     @Test
     void testThrowsIOExceptionWhenPositionIsSetToANegativeValue() throws Exception {
         try (SeekableByteChannel c = new SeekableInMemoryByteChannel()) {
-            assertThrows(IOException.class, () -> c.position(-1));
+            assertThrows(IllegalArgumentException.class, () -> c.position(-1));
         }
     }
 
@@ -295,7 +259,6 @@ class SeekableInMemoryByteChannelTest {
             assertEquals(testData.length + 1, c.position());
         }
     }
-
     // https://docs.oracle.com/javase/8/docs/api/java/nio/channels/SeekableByteChannel.html#truncate(long)
 
     /*
@@ -358,11 +321,10 @@ class SeekableInMemoryByteChannelTest {
      * <q>ClosedChannelException - If this channel is closed</q>
      */
     @Test
-    @Disabled("we deliberately violate the spec")
     public void throwsClosedChannelExceptionWhenPositionIsReadOnClosedChannel() throws Exception {
         try (SeekableByteChannel c = new SeekableInMemoryByteChannel()) {
             c.close();
-            c.position();
+            assertThrows(ClosedChannelException.class, c::position);
         }
     }
 
@@ -370,11 +332,10 @@ class SeekableInMemoryByteChannelTest {
      * <q>ClosedChannelException - If this channel is closed</q>
      */
     @Test
-    @Disabled("we deliberately violate the spec")
     public void throwsClosedChannelExceptionWhenSizeIsReadOnClosedChannel() throws Exception {
         try (SeekableByteChannel c = new SeekableInMemoryByteChannel()) {
             c.close();
-            c.size();
+            assertThrows(ClosedChannelException.class, c::size);
         }
     }
 
@@ -382,11 +343,10 @@ class SeekableInMemoryByteChannelTest {
      * <q>ClosedChannelException - If this channel is closed</q>
      */
     @Test
-    @Disabled("we deliberately violate the spec")
     public void throwsClosedChannelExceptionWhenTruncateIsCalledOnClosedChannel() throws Exception {
         try (SeekableByteChannel c = new SeekableInMemoryByteChannel()) {
             c.close();
-            c.truncate(0);
+            assertThrows(ClosedChannelException.class, () -> c.truncate(0));
         }
     }
 
@@ -402,12 +362,10 @@ class SeekableInMemoryByteChannelTest {
             final ByteBuffer inData = ByteBuffer.wrap(testData);
             assertEquals(testData.length, c.write(inData));
             assertEquals(testData.length + 2, c.size());
-
             c.position(2);
             final ByteBuffer readBuffer = ByteBuffer.allocate(testData.length);
             c.read(readBuffer);
             assertArrayEquals(testData, Arrays.copyOf(readBuffer.array(), testData.length));
         }
     }
-
 }

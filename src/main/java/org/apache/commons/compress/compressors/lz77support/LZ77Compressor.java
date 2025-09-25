@@ -28,7 +28,7 @@ import org.apache.commons.lang3.ArrayFill;
  *
  * <p>
  * Most LZ77 derived algorithms split input data into blocks of uncompressed data (called literal blocks) and back-references (pairs of offsets and lengths)
- * that state "add {@code length} bytes that are the same as those already written starting {@code offset} bytes before the current position. The details of how
+ * that state add {@code length} bytes that are the same as those already written starting {@code offset} bytes before the current position. The details of how
  * those blocks and back-references are encoded are quite different between the algorithms and some algorithms perform additional steps (Huffman encoding in the
  * case of DEFLATE for example).
  * </p>
@@ -195,9 +195,9 @@ public class LZ77Compressor {
         }
 
         /**
-         * Gets the the block type.
+         * Gets the block type.
          *
-         * @return the the block type.
+         * @return the block type.
          */
         public BlockType getType() {
             return type;

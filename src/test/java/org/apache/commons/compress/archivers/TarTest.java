@@ -27,7 +27,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -44,8 +43,8 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 import org.apache.commons.compress.archivers.tar.TarConstants;
 import org.apache.commons.compress.archivers.tar.TarFile;
-import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.Test;
 
 import shaded.org.apache.commons.lang3.StringUtils;
@@ -69,9 +68,10 @@ public final class TarTest extends AbstractTest {
 
     @Test
     void testCOMPRESS114() throws Exception {
-        final File input = getFile("COMPRESS-114.tar");
-        try (InputStream is = Files.newInputStream(input.toPath());
-                TarArchiveInputStream in = new TarArchiveInputStream(is, StandardCharsets.ISO_8859_1.name())) {
+        try (TarArchiveInputStream in = TarArchiveInputStream.builder()
+                .setURI(getURI("COMPRESS-114.tar"))
+                .setCharset(StandardCharsets.ISO_8859_1)
+                .get()) {
             TarArchiveEntry entry = in.getNextEntry();
             assertEquals("3\u00b1\u00b1\u00b1F06\u00b1W2345\u00b1ZB\u00b1la\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1\u00b1BLA", entry.getName());
             assertEquals(TarConstants.LF_NORMAL, entry.getLinkFlag());
@@ -94,9 +94,10 @@ public final class TarTest extends AbstractTest {
 
     @Test
     void testCOMPRESS178Lenient() throws Exception {
-        final File input = getFile("COMPRESS-178-fail.tar");
-        try (InputStream is = Files.newInputStream(input.toPath());
-                ArchiveInputStream<?> in = new TarArchiveInputStream(is, true)) {
+        try (ArchiveInputStream<?> in = TarArchiveInputStream.builder()
+                .setURI(getURI("COMPRESS-178-fail.tar"))
+                .setLenient(true)
+                .get()) {
             in.getNextEntry();
         }
     }
@@ -113,7 +114,7 @@ public final class TarTest extends AbstractTest {
             tos.closeArchiveEntry();
         }
         final TarArchiveEntry out;
-        try (TarArchiveInputStream tis = new TarArchiveInputStream(Files.newInputStream(archive.toPath()))) {
+        try (TarArchiveInputStream tis = TarArchiveInputStream.builder().setFile(archive).get()) {
             out = tis.getNextTarEntry();
         }
         assertNotNull(out);
@@ -127,15 +128,14 @@ public final class TarTest extends AbstractTest {
 
     @Test
     void testDirectoryRead() throws IOException {
-        final File input = getFile("directory.tar");
-        try (InputStream is = Files.newInputStream(input.toPath());
-                TarArchiveInputStream in = new TarArchiveInputStream(is)) {
+        try (TarArchiveInputStream in =
+                TarArchiveInputStream.builder().setURI(getURI("directory.tar")).get()) {
             final TarArchiveEntry directoryEntry = in.getNextTarEntry();
             assertEquals("directory/", directoryEntry.getName());
             assertEquals(TarConstants.LF_DIR, directoryEntry.getLinkFlag());
             assertTrue(directoryEntry.isDirectory());
             final byte[] directoryRead = IOUtils.toByteArray(in);
-            assertArrayEquals(ByteUtils.EMPTY_BYTE_ARRAY, directoryRead);
+            assertArrayEquals(ArrayUtils.EMPTY_BYTE_ARRAY, directoryRead);
         }
     }
 
@@ -151,7 +151,7 @@ public final class TarTest extends AbstractTest {
             tos.closeArchiveEntry();
         }
         final TarArchiveEntry out;
-        try (TarArchiveInputStream tis = new TarArchiveInputStream(Files.newInputStream(archive.toPath()))) {
+        try (TarArchiveInputStream tis = TarArchiveInputStream.builder().setFile(archive).get()) {
             out = tis.getNextTarEntry();
         }
         assertNotNull(out);
@@ -175,7 +175,7 @@ public final class TarTest extends AbstractTest {
             outputStream.closeArchiveEntry();
         }
         final TarArchiveEntry entryOut;
-        try (TarArchiveInputStream tis = new TarArchiveInputStream(Files.newInputStream(archive.toPath()))) {
+        try (TarArchiveInputStream tis = TarArchiveInputStream.builder().setFile(archive).get()) {
             entryOut = tis.getNextTarEntry();
         }
         assertNotNull(entryOut);
@@ -197,7 +197,7 @@ public final class TarTest extends AbstractTest {
             outputStream.closeArchiveEntry();
         }
         final TarArchiveEntry out;
-        try (TarArchiveInputStream tis = new TarArchiveInputStream(Files.newInputStream(archive.toPath()))) {
+        try (TarArchiveInputStream tis = TarArchiveInputStream.builder().setFile(archive).get()) {
             out = tis.getNextTarEntry();
         }
         assertNotNull(out);
@@ -216,8 +216,8 @@ public final class TarTest extends AbstractTest {
             final String fileName = createLongName(length);
             assertEquals(length.intValue(), fileName.length());
             final byte[] data = createTarWithOneLongNameEntry(fileName);
-            try (ByteArrayInputStream bis = new ByteArrayInputStream(data);
-                    TarArchiveInputStream tis = new TarArchiveInputStream(bis)) {
+            try (TarArchiveInputStream tis =
+                    TarArchiveInputStream.builder().setByteArray(data).get()) {
                 assertEquals(fileName, tis.getNextTarEntry().getName());
             }
         }
@@ -353,7 +353,7 @@ public final class TarTest extends AbstractTest {
             assertTrue(directoryEntry.isDirectory());
             try (InputStream directoryStream = tarFile.getInputStream(directoryEntry)) {
                 final byte[] directoryRead = IOUtils.toByteArray(directoryStream);
-                assertArrayEquals(ByteUtils.EMPTY_BYTE_ARRAY, directoryRead);
+                assertArrayEquals(ArrayUtils.EMPTY_BYTE_ARRAY, directoryRead);
             }
         }
     }

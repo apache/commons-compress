@@ -38,7 +38,6 @@ import java.util.zip.ZipException;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.EntryStreamOffsets;
-import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.io.file.attribute.FileTimes;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -823,7 +822,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
      */
     public byte[] getLocalFileDataExtra() {
         final byte[] extra = getExtra();
-        return extra != null ? extra : ByteUtils.EMPTY_BYTE_ARRAY;
+        return extra != null ? extra : ArrayUtils.EMPTY_BYTE_ARRAY;
     }
 
     /**

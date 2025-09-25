@@ -33,6 +33,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -56,12 +57,13 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 
 import org.apache.commons.compress.AbstractTest;
+import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
-import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.function.IORunnable;
 import org.apache.commons.lang3.ArrayFill;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.junit.Assume;
 import org.junit.jupiter.api.AfterEach;
@@ -129,7 +131,7 @@ class ZipFileTest extends AbstractTest {
             final byte[] bytes = new byte[0x40000];
             final int read = stream.read(bytes);
             if (read < 0) {
-                full = ByteUtils.EMPTY_BYTE_ARRAY;
+                full = ArrayUtils.EMPTY_BYTE_ARRAY;
             } else {
                 full = readStreamRest(bytes, read, stream);
             }
@@ -141,7 +143,7 @@ class ZipFileTest extends AbstractTest {
             final byte[] full;
             final int single = stream.read();
             if (single < 0) {
-                full = ByteUtils.EMPTY_BYTE_ARRAY;
+                full = ArrayUtils.EMPTY_BYTE_ARRAY;
             } else {
                 final byte[] big = new byte[0x40000];
                 big[0] = (byte) single;
@@ -494,7 +496,7 @@ class ZipFileTest extends AbstractTest {
 
             }
 
-            try (ZipFile zf = ZipFile.builder().setByteArray(Arrays.copyOfRange(zipContent.array(), 0, (int) zipContent.size())).get()) {
+            try (ZipFile zf = ZipFile.builder().setByteArray(Arrays.copyOfRange(zipContent.array(), 0, (int) zipContent.getSize())).get()) {
                 final ZipArchiveEntry inflatedEntry = zf.getEntry("inflated.txt");
                 final ResourceAlignmentExtraField inflatedAlignmentEx = (ResourceAlignmentExtraField) inflatedEntry
                         .getExtraField(ResourceAlignmentExtraField.ID);
@@ -973,7 +975,7 @@ class ZipFileTest extends AbstractTest {
     void testThrowsExceptionWhenWritingPreamble() throws IOException {
         try (ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(new ByteArrayOutputStream())) {
             outputStream.putArchiveEntry(new ZipArchiveEntry());
-            assertThrows(IllegalStateException.class, () -> outputStream.writePreamble(ByteUtils.EMPTY_BYTE_ARRAY));
+            assertThrows(IllegalStateException.class, () -> outputStream.writePreamble(ArrayUtils.EMPTY_BYTE_ARRAY));
             outputStream.closeArchiveEntry();
         }
     }
@@ -1068,6 +1070,29 @@ class ZipFileTest extends AbstractTest {
             try (InputStream inputStream = zipFile.getInputStream(entry)) {
                 final byte[] content = IOUtils.toByteArray(inputStream);
                 assertArrayEquals("entry-content\n".getBytes(StandardCharsets.UTF_8), content);
+            }
+        }
+    }
+
+    /*
+     * Tests [COMPRESS-708] ZstdCompressorInputStream closes the InputStream held by ZipArchiveInputStream garbage collection.
+     */
+    @Test
+    void testZstdInputStreamErrorCloseWhenGc() throws Exception {
+        final File archive = getFile("COMPRESS-692/compress-692.zip");
+        for (int i = 0; i < 500; i++) {
+            try (FileInputStream fileInputStream = new FileInputStream(archive);
+                    ZipArchiveInputStream zipArchiveInputStream = new ZipArchiveInputStream(fileInputStream)) {
+                ArchiveEntry entry;
+                while ((entry = zipArchiveInputStream.getNextEntry()) != null) {
+                    if (entry.isDirectory()) {
+                        continue;
+                    }
+                    System.gc();
+                    IOUtils.toByteArray(zipArchiveInputStream);
+                }
+            } catch (final IOException e) {
+                fail("testZstdInputStreamErrorCloseWhenGc error, test error at batch " + (i + 1), e);
             }
         }
     }
