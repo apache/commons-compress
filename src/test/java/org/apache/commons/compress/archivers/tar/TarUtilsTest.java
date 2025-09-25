@@ -504,6 +504,10 @@ class TarUtilsTest extends AbstractTest {
                 Arguments.of(
                         "Non-numeric offset in PAX 00 sparse header",
                         "23 GNU.sparse.offset=a\n26 GNU.sparse.numbytes=10\n"),
+                Arguments.of(
+                        "Numbytes in PAX 00 sparse header without offset",
+                        "26 GNU.sparse.numbytes=10\n"
+                ),
                 Arguments.of("Missing trailing newline in PAX header", "30 atime=1321711775.9720594634"));
     }
 
@@ -644,11 +648,9 @@ class TarUtilsTest extends AbstractTest {
 
     @Test
     void testSecondEntryWinsWhenPaxHeaderContainsDuplicateKey() throws Exception {
-        final Map<String, String> headers = TarUtils.parsePaxHeaders(
-                new ByteArrayInputStream("11 foo=bar\n11 foo=baz\n".getBytes(UTF_8)),
-                emptyList(),
-                emptyMap(),
-                Integer.MAX_VALUE);
+        final byte[] header = "11 foo=bar\n11 foo=baz\n".getBytes(UTF_8);
+        final Map<String, String> headers =
+                TarUtils.parsePaxHeaders(new ByteArrayInputStream(header), emptyList(), emptyMap(), header.length);
         assertEquals(1, headers.size());
         assertEquals("baz", headers.get("foo"));
     }
