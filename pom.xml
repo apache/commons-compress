@@ -300,6 +300,12 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
                 <exclude>org.apache.commons.compress.harmony.pack200.SegmentMethodVisitor</exclude>
                 <exclude>org.apache.commons.compress.harmony.pack200.SegmentAnnotationVisitor</exclude>
                 <exclude>org.apache.commons.compress.harmony.pack200.SegmentFieldVisitor</exclude>
+                <!-- Compress 1.28.0 -> 1.29.0: make TarUtils final -->
+                <exclude>org.apache.commons.compress.archivers.tar.TarUtils#parseFromPAX01SparseHeaders(java.lang.String)</exclude>
+                <exclude>org.apache.commons.compress.archivers.tar.TarUtils#parsePAX01SparseHeaders(java.lang.String)</exclude>
+                <exclude>org.apache.commons.compress.archivers.tar.TarUtils#parsePAX1XSparseHeaders(java.io.InputStream,int)</exclude>
+                <exclude>org.apache.commons.compress.archivers.tar.TarUtils#parsePaxHeaders(java.io.InputStream,java.util.List,java.util.Map)</exclude>
+                <exclude>org.apache.commons.compress.archivers.tar.TarUtils#parsePaxHeaders(java.io.InputStream,java.util.List,java.util.Map,long)</exclude>
               </excludes>
             </parameter>
           </configuration>
