@@ -155,7 +155,6 @@ class DumpArchiveInputStreamTest extends AbstractTest {
             ArchiveEntry entry = assertDoesNotThrow(archive::getNextEntry);
             String entryName = entry.getName();
             assertEquals("", entryName);
-
             entry = assertDoesNotThrow(archive::getNextEntry);
             entryName = entry.getName();
             assertEquals(255, entryName.length());
