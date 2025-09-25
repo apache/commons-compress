@@ -222,6 +222,20 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      */
     private static final Pattern PAX_EXTENDED_HEADER_FILE_TIMES_PATTERN = Pattern.compile("-?\\d{1,19}(?:\\.\\d{1,19})?");
 
+    /**
+     * PAX header key for the path (file name) of the entry.
+     *
+     * @see #getName()
+     */
+    static final String PAX_NAME_KEY = "path";
+
+    /**
+     * PAX header key for the link path (link name) of the entry.
+     *
+     * @see #getLinkName()
+     */
+    static final String PAX_LINK_NAME_KEY = "linkpath";
+
     private static FileTime fileTimeFromOptionalSeconds(final long seconds) {
         return seconds <= 0 ? null : FileTimes.fromUnixTime(seconds);
     }
@@ -1629,10 +1643,10 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
          * If called from addExtraPaxHeader, these additional headers must be already present.
          */
         switch (key) {
-        case "path":
+        case PAX_NAME_KEY:
             setName(val);
             break;
-        case "linkpath":
+        case PAX_LINK_NAME_KEY:
             setLinkName(val);
             break;
         case "gid":

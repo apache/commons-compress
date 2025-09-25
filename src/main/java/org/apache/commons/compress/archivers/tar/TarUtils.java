@@ -809,7 +809,7 @@ public class TarUtils {
                                 throw new ArchiveException("PAX header value size %,d exceeds size of header record.", restLen);
                             } else {
                                 // 3. Entry length exceeds configurable file and link name limits
-                                if ("path".equals(keyword) || "linkpath".equals(keyword)) {
+                                if (TarArchiveEntry.PAX_NAME_KEY.equals(keyword) || TarArchiveEntry.PAX_LINK_NAME_KEY.equals(keyword)) {
                                     ArchiveUtils.checkEntryNameLength(restLen - 1, maxEntryPathLength, "TAR");
                                 }
                                 final byte[] rest = IOUtils.readRange(inputStream, restLen);
