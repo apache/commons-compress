@@ -513,14 +513,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
             lastWasSpecial = TarUtils.isSpecialTarRecord(currEntry);
             if (lastWasSpecial) {
                 // Handle PAX, GNU long name, or other special records
-                TarUtils.handleSpecialTarRecord(
-                        this,
-                        zipEncoding,
-                        getMaxEntryNameLength(),
-                        currEntry,
-                        paxHeaders,
-                        sparseHeaders,
-                        globalPaxHeaders,
+                TarUtils.handleSpecialTarRecord(this, zipEncoding, getMaxEntryNameLength(), currEntry, paxHeaders, sparseHeaders, globalPaxHeaders,
                         globalSparseHeaders);
             }
         } while (lastWasSpecial);

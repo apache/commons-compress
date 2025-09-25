@@ -362,16 +362,9 @@ public class TarUtils {
      * @param globalSparseHeaders the list to update with global sparse headers.
      * @throws IOException if an I/O error occurs while reading the entry.
      */
-    static void handleSpecialTarRecord(
-            final InputStream input,
-            final ZipEncoding encoding,
-            final int maxEntryNameLength,
-            final TarArchiveEntry entry,
-            final Map<String, String> paxHeaders,
-            final List<TarArchiveStructSparse> sparseHeaders,
-            final Map<String, String> globalPaxHeaders,
-            final List<TarArchiveStructSparse> globalSparseHeaders)
-            throws IOException {
+    static void handleSpecialTarRecord(final InputStream input, final ZipEncoding encoding, final int maxEntryNameLength, final TarArchiveEntry entry,
+            final Map<String, String> paxHeaders, final List<TarArchiveStructSparse> sparseHeaders, final Map<String, String> globalPaxHeaders,
+            final List<TarArchiveStructSparse> globalSparseHeaders) throws IOException {
         if (entry.isGNULongLinkEntry()) {
             // GNU long link entry: read and store the link path
             final String longLinkName = readLongName(input, encoding, maxEntryNameLength, entry);
@@ -384,14 +377,12 @@ public class TarUtils {
             // Global PAX header: clear and update global PAX and sparse headers
             globalSparseHeaders.clear();
             globalPaxHeaders.clear();
-            globalPaxHeaders.putAll(
-                    parsePaxHeaders(input, globalPaxHeaders, entry.getSize(), maxEntryNameLength, globalSparseHeaders));
+            globalPaxHeaders.putAll(parsePaxHeaders(input, globalPaxHeaders, entry.getSize(), maxEntryNameLength, globalSparseHeaders));
         } else if (entry.isPaxHeader()) {
             // PAX header: clear and update local PAX and sparse headers, parse GNU sparse headers if present
             sparseHeaders.clear();
             paxHeaders.clear();
-            paxHeaders.putAll(
-                    parsePaxHeaders(input, globalPaxHeaders, entry.getSize(), maxEntryNameLength, sparseHeaders));
+            paxHeaders.putAll(parsePaxHeaders(input, globalPaxHeaders, entry.getSize(), maxEntryNameLength, sparseHeaders));
             if (paxHeaders.containsKey(TarGnuSparseKeys.MAP)) {
                 sparseHeaders.addAll(parseFromPAX01SparseHeaders(paxHeaders.get(TarGnuSparseKeys.MAP)));
             }
@@ -777,13 +768,8 @@ public class TarUtils {
      * @throws ArchiveException      If a header is malformed or contains invalid data
      * @throws IOException           If an I/O error occurs while reading
      */
-    private static Map<String, String> parsePaxHeaders(
-            final InputStream inputStream,
-            final Map<String, String> globalPaxHeaders,
-            final long headerSize,
-            final int maxEntryPathLength,
-            final List<? super TarArchiveStructSparse> sparseHeaders)
-            throws IOException {
+    private static Map<String, String> parsePaxHeaders(final InputStream inputStream, final Map<String, String> globalPaxHeaders, final long headerSize,
+            final int maxEntryPathLength, final List<? super TarArchiveStructSparse> sparseHeaders) throws IOException {
         // Check if there is enough memory to store the headers
         MemoryLimitException.checkBytes(headerSize, Long.MAX_VALUE);
         final Map<String, String> headers = new HashMap<>(globalPaxHeaders);
@@ -829,8 +815,7 @@ public class TarUtils {
                                 final byte[] rest = IOUtils.readRange(inputStream, restLen);
                                 final int got = rest.length;
                                 if (got != restLen) {
-                                    throw new EOFException(String.format(
-                                            "Failed to read PAX header: Expected %,d bytes, read %,d.", restLen, got));
+                                    throw new EOFException(String.format("Failed to read PAX header: Expected %,d bytes, read %,d.", restLen, got));
                                 }
                                 totalRead += restLen;
                                 // Drop trailing NL
@@ -943,18 +928,13 @@ public class TarUtils {
      * @throws IOException if an I/O error occurs or the entry is truncated.
      * @throws ArchiveException if the entry size is invalid.
      */
-    static String readLongName(
-            final InputStream input,
-            final ZipEncoding encoding,
-            final int maxEntryNameLength,
-            final TarArchiveEntry entry)
-            throws IOException {
+    static String readLongName(final InputStream input, final ZipEncoding encoding, final int maxEntryNameLength,
+            final TarArchiveEntry entry) throws IOException {
         final int declaredLength = ArchiveUtils.checkEntryNameLength(entry.getSize(), maxEntryNameLength, "TAR");
         final byte[] name = IOUtils.readRange(input, declaredLength);
         int actualLength = name.length;
         if (actualLength != declaredLength) {
-            throw new EOFException(String.format(
-                    "Truncated long name entry: expected %,d bytes, read %,d bytes.", declaredLength, actualLength));
+            throw new EOFException(String.format("Truncated long name entry: expected %,d bytes, read %,d bytes.", declaredLength, actualLength));
         }
         while (actualLength > 0 && name[actualLength - 1] == 0) {
             actualLength--;

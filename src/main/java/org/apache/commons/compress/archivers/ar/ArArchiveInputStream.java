@@ -246,8 +246,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
      * @since 1.3
      */
     private String getBSDLongName(final String bsdLongName) throws IOException {
-        final int nameLen =
-                checkEntryNameLength(ParsingUtils.parseIntValue(bsdLongName.substring(BSD_LONGNAME_PREFIX_LEN)));
+        final int nameLen = checkEntryNameLength(ParsingUtils.parseIntValue(bsdLongName.substring(BSD_LONGNAME_PREFIX_LEN)));
         final byte[] name = IOUtils.readRange(in, nameLen);
         final int read = name.length;
         count(read);

@@ -862,8 +862,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
         } else {
             off += 3 * WORD;
         }
-        final int fileNameLen =
-                ArchiveUtils.checkEntryNameLength(ZipShort.getValue(lfhBuf, off), getMaxEntryNameLength(), "ZIP");
+        final int fileNameLen = ArchiveUtils.checkEntryNameLength(ZipShort.getValue(lfhBuf, off), getMaxEntryNameLength(), "ZIP");
         off += SHORT;
         final int extraLen = ZipShort.getValue(lfhBuf, off);
         final byte[] fileName = readRange(fileNameLen);

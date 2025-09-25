@@ -680,16 +680,8 @@ public class SevenZFile implements Closeable {
         this(channel, fileName, password, false, SevenZFileOptions.DEFAULT);
     }
 
-    private SevenZFile(
-            final SeekableByteChannel channel,
-            final String fileName,
-            final byte[] password,
-            final boolean closeOnError,
-            final int maxMemoryLimitKiB,
-            final boolean useDefaultNameForUnnamedEntries,
-            final boolean tryToRecoverBrokenArchives,
-            final int maxEntryNameLength)
-            throws IOException {
+    private SevenZFile(final SeekableByteChannel channel, final String fileName, final byte[] password, final boolean closeOnError, final int maxMemoryLimitKiB,
+            final boolean useDefaultNameForUnnamedEntries, final boolean tryToRecoverBrokenArchives, final int maxEntryNameLength) throws IOException {
         boolean succeeded = false;
         this.channel = channel;
         this.fileName = fileName;
@@ -1366,8 +1358,7 @@ public class SevenZFile implements Closeable {
                     if (names[i] == 0 && names[i + 1] == 0) {
                         computeIfAbsent(fileMap, nextFile);
                         // Entry name length in UTF-16LE characters (not bytes)
-                        final int entryNameLength =
-                                ArchiveUtils.checkEntryNameLength((i - nextName) / 2, maxEntryNameLength, "7z");
+                        final int entryNameLength = ArchiveUtils.checkEntryNameLength((i - nextName) / 2, maxEntryNameLength, "7z");
                         fileMap.get(nextFile).setName(new String(names, nextName, 2 * entryNameLength, UTF_16LE));
                         nextName = i + 2;
                         nextFile++;

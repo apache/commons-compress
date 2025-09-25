@@ -170,15 +170,8 @@ public class ZipFile implements Closeable {
                 actualDescription = path.toString();
             }
             final boolean closeOnError = seekableByteChannel != null;
-            return new ZipFile(
-                    actualChannel,
-                    actualDescription,
-                    getCharset(),
-                    useUnicodeExtraFields,
-                    closeOnError,
-                    ignoreLocalFileHeader,
-                    zstdInputStreamFactory,
-                    getMaxEntryNameLength());
+            return new ZipFile(actualChannel, actualDescription, getCharset(), useUnicodeExtraFields, closeOnError, ignoreLocalFileHeader,
+                    zstdInputStreamFactory, getMaxEntryNameLength());
         }
 
         /**
@@ -821,15 +814,8 @@ public class ZipFile implements Closeable {
     @Deprecated
     @SuppressWarnings("resource") // Caller closes
     public ZipFile(final File file, final String encoding, final boolean useUnicodeExtraFields, final boolean ignoreLocalFileHeader) throws IOException {
-        this(
-                newReadByteChannel(file.toPath()),
-                file.getAbsolutePath(),
-                Charsets.toCharset(encoding),
-                useUnicodeExtraFields,
-                true,
-                ignoreLocalFileHeader,
-                null,
-                Short.MAX_VALUE);
+        this(newReadByteChannel(file.toPath()), file.getAbsolutePath(), Charsets.toCharset(encoding), useUnicodeExtraFields, true, ignoreLocalFileHeader,
+                null, Short.MAX_VALUE);
     }
 
     /**
@@ -895,15 +881,8 @@ public class ZipFile implements Closeable {
     @SuppressWarnings("resource") // Caller closes
     @Deprecated
     public ZipFile(final Path path, final String encoding, final boolean useUnicodeExtraFields, final boolean ignoreLocalFileHeader) throws IOException {
-        this(
-                newReadByteChannel(path),
-                path.toAbsolutePath().toString(),
-                Charsets.toCharset(encoding),
-                useUnicodeExtraFields,
-                true,
-                ignoreLocalFileHeader,
-                null,
-                Short.MAX_VALUE);
+        this(newReadByteChannel(path), path.toAbsolutePath().toString(), Charsets.toCharset(encoding), useUnicodeExtraFields, true, ignoreLocalFileHeader,
+                null, Short.MAX_VALUE);
     }
 
     /**
@@ -939,16 +918,9 @@ public class ZipFile implements Closeable {
         this(channel, "a SeekableByteChannel", encoding, true);
     }
 
-    private ZipFile(
-            final SeekableByteChannel channel,
-            final String channelDescription,
-            final Charset encoding,
-            final boolean useUnicodeExtraFields,
-            final boolean closeOnError,
-            final boolean ignoreLocalFileHeader,
-            final IOFunction<InputStream, InputStream> zstdInputStream,
-            final int maxEntryNameLength)
-            throws IOException {
+    private ZipFile(final SeekableByteChannel channel, final String channelDescription, final Charset encoding, final boolean useUnicodeExtraFields,
+            final boolean closeOnError, final boolean ignoreLocalFileHeader, final IOFunction<InputStream, InputStream> zstdInputStream,
+            final int maxEntryNameLength) throws IOException {
         this.isSplitZipArchive = channel instanceof ZipSplitReadOnlySeekableByteChannel;
         this.encoding = Charsets.toCharset(encoding, Builder.DEFAULT_CHARSET);
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
@@ -993,15 +965,7 @@ public class ZipFile implements Closeable {
     @Deprecated
     public ZipFile(final SeekableByteChannel channel, final String channelDescription, final String encoding, final boolean useUnicodeExtraFields)
             throws IOException {
-        this(
-                channel,
-                channelDescription,
-                Charsets.toCharset(encoding),
-                useUnicodeExtraFields,
-                false,
-                false,
-                null,
-                Short.MAX_VALUE);
+        this(channel, channelDescription, Charsets.toCharset(encoding), useUnicodeExtraFields, false, false, null, Short.MAX_VALUE);
     }
 
     /**
@@ -1029,15 +993,7 @@ public class ZipFile implements Closeable {
     @Deprecated
     public ZipFile(final SeekableByteChannel channel, final String channelDescription, final String encoding, final boolean useUnicodeExtraFields,
             final boolean ignoreLocalFileHeader) throws IOException {
-        this(
-                channel,
-                channelDescription,
-                Charsets.toCharset(encoding),
-                useUnicodeExtraFields,
-                false,
-                ignoreLocalFileHeader,
-                null,
-                Short.MAX_VALUE);
+        this(channel, channelDescription, Charsets.toCharset(encoding), useUnicodeExtraFields, false, ignoreLocalFileHeader, null, Short.MAX_VALUE);
     }
 
     /**
@@ -1575,8 +1531,7 @@ public class ZipFile implements Closeable {
         ze.setSize(size);
         off += ZipConstants.WORD;
 
-        final int fileNameLen =
-                ArchiveUtils.checkEntryNameLength(ZipShort.getValue(cfhBuf, off), maxEntryNameLength, "ZIP");
+        final int fileNameLen = ArchiveUtils.checkEntryNameLength(ZipShort.getValue(cfhBuf, off), maxEntryNameLength, "ZIP");
         off += ZipConstants.SHORT;
         if (fileNameLen < 0) {
             throw new ArchiveException("Broken archive, entry with negative fileNameLen");

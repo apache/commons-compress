@@ -49,10 +49,8 @@ public class ArchiveUtils {
     public static int checkEntryNameLength(long length, int maxEntryNameLength, String archiveType)
             throws ArchiveException, MemoryLimitException {
         if (length > maxEntryNameLength) {
-            throw new ArchiveException(
-                    "Invalid %s archive entry: invalid file name length %,d (must be between 1 and %,d). "
-                            + "If the file is not corrupt, consider increasing the `maxEntryNameLength` limit.",
-                    archiveType, length, maxEntryNameLength);
+            throw new ArchiveException("Invalid %s archive entry: invalid file name length %,d (must be between 1 and %,d). If the file is not corrupt, " +
+                    "consider increasing the `maxEntryNameLength` limit.", archiveType, length, maxEntryNameLength);
         }
         MemoryLimitException.checkBytes(length, SOFT_MAX_ARRAY_LENGTH);
         return (int) length;

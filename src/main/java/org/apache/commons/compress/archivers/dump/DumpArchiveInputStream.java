@@ -550,8 +550,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
 
                 final byte type = blockBuffer[i + 6];
 
-                final String name =
-                        DumpArchiveUtil.decode(zipEncoding, blockBuffer, i + 8, Byte.toUnsignedInt(blockBuffer[i + 7]));
+                final String name = DumpArchiveUtil.decode(zipEncoding, blockBuffer, i + 8, Byte.toUnsignedInt(blockBuffer[i + 7]));
 
                 if (CURRENT_PATH_SEGMENT.equals(name) || PARENT_PATH_SEGMENT.equals(name)) {
                     // do nothing...

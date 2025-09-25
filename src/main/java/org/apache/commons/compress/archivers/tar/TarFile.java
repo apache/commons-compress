@@ -511,15 +511,8 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
             lastWasSpecial = TarUtils.isSpecialTarRecord(currEntry);
             if (lastWasSpecial) {
                 // Handle PAX, GNU long name, or other special records
-                TarUtils.handleSpecialTarRecord(
-                        getInputStream(currEntry),
-                        zipEncoding,
-                        maxEntryNameLength,
-                        currEntry,
-                        paxHeaders,
-                        sparseHeaders,
-                        globalPaxHeaders,
-                        globalSparseHeaders);
+                TarUtils.handleSpecialTarRecord(getInputStream(currEntry), zipEncoding, maxEntryNameLength, currEntry, paxHeaders, sparseHeaders,
+                        globalPaxHeaders, globalSparseHeaders);
             }
         } while (lastWasSpecial);
         // Apply global and local PAX headers

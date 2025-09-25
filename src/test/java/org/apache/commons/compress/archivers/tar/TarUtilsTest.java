@@ -422,9 +422,7 @@ class TarUtilsTest extends AbstractTest {
         final TarArchiveEntry entry = new TarArchiveEntry("test");
         entry.setSize(size); // absurdly large so any finite stream truncates
         try (InputStream in = new NullInputStream()) {
-            final IOException ex = assertThrows(
-                    IOException.class,
-                    () -> TarUtils.readLongName(in, TarUtils.DEFAULT_ENCODING, Integer.MAX_VALUE, entry),
+            final IOException ex = assertThrows(IOException.class, () -> TarUtils.readLongName(in, TarUtils.DEFAULT_ENCODING, Integer.MAX_VALUE, entry),
                     "Expected IOException due to out of range size for Java byte arrays");
             final String actualMessage = StringUtils.toRootLowerCase(ex.getMessage());
             assertNotNull(actualMessage, "Exception message should not be null");
