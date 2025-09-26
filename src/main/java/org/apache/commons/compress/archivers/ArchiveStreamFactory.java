@@ -37,6 +37,7 @@ import org.apache.commons.compress.archivers.cpio.CpioArchiveOutputStream;
 import org.apache.commons.compress.archivers.dump.DumpArchiveInputStream;
 import org.apache.commons.compress.archivers.jar.JarArchiveInputStream;
 import org.apache.commons.compress.archivers.jar.JarArchiveOutputStream;
+import org.apache.commons.compress.archivers.lha.LhaArchiveInputStream;
 import org.apache.commons.compress.archivers.sevenz.SevenZFile;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
@@ -89,6 +90,8 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
     private static final int TAR_TEST_ENTRY_COUNT = 10;
 
     private static final int DUMP_SIGNATURE_SIZE = 32;
+
+    private static final int LHA_SIGNATURE_SIZE = 22;
 
     private static final int SIGNATURE_SIZE = 12;
 
@@ -175,6 +178,13 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
     public static final String JAR = "jar";
 
     /**
+     * Constant (value {@value}) used to identify the LHA archive format.
+     * Not supported as an output stream type.
+     * @since 1.29.0
+     */
+    public static final String LHA = "lha";
+
+    /**
      * Constant used to identify the TAR archive format.
      *
      * @since 1.1
@@ -254,6 +264,18 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
         }
         if (DumpArchiveInputStream.matches(dumpsig, signatureLength)) {
             return DUMP;
+        }
+        // LHA needs a bigger buffer to check the signature
+        final byte[] lhasig = new byte[LHA_SIGNATURE_SIZE];
+        in.mark(lhasig.length);
+        try {
+            signatureLength = IOUtils.readFully(in, lhasig);
+            in.reset();
+        } catch (final IOException e) {
+            throw new ArchiveException("IOException while reading LHA signature", (Throwable) e);
+        }
+        if (LhaArchiveInputStream.matches(lhasig, signatureLength)) {
+            return LHA;
         }
         // Tar needs an even bigger buffer to check the signature; read the first block
         final byte[] tarHeader = new byte[TAR_HEADER_SIZE];
@@ -439,6 +461,13 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
                 }
                 return (I) arjBuilder.get();
             }
+            if (LHA.equalsIgnoreCase(archiverName)) {
+                final LhaArchiveInputStream.Builder lhaBuilder = LhaArchiveInputStream.builder().setInputStream(in);
+                if (actualEncoding != null) {
+                    lhaBuilder.setCharset(actualEncoding);
+                }
+                return (I) lhaBuilder.get();
+            }
             if (ZIP.equalsIgnoreCase(archiverName)) {
                 final ZipArchiveInputStream.Builder zipBuilder = ZipArchiveInputStream.builder().setInputStream(in);
                 if (actualEncoding != null) {
@@ -593,7 +622,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
 
     @Override
     public Set<String> getInputStreamArchiveNames() {
-        return Sets.newHashSet(AR, ARJ, ZIP, TAR, JAR, CPIO, DUMP, SEVEN_Z);
+        return Sets.newHashSet(AR, ARJ, LHA, ZIP, TAR, JAR, CPIO, DUMP, SEVEN_Z);
     }
 
     @Override
