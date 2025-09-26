@@ -244,6 +244,7 @@ public class BitInputStream implements Closeable {
      *
      * @return the bit ordering: {@link ByteOrder#BIG_ENDIAN} (MSB-first) or {@link ByteOrder#LITTLE_ENDIAN} (LSB-first).
      * @see #BitInputStream(InputStream, ByteOrder)
+     * @since 1.29.0
      */
     public ByteOrder getByteOrder() {
         return byteOrder;
