@@ -45,6 +45,8 @@ import org.apache.commons.compress.utils.BitInputStream;
  *
  * <h2>Thread-safety</h2>
  * Instances are immutable after construction and may be safely shared between threads.
+ *
+ * @since 1.29.0
  */
 public final class HuffmanDecoder {
 
