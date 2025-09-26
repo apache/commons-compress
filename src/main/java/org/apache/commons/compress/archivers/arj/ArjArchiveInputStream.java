@@ -27,9 +27,11 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.zip.CRC32;
 
+import org.apache.commons.compress.archivers.AbstractArchiveBuilder;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
+import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.io.input.ChecksumInputStream;
@@ -60,7 +62,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
      *
      * @since 1.29.0
      */
-    public static final class Builder extends AbstractBuilder<ArjArchiveInputStream, Builder> {
+    public static final class Builder extends AbstractArchiveBuilder<ArjArchiveInputStream, Builder> {
 
         private Builder() {
             setCharset(ENCODING_NAME);
@@ -117,7 +119,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
     }
 
     private ArjArchiveInputStream(final InputStream inputStream, final Builder builder) throws ArchiveException {
-        super(new DataInputStream(inputStream), builder.getCharset());
+        super(new DataInputStream(inputStream), builder);
         dis = (DataInputStream) in;
         try {
             mainHeader = readMainHeader();
@@ -314,8 +316,8 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
 
                 readExtraData(firstHeaderSize, firstHeader, localFileHeader);
 
-                localFileHeader.name = readString(basicHeader);
-                localFileHeader.comment = readString(basicHeader);
+                localFileHeader.name = readEntryName(basicHeader);
+                localFileHeader.comment = readComment(basicHeader);
 
                 final ArrayList<byte[]> extendedHeaders = new ArrayList<>();
                 int extendedHeaderSize;
@@ -374,8 +376,8 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
             firstHeader.readUnsignedByte();
         }
 
-        header.name = readString(basicHeader);
-        header.comment = readString(basicHeader);
+        header.name = readEntryName(basicHeader);
+        header.comment = readComment(basicHeader);
 
         final int extendedHeaderSize = read16(dis);
         if (extendedHeaderSize > 0) {
@@ -400,13 +402,23 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
         return b;
     }
 
-    private String readString(final DataInputStream dataIn) throws IOException {
+    private String readComment(DataInputStream dataIn) throws IOException {
+        return new String(readString(dataIn).toByteArray(), getCharset());
+    }
+
+    private String readEntryName(DataInputStream dataIn) throws IOException {
+        final ByteArrayOutputStream buffer = readString(dataIn);
+        ArchiveUtils.checkEntryNameLength(buffer.size(), getMaxEntryNameLength(), "ARJ");
+        return new String(buffer.toByteArray(), getCharset());
+    }
+
+    private ByteArrayOutputStream readString(DataInputStream dataIn) throws IOException {
         try (ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
             int nextByte;
             while ((nextByte = dataIn.readUnsignedByte()) != 0) {
                 buffer.write(nextByte);
             }
-            return buffer.toString(getCharset().name());
+            return buffer;
         }
     }
 }

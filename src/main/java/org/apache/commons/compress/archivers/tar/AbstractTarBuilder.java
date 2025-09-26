@@ -19,7 +19,7 @@
 
 package org.apache.commons.compress.archivers.tar;
 
-import org.apache.commons.io.build.AbstractStreamBuilder;
+import org.apache.commons.compress.archivers.AbstractArchiveBuilder;
 
 /**
  * Abstracts TAR builder operations.
@@ -28,7 +28,7 @@ import org.apache.commons.io.build.AbstractStreamBuilder;
  * @param <B> the type of builder subclass.
  * @since 1.29.0
  */
-public abstract class AbstractTarBuilder<T, B extends AbstractTarBuilder<T, B>> extends AbstractStreamBuilder<T, B> {
+public abstract class AbstractTarBuilder<T, B extends AbstractTarBuilder<T, B>> extends AbstractArchiveBuilder<T, B> {
 
     private int blockSize = TarConstants.DEFAULT_BLKSIZE;
     private int recordSize = TarConstants.DEFAULT_RCDSIZE;

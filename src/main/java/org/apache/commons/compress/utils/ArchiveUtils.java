@@ -22,7 +22,9 @@ package org.apache.commons.compress.utils;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
+import org.apache.commons.compress.MemoryLimitException;
 import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.ArchiveException;
 
 /**
  * Generic Archive utilities.
@@ -30,6 +32,29 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 public class ArchiveUtils {
 
     private static final int MAX_SANITIZED_NAME_LENGTH = 255;
+
+    private static final int SOFT_MAX_ARRAY_LENGTH = Integer.MAX_VALUE - 8;
+
+    /**
+     * Checks that the given entry name length is valid.
+     *
+     * @param length The length of the entry name.
+     * @param maxEntryNameLength The maximum allowed length of the entry name.
+     * @param archiveType The type of the archive (for error messages).
+     * @return The length, if valid.
+     * @throws ArchiveException If the length is not valid.
+     * @throws MemoryLimitException If the length is valid, but too large for the current JVM to handle.
+     * @since 1.29.0
+     */
+    public static int checkEntryNameLength(long length, int maxEntryNameLength, String archiveType)
+            throws ArchiveException, MemoryLimitException {
+        if (length > maxEntryNameLength) {
+            throw new ArchiveException("Invalid %s archive entry: invalid file name length %,d (must be between 1 and %,d). If the file is not corrupt, " +
+                    "consider increasing the `maxEntryNameLength` limit.", archiveType, length, maxEntryNameLength);
+        }
+        MemoryLimitException.checkBytes(length, SOFT_MAX_ARRAY_LENGTH);
+        return (int) length;
+    }
 
     /**
      * Tests whether true if the first N bytes of an array are all zero.
