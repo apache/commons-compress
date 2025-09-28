@@ -36,6 +36,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -405,7 +406,7 @@ class TarArchiveInputStreamTest extends AbstractTest {
     void testParseTarWithSpecialPaxHeaders() throws IOException {
         try (TarArchiveInputStream archive = getTestStream("COMPRESS-530-fail.tar")) {
             assertThrows(ArchiveException.class, () -> archive.getNextEntry());
-            assertThrows(ArchiveException.class, () -> IOUtils.toByteArray(archive));
+            assertThrows(EOFException.class, () -> IOUtils.toByteArray(archive));
         }
     }
 
@@ -501,7 +502,7 @@ class TarArchiveInputStreamTest extends AbstractTest {
     void testShouldThrowAnExceptionOnTruncatedEntries() throws Exception {
         final Path dir = createTempDirectory("COMPRESS-279");
         try (TarArchiveInputStream is = getTestStream("COMPRESS-279-fail.tar")) {
-            assertThrows(ArchiveException.class, () -> {
+            assertThrows(EOFException.class, () -> {
                 TarArchiveEntry entry = is.getNextTarEntry();
                 int count = 0;
                 while (entry != null) {
@@ -518,7 +519,7 @@ class TarArchiveInputStreamTest extends AbstractTest {
         final Path dir = createTempDirectory("COMPRESS-279");
         try (TarArchiveInputStream is = getTestStream("COMPRESS-279-fail.tar")) {
             final AtomicInteger count = new AtomicInteger();
-            assertThrows(ArchiveException.class, () -> is.forEach(entry -> Files.copy(is, dir.resolve(String.valueOf(count.getAndIncrement())))));
+            assertThrows(EOFException.class, () -> is.forEach(entry -> Files.copy(is, dir.resolve(String.valueOf(count.getAndIncrement())))));
         }
     }
 

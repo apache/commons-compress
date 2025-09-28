@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
@@ -35,13 +36,26 @@ import java.nio.file.Path;
 import java.util.List;
 
 import org.apache.commons.compress.AbstractTest;
+import org.apache.commons.compress.archivers.TestArchiveGenerator;
 import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.EnabledOnOs;
 import org.junit.jupiter.api.condition.OS;
+import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class SparseFilesTest extends AbstractTest {
+
+    @TempDir
+    private static Path tempDir;
+
+    @BeforeAll
+    static void setupAll() throws IOException {
+        TestArchiveGenerator.createSparseFileTestCases(tempDir);
+    }
 
     private void assertPaxGNUEntry(final TarArchiveEntry entry, final String suffix) {
         assertEquals("sparsefile-" + suffix, entry.getName());
@@ -242,6 +256,53 @@ class SparseFilesTest extends AbstractTest {
                 assertTrue(oldGNUSparseInputStream.canReadEntryData(oldGNUEntry));
                 assertArrayEquals(IOUtils.toByteArray(oldGNUSparseInputStream), IOUtils.toByteArray(paxGNUSparseInputStream));
             }
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"old-gnu-sparse.tar" , "gnu-sparse-00.tar", "gnu-sparse-01.tar", "gnu-sparse-1.tar"})
+    void testMaximallyFragmentedTarFile(final String fileName) throws IOException {
+        final int expectedSize = 8192;
+        try (TarFile input = TarFile.builder().setPath(tempDir.resolve(fileName)).get()) {
+            final List<TarArchiveEntry> entries = input.getEntries();
+            assertEquals(1, entries.size());
+            final TarArchiveEntry entry = entries.get(0);
+            assertNotNull(entry);
+            assertEquals("sparse-file.txt", entry.getName());
+
+            try (InputStream inputStream = input.getInputStream(entry)) {
+                // read the expected amount of data
+                final byte[] content = new byte[expectedSize];
+                assertEquals(expectedSize, inputStream.read(content));
+                // verify that the stream is at EOF
+                assertEquals(IOUtils.EOF, inputStream.read());
+                // check content
+                for (int i = 0; i < content.length; i++) {
+                    assertEquals((byte) (i % 256), content[i], "at index " + i);
+                }
+            }
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"old-gnu-sparse.tar", "gnu-sparse-00.tar", "gnu-sparse-01.tar", "gnu-sparse-1.tar"})
+    void testMaximallyFragmentedTarStream(final String fileName) throws IOException {
+        final int expectedSize = 8192;
+        try (TarArchiveInputStream input = TarArchiveInputStream.builder().setPath(tempDir.resolve(fileName)).get()) {
+            final TarArchiveEntry entry = input.getNextEntry();
+            assertNotNull(entry);
+            assertEquals("sparse-file.txt", entry.getName());
+            // read the expected amount of data
+            final byte[] content = new byte[expectedSize];
+            assertEquals(expectedSize, input.read(content));
+            // verify that the stream is at EOF
+            assertEquals(IOUtils.EOF, input.read());
+            // check content
+            for (int i = 0; i < content.length; i++) {
+                assertEquals((byte) (i % 256), content[i], "at index " + i);
+            }
+            // check that there are no more entries
+            assertNull(input.getNextEntry());
         }
     }
 
