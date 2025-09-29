@@ -26,7 +26,6 @@ package org.apache.commons.compress.archivers.tar;
 
 import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -398,26 +397,6 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
         if (bytesReadOfLastBlock > 0) {
             count(IOUtils.skip(in, blockSize - bytesReadOfLastBlock));
         }
-    }
-
-    /**
-     * For FileInputStream, the skip always return the number you input, so we need the available bytes to determine how many bytes are actually skipped
-     *
-     * @param available available bytes returned by {@link InputStream#available()}.
-     * @param skipped   skipped bytes returned by {@link InputStream#skip(long)}.
-     * @param expected  bytes expected to skip.
-     * @return number of bytes actually skipped.
-     * @throws IOException if a truncated tar archive is detected.
-     */
-    private long getActuallySkipped(final long available, final long skipped, final long expected) throws IOException {
-        long actuallySkipped = skipped;
-        if (in instanceof FileInputStream) {
-            actuallySkipped = Math.min(skipped, available);
-        }
-        if (actuallySkipped != expected) {
-            throw new ArchiveException("Truncated TAR archive");
-        }
-        return actuallySkipped;
     }
 
     /**
