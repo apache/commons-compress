@@ -54,8 +54,8 @@ import org.apache.commons.compress.MemoryLimitException;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
-import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.apache.commons.io.build.AbstractOrigin.ByteArrayOrigin;
+import org.apache.commons.io.build.AbstractOrigin.ChannelOrigin;
 import org.apache.commons.io.build.AbstractStreamBuilder;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.io.input.ChecksumInputStream;
@@ -184,7 +184,6 @@ public class SevenZFile implements Closeable {
         static final boolean USE_DEFAULTNAME_FOR_UNNAMED_ENTRIES = false;
         static final boolean TRY_TO_RECOVER_BROKEN_ARCHIVES = false;
 
-        private SeekableByteChannel seekableByteChannel;
         private String defaultName = DEFAULT_FILE_NAME;
         private byte[] password;
         private int maxMemoryLimitKiB = MEMORY_LIMIT_KIB;
@@ -201,11 +200,14 @@ public class SevenZFile implements Closeable {
         public SevenZFile get() throws IOException {
             final SeekableByteChannel actualChannel;
             final String actualDescription;
-            if (seekableByteChannel != null) {
-                actualChannel = seekableByteChannel;
+            final boolean isChannelOrigin = checkOrigin() instanceof ChannelOrigin;
+            boolean isSeekableByteChannellOrigin = false;
+            if (isChannelOrigin) {
+                actualChannel = getChannel(SeekableByteChannel.class);
+                isSeekableByteChannellOrigin = true;
                 actualDescription = defaultName;
             } else if (checkOrigin() instanceof ByteArrayOrigin) {
-                actualChannel = new SeekableInMemoryByteChannel(checkOrigin().getByteArray());
+                actualChannel = getChannel(SeekableByteChannel.class);
                 actualDescription = defaultName;
             } else {
                 OpenOption[] openOptions = getOpenOptions();
@@ -216,7 +218,7 @@ public class SevenZFile implements Closeable {
                 actualChannel = Files.newByteChannel(path, openOptions);
                 actualDescription = path.toAbsolutePath().toString();
             }
-            final boolean closeOnError = seekableByteChannel != null;
+            final boolean closeOnError = isSeekableByteChannellOrigin;
             return new SevenZFile(actualChannel, actualDescription, password, closeOnError, maxMemoryLimitKiB, useDefaultNameForUnnamedEntries,
                     tryToRecoverBrokenArchives);
         }
@@ -301,8 +303,7 @@ public class SevenZFile implements Closeable {
          * @return {@code this} instance.
          */
         public Builder setSeekableByteChannel(final SeekableByteChannel seekableByteChannel) {
-            this.seekableByteChannel = seekableByteChannel;
-            return this;
+            return setChannel(seekableByteChannel);
         }
 
         /**

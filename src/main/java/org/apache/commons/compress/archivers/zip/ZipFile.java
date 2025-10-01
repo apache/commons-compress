@@ -61,10 +61,10 @@ import org.apache.commons.compress.utils.BoundedArchiveInputStream;
 import org.apache.commons.compress.utils.BoundedSeekableByteChannelInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
-import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.build.AbstractOrigin.ByteArrayOrigin;
+import org.apache.commons.io.build.AbstractOrigin.ChannelOrigin;
 import org.apache.commons.io.build.AbstractStreamBuilder;
 import org.apache.commons.io.function.IOFunction;
 import org.apache.commons.io.function.IOStream;
@@ -135,7 +135,6 @@ public class ZipFile implements Closeable {
     public static class Builder extends AbstractStreamBuilder<ZipFile, Builder> {
 
         static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
-        private SeekableByteChannel seekableByteChannel;
         private boolean useUnicodeExtraFields = true;
         private boolean ignoreLocalFileHeader;
         private long maxNumberOfDisks = 1;
@@ -153,11 +152,14 @@ public class ZipFile implements Closeable {
         public ZipFile get() throws IOException {
             final SeekableByteChannel actualChannel;
             final String actualDescription;
-            if (seekableByteChannel != null) {
-                actualChannel = seekableByteChannel;
+            final boolean isChannelOrigin = checkOrigin() instanceof ChannelOrigin;
+            boolean isSeekableByteChannellOrigin = false;
+            if (isChannelOrigin) {
+                actualChannel = getChannel(SeekableByteChannel.class);
+                isSeekableByteChannellOrigin = true;
                 actualDescription = actualChannel.getClass().getSimpleName();
             } else if (checkOrigin() instanceof ByteArrayOrigin) {
-                actualChannel = new SeekableInMemoryByteChannel(checkOrigin().getByteArray());
+                actualChannel = getChannel(SeekableByteChannel.class);
                 actualDescription = actualChannel.getClass().getSimpleName();
             } else {
                 OpenOption[] openOptions = getOpenOptions();
@@ -168,7 +170,7 @@ public class ZipFile implements Closeable {
                 actualChannel = openZipChannel(path, maxNumberOfDisks, openOptions);
                 actualDescription = path.toString();
             }
-            final boolean closeOnError = seekableByteChannel != null;
+            final boolean closeOnError = isSeekableByteChannellOrigin;
             return new ZipFile(actualChannel, actualDescription, getCharset(), useUnicodeExtraFields, closeOnError, ignoreLocalFileHeader,
                     zstdInputStreamFactory);
         }
@@ -202,8 +204,7 @@ public class ZipFile implements Closeable {
          * @return {@code this} instance.
          */
         public Builder setSeekableByteChannel(final SeekableByteChannel seekableByteChannel) {
-            this.seekableByteChannel = seekableByteChannel;
-            return this;
+            return setChannel(seekableByteChannel);
         }
 
         /**

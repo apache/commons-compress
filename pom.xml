@@ -90,6 +90,17 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <checkstyle.suppress.file>${basedir}/src/conf/checkstyle/checkstyle-suppressions.xml</checkstyle.suppress.file>
     <checkstyle.resourceExcludes>LICENSE.txt, NOTICE.txt, **/maven-archiver/pom.properties</checkstyle.resourceExcludes>
   </properties>
+  <repositories>
+    <!-- TEMP for branch commons_io... -->
+  	<repository>
+      <id>apache.snapshots</id>
+      <name>Apache Snapshot Repository</name>
+      <url>http://repository.apache.org/snapshots</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </repository>
+  </repositories>
   <issueManagement>
     <system>jira</system>
     <url>https://issues.apache.org/jira/browse/COMPRESS</url>
@@ -203,7 +214,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
-      <version>2.20.0</version>
+      <version>2.21.0-SNAPSHOT</version>
     </dependency>    
     <dependency>
       <groupId>org.apache.commons</groupId>
