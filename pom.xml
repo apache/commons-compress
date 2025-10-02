@@ -95,7 +95,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
   	<repository>
       <id>apache.snapshots</id>
       <name>Apache Snapshot Repository</name>
-      <url>http://repository.apache.org/snapshots</url>
+      <url>https://repository.apache.org/content/groups/snapshots</url>
       <releases>
         <enabled>false</enabled>
       </releases>
