@@ -31,6 +31,7 @@ import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
+import org.apache.commons.io.IOUtils;
 
 /**
  * CpioArchiveOutputStream is a stream for writing CPIO streams. All formats of CPIO are supported (old ASCII, old binary, new portable format and the new
@@ -313,17 +314,17 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
      * @param b   the data to be written
      * @param off the start offset in the data
      * @param len the number of bytes that are written
+     * @throws NullPointerException      if b is null
+     * @throws IndexOutOfBoundsException if {@code off} or {@code len} are negative, or if {@code off + len} is greater than {@code b.length}.
      * @throws IOException if an I/O error has occurred or if a CPIO file error has occurred
      */
     @Override
     public void write(final byte[] b, final int off, final int len) throws IOException {
-        checkOpen();
-        if (off < 0 || len < 0 || off > b.length - len) {
-            throw new IndexOutOfBoundsException();
-        }
+        IOUtils.checkFromIndexSize(b, off, len);
         if (len == 0) {
             return;
         }
+        checkOpen();
         if (this.entry == null) {
             throw new ArchiveException("No current CPIO entry");
         }

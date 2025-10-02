@@ -127,10 +127,10 @@ final class TapeInputStream extends FilterInputStream {
      * </p>
      *
      * @param len length to read, must be a multiple of the stream's record size.
-     * @throws IOException Thrown if an I/O error occurs.
      */
     @Override
     public int read(final byte[] b, int off, final int len) throws IOException {
+        org.apache.commons.io.IOUtils.checkFromIndexSize(b, off, len);
         if (len == 0) {
             return 0;
         }

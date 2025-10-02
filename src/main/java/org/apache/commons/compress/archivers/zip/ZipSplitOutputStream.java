@@ -33,6 +33,7 @@ import java.util.Objects;
 import java.util.TreeMap;
 
 import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.file.PathUtils;
 
 /**
@@ -252,10 +253,14 @@ final class ZipSplitOutputStream extends RandomAccessOutputStream {
      * @param b   data to write
      * @param off offset of the start of data in param b
      * @param len the length of data to write
+     * @throws NullPointerException      if {@code b} is null
+     * @throws IndexOutOfBoundsException if {@code off} or {@code len} are negative,
+     *                                   or if {@code off + len} is greater than {@code b.length}.
      * @throws IOException if an I/O error occurs.
      */
     @Override
     public void write(final byte[] b, final int off, final int len) throws IOException {
+        IOUtils.checkFromIndexSize(b, off, len);
         if (len <= 0) {
             return;
         }

@@ -26,6 +26,7 @@ import org.apache.commons.codec.digest.PureJavaCrc32C;
 import org.apache.commons.compress.compressors.CompressorOutputStream;
 import org.apache.commons.compress.compressors.lz77support.Parameters;
 import org.apache.commons.compress.utils.ByteUtils;
+import org.apache.commons.io.IOUtils;
 
 /**
  * CompressorOutputStream for the framing Snappy format.
@@ -125,6 +126,7 @@ public class FramedSnappyCompressorOutputStream extends CompressorOutputStream<O
 
     @Override
     public void write(final byte[] data, int off, int len) throws IOException {
+        IOUtils.checkFromIndexSize(data, off, len);
         int blockDataRemaining = buffer.length - currentIndex;
         while (len > 0) {
             final int copyLen = Math.min(len, blockDataRemaining);

@@ -435,13 +435,9 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see InputStream#read(byte[], int, int)
-     */
     @Override
     public int read(final byte[] b, final int off, final int len) throws IOException {
+        org.apache.commons.io.IOUtils.checkFromIndexSize(b, off, len);
         if (len == 0) {
             return 0;
         }

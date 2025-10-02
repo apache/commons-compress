@@ -211,6 +211,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
 
     @Override
     public int read(final byte[] b, final int off, final int len) throws IOException {
+        org.apache.commons.io.IOUtils.checkFromIndexSize(b, off, len);
         if (len == 0) {
             return 0;
         }
