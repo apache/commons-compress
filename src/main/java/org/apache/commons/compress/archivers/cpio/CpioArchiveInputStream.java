@@ -371,17 +371,17 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
      * @param off the start offset of the data
      * @param len the maximum number of bytes read
      * @return the actual number of bytes read, or -1 if the end of the entry is reached
+     * @throws NullPointerException      if b is null
+     * @throws IndexOutOfBoundsException if {@code off} or {@code len} are negative, or if {@code off + len} is greater than {@code b.length}.
      * @throws IOException if an I/O error has occurred or if a CPIO file error has occurred
      */
     @Override
     public int read(final byte[] b, final int off, final int len) throws IOException {
-        checkOpen();
-        if (off < 0 || len < 0 || off > b.length - len) {
-            throw new IndexOutOfBoundsException();
-        }
+        org.apache.commons.io.IOUtils.checkFromIndexSize(b, off, len);
         if (len == 0) {
             return 0;
         }
+        checkOpen();
         if (entry == null || entryEOF) {
             return -1;
         }

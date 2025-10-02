@@ -18,7 +18,11 @@
  */
 package org.apache.commons.compress.archivers.tar;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+
+import org.apache.commons.io.IOUtils;
 
 /**
  * This is an InputStream that always return 0, this is used when reading the "holes" of a sparse file
@@ -33,6 +37,16 @@ final class TarArchiveSparseZeroInputStream extends InputStream {
     @Override
     public int read() {
         return 0;
+    }
+
+    @Override
+    public int read(byte[] b, int off, int len) throws IOException {
+        IOUtils.checkFromIndexSize(b, off, len);
+        if (len == 0) {
+            return 0;
+        }
+        Arrays.fill(b, off, off + len, (byte) 0);
+        return len;
     }
 
     /**

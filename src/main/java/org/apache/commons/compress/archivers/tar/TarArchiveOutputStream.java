@@ -39,6 +39,7 @@ import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.FixedLengthBlockOutputStream;
 import org.apache.commons.io.Charsets;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.file.attribute.FileTimes;
 import org.apache.commons.io.output.CountingOutputStream;
 import org.apache.commons.lang3.ArrayFill;
@@ -627,10 +628,14 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
      * @param wBuf       The buffer to write to the archive.
      * @param wOffset    The offset in the buffer from which to get bytes.
      * @param numToWrite The number of bytes to write.
+     * @throws NullPointerException      if {@code wBuf} is null
+     * @throws IndexOutOfBoundsException if {@code wOffset} or {@code numToWrite} are negative,
+     *                                   or if {@code wOffset + numToWrite} is greater than {@code wBuf.length}.
      * @throws IOException on error
      */
     @Override
     public void write(final byte[] wBuf, final int wOffset, final int numToWrite) throws IOException {
+        IOUtils.checkFromIndexSize(wBuf, wOffset, numToWrite);
         if (!haveUnclosedEntry) {
             throw new IllegalStateException("No current tar entry");
         }

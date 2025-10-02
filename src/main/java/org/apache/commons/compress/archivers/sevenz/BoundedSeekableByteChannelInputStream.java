@@ -23,6 +23,8 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 
+import org.apache.commons.io.IOUtils;
+
 final class BoundedSeekableByteChannelInputStream extends InputStream {
     private static final int MAX_BUF_LEN = 8192;
     private final ByteBuffer buffer;
@@ -63,9 +65,18 @@ final class BoundedSeekableByteChannelInputStream extends InputStream {
      * <p>
      * This implementation may return 0 if the underlying {@link SeekableByteChannel} is non-blocking and currently hasn't got any bytes available.
      * </p>
+     *
+     * @param b   the buffer into which the data is read.
+     * @param off the start offset in array b at which the data is written.
+     * @param len the maximum number of bytes to read.
+     * @return the total number of bytes read into the buffer, or -1 if EOF is reached.
+     * @throws NullPointerException      if b is null.
+     * @throws IndexOutOfBoundsException if {@code off} or {@code len} are negative, or if {@code off + len} is greater than {@code b.length}.
+     * @throws IOException               if an I/O error occurs.
      */
     @Override
     public int read(final byte[] b, final int off, final int len) throws IOException {
+        IOUtils.checkFromIndexSize(b, off, len);
         if (len == 0) {
             return 0;
         }
