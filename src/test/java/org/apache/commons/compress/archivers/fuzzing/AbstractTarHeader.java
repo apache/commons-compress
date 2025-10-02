@@ -22,18 +22,27 @@ import static java.nio.charset.StandardCharsets.US_ASCII;
 
 import java.nio.ByteBuffer;
 
+import com.code_intelligence.jazzer.mutation.annotation.InRange;
+import com.code_intelligence.jazzer.mutation.annotation.WithUtf8Length;
+
 public abstract class AbstractTarHeader {
 
     public static final String GNU_MAGIC_AND_VERSION = "ustar  \0";
     public static final String USTAR_MAGIC_AND_VERSION = "ustar\00000";
 
+    @SuppressWarnings("OctalInteger")
+    private static final int OCTAL_5_DIGITS = 077_777;
+    @SuppressWarnings("OctalInteger")
+    private static final int OCTAL_7_DIGITS = 07_777_777;
+    @SuppressWarnings("OctalInteger")
+    private static final long OCTAL_11_DIGITS = 077_777_777_777L;
+
     private final String fileName;
 
     @SuppressWarnings("OctalInteger")
-    private final int fileMode = 0100644; // file mode for regular files
-
-    private final int ownerId = 0; // default owner ID
-    private final int groupId = 0; // default group ID
+    private final int fileMode;
+    private final int ownerId;
+    private final int groupId;
     private final long fileSize; // size of the file in bytes
     private final long lastModifiedTime; // last modification time in seconds since epoch
     private final byte linkIndicator;
@@ -45,12 +54,15 @@ public abstract class AbstractTarHeader {
     private final int deviceMinorNumber = 0; // default device minor number
 
     public AbstractTarHeader(
-            String fileName,
-            long fileSize,
-            long lastModifiedTime,
-            byte linkIndicator,
-            String linkName,
-            String magicAndVersion) {
+            final @WithUtf8Length(min = 1, max = 100) String fileName,
+            final @InRange(min = 0, max = OCTAL_7_DIGITS) int fileMode,
+            final @InRange(min = 0, max = OCTAL_5_DIGITS) int ownerId,
+            final @InRange(min = 0, max = OCTAL_5_DIGITS) int groupId,
+            final @InRange(min = 0, max = OCTAL_11_DIGITS) long fileSize,
+            final @InRange(min = 0, max = OCTAL_11_DIGITS) long lastModifiedTime,
+            final byte linkIndicator,
+            final @WithUtf8Length(min = 1, max = 100) String linkName,
+            final String magicAndVersion) {
         this.fileName = fileName;
         this.fileSize = fileSize;
         this.lastModifiedTime = lastModifiedTime;
