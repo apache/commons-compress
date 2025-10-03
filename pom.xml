@@ -74,8 +74,6 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <slf4j.version>2.0.16</slf4j.version>
     <!-- project.build.outputTimestamp is managed by Maven plugins, see https://maven.apache.org/guides/mini/guide-reproducible-builds.html -->
     <project.build.outputTimestamp>2025-07-29T22:23:16Z</project.build.outputTimestamp>
-    <!-- spdx 0.6.0 can require Java 11 depending on undocumented behavior which kicks in for us here. -->
-    <commons.spdx.version>0.5.5</commons.spdx.version>
     <!-- JaCoCo: Don't make code coverage worse than: -->
     <commons.jacoco.haltOnFailure>true</commons.jacoco.haltOnFailure>
     <commons.jacoco.classRatio>0.96</commons.jacoco.classRatio>
@@ -89,6 +87,12 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <checkstyle.config.file>${basedir}/src/conf/checkstyle/checkstyle.xml</checkstyle.config.file>
     <checkstyle.suppress.file>${basedir}/src/conf/checkstyle/checkstyle-suppressions.xml</checkstyle.suppress.file>
     <checkstyle.resourceExcludes>LICENSE.txt, NOTICE.txt, **/maven-archiver/pom.properties</checkstyle.resourceExcludes>
+    <!--
+      ~ Temporary overrides of versions defined by parent pom.
+      -->
+    <!-- spdx 0.6.0 can require Java 11 depending on undocumented behavior which kicks in for us here. -->
+    <commons.spdx.version>0.5.5</commons.spdx.version>
+    <commons.japicmp.version>0.24.0</commons.japicmp.version>
   </properties>
   <issueManagement>
     <system>jira</system>
@@ -288,40 +292,6 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
           <groupId>org.apache.felix</groupId>
           <artifactId>maven-bundle-plugin</artifactId>
           <version>${commons.felix.version}</version>
-        </plugin>
-        <plugin>
-          <groupId>com.github.siom79.japicmp</groupId>
-          <artifactId>japicmp-maven-plugin</artifactId>
-          <configuration>
-            <parameter>
-              <excludes>
-                <!-- Compress 1.21 -> 1.22 updates ASM from 3.2 to 9.2 for pack200 implementation. -->
-                <exclude>org.apache.commons.compress.harmony.pack200.Segment</exclude>
-                <exclude>org.apache.commons.compress.harmony.pack200.SegmentMethodVisitor</exclude>
-                <exclude>org.apache.commons.compress.harmony.pack200.SegmentAnnotationVisitor</exclude>
-                <exclude>org.apache.commons.compress.harmony.pack200.SegmentFieldVisitor</exclude>
-                <!-- Compress 1.28.0 -> 1.29.0: make TarUtils final -->
-                <exclude>org.apache.commons.compress.archivers.tar.TarUtils#parseFromPAX01SparseHeaders(java.lang.String)</exclude>
-                <exclude>org.apache.commons.compress.archivers.tar.TarUtils#parsePAX01SparseHeaders(java.lang.String)</exclude>
-                <exclude>org.apache.commons.compress.archivers.tar.TarUtils#parsePAX1XSparseHeaders(java.io.InputStream,int)</exclude>
-                <exclude>org.apache.commons.compress.archivers.tar.TarUtils#parsePaxHeaders(java.io.InputStream,java.util.List,java.util.Map)</exclude>
-                <exclude>org.apache.commons.compress.archivers.tar.TarUtils#parsePaxHeaders(java.io.InputStream,java.util.List,java.util.Map,long)</exclude>
-              </excludes>
-              <!--
-                ~ JapiCmp does not support ignoring a specific compatibility change for a single class.
-                ~ As a workaround, we override the change globally.
-                ~
-                ~ TODO: Remove after release 1.29.0.
-                -->
-              <overrideCompatibilityChangeParameters>
-                <overrideCompatibilityChangeParameter>
-                  <compatibilityChange>CLASS_NOW_FINAL</compatibilityChange>
-                  <binaryCompatible>true</binaryCompatible>
-                  <sourceCompatible>true</sourceCompatible>
-                </overrideCompatibilityChangeParameter>
-              </overrideCompatibilityChangeParameters>
-            </parameter>
-          </configuration>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
