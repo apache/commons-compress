@@ -34,12 +34,9 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.Channels;
 import java.nio.channels.SeekableByteChannel;
-import java.nio.file.Files;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
-import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -420,10 +417,6 @@ public class SevenZFile implements Closeable {
      */
     public static boolean matches(final byte[] buffer, final int ignored) {
         return ArrayUtils.startsWith(buffer, SIGNATURE);
-    }
-
-    private static SeekableByteChannel newByteChannel(final File file) throws IOException {
-        return Files.newByteChannel(file.toPath(), EnumSet.of(StandardOpenOption.READ));
     }
 
     private static long readUint64(final ByteBuffer in) throws IOException {

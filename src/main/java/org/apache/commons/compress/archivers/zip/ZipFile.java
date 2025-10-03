@@ -39,7 +39,6 @@ import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.EnumSet;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -278,10 +277,6 @@ public class ZipFile implements Closeable {
             return getCompressedCount();
         }
     }
-
-    private static final String DEFAULT_CHARSET_NAME = StandardCharsets.UTF_8.name();
-
-    private static final EnumSet<StandardOpenOption> READ = EnumSet.of(StandardOpenOption.READ);
 
     private static final int HASH_SIZE = 509;
     static final int NIBLET_MASK = 0x0f;
