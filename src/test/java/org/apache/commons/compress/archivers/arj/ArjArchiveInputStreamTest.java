@@ -22,23 +22,29 @@ package org.apache.commons.compress.archivers.arj;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Calendar;
 import java.util.TimeZone;
 
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 /**
  * Tests {@link ArjArchiveInputStream}.
@@ -114,6 +120,19 @@ class ArjArchiveInputStreamTest extends AbstractTest {
             });
         }
         assertEquals(expected.toString(), result.toString());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "bla.arj", "bla.unix.arj" })
+    void testGetBytesRead(final String resource) throws IOException {
+        final Path path = getPath(resource);
+        try (ArjArchiveInputStream in = ArjArchiveInputStream.builder().setPath(path).get()) {
+            while (in.getNextEntry() != null) {
+                // nop
+            }
+            final long expected = Files.size(path);
+            assertEquals(expected, in.getBytesRead(), "getBytesRead() did not return the expected value");
+        }
     }
 
     @Test
@@ -274,6 +293,95 @@ class ArjArchiveInputStreamTest extends AbstractTest {
             assertEquals(-1, archive.read());
             assertEquals(-1, archive.read());
             assertForEach(archive);
+        }
+    }
+
+    /**
+     * Verifies that reading an ARJ header record cut short at various boundaries
+     * results in an {@link EOFException}.
+     *
+     * <p>The main archive header is at the beginning of the file. Within that header:</p>
+     * <ul>
+     *   <li><b>Basic header size</b> (2 bytes at offsets 0x02–0x03) = {@code 0x002b}.</li>
+     *   <li><b>Fixed header size</b> (aka {@code first_hdr_size}, 1 byte at 0x04) = {@code 0x22}.</li>
+     *   <li>The archive name and comment C-strings follow the fixed header and complete the basic header.</li>
+     *   <li>A 4-byte <b>basic header CRC-32</b> follows the basic header.</li>
+     * </ul>
+     *
+     * @param maxCount absolute truncation point (number of readable bytes from the start of the file)
+     */
+    @ParameterizedTest
+    @ValueSource(longs = {
+            // Empty file.
+            0,
+            // Immediately after the 2-byte signature
+            0x02,
+            // Inside / after the basic-header size (2 bytes at 0x02–0x03)
+            0x03, 0x04,
+            // Just after the fixed-header size (1 byte at 0x04)
+            0x05,
+            // End of fixed header (0x04 + first_hdr_size == 0x26)
+            0x26,
+            // End of basic header after filename/comment (0x04 + basic_hdr_size == 0x2f)
+            0x2f,
+            // Inside / after the basic-header CRC-32 (4 bytes)
+            0x30, 0x33,
+            // Inside the extended-header length (2 bytes)
+            0x34})
+    void testTruncatedMainHeader(long maxCount) throws Exception {
+        try (InputStream input = BoundedInputStream.builder()
+                .setURI(getURI("bla.arj"))
+                .setMaxCount(maxCount)
+                .get()) {
+            ArchiveException ex = assertThrows(ArchiveException.class, () -> ArjArchiveInputStream.builder().setInputStream(input).get());
+            Throwable cause = ex.getCause();
+            assertInstanceOf(EOFException.class, cause, "Expected EOFException as cause of ArchiveException.");
+        }
+    }
+
+    /**
+     * Verifies that reading an ARJ header record cut short at various boundaries
+     * results in an {@link EOFException}.
+     *
+     * <p>The test archive is crafted so that the local file header of the first entry begins at
+     * byte offset {@code 0x0035}. Within that header:</p>
+     * <ul>
+     *   <li><b>Basic header size</b> (2 bytes at offsets 0x02–0x03) = {@code 0x0039}.</li>
+     *   <li><b>Fixed header size</b> (aka {@code first_hdr_size}, 1 byte at 0x04) = {@code 0x2E}.</li>
+     *   <li>The filename and comment C-strings follow the fixed header and complete the basic header.</li>
+     *   <li>A 4-byte <b>basic header CRC-32</b> follows the basic header.</li>
+     * </ul>
+     *
+     * @param maxCount absolute truncation point (number of readable bytes from the start of the file)
+     */
+    @ParameterizedTest
+    @ValueSource(longs = {
+            // Before the local file header signature
+            0x35,
+            // Immediately after the 2-byte signature
+            0x35 + 0x02,
+            // Inside / after the basic-header size (2 bytes at 0x02–0x03)
+            0x35 + 0x03, 0x35 + 0x04,
+            // Just after the fixed-header size (1 byte at 0x04)
+            0x35 + 0x05,
+            // End of fixed header (0x04 + first_hdr_size == 0x32)
+            0x35 + 0x32,
+            // End of basic header after filename/comment (0x04 + basic_hdr_size == 0x3d)
+            0x35 + 0x3d,
+            // Inside / after the basic-header CRC-32 (4 bytes)
+            0x35 + 0x3e, 0x35 + 0x41,
+            // Inside / after the extended-header length (2 bytes)
+            0x35 + 0x42, 0x35 + 0x43,
+            // One byte before the first file’s data
+            0x95
+    })
+    void testTruncatedLocalHeader(long maxCount) throws Exception {
+        try (InputStream input = BoundedInputStream.builder().setURI(getURI("bla.arj")).setMaxCount(maxCount).get();
+             ArjArchiveInputStream archive = ArjArchiveInputStream.builder().setInputStream(input).get()) {
+            assertThrows(EOFException.class, () -> {
+                archive.getNextEntry();
+                IOUtils.skip(archive, Long.MAX_VALUE);
+            });
         }
     }
 }

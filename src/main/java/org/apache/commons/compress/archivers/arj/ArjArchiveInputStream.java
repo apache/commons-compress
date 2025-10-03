@@ -18,9 +18,12 @@
  */
 package org.apache.commons.compress.archivers.arj;
 
+import static org.apache.commons.io.EndianUtils.readSwappedInteger;
+import static org.apache.commons.io.EndianUtils.readSwappedShort;
+import static org.apache.commons.io.EndianUtils.readSwappedUnsignedInteger;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,7 +34,7 @@ import org.apache.commons.compress.archivers.AbstractArchiveBuilder;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
-import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.io.EndianUtils;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.io.input.ChecksumInputStream;
 
@@ -98,7 +101,6 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
         return length >= 2 && (0xff & signature[0]) == ARJ_MAGIC_1 && (0xff & signature[1]) == ARJ_MAGIC_2;
     }
 
-    private final DataInputStream dis;
     private final MainHeader mainHeader;
     private LocalFileHeader currentLocalFileHeader;
     private InputStream currentInputStream;
@@ -118,8 +120,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
     }
 
     private ArjArchiveInputStream(final InputStream inputStream, final Builder builder) throws ArchiveException {
-        super(new DataInputStream(inputStream), builder);
-        dis = (DataInputStream) in;
+        super(inputStream, builder);
         try {
             mainHeader = readMainHeader();
             if ((mainHeader.arjFlags & MainHeader.Flags.GARBLED) != 0) {
@@ -128,6 +129,8 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
             if ((mainHeader.arjFlags & MainHeader.Flags.VOLUME) != 0) {
                 throw new ArchiveException("Multi-volume ARJ files are unsupported");
             }
+        } catch (final ArchiveException e) {
+            throw e;
         } catch (final IOException e) {
             throw new ArchiveException(e.getMessage(), (Throwable) e);
         }
@@ -149,11 +152,6 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
     @Override
     public boolean canReadEntryData(final ArchiveEntry ae) {
         return ae instanceof ArjArchiveEntry && ((ArjArchiveEntry) ae).getMethod() == LocalFileHeader.Methods.STORED;
-    }
-
-    @Override
-    public void close() throws IOException {
-        dis.close();
     }
 
     /**
@@ -188,10 +186,22 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
         currentLocalFileHeader = readLocalFileHeader();
         if (currentLocalFileHeader != null) {
             // @formatter:off
+            final long currentPosition = getBytesRead();
             currentInputStream = BoundedInputStream.builder()
-                    .setInputStream(dis)
+                    .setInputStream(in)
                     .setMaxCount(currentLocalFileHeader.compressedSize)
                     .setPropagateClose(false)
+                    .setAfterRead(read -> {
+                        if (read < 0) {
+                            throw new EOFException(String.format(
+                                    "Truncated ARJ archive: entry '%s' expected %,d bytes, but only %,d were read.",
+                                    currentLocalFileHeader.name,
+                                    currentLocalFileHeader.compressedSize,
+                                    getBytesRead() - currentPosition
+                            ));
+                        }
+                        count(read);
+                    })
                     .get();
             // @formatter:on
             if (currentLocalFileHeader.method == LocalFileHeader.Methods.STORED) {
@@ -225,63 +235,72 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
         return currentInputStream.read(b, off, len);
     }
 
-    private int read16(final DataInputStream dataIn) throws IOException {
-        final int value = dataIn.readUnsignedShort();
+    private static int readUnsignedByte(InputStream in) throws IOException {
+        final int value = in.read();
+        if (value == -1) {
+            throw new EOFException();
+        }
+        return value & 0xff;
+    }
+
+    private int readSwappedUnsignedShort() throws IOException {
+        final int value = EndianUtils.readSwappedUnsignedShort(in);
         count(2);
-        return Integer.reverseBytes(value) >>> 16;
-    }
-
-    private int read32(final DataInputStream dataIn) throws IOException {
-        final int value = dataIn.readInt();
-        count(4);
-        return Integer.reverseBytes(value);
-    }
-
-    private int read8(final DataInputStream dataIn) throws IOException {
-        final int value = dataIn.readUnsignedByte();
-        count(1);
         return value;
     }
 
-    private void readExtraData(final int firstHeaderSize, final DataInputStream firstHeader, final LocalFileHeader localFileHeader) throws IOException {
+    private int readUnsignedByte() throws IOException {
+        final int value = readUnsignedByte(in);
+        count(1);
+        return value & 0xff;
+    }
+
+    private static void readExtraData(final int firstHeaderSize, final InputStream firstHeader, final LocalFileHeader localFileHeader) throws IOException {
         if (firstHeaderSize >= 33) {
-            localFileHeader.extendedFilePosition = read32(firstHeader);
+            localFileHeader.extendedFilePosition = readSwappedInteger(firstHeader);
             if (firstHeaderSize >= 45) {
-                localFileHeader.dateTimeAccessed = read32(firstHeader);
-                localFileHeader.dateTimeCreated = read32(firstHeader);
-                localFileHeader.originalSizeEvenForVolumes = read32(firstHeader);
-                pushedBackBytes(12);
+                localFileHeader.dateTimeAccessed = readSwappedInteger(firstHeader);
+                localFileHeader.dateTimeCreated = readSwappedInteger(firstHeader);
+                localFileHeader.originalSizeEvenForVolumes = readSwappedInteger(firstHeader);
             }
-            pushedBackBytes(4);
         }
     }
 
+    /**
+     * Scans for the next valid ARJ header.
+     *
+     * @return The header bytes, or {@code null} if end of archive.
+     * @throws EOFException If the end of the stream is reached before a valid header is found.
+     * @throws IOException If an I/O error occurs.
+     */
     private byte[] readHeader() throws IOException {
-        boolean found = false;
-        byte[] basicHeaderBytes = null;
-        do {
+        byte[] basicHeaderBytes;
+        // TODO: Explain why we are scanning for a valid ARJ header
+        //       and don't throw, when an invalid/corrupted header is found,
+        //       which might indicate a corrupted archive.
+        while (true) {
             int first;
-            int second = read8(dis);
+            int second = readUnsignedByte();
             do {
                 first = second;
-                second = read8(dis);
+                second = readUnsignedByte();
             } while (first != ARJ_MAGIC_1 && second != ARJ_MAGIC_2);
-            final int basicHeaderSize = read16(dis);
+            final int basicHeaderSize = readSwappedUnsignedShort();
             if (basicHeaderSize == 0) {
                 // end of archive
                 return null;
-            }
-            if (basicHeaderSize <= 2600) {
-                basicHeaderBytes = readRange(dis, basicHeaderSize);
-                final long basicHeaderCrc32 = read32(dis) & 0xFFFFFFFFL;
+            } else if (basicHeaderSize <= 2600) {
+                basicHeaderBytes = org.apache.commons.io.IOUtils.toByteArray(in, basicHeaderSize);
+                count(basicHeaderSize);
+                final long basicHeaderCrc32 = readSwappedUnsignedInteger(in);
+                count(4);
                 final CRC32 crc32 = new CRC32();
                 crc32.update(basicHeaderBytes);
                 if (basicHeaderCrc32 == crc32.getValue()) {
-                    found = true;
+                    return basicHeaderBytes;
                 }
             }
-        } while (!found);
-        return basicHeaderBytes;
+        }
     }
 
     private LocalFileHeader readLocalFileHeader() throws IOException {
@@ -289,100 +308,101 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
         if (basicHeaderBytes == null) {
             return null;
         }
-        try (DataInputStream basicHeader = new DataInputStream(new ByteArrayInputStream(basicHeaderBytes))) {
+        final LocalFileHeader localFileHeader = new LocalFileHeader();
+        try (InputStream basicHeader = new ByteArrayInputStream(basicHeaderBytes)) {
 
-            final int firstHeaderSize = basicHeader.readUnsignedByte();
-            final byte[] firstHeaderBytes = readRange(basicHeader, firstHeaderSize - 1);
-            pushedBackBytes(firstHeaderBytes.length);
-            try (DataInputStream firstHeader = new DataInputStream(new ByteArrayInputStream(firstHeaderBytes))) {
+            final int firstHeaderSize = readUnsignedByte(basicHeader);
+            try (InputStream firstHeader = BoundedInputStream.builder().setInputStream(basicHeader).setMaxCount(firstHeaderSize - 1).get()) {
 
-                final LocalFileHeader localFileHeader = new LocalFileHeader();
-                localFileHeader.archiverVersionNumber = firstHeader.readUnsignedByte();
-                localFileHeader.minVersionToExtract = firstHeader.readUnsignedByte();
-                localFileHeader.hostOS = firstHeader.readUnsignedByte();
-                localFileHeader.arjFlags = firstHeader.readUnsignedByte();
-                localFileHeader.method = firstHeader.readUnsignedByte();
-                localFileHeader.fileType = firstHeader.readUnsignedByte();
-                localFileHeader.reserved = firstHeader.readUnsignedByte();
-                localFileHeader.dateTimeModified = read32(firstHeader);
-                localFileHeader.compressedSize = 0xffffFFFFL & read32(firstHeader);
-                localFileHeader.originalSize = 0xffffFFFFL & read32(firstHeader);
-                localFileHeader.originalCrc32 = 0xffffFFFFL & read32(firstHeader);
-                localFileHeader.fileSpecPosition = read16(firstHeader);
-                localFileHeader.fileAccessMode = read16(firstHeader);
-                pushedBackBytes(20);
-                localFileHeader.firstChapter = firstHeader.readUnsignedByte();
-                localFileHeader.lastChapter = firstHeader.readUnsignedByte();
+                localFileHeader.archiverVersionNumber = readUnsignedByte(firstHeader);
+                localFileHeader.minVersionToExtract = readUnsignedByte(firstHeader);
+                localFileHeader.hostOS = readUnsignedByte(firstHeader);
+                localFileHeader.arjFlags = readUnsignedByte(firstHeader);
+                localFileHeader.method = readUnsignedByte(firstHeader);
+                localFileHeader.fileType = readUnsignedByte(firstHeader);
+                localFileHeader.reserved = readUnsignedByte(firstHeader);
+                localFileHeader.dateTimeModified = readSwappedInteger(firstHeader);
+                localFileHeader.compressedSize = readSwappedUnsignedInteger(firstHeader);
+                localFileHeader.originalSize = readSwappedUnsignedInteger(firstHeader);
+                localFileHeader.originalCrc32 = readSwappedUnsignedInteger(firstHeader);
+                localFileHeader.fileSpecPosition = readSwappedShort(firstHeader);
+                localFileHeader.fileAccessMode = readSwappedShort(firstHeader);
+                localFileHeader.firstChapter = readUnsignedByte(firstHeader);
+                localFileHeader.lastChapter = readUnsignedByte(firstHeader);
 
                 readExtraData(firstHeaderSize, firstHeader, localFileHeader);
-
-                localFileHeader.name = readString(basicHeader);
-                localFileHeader.comment = readString(basicHeader);
-
-                final ArrayList<byte[]> extendedHeaders = new ArrayList<>();
-                int extendedHeaderSize;
-                while ((extendedHeaderSize = read16(dis)) > 0) {
-                    final byte[] extendedHeaderBytes = readRange(dis, extendedHeaderSize);
-                    final long extendedHeaderCrc32 = 0xffffFFFFL & read32(dis);
-                    final CRC32 crc32 = new CRC32();
-                    crc32.update(extendedHeaderBytes);
-                    if (extendedHeaderCrc32 != crc32.getValue()) {
-                        throw new ArchiveException("Extended header CRC32 verification failure");
-                    }
-                    extendedHeaders.add(extendedHeaderBytes);
-                }
-                localFileHeader.extendedHeaders = extendedHeaders.toArray(new byte[0][]);
-
-                return localFileHeader;
             }
+
+            localFileHeader.name = readString(basicHeader);
+            localFileHeader.comment = readString(basicHeader);
         }
+
+        final ArrayList<byte[]> extendedHeaders = new ArrayList<>();
+        int extendedHeaderSize;
+        while ((extendedHeaderSize = readSwappedUnsignedShort()) > 0) {
+            final byte[] extendedHeaderBytes = org.apache.commons.io.IOUtils.toByteArray(in, extendedHeaderSize);
+            count(extendedHeaderSize);
+            final long extendedHeaderCrc32 = readSwappedUnsignedInteger(in);
+            count(4);
+            final CRC32 crc32 = new CRC32();
+            crc32.update(extendedHeaderBytes);
+            if (extendedHeaderCrc32 != crc32.getValue()) {
+                throw new ArchiveException("Extended header CRC32 verification failure");
+            }
+            extendedHeaders.add(extendedHeaderBytes);
+        }
+        localFileHeader.extendedHeaders = extendedHeaders.toArray(new byte[0][]);
+
+        return localFileHeader;
     }
 
     private MainHeader readMainHeader() throws IOException {
-        final byte[] basicHeaderBytes = readHeader();
-        if (basicHeaderBytes == null) {
-            throw new ArchiveException("Archive ends without any headers");
+        final byte[] basicHeaderBytes;
+        try {
+            basicHeaderBytes = readHeader();
+        } catch (final EOFException e) {
+            throw new ArchiveException("Archive ends without any headers", (Throwable) e);
         }
-        final DataInputStream basicHeader = new DataInputStream(new ByteArrayInputStream(basicHeaderBytes));
-
-        final int firstHeaderSize = basicHeader.readUnsignedByte();
-        final byte[] firstHeaderBytes = readRange(basicHeader, firstHeaderSize - 1);
-        pushedBackBytes(firstHeaderBytes.length);
-
-        final DataInputStream firstHeader = new DataInputStream(new ByteArrayInputStream(firstHeaderBytes));
-
         final MainHeader header = new MainHeader();
-        header.archiverVersionNumber = firstHeader.readUnsignedByte();
-        header.minVersionToExtract = firstHeader.readUnsignedByte();
-        header.hostOS = firstHeader.readUnsignedByte();
-        header.arjFlags = firstHeader.readUnsignedByte();
-        header.securityVersion = firstHeader.readUnsignedByte();
-        header.fileType = firstHeader.readUnsignedByte();
-        header.reserved = firstHeader.readUnsignedByte();
-        header.dateTimeCreated = read32(firstHeader);
-        header.dateTimeModified = read32(firstHeader);
-        header.archiveSize = 0xffffFFFFL & read32(firstHeader);
-        header.securityEnvelopeFilePosition = read32(firstHeader);
-        header.fileSpecPosition = read16(firstHeader);
-        header.securityEnvelopeLength = read16(firstHeader);
-        pushedBackBytes(20); // count has already counted them via readRange
-        header.encryptionVersion = firstHeader.readUnsignedByte();
-        header.lastChapter = firstHeader.readUnsignedByte();
+        try (InputStream basicHeader = new ByteArrayInputStream(basicHeaderBytes)) {
 
-        if (firstHeaderSize >= 33) {
-            header.arjProtectionFactor = firstHeader.readUnsignedByte();
-            header.arjFlags2 = firstHeader.readUnsignedByte();
-            firstHeader.readUnsignedByte();
-            firstHeader.readUnsignedByte();
+            final int firstHeaderSize = readUnsignedByte(basicHeader);
+            try (InputStream firstHeader = BoundedInputStream.builder().setInputStream(basicHeader).setMaxCount(firstHeaderSize - 1).get()) {
+
+                header.archiverVersionNumber = readUnsignedByte(firstHeader);
+                header.minVersionToExtract = readUnsignedByte(firstHeader);
+                header.hostOS = readUnsignedByte(firstHeader);
+                header.arjFlags = readUnsignedByte(firstHeader);
+                header.securityVersion = readUnsignedByte(firstHeader);
+                header.fileType = readUnsignedByte(firstHeader);
+                header.reserved = readUnsignedByte(firstHeader);
+                header.dateTimeCreated = readSwappedInteger(firstHeader);
+                header.dateTimeModified = readSwappedInteger(firstHeader);
+                header.archiveSize = readSwappedUnsignedInteger(firstHeader);
+                header.securityEnvelopeFilePosition = readSwappedInteger(firstHeader);
+                header.fileSpecPosition = readSwappedShort(firstHeader);
+                header.securityEnvelopeLength = readSwappedShort(firstHeader);
+                header.encryptionVersion = readUnsignedByte(firstHeader);
+                header.lastChapter = readUnsignedByte(firstHeader);
+
+                if (firstHeaderSize >= 33) {
+                    header.arjProtectionFactor = readUnsignedByte(firstHeader);
+                    header.arjFlags2 = readUnsignedByte(firstHeader);
+                    readUnsignedByte(firstHeader);
+                    readUnsignedByte(firstHeader);
+                }
+            }
+
+            header.name = readString(basicHeader);
+            header.comment = readString(basicHeader);
         }
 
-        header.name = readString(basicHeader);
-        header.comment = readString(basicHeader);
-
-        final int extendedHeaderSize = read16(dis);
+        final int extendedHeaderSize = readSwappedUnsignedShort();
         if (extendedHeaderSize > 0) {
-            header.extendedHeaderBytes = readRange(dis, extendedHeaderSize);
-            final long extendedHeaderCrc32 = 0xffffFFFFL & read32(dis);
+            header.extendedHeaderBytes = org.apache.commons.io.IOUtils.toByteArray(in, extendedHeaderSize);
+            count(extendedHeaderSize);
+            final long extendedHeaderCrc32 = readSwappedUnsignedInteger(in);
+            count(4);
             final CRC32 crc32 = new CRC32();
             crc32.update(header.extendedHeaderBytes);
             if (extendedHeaderCrc32 != crc32.getValue()) {
@@ -393,19 +413,10 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
         return header;
     }
 
-    private byte[] readRange(final InputStream in, final int len) throws IOException {
-        final byte[] b = IOUtils.readRange(in, len);
-        count(b.length);
-        if (b.length < len) {
-            throw new EOFException();
-        }
-        return b;
-    }
-
-    private String readString(final DataInputStream dataIn) throws IOException {
+    private String readString(final InputStream dataIn) throws IOException {
         try (ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
             int nextByte;
-            while ((nextByte = dataIn.readUnsignedByte()) != 0) {
+            while ((nextByte = readUnsignedByte(dataIn)) != 0) {
                 buffer.write(nextByte);
             }
             return buffer.toString(getCharset().name());
