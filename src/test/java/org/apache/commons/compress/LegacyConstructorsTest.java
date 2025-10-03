@@ -246,7 +246,7 @@ class LegacyConstructorsTest extends AbstractTest {
 
     static Stream<Arguments> testZipFileConstructors() throws IOException {
         final Path path = getPath("bla.zip");
-        final String defaultEncoding = Charset.defaultCharset().name();
+        final String defaultEncoding = StandardCharsets.UTF_8.name();
         final String otherEncoding = "UTF-8".equals(defaultEncoding) ? "US-ASCII" : "UTF-8";
         return Stream.of(
                 Arguments.of(new ZipFile(path.toFile()), defaultEncoding, true),
