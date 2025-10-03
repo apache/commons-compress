@@ -25,6 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
+import org.apache.commons.compress.archivers.AbstractArchiveBuilder;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.utils.ArchiveUtils;
@@ -52,7 +53,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
      *
      * @since 1.29.0
      */
-    public static final class Builder extends AbstractBuilder<ArArchiveInputStream, Builder> {
+    public static final class Builder extends AbstractArchiveBuilder<ArArchiveInputStream, Builder> {
 
         private Builder() {
             setCharset(StandardCharsets.US_ASCII);
@@ -167,7 +168,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
     private final byte[] metaData = new byte[NAME_LEN + LAST_MODIFIED_LEN + USER_ID_LEN + GROUP_ID_LEN + FILE_MODE_LEN + LENGTH_LEN];
 
     private ArArchiveInputStream(final Builder builder) throws IOException {
-        this(builder.getInputStream(), builder);
+        super(builder);
     }
 
     /**
@@ -180,7 +181,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
     }
 
     private ArArchiveInputStream(final InputStream inputStream, final Builder builder) {
-        super(inputStream, builder.getCharset());
+        super(inputStream, builder);
     }
 
     private int asInt(final byte[] byteArray, final int offset, final int len, final boolean treatBlankAsZero) throws IOException {

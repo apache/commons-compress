@@ -160,10 +160,6 @@ class SevenZFileTest extends AbstractTest {
 
     @Test
     void test7zMultiVolumeUnarchive() throws Exception {
-        try (@SuppressWarnings("deprecation")
-        SevenZFile sevenZFile = new SevenZFile(MultiReadOnlySeekableByteChannel.forFiles(getFile("bla-multi.7z.001"), getFile("bla-multi.7z.002")))) {
-            test7zUnarchive(sevenZFile, SevenZMethod.LZMA2);
-        }
         try (SevenZFile sevenZFile = SevenZFile.builder()
                 .setSeekableByteChannel(MultiReadOnlySeekableByteChannel.forFiles(getFile("bla-multi.7z.001"), getFile("bla-multi.7z.002"))).get()) {
             test7zUnarchive(sevenZFile, SevenZMethod.LZMA2);
@@ -184,10 +180,6 @@ class SevenZFileTest extends AbstractTest {
     }
 
     private void test7zUnarchive(final File file, final SevenZMethod method, final byte[] password) throws Exception {
-        try (@SuppressWarnings("deprecation")
-        SevenZFile sevenZFile = new SevenZFile(file, password)) {
-            test7zUnarchive(sevenZFile, method);
-        }
         try (SevenZFile sevenZFile = SevenZFile.builder().setFile(file).setPassword(password).get()) {
             test7zUnarchive(sevenZFile, method);
         }
@@ -198,11 +190,6 @@ class SevenZFileTest extends AbstractTest {
     }
 
     private void test7zUnarchive(final File file, final SevenZMethod m, final char[] password, final boolean tryToRecoverBrokenArchives) throws Exception {
-        try (@SuppressWarnings("deprecation")
-        SevenZFile sevenZFile = new SevenZFile(file, password,
-                SevenZFileOptions.builder().withTryToRecoverBrokenArchives(tryToRecoverBrokenArchives).build())) {
-            test7zUnarchive(sevenZFile, m);
-        }
         try (SevenZFile sevenZFile = SevenZFile.builder().setFile(file).setPassword(password).setTryToRecoverBrokenArchives(tryToRecoverBrokenArchives).get()) {
             test7zUnarchive(sevenZFile, m);
         }
@@ -324,8 +311,7 @@ class SevenZFileTest extends AbstractTest {
 
     @Test
     void testExtractSpecifiedFileDeprecated() throws Exception {
-        try (@SuppressWarnings("deprecation")
-        SevenZFile sevenZFile = new SevenZFile(getFile("COMPRESS-256.7z"))) {
+        try (SevenZFile sevenZFile = SevenZFile.builder().setURI(getURI("COMPRESS-256.7z")).get()) {
             // @formatter:off
             final String testTxtContents =
                     "111111111111111111111111111000101011\n"
@@ -363,10 +349,6 @@ class SevenZFileTest extends AbstractTest {
         }
         try (SevenZFile sevenZFile = SevenZFile.builder().setSeekableByteChannel(Files.newByteChannel(getFile("bla.deflate64.7z").toPath())).get()) {
             assertNull(sevenZFile.getDefaultName());
-        }
-        try (@SuppressWarnings("deprecation")
-        SevenZFile sevenZFile = new SevenZFile(Files.newByteChannel(getFile("bla.deflate64.7z").toPath()), "foo")) {
-            assertEquals("foo~", sevenZFile.getDefaultName());
         }
         try (SevenZFile sevenZFile = SevenZFile.builder().setSeekableByteChannel(Files.newByteChannel(getFile("bla.deflate64.7z").toPath()))
                 .setDefaultName("foo").get()) {
@@ -407,16 +389,6 @@ class SevenZFileTest extends AbstractTest {
 
     @Test
     void testGivenNameWinsOverDefaultName() throws Exception {
-        try (@SuppressWarnings("deprecation")
-        SevenZFile sevenZFile = new SevenZFile(getFile("bla.7z"), SevenZFileOptions.builder().withUseDefaultNameForUnnamedEntries(true).build())) {
-            SevenZArchiveEntry ae = sevenZFile.getNextEntry();
-            assertNotNull(ae);
-            assertEquals("test1.xml", ae.getName());
-            ae = sevenZFile.getNextEntry();
-            assertNotNull(ae);
-            assertEquals("test2.xml", ae.getName());
-            assertNull(sevenZFile.getNextEntry());
-        }
         try (SevenZFile sevenZFile = SevenZFile.builder().setFile(getFile("bla.7z")).setUseDefaultNameForUnnamedEntries(true).get()) {
             SevenZArchiveEntry ae = sevenZFile.getNextEntry();
             assertNotNull(ae);
@@ -512,25 +484,12 @@ class SevenZFileTest extends AbstractTest {
         testFiles.add(getPath("COMPRESS-542-endheadercorrupted.7z"));
         testFiles.add(getPath("COMPRESS-542-endheadercorrupted2.7z"));
         for (final Path file : testFiles) {
-            {
-                final IOException e = assertThrows(ArchiveException.class, () -> {
-                    try (@SuppressWarnings("deprecation")
-                    SevenZFile sevenZFile = new SevenZFile(Files.newByteChannel(file),
-                            SevenZFileOptions.builder().withTryToRecoverBrokenArchives(true).build())) {
-                        // do nothing
-                    }
-                }, "Expected IOException: start header corrupt and unable to guess end header");
-                assertEquals("Start header corrupt and unable to guess end header", e.getMessage());
-            }
-            {
-                final IOException e = assertThrows(ArchiveException.class, () -> {
-                    try (SevenZFile sevenZFile = SevenZFile.builder().setSeekableByteChannel(Files.newByteChannel(file)).setTryToRecoverBrokenArchives(true)
-                            .get()) {
-                        // do nothing
-                    }
-                }, "Expected IOException: start header corrupt and unable to guess end header");
-                assertEquals("Start header corrupt and unable to guess end header", e.getMessage());
-            }
+            final IOException e = assertThrows(ArchiveException.class, () -> {
+                try (SevenZFile sevenZFile = SevenZFile.builder().setPath(file).setTryToRecoverBrokenArchives(true).get()) {
+                    // do nothing
+                }
+            }, "Expected IOException: start header corrupt and unable to guess end header");
+            assertEquals("Start header corrupt and unable to guess end header", e.getMessage());
         }
     }
 
@@ -554,8 +513,6 @@ class SevenZFileTest extends AbstractTest {
                     .setPassword(password)
                     .setTryToRecoverBrokenArchives(true)
                     .get().close());
-        assertThrows(ArchiveException.class,
-                () -> new SevenZFile(new File(fixture), password).close());
         // @formatter:on
     }
 

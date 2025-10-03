@@ -35,8 +35,6 @@ import java.nio.ByteOrder;
 import java.nio.channels.Channels;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
-import java.nio.file.OpenOption;
-import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,12 +49,10 @@ import java.util.zip.CRC32;
 import java.util.zip.CheckedInputStream;
 
 import org.apache.commons.compress.MemoryLimitException;
+import org.apache.commons.compress.archivers.AbstractArchiveBuilder;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
-import org.apache.commons.io.build.AbstractOrigin.ByteArrayOrigin;
-import org.apache.commons.io.build.AbstractOrigin.ChannelOrigin;
-import org.apache.commons.io.build.AbstractStreamBuilder;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.io.input.ChecksumInputStream;
 import org.apache.commons.lang3.ArrayUtils;
@@ -178,13 +174,14 @@ public class SevenZFile implements Closeable {
      *
      * @since 1.26.0
      */
-    public static class Builder extends AbstractStreamBuilder<SevenZFile, Builder> {
+    public static class Builder extends AbstractArchiveBuilder<SevenZFile, Builder> {
 
         static final int MEMORY_LIMIT_KIB = Integer.MAX_VALUE;
         static final boolean USE_DEFAULTNAME_FOR_UNNAMED_ENTRIES = false;
         static final boolean TRY_TO_RECOVER_BROKEN_ARCHIVES = false;
 
         private String defaultName = DEFAULT_FILE_NAME;
+        private String name;
         private byte[] password;
         private int maxMemoryLimitKiB = MEMORY_LIMIT_KIB;
         private boolean useDefaultNameForUnnamedEntries = USE_DEFAULTNAME_FOR_UNNAMED_ENTRIES;
@@ -198,29 +195,7 @@ public class SevenZFile implements Closeable {
         @SuppressWarnings("resource") // Caller closes
         @Override
         public SevenZFile get() throws IOException {
-            final SeekableByteChannel actualChannel;
-            final String actualDescription;
-            final boolean isChannelOrigin = checkOrigin() instanceof ChannelOrigin;
-            boolean isSeekableByteChannellOrigin = false;
-            if (isChannelOrigin) {
-                actualChannel = getChannel(SeekableByteChannel.class);
-                isSeekableByteChannellOrigin = true;
-                actualDescription = defaultName;
-            } else if (checkOrigin() instanceof ByteArrayOrigin) {
-                actualChannel = getChannel(SeekableByteChannel.class);
-                actualDescription = defaultName;
-            } else {
-                OpenOption[] openOptions = getOpenOptions();
-                if (ArrayUtils.isEmpty(openOptions)) {
-                    openOptions = new OpenOption[] { StandardOpenOption.READ };
-                }
-                final Path path = getPath();
-                actualChannel = Files.newByteChannel(path, openOptions);
-                actualDescription = path.toAbsolutePath().toString();
-            }
-            final boolean closeOnError = isSeekableByteChannellOrigin;
-            return new SevenZFile(actualChannel, actualDescription, password, closeOnError, maxMemoryLimitKiB, useDefaultNameForUnnamedEntries,
-                    tryToRecoverBrokenArchives);
+            return new SevenZFile(this);
         }
 
         /**
@@ -232,6 +207,22 @@ public class SevenZFile implements Closeable {
         public Builder setDefaultName(final String defaultName) {
             this.defaultName = defaultName;
             return this;
+        }
+
+        Builder setName(final String name) {
+            this.name = name;
+            return this;
+        }
+
+        String getName() {
+            if (name == null) {
+                try {
+                    name = getPath().toAbsolutePath().toString();
+                } catch (UnsupportedOperationException e) {
+                    name = defaultName;
+                }
+            }
+            return name;
         }
 
         /**
@@ -260,6 +251,14 @@ public class SevenZFile implements Closeable {
          */
         public Builder setMaxMemoryLimitKiB(final int maxMemoryLimitKiB) {
             this.maxMemoryLimitKiB = maxMemoryLimitKiB;
+            return this;
+        }
+
+        Builder setOptions(final SevenZFileOptions options) {
+            Objects.requireNonNull(options, "options");
+            this.maxMemoryLimitKiB = options.getMaxMemoryLimitInKb();
+            this.useDefaultNameForUnnamedEntries = options.getUseDefaultNameForUnnamedEntries();
+            this.tryToRecoverBrokenArchives = options.getTryToRecoverBrokenArchives();
             return this;
         }
 
@@ -301,7 +300,9 @@ public class SevenZFile implements Closeable {
          *
          * @param seekableByteChannel the input channel.
          * @return {@code this} instance.
+         * @deprecated Since 1.29.0, use {@link #setChannel} instead.
          */
+        @Deprecated
         public Builder setSeekableByteChannel(final SeekableByteChannel seekableByteChannel) {
             return setChannel(seekableByteChannel);
         }
@@ -496,7 +497,7 @@ public class SevenZFile implements Closeable {
      */
     @Deprecated
     public SevenZFile(final File fileName) throws IOException {
-        this(fileName, SevenZFileOptions.DEFAULT);
+        this(builder().setFile(fileName));
     }
 
     /**
@@ -510,7 +511,7 @@ public class SevenZFile implements Closeable {
     @SuppressWarnings("resource") // caller closes
     @Deprecated
     public SevenZFile(final File file, final byte[] password) throws IOException {
-        this(newByteChannel(file), file.getAbsolutePath(), password, true, SevenZFileOptions.DEFAULT);
+        this(builder().setFile(file).setPassword(password));
     }
 
     /**
@@ -524,7 +525,7 @@ public class SevenZFile implements Closeable {
      */
     @Deprecated
     public SevenZFile(final File file, final char[] password) throws IOException {
-        this(file, password, SevenZFileOptions.DEFAULT);
+        this(builder().setFile(file).setPassword(password));
     }
 
     /**
@@ -540,8 +541,7 @@ public class SevenZFile implements Closeable {
     @SuppressWarnings("resource") // caller closes
     @Deprecated
     public SevenZFile(final File file, final char[] password, final SevenZFileOptions options) throws IOException {
-        this(newByteChannel(file), // NOSONAR
-                file.getAbsolutePath(), AES256SHA256Decoder.utf16Decode(password), true, options);
+        this(builder().setFile(file).setPassword(password).setOptions(options));
     }
 
     /**
@@ -555,7 +555,7 @@ public class SevenZFile implements Closeable {
      */
     @Deprecated
     public SevenZFile(final File file, final SevenZFileOptions options) throws IOException {
-        this(file, null, options);
+        this(builder().setFile(file).setOptions(options));
     }
 
     /**
@@ -571,7 +571,7 @@ public class SevenZFile implements Closeable {
      */
     @Deprecated
     public SevenZFile(final SeekableByteChannel channel) throws IOException {
-        this(channel, SevenZFileOptions.DEFAULT);
+        this(builder().setChannel(channel));
     }
 
     /**
@@ -588,7 +588,7 @@ public class SevenZFile implements Closeable {
      */
     @Deprecated
     public SevenZFile(final SeekableByteChannel channel, final byte[] password) throws IOException {
-        this(channel, DEFAULT_FILE_NAME, password);
+        this(builder().setChannel(channel).setPassword(password));
     }
 
     /**
@@ -605,7 +605,7 @@ public class SevenZFile implements Closeable {
      */
     @Deprecated
     public SevenZFile(final SeekableByteChannel channel, final char[] password) throws IOException {
-        this(channel, password, SevenZFileOptions.DEFAULT);
+        this(builder().setChannel(channel).setPassword(password));
     }
 
     /**
@@ -623,7 +623,7 @@ public class SevenZFile implements Closeable {
      */
     @Deprecated
     public SevenZFile(final SeekableByteChannel channel, final char[] password, final SevenZFileOptions options) throws IOException {
-        this(channel, DEFAULT_FILE_NAME, password, options);
+        this(builder().setChannel(channel).setPassword(password).setOptions(options));
     }
 
     /**
@@ -640,7 +640,7 @@ public class SevenZFile implements Closeable {
      */
     @Deprecated
     public SevenZFile(final SeekableByteChannel channel, final SevenZFileOptions options) throws IOException {
-        this(channel, DEFAULT_FILE_NAME, null, options);
+        this(builder().setChannel(channel).setOptions(options));
     }
 
     /**
@@ -657,7 +657,7 @@ public class SevenZFile implements Closeable {
      */
     @Deprecated
     public SevenZFile(final SeekableByteChannel channel, final String fileName) throws IOException {
-        this(channel, fileName, SevenZFileOptions.DEFAULT);
+        this(builder().setChannel(channel).setName(fileName));
     }
 
     /**
@@ -675,50 +675,28 @@ public class SevenZFile implements Closeable {
      */
     @Deprecated
     public SevenZFile(final SeekableByteChannel channel, final String fileName, final byte[] password) throws IOException {
-        this(channel, fileName, password, false, SevenZFileOptions.DEFAULT);
+        this(builder().setChannel(channel).setName(fileName).setPassword(password));
     }
 
-    private SevenZFile(final SeekableByteChannel channel, final String fileName, final byte[] password, final boolean closeOnError, final int maxMemoryLimitKiB,
-            final boolean useDefaultNameForUnnamedEntries, final boolean tryToRecoverBrokenArchives) throws IOException {
-        boolean succeeded = false;
-        this.channel = channel;
-        this.fileName = fileName;
-        this.maxMemoryLimitKiB = maxMemoryLimitKiB;
-        this.useDefaultNameForUnnamedEntries = useDefaultNameForUnnamedEntries;
-        this.tryToRecoverBrokenArchives = tryToRecoverBrokenArchives;
+    private SevenZFile(Builder builder) throws IOException {
+        this.channel = builder.getChannel(SeekableByteChannel.class);
         try {
+            this.fileName = builder.getName();
+            this.maxMemoryLimitKiB = builder.maxMemoryLimitKiB;
+            this.useDefaultNameForUnnamedEntries = builder.useDefaultNameForUnnamedEntries;
+            this.tryToRecoverBrokenArchives = builder.tryToRecoverBrokenArchives;
+            final byte[] password = builder.password;
             archive = readHeaders(password);
-            if (password != null) {
-                this.password = Arrays.copyOf(password, password.length);
-            } else {
-                this.password = null;
-            }
-            succeeded = true;
+            this.password = password != null ? Arrays.copyOf(password, password.length) : null;
         } catch (final ArithmeticException | IllegalArgumentException e) {
-            throw new ArchiveException(e);
-        } finally {
-            if (!succeeded && closeOnError) {
-                this.channel.close();
+            final ArchiveException archiveException = new ArchiveException(e);
+            try {
+                channel.close();
+            } catch (final IOException suppressed) {
+                archiveException.addSuppressed(suppressed);
             }
+            throw archiveException;
         }
-    }
-
-    /**
-     * Constructs a new instance.
-     *
-     * @param channel      the channel to read.
-     * @param fileName     name of the archive - only used for error reporting.
-     * @param password     optional password if the archive is encrypted.
-     * @param closeOnError closes the channel on error.
-     * @param options      options.
-     * @throws IOException if reading the archive fails
-     * @deprecated Use {@link Builder#get()}.
-     */
-    @Deprecated
-    private SevenZFile(final SeekableByteChannel channel, final String fileName, final byte[] password, final boolean closeOnError,
-            final SevenZFileOptions options) throws IOException {
-        this(channel, fileName, password, closeOnError, options.getMaxMemoryLimitInKb(), options.getUseDefaultNameForUnnamedEntries(),
-                options.getTryToRecoverBrokenArchives());
     }
 
     /**
@@ -736,7 +714,7 @@ public class SevenZFile implements Closeable {
      */
     @Deprecated
     public SevenZFile(final SeekableByteChannel channel, final String fileName, final char[] password) throws IOException {
-        this(channel, fileName, password, SevenZFileOptions.DEFAULT);
+        this(builder().setChannel(channel).setName(fileName).setPassword(password));
     }
 
     /**
@@ -755,7 +733,7 @@ public class SevenZFile implements Closeable {
      */
     @Deprecated
     public SevenZFile(final SeekableByteChannel channel, final String fileName, final char[] password, final SevenZFileOptions options) throws IOException {
-        this(channel, fileName, AES256SHA256Decoder.utf16Decode(password), false, options);
+        this(builder().setChannel(channel).setName(fileName).setPassword(password).setOptions(options));
     }
 
     /**
@@ -773,7 +751,7 @@ public class SevenZFile implements Closeable {
      */
     @Deprecated
     public SevenZFile(final SeekableByteChannel channel, final String fileName, final SevenZFileOptions options) throws IOException {
-        this(channel, fileName, null, false, options);
+        this(builder().setChannel(channel).setName(fileName).setOptions(options));
     }
 
     private InputStream buildDecoderStack(final Folder folder, final long folderOffset, final int firstPackStreamIndex, final SevenZArchiveEntry entry)

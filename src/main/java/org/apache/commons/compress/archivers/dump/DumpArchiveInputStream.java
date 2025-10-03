@@ -29,6 +29,7 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Stack;
 
+import org.apache.commons.compress.archivers.AbstractArchiveBuilder;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
@@ -60,7 +61,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
      *
      * @since 1.29.0
      */
-    public static final class Builder extends AbstractBuilder<DumpArchiveInputStream, Builder> {
+    public static final class Builder extends AbstractArchiveBuilder<DumpArchiveInputStream, Builder> {
 
         private Builder() {
         }
@@ -153,7 +154,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
     }
 
     private DumpArchiveInputStream(final InputStream is, final Builder builder) throws ArchiveException {
-        super(is, builder.getCharset());
+        super(is, builder);
         this.raw = new TapeInputStream(is);
         this.hasHitEOF = false;
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(builder.getCharset());

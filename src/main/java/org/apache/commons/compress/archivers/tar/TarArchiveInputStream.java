@@ -204,7 +204,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
     }
 
     private TarArchiveInputStream(final InputStream inputStream, final Builder builder) {
-        super(inputStream, builder.getCharset());
+        super(inputStream, builder);
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(builder.getCharset());
         this.recordBuffer = new byte[builder.getRecordSize()];
         this.blockSize = builder.getBlockSize();
