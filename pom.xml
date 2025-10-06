@@ -418,8 +418,6 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
               <rules>
                 <requireProperty>
                   <property>project.parent.version</property>
-                  <regex>88</regex>
-                  <regexMessage>Please remove the override of the `commons.japicmp.version` property in the pom.xml.</regexMessage>
                 </requireProperty>
               </rules>
             </configuration>
