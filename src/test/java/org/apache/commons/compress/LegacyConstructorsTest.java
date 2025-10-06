@@ -100,8 +100,7 @@ class LegacyConstructorsTest extends AbstractTest {
     void testArjConstructor() throws Exception {
         try (InputStream inputStream = Files.newInputStream(getPath("bla.arj"));
                 ArjArchiveInputStream archiveInputStream = new ArjArchiveInputStream(inputStream, "US-ASCII")) {
-            // Arj wraps the input stream in a DataInputStream
-            assertEquals(inputStream, getNestedInputStream(getNestedInputStream(archiveInputStream)));
+            assertEquals(inputStream, getNestedInputStream(archiveInputStream));
             assertEquals(US_ASCII, archiveInputStream.getCharset());
         }
     }
