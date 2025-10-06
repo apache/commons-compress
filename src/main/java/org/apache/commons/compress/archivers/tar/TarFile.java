@@ -224,7 +224,9 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
             this.recordBuffer = ByteBuffer.allocate(this.recordSize);
             this.blockSize = builder.getBlockSize();
             this.lenient = builder.isLenient();
-            // Read all entries eagerly
+            // Populate `entries` explicitly here instead of using `forEach`/`stream`,
+            // because both rely on `entries` internally.
+            // Using them would cause a self-referential loop and leave `entries` empty.
             TarArchiveEntry entry;
             while ((entry = getNextTarEntry()) != null) {
                 entries.add(entry);
