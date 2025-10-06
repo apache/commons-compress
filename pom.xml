@@ -408,6 +408,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
+        <version>3.6.2</version>
         <executions>
           <execution>
             <id>cleanup-parent-upgrade</id>
@@ -418,7 +419,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
               <rules>
                 <requireProperty>
                   <property>project.parent.version</property>
-                  <regex>\s*88\s*</regex>
+                  <regex>88</regex>
                   <regexMessage>Please remove `commons.japicmp.version` override.</regexMessage>
                 </requireProperty>
               </rules>
