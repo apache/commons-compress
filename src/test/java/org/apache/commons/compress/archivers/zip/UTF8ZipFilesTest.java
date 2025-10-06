@@ -201,8 +201,7 @@ class UTF8ZipFilesTest extends AbstractTest {
      */
     @Test
     void testRead7ZipArchive() throws IOException {
-        final File archive = getFile("utf8-7zip-test.zip");
-        try (ZipFile zf = new ZipFile(archive, CP437, false)) {
+        try (ZipFile zf = ZipFile.builder().setURI(getURI("utf8-7zip-test.zip")).setCharset(CP437).setUseUnicodeExtraFields(false).get()) {
             assertNotNull(zf.getEntry(ASCII_TXT));
             assertNotNull(zf.getEntry(EURO_FOR_DOLLAR_TXT));
             assertNotNull(zf.getEntry(OIL_BARREL_TXT));

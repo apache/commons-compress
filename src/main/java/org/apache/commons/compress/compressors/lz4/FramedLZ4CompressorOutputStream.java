@@ -24,6 +24,7 @@ import java.io.OutputStream;
 
 import org.apache.commons.compress.compressors.CompressorOutputStream;
 import org.apache.commons.compress.utils.ByteUtils;
+import org.apache.commons.io.IOUtils;
 
 /**
  * CompressorOutputStream for the LZ4 frame format.
@@ -271,6 +272,7 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream<Outp
 
     @Override
     public void write(final byte[] data, int off, int len) throws IOException {
+        IOUtils.checkFromIndexSize(data, off, len);
         if (params.withContentChecksum) {
             contentHash.update(data, off, len);
         }

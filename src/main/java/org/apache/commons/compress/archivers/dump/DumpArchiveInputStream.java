@@ -29,6 +29,7 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Stack;
 
+import org.apache.commons.compress.archivers.AbstractArchiveBuilder;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
@@ -60,7 +61,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
      *
      * @since 1.29.0
      */
-    public static final class Builder extends AbstractBuilder<DumpArchiveInputStream, Builder> {
+    public static final class Builder extends AbstractArchiveBuilder<DumpArchiveInputStream, Builder> {
 
         private Builder() {
         }
@@ -153,7 +154,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
     }
 
     private DumpArchiveInputStream(final InputStream is, final Builder builder) throws ArchiveException {
-        super(is, builder.getCharset());
+        super(is, builder);
         this.raw = new TapeInputStream(is);
         this.hasHitEOF = false;
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(builder.getCharset());
@@ -390,18 +391,13 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
     }
 
     /**
-     * Reads bytes from the current dump archive entry.
+     * {@inheritDoc}
      *
-     * This method is aware of the boundaries of the current entry in the archive and will deal with them as if they were this stream's start and EOF.
-     *
-     * @param buf The buffer into which to place bytes read.
-     * @param off The offset at which to place bytes read.
-     * @param len The number of bytes to read.
-     * @return The number of bytes read, or -1 at EOF.
-     * @throws IOException on error
+     * <p>This method is aware of the boundaries of the current entry in the archive and will deal with them as if they were this stream's start and EOF.</p>
      */
     @Override
     public int read(final byte[] buf, int off, int len) throws IOException {
+        org.apache.commons.io.IOUtils.checkFromIndexSize(buf, off, len);
         if (len == 0) {
             return 0;
         }
@@ -547,8 +543,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
 
                 final byte type = blockBuffer[i + 6];
 
-                final String name = DumpArchiveUtil.decode(zipEncoding, blockBuffer, i + 8, blockBuffer[i + 7]);
-
+                final String name = DumpArchiveUtil.decode(zipEncoding, blockBuffer, i + 8, Byte.toUnsignedInt(blockBuffer[i + 7]));
                 if (CURRENT_PATH_SEGMENT.equals(name) || PARENT_PATH_SEGMENT.equals(name)) {
                     // do nothing...
                     continue;

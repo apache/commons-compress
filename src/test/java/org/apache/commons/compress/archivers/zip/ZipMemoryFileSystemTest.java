@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.SeekableByteChannel;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -230,8 +229,7 @@ class ZipMemoryFileSystemTest {
                 }
             }
 
-            try (ZipFile zf = new ZipFile(Files.newByteChannel(target, StandardOpenOption.READ), target.getFileName().toString(), StandardCharsets.UTF_8.name(),
-                    true)) {
+            try (ZipFile zf = ZipFile.builder().setPath(target).get()) {
                 final ZipArchiveEntry b_entry = zf.getEntries("b.txt").iterator().next();
                 assertEquals(8, b_entry.getSize());
                 try (InputStream inputStream = zf.getInputStream(b_entry)) {
@@ -245,8 +243,7 @@ class ZipMemoryFileSystemTest {
                 }
             }
 
-            try (ZipFile zf = new ZipFile(Files.newByteChannel(target, StandardOpenOption.READ), target.getFileName().toString(), StandardCharsets.UTF_8.name(),
-                    true, false)) {
+            try (ZipFile zf = ZipFile.builder().setPath(target).get()) {
                 final ZipArchiveEntry b_entry = zf.getEntries("b.txt").iterator().next();
                 assertEquals(8, b_entry.getSize());
                 try (InputStream inputStream = zf.getInputStream(b_entry)) {
@@ -328,7 +325,7 @@ class ZipMemoryFileSystemTest {
                 }
             }
 
-            try (ZipFile zf = new ZipFile(target)) {
+            try (ZipFile zf = ZipFile.builder().setPath(target).get()) {
                 final ZipArchiveEntry b_entry = zf.getEntries("b.txt").iterator().next();
                 assertEquals(8, b_entry.getSize());
                 try (InputStream inputStream = zf.getInputStream(b_entry)) {

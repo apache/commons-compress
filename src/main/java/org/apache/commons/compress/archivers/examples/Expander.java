@@ -395,11 +395,11 @@ public class Expander {
             if (!prefersSeekableByteChannel(format)) {
                 expand(format, c.track(Channels.newInputStream(archive)), targetDirectory, CloseableConsumer.NULL_CONSUMER);
             } else if (ArchiveStreamFactory.TAR.equalsIgnoreCase(format)) {
-                expand(c.track(new TarFile(archive)), targetDirectory);
+                expand(c.track(TarFile.builder().setChannel(archive).get()), targetDirectory);
             } else if (ArchiveStreamFactory.ZIP.equalsIgnoreCase(format)) {
-                expand(c.track(ZipFile.builder().setSeekableByteChannel(archive).get()), targetDirectory);
+                expand(c.track(ZipFile.builder().setChannel(archive).get()), targetDirectory);
             } else if (ArchiveStreamFactory.SEVEN_Z.equalsIgnoreCase(format)) {
-                expand(c.track(SevenZFile.builder().setSeekableByteChannel(archive).get()), targetDirectory);
+                expand(c.track(SevenZFile.builder().setChannel(archive).get()), targetDirectory);
             } else {
                 // never reached as prefersSeekableByteChannel only returns true for TAR, ZIP and 7z
                 throw new ArchiveException("Don't know how to handle format '%s'", format);

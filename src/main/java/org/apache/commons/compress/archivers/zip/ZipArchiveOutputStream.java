@@ -41,6 +41,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.io.Charsets;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
 
 /**
@@ -1568,10 +1569,14 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * @param b      the byte array to write.
      * @param offset the start position to write from.
      * @param length the number of bytes to write.
+     * @throws NullPointerException      if {@code b} is null
+     * @throws IndexOutOfBoundsException if {@code offset} or {@code length} are negative,
+     *                                   or if {@code offset + length} is greater than {@code b.length}.
      * @throws IOException on error.
      */
     @Override
     public void write(final byte[] b, final int offset, final int length) throws IOException {
+        IOUtils.checkFromIndexSize(b, offset, length);
         if (entry == null) {
             throw new IllegalStateException("No current entry");
         }
