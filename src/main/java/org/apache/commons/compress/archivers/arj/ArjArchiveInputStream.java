@@ -18,10 +18,6 @@
  */
 package org.apache.commons.compress.archivers.arj;
 
-import static org.apache.commons.io.EndianUtils.readSwappedInteger;
-import static org.apache.commons.io.EndianUtils.readSwappedShort;
-import static org.apache.commons.io.EndianUtils.readSwappedUnsignedInteger;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
@@ -257,11 +253,11 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
 
     private static void readExtraData(final int firstHeaderSize, final InputStream firstHeader, final LocalFileHeader localFileHeader) throws IOException {
         if (firstHeaderSize >= 33) {
-            localFileHeader.extendedFilePosition = readSwappedInteger(firstHeader);
+            localFileHeader.extendedFilePosition = EndianUtils.readSwappedInteger(firstHeader);
             if (firstHeaderSize >= 45) {
-                localFileHeader.dateTimeAccessed = readSwappedInteger(firstHeader);
-                localFileHeader.dateTimeCreated = readSwappedInteger(firstHeader);
-                localFileHeader.originalSizeEvenForVolumes = readSwappedInteger(firstHeader);
+                localFileHeader.dateTimeAccessed = EndianUtils.readSwappedInteger(firstHeader);
+                localFileHeader.dateTimeCreated = EndianUtils.readSwappedInteger(firstHeader);
+                localFileHeader.originalSizeEvenForVolumes = EndianUtils.readSwappedInteger(firstHeader);
             }
         }
     }
@@ -292,7 +288,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
             } else if (basicHeaderSize <= 2600) {
                 basicHeaderBytes = org.apache.commons.io.IOUtils.toByteArray(in, basicHeaderSize);
                 count(basicHeaderSize);
-                final long basicHeaderCrc32 = readSwappedUnsignedInteger(in);
+                final long basicHeaderCrc32 = EndianUtils.readSwappedUnsignedInteger(in);
                 count(4);
                 final CRC32 crc32 = new CRC32();
                 crc32.update(basicHeaderBytes);
@@ -321,12 +317,12 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
                 localFileHeader.method = readUnsignedByte(firstHeader);
                 localFileHeader.fileType = readUnsignedByte(firstHeader);
                 localFileHeader.reserved = readUnsignedByte(firstHeader);
-                localFileHeader.dateTimeModified = readSwappedInteger(firstHeader);
-                localFileHeader.compressedSize = readSwappedUnsignedInteger(firstHeader);
-                localFileHeader.originalSize = readSwappedUnsignedInteger(firstHeader);
-                localFileHeader.originalCrc32 = readSwappedUnsignedInteger(firstHeader);
-                localFileHeader.fileSpecPosition = readSwappedShort(firstHeader);
-                localFileHeader.fileAccessMode = readSwappedShort(firstHeader);
+                localFileHeader.dateTimeModified = EndianUtils.readSwappedInteger(firstHeader);
+                localFileHeader.compressedSize = EndianUtils.readSwappedUnsignedInteger(firstHeader);
+                localFileHeader.originalSize = EndianUtils.readSwappedUnsignedInteger(firstHeader);
+                localFileHeader.originalCrc32 = EndianUtils.readSwappedUnsignedInteger(firstHeader);
+                localFileHeader.fileSpecPosition = EndianUtils.readSwappedShort(firstHeader);
+                localFileHeader.fileAccessMode = EndianUtils.readSwappedShort(firstHeader);
                 localFileHeader.firstChapter = readUnsignedByte(firstHeader);
                 localFileHeader.lastChapter = readUnsignedByte(firstHeader);
 
@@ -342,7 +338,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
         while ((extendedHeaderSize = readSwappedUnsignedShort()) > 0) {
             final byte[] extendedHeaderBytes = org.apache.commons.io.IOUtils.toByteArray(in, extendedHeaderSize);
             count(extendedHeaderSize);
-            final long extendedHeaderCrc32 = readSwappedUnsignedInteger(in);
+            final long extendedHeaderCrc32 = EndianUtils.readSwappedUnsignedInteger(in);
             count(4);
             final CRC32 crc32 = new CRC32();
             crc32.update(extendedHeaderBytes);
@@ -376,12 +372,12 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
                 header.securityVersion = readUnsignedByte(firstHeader);
                 header.fileType = readUnsignedByte(firstHeader);
                 header.reserved = readUnsignedByte(firstHeader);
-                header.dateTimeCreated = readSwappedInteger(firstHeader);
-                header.dateTimeModified = readSwappedInteger(firstHeader);
-                header.archiveSize = readSwappedUnsignedInteger(firstHeader);
-                header.securityEnvelopeFilePosition = readSwappedInteger(firstHeader);
-                header.fileSpecPosition = readSwappedShort(firstHeader);
-                header.securityEnvelopeLength = readSwappedShort(firstHeader);
+                header.dateTimeCreated = EndianUtils.readSwappedInteger(firstHeader);
+                header.dateTimeModified = EndianUtils.readSwappedInteger(firstHeader);
+                header.archiveSize = EndianUtils.readSwappedUnsignedInteger(firstHeader);
+                header.securityEnvelopeFilePosition = EndianUtils.readSwappedInteger(firstHeader);
+                header.fileSpecPosition = EndianUtils.readSwappedShort(firstHeader);
+                header.securityEnvelopeLength = EndianUtils.readSwappedShort(firstHeader);
                 header.encryptionVersion = readUnsignedByte(firstHeader);
                 header.lastChapter = readUnsignedByte(firstHeader);
 
@@ -401,7 +397,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
         if (extendedHeaderSize > 0) {
             header.extendedHeaderBytes = org.apache.commons.io.IOUtils.toByteArray(in, extendedHeaderSize);
             count(extendedHeaderSize);
-            final long extendedHeaderCrc32 = readSwappedUnsignedInteger(in);
+            final long extendedHeaderCrc32 = EndianUtils.readSwappedUnsignedInteger(in);
             count(4);
             final CRC32 crc32 = new CRC32();
             crc32.update(header.extendedHeaderBytes);
