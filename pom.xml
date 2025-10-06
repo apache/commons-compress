@@ -404,29 +404,6 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
       </plugin>
-      <!-- Rule to remember to clean up various overrides after parent upgrade -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-enforcer-plugin</artifactId>
-        <version>3.6.2</version>
-        <executions>
-          <execution>
-            <id>cleanup-parent-upgrade</id>
-            <goals>
-              <goal>enforce</goal>
-            </goals>
-            <configuration>
-              <rules>
-                <requireProperty>
-                  <property>project.parent.version</property>
-                  <regex>88</regex>
-                  <regexMessage>Please remove `commons.japicmp.version` override.</regexMessage>
-                </requireProperty>
-              </rules>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
   </build>
   <reporting>
