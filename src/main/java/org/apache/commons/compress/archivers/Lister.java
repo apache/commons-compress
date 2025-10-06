@@ -155,7 +155,7 @@ public final class Lister {
     }
 
     private  void listZipUsingTarFile(final Path file) throws IOException {
-        try (TarFile tarFile = new TarFile(file)) {
+        try (TarFile tarFile = TarFile.builder().setPath(file).get()) {
             println("Created " + tarFile);
             tarFile.getEntries().forEach(this::println);
         }
