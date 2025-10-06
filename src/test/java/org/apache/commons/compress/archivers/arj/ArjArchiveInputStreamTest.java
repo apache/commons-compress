@@ -333,8 +333,8 @@ class ArjArchiveInputStreamTest extends AbstractTest {
                 .setURI(getURI("bla.arj"))
                 .setMaxCount(maxCount)
                 .get()) {
-            ArchiveException ex = assertThrows(ArchiveException.class, () -> ArjArchiveInputStream.builder().setInputStream(input).get());
-            Throwable cause = ex.getCause();
+            final ArchiveException ex = assertThrows(ArchiveException.class, () -> ArjArchiveInputStream.builder().setInputStream(input).get());
+            final Throwable cause = ex.getCause();
             assertInstanceOf(EOFException.class, cause, "Expected EOFException as cause of ArchiveException.");
         }
     }
