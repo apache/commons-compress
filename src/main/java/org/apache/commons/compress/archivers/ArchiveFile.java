@@ -87,9 +87,7 @@ public interface ArchiveFile<T extends ArchiveEntry> extends Closeable, IOIterab
 
     @Override
     default Iterable<T> unwrap() {
-        // Commons IO 2.21.0:
-        // return asIterable();
-        return null;
+        return asIterable();
     }
 }
 
