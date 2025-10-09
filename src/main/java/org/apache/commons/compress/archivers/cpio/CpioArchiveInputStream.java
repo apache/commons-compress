@@ -404,9 +404,9 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         final int tmpread = readFully(b, off, tmplength);
         if (entry.getFormat() == FORMAT_NEW_CRC) {
             for (int pos = 0; pos < tmpread; pos++) {
-                crc += b[pos] & 0xFF;
-                crc &= 0xFFFFFFFFL;
+                crc += b[off + pos] & 0xFF;
             }
+            crc &= 0xFFFFFFFFL;
         }
         if (tmpread > 0) {
             entryBytesRead += tmpread;

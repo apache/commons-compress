@@ -19,6 +19,7 @@
 package org.apache.commons.compress.archivers.cpio;
 
 import static org.apache.commons.lang3.reflect.FieldUtils.readDeclaredField;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -33,6 +34,7 @@ import org.apache.commons.compress.MemoryLimitException;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
+import org.junitpioneer.jupiter.Issue;
 
 class CpioArchiveInputStreamTest extends AbstractTest {
 
@@ -182,6 +184,21 @@ class CpioArchiveInputStreamTest extends AbstractTest {
             IOUtils.toByteArray(archive);
             assertEquals(-1, archive.read());
             assertEquals(-1, archive.read());
+        }
+    }
+
+    @Test
+    @Issue("https://issues.apache.org/jira/browse/COMPRESS-711")
+    void testCrcVerification() throws Exception {
+        try (CpioArchiveInputStream archive = CpioArchiveInputStream.builder().setURI(getURI("bla.cpio")).get()) {
+            assertNotNull(archive.getNextEntry());
+            assertDoesNotThrow(() -> {
+                final byte[] buffer = new byte[1024];
+                // Read with an offset to test that the right bytes are checksummed
+                while (archive.read(buffer, 1, 1023) != -1) {
+                    // noop
+                }
+            });
         }
     }
 }
