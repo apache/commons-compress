@@ -198,7 +198,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
     }
 
     private TarArchiveInputStream(final InputStream inputStream, final Builder builder) {
-        super(inputStream, builder.getCharset());
+        super(inputStream, builder);
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(builder.getCharset());
         this.recordBuffer = new byte[builder.getRecordSize()];
         this.blockSize = builder.getBlockSize();
@@ -624,13 +624,14 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      * @param offset    The offset at which to place bytes read.
      * @param numToRead The number of bytes to read.
      * @return The number of bytes read, or -1 at EOF.
-     * @throws NullPointerException if {@code buf} is null
-     * @throws IndexOutOfBoundsException if {@code [offset, offset + numToRead)} is not a valid range within {@code buf}
+     * @throws NullPointerException      if {@code buf} is null
+     * @throws IndexOutOfBoundsException if {@code offset} or {@code numToRead} are negative,
+     *                                   or if {@code offset + numToRead} is greater than {@code buf.length}.
      * @throws IOException on error
      */
     @Override
     public int read(final byte[] buf, final int offset, int numToRead) throws IOException {
-        ArchiveUtils.checkFromIndexSize(buf, offset, numToRead);
+        org.apache.commons.io.IOUtils.checkFromIndexSize(buf, offset, numToRead);
         if (numToRead == 0) {
             return 0;
         }

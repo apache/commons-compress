@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Iterator;
 
-import org.apache.commons.compress.utils.ArchiveUtils;
+import org.apache.commons.io.IOUtils;
 
 final class ComposedTarInputStream extends InputStream {
 
@@ -65,7 +65,7 @@ final class ComposedTarInputStream extends InputStream {
 
     @Override
     public int read(final byte[] b, final int off, final int len) throws IOException {
-        ArchiveUtils.checkFromIndexSize(b, off, len);
+        IOUtils.checkFromIndexSize(b, off, len);
         if (len == 0) {
             return 0;
         }

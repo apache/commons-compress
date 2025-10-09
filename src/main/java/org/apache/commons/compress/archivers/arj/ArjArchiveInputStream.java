@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.zip.CRC32;
 
+import org.apache.commons.compress.archivers.AbstractArchiveBuilder;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
@@ -60,7 +61,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
      *
      * @since 1.29.0
      */
-    public static final class Builder extends AbstractBuilder<ArjArchiveInputStream, Builder> {
+    public static final class Builder extends AbstractArchiveBuilder<ArjArchiveInputStream, Builder> {
 
         private Builder() {
             setCharset(ENCODING_NAME);
@@ -117,7 +118,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
     }
 
     private ArjArchiveInputStream(final InputStream inputStream, final Builder builder) throws ArchiveException {
-        super(new DataInputStream(inputStream), builder.getCharset());
+        super(new DataInputStream(inputStream), builder);
         dis = (DataInputStream) in;
         try {
             mainHeader = readMainHeader();
@@ -211,6 +212,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
 
     @Override
     public int read(final byte[] b, final int off, final int len) throws IOException {
+        org.apache.commons.io.IOUtils.checkFromIndexSize(b, off, len);
         if (len == 0) {
             return 0;
         }

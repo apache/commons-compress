@@ -21,7 +21,6 @@ package org.apache.commons.compress.utils;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.Objects;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 
@@ -260,23 +259,6 @@ public class ArchiveUtils {
         }
         sb.append(size).append(' ').append(entry.getName());
         return sb.toString();
-    }
-
-    /**
-     * Checks that the specified range is within the bounds of an array of the specified length.
-     *
-     * @param b           the array
-     * @param off         the starting offset of the range
-     * @param len         the length of the range
-     * @throws IndexOutOfBoundsException if {@code off} is negative, or {@code len} is negative, or {@code off + len} is greater than {@code arrayLength}
-     * @since 1.29.0
-     */
-    public static void checkFromIndexSize(final byte[] b, final int off, final int len) {
-        // TODO: replace with IOUtils.checkFromIndexSize, after upgrading to Commons IO 2.21.0
-        Objects.requireNonNull(b, "byte array");
-        if ((off | len) < 0 || b.length - len < off) {
-            throw new IndexOutOfBoundsException(String.format("Range [%s, %<s + %s) out of bounds for length %s", off, len, b.length));
-        }
     }
 
     /** Private constructor to prevent instantiation of this utility class. */

@@ -37,6 +37,7 @@ import javax.crypto.spec.IvParameterSpec;
 
 import org.apache.commons.compress.PasswordRequiredException;
 import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.io.IOUtils;
 
 final class AES256SHA256Decoder extends AbstractCoder {
 
@@ -169,6 +170,7 @@ final class AES256SHA256Decoder extends AbstractCoder {
 
         @Override
         public void write(final byte[] b, final int off, final int len) throws IOException {
+            IOUtils.checkFromIndexSize(b, off, len);
             int gap = len + count > cipherBlockSize ? cipherBlockSize - count : len;
             System.arraycopy(b, off, cipherBlockBuffer, count, gap);
             count += gap;

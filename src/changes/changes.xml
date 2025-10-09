@@ -125,9 +125,12 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="add" dev="ggregory" due-to="Gary Gregory, Piotr P. Karwasz">Introduce builders for all ArchiveInputStream implementations and deprecate some constructors.</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">TarFile now implements IOIterable&lt;TarArchiveEntry&gt;.</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add a builder for the TarFile class and deprecate some constructors.</action>
+      <action type="add" dev="pkarwasz" due-to="Piotr Karwasz">SevenZFile, TarFile, and ZipFile now always close underlying resources when builder or constructor fails.</action>
       <!-- UPDATE -->
       <action type="update" dev="ggregory" due-to="Gary Gregory">Bump org.apache.commons:commons-parent from 85 to 88 #707.</action>
       <action type="update" dev="ggregory" due-to="Gary Gregory">Bump org.apache.commons:commons-lang3 from 3.18.0 to 3.19.0.</action>
+      <!-- REMOVE -->
+      <action type="remove" dev="pkarwasz" due-to="Piotr P. Karwasz">Makes TarUtils final and cleans up protected methods #712.</action>
     </release>
     <release version="1.28.0" date="2025-07-26" description="This is a feature and maintenance release. Java 8 or later is required.">
       <!-- FIX -->

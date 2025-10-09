@@ -55,6 +55,7 @@ import java.util.zip.CRC32;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.file.attribute.FileTimes;
 import org.apache.commons.io.output.CountingOutputStream;
 
@@ -87,6 +88,7 @@ public class SevenZOutputFile implements Closeable {
 
         @Override
         public void write(final byte[] b, final int off, final int len) throws IOException {
+            IOUtils.checkFromIndexSize(b, off, len);
             if (len > BUF_SIZE) {
                 channel.write(ByteBuffer.wrap(b, off, len));
             } else {

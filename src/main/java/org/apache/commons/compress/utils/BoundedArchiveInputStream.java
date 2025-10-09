@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 
+import org.apache.commons.io.IOUtils;
+
 /**
  * NIO backed bounded input stream for reading a predefined amount of data.
  *
@@ -69,11 +71,10 @@ public abstract class BoundedArchiveInputStream extends InputStream {
 
     @Override
     public synchronized int read(final byte[] b, final int off, final int len) throws IOException {
-        ArchiveUtils.checkFromIndexSize(b, off, len);
+        IOUtils.checkFromIndexSize(b, off, len);
         if (len == 0) {
             return 0;
         }
-
         if (loc >= end) {
             return -1;
         }

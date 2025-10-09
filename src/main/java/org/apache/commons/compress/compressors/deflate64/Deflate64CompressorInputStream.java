@@ -102,11 +102,9 @@ public class Deflate64CompressorInputStream extends CompressorInputStream implem
         }
     }
 
-    /**
-     * @throws java.io.EOFException if the underlying stream is exhausted before the end of deflated data was reached.
-     */
     @Override
     public int read(final byte[] b, final int off, final int len) throws IOException {
+        IOUtils.checkFromIndexSize(b, off, len);
         if (len == 0) {
             return 0;
         }

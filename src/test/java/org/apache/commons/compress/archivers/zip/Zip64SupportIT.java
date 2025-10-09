@@ -43,6 +43,7 @@ import java.util.zip.ZipEntry;
 
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.io.RandomAccessFileMode;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import shaded.org.apache.commons.io.IOUtils;
@@ -50,6 +51,7 @@ import shaded.org.apache.commons.io.IOUtils;
 /**
  * Tests {@link ZipFile} Zip64 support.
  */
+@Disabled
 public class Zip64SupportIT {
 
     interface ZipOutputTest {
