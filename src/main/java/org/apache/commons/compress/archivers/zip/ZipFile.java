@@ -155,7 +155,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
             if (name == null) {
                 try {
                     name = getPath().toAbsolutePath().toString();
-                } catch (UnsupportedOperationException ex) {
+                } catch (final UnsupportedOperationException ex) {
                     name = "unknown";
                 }
             }
@@ -731,12 +731,12 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
 
     private long firstLocalFileHeaderOffset;
 
-    private ZipFile(Builder builder) throws IOException {
+    private ZipFile(final Builder builder) throws IOException {
         SeekableByteChannel archive;
         try {
             final Path path = builder.getPath();
             archive = openZipChannel(path, builder.maxNumberOfDisks, builder.getOpenOptions());
-        } catch (UnsupportedOperationException e) {
+        } catch (final UnsupportedOperationException e) {
             archive = builder.getChannel(SeekableByteChannel.class);
         }
         this.archive = archive;

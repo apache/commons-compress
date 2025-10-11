@@ -231,7 +231,7 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
             while ((entry = getNextTarEntry()) != null) {
                 entries.add(entry);
             }
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             try {
                 this.archive.close();
             } catch (final IOException e) {

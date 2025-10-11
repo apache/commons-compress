@@ -200,7 +200,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
             if (name == null) {
                 try {
                     name = getPath().toAbsolutePath().toString();
-                } catch (UnsupportedOperationException e) {
+                } catch (final UnsupportedOperationException e) {
                     name = defaultName;
                 }
             }
@@ -482,7 +482,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
 
     private final boolean tryToRecoverBrokenArchives;
 
-    private SevenZFile(Builder builder) throws IOException {
+    private SevenZFile(final Builder builder) throws IOException {
         this.channel = builder.getChannel(SeekableByteChannel.class);
         try {
             this.fileName = builder.getName();

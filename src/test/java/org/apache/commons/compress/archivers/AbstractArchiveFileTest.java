@@ -43,7 +43,7 @@ import org.junit.jupiter.api.Test;
  */
 public abstract class AbstractArchiveFileTest<T extends ArchiveEntry> extends AbstractTest {
 
-    private static ArchiveEntry newEntry(String name, long size, Instant lastModified) {
+    private static ArchiveEntry newEntry(final String name, final long size, final Instant lastModified) {
         return new ArchiveEntry() {
 
             @Override
@@ -68,7 +68,7 @@ public abstract class AbstractArchiveFileTest<T extends ArchiveEntry> extends Ab
         };
     }
 
-    private static ArchiveEntry newEntryUtc(String name, long size, LocalDateTime lastModified) {
+    private static ArchiveEntry newEntryUtc(final String name, final long size, final LocalDateTime lastModified) {
         return newEntry(name, size, lastModified.toInstant(ZoneOffset.UTC));
     }
 
@@ -91,7 +91,7 @@ public abstract class AbstractArchiveFileTest<T extends ArchiveEntry> extends Ab
                 newEntryUtc("test2.xml", 82, LocalDateTime.of(2007, 11, 14, 10, 19, 2)));
     }
 
-    private T getMatchingEntry(ArchiveFile<? extends T> archiveFile, String name) throws Exception {
+    private T getMatchingEntry(final ArchiveFile<? extends T> archiveFile, final String name) throws Exception {
         try (IOStream<? extends T> stream = archiveFile.stream()) {
             return stream.filter(e -> e.getName().equals(name)).findFirst().orElse(null);
         }
