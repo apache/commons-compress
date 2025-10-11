@@ -23,7 +23,6 @@ import static java.nio.charset.StandardCharsets.UTF_16LE;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.Closeable;
 import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.File;
@@ -48,8 +47,10 @@ import java.util.zip.CheckedInputStream;
 import org.apache.commons.compress.MemoryLimitException;
 import org.apache.commons.compress.archivers.AbstractArchiveBuilder;
 import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.compress.archivers.ArchiveFile;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
+import org.apache.commons.io.function.IOStream;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.io.input.ChecksumInputStream;
 import org.apache.commons.lang3.ArrayUtils;
@@ -77,7 +78,7 @@ import org.apache.commons.lang3.ArrayUtils;
  * @NotThreadSafe
  * @since 1.6
  */
-public class SevenZFile implements Closeable {
+public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
 
     private static final class ArchiveStatistics {
         private int numberOfPackedStreams;
@@ -1029,9 +1030,20 @@ public class SevenZFile implements Closeable {
      *
      * @return a copy of meta-data of all archive entries.
      * @since 1.11
+     * @deprecated Since 1.29.0, use {@link #entries()} or {@link #stream()} instead.
      */
+    @Deprecated
     public Iterable<SevenZArchiveEntry> getEntries() {
         return new ArrayList<>(Arrays.asList(archive.files));
+    }
+
+    /**
+     * {@inheritDoc}
+     * @since 1.29.0
+     */
+    @Override
+    public IOStream<? extends SevenZArchiveEntry> stream() {
+        return IOStream.of(archive.files);
     }
 
     /**
@@ -1045,6 +1057,7 @@ public class SevenZFile implements Closeable {
      * @throws IOException if unable to create an input stream from the entry
      * @since 1.20
      */
+    @Override
     public InputStream getInputStream(final SevenZArchiveEntry entry) throws IOException {
         int entryIndex = -1;
         for (int i = 0; i < archive.files.length; i++) {

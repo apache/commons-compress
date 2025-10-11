@@ -20,7 +20,6 @@ package org.apache.commons.compress.archivers.zip;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
-import java.io.Closeable;
 import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
@@ -52,6 +51,7 @@ import java.util.zip.ZipException;
 
 import org.apache.commons.compress.archivers.AbstractArchiveBuilder;
 import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.compress.archivers.ArchiveFile;
 import org.apache.commons.compress.archivers.EntryStreamOffsets;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.deflate64.Deflate64CompressorInputStream;
@@ -88,7 +88,7 @@ import org.apache.commons.io.input.BoundedInputStream;
  * <li>close is allowed to throw IOException.</li>
  * </ul>
  */
-public class ZipFile implements Closeable {
+public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
 
     /**
      * Lock-free implementation of BoundedInputStream. The implementation uses positioned reads on the underlying archive file channel and therefore performs
@@ -1135,7 +1135,9 @@ public class ZipFile implements Closeable {
      * </p>
      *
      * @return all entries as {@link ZipArchiveEntry} instances
+     * @deprecated Since 1.29.0, use {@link #entries()} or {@link #stream()} instead.
      */
+    @Deprecated
     public Enumeration<ZipArchiveEntry> getEntries() {
         return Collections.enumeration(entries);
     }
@@ -1208,6 +1210,7 @@ public class ZipFile implements Closeable {
      * @return a stream to read the entry from. The returned stream implements {@link InputStreamStatistics}.
      * @throws IOException if unable to create an input stream from the zipEntry.
      */
+    @Override
     public InputStream getInputStream(final ZipArchiveEntry entry) throws IOException {
         if (!(entry instanceof Entry)) {
             return null;
@@ -1738,6 +1741,7 @@ public class ZipFile implements Closeable {
      * @throws IllegalStateException if the ZIP file has been closed.
      * @since 1.28.0
      */
+    @Override
     public IOStream<? extends ZipArchiveEntry> stream() {
         return IOStream.adapt(entries.stream());
     }

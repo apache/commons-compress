@@ -56,7 +56,7 @@ import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 
-import org.apache.commons.compress.AbstractTest;
+import org.apache.commons.compress.archivers.AbstractArchiveFileTest;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
@@ -73,7 +73,7 @@ import org.junit.jupiter.api.Test;
 
 import io.airlift.compress.zstd.ZstdInputStream;
 
-class ZipFileTest extends AbstractTest {
+class ZipFileTest extends AbstractArchiveFileTest<ZipArchiveEntry> {
 
     /**
      * This Class simulates the case where the Zip File uses the aircompressors {@link ZstdInputStream}
@@ -1085,4 +1085,8 @@ class ZipFileTest extends AbstractTest {
         }
     }
 
+    @Override
+    protected ZipFile getArchiveFile() throws Exception {
+        return ZipFile.builder().setPath(getPath("bla.zip")).get();
+    }
 }
