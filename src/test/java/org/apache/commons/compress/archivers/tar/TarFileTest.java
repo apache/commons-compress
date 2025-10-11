@@ -64,7 +64,7 @@ class TarFileTest extends AbstractArchiveFileTest<TarArchiveEntry> {
     }
 
     @Override
-    protected TarFile getArchiveFile() throws Exception {
+    protected TarFile getArchiveFile() throws IOException {
         return TarFile.builder().setPath(getPath("bla.tar")).get();
     }
 

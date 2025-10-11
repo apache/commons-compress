@@ -114,7 +114,7 @@ class SevenZFileTest extends AbstractArchiveFileTest<SevenZArchiveEntry> {
     }
 
     @Override
-    protected SevenZFile getArchiveFile() throws Exception {
+    protected SevenZFile getArchiveFile() throws IOException {
         return SevenZFile.builder().setPath(getPath("bla.7z")).get();
     }
 

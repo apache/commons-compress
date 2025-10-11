@@ -21,6 +21,7 @@ package org.apache.commons.compress.archivers;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -75,9 +76,9 @@ public abstract class AbstractArchiveFileTest<T extends ArchiveEntry> extends Ab
      * Gets an {@link ArchiveFile} to be tested.
      *
      * @return The archive file to be tested.
-     * @throws Exception Indicates a test failure.
+     * @throws IOException Indicates a test failure.
      */
-    protected abstract ArchiveFile<T> getArchiveFile() throws Exception;
+    protected abstract ArchiveFile<T> getArchiveFile() throws IOException;
 
     /**
      * Gets the expected entries in the test archive.

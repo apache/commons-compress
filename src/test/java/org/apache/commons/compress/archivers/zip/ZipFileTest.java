@@ -192,7 +192,7 @@ class ZipFileTest extends AbstractArchiveFileTest<ZipArchiveEntry> {
     }
 
     @Override
-    protected ZipFile getArchiveFile() throws Exception {
+    protected ZipFile getArchiveFile() throws IOException {
         return ZipFile.builder().setPath(getPath("bla.zip")).get();
     }
 
