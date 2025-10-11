@@ -36,7 +36,7 @@ import org.apache.commons.io.function.IOStream;
 import org.junit.jupiter.api.Test;
 
 /**
- * Abstract base class for tests of {@link ArchiveFile} implementations.
+ * Abstracts tests for {@link ArchiveFile} implementations.
  *
  * @param <T> The type of {@link ArchiveEntry} produced.
  */
@@ -72,14 +72,15 @@ public abstract class AbstractArchiveFileTest<T extends ArchiveEntry> extends Ab
     }
 
     /**
-     * Returns an {@link ArchiveFile} to be tested.
+     * Gets an {@link ArchiveFile} to be tested.
      *
      * @return The archive file to be tested.
+     * @throws Exception Indicates a test failure.
      */
     protected abstract ArchiveFile<T> getArchiveFile() throws Exception;
 
     /**
-     * Returns the expected entries in the test archive.
+     * Gets the expected entries in the test archive.
      *
      * @return The expected entries.
      */
@@ -109,10 +110,7 @@ public abstract class AbstractArchiveFileTest<T extends ArchiveEntry> extends Ab
                 final ArchiveEntry actual = entries.get(i);
                 assertEquals(expected.getName(), actual.getName(), "Entry name at index " + i);
                 assertEquals(expected.getSize(), actual.getSize(), "Size of entry " + expected.getName());
-                assertEquals(
-                        expected.getLastModifiedDate(),
-                        actual.getLastModifiedDate(),
-                        "Last modified date of entry " + expected.getName());
+                assertEquals(expected.getLastModifiedDate(), actual.getLastModifiedDate(), "Last modified date of entry " + expected.getName());
             }
         }
     }

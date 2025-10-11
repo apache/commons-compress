@@ -298,7 +298,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
          *
          * @param seekableByteChannel the input channel.
          * @return {@code this} instance.
-         * @deprecated Since 1.29.0, use {@link #setChannel} instead.
+         * @deprecated Since 1.29.0, use {@link #setChannel(java.nio.channels.Channel)}.
          */
         @Deprecated
         public Builder setSeekableByteChannel(final SeekableByteChannel seekableByteChannel) {
@@ -1030,7 +1030,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
      *
      * @return a copy of meta-data of all archive entries.
      * @since 1.11
-     * @deprecated Since 1.29.0, use {@link #entries()} or {@link #stream()} instead.
+     * @deprecated Since 1.29.0, use {@link #entries()} or {@link #stream()}.
      */
     @Deprecated
     public Iterable<SevenZArchiveEntry> getEntries() {
@@ -2209,6 +2209,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
 
     /**
      * {@inheritDoc}
+     *
      * @since 1.29.0
      */
     @Override

@@ -1134,8 +1134,8 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
      * Entries will be returned in the same order they appear within the archive's central directory.
      * </p>
      *
-     * @return all entries as {@link ZipArchiveEntry} instances
-     * @deprecated Since 1.29.0, use {@link #entries()} or {@link #stream()} instead.
+     * @return all entries as {@link ZipArchiveEntry} instances.
+     * @deprecated Since 1.29.0, use {@link #entries()} or {@link #stream()}.
      */
     @Deprecated
     public Enumeration<ZipArchiveEntry> getEntries() {
@@ -1146,7 +1146,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
      * Gets all named entries in the same order they appear within the archive's central directory.
      *
      * @param name name of the entry.
-     * @return the Iterable&lt;ZipArchiveEntry&gt; corresponding to the given name
+     * @return the Iterable&lt;ZipArchiveEntry&gt; corresponding to the given name.
      * @since 1.6
      */
     public Iterable<ZipArchiveEntry> getEntries(final String name) {
@@ -1159,7 +1159,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
      * Entries will be returned in the same order their contents appear within the archive.
      * </p>
      *
-     * @return all entries as {@link ZipArchiveEntry} instances
+     * @return all entries as {@link ZipArchiveEntry} instances.
      * @since 1.1
      */
     public Enumeration<ZipArchiveEntry> getEntriesInPhysicalOrder() {
@@ -1171,7 +1171,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
      * Gets all named entries in the same order their contents appear within the archive.
      *
      * @param name name of the entry.
-     * @return the Iterable&lt;ZipArchiveEntry&gt; corresponding to the given name
+     * @return the Iterable&lt;ZipArchiveEntry&gt; corresponding to the given name.
      * @since 1.6
      */
     public Iterable<ZipArchiveEntry> getEntriesInPhysicalOrder(final String name) {
@@ -1196,7 +1196,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
     /**
      * Gets the offset of the first local file header in the file.
      *
-     * @return the length of the content before the first local file header
+     * @return the length of the content before the first local file header.
      * @since 1.23
      */
     public long getFirstLocalFileHeaderOffset() {
@@ -1287,7 +1287,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
      * {@code true} in the constructor. An IOException can also be thrown from the body of the method if this lookup fails for some reason.
      * </p>
      *
-     * @param entry The entry to get the stream for
+     * @param entry The entry to get the stream for.
      * @return The raw input stream containing (possibly) compressed data.
      * @throws IOException if there is a problem reading data offset (added in version 1.22).
      * @since 1.11
@@ -1309,9 +1309,9 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
      * This method assumes the symbolic link's file name uses the same encoding that as been specified for this ZipFile.
      * </p>
      *
-     * @param entry ZipArchiveEntry object that represents the symbolic link
-     * @return entry's content as a String
-     * @throws IOException problem with content's input stream
+     * @param entry ZipArchiveEntry object that represents the symbolic link.
+     * @return entry's content as a String.
+     * @throws IOException problem with content's input stream.
      * @since 1.5
      */
     public String getUnixSymlink(final ZipArchiveEntry entry) throws IOException {

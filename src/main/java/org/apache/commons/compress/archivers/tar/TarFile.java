@@ -446,7 +446,7 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
      * Gets all TAR Archive Entries from the TarFile.
      *
      * @return All entries from the tar file.
-     * @deprecated Since 1.29.0, use {@link #entries()} or {@link #stream()} instead.
+     * @deprecated Since 1.29.0, use {@link #entries()} or {@link #stream()}.
      */
     @Deprecated
     public List<TarArchiveEntry> getEntries() {
@@ -649,6 +649,7 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
 
     /**
      * {@inheritDoc}
+     *
      * @since 1.29.0
      */
     @Override
