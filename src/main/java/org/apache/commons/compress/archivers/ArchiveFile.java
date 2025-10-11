@@ -58,17 +58,6 @@ public interface ArchiveFile<T extends ArchiveEntry> extends Closeable, IOIterab
     }
 
     /**
-     * Returns a sequential stream of archive entries.
-     *
-     * <p>The order of entries is format-dependent but stable for a given archive.</p>
-     * <p>The returned stream <strong>must</strong> be closed after use to free
-     * associated resources.</p>
-     *
-     * @return A stream of entries in this archive.
-     */
-    IOStream<? extends T> stream();
-
-    /**
      * Opens an input stream for the specified entry's contents.
      *
      * <p>The caller is responsible for closing the returned stream after use.</p>
@@ -84,6 +73,17 @@ public interface ArchiveFile<T extends ArchiveEntry> extends Closeable, IOIterab
     default IOIterator<T> iterator() {
         return IOIterator.adapt((Iterable<T>) entries());
     }
+
+    /**
+     * Returns a sequential stream of archive entries.
+     *
+     * <p>The order of entries is format-dependent but stable for a given archive.</p>
+     * <p>The returned stream <strong>must</strong> be closed after use to free
+     * associated resources.</p>
+     *
+     * @return A stream of entries in this archive.
+     */
+    IOStream<? extends T> stream();
 
     @Override
     default Iterable<T> unwrap() {

@@ -63,6 +63,11 @@ class TarFileTest extends AbstractArchiveFileTest<TarArchiveEntry> {
         }
     }
 
+    @Override
+    protected TarFile getArchiveFile() throws Exception {
+        return TarFile.builder().setPath(getPath("bla.tar")).get();
+    }
+
     /**
      * This test ensures the implementation is reading the padded last block if a tool has added one to an archive
      */
@@ -378,10 +383,5 @@ class TarFileTest extends AbstractArchiveFileTest<TarArchiveEntry> {
             assertTrue(entry.isSymbolicLink());
             assertTrue(entry.isCheckSumOK());
         }
-    }
-
-    @Override
-    protected TarFile getArchiveFile() throws Exception {
-        return TarFile.builder().setPath(getPath("bla.tar")).get();
     }
 }

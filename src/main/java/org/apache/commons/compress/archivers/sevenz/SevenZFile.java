@@ -196,22 +196,6 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
             return new SevenZFile(this);
         }
 
-        /**
-         * Sets the default name.
-         *
-         * @param defaultName the default name.
-         * @return {@code this} instance.
-         */
-        public Builder setDefaultName(final String defaultName) {
-            this.defaultName = defaultName;
-            return this;
-        }
-
-        Builder setName(final String name) {
-            this.name = name;
-            return this;
-        }
-
         String getName() {
             if (name == null) {
                 try {
@@ -221,6 +205,17 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
                 }
             }
             return name;
+        }
+
+        /**
+         * Sets the default name.
+         *
+         * @param defaultName the default name.
+         * @return {@code this} instance.
+         */
+        public Builder setDefaultName(final String defaultName) {
+            this.defaultName = defaultName;
+            return this;
         }
 
         /**
@@ -249,6 +244,11 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
          */
         public Builder setMaxMemoryLimitKiB(final int maxMemoryLimitKiB) {
             this.maxMemoryLimitKiB = maxMemoryLimitKiB;
+            return this;
+        }
+
+        Builder setName(final String name) {
+            this.name = name;
             return this;
         }
 
@@ -482,6 +482,27 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
 
     private final boolean tryToRecoverBrokenArchives;
 
+    private SevenZFile(Builder builder) throws IOException {
+        this.channel = builder.getChannel(SeekableByteChannel.class);
+        try {
+            this.fileName = builder.getName();
+            this.maxMemoryLimitKiB = builder.maxMemoryLimitKiB;
+            this.useDefaultNameForUnnamedEntries = builder.useDefaultNameForUnnamedEntries;
+            this.tryToRecoverBrokenArchives = builder.tryToRecoverBrokenArchives;
+            final byte[] password = builder.password;
+            archive = readHeaders(password);
+            this.password = password != null ? Arrays.copyOf(password, password.length) : null;
+        } catch (final ArithmeticException | IllegalArgumentException e) {
+            final ArchiveException archiveException = new ArchiveException(e);
+            try {
+                channel.close();
+            } catch (final IOException suppressed) {
+                archiveException.addSuppressed(suppressed);
+            }
+            throw archiveException;
+        }
+    }
+
     /**
      * Reads a file as unencrypted 7z archive.
      *
@@ -670,27 +691,6 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     @Deprecated
     public SevenZFile(final SeekableByteChannel channel, final String fileName, final byte[] password) throws IOException {
         this(builder().setChannel(channel).setName(fileName).setPassword(password));
-    }
-
-    private SevenZFile(Builder builder) throws IOException {
-        this.channel = builder.getChannel(SeekableByteChannel.class);
-        try {
-            this.fileName = builder.getName();
-            this.maxMemoryLimitKiB = builder.maxMemoryLimitKiB;
-            this.useDefaultNameForUnnamedEntries = builder.useDefaultNameForUnnamedEntries;
-            this.tryToRecoverBrokenArchives = builder.tryToRecoverBrokenArchives;
-            final byte[] password = builder.password;
-            archive = readHeaders(password);
-            this.password = password != null ? Arrays.copyOf(password, password.length) : null;
-        } catch (final ArithmeticException | IllegalArgumentException e) {
-            final ArchiveException archiveException = new ArchiveException(e);
-            try {
-                channel.close();
-            } catch (final IOException suppressed) {
-                archiveException.addSuppressed(suppressed);
-            }
-            throw archiveException;
-        }
     }
 
     /**
@@ -1035,15 +1035,6 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     @Deprecated
     public Iterable<SevenZArchiveEntry> getEntries() {
         return new ArrayList<>(Arrays.asList(archive.files));
-    }
-
-    /**
-     * {@inheritDoc}
-     * @since 1.29.0
-     */
-    @Override
-    public IOStream<? extends SevenZArchiveEntry> stream() {
-        return IOStream.of(archive.files);
     }
 
     /**
@@ -2214,6 +2205,15 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
             fileToSkip.setContentMethods(file.getContentMethods());
         }
         return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     * @since 1.29.0
+     */
+    @Override
+    public IOStream<? extends SevenZArchiveEntry> stream() {
+        return IOStream.of(archive.files);
     }
 
     @Override

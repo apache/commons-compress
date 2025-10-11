@@ -151,6 +151,17 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
             return new ZipFile(this);
         }
 
+        String getName() {
+            if (name == null) {
+                try {
+                    name = getPath().toAbsolutePath().toString();
+                } catch (UnsupportedOperationException ex) {
+                    name = "unknown";
+                }
+            }
+            return name;
+        }
+
         /**
          * Sets whether to ignore information stored inside the local file header.
          *
@@ -176,17 +187,6 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
         Builder setName(final String name) {
             this.name = name;
             return this;
-        }
-
-        String getName() {
-            if (name == null) {
-                try {
-                    name = getPath().toAbsolutePath().toString();
-                } catch (UnsupportedOperationException ex) {
-                    name = "unknown";
-                }
-            }
-            return name;
         }
 
         /**
@@ -731,6 +731,38 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
 
     private long firstLocalFileHeaderOffset;
 
+    private ZipFile(Builder builder) throws IOException {
+        SeekableByteChannel archive;
+        try {
+            final Path path = builder.getPath();
+            archive = openZipChannel(path, builder.maxNumberOfDisks, builder.getOpenOptions());
+        } catch (UnsupportedOperationException e) {
+            archive = builder.getChannel(SeekableByteChannel.class);
+        }
+        this.archive = archive;
+        try {
+            this.isSplitZipArchive = this.archive instanceof ZipSplitReadOnlySeekableByteChannel;
+            this.encoding = builder.getCharset();
+            this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
+            this.useUnicodeExtraFields = builder.useUnicodeExtraFields;
+            this.zstdInputStreamFactory = builder.zstdInputStreamFactory;
+            final Map<ZipArchiveEntry, NameAndComment> entriesWithoutUTF8Flag = populateFromCentralDirectory();
+            if (!builder.ignoreLocalFileHeader) {
+                resolveLocalFileHeaderData(entriesWithoutUTF8Flag);
+            }
+            fillNameMap();
+        } catch (final IOException e) {
+            final ArchiveException archiveException = new ArchiveException("Error reading Zip content from " + builder.getName(), (Throwable) e);
+            this.closed = true;
+            try {
+                this.archive.close();
+            } catch (final IOException ioException) {
+                archiveException.addSuppressed(ioException);
+            }
+            throw archiveException;
+        }
+    }
+
     /**
      * Opens the given file for reading, assuming "UTF8" for file names.
      *
@@ -890,38 +922,6 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
     @Deprecated
     public ZipFile(final SeekableByteChannel channel, final String encoding) throws IOException {
         this(builder().setChannel(channel).setCharset(encoding));
-    }
-
-    private ZipFile(Builder builder) throws IOException {
-        SeekableByteChannel archive;
-        try {
-            final Path path = builder.getPath();
-            archive = openZipChannel(path, builder.maxNumberOfDisks, builder.getOpenOptions());
-        } catch (UnsupportedOperationException e) {
-            archive = builder.getChannel(SeekableByteChannel.class);
-        }
-        this.archive = archive;
-        try {
-            this.isSplitZipArchive = this.archive instanceof ZipSplitReadOnlySeekableByteChannel;
-            this.encoding = builder.getCharset();
-            this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
-            this.useUnicodeExtraFields = builder.useUnicodeExtraFields;
-            this.zstdInputStreamFactory = builder.zstdInputStreamFactory;
-            final Map<ZipArchiveEntry, NameAndComment> entriesWithoutUTF8Flag = populateFromCentralDirectory();
-            if (!builder.ignoreLocalFileHeader) {
-                resolveLocalFileHeaderData(entriesWithoutUTF8Flag);
-            }
-            fillNameMap();
-        } catch (final IOException e) {
-            final ArchiveException archiveException = new ArchiveException("Error reading Zip content from " + builder.getName(), (Throwable) e);
-            this.closed = true;
-            try {
-                this.archive.close();
-            } catch (final IOException ioException) {
-                archiveException.addSuppressed(ioException);
-            }
-            throw archiveException;
-        }
     }
 
     /**

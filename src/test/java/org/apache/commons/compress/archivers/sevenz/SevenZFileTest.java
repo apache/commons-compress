@@ -113,6 +113,11 @@ class SevenZFileTest extends AbstractArchiveFileTest<SevenZArchiveEntry> {
         }
     }
 
+    @Override
+    protected SevenZFile getArchiveFile() throws Exception {
+        return SevenZFile.builder().setPath(getPath("bla.7z")).get();
+    }
+
     private SevenZFile getSevenZFile(final String specialPath) throws IOException {
         return SevenZFile.builder().setFile(getFile(specialPath)).get();
     }
@@ -1006,10 +1011,5 @@ class SevenZFileTest extends AbstractArchiveFileTest<SevenZArchiveEntry> {
         assertTrue(SevenZFile.matches(data2, data2.length));
         final byte[] data3 = { '7', 'z', (byte) 0xBC, (byte) 0xAF, 0x27, 0x1D };
         assertFalse(SevenZFile.matches(data3, data3.length));
-    }
-
-    @Override
-    protected SevenZFile getArchiveFile() throws Exception {
-        return SevenZFile.builder().setPath(getPath("bla.7z")).get();
     }
 }

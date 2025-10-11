@@ -454,15 +454,6 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
     }
 
     /**
-     * {@inheritDoc}
-     * @since 1.29.0
-     */
-    @Override
-    public IOStream<? extends TarArchiveEntry> stream() {
-        return IOStream.of(entries);
-    }
-
-    /**
      * Gets the input stream for the provided Tar Archive Entry.
      *
      * @param entry Entry to get the input stream from.
@@ -654,6 +645,15 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
             repositionForwardBy(padding);
             throwExceptionIfPositionIsNotInArchive();
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     * @since 1.29.0
+     */
+    @Override
+    public IOStream<? extends TarArchiveEntry> stream() {
+        return IOStream.of(entries);
     }
 
     /**

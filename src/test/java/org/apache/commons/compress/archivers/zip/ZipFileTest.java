@@ -191,6 +191,11 @@ class ZipFileTest extends AbstractArchiveFileTest<ZipArchiveEntry> {
         return crc.getValue();
     }
 
+    @Override
+    protected ZipFile getArchiveFile() throws Exception {
+        return ZipFile.builder().setPath(getPath("bla.zip")).get();
+    }
+
     private void multiByteReadConsistentlyReturnsMinusOneAtEof(final File file) throws Exception {
         final byte[] buf = new byte[2];
         try (ZipFile zipFile = ZipFile.builder().setFile(file).get()) {
@@ -1083,10 +1088,5 @@ class ZipFileTest extends AbstractArchiveFileTest<ZipArchiveEntry> {
                 fail("testZstdInputStreamErrorCloseWhenGc error, test error at batch " + (i + 1), e);
             }
         }
-    }
-
-    @Override
-    protected ZipFile getArchiveFile() throws Exception {
-        return ZipFile.builder().setPath(getPath("bla.zip")).get();
     }
 }

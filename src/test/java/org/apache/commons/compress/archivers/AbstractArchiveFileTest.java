@@ -42,12 +42,13 @@ import org.junit.jupiter.api.Test;
  */
 public abstract class AbstractArchiveFileTest<T extends ArchiveEntry> extends AbstractTest {
 
-    private static ArchiveEntry newEntryUtc(String name, long size, LocalDateTime lastModified) {
-        return newEntry(name, size, lastModified.toInstant(ZoneOffset.UTC));
-    }
-
     private static ArchiveEntry newEntry(String name, long size, Instant lastModified) {
         return new ArchiveEntry() {
+
+            @Override
+            public Date getLastModifiedDate() {
+                return Date.from(lastModified);
+            }
 
             @Override
             public String getName() {
@@ -63,12 +64,11 @@ public abstract class AbstractArchiveFileTest<T extends ArchiveEntry> extends Ab
             public boolean isDirectory() {
                 return false;
             }
-
-            @Override
-            public Date getLastModifiedDate() {
-                return Date.from(lastModified);
-            }
         };
+    }
+
+    private static ArchiveEntry newEntryUtc(String name, long size, LocalDateTime lastModified) {
+        return newEntry(name, size, lastModified.toInstant(ZoneOffset.UTC));
     }
 
     /**
@@ -87,6 +87,12 @@ public abstract class AbstractArchiveFileTest<T extends ArchiveEntry> extends Ab
         return Arrays.asList(
                 newEntryUtc("test1.xml", 610, LocalDateTime.of(2007, 11, 14, 10, 19, 2)),
                 newEntryUtc("test2.xml", 82, LocalDateTime.of(2007, 11, 14, 10, 19, 2)));
+    }
+
+    private T getMatchingEntry(ArchiveFile<? extends T> archiveFile, String name) throws Exception {
+        try (IOStream<? extends T> stream = archiveFile.stream()) {
+            return stream.filter(e -> e.getName().equals(name)).findFirst().orElse(null);
+        }
     }
 
     /**
@@ -112,29 +118,6 @@ public abstract class AbstractArchiveFileTest<T extends ArchiveEntry> extends Ab
     }
 
     /**
-     * Tests that the iterator returned by {@link ArchiveFile#iterator()} matches the expected entries.
-     */
-    @Test
-    void testIterator() throws Exception {
-        try (ArchiveFile<T> archiveFile = getArchiveFile()) {
-            final IOIterator<T> iterator = archiveFile.iterator();
-            final List<? extends ArchiveEntry> entries = getExpectedEntries();
-            int count = 0;
-            while (iterator.hasNext()) {
-                final ArchiveEntry expected = entries.get(count);
-                final ArchiveEntry actual = iterator.next();
-                assertEquals(expected.getName(), actual.getName(), "Entry name at index " + count);
-                assertEquals(expected.getSize(), actual.getSize(), "Size of entry " + expected.getName());
-                assertEquals(
-                        expected.getLastModifiedDate(),
-                        actual.getLastModifiedDate(),
-                        "Last modified date of entry " + expected.getName());
-                count++;
-            }
-        }
-    }
-
-    /**
      * Tests that the input streams returned by {@link ArchiveFile#getInputStream(ArchiveEntry)} match the expected
      * entries.
      */
@@ -154,9 +137,26 @@ public abstract class AbstractArchiveFileTest<T extends ArchiveEntry> extends Ab
         }
     }
 
-    private T getMatchingEntry(ArchiveFile<? extends T> archiveFile, String name) throws Exception {
-        try (IOStream<? extends T> stream = archiveFile.stream()) {
-            return stream.filter(e -> e.getName().equals(name)).findFirst().orElse(null);
+    /**
+     * Tests that the iterator returned by {@link ArchiveFile#iterator()} matches the expected entries.
+     */
+    @Test
+    void testIterator() throws Exception {
+        try (ArchiveFile<T> archiveFile = getArchiveFile()) {
+            final IOIterator<T> iterator = archiveFile.iterator();
+            final List<? extends ArchiveEntry> entries = getExpectedEntries();
+            int count = 0;
+            while (iterator.hasNext()) {
+                final ArchiveEntry expected = entries.get(count);
+                final ArchiveEntry actual = iterator.next();
+                assertEquals(expected.getName(), actual.getName(), "Entry name at index " + count);
+                assertEquals(expected.getSize(), actual.getSize(), "Size of entry " + expected.getName());
+                assertEquals(
+                        expected.getLastModifiedDate(),
+                        actual.getLastModifiedDate(),
+                        "Last modified date of entry " + expected.getName());
+                count++;
+            }
         }
     }
 }
