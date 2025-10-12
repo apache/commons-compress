@@ -247,7 +247,7 @@ public class MaxNameEntryLengthTest extends AbstractTest {
         final ArchiveException exception = assertThrows(ArchiveException.class, builder::get);
         final String message = exception.getMessage();
         assertNotNull(message);
-        assertTrue(message.contains("file name length"));
+        assertTrue(message.contains("file name length"), "Message mentions file name length: " + message);
         assertTrue(message.contains(String.format("%,d", expectedLength)));
     }
 

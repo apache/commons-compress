@@ -489,13 +489,13 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         this.channel = builder.getChannel(SeekableByteChannel.class);
         try {
             this.fileName = builder.getName();
+            this.maxEntryNameLength = builder.getMaxEntryNameLength();
             this.maxMemoryLimitKiB = builder.maxMemoryLimitKiB;
             this.useDefaultNameForUnnamedEntries = builder.useDefaultNameForUnnamedEntries;
             this.tryToRecoverBrokenArchives = builder.tryToRecoverBrokenArchives;
             final byte[] password = builder.password;
             archive = readHeaders(password);
             this.password = password != null ? Arrays.copyOf(password, password.length) : null;
-            this.maxEntryNameLength = builder.getMaxEntryNameLength();
         } catch (final ArithmeticException | IllegalArgumentException e) {
             final ArchiveException archiveException = new ArchiveException(e);
             try {
