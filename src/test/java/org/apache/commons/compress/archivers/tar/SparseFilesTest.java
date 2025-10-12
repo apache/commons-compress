@@ -273,7 +273,7 @@ class SparseFilesTest extends AbstractTest {
             try (InputStream inputStream = input.getInputStream(entry)) {
                 // read the expected amount of data
                 final byte[] content = new byte[expectedSize];
-                assertEquals(expectedSize, inputStream.read(content));
+                assertEquals(expectedSize, IOUtils.read(inputStream, content));
                 // verify that the stream is at EOF
                 assertEquals(IOUtils.EOF, inputStream.read());
                 // check content
@@ -294,7 +294,7 @@ class SparseFilesTest extends AbstractTest {
             assertEquals("sparse-file.txt", entry.getName());
             // read the expected amount of data
             final byte[] content = new byte[expectedSize];
-            assertEquals(expectedSize, input.read(content));
+            assertEquals(expectedSize, IOUtils.read(input, content));
             // verify that the stream is at EOF
             assertEquals(IOUtils.EOF, input.read());
             // check content

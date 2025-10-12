@@ -25,6 +25,7 @@ import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.SequenceInputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Path;
@@ -43,7 +44,6 @@ import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.BoundedArchiveInputStream;
-import org.apache.commons.compress.utils.BoundedSeekableByteChannelInputStream;
 import org.apache.commons.io.function.IOIterable;
 import org.apache.commons.io.function.IOIterator;
 import org.apache.commons.io.input.BoundedInputStream;
@@ -55,15 +55,24 @@ import org.apache.commons.io.input.BoundedInputStream;
  */
 public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
 
+    /**
+     * InputStream that reads a specific entry from the archive.
+     *
+     * <p>It ensures that:</p>
+     * <ul>
+     * <li>No more than the specified number of bytes are read from the underlying channel.</li>
+     * <li>If the end of the entry is reached before the expected number of bytes, an {@link EOFException} is thrown.</li>
+     * </ul>
+     */
     private final class BoundedTarEntryInputStream extends BoundedArchiveInputStream {
 
         private final SeekableByteChannel channel;
 
-        private final TarArchiveEntry entry;
+        private final long end;
 
-        BoundedTarEntryInputStream(final TarArchiveEntry entry, final SeekableByteChannel channel) throws IOException {
-            super(entry.getDataOffset(), entry.getSize());
-            this.entry = entry;
+        BoundedTarEntryInputStream(final long start, final long remaining, final SeekableByteChannel channel) {
+            super(start, remaining);
+            this.end = start + remaining;
             this.channel = channel;
         }
 
@@ -76,7 +85,7 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
             if (totalRead == -1) {
                 if (buf.remaining() > 0) {
                     throw new EOFException(String.format("Truncated TAR archive: expected at least %d bytes, but got only %d bytes",
-                            entry.getDataOffset() + entry.getSize(), channel.position()));
+                            end, channel.position()));
                 }
                 // Marks the TarFile as having reached EOF.
                 setAtEOF(true);
@@ -364,7 +373,7 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
                     // possible integer overflow
                     throw new ArchiveException("Unreadable TAR archive, sparse block offset or length too big");
                 }
-                streams.add(new BoundedSeekableByteChannelInputStream(start, sparseHeader.getNumbytes(), archive));
+                streams.add(new BoundedTarEntryInputStream(start, sparseHeader.getNumbytes(), archive));
             }
             offset = sparseHeader.getOffset() + sparseHeader.getNumbytes();
         }
@@ -405,13 +414,13 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
      */
     public InputStream getInputStream(final TarArchiveEntry entry) throws IOException {
         try {
-            // Sparse entries are composed of multiple fragments: wrap them in a ComposedTarInputStream
+            // Sparse entries are composed of multiple fragments: wrap them in a SequenceInputStream
             if (entry.isSparse()) {
                 final List<InputStream> streams = sparseInputStreams.get(entry.getName());
-                return new ComposedTarInputStream(streams != null ? streams : Collections.emptyList(), entry.getRealSize());
+                return new SequenceInputStream(streams != null ? Collections.enumeration(streams) : Collections.emptyEnumeration());
             }
             // Regular entries are bounded: wrap in BoundedTarEntryInputStream to enforce size and detect premature EOF
-            return new BoundedTarEntryInputStream(entry, archive);
+            return new BoundedTarEntryInputStream(entry.getDataOffset(), entry.getSize(), archive);
         } catch (final RuntimeException e) {
             throw new ArchiveException("Corrupted TAR archive. Can't read entry", (Throwable) e);
         }
@@ -454,14 +463,12 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
             // Parse the header into a new entry
             final long position = archive.position();
             currEntry = new TarArchiveEntry(globalPaxHeaders, headerBuf.array(), zipEncoding, lenient, position);
-            currentStream = new BoundedTarEntryInputStream(currEntry, archive);
+            currentStream = new BoundedTarEntryInputStream(currEntry.getDataOffset(), currEntry.getSize(), archive);
             lastWasSpecial = TarUtils.isSpecialTarRecord(currEntry);
             if (lastWasSpecial) {
                 // Handle PAX, GNU long name, or other special records
                 // Make sure not to read beyond the entry data
-                final BoundedTarEntryInputStream inputStream = new BoundedTarEntryInputStream(currEntry, archive);
-                TarUtils.handleSpecialTarRecord(inputStream, zipEncoding, currEntry, paxHeaders, sparseHeaders, globalPaxHeaders,
-                        globalSparseHeaders);
+                TarUtils.handleSpecialTarRecord(currentStream, zipEncoding, currEntry, paxHeaders, sparseHeaders, globalPaxHeaders, globalSparseHeaders);
             }
         } while (lastWasSpecial);
         // Apply global and local PAX headers

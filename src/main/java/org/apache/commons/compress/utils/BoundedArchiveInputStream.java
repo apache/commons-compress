@@ -78,15 +78,9 @@ public abstract class BoundedArchiveInputStream extends InputStream {
         if (loc >= end) {
             return -1;
         }
-        final long maxLen = Math.min(len, end - loc);
-        if (maxLen <= 0) {
-            return 0;
-        }
-        if (off < 0 || off > b.length || maxLen > b.length - off) {
-            throw new IndexOutOfBoundsException("offset or len are out of bounds");
-        }
-
-        final ByteBuffer buf = ByteBuffer.wrap(b, off, (int) maxLen);
+        // Both len and end - loc are guaranteed to be > 0 here and at least len is <= Integer.MAX_VALUE.
+        final int maxLen = (int) Math.min(len, end - loc);
+        final ByteBuffer buf = ByteBuffer.wrap(b, off, maxLen);
         final int ret = read(loc, buf);
         if (ret > 0) {
             loc += ret;
