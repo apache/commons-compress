@@ -198,9 +198,9 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream imp
         return read(oneByte, 0, 1) == -1 ? -1 : oneByte[0] & 0xFF;
     }
 
-    /** {@inheritDoc} */
     @Override
     public int read(final byte[] b, final int off, final int len) throws IOException {
+        org.apache.commons.io.IOUtils.checkFromIndexSize(b, off, len);
         if (len == 0) {
             return 0;
         }

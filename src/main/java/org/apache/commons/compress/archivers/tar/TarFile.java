@@ -18,32 +18,29 @@
  */
 package org.apache.commons.compress.archivers.tar;
 
-import java.io.Closeable;
 import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
-import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.compress.archivers.ArchiveFile;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.BoundedArchiveInputStream;
 import org.apache.commons.compress.utils.BoundedSeekableByteChannelInputStream;
-import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
-import org.apache.commons.io.function.IOIterable;
-import org.apache.commons.io.function.IOIterator;
+import org.apache.commons.io.function.IOStream;
 import org.apache.commons.io.input.BoundedInputStream;
 
 /**
@@ -51,7 +48,7 @@ import org.apache.commons.io.input.BoundedInputStream;
  *
  * @since 1.21
  */
-public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
+public class TarFile implements ArchiveFile<TarArchiveEntry> {
 
     private final class BoundedTarEntryInputStream extends BoundedArchiveInputStream {
 
@@ -160,32 +157,18 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
      */
     // @formatter:on
     public static final class Builder extends AbstractTarBuilder<TarFile, Builder> {
-
-        private SeekableByteChannel channel;
-
         /**
          * Constructs a new instance.
          */
         private Builder() {
-            // empty
+            // Default options
+            setOpenOptions(StandardOpenOption.READ);
         }
 
         @Override
         public TarFile get() throws IOException {
             return new TarFile(this);
         }
-
-        /**
-         * Sets the SeekableByteChannel.
-         *
-         * @param channel  the SeekableByteChannel.
-         * @return {@code this} instance.
-         */
-        public Builder setSeekableByteChannel(final SeekableByteChannel channel) {
-            this.channel = channel;
-            return asThis();
-        }
-
     }
 
     /**
@@ -237,14 +220,29 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
     private final int maxEntryNameLength;
 
     private TarFile(final Builder builder) throws IOException {
-        this.archive = builder.channel != null ? builder.channel : Files.newByteChannel(builder.getPath());
-        this.zipEncoding = ZipEncodingHelper.getZipEncoding(builder.getCharset());
-        this.recordSize = builder.getRecordSize();
-        this.recordBuffer = ByteBuffer.allocate(this.recordSize);
-        this.blockSize = builder.getBlockSize();
-        this.lenient = builder.isLenient();
-        this.maxEntryNameLength = builder.getMaxEntryNameLength();
-        forEach(entries::add);
+        this.archive = builder.getChannel(SeekableByteChannel.class);
+        try {
+            this.zipEncoding = ZipEncodingHelper.getZipEncoding(builder.getCharset());
+            this.recordSize = builder.getRecordSize();
+            this.recordBuffer = ByteBuffer.allocate(this.recordSize);
+            this.blockSize = builder.getBlockSize();
+            this.lenient = builder.isLenient();
+            this.maxEntryNameLength = builder.getMaxEntryNameLength();
+            // Populate `entries` explicitly here instead of using `forEach`/`stream`,
+            // because both rely on `entries` internally.
+            // Using them would cause a self-referential loop and leave `entries` empty.
+            TarArchiveEntry entry;
+            while ((entry = getNextTarEntry()) != null) {
+                entries.add(entry);
+            }
+        } catch (final IOException ex) {
+            try {
+                this.archive.close();
+            } catch (final IOException e) {
+                ex.addSuppressed(e);
+            }
+            throw ex;
+        }
     }
 
     /**
@@ -256,7 +254,7 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
      */
     @Deprecated
     public TarFile(final byte[] content) throws IOException {
-        this(new SeekableInMemoryByteChannel(content));
+        this(builder().setByteArray(content));
     }
 
     /**
@@ -270,7 +268,7 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
      */
     @Deprecated
     public TarFile(final byte[] content, final boolean lenient) throws IOException {
-        this(new SeekableInMemoryByteChannel(content), TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, null, lenient);
+        this(builder().setByteArray(content).setLenient(lenient));
     }
 
     /**
@@ -283,7 +281,7 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
      */
     @Deprecated
     public TarFile(final byte[] content, final String encoding) throws IOException {
-        this(new SeekableInMemoryByteChannel(content), TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, encoding, false);
+        this(builder().setByteArray(content).setCharset(encoding));
     }
 
     /**
@@ -295,7 +293,7 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
      */
     @Deprecated
     public TarFile(final File archive) throws IOException {
-        this(archive.toPath());
+        this(builder().setFile(archive));
     }
 
     /**
@@ -309,7 +307,7 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
      */
     @Deprecated
     public TarFile(final File archive, final boolean lenient) throws IOException {
-        this(archive.toPath(), lenient);
+        this(builder().setFile(archive).setLenient(lenient));
     }
 
     /**
@@ -322,7 +320,7 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
      */
     @Deprecated
     public TarFile(final File archive, final String encoding) throws IOException {
-        this(archive.toPath(), encoding);
+        this(builder().setFile(archive).setCharset(encoding));
     }
 
     /**
@@ -332,7 +330,7 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
      * @throws IOException when reading the tar archive fails.
      */
     public TarFile(final Path archivePath) throws IOException {
-        this(Files.newByteChannel(archivePath), TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, null, false);
+        this(builder().setPath(archivePath));
     }
 
     /**
@@ -346,7 +344,7 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
      */
     @Deprecated
     public TarFile(final Path archivePath, final boolean lenient) throws IOException {
-        this(Files.newByteChannel(archivePath), TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, null, lenient);
+        this(builder().setPath(archivePath).setLenient(lenient));
     }
 
     /**
@@ -359,7 +357,7 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
      */
     @Deprecated
     public TarFile(final Path archivePath, final String encoding) throws IOException {
-        this(Files.newByteChannel(archivePath), TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, encoding, false);
+        this(builder().setPath(archivePath).setCharset(encoding));
     }
 
     /**
@@ -371,7 +369,7 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
      */
     @Deprecated
     public TarFile(final SeekableByteChannel content) throws IOException {
-        this(content, TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, null, false);
+        this(builder().setChannel(content));
     }
 
     /**
@@ -389,7 +387,7 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
     @Deprecated
     public TarFile(final SeekableByteChannel archive, final int blockSize, final int recordSize, final String encoding, final boolean lenient)
             throws IOException {
-        this(builder().setSeekableByteChannel(archive).setBlockSize(blockSize).setRecordSize(recordSize).setCharset(encoding).setLenient(lenient));
+        this(builder().setChannel(archive).setBlockSize(blockSize).setRecordSize(recordSize).setCharset(encoding).setLenient(lenient));
     }
 
     /**
@@ -452,7 +450,9 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
      * Gets all TAR Archive Entries from the TarFile.
      *
      * @return All entries from the tar file.
+     * @deprecated Since 1.29.0, use {@link #entries()} or {@link #stream()}.
      */
+    @Deprecated
     public List<TarArchiveEntry> getEntries() {
         return new ArrayList<>(entries);
     }
@@ -464,6 +464,7 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
      * @return Input stream of the provided entry.
      * @throws IOException Corrupted TAR archive. Can't read entry.
      */
+    @Override
     public InputStream getInputStream(final TarArchiveEntry entry) throws IOException {
         try {
             return new BoundedTarEntryInputStream(entry, archive);
@@ -577,38 +578,6 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
         return headerBuf == null || ArchiveUtils.isArrayZero(headerBuf.array(), recordSize);
     }
 
-    @Override
-    public IOIterator<TarArchiveEntry> iterator() {
-        return new IOIterator<TarArchiveEntry>() {
-
-            private TarArchiveEntry next;
-
-            @Override
-            public boolean hasNext() throws IOException {
-                if (next == null) {
-                    next = getNextTarEntry();
-                }
-                return next != null;
-            }
-
-            @Override
-            public TarArchiveEntry next() throws IOException {
-                if (next == null) {
-                    next = getNextTarEntry();
-                }
-                final TarArchiveEntry tmp = next;
-                next = null;
-                return tmp;
-            }
-
-            @Override
-            public Iterator<TarArchiveEntry> unwrap() {
-                return null;
-            }
-
-        };
-    }
-
     /**
      * Adds the sparse chunks from the current entry to the sparse chunks, including any additional sparse entries following the current entry.
      *
@@ -683,6 +652,16 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
     }
 
     /**
+     * {@inheritDoc}
+     *
+     * @since 1.29.0
+     */
+    @Override
+    public IOStream<? extends TarArchiveEntry> stream() {
+        return IOStream.of(entries);
+    }
+
+    /**
      * Checks if the current position of the SeekableByteChannel is in the archive.
      *
      * @throws IOException If the position is not in the archive
@@ -714,12 +693,4 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
             }
         }
     }
-
-    @Override
-    public Iterable<TarArchiveEntry> unwrap() {
-        // Commons IO 2.21.0:
-        // return asIterable();
-        return null;
-    }
-
 }

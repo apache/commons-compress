@@ -636,10 +636,14 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      * @param offset    The offset at which to place bytes read.
      * @param numToRead The number of bytes to read.
      * @return The number of bytes read, or -1 at EOF.
+     * @throws NullPointerException      if {@code buf} is null
+     * @throws IndexOutOfBoundsException if {@code offset} or {@code numToRead} are negative,
+     *                                   or if {@code offset + numToRead} is greater than {@code buf.length}.
      * @throws IOException on error
      */
     @Override
     public int read(final byte[] buf, final int offset, int numToRead) throws IOException {
+        org.apache.commons.io.IOUtils.checkFromIndexSize(buf, offset, numToRead);
         if (numToRead == 0) {
             return 0;
         }

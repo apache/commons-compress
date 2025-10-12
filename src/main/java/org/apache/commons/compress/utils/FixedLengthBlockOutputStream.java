@@ -201,6 +201,7 @@ public class FixedLengthBlockOutputStream extends OutputStream implements Writab
 
     @Override
     public void write(final byte[] b, final int offset, final int length) throws IOException {
+        IOUtils.checkFromIndexSize(b, offset, length);
         if (!isOpen()) {
             throw new ClosedChannelException();
         }

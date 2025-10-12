@@ -445,6 +445,7 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
      */
     @Override
     public int read(final byte[] b, int off, int len) throws IOException {
+        IOUtils.checkFromIndexSize(b, off, len);
         if (len == 0) {
             return 0;
         }

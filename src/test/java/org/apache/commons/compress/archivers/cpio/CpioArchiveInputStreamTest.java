@@ -32,6 +32,7 @@ import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
+import org.junitpioneer.jupiter.Issue;
 
 class CpioArchiveInputStreamTest extends AbstractTest {
 
@@ -87,6 +88,19 @@ class CpioArchiveInputStreamTest extends AbstractTest {
             count = consumeEntries(in);
         }
         assertEquals(2, count);
+    }
+
+    @Test
+    @Issue("https://issues.apache.org/jira/browse/COMPRESS-711")
+    void testCrcVerification() throws Exception {
+        try (CpioArchiveInputStream archive = CpioArchiveInputStream.builder().setURI(getURI("bla.cpio")).get()) {
+            assertNotNull(archive.getNextEntry());
+            final byte[] buffer = new byte[1024];
+            // Read with an offset to test that the right bytes are checksummed
+            while (archive.read(buffer, 1, 1023) != -1) {
+                // noop
+            }
+        }
     }
 
     @Test

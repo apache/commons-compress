@@ -124,6 +124,7 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
      * Constructs a new instance from a builder.
      *
      * @param builder The builder.
+     * @throws IOException Thrown if an I/O error occurs.
      * @since 1.29.0
      */
     protected ArchiveInputStream(AbstractArchiveBuilder<?, ?> builder) throws IOException {

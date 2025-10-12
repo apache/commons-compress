@@ -27,6 +27,7 @@ import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.utils.BitInputStream;
 import org.apache.commons.compress.utils.InputStreamStatistics;
+import org.apache.commons.io.IOUtils;
 
 /**
  * <p>
@@ -276,6 +277,7 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
 
     @Override
     public int read(final byte[] b, final int off, final int len) throws IOException {
+        IOUtils.checkFromIndexSize(b, off, len);
         if (len == 0) {
             return 0;
         }

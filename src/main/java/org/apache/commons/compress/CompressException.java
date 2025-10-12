@@ -27,7 +27,7 @@ import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.lang3.function.Suppliers;
 
 /**
- * Signals that a Pack200 Compress exception of some sort has occurred.
+ * Signals that a Compress I/O exception of some sort has occurred.
  *
  * @since 1.28.0
  */

@@ -23,6 +23,7 @@ import java.io.OutputStream;
 import java.util.Arrays;
 
 import org.apache.commons.compress.compressors.CompressorOutputStream;
+import org.apache.commons.io.IOUtils;
 
 /**
  * An output stream that compresses into the BZip2 format into another stream.
@@ -1149,15 +1150,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream<OutputSt
 
     @Override
     public void write(final byte[] buf, int offs, final int len) throws IOException {
-        if (offs < 0) {
-            throw new IndexOutOfBoundsException("offs(" + offs + ") < 0.");
-        }
-        if (len < 0) {
-            throw new IndexOutOfBoundsException("len(" + len + ") < 0.");
-        }
-        if (offs + len > buf.length) {
-            throw new IndexOutOfBoundsException("offs(" + offs + ") + len(" + len + ") > buf.length(" + buf.length + ").");
-        }
+        IOUtils.checkFromIndexSize(buf, offs, len);
         checkOpen();
         for (final int hi = offs + len; offs < hi;) {
             write0(buf[offs++]);

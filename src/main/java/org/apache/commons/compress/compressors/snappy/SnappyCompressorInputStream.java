@@ -24,6 +24,7 @@ import java.io.InputStream;
 import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.lz77support.AbstractLZ77CompressorInputStream;
 import org.apache.commons.compress.utils.ByteUtils;
+import org.apache.commons.io.IOUtils;
 
 /**
  * CompressorInputStream for the raw Snappy format.
@@ -192,11 +193,9 @@ public class SnappyCompressorInputStream extends AbstractLZ77CompressorInputStre
         return uncompressedSize;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public int read(final byte[] b, final int off, final int len) throws IOException {
+        IOUtils.checkFromIndexSize(b, off, len);
         if (len == 0) {
             return 0;
         }

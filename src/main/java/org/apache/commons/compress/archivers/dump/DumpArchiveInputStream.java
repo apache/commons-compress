@@ -393,18 +393,13 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
     }
 
     /**
-     * Reads bytes from the current dump archive entry.
+     * {@inheritDoc}
      *
-     * This method is aware of the boundaries of the current entry in the archive and will deal with them as if they were this stream's start and EOF.
-     *
-     * @param buf The buffer into which to place bytes read.
-     * @param off The offset at which to place bytes read.
-     * @param len The number of bytes to read.
-     * @return The number of bytes read, or -1 at EOF.
-     * @throws IOException on error
+     * <p>This method is aware of the boundaries of the current entry in the archive and will deal with them as if they were this stream's start and EOF.</p>
      */
     @Override
     public int read(final byte[] buf, int off, int len) throws IOException {
+        org.apache.commons.io.IOUtils.checkFromIndexSize(buf, off, len);
         if (len == 0) {
             return 0;
         }

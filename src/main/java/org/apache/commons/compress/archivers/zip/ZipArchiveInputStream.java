@@ -1034,6 +1034,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
 
     @Override
     public int read(final byte[] buffer, final int offset, final int length) throws IOException {
+        org.apache.commons.io.IOUtils.checkFromIndexSize(buffer, offset, length);
         if (length == 0) {
             return 0;
         }
