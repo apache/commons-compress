@@ -523,7 +523,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
         count(read);
         // Check for truncated entries
         if (read == -1 && entryOffset < currEntry.getSize()) {
-            throw new EOFException(String.format("Truncated TAR archive: entry '%s' expected %d bytes, but got %d", currEntry.getName(), currEntry.getSize(),
+            throw new EOFException(String.format("Truncated TAR archive: entry '%s' expected %,d bytes, actual %,d", currEntry.getName(), currEntry.getSize(),
                     entryOffset));
         }
         entryOffset += Math.max(0, read);
