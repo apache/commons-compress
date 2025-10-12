@@ -23,7 +23,6 @@ import static java.nio.charset.StandardCharsets.UTF_16LE;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.Closeable;
 import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.File;
@@ -48,8 +47,10 @@ import java.util.zip.CheckedInputStream;
 import org.apache.commons.compress.MemoryLimitException;
 import org.apache.commons.compress.archivers.AbstractArchiveBuilder;
 import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.compress.archivers.ArchiveFile;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
+import org.apache.commons.io.function.IOStream;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.io.input.ChecksumInputStream;
 import org.apache.commons.lang3.ArrayUtils;
@@ -77,7 +78,7 @@ import org.apache.commons.lang3.ArrayUtils;
  * @NotThreadSafe
  * @since 1.6
  */
-public class SevenZFile implements Closeable {
+public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
 
     private static final class ArchiveStatistics {
         private int numberOfPackedStreams;
@@ -195,6 +196,17 @@ public class SevenZFile implements Closeable {
             return new SevenZFile(this);
         }
 
+        String getName() {
+            if (name == null) {
+                try {
+                    name = getPath().toAbsolutePath().toString();
+                } catch (final UnsupportedOperationException e) {
+                    name = defaultName;
+                }
+            }
+            return name;
+        }
+
         /**
          * Sets the default name.
          *
@@ -204,22 +216,6 @@ public class SevenZFile implements Closeable {
         public Builder setDefaultName(final String defaultName) {
             this.defaultName = defaultName;
             return this;
-        }
-
-        Builder setName(final String name) {
-            this.name = name;
-            return this;
-        }
-
-        String getName() {
-            if (name == null) {
-                try {
-                    name = getPath().toAbsolutePath().toString();
-                } catch (UnsupportedOperationException e) {
-                    name = defaultName;
-                }
-            }
-            return name;
         }
 
         /**
@@ -248,6 +244,11 @@ public class SevenZFile implements Closeable {
          */
         public Builder setMaxMemoryLimitKiB(final int maxMemoryLimitKiB) {
             this.maxMemoryLimitKiB = maxMemoryLimitKiB;
+            return this;
+        }
+
+        Builder setName(final String name) {
+            this.name = name;
             return this;
         }
 
@@ -297,7 +298,7 @@ public class SevenZFile implements Closeable {
          *
          * @param seekableByteChannel the input channel.
          * @return {@code this} instance.
-         * @deprecated Since 1.29.0, use {@link #setChannel} instead.
+         * @deprecated Since 1.29.0, use {@link #setChannel(java.nio.channels.Channel)}.
          */
         @Deprecated
         public Builder setSeekableByteChannel(final SeekableByteChannel seekableByteChannel) {
@@ -480,6 +481,27 @@ public class SevenZFile implements Closeable {
     private final boolean useDefaultNameForUnnamedEntries;
 
     private final boolean tryToRecoverBrokenArchives;
+
+    private SevenZFile(final Builder builder) throws IOException {
+        this.channel = builder.getChannel(SeekableByteChannel.class);
+        try {
+            this.fileName = builder.getName();
+            this.maxMemoryLimitKiB = builder.maxMemoryLimitKiB;
+            this.useDefaultNameForUnnamedEntries = builder.useDefaultNameForUnnamedEntries;
+            this.tryToRecoverBrokenArchives = builder.tryToRecoverBrokenArchives;
+            final byte[] password = builder.password;
+            archive = readHeaders(password);
+            this.password = password != null ? Arrays.copyOf(password, password.length) : null;
+        } catch (final ArithmeticException | IllegalArgumentException e) {
+            final ArchiveException archiveException = new ArchiveException(e);
+            try {
+                channel.close();
+            } catch (final IOException suppressed) {
+                archiveException.addSuppressed(suppressed);
+            }
+            throw archiveException;
+        }
+    }
 
     /**
      * Reads a file as unencrypted 7z archive.
@@ -669,27 +691,6 @@ public class SevenZFile implements Closeable {
     @Deprecated
     public SevenZFile(final SeekableByteChannel channel, final String fileName, final byte[] password) throws IOException {
         this(builder().setChannel(channel).setName(fileName).setPassword(password));
-    }
-
-    private SevenZFile(Builder builder) throws IOException {
-        this.channel = builder.getChannel(SeekableByteChannel.class);
-        try {
-            this.fileName = builder.getName();
-            this.maxMemoryLimitKiB = builder.maxMemoryLimitKiB;
-            this.useDefaultNameForUnnamedEntries = builder.useDefaultNameForUnnamedEntries;
-            this.tryToRecoverBrokenArchives = builder.tryToRecoverBrokenArchives;
-            final byte[] password = builder.password;
-            archive = readHeaders(password);
-            this.password = password != null ? Arrays.copyOf(password, password.length) : null;
-        } catch (final ArithmeticException | IllegalArgumentException e) {
-            final ArchiveException archiveException = new ArchiveException(e);
-            try {
-                channel.close();
-            } catch (final IOException suppressed) {
-                archiveException.addSuppressed(suppressed);
-            }
-            throw archiveException;
-        }
     }
 
     /**
@@ -1029,7 +1030,9 @@ public class SevenZFile implements Closeable {
      *
      * @return a copy of meta-data of all archive entries.
      * @since 1.11
+     * @deprecated Since 1.29.0, use {@link #entries()} or {@link #stream()}.
      */
+    @Deprecated
     public Iterable<SevenZArchiveEntry> getEntries() {
         return new ArrayList<>(Arrays.asList(archive.files));
     }
@@ -1045,6 +1048,7 @@ public class SevenZFile implements Closeable {
      * @throws IOException if unable to create an input stream from the entry
      * @since 1.20
      */
+    @Override
     public InputStream getInputStream(final SevenZArchiveEntry entry) throws IOException {
         int entryIndex = -1;
         for (int i = 0; i < archive.files.length; i++) {
@@ -2201,6 +2205,16 @@ public class SevenZFile implements Closeable {
             fileToSkip.setContentMethods(file.getContentMethods());
         }
         return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.29.0
+     */
+    @Override
+    public IOStream<? extends SevenZArchiveEntry> stream() {
+        return IOStream.of(archive.files);
     }
 
     @Override

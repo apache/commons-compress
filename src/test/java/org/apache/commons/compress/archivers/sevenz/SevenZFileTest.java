@@ -51,9 +51,9 @@ import java.util.function.Function;
 
 import javax.crypto.Cipher;
 
-import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.MemoryLimitException;
 import org.apache.commons.compress.PasswordRequiredException;
+import org.apache.commons.compress.archivers.AbstractArchiveFileTest;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.utils.MultiReadOnlySeekableByteChannel;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
@@ -62,7 +62,7 @@ import org.apache.commons.io.input.ChecksumInputStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class SevenZFileTest extends AbstractTest {
+class SevenZFileTest extends AbstractArchiveFileTest<SevenZArchiveEntry> {
     private static final String TEST2_CONTENT = "<?xml version = '1.0'?>\r\n<!DOCTYPE connections>\r\n<meinxml>\r\n\t<leer />\r\n</meinxml>\n";
 
     private static boolean isStrongCryptoAvailable() throws NoSuchAlgorithmException {
@@ -111,6 +111,11 @@ class SevenZFileTest extends AbstractTest {
             assertEquals("Hello, world!\n", new String(contents, UTF_8));
             assertNull(sevenZFile.getNextEntry());
         }
+    }
+
+    @Override
+    protected SevenZFile getArchiveFile() throws IOException {
+        return SevenZFile.builder().setPath(getPath("bla.7z")).get();
     }
 
     private SevenZFile getSevenZFile(final String specialPath) throws IOException {
