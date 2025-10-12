@@ -20,7 +20,6 @@ package org.apache.commons.compress.archivers.tar;
 
 import static java.util.Objects.requireNonNull;
 
-import java.io.Closeable;
 import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
@@ -33,19 +32,18 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.compress.archivers.ArchiveFile;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.BoundedArchiveInputStream;
-import org.apache.commons.io.function.IOIterable;
-import org.apache.commons.io.function.IOIterator;
+import org.apache.commons.io.function.IOStream;
 import org.apache.commons.io.input.BoundedInputStream;
 
 /**
@@ -53,7 +51,7 @@ import org.apache.commons.io.input.BoundedInputStream;
  *
  * @since 1.21
  */
-public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
+public class TarFile implements ArchiveFile<TarArchiveEntry> {
 
     /**
      * InputStream that reads a specific entry from the archive.
@@ -184,8 +182,14 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
             this.recordBuffer = ByteBuffer.allocate(this.recordSize);
             this.blockSize = builder.getBlockSize();
             this.lenient = builder.isLenient();
-            forEach(entries::add);
-        } catch (IOException ex) {
+            // Populate `entries` explicitly here instead of using `forEach`/`stream`,
+            // because both rely on `entries` internally.
+            // Using them would cause a self-referential loop and leave `entries` empty.
+            TarArchiveEntry entry;
+            while ((entry = getNextTarEntry()) != null) {
+                entries.add(entry);
+            }
+        } catch (final IOException ex) {
             try {
                 this.archive.close();
             } catch (final IOException e) {
@@ -400,7 +404,9 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
      * Gets all TAR Archive Entries from the TarFile.
      *
      * @return All entries from the tar file.
+     * @deprecated Since 1.29.0, use {@link #entries()} or {@link #stream()}.
      */
+    @Deprecated
     public List<TarArchiveEntry> getEntries() {
         return new ArrayList<>(entries);
     }
@@ -412,6 +418,7 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
      * @return Input stream of the provided entry.
      * @throws IOException Corrupted TAR archive. Can't read entry.
      */
+    @Override
     public InputStream getInputStream(final TarArchiveEntry entry) throws IOException {
         try {
             // Sparse entries are composed of multiple fragments: wrap them in a SequenceInputStream
@@ -543,38 +550,6 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
         return headerBuf == null || ArchiveUtils.isArrayZero(headerBuf.array(), recordSize);
     }
 
-    @Override
-    public IOIterator<TarArchiveEntry> iterator() {
-        return new IOIterator<TarArchiveEntry>() {
-
-            private TarArchiveEntry next;
-
-            @Override
-            public boolean hasNext() throws IOException {
-                if (next == null) {
-                    next = getNextTarEntry();
-                }
-                return next != null;
-            }
-
-            @Override
-            public TarArchiveEntry next() throws IOException {
-                if (next == null) {
-                    next = getNextTarEntry();
-                }
-                final TarArchiveEntry tmp = next;
-                next = null;
-                return tmp;
-            }
-
-            @Override
-            public Iterator<TarArchiveEntry> unwrap() {
-                return null;
-            }
-
-        };
-    }
-
     /**
      * Adds the sparse chunks from the current entry to the sparse chunks, including any additional sparse entries following the current entry.
      *
@@ -644,6 +619,16 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
     }
 
     /**
+     * {@inheritDoc}
+     *
+     * @since 1.29.0
+     */
+    @Override
+    public IOStream<? extends TarArchiveEntry> stream() {
+        return IOStream.of(entries);
+    }
+
+    /**
      * Checks if the current position of the SeekableByteChannel is in the archive.
      *
      * @throws IOException If the position is not in the archive
@@ -675,12 +660,4 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
             }
         }
     }
-
-    @Override
-    public Iterable<TarArchiveEntry> unwrap() {
-        // Commons IO 2.21.0:
-        // return asIterable();
-        return null;
-    }
-
 }
