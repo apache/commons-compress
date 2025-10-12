@@ -179,7 +179,7 @@ public class LZ77Compressor {
         /**
          * Constructs a new typeless instance.
          *
-         * @deprecated Use {@link #Block()}.
+         * @deprecated Use {@link #Block(BlockType)}.
          */
         @Deprecated
         public Block() {

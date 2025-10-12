@@ -63,7 +63,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="pkarwasz" due-to="Tyler Nighswander">Align DUMP archive block size with Linux `dump` utility.</action>
       <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">DumpArchiveInputStream.getNextEntry() throws an ArchiveException instead of ArrayIndexOutOfBoundsException.</action>
       <action type="fix" dev="pkarwasz" due-to="Piotr P. Karwasz">Fix DumpArchiveInputStream to correctly handle file names up to 255 bytes #711.</action>
-      <!-- FIX zip -->      
+      <!-- FIX zip -->
       <action type="fix" dev="ggregory" due-to="Dominik Stadler, Gary Gregory" issue="COMPRESS-598">ZipArchiveInputStream.read(byte[], int, int) now throws an IOException instead of a NullPointerException.</action>
       <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">ZipFile.createBoundedInputStream(long, long) now throws an ArchiveException instead of IllegalArgumentException.</action>
       <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">ZipFile.getContentBeforeFirstLocalFileHeader() now throws an ArchiveException instead of IllegalArgumentException.</action>
@@ -71,7 +71,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">ZipArchiveInputStream.read() now throws an IOException instead of java.lang.ArrayIndexOutOfBoundsException.</action>
       <action type="fix" dev="ggregory" due-to="Stanislav Fort, Gary Gregory">ZipArchiveInputStream now throws an MemoryLimitException instead of ArchiveException, or OutOfMemoryError when running with low memory settings set on the command line.</action>
       <action type="fix" dev="ggregory" due-to="YuWeiBoy, Gary Gregory" issue="COMPRESS-708">ZstdCompressorInputStream closes the InputStream held by ZipArchiveInputStream garbage collection.</action>
-      <!-- FIX tar -->      
+      <!-- FIX tar -->
       <action type="fix" dev="pkarwasz" due-to="Tyler Nighswander, Piotr P. Karwasz, Gary Gregory">>Uniform handling of special tar records in TarFile and TarArchiveInputStream.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory, Stanislav Fort">TarArchiveOutputStream now throws a IllegalArgumentException instead of an OutOfMemoryError.</action>
       <action type="fix" dev="ggregory" issue="COMPRESS-707" due-to="Gary Gregory, Roel van Dijk">TarUtils.verifyCheckSum() throws an Exception when checksum could not be parsed.</action>
@@ -87,11 +87,12 @@ The <action> type attribute can be add,update,fix,remove.
       <!-- FIX pack200 -->      
       <action type="fix" dev="ggregory" due-to="Gary Gregory, Igor Morgenstern">org.apache.commons.compress.harmony.pack200 now throws Pack200Exception, IllegalArgumentException, IllegalStateException, instead of other runtime exceptions and Error.</action>
       <action type="fix" dev="ppkarwasz" due-to="Raeps">Extract duplicate code in org.apache.commons.compress.harmony.pack200.IntList.</action>
-      <!-- FIX cpio -->      
+      <!-- FIX cpio -->
       <action type="fix" dev="ggregory" due-to="Stan, Gary Gregory">CpioArchiveEntry now throws ArchiveException instead of Arithmetic exception.</action>
       <action type="fix" dev="ggregory" due-to="Stan, Gary Gregory">CpioArchiveInputStream.getNextEntry() now throws a MemoryLimitException instead of OutOfMemoryError when it can't process input greater than available memory.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">CpioArchiveInputStream.readOldAsciiEntry(boolean) now throws ArchiveException instead of Arithmetic exception.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">CpioArchiveInputStream.readOldBinaryEntry(boolean) now throws ArchiveException instead of Arithmetic exception.</action>
+      <action type="fix" issue="COMPRESS-711" dev="pkarwasz" due-to="Piotr P. Karwasz">Fix checksum calculation in CpioArchiveInputStream when reading with a non-zero offset.</action>
       <!-- FIX gzip -->
       <action type="fix" dev="ggregory" due-to="Gary Gregory">GzipParameters.setOperatingSystem(int) now throws CompressorException on illegal input.</action>
       <action type="fix" issue="COMPRESS-705" dev="ggregory" due-to="Mario Fredenhagen, Gary Gregory">GZip IOException: Extra subfield length exceeds remaining bytes in extra field; use new option GzipCompressorInputStream.Builder.setIgnoreExtraField(boolean).</action>
@@ -107,6 +108,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory">SeekableInMemoryByteChannel.SeekableInMemoryByteChannel() internal buffer now defaults to IOUtils.DEFAULT_BUFFER_SIZE.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">SeekableInMemoryByteChannel.position(), size(), and truncate() now comply with the SeekableByteChannel contract and throw ClosedChannelException.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">SeekableInMemoryByteChannel.position(long) now throws IllegalArgumentException instead of IOException when the position request is negative, complying with the SeekableByteChannel.position(long) contract.</action>
+      <action type="fix" dev="pkarwasz" due-to="Piotr P. Karwasz">Makes TarUtils final and cleans up protected methods #712.</action>
       <!-- ADD -->
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add MemoryLimitException.MemoryLimitException(long, long).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add CompressException.CompressException(String, Object...).</action>
@@ -129,11 +131,11 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="add" dev="ggregory" due-to="Gary Gregory">TarFile now implements IOIterable&lt;TarArchiveEntry&gt;.</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add a builder for the TarFile class and deprecate some constructors.</action>
       <action type="add" dev="pkarwasz" due-to="Piotr Karwasz">SevenZFile, TarFile, and ZipFile now always close underlying resources when builder or constructor fails.</action>
+      <action type="add" dev="pkarwasz" due-to="Piotr P. Karwasz">Introduce an ArchiveFile abstraction to unify the APIs of SevenZFile, TarFile, and ZipFile.</action>
       <!-- UPDATE -->
       <action type="update" dev="ggregory" due-to="Gary Gregory">Bump org.apache.commons:commons-parent from 85 to 88 #707.</action>
       <action type="update" dev="ggregory" due-to="Gary Gregory">Bump org.apache.commons:commons-lang3 from 3.18.0 to 3.19.0.</action>
       <!-- REMOVE -->
-      <action type="remove" dev="pkarwasz" due-to="Piotr P. Karwasz">Makes TarUtils final and cleans up protected methods #712.</action>
     </release>
     <release version="1.28.0" date="2025-07-26" description="This is a feature and maintenance release. Java 8 or later is required.">
       <!-- FIX -->
