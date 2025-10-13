@@ -373,10 +373,6 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         checkEndOfFile(buf, to.length).get(to);
     }
 
-    private static char getChar(final ByteBuffer buf) throws EOFException {
-        return checkEndOfFile(buf, Character.BYTES).getChar();
-    }
-
     private static int getInt(final ByteBuffer buf) throws EOFException {
         return checkEndOfFile(buf, Integer.BYTES).getInt();
     }
