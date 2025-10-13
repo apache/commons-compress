@@ -673,7 +673,7 @@ public final class TarUtils {
      *
      * @param inputStream        The input stream providing PAX header data
      * @param globalPaxHeaders   The global PAX headers of the tar archive
-     * @param headerSize         The total size of the PAX header block; ignored if negative
+     * @param headerSize         The total size of the PAX header block; always non-negative
      * @param maxEntryPathLength The maximum permitted length for entry paths
      * @param sparseHeaders      Output list to collect any GNU sparse 0.0 headers found
      * @return A map of PAX headers merged with the supplied global headers
@@ -684,6 +684,7 @@ public final class TarUtils {
      */
     static Map<String, String> parsePaxHeaders(final InputStream inputStream, final Map<String, String> globalPaxHeaders, final long headerSize,
             final int maxEntryPathLength, final List<? super TarArchiveStructSparse> sparseHeaders) throws IOException {
+        assert headerSize >= 0 : "headerSize must be non-negative";
         // Check if there is enough memory to store the headers
         MemoryLimitException.checkBytes(headerSize, Long.MAX_VALUE);
         final Map<String, String> headers = new HashMap<>(globalPaxHeaders);
@@ -719,18 +720,15 @@ public final class TarUtils {
                             if (restLen <= 1) { // only NL
                                 headers.remove(keyword);
                             // 2. Entry length exceeds header size
-                            } else if (headerSize >= 0 && restLen > headerSize - totalRead) {
+                            } else if (restLen > headerSize - totalRead) {
                                 throw new ArchiveException("PAX header value size %,d exceeds size of header record.", restLen);
                             } else {
                                 // 3. Entry length exceeds configurable file and link name limits
                                 if (TarArchiveEntry.PAX_NAME_KEY.equals(keyword) || TarArchiveEntry.PAX_LINK_NAME_KEY.equals(keyword)) {
                                     ArchiveUtils.checkEntryNameLength(restLen - 1, maxEntryPathLength, "TAR");
                                 }
-                                final byte[] rest = IOUtils.readRange(inputStream, restLen);
-                                final int got = rest.length;
-                                if (got != restLen) {
-                                    throw new EOFException(String.format("Failed to read PAX header: Expected %,d bytes, read %,d.", restLen, got));
-                                }
+                                final byte[] rest = org.apache.commons.io.IOUtils.toByteArray(inputStream, restLen,
+                                        org.apache.commons.io.IOUtils.DEFAULT_BUFFER_SIZE);
                                 totalRead += restLen;
                                 // Drop trailing NL
                                 if (rest[restLen - 1] != '\n') {

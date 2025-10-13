@@ -1065,7 +1065,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * when the entry represents a sparse file.
      * </p>
      *
-     * @return This entry's file size.
+     * @return This entry's file size, always &gt;= 0.
      */
     @Override
     public long getSize() {
