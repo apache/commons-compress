@@ -349,6 +349,31 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     public static int SOFT_MAX_ARRAY_LENGTH = Integer.MAX_VALUE - 8;
 
     /**
+     * Maximum number of coders permitted in a single 7z folder.
+     *
+     * <p>This limit is defined by the original 7-Zip implementation
+     * ({@code CPP/7zip/Archive/7z/7zIn.cpp}) to guard against malformed archives:</p>
+     *
+     * <pre>
+     * #define k_Scan_NumCoders_MAX 64
+     * </pre>
+     */
+    private static final int MAX_CODERS_PER_FOLDER = 64;
+
+    /**
+     * Maximum total number of coder input/output streams permitted in a single folder.
+     *
+     * <p>This limit is also taken from the reference implementation
+     * ({@code CPP/7zip/Archive/7z/7zIn.cpp}):</p>
+     *
+     * <pre>
+     * #define k_Scan_NumCodersStreams_in_Folder_MAX 64
+     * </pre>
+     */
+    private static final int MAX_CODER_STREAMS_PER_FOLDER = 64;
+
+
+    /**
      * Creates a new Builder.
      *
      * @return a new Builder.
@@ -1437,12 +1462,15 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         calculateStreamMap(archive);
     }
 
-    private Folder readFolder(final ByteBuffer header) throws IOException {
+    Folder readFolder(final ByteBuffer header) throws IOException {
         final Folder folder = new Folder();
-        final int numCoders = readUint64ToIntExact(header);
-        final Coder[] coders = new Coder[checkObjectArray(numCoders)];
-        long totalInStreams = 0;
-        long totalOutStreams = 0;
+        final long numCoders = readUint64(header);
+        if (numCoders == 0 || numCoders > MAX_CODERS_PER_FOLDER) {
+            throw new ArchiveException("Unsupported 7z archive: " + numCoders + " coders in folder.");
+        }
+        final Coder[] coders = new Coder[(int) numCoders];
+        int totalInStreams = 0;
+        int totalOutStreams = 0;
         for (int i = 0; i < coders.length; i++) {
             final int bits = getUnsignedByte(header);
             final int idSize = bits & 0xf;
@@ -1458,10 +1486,19 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
                 numOutStreams = 1;
             } else {
                 numInStreams = readUint64(header);
+                if (numInStreams > MAX_CODER_STREAMS_PER_FOLDER) {
+                    throw new ArchiveException("Unsupported 7z archive: %,d coder input streams in folder.", numInStreams);
+                }
                 numOutStreams = readUint64(header);
+                if (numOutStreams != 1) {
+                    throw new ArchiveException("Unsupported 7z archive: %,d coder output streams in folder.", numOutStreams);
+                }
             }
-            totalInStreams = ArchiveException.addExact(totalInStreams, numInStreams);
-            totalOutStreams = ArchiveException.addExact(totalOutStreams, numOutStreams);
+            totalInStreams += (int) numInStreams;
+            if (totalInStreams > MAX_CODER_STREAMS_PER_FOLDER) {
+                throw new ArchiveException("Unsupported 7z archive: %,d coder input streams in folder.", totalInStreams);
+            }
+            totalOutStreams += (int) numOutStreams;
             byte[] properties = null;
             if (hasAttributes) {
                 final long propertiesSize = readUint64(header);
@@ -1470,22 +1507,30 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
             }
             // would need to keep looping as above:
             if (moreAlternativeMethods) {
-                throw new ArchiveException("Alternative methods are unsupported, please report. The reference implementation doesn't support them either.");
+                throw new ArchiveException("Unsupported 7z archive: alternative methods are unsupported, please report. "
+                        + "The reference implementation doesn't support them either.");
             }
             coders[i] = new Coder(decompressionMethodId, numInStreams, numOutStreams, properties);
         }
         folder.coders = coders;
         folder.totalInputStreams = totalInStreams;
         folder.totalOutputStreams = totalOutStreams;
-        final long numBindPairs = totalOutStreams - 1;
-        final BindPair[] bindPairs = new BindPair[checkObjectArray(ArchiveException.toIntExact(numBindPairs))];
+        final int numBindPairs = totalOutStreams - 1;
+        final BindPair[] bindPairs = new BindPair[numBindPairs];
         for (int i = 0; i < bindPairs.length; i++) {
-            bindPairs[i] = new BindPair(readUint64(header), readUint64(header));
+            final long inIndex = readUint64(header);
+            if (inIndex >= totalInStreams) {
+                throw new ArchiveException("Unsupported 7z archive: bind pair inIndex %d out of range.", inIndex);
+            }
+            final long outIndex = readUint64(header);
+            if (outIndex >= totalOutStreams) {
+                throw new ArchiveException("Unsupported 7z archive: bind pair outIndex %d out of range.", inIndex);
+            }
+            bindPairs[i] = new BindPair(inIndex, outIndex);
         }
         folder.bindPairs = bindPairs;
-        final long numPackedStreams = totalInStreams - numBindPairs;
-        final int numPackedStreamsInt = ArchiveException.toIntExact(numPackedStreams);
-        final long[] packedStreams = new long[checkObjectArray(numPackedStreamsInt)];
+        final int numPackedStreams = totalInStreams - numBindPairs;
+        final long[] packedStreams = new long[numPackedStreams];
         if (numPackedStreams == 1) {
             long i;
             for (i = 0; i < totalInStreams; i++) {
@@ -1495,8 +1540,11 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
             }
             packedStreams[0] = i;
         } else {
-            for (int i = 0; i < numPackedStreamsInt; i++) {
+            for (int i = 0; i < numPackedStreams; i++) {
                 packedStreams[i] = readUint64(header);
+                if (packedStreams[i] >= totalInStreams) {
+                    throw new ArchiveException("Unsupported 7z archive: packed stream index %d out of range.", packedStreams[i]);
+                }
             }
         }
         folder.packedStreams = packedStreams;

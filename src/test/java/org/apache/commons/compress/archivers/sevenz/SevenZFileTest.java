@@ -33,6 +33,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
@@ -47,7 +49,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import javax.crypto.Cipher;
 
@@ -61,6 +65,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.ChecksumInputStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 class SevenZFileTest extends AbstractArchiveFileTest<SevenZArchiveEntry> {
     private static final String TEST2_CONTENT = "<?xml version = '1.0'?>\r\n<!DOCTYPE connections>\r\n<meinxml>\r\n\t<leer />\r\n</meinxml>\n";
@@ -838,6 +844,70 @@ class SevenZFileTest extends AbstractArchiveFileTest<SevenZArchiveEntry> {
         }
     }
 
+    static Stream<Consumer<ByteBuffer>> testReadFolder_Unsupported() {
+        return Stream.of(
+                // Folder with no coders
+                buf -> writeFolder(buf, new Coder[0]),
+                // Folder with too many coders
+                buf -> {
+                    final Coder[] coders = new Coder[65];
+                    final Coder simpleCoder = new Coder(new byte[] { 0x03 }, 1, 1, null);
+                    Arrays.fill(coders, simpleCoder);
+                    writeFolder(buf, coders);
+                },
+                // Folder with too many input streams per coder
+                buf -> {
+                    final Coder coder = new Coder(new byte[] { 0x03 }, 65, 1, null);
+                    writeFolder(buf, new Coder[] { coder });
+                },
+                // Folder with more than one output stream per coder
+                buf -> {
+                    final Coder coder = new Coder(new byte[] { 0x03 }, 1, 2, null);
+                    writeFolder(buf, new Coder[] { coder });
+                },
+                // Folder with too many total input streams
+                buf -> {
+                    final Coder coder = new Coder(new byte[] { 0x03 }, 2, 1, null);
+                    final Coder[] coders = new Coder[33];
+                    Arrays.fill(coders, coder);
+                    writeFolder(buf, coders);
+                },
+                // Folder with more alternative methods (not supported yet)
+                buf -> writeFolder(buf, new Coder[]{new Coder(new byte[]{0x03}, 1, 1, null)},
+                        true, false, false, false),
+                // Folder with unsupported bind pair in index
+                buf -> {
+                    final Coder coder = new Coder(new byte[] { 0x03 }, 1, 1, null);
+                    writeFolder(buf, new Coder[] { coder, coder }, false, true, false, false);
+                },
+                // Folder with unsupported bind pair out index
+                buf -> {
+                    final Coder coder = new Coder(new byte[] { 0x03 }, 1, 1, null);
+                    writeFolder(buf, new Coder[] { coder, coder }, false, false, true, false);
+                },
+                // Folder with unsupported packed stream index
+                buf -> {
+                    final Coder coder = new Coder(new byte[]{0x03}, 2, 1, null);
+                    writeFolder(buf, new Coder[]{ coder, coder }, false, false, false, true);
+                }
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void testReadFolder_Unsupported(final Consumer<ByteBuffer> folderWriter) throws IOException {
+        try (SevenZFile file = SevenZFile.builder().setURI(getURI("bla.7z")).get()) {
+            // Allocate a buffer large enough to hold the folder data
+            final ByteBuffer buffer = ByteBuffer.allocate(8192).order(ByteOrder.LITTLE_ENDIAN);
+            folderWriter.accept(buffer);
+            buffer.flip();
+            final ArchiveException e = assertThrows(ArchiveException.class, () -> {
+                file.readFolder(buffer);
+            });
+            assertTrue(e.getMessage().contains("Unsupported 7z archive"));
+        }
+    }
+
     /**
      * Test case for <a href="https://issues.apache.org/jira/browse/COMPRESS-681">COMPRESS-681</a>.
      */
@@ -1011,5 +1081,64 @@ class SevenZFileTest extends AbstractArchiveFileTest<SevenZArchiveEntry> {
         assertTrue(SevenZFile.matches(data2, data2.length));
         final byte[] data3 = { '7', 'z', (byte) 0xBC, (byte) 0xAF, 0x27, 0x1D };
         assertFalse(SevenZFile.matches(data3, data3.length));
+    }
+
+    private static void writeBindPair(final ByteBuffer buffer, final long inIndex, final long outIndex) {
+        writeUint64(buffer, inIndex);
+        writeUint64(buffer, outIndex);
+    }
+
+    private static void writeCoder(final ByteBuffer buffer, final byte[] methodId, final long numInStreams, final long numOutStreams,
+            final boolean moreAlternativeMethods) {
+        final boolean isComplex = numInStreams != 1 || numOutStreams != 1;
+        int flag = methodId.length;
+        if (isComplex) {
+            flag |= 0x10;
+        }
+        if (moreAlternativeMethods) {
+            flag |= 0x80;
+        }
+        // coder
+        buffer.put((byte) flag);
+        buffer.put(methodId);
+        if (isComplex) {
+            writeUint64(buffer, numInStreams);
+            writeUint64(buffer, numOutStreams);
+        }
+    }
+
+    private static void writeFolder(final ByteBuffer buffer, final Coder[] coders, final boolean moreAlternativeMethods, final boolean unsupportedBindPairIn,
+            final boolean unsupportedBindPairOut, final boolean unsupportedPackedStreams) {
+        writeUint64(buffer, coders.length);
+        long totalInStreams = 0;
+        long totalOutStreams = 0;
+        for (final Coder coder : coders) {
+            writeCoder(buffer, coder.decompressionMethodId, coder.numInStreams, coder.numOutStreams, moreAlternativeMethods);
+            totalInStreams += coder.numInStreams;
+            totalOutStreams += coder.numOutStreams;
+        }
+        long i = 0;
+        // Bind pairs: one less than number of total out streams
+        for (; i < totalOutStreams - 1; i++) {
+            final long inIndex = (unsupportedBindPairIn ? totalInStreams : 0) + i;
+            final long outIndex = (unsupportedBindPairOut ? totalOutStreams : 0) + i + 1;
+            writeBindPair(buffer, inIndex, outIndex);
+        }
+        // Packed streams: one per in stream that is not bound
+        if (totalInStreams > i + 1) {
+            for (; i < totalInStreams; i++) {
+                final long packedStreamIndex = (unsupportedPackedStreams ? totalInStreams : 0) + i;
+                writeUint64(buffer, packedStreamIndex);
+            }
+        }
+    }
+
+    private static void writeFolder(final ByteBuffer buffer, final Coder[] coders) {
+        writeFolder(buffer, coders, false, false, false, false);
+    }
+
+    private static void writeUint64(final ByteBuffer buffer, final long value) {
+        buffer.put((byte) 0b1111_1111);
+        buffer.putLong(value);
     }
 }
