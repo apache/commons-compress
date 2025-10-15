@@ -95,7 +95,9 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
     /** The number of bytes read in this stream. */
     private long bytesRead;
 
-    private Charset charset;
+    private final Charset charset;
+
+    private final int maxEntryNameLength;
 
     /**
      * Constructs a new instance.
@@ -115,6 +117,7 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
     protected ArchiveInputStream(final InputStream inputStream, final String charsetName) {
         super(inputStream == null ? new NullInputStream() : inputStream);
         this.charset = Charsets.toCharset(charsetName);
+        this.maxEntryNameLength = Short.MAX_VALUE;
     }
 
     /**
@@ -142,6 +145,7 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
     protected ArchiveInputStream(final InputStream inputStream, final AbstractArchiveBuilder<?, ?> builder) {
         super(inputStream);
         this.charset = builder.getCharset();
+        this.maxEntryNameLength = builder.getMaxEntryNameLength();
     }
 
     /**
@@ -224,6 +228,16 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
     @Deprecated
     public int getCount() {
         return (int) bytesRead;
+    }
+
+    /**
+     * Gets the maximum length of an archive entry name.
+     *
+     * @return The maximum length of an archive entry name.
+     * @since 1.29.0
+     */
+    protected int getMaxEntryNameLength() {
+        return maxEntryNameLength;
     }
 
     /**

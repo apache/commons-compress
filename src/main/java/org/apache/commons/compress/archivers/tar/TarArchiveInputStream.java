@@ -25,6 +25,7 @@
 package org.apache.commons.compress.archivers.tar;
 
 import java.io.ByteArrayOutputStream;
+import java.io.EOFException;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -512,7 +513,8 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
             lastWasSpecial = TarUtils.isSpecialTarRecord(currEntry);
             if (lastWasSpecial) {
                 // Handle PAX, GNU long name, or other special records
-                TarUtils.handleSpecialTarRecord(this, zipEncoding, currEntry, paxHeaders, sparseHeaders, globalPaxHeaders, globalSparseHeaders);
+                TarUtils.handleSpecialTarRecord(this, zipEncoding, getMaxEntryNameLength(), currEntry, paxHeaders, sparseHeaders, globalPaxHeaders,
+                        globalSparseHeaders);
             }
         } while (lastWasSpecial);
         // Apply global and local PAX headers
@@ -664,7 +666,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
         }
         if (totalRead == -1) {
             if (numToRead > 0) {
-                throw new ArchiveException("Truncated TAR archive");
+                throw new EOFException("Truncated TAR archive");
             }
             setAtEOF(true);
         } else {

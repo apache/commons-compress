@@ -29,11 +29,13 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Stack;
 
+import org.apache.commons.compress.MemoryLimitException;
 import org.apache.commons.compress.archivers.AbstractArchiveBuilder;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
+import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.IOUtils;
 
 /**
@@ -253,7 +255,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
 
         // is there anything in the queue?
         if (!queue.isEmpty()) {
-            return queue.remove();
+            return checkEntry(queue.remove());
         }
 
         while (entry == null) {
@@ -336,7 +338,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
         entry.setSimpleName(names.get(entry.getIno()).getName());
         entry.setOffset(filepos);
 
-        return entry;
+        return checkEntry(entry);
     }
 
     /**
@@ -585,4 +587,8 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
         }
     }
 
+    private DumpArchiveEntry checkEntry(DumpArchiveEntry entry) throws ArchiveException, MemoryLimitException {
+        ArchiveUtils.checkEntryNameLength(entry.getName().length(), getMaxEntryNameLength(), "DUMP");
+        return entry;
+    }
 }

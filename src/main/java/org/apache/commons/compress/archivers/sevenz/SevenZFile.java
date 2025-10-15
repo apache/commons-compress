@@ -18,8 +18,6 @@
  */
 package org.apache.commons.compress.archivers.sevenz;
 
-import static java.nio.charset.StandardCharsets.UTF_16LE;
-
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -48,6 +46,7 @@ import org.apache.commons.compress.MemoryLimitException;
 import org.apache.commons.compress.archivers.AbstractArchiveBuilder;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveFile;
+import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
 import org.apache.commons.io.function.IOStream;
@@ -374,10 +373,6 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         checkEndOfFile(buf, to.length).get(to);
     }
 
-    private static char getChar(final ByteBuffer buf) throws EOFException {
-        return checkEndOfFile(buf, Character.BYTES).getChar();
-    }
-
     private static int getInt(final ByteBuffer buf) throws EOFException {
         return checkEndOfFile(buf, Integer.BYTES).getInt();
     }
@@ -482,10 +477,13 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
 
     private final boolean tryToRecoverBrokenArchives;
 
+    private final int maxEntryNameLength;
+
     private SevenZFile(final Builder builder) throws IOException {
         this.channel = builder.getChannel(SeekableByteChannel.class);
         try {
             this.fileName = builder.getName();
+            this.maxEntryNameLength = builder.getMaxEntryNameLength();
             this.maxMemoryLimitKiB = builder.maxMemoryLimitKiB;
             this.useDefaultNameForUnnamedEntries = builder.useDefaultNameForUnnamedEntries;
             this.tryToRecoverBrokenArchives = builder.tryToRecoverBrokenArchives;
@@ -972,8 +970,8 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         }
     }
 
-    private void computeIfAbsent(final Map<Integer, SevenZArchiveEntry> archiveEntries, final int index) {
-        archiveEntries.computeIfAbsent(index, i -> new SevenZArchiveEntry());
+    private SevenZArchiveEntry computeIfAbsent(final Map<Integer, SevenZArchiveEntry> archiveEntries, final int index) {
+        return archiveEntries.computeIfAbsent(index, i -> new SevenZArchiveEntry());
     }
 
     private InputStream getCurrentStream() throws IOException {
@@ -1140,7 +1138,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
             }
             if (startHeader.nextHeaderCrc != cis.getChecksum().getValue()) {
                 throw new ArchiveException("NextHeader CRC-32 mismatch");
-            }
+}
             channel.position(position);
         }
         Archive archive = new Archive();
@@ -1299,12 +1297,18 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         BitSet isEmptyStream = null;
         BitSet isEmptyFile = null;
         BitSet isAnti = null;
+        final int originalLimit = header.limit();
         while (true) {
             final int propertyType = getUnsignedByte(header);
             if (propertyType == 0) {
                 break;
             }
-            final long size = readUint64(header);
+            final int size = readUint64ToIntExact(header);
+            if (size < 0 || size > header.remaining()) {
+                throw new ArchiveException("Corrupted 7z archive: property size %,d, but only %,d bytes available", size, header.remaining());
+            }
+            // Limit the buffer to the size of the property
+            header.limit(header.position() + size);
             switch (propertyType) {
             case NID.kEmptyStream: {
                 isEmptyStream = readBits(header, numFilesInt);
@@ -1320,21 +1324,22 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
             }
             case NID.kName: {
                 /* final int external = */ getUnsignedByte(header);
-                MemoryLimitException.checkKiB(bytesToKiB(size - 1), maxMemoryLimitKiB);
-                final byte[] names = new byte[checkByteArray(ArchiveException.toIntExact(size - 1))];
-                final int namesLength = names.length;
-                get(header, names);
+                final StringBuilder entryName = new StringBuilder();
                 int nextFile = 0;
-                int nextName = 0;
-                for (int i = 0; i < namesLength; i += 2) {
-                    if (names[i] == 0 && names[i + 1] == 0) {
-                        computeIfAbsent(fileMap, nextFile);
-                        fileMap.get(nextFile).setName(new String(names, nextName, i - nextName, UTF_16LE));
-                        nextName = i + 2;
+                while (header.remaining() > 0) {
+                    final char c = header.getChar();
+                    if (c == 0) {
+                        // Entry name length in UTF-16LE characters (not bytes)
+                        // as it might be surprising to users for ASCII characters to take 2 bytes each.
+                        ArchiveUtils.checkEntryNameLength(entryName.length(), maxEntryNameLength, "7z");
+                        computeIfAbsent(fileMap, nextFile).setName(entryName.toString());
+                        entryName.setLength(0);
                         nextFile++;
+                    } else {
+                        entryName.append(c);
                     }
                 }
-                if (nextName != namesLength || nextFile != numFilesInt) {
+                if (entryName.length() != 0 ||  nextFile != numFilesInt) {
                     throw new ArchiveException("Error parsing file names");
                 }
                 break;
@@ -1403,6 +1408,8 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
                 break;
             }
             }
+            // Restore original limit
+            header.limit(originalLimit);
         }
         int nonEmptyFileCounter = 0;
         int emptyFileCounter = 0;
@@ -1804,12 +1811,18 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     private void sanityCheckFilesInfo(final ByteBuffer header, final ArchiveStatistics stats) throws IOException {
         stats.numberOfEntries = toNonNegativeInt("numFiles", readUint64(header));
         int emptyStreams = -1;
+        final int originalLimit = header.limit();
         while (true) {
             final int propertyType = getUnsignedByte(header);
             if (propertyType == 0) {
                 break;
             }
-            final long size = readUint64(header);
+            final int size = readUint64ToIntExact(header);
+            if (size < 0 || size > header.remaining()) {
+                throw new ArchiveException("Corrupted 7z archive: property size %,d, but only %,d bytes available", size, header.remaining());
+            }
+            // Limit the buffer to the size of the property
+            header.limit(header.position() + size);
             switch (propertyType) {
             case NID.kEmptyStream: {
                 emptyStreams = readBits(header, stats.numberOfEntries).cardinality();
@@ -1830,17 +1843,17 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
                 break;
             }
             case NID.kName: {
+                // 1 byte for external and sequence of zero-terminated UTF-16 strings.
+                if (size % 2 != 1) {
+                    throw new ArchiveException("File names length invalid");
+                }
                 final int external = getUnsignedByte(header);
                 if (external != 0) {
                     throw new ArchiveException("Not implemented");
                 }
-                final int namesLength = toNonNegativeInt("file names length", size - 1);
-                if ((namesLength & 1) != 0) {
-                    throw new ArchiveException("File names length invalid");
-                }
                 int filesSeen = 0;
-                for (int i = 0; i < namesLength; i += 2) {
-                    final char c = getChar(header);
+                while (header.remaining() > 0) {
+                    final char c = header.getChar();
                     if (c == 0) {
                         filesSeen++;
                     }
@@ -1913,6 +1926,8 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
                 break;
             }
             }
+            // Restore original limit
+            header.limit(originalLimit);
         }
         stats.numberOfEntriesWithStream = stats.numberOfEntries - Math.max(emptyStreams, 0);
     }
