@@ -43,6 +43,15 @@ public abstract class AbstractArchiveBuilder<T, B extends AbstractArchiveBuilder
     }
 
     /**
+     * Gets the maximum length of an archive entry name.
+     *
+     * @return The maximum length of an archive entry name.
+     */
+    public int getMaxEntryNameLength() {
+        return maxEntryNameLength;
+    }
+
+    /**
      * Sets the maximum length, in bytes, of an archive entry name.
      *
      * <p>Most operating systems and file systems impose relatively small limits on
@@ -67,14 +76,5 @@ public abstract class AbstractArchiveBuilder<T, B extends AbstractArchiveBuilder
         }
         this.maxEntryNameLength = maxEntryNameLength;
         return asThis();
-    }
-
-    /**
-     * Gets the maximum length of an archive entry name.
-     *
-     * @return The maximum length of an archive entry name.
-     */
-    public int getMaxEntryNameLength() {
-        return maxEntryNameLength;
     }
 }

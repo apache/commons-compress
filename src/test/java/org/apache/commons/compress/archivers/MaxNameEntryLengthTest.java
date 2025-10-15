@@ -109,24 +109,6 @@ public class MaxNameEntryLengthTest extends AbstractTest {
                         SOFT_MAX_ARRAY_LENGTH));
     }
 
-    @ParameterizedTest
-    @MethodSource
-    void testTruncatedStreams(final ArchiveInputStream<?> archiveInputStream, final long expectedLength) {
-        // If the file name length exceeds available memory, the stream fails fast with MemoryLimitException.
-        // Otherwise, it fails with EOFException when the stream ends unexpectedly.
-        if (Runtime.getRuntime().totalMemory() < expectedLength) {
-            final MemoryLimitException exception =
-                    assertThrows(MemoryLimitException.class, archiveInputStream::getNextEntry);
-            final String message = exception.getMessage();
-            assertNotNull(message);
-            assertTrue(
-                    message.contains(String.format("%,d", expectedLength)),
-                    "Message mentions expected length (" + expectedLength + "): " + message);
-        } else {
-            assertThrows(EOFException.class, archiveInputStream::getNextEntry);
-        }
-    }
-
     static Stream<Arguments> testTruncatedTarFiles() throws IOException {
         return Stream.of(
                 Arguments.of(TarFile.builder()
@@ -135,14 +117,6 @@ public class MaxNameEntryLengthTest extends AbstractTest {
                 Arguments.of(TarFile.builder()
                         .setMaxEntryNameLength(Integer.MAX_VALUE)
                         .setURI(getURI("synthetic/long-name/gnu-fail.tar"))));
-    }
-
-    @ParameterizedTest
-    @MethodSource
-    void testTruncatedTarFiles(final TarFile.Builder tarFileBuilder) {
-        // Since the real size of the archive is known, the truncation is detected
-        // much earlier and before trying to read file names.
-        assertThrows(EOFException.class, () -> tarFileBuilder.get().getEntries());
     }
 
     static Stream<Arguments> testValidStreams() throws IOException {
@@ -178,6 +152,112 @@ public class MaxNameEntryLengthTest extends AbstractTest {
                         Short.MAX_VALUE));
     }
 
+    static Stream<Arguments> testValidTarFiles() throws IOException {
+        return Stream.of(
+                Arguments.of(TarFile.builder().setURI(getURI("synthetic/long-name/pax.tar")), Short.MAX_VALUE),
+                Arguments.of(TarFile.builder().setURI(getURI("synthetic/long-name/gnu.tar")), Short.MAX_VALUE));
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void testTruncatedStreams(final ArchiveInputStream<?> archiveInputStream, final long expectedLength) {
+        // If the file name length exceeds available memory, the stream fails fast with MemoryLimitException.
+        // Otherwise, it fails with EOFException when the stream ends unexpectedly.
+        if (Runtime.getRuntime().totalMemory() < expectedLength) {
+            final MemoryLimitException exception = assertThrows(MemoryLimitException.class, archiveInputStream::getNextEntry);
+            final String message = exception.getMessage();
+            assertNotNull(message);
+            assertTrue(message.contains(String.format("%,d", expectedLength)), "Message mentions expected length (" + expectedLength + "): " + message);
+        } else {
+            assertThrows(EOFException.class, archiveInputStream::getNextEntry);
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void testTruncatedTarFiles(final TarFile.Builder tarFileBuilder) {
+        // Since the real size of the archive is known, the truncation is detected
+        // much earlier and before trying to read file names.
+        assertThrows(EOFException.class, () -> tarFileBuilder.get().getEntries());
+    }
+
+    @Test
+    void testValid7ZipFile() throws IOException {
+        final SevenZFile.Builder builder = SevenZFile.builder().setURI(getURI("synthetic/long-name/long-name.7z"));
+        final int expectedLength = Short.MAX_VALUE;
+        try (SevenZFile sevenZFile = builder.get()) {
+            final ArchiveEntry entry = sevenZFile.getNextEntry();
+            assertNotNull(entry);
+            final String name = entry.getName();
+            assertEquals(expectedLength, name.length(), "Unexpected name length");
+            final String expected = StringUtils.repeat("a", expectedLength);
+            assertEquals(expected, name);
+        }
+        // SevenZFile parses the whole archive at once, so the builder throws the exception.
+        final ArchiveException exception = assertThrows(ArchiveException.class, () -> builder.setMaxEntryNameLength(PORTABLE_NAME_LIMIT).get());
+        final String message = exception.getMessage();
+        assertNotNull(message);
+        assertTrue(message.contains("file name length"));
+        assertTrue(message.contains(String.format("%,d", expectedLength)));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"synthetic/long-name/long-name.dump", "synthetic/long-name/long-name-reversed.dump"})
+    void testValidDumpStreams(final String resourceName) throws IOException {
+        final int rootInode = 2;
+        final int expectedDepth = 127; // number of nested directories
+        final int nameSegmentLength = 255; // length of each segment
+        final int totalEntries = 1 + expectedDepth + 1; // root + 127 dirs + 1 file
+        final int maxInode = rootInode + totalEntries - 1;
+        final String nameSegment = StringUtils.repeat('a', nameSegmentLength);
+        final DumpArchiveInputStream.Builder builder = DumpArchiveInputStream.builder().setURI(getURI(resourceName));
+        try (DumpArchiveInputStream in = builder.get()) {
+            for (int expectedInode = rootInode; expectedInode <= maxInode; expectedInode++) {
+                final boolean isRegularFile = expectedInode == maxInode;
+                final DumpArchiveEntry entry = in.getNextEntry();
+                assertNotNull(entry, "Entry " + expectedInode + " should exist");
+                // Type checks: root + 127 are directories, last is a regular file.
+                assertEquals(!isRegularFile, entry.isDirectory(), "isDirectory() mismatch");
+                final int depth = expectedInode - rootInode; // 0 for root, 1..127 for dirs, 128 for file’s dir count
+                final String expectedNameDirs = StringUtils.repeat(nameSegment + "/", depth);
+                final int expectedLength = (nameSegmentLength + 1) * depth - (isRegularFile ? 1 : 0);
+                final String actualName = entry.getName();
+                assertEquals(expectedInode, entry.getIno(), "inode");
+                assertEquals(expectedLength, actualName.length(), "name length");
+                assertEquals(expectedNameDirs.substring(0, expectedLength), actualName, "full name");
+                // Structure checks: every path component is exactly 255×'a'
+                String[] parts = actualName.split("/");
+                if (parts.length > 0 && parts[parts.length - 1].isEmpty()) {
+                    // Trailing slash yields an empty final component; ignore it.
+                    parts = Arrays.copyOf(parts, parts.length - 1);
+                }
+                // For directories: depth components; for file: depth components (including file itself)
+                assertEquals(depth, parts.length, "component count");
+                for (int i = 0; i < parts.length; i++) {
+                    assertEquals(nameSegmentLength, parts[i].length(), "segment[" + i + "] length");
+                    assertEquals(nameSegment, parts[i], "segment[" + i + "] content");
+                }
+            }
+            // Stream should now be exhausted.
+            assertNull(in.getNextEntry(), "No more entries expected after " + totalEntries);
+        }
+        try (DumpArchiveInputStream in = builder.setMaxEntryNameLength(PORTABLE_NAME_LIMIT).get()) {
+            int expectedLength;
+            for (int depth = 0;; depth++) {
+                expectedLength = depth * (nameSegmentLength + 1);
+                if (expectedLength > PORTABLE_NAME_LIMIT) {
+                    break;
+                }
+                assertDoesNotThrow(in::getNextEntry, "Entry " + (rootInode + depth) + " should be readable");
+            }
+            final ArchiveException exception = assertThrows(ArchiveException.class, in::getNextEntry);
+            final String message = exception.getMessage();
+            assertNotNull(message);
+            assertTrue(message.contains("file name length"));
+            assertTrue(message.contains(String.format("%,d", expectedLength)));
+        }
+    }
+
     @ParameterizedTest
     @MethodSource
     void testValidStreams(final AbstractArchiveBuilder<ArchiveInputStream<?>, ?> builder, final int expectedLength)
@@ -199,12 +279,6 @@ public class MaxNameEntryLengthTest extends AbstractTest {
             assertTrue(message.contains("file name length"));
             assertTrue(message.contains(String.format("%,d", expectedLength)));
         }
-    }
-
-    static Stream<Arguments> testValidTarFiles() throws IOException {
-        return Stream.of(
-                Arguments.of(TarFile.builder().setURI(getURI("synthetic/long-name/pax.tar")), Short.MAX_VALUE),
-                Arguments.of(TarFile.builder().setURI(getURI("synthetic/long-name/gnu.tar")), Short.MAX_VALUE));
     }
 
     @ParameterizedTest
@@ -249,100 +323,5 @@ public class MaxNameEntryLengthTest extends AbstractTest {
         assertNotNull(message);
         assertTrue(message.contains("file name length"), "Message mentions file name length: " + message);
         assertTrue(message.contains(String.format("%,d", expectedLength)));
-    }
-
-    @Test
-    void testValid7ZipFile() throws IOException {
-        final SevenZFile.Builder builder = SevenZFile.builder().setURI(getURI("synthetic/long-name/long-name.7z"));
-        final int expectedLength = Short.MAX_VALUE;
-        try (SevenZFile sevenZFile = builder.get()) {
-            final ArchiveEntry entry = sevenZFile.getNextEntry();
-            assertNotNull(entry);
-            final String name = entry.getName();
-            assertEquals(expectedLength, name.length(), "Unexpected name length");
-            final String expected = StringUtils.repeat("a", expectedLength);
-            assertEquals(expected, name);
-        }
-        // SevenZFile parses the whole archive at once, so the builder throws the exception.
-        final ArchiveException exception =
-                assertThrows(ArchiveException.class, () -> builder.setMaxEntryNameLength(PORTABLE_NAME_LIMIT)
-                        .get());
-        final String message = exception.getMessage();
-        assertNotNull(message);
-        assertTrue(message.contains("file name length"));
-        assertTrue(message.contains(String.format("%,d", expectedLength)));
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"synthetic/long-name/long-name.dump", "synthetic/long-name/long-name-reversed.dump"})
-    void testValidDumpStreams(final String resourceName) throws IOException {
-        final int rootInode = 2;
-        final int expectedDepth = 127; // number of nested directories
-        final int nameSegmentLength = 255; // length of each segment
-        final int totalEntries = 1 + expectedDepth + 1; // root + 127 dirs + 1 file
-        final int maxInode = rootInode + totalEntries - 1;
-
-        final String nameSegment = StringUtils.repeat('a', nameSegmentLength);
-
-        final DumpArchiveInputStream.Builder builder =
-                DumpArchiveInputStream.builder().setURI(getURI(resourceName));
-
-        try (DumpArchiveInputStream in = builder.get()) {
-            for (int expectedInode = rootInode; expectedInode <= maxInode; expectedInode++) {
-                final boolean isRegularFile = expectedInode == maxInode;
-                final DumpArchiveEntry entry = in.getNextEntry();
-
-                assertNotNull(entry, "Entry " + expectedInode + " should exist");
-
-                // Type checks: root + 127 are directories, last is a regular file.
-                assertEquals(!isRegularFile, entry.isDirectory(), "isDirectory() mismatch");
-
-                final int depth = expectedInode - rootInode; // 0 for root, 1..127 for dirs, 128 for file’s dir count
-
-                final String expectedNameDirs = StringUtils.repeat(nameSegment + "/", depth);
-                final int expectedLength = (nameSegmentLength + 1) * depth - (isRegularFile ? 1 : 0);
-
-                final String actualName = entry.getName();
-
-                assertEquals(expectedInode, entry.getIno(), "inode");
-                assertEquals(expectedLength, actualName.length(), "name length");
-                assertEquals(expectedNameDirs.substring(0, expectedLength), actualName, "full name");
-
-                // Structure checks: every path component is exactly 255×'a'
-
-                String[] parts = actualName.split("/");
-                if (parts.length > 0 && parts[parts.length - 1].isEmpty()) {
-                    // Trailing slash yields an empty final component; ignore it.
-                    parts = Arrays.copyOf(parts, parts.length - 1);
-                }
-
-                // For directories: depth components; for file: depth components (including file itself)
-                assertEquals(depth, parts.length, "component count");
-                for (int i = 0; i < parts.length; i++) {
-                    assertEquals(nameSegmentLength, parts[i].length(), "segment[" + i + "] length");
-                    assertEquals(nameSegment, parts[i], "segment[" + i + "] content");
-                }
-            }
-
-            // Stream should now be exhausted.
-            assertNull(in.getNextEntry(), "No more entries expected after " + totalEntries);
-        }
-
-        try (DumpArchiveInputStream in =
-                builder.setMaxEntryNameLength(PORTABLE_NAME_LIMIT).get()) {
-            int expectedLength;
-            for (int depth = 0; ; depth++) {
-                expectedLength = depth * (nameSegmentLength + 1);
-                if (expectedLength > PORTABLE_NAME_LIMIT) {
-                    break;
-                }
-                assertDoesNotThrow(in::getNextEntry, "Entry " + (rootInode + depth) + " should be readable");
-            }
-            final ArchiveException exception = assertThrows(ArchiveException.class, in::getNextEntry);
-            final String message = exception.getMessage();
-            assertNotNull(message);
-            assertTrue(message.contains("file name length"));
-            assertTrue(message.contains(String.format("%,d", expectedLength)));
-        }
     }
 }

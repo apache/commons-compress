@@ -108,19 +108,6 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
     }
 
     /**
-     * Constructs a new instance.
-     *
-     * @param inputStream the underlying input stream, or {@code null} if this instance is to be created without an underlying stream.
-     * @param charsetName charset name.
-     * @since 1.26.0
-     */
-    protected ArchiveInputStream(final InputStream inputStream, final String charsetName) {
-        super(inputStream == null ? new NullInputStream() : inputStream);
-        this.charset = Charsets.toCharset(charsetName);
-        this.maxEntryNameLength = Short.MAX_VALUE;
-    }
-
-    /**
      * Constructs a new instance from a builder.
      *
      * @param builder The builder.
@@ -146,6 +133,19 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
         super(inputStream);
         this.charset = builder.getCharset();
         this.maxEntryNameLength = builder.getMaxEntryNameLength();
+    }
+
+    /**
+     * Constructs a new instance.
+     *
+     * @param inputStream the underlying input stream, or {@code null} if this instance is to be created without an underlying stream.
+     * @param charsetName charset name.
+     * @since 1.26.0
+     */
+    protected ArchiveInputStream(final InputStream inputStream, final String charsetName) {
+        super(inputStream == null ? new NullInputStream() : inputStream);
+        this.charset = Charsets.toCharset(charsetName);
+        this.maxEntryNameLength = Short.MAX_VALUE;
     }
 
     /**

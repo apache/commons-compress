@@ -214,6 +214,11 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
         this(is, builder().setCharset(encoding));
     }
 
+    private DumpArchiveEntry checkEntry(final DumpArchiveEntry entry) throws ArchiveException, MemoryLimitException {
+        ArchiveUtils.checkEntryNameLength(entry.getName().length(), getMaxEntryNameLength(), "DUMP");
+        return entry;
+    }
+
     /**
      * Closes the stream for this entry.
      */
@@ -585,10 +590,5 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
             first = false;
             size -= DumpArchiveConstants.TP_SIZE;
         }
-    }
-
-    private DumpArchiveEntry checkEntry(DumpArchiveEntry entry) throws ArchiveException, MemoryLimitException {
-        ArchiveUtils.checkEntryNameLength(entry.getName().length(), getMaxEntryNameLength(), "DUMP");
-        return entry;
     }
 }

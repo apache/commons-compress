@@ -454,6 +454,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         }
         return (int) value;
     }
+
     private final String fileName;
     private SeekableByteChannel channel;
     private final Archive archive;

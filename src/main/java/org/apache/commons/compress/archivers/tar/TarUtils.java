@@ -714,7 +714,6 @@ public final class TarUtils {
                             final String keyword = coll.toString(StandardCharsets.UTF_8);
                             // Get rest of entry
                             final int restLen = len - read;
-
                             // Validate entry length
                             // 1. Ignore empty keywords
                             if (restLen <= 1) { // only NL
@@ -745,8 +744,7 @@ public final class TarUtils {
                                     try {
                                         offset = ParsingUtils.parseLongValue(value);
                                     } catch (final IOException ex) {
-                                        throw new ArchiveException(
-                                                "Failed to read PAX header: Offset %s contains a non-numeric value.",
+                                        throw new ArchiveException("Failed to read PAX header: Offset %s contains a non-numeric value.",
                                                 TarGnuSparseKeys.OFFSET);
                                     }
                                     if (offset < 0) {
@@ -763,8 +761,7 @@ public final class TarUtils {
                                     try {
                                         numbytes = ParsingUtils.parseLongValue(value);
                                     } catch (final IOException ex) {
-                                        throw new ArchiveException(
-                                                "Failed to read PAX header: Numbytes %s contains a non-numeric value.",
+                                        throw new ArchiveException("Failed to read PAX header: Numbytes %s contains a non-numeric value.",
                                                 TarGnuSparseKeys.NUMBYTES);
                                     }
                                     if (numbytes < 0) {
