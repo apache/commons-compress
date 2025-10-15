@@ -44,6 +44,9 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.RuntimeVisibleorIn
  */
 public class MetadataBandGroup {
 
+    /** Size in bytes of an {@link ElementValue} instance: header, Object, int, int. */
+    private static final int ELEMENT_VALUE_BYTES = 8 + 8 + Integer.BYTES + Integer.BYTES;
+
     private static CPUTF8 rvaUTF8;
     private static CPUTF8 riaUTF8;
 
@@ -220,7 +223,7 @@ public class MetadataBandGroup {
             return cases_RU[cases_RU_Index++];
         case '[':
             final int arraySize = casearray_N[casearray_N_Index++];
-            final ElementValue[] nestedArray = new ElementValue[Pack200Exception.checkObjectArray(arraySize, ElementValue.BYTES)];
+            final ElementValue[] nestedArray = new ElementValue[Pack200Exception.checkObjectArray(arraySize, ELEMENT_VALUE_BYTES)];
             for (int i = 0; i < arraySize; i++) {
                 final int nextT = T[T_index++];
                 nestedArray[i] = new ElementValue(nextT, getNextValue(nextT));
