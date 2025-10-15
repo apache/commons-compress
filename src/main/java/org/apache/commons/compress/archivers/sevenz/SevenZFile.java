@@ -20,7 +20,6 @@ package org.apache.commons.compress.archivers.sevenz;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.File;
@@ -341,13 +340,6 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     static final byte[] SIGNATURE = { (byte) '7', (byte) 'z', (byte) 0xBC, (byte) 0xAF, (byte) 0x27, (byte) 0x1C };
 
     /**
-     * The maximum array size defined privately in {@link ByteArrayOutputStream}.
-     *
-     * @since 1.29.0
-     */
-    public static int SOFT_MAX_ARRAY_LENGTH = Integer.MAX_VALUE - 8;
-
-    /**
      * Creates a new Builder.
      *
      * @return a new Builder.
@@ -456,7 +448,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
      * @return The given value as an int.
      * @throws IOException Thrown if the given value is not in {@code [0, Integer.MAX_VALUE]}.
      */
-    public static int toNonNegativeInt(final String description, final long value) throws IOException {
+    private static int toNonNegativeInt(final String description, final long value) throws IOException {
         if (value > Integer.MAX_VALUE || value < 0) {
             throw new ArchiveException("Cannot handle %s %,d", description, value);
         }
@@ -1128,7 +1120,8 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
 
     private Archive initializeArchive(final StartHeader startHeader, final byte[] password, final boolean verifyCrc) throws IOException {
         final int nextHeaderSizeInt = toNonNegativeInt("startHeader.nextHeaderSize", startHeader.nextHeaderSize);
-        MemoryLimitException.checkKiB(bytesToKiB(nextHeaderSizeInt), Math.min(bytesToKiB(SOFT_MAX_ARRAY_LENGTH), maxMemoryLimitKiB));
+        MemoryLimitException.checkKiB(bytesToKiB(nextHeaderSizeInt), Math.min(bytesToKiB(org.apache.commons.io.IOUtils.SOFT_MAX_ARRAY_LENGTH),
+                maxMemoryLimitKiB));
         channel.position(SIGNATURE_HEADER_SIZE + startHeader.nextHeaderOffset);
         if (verifyCrc) {
             final long position = channel.position();
