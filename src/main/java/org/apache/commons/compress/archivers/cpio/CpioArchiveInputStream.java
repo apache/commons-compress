@@ -199,20 +199,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
     private final ZipEncoding zipEncoding;
 
     private CpioArchiveInputStream(final Builder builder) throws IOException {
-        this(builder.getInputStream(), builder);
-    }
-
-    /**
-     * Constructs the cpio input stream with a blocksize of {@link CpioConstants#BLOCK_SIZE BLOCK_SIZE} and expecting ASCII file names.
-     *
-     * @param in The cpio stream
-     */
-    public CpioArchiveInputStream(final InputStream in) {
-        this(in, builder());
-    }
-
-    private CpioArchiveInputStream(final InputStream in, final Builder builder) {
-        super(in, builder);
+        super(builder);
         if (builder.blockSize <= 0) {
             throw new IllegalArgumentException("blockSize must be bigger than 0");
         }
@@ -221,44 +208,65 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
     }
 
     /**
+     * Constructs the cpio input stream with a blocksize of {@link CpioConstants#BLOCK_SIZE BLOCK_SIZE} and expecting ASCII file names.
+     *
+     * <p>Since 1.29.0: throws {@link IOException}.</p>
+     *
+     * @param in The cpio stream
+     * @throws IOException if an I/O error has occurred
+     */
+    public CpioArchiveInputStream(final InputStream in) throws IOException {
+        this(builder().setInputStream(in));
+    }
+
+    /**
      * Constructs the cpio input stream with a blocksize of {@link CpioConstants#BLOCK_SIZE BLOCK_SIZE} expecting ASCII file names.
+     *
+     * <p>Since 1.29.0: throws {@link IOException}.</p>
      *
      * @param in        The cpio stream
      * @param blockSize The block size of the archive.
+     * @throws IOException if an I/O error has occurred
      * @since 1.5
      * @deprecated Since 1.29.0, use {@link #builder()}.
      */
     @Deprecated
-    public CpioArchiveInputStream(final InputStream in, final int blockSize) {
-        this(in, builder().setBlockSize(blockSize));
+    public CpioArchiveInputStream(final InputStream in, final int blockSize) throws IOException {
+        this(builder().setInputStream(in).setBlockSize(blockSize));
     }
 
     /**
      * Constructs the cpio input stream with a blocksize of {@link CpioConstants#BLOCK_SIZE BLOCK_SIZE}.
+     *
+     * <p>Since 1.29.0: throws {@link IOException}.</p>
      *
      * @param in        The cpio stream
      * @param blockSize The block size of the archive.
      * @param encoding  The encoding of file names to expect - use null for the platform's default.
      * @throws IllegalArgumentException if {@code blockSize} is not bigger than 0
+     * @throws IOException if an I/O error has occurred
      * @since 1.6
      * @deprecated Since 1.29.0, use {@link #builder()}.
      */
     @Deprecated
-    public CpioArchiveInputStream(final InputStream in, final int blockSize, final String encoding) {
-        this(in, builder().setBlockSize(blockSize).setCharset(encoding));
+    public CpioArchiveInputStream(final InputStream in, final int blockSize, final String encoding) throws IOException {
+        this(builder().setInputStream(in).setBlockSize(blockSize).setCharset(encoding));
     }
 
     /**
      * Constructs the cpio input stream with a blocksize of {@link CpioConstants#BLOCK_SIZE BLOCK_SIZE}.
      *
+     * <p>Since 1.29.0: throws {@link IOException}.</p>
+     *
      * @param in       The cpio stream
      * @param encoding The encoding of file names to expect - use null for the platform's default.
+     * @throws IOException if an I/O error has occurred
      * @since 1.6
      * @deprecated Since 1.29.0, use {@link #builder()}.
      */
     @Deprecated
-    public CpioArchiveInputStream(final InputStream in, final String encoding) {
-        this(in, builder().setCharset(encoding));
+    public CpioArchiveInputStream(final InputStream in, final String encoding) throws IOException {
+        this(builder().setInputStream(in).setCharset(encoding));
     }
 
     /**

@@ -96,10 +96,10 @@ class ArchiveStreamFactoryTest extends AbstractTest {
      */
     private static final String ARJ_DEFAULT;
     private static final String DUMP_DEFAULT;
-    private static final String ZIP_DEFAULT = getCharsetName(new ZipArchiveInputStream(null));
-    private static final String CPIO_DEFAULT = getCharsetName(new CpioArchiveInputStream(null));
-    private static final String TAR_DEFAULT = getCharsetName(new TarArchiveInputStream(null));
-    private static final String JAR_DEFAULT = getCharsetName(new JarArchiveInputStream(null));
+    private static final String ZIP_DEFAULT = getCharsetName(ZipArchiveInputStream.builder());
+    private static final String CPIO_DEFAULT = getCharsetName(CpioArchiveInputStream.builder());
+    private static final String TAR_DEFAULT = getCharsetName(TarArchiveInputStream.builder());
+    private static final String JAR_DEFAULT = getCharsetName(JarArchiveInputStream.builder());
 
     static {
         String dflt;
@@ -155,6 +155,10 @@ class ArchiveStreamFactoryTest extends AbstractTest {
             new TestData("bla.zip", ArchiveStreamFactory.ZIP, true, StandardCharsets.US_ASCII.name(), FACTORY_ASCII, "charset"),
             new TestData("bla.zip", ArchiveStreamFactory.ZIP, true, StandardCharsets.UTF_8.name(), FACTORY_SET_UTF8, "charset"),
             new TestData("bla.zip", ArchiveStreamFactory.ZIP, true, StandardCharsets.US_ASCII.name(), FACTORY_SET_ASCII, "charset"), };
+
+    private static String getCharsetName(final AbstractArchiveBuilder<?, ?> builder) {
+        return builder.getCharset().name();
+    }
 
     private static String getCharsetName(final ArchiveInputStream<?> inputStream) {
         return inputStream.getCharset().name();

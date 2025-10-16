@@ -142,48 +142,30 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
     private final ZipEncoding zipEncoding;
 
     private DumpArchiveInputStream(final Builder builder) throws IOException {
-        this(builder.getInputStream(), builder);
-    }
-
-    /**
-     * Constructor using the platform's default encoding for file names.
-     *
-     * @param is stream to read from
-     * @throws ArchiveException on error
-     */
-    public DumpArchiveInputStream(final InputStream is) throws ArchiveException {
-        this(is, builder());
-    }
-
-    private DumpArchiveInputStream(final InputStream is, final Builder builder) throws ArchiveException {
-        super(is, builder);
-        this.raw = new TapeInputStream(is);
+        super(builder);
+        this.raw = new TapeInputStream(in);
         this.hasHitEOF = false;
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(builder.getCharset());
 
-        try {
-            // read header, verify it's a dump archive.
-            final byte[] headerBytes = raw.readRecord();
+        // read header, verify it's a dump archive.
+        final byte[] headerBytes = raw.readRecord();
 
-            if (!DumpArchiveUtil.verify(headerBytes)) {
-                throw new UnrecognizedFormatException();
-            }
-
-            // get summary information
-            summary = new DumpArchiveSummary(headerBytes, this.zipEncoding);
-
-            // reset buffer with actual block size.
-            raw.resetBlockSize(summary.getNTRec(), summary.isCompressed());
-
-            // allocate our read buffer.
-            blockBuffer = new byte[4 * DumpArchiveConstants.TP_SIZE];
-
-            // skip past CLRI and BITS segments since we don't handle them yet.
-            readCLRI();
-            readBITS();
-        } catch (final IOException e) {
-            throw new ArchiveException(e.getMessage(), (Throwable) e);
+        if (!DumpArchiveUtil.verify(headerBytes)) {
+            throw new UnrecognizedFormatException();
         }
+
+        // get summary information
+        summary = new DumpArchiveSummary(headerBytes, this.zipEncoding);
+
+        // reset buffer with actual block size.
+        raw.resetBlockSize(summary.getNTRec(), summary.isCompressed());
+
+        // allocate our read buffer.
+        blockBuffer = new byte[4 * DumpArchiveConstants.TP_SIZE];
+
+        // skip past CLRI and BITS segments since we don't handle them yet.
+        readCLRI();
+        readBITS();
 
         // put in a dummy record for the root node.
         final Dirent root = new Dirent(2, 2, 4, CURRENT_PATH_SEGMENT);
@@ -201,17 +183,31 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
     }
 
     /**
+     * Constructor using the platform's default encoding for file names.
+     *
+     * <p>Since 1.29.0: throws {@link IOException}.</p>
+     *
+     * @param is stream to read from
+     * @throws IOException on error
+     */
+    public DumpArchiveInputStream(final InputStream is) throws IOException {
+        this(builder().setInputStream(is));
+    }
+
+    /**
      * Constructs a new instance.
+     *
+     * <p>Since 1.29.0: throws {@link IOException}.</p>
      *
      * @param is       stream to read from
      * @param encoding the encoding to use for file names, use null for the platform's default encoding
-     * @throws ArchiveException on error
+     * @throws IOException on error
      * @since 1.6
      * @deprecated Since 1.29.0, use {@link #builder()}.
      */
     @Deprecated
-    public DumpArchiveInputStream(final InputStream is, final String encoding) throws ArchiveException {
-        this(is, builder().setCharset(encoding));
+    public DumpArchiveInputStream(final InputStream is, final String encoding) throws IOException {
+        this(builder().setInputStream(is).setCharset(encoding));
     }
 
     private DumpArchiveEntry checkEntry(final DumpArchiveEntry entry) throws ArchiveException, MemoryLimitException {

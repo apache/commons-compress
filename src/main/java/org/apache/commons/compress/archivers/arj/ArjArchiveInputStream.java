@@ -105,46 +105,42 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
     private InputStream currentInputStream;
 
     private ArjArchiveInputStream(final Builder builder) throws IOException {
-        this(builder.getInputStream(), builder);
+        super(builder);
+        dis = new DataInputStream(in);
+        mainHeader = readMainHeader();
+        if ((mainHeader.arjFlags & MainHeader.Flags.GARBLED) != 0) {
+            throw new ArchiveException("Encrypted ARJ files are unsupported");
+        }
+        if ((mainHeader.arjFlags & MainHeader.Flags.VOLUME) != 0) {
+            throw new ArchiveException("Multi-volume ARJ files are unsupported");
+        }
     }
 
     /**
      * Constructs the ArjInputStream, taking ownership of the inputStream that is passed in, and using the CP437 character encoding.
      *
+     * <p>Since 1.29.0: throws {@link IOException}.</p>
+     *
      * @param inputStream the underlying stream, whose ownership is taken
-     * @throws ArchiveException if an exception occurs while reading
+     * @throws IOException if an exception occurs while reading
      */
-    public ArjArchiveInputStream(final InputStream inputStream) throws ArchiveException {
-        this(inputStream, builder());
-    }
-
-    private ArjArchiveInputStream(final InputStream inputStream, final Builder builder) throws ArchiveException {
-        super(new DataInputStream(inputStream), builder);
-        dis = (DataInputStream) in;
-        try {
-            mainHeader = readMainHeader();
-            if ((mainHeader.arjFlags & MainHeader.Flags.GARBLED) != 0) {
-                throw new ArchiveException("Encrypted ARJ files are unsupported");
-            }
-            if ((mainHeader.arjFlags & MainHeader.Flags.VOLUME) != 0) {
-                throw new ArchiveException("Multi-volume ARJ files are unsupported");
-            }
-        } catch (final IOException e) {
-            throw new ArchiveException(e.getMessage(), (Throwable) e);
-        }
+    public ArjArchiveInputStream(final InputStream inputStream) throws IOException {
+        this(builder().setInputStream(inputStream));
     }
 
     /**
      * Constructs the ArjInputStream, taking ownership of the inputStream that is passed in.
      *
+     * <p>Since 1.29.0: throws {@link IOException}.</p>
+     *
      * @param inputStream the underlying stream, whose ownership is taken
      * @param charsetName the charset used for file names and comments in the archive. May be {@code null} to use the platform default.
-     * @throws ArchiveException if an exception occurs while reading
+     * @throws IOException if an exception occurs while reading
      * @deprecated Since 1.29.0, use {@link #builder()}.
      */
     @Deprecated
-    public ArjArchiveInputStream(final InputStream inputStream, final String charsetName) throws ArchiveException {
-        this(inputStream, builder().setCharset(charsetName));
+    public ArjArchiveInputStream(final InputStream inputStream, final String charsetName) throws IOException {
+        this(builder().setInputStream(inputStream).setCharset(charsetName));
     }
 
     @Override

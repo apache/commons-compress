@@ -409,21 +409,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
      * @since 1.29.0
      */
     protected ZipArchiveInputStream(final AbstractBuilder<?, ?> builder) throws IOException {
-        this(builder.getInputStream(), builder);
-    }
-
-    /**
-     * Constructs an instance using UTF-8 encoding.
-     *
-     * @param inputStream the stream to wrap.
-     */
-    public ZipArchiveInputStream(final InputStream inputStream) {
-        this(inputStream, builder());
-    }
-
-    private ZipArchiveInputStream(final InputStream inputStream, final AbstractBuilder<?, ?> builder) {
-        super(inputStream, builder);
-        this.in = new PushbackInputStream(inputStream, buf.capacity());
+        super(builder);
+        this.in = new PushbackInputStream(in, buf.capacity());
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(builder.getCharset());
         this.useUnicodeExtraFields = builder.isUseUnicodeExtraFields();
         this.supportStoredEntryDataDescriptor = builder.isSupportStoredEntryDataDescriptor();
@@ -433,38 +420,59 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     }
 
     /**
+     * Constructs an instance using UTF-8 encoding.
+     *
+     * <p>Since 1.29.0: throws {@link IOException}.</p>
+     *
+     * @param inputStream the stream to wrap.
+     * @throws IOException if an I/O error occurs.
+     */
+    public ZipArchiveInputStream(final InputStream inputStream) throws IOException {
+        this(builder().setInputStream(inputStream));
+    }
+
+    /**
      * Constructs an instance using the specified encoding.
+     *
+     * <p>Since 1.29.0: throws {@link IOException}.</p>
      *
      * @param inputStream the stream to wrap.
      * @param encoding    the encoding to use for file names, use null for the platform's default encoding.
+     * @throws IOException if an I/O error occurs.
      * @since 1.5
      * @deprecated Since 1.29.0, use {@link #builder()}.
      */
     @Deprecated
-    public ZipArchiveInputStream(final InputStream inputStream, final String encoding) {
-        this(inputStream, builder().setCharset(encoding));
+    public ZipArchiveInputStream(final InputStream inputStream, final String encoding) throws IOException {
+        this(builder().setInputStream(inputStream).setCharset(encoding));
     }
 
     /**
      * Constructs an instance using the specified encoding.
      *
+     * <p>Since 1.29.0: throws {@link IOException}.</p>
+     *
      * @param inputStream           the stream to wrap.
      * @param encoding              the encoding to use for file names, use null for the platform's default encoding.
      * @param useUnicodeExtraFields whether to use InfoZIP Unicode Extra Fields (if present) to set the file names.
+     * @throws IOException if an I/O error occurs.
      * @deprecated Since 1.29.0, use {@link #builder()}.
      */
     @Deprecated
-    public ZipArchiveInputStream(final InputStream inputStream, final String encoding, final boolean useUnicodeExtraFields) {
-        this(inputStream, builder().setCharset(encoding).setUseUnicodeExtraFields(useUnicodeExtraFields));
+    public ZipArchiveInputStream(final InputStream inputStream, final String encoding, final boolean useUnicodeExtraFields) throws IOException {
+        this(builder().setInputStream(inputStream).setCharset(encoding).setUseUnicodeExtraFields(useUnicodeExtraFields));
     }
 
     /**
      * Constructs an instance using the specified encoding.
+     *
+     * <p>Since 1.29.0: throws {@link IOException}.</p>
      *
      * @param inputStream                      the stream to wrap.
      * @param encoding                         the encoding to use for file names, use null for the platform's default encoding.
      * @param useUnicodeExtraFields            whether to use InfoZIP Unicode Extra Fields (if present) to set the file names.
      * @param supportStoredEntryDataDescriptor whether the stream will try to read STORED entries that use a data descriptor.
+     * @throws IOException if an I/O error occurs.
      * @since 1.1
      * @deprecated Since 1.29.0, use {@link #builder()}.
      */
@@ -473,9 +481,10 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
             final InputStream inputStream,
             final String encoding,
             final boolean useUnicodeExtraFields,
-            final boolean supportStoredEntryDataDescriptor) {
+            final boolean supportStoredEntryDataDescriptor) throws IOException {
         // @formatter:off
-        this(inputStream, builder()
+        this(builder()
+                .setInputStream(inputStream)
                 .setCharset(encoding)
                 .setUseUnicodeExtraFields(useUnicodeExtraFields)
                 .setSupportStoredEntryDataDescriptor(supportStoredEntryDataDescriptor));
@@ -485,12 +494,15 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     /**
      * Constructs an instance using the specified encoding.
      *
+     * <p>Since 1.29.0: throws {@link IOException}.</p>
+     *
      * @param inputStream                      the stream to wrap.
      * @param encoding                         the encoding to use for file names, use null for the platform's default encoding.
      * @param useUnicodeExtraFields            whether to use InfoZIP Unicode Extra Fields (if present) to set the file names.
      * @param supportStoredEntryDataDescriptor whether the stream will try to read STORED entries that use a data descriptor.
      * @param skipSplitSignature               Whether the stream will try to skip the zip split signature(08074B50) at the beginning.
      *                                         You will need to set this to true if you want to read a split archive.
+     * @throws IOException if an I/O error occurs.
      * @since 1.20
      * @deprecated Since 1.29.0, use {@link #builder()}.
      */
@@ -500,9 +512,10 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
             final String encoding,
             final boolean useUnicodeExtraFields,
             final boolean supportStoredEntryDataDescriptor,
-            final boolean skipSplitSignature) {
+            final boolean skipSplitSignature) throws IOException {
         // @formatter:off
-        this(inputStream, builder()
+        this(builder()
+                .setInputStream(inputStream)
                 .setCharset(encoding)
                 .setUseUnicodeExtraFields(useUnicodeExtraFields)
                 .setSupportStoredEntryDataDescriptor(supportStoredEntryDataDescriptor)
