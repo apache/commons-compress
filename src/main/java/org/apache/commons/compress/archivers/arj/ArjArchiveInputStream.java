@@ -123,17 +123,6 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
         return length >= 2 && (0xff & signature[0]) == ARJ_MAGIC_1 && (0xff & signature[1]) == ARJ_MAGIC_2;
     }
 
-    private static void readExtraData(final int firstHeaderSize, final InputStream firstHeader, final LocalFileHeader localFileHeader) throws IOException {
-        if (firstHeaderSize >= 33) {
-            localFileHeader.extendedFilePosition = EndianUtils.readSwappedInteger(firstHeader);
-            if (firstHeaderSize >= 45) {
-                localFileHeader.dateTimeAccessed = EndianUtils.readSwappedInteger(firstHeader);
-                localFileHeader.dateTimeCreated = EndianUtils.readSwappedInteger(firstHeader);
-                localFileHeader.originalSizeEvenForVolumes = EndianUtils.readSwappedInteger(firstHeader);
-            }
-        }
-    }
-
     private static int readUnsignedByte(InputStream in) throws IOException {
         final int value = in.read();
         if (value == -1) {
