@@ -113,7 +113,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
     private final DumpArchiveSummary summary;
     private DumpArchiveEntry active;
     private boolean isClosed;
-    private boolean hasHitEOF;
+    private boolean eof;
     private long entrySize;
     private long entryOffset;
     private int readIdx;
@@ -144,7 +144,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
     private DumpArchiveInputStream(final Builder builder) throws IOException {
         super(builder);
         this.raw = new TapeInputStream(in);
-        this.hasHitEOF = false;
+        this.eof = false;
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(builder.getCharset());
 
         // read header, verify it's a dump archive.
@@ -260,7 +260,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
         }
 
         while (entry == null) {
-            if (hasHitEOF) {
+            if (eof) {
                 return null;
             }
 
@@ -306,7 +306,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
 
             // check if this is an end-of-volume marker.
             if (DumpArchiveConstants.SEGMENT_TYPE.END == active.getHeaderType()) {
-                hasHitEOF = true;
+                eof = true;
 
                 return null;
             }
@@ -406,7 +406,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
         }
         int totalRead = 0;
 
-        if (hasHitEOF || isClosed || entryOffset >= entrySize) {
+        if (eof || isClosed || entryOffset >= entrySize) {
             return -1;
         }
 
