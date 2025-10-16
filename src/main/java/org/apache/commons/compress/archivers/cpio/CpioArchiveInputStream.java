@@ -213,7 +213,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
      * <p>Since 1.29.0: throws {@link IOException}.</p>
      *
      * @param in The cpio stream
-     * @throws IOException if an I/O error has occurred
+     * @throws IOException if an I/O error has occurred.
      */
     public CpioArchiveInputStream(final InputStream in) throws IOException {
         this(builder().setInputStream(in));
@@ -226,7 +226,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
      *
      * @param in        The cpio stream
      * @param blockSize The block size of the archive.
-     * @throws IOException if an I/O error has occurred
+     * @throws IOException if an I/O error has occurred.
      * @since 1.5
      * @deprecated Since 1.29.0, use {@link #builder()}.
      */
@@ -244,7 +244,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
      * @param blockSize The block size of the archive.
      * @param encoding  The encoding of file names to expect - use null for the platform's default.
      * @throws IllegalArgumentException if {@code blockSize} is not bigger than 0
-     * @throws IOException if an I/O error has occurred
+     * @throws IOException if an I/O error has occurred.
      * @since 1.6
      * @deprecated Since 1.29.0, use {@link #builder()}.
      */
@@ -260,7 +260,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
      *
      * @param in       The cpio stream
      * @param encoding The encoding of file names to expect - use null for the platform's default.
-     * @throws IOException if an I/O error has occurred
+     * @throws IOException if an I/O error has occurred.
      * @since 1.6
      * @deprecated Since 1.29.0, use {@link #builder()}.
      */
@@ -298,7 +298,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
     /**
      * Closes the CPIO input stream.
      *
-     * @throws IOException if an I/O error has occurred
+     * @throws IOException if an I/O error has occurred.
      */
     @Override
     public void close() throws IOException {

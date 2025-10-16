@@ -1157,7 +1157,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
      * Reads a byte of data.
      *
      * @return the byte read, or -1 if end of input is reached
-     * @throws IOException if an I/O error has occurred
+     * @throws IOException if an I/O error has occurred.
      */
     public int read() throws IOException {
         @SuppressWarnings("resource") // does not allocate
@@ -1173,7 +1173,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
      *
      * @param b the array to write data to
      * @return the number of bytes read, or -1 if end of input is reached
-     * @throws IOException if an I/O error has occurred
+     * @throws IOException if an I/O error has occurred.
      */
     public int read(final byte[] b) throws IOException {
         return read(b, 0, b.length);
@@ -1186,7 +1186,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
      * @param off offset into the buffer to start filling at
      * @param len of bytes to read
      * @return the number of bytes read, or -1 if end of input is reached
-     * @throws IOException if an I/O error has occurred
+     * @throws IOException if an I/O error has occurred.
      */
     public int read(final byte[] b, final int off, final int len) throws IOException {
         if (len == 0) {

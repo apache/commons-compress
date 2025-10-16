@@ -91,9 +91,9 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
      * Look at the first few bytes of the file to decide if it's a dump archive. With 32 bytes we can look at the magic value, with a full 1k we can verify the
      * checksum.
      *
-     * @param buffer data to match
-     * @param length length of data
-     * @return whether the buffer seems to contain dump data
+     * @param buffer data to match.
+     * @param length length of data.
+     * @return whether the buffer seems to contain dump data.
      */
     public static boolean matches(final byte[] buffer, final int length) {
         // do we have enough of the header?
@@ -187,8 +187,8 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
      *
      * <p>Since 1.29.0: throws {@link IOException}.</p>
      *
-     * @param is stream to read from
-     * @throws IOException on error
+     * @param is stream to read from.
+     * @throws IOException on error.
      */
     public DumpArchiveInputStream(final InputStream is) throws IOException {
         this(builder().setInputStream(is));
@@ -199,9 +199,9 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
      *
      * <p>Since 1.29.0: throws {@link IOException}.</p>
      *
-     * @param is       stream to read from
-     * @param encoding the encoding to use for file names, use null for the platform's default encoding
-     * @throws IOException on error
+     * @param is       stream to read from.
+     * @param encoding the encoding to use for file names, use null for the platform's default encoding.
+     * @throws IOException on error.
      * @since 1.6
      * @deprecated Since 1.29.0, use {@link #builder()}.
      */
@@ -240,8 +240,8 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
     /**
      * Reads the next entry.
      *
-     * @return the next entry
-     * @throws IOException on error
+     * @return the next entry.
+     * @throws IOException on error.
      * @deprecated Use {@link #getNextEntry()}.
      */
     @Deprecated
@@ -345,7 +345,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
     /**
      * Gets full path for specified archive entry, or null if there's a gap.
      *
-     * @param entry
+     * @param entry The entry to query.
      * @return full path for specified archive entry, or null if there's a gap.
      * @throws DumpArchiveException Infinite loop detected in directory entries.
      */
@@ -387,7 +387,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
     /**
      * Gets the archive summary information.
      *
-     * @return the summary
+     * @return the summary.
      */
     public DumpArchiveSummary getSummary() {
         return summary;

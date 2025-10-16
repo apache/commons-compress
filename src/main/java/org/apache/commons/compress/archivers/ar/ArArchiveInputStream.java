@@ -180,7 +180,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
      * <p>Since 1.29.0: throws {@link IOException}.</p>
      *
      * @param inputStream the ar input stream
-     * @throws IOException if an I/O error has occurred
+     * @throws IOException if an I/O error has occurred.
      */
     public ArArchiveInputStream(final InputStream inputStream) throws IOException {
         this(builder().setInputStream(inputStream));
