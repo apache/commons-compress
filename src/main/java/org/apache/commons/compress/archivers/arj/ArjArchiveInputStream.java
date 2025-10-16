@@ -99,6 +99,25 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
         return length >= 2 && (0xff & signature[0]) == ARJ_MAGIC_1 && (0xff & signature[1]) == ARJ_MAGIC_2;
     }
 
+    private static void readExtraData(final int firstHeaderSize, final InputStream firstHeader, final LocalFileHeader localFileHeader) throws IOException {
+        if (firstHeaderSize >= 33) {
+            localFileHeader.extendedFilePosition = EndianUtils.readSwappedInteger(firstHeader);
+            if (firstHeaderSize >= 45) {
+                localFileHeader.dateTimeAccessed = EndianUtils.readSwappedInteger(firstHeader);
+                localFileHeader.dateTimeCreated = EndianUtils.readSwappedInteger(firstHeader);
+                localFileHeader.originalSizeEvenForVolumes = EndianUtils.readSwappedInteger(firstHeader);
+            }
+        }
+    }
+
+    private static int readUnsignedByte(InputStream in) throws IOException {
+        final int value = in.read();
+        if (value == -1) {
+            throw new EOFException();
+        }
+        return value & 0xff;
+    }
+
     private final MainHeader mainHeader;
     private LocalFileHeader currentLocalFileHeader;
     private InputStream currentInputStream;
@@ -227,35 +246,14 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
         return currentInputStream.read(b, off, len);
     }
 
-    private static int readUnsignedByte(InputStream in) throws IOException {
-        final int value = in.read();
-        if (value == -1) {
-            throw new EOFException();
-        }
-        return value & 0xff;
+    private String readComment(final InputStream dataIn) throws IOException {
+        return new String(readString(dataIn).toByteArray(), getCharset());
     }
 
-    private int readSwappedUnsignedShort() throws IOException {
-        final int value = EndianUtils.readSwappedUnsignedShort(in);
-        count(2);
-        return value;
-    }
-
-    private int readUnsignedByte() throws IOException {
-        final int value = readUnsignedByte(in);
-        count(1);
-        return value & 0xff;
-    }
-
-    private static void readExtraData(final int firstHeaderSize, final InputStream firstHeader, final LocalFileHeader localFileHeader) throws IOException {
-        if (firstHeaderSize >= 33) {
-            localFileHeader.extendedFilePosition = EndianUtils.readSwappedInteger(firstHeader);
-            if (firstHeaderSize >= 45) {
-                localFileHeader.dateTimeAccessed = EndianUtils.readSwappedInteger(firstHeader);
-                localFileHeader.dateTimeCreated = EndianUtils.readSwappedInteger(firstHeader);
-                localFileHeader.originalSizeEvenForVolumes = EndianUtils.readSwappedInteger(firstHeader);
-            }
-        }
+    private String readEntryName(final InputStream dataIn) throws IOException {
+        final ByteArrayOutputStream buffer = readString(dataIn);
+        ArchiveUtils.checkEntryNameLength(buffer.size(), getMaxEntryNameLength(), "ARJ");
+        return new String(buffer.toByteArray(), getCharset());
     }
 
     /**
@@ -409,16 +407,6 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
         return b;
     }
 
-    private String readComment(final InputStream dataIn) throws IOException {
-        return new String(readString(dataIn).toByteArray(), getCharset());
-    }
-
-    private String readEntryName(final InputStream dataIn) throws IOException {
-        final ByteArrayOutputStream buffer = readString(dataIn);
-        ArchiveUtils.checkEntryNameLength(buffer.size(), getMaxEntryNameLength(), "ARJ");
-        return new String(buffer.toByteArray(), getCharset());
-    }
-
     private ByteArrayOutputStream readString(final InputStream dataIn) throws IOException {
         try (ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
             int nextByte;
@@ -427,5 +415,17 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
             }
             return buffer;
         }
+    }
+
+    private int readSwappedUnsignedShort() throws IOException {
+        final int value = EndianUtils.readSwappedUnsignedShort(in);
+        count(2);
+        return value;
+    }
+
+    private int readUnsignedByte() throws IOException {
+        final int value = readUnsignedByte(in);
+        count(1);
+        return value & 0xff;
     }
 }
