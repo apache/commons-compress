@@ -317,6 +317,17 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
         this(builder().setInputStream(inputStream).setCharset(encoding));
     }
 
+    private void afterRead(final int read) throws IOException {
+        // Count the bytes read
+        count(read);
+        // Check for truncated entries
+        if (read == -1 && entryOffset < currEntry.getSize()) {
+            throw new EOFException(String.format("Truncated TAR archive: entry '%s' expected %,d bytes, actual %,d", currEntry.getName(), currEntry.getSize(),
+                    entryOffset));
+        }
+        entryOffset += Math.max(0, read);
+    }
+
     /**
      * Gets the available data that can be read from the current entry in the archive. This does not indicate how much data is left in the entire archive, only
      * in the current entry. This value is determined from the entry's size header field and the amount of data already read from the current entry.
@@ -534,17 +545,6 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
             currEntry.setName(currEntry.getName() + "/");
         }
         return currEntry;
-    }
-
-    private void afterRead(final int read) throws IOException {
-        // Count the bytes read
-        count(read);
-        // Check for truncated entries
-        if (read == -1 && entryOffset < currEntry.getSize()) {
-            throw new EOFException(String.format("Truncated TAR archive: entry '%s' expected %,d bytes, actual %,d", currEntry.getName(), currEntry.getSize(),
-                    entryOffset));
-        }
-        entryOffset += Math.max(0, read);
     }
 
     /**

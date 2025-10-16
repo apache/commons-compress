@@ -39,30 +39,85 @@ import org.apache.commons.lang3.tuple.Pair;
 
 public final class TestArchiveGenerator {
 
-    private static final int TIMESTAMP = 0;
-    private static final int OWNER_ID = 0;
-    private static final String OWNER_NAME = "owner";
+    private static final int FILE_MODE = 0100644;
     private static final int GROUP_ID = 0;
     private static final String GROUP_NAME = "group";
-    private static final int FILE_MODE = 0100644;
     // TAR
     private static final String OLD_GNU_MAGIC = "ustar  ";
+    private static final int OWNER_ID = 0;
+    private static final String OWNER_NAME = "owner";
     private static final String PAX_MAGIC = "ustar\u000000";
+    private static final int TIMESTAMP = 0;
 
-    public static void main(final String[] args) throws IOException {
-        if (args.length != 1) {
-            System.err.println("Expected one argument: output directory");
-            System.exit(1);
+    private static byte[] createData(final int size) {
+        final byte[] data = new byte[size];
+        for (int i = 0; i < size; i++) {
+            data[i] = (byte) (i % 256);
         }
-        final Path path = Paths.get(args[0]);
-        if (!Files.isDirectory(path)) {
-            System.err.println("Not a directory: " + path);
-            System.exit(1);
+        return data;
+    }
+
+    // Very fragmented sparse file
+    private static List<Pair<Integer, Integer>> createFragmentedSparseEntries(final int realSize) {
+        final List<Pair<Integer, Integer>> sparseEntries = new ArrayList<>();
+        for (int offset = 0; offset < realSize; offset++) {
+            sparseEntries.add(Pair.of(offset, 1));
         }
-        // Sparse file examples
-        final Path sparsePath = path.resolve("sparse");
-        Files.createDirectories(sparsePath);
-        createSparseFileTestCases(sparsePath);
+        return sparseEntries;
+    }
+
+    private static byte[] createGnuSparse00PaxData(
+            final Collection<? extends Pair<Integer, Integer>> sparseEntries, final int realSize) {
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try (PrintWriter writer = new PrintWriter(new OutputStreamWriter(baos, US_ASCII))) {
+            writePaxKeyValue("GNU.sparse.size", realSize, writer);
+            writePaxKeyValue("GNU.sparse.numblocks", sparseEntries.size(), writer);
+            for (final Pair<Integer, Integer> entry : sparseEntries) {
+                writePaxKeyValue("GNU.sparse.offset", entry.getLeft(), writer);
+                writePaxKeyValue("GNU.sparse.numbytes", entry.getRight(), writer);
+            }
+        }
+        return baos.toByteArray();
+    }
+
+    private static byte[] createGnuSparse01PaxData(
+            final Collection<? extends Pair<Integer, Integer>> sparseEntries, final int realSize) {
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try (PrintWriter writer = new PrintWriter(new OutputStreamWriter(baos, US_ASCII))) {
+            writePaxKeyValue("GNU.sparse.size", realSize, writer);
+            writePaxKeyValue("GNU.sparse.numblocks", sparseEntries.size(), writer);
+            final String map = sparseEntries.stream()
+                    .map(e -> e.getLeft() + "," + e.getRight())
+                    .collect(Collectors.joining(","));
+            writePaxKeyValue("GNU.sparse.map", map, writer);
+        }
+        return baos.toByteArray();
+    }
+
+    private static byte[] createGnuSparse1EntriesData(final Collection<? extends Pair<Integer, Integer>> sparseEntries)
+            throws IOException {
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try (PrintWriter writer = new PrintWriter(new OutputStreamWriter(baos, US_ASCII))) {
+            writer.printf("%d\n", sparseEntries.size());
+            for (final Pair<Integer, Integer> entry : sparseEntries) {
+                writer.printf("%d\n", entry.getLeft());
+                writer.printf("%d\n", entry.getRight());
+            }
+        }
+        padTo512Bytes(baos.size(), baos);
+        return baos.toByteArray();
+    }
+
+    private static byte[] createGnuSparse1PaxData(
+            final Collection<Pair<Integer, Integer>> sparseEntries, final int realSize) {
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try (PrintWriter writer = new PrintWriter(new OutputStreamWriter(baos, US_ASCII))) {
+            writePaxKeyValue("GNU.sparse.realsize", realSize, writer);
+            writePaxKeyValue("GNU.sparse.numblocks", sparseEntries.size(), writer);
+            writePaxKeyValue("GNU.sparse.major", 1, writer);
+            writePaxKeyValue("GNU.sparse.minor", 0, writer);
+        }
+        return baos.toByteArray();
     }
 
     public static void createSparseFileTestCases(final Path path) throws IOException {
@@ -73,16 +128,6 @@ public final class TestArchiveGenerator {
         gnuSparse00(path);
         gnuSparse01(path);
         gnuSparse1X(path);
-    }
-
-    private static void oldGnuSparse(final Path path) throws IOException {
-        final Path file = path.resolve("old-gnu-sparse.tar");
-        try (OutputStream out = Files.newOutputStream(file)) {
-            final byte[] data = createData(8 * 1024);
-            final List<Pair<Integer, Integer>> sparseEntries = createFragmentedSparseEntries(data.length);
-            writeOldGnuSparseFile(sparseEntries, data, data.length, out);
-            writeUstarTrailer(out);
-        }
     }
 
     private static void gnuSparse00(final Path path) throws IOException {
@@ -117,47 +162,39 @@ public final class TestArchiveGenerator {
         }
     }
 
-    // Very fragmented sparse file
-    private static List<Pair<Integer, Integer>> createFragmentedSparseEntries(final int realSize) {
-        final List<Pair<Integer, Integer>> sparseEntries = new ArrayList<>();
-        for (int offset = 0; offset < realSize; offset++) {
-            sparseEntries.add(Pair.of(offset, 1));
+    public static void main(final String[] args) throws IOException {
+        if (args.length != 1) {
+            System.err.println("Expected one argument: output directory");
+            System.exit(1);
         }
-        return sparseEntries;
+        final Path path = Paths.get(args[0]);
+        if (!Files.isDirectory(path)) {
+            System.err.println("Not a directory: " + path);
+            System.exit(1);
+        }
+        // Sparse file examples
+        final Path sparsePath = path.resolve("sparse");
+        Files.createDirectories(sparsePath);
+        createSparseFileTestCases(sparsePath);
     }
 
-    private static byte[] createData(final int size) {
-        final byte[] data = new byte[size];
-        for (int i = 0; i < size; i++) {
-            data[i] = (byte) (i % 256);
+    private static void oldGnuSparse(final Path path) throws IOException {
+        final Path file = path.resolve("old-gnu-sparse.tar");
+        try (OutputStream out = Files.newOutputStream(file)) {
+            final byte[] data = createData(8 * 1024);
+            final List<Pair<Integer, Integer>> sparseEntries = createFragmentedSparseEntries(data.length);
+            writeOldGnuSparseFile(sparseEntries, data, data.length, out);
+            writeUstarTrailer(out);
         }
-        return data;
     }
 
-    private static void writeOldGnuSparseFile(
-            final Collection<Pair<Integer, Integer>> sparseEntries,
-            final byte[] data,
-            final int realSize,
-            final OutputStream out)
-            throws IOException {
-        int offset = writeTarUstarHeader("sparse-file.txt", data.length, OLD_GNU_MAGIC, 'S', out);
-        while (offset < 386) {
+    private static int padTo512Bytes(final int offset, final OutputStream out) throws IOException {
+        int count = offset;
+        while (count % 512 != 0) {
             out.write(0);
-            offset++;
+            count++;
         }
-        // Sparse entries (24 bytes each)
-        offset += writeOldGnuSparseEntries(sparseEntries, 4, out);
-        // Real size (12 bytes)
-        offset += writeOctalString(realSize, 12, out);
-        offset = padTo512Bytes(offset, out);
-        // Write extended headers
-        while (!sparseEntries.isEmpty()) {
-            offset += writeOldGnuSparseExtendedHeader(sparseEntries, out);
-        }
-        // Write file data
-        out.write(data);
-        offset += data.length;
-        padTo512Bytes(offset, out);
+        return count;
     }
 
     private static void writeGnuSparse0File(final byte[] data, final byte[] paxData, final OutputStream out)
@@ -201,6 +238,103 @@ public final class TestArchiveGenerator {
         padTo512Bytes(offset, out);
     }
 
+    private static int writeOctalString(final long value, final int length, final OutputStream out) throws IOException {
+        int count = 0;
+        final String s = Long.toOctalString(value);
+        count += writeString(s, length - 1, out);
+        out.write('\0');
+        return ++count;
+    }
+
+    private static int writeOldGnuSparseEntries(
+            final Iterable<Pair<Integer, Integer>> sparseEntries, final int limit, final OutputStream out)
+            throws IOException {
+        int offset = 0;
+        int count = 0;
+        final Iterator<Pair<Integer, Integer>> it = sparseEntries.iterator();
+        while (it.hasNext()) {
+            if (count >= limit) {
+                out.write(1); // more entries follow
+                return ++offset;
+            }
+            final Pair<Integer, Integer> entry = it.next();
+            it.remove();
+            count++;
+            offset += writeOldGnuSparseEntry(entry.getLeft(), entry.getRight(), out);
+        }
+        while (count < limit) {
+            // pad with empty entries
+            offset += writeOldGnuSparseEntry(0, 0, out);
+            count++;
+        }
+        out.write(0); // no more entries
+        return ++offset;
+    }
+
+    private static int writeOldGnuSparseEntry(final int offset, final int length, final OutputStream out)
+            throws IOException {
+        int count = 0;
+        count += writeOctalString(offset, 12, out);
+        count += writeOctalString(length, 12, out);
+        return count;
+    }
+
+    private static int writeOldGnuSparseExtendedHeader(
+            final Iterable<Pair<Integer, Integer>> sparseEntries, final OutputStream out) throws IOException {
+        int offset = 0;
+        offset += writeOldGnuSparseEntries(sparseEntries, 21, out);
+        offset = padTo512Bytes(offset, out);
+        return offset;
+    }
+
+    private static void writeOldGnuSparseFile(
+            final Collection<Pair<Integer, Integer>> sparseEntries,
+            final byte[] data,
+            final int realSize,
+            final OutputStream out)
+            throws IOException {
+        int offset = writeTarUstarHeader("sparse-file.txt", data.length, OLD_GNU_MAGIC, 'S', out);
+        while (offset < 386) {
+            out.write(0);
+            offset++;
+        }
+        // Sparse entries (24 bytes each)
+        offset += writeOldGnuSparseEntries(sparseEntries, 4, out);
+        // Real size (12 bytes)
+        offset += writeOctalString(realSize, 12, out);
+        offset = padTo512Bytes(offset, out);
+        // Write extended headers
+        while (!sparseEntries.isEmpty()) {
+            offset += writeOldGnuSparseExtendedHeader(sparseEntries, out);
+        }
+        // Write file data
+        out.write(data);
+        offset += data.length;
+        padTo512Bytes(offset, out);
+    }
+
+    private static void writePaxKeyValue(final String key, final int value, final PrintWriter out) {
+        writePaxKeyValue(key, Integer.toString(value), out);
+    }
+
+    private static void writePaxKeyValue(final String key, final String value, final PrintWriter out) {
+        final String entry = ' ' + key + "=" + value + "\n";
+        // Guess length: length of length + space + entry
+        final int length = String.valueOf(entry.length()).length() + entry.length();
+        // Recompute if number of digits changes
+        out.print(String.valueOf(length).length() + entry.length());
+        out.print(entry);
+    }
+
+    private static int writeString(final String s, final int length, final OutputStream out) throws IOException {
+        final byte[] bytes = s.getBytes(US_ASCII);
+        out.write(bytes);
+        for (int i = bytes.length; i < length; i++) {
+            out.write('\0');
+        }
+        return length;
+    }
+
     private static int writeTarUstarHeader(
             final String fileName,
             final long fileSize,
@@ -241,14 +375,6 @@ public final class TestArchiveGenerator {
         return count;
     }
 
-    private static int writeOldGnuSparseExtendedHeader(
-            final Iterable<Pair<Integer, Integer>> sparseEntries, final OutputStream out) throws IOException {
-        int offset = 0;
-        offset += writeOldGnuSparseEntries(sparseEntries, 21, out);
-        offset = padTo512Bytes(offset, out);
-        return offset;
-    }
-
     private static void writeUstarTrailer(final OutputStream out) throws IOException {
         int offset = 0;
         // 1024 bytes of zero
@@ -256,132 +382,6 @@ public final class TestArchiveGenerator {
             out.write(0);
             offset++;
         }
-    }
-
-    private static int writeOldGnuSparseEntries(
-            final Iterable<Pair<Integer, Integer>> sparseEntries, final int limit, final OutputStream out)
-            throws IOException {
-        int offset = 0;
-        int count = 0;
-        final Iterator<Pair<Integer, Integer>> it = sparseEntries.iterator();
-        while (it.hasNext()) {
-            if (count >= limit) {
-                out.write(1); // more entries follow
-                return ++offset;
-            }
-            final Pair<Integer, Integer> entry = it.next();
-            it.remove();
-            count++;
-            offset += writeOldGnuSparseEntry(entry.getLeft(), entry.getRight(), out);
-        }
-        while (count < limit) {
-            // pad with empty entries
-            offset += writeOldGnuSparseEntry(0, 0, out);
-            count++;
-        }
-        out.write(0); // no more entries
-        return ++offset;
-    }
-
-    private static int writeOldGnuSparseEntry(final int offset, final int length, final OutputStream out)
-            throws IOException {
-        int count = 0;
-        count += writeOctalString(offset, 12, out);
-        count += writeOctalString(length, 12, out);
-        return count;
-    }
-
-    private static byte[] createGnuSparse00PaxData(
-            final Collection<? extends Pair<Integer, Integer>> sparseEntries, final int realSize) {
-        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try (PrintWriter writer = new PrintWriter(new OutputStreamWriter(baos, US_ASCII))) {
-            writePaxKeyValue("GNU.sparse.size", realSize, writer);
-            writePaxKeyValue("GNU.sparse.numblocks", sparseEntries.size(), writer);
-            for (final Pair<Integer, Integer> entry : sparseEntries) {
-                writePaxKeyValue("GNU.sparse.offset", entry.getLeft(), writer);
-                writePaxKeyValue("GNU.sparse.numbytes", entry.getRight(), writer);
-            }
-        }
-        return baos.toByteArray();
-    }
-
-    private static byte[] createGnuSparse01PaxData(
-            final Collection<? extends Pair<Integer, Integer>> sparseEntries, final int realSize) {
-        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try (PrintWriter writer = new PrintWriter(new OutputStreamWriter(baos, US_ASCII))) {
-            writePaxKeyValue("GNU.sparse.size", realSize, writer);
-            writePaxKeyValue("GNU.sparse.numblocks", sparseEntries.size(), writer);
-            final String map = sparseEntries.stream()
-                    .map(e -> e.getLeft() + "," + e.getRight())
-                    .collect(Collectors.joining(","));
-            writePaxKeyValue("GNU.sparse.map", map, writer);
-        }
-        return baos.toByteArray();
-    }
-
-    private static byte[] createGnuSparse1PaxData(
-            final Collection<Pair<Integer, Integer>> sparseEntries, final int realSize) {
-        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try (PrintWriter writer = new PrintWriter(new OutputStreamWriter(baos, US_ASCII))) {
-            writePaxKeyValue("GNU.sparse.realsize", realSize, writer);
-            writePaxKeyValue("GNU.sparse.numblocks", sparseEntries.size(), writer);
-            writePaxKeyValue("GNU.sparse.major", 1, writer);
-            writePaxKeyValue("GNU.sparse.minor", 0, writer);
-        }
-        return baos.toByteArray();
-    }
-
-    private static void writePaxKeyValue(final String key, final String value, final PrintWriter out) {
-        final String entry = ' ' + key + "=" + value + "\n";
-        // Guess length: length of length + space + entry
-        final int length = String.valueOf(entry.length()).length() + entry.length();
-        // Recompute if number of digits changes
-        out.print(String.valueOf(length).length() + entry.length());
-        out.print(entry);
-    }
-
-    private static void writePaxKeyValue(final String key, final int value, final PrintWriter out) {
-        writePaxKeyValue(key, Integer.toString(value), out);
-    }
-
-    private static byte[] createGnuSparse1EntriesData(final Collection<? extends Pair<Integer, Integer>> sparseEntries)
-            throws IOException {
-        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        try (PrintWriter writer = new PrintWriter(new OutputStreamWriter(baos, US_ASCII))) {
-            writer.printf("%d\n", sparseEntries.size());
-            for (final Pair<Integer, Integer> entry : sparseEntries) {
-                writer.printf("%d\n", entry.getLeft());
-                writer.printf("%d\n", entry.getRight());
-            }
-        }
-        padTo512Bytes(baos.size(), baos);
-        return baos.toByteArray();
-    }
-
-    private static int writeOctalString(final long value, final int length, final OutputStream out) throws IOException {
-        int count = 0;
-        final String s = Long.toOctalString(value);
-        count += writeString(s, length - 1, out);
-        out.write('\0');
-        return ++count;
-    }
-
-    private static int writeString(final String s, final int length, final OutputStream out) throws IOException {
-        final byte[] bytes = s.getBytes(US_ASCII);
-        out.write(bytes);
-        for (int i = bytes.length; i < length; i++) {
-            out.write('\0');
-        }
-        return length;
-    }
-
-    private static int padTo512Bytes(final int offset, final OutputStream out) throws IOException {
-        int count = offset;
-        while (count % 512 != 0) {
-            out.write(0);
-            count++;
-        }
-        return count;
     }
 
     private TestArchiveGenerator() {
