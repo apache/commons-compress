@@ -349,12 +349,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
     }
 
     private MainHeader readMainHeader() throws IOException {
-        final byte[] basicHeaderBytes;
-        try {
-            basicHeaderBytes = readHeader();
-        } catch (final EOFException e) {
-            throw new ArchiveException("Archive ends without any headers", (Throwable) e);
-        }
+        final byte[] basicHeaderBytes = readHeader();
         final MainHeader header = new MainHeader();
         try (InputStream basicHeader = new ByteArrayInputStream(basicHeaderBytes)) {
 
