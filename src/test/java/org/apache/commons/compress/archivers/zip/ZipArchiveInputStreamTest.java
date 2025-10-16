@@ -69,7 +69,7 @@ class ZipArchiveInputStreamTest extends AbstractTest {
 
         private boolean used;
 
-        private AirliftZipArchiveInputStream(final InputStream inputStream) {
+        private AirliftZipArchiveInputStream(final InputStream inputStream) throws IOException {
             super(inputStream);
         }
 

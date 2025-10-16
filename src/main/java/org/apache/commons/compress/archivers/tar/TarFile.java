@@ -18,8 +18,6 @@
  */
 package org.apache.commons.compress.archivers.tar;
 
-import static java.util.Objects.requireNonNull;
-
 import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
@@ -35,6 +33,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveFile;
@@ -76,7 +75,7 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
 
         @Override
         protected int read(final long pos, final ByteBuffer buf) throws IOException {
-            requireNonNull(buf, "ByteBuffer");
+            Objects.requireNonNull(buf, "ByteBuffer");
             // The caller ensures that [pos, pos + buf.remaining()] is within [start, end]
             channel.position(pos);
             final int totalRead = channel.read(buf);
@@ -174,6 +173,8 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
 
     private final Map<String, List<InputStream>> sparseInputStreams = new HashMap<>();
 
+    private final int maxEntryNameLength;
+
     private TarFile(final Builder builder) throws IOException {
         this.archive = builder.getChannel(SeekableByteChannel.class);
         try {
@@ -182,6 +183,7 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
             this.recordBuffer = ByteBuffer.allocate(this.recordSize);
             this.blockSize = builder.getBlockSize();
             this.lenient = builder.isLenient();
+            this.maxEntryNameLength = builder.getMaxEntryNameLength();
             // Populate `entries` explicitly here instead of using `forEach`/`stream`,
             // because both rely on `entries` internally.
             // Using them would cause a self-referential loop and leave `entries` empty.
@@ -474,8 +476,8 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
             lastWasSpecial = TarUtils.isSpecialTarRecord(currEntry);
             if (lastWasSpecial) {
                 // Handle PAX, GNU long name, or other special records
-                // Make sure not to read beyond the entry data
-                TarUtils.handleSpecialTarRecord(currentStream, zipEncoding, currEntry, paxHeaders, sparseHeaders, globalPaxHeaders, globalSparseHeaders);
+                TarUtils.handleSpecialTarRecord(currentStream, zipEncoding, maxEntryNameLength, currEntry, paxHeaders, sparseHeaders, globalPaxHeaders,
+                        globalSparseHeaders);
             }
         } while (lastWasSpecial);
         // Apply global and local PAX headers

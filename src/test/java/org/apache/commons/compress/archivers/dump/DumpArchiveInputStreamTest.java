@@ -24,7 +24,6 @@ import static org.apache.commons.compress.archivers.dump.DumpArchiveTestFactory.
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
@@ -68,7 +67,6 @@ class DumpArchiveInputStreamTest extends AbstractTest {
         final ArchiveException ex = assertThrows(ArchiveException.class, () -> DumpArchiveInputStream.builder()
                 .setByteArray(createArchive(ntrec))
                 .get());
-        assertInstanceOf(ArchiveException.class, ex.getCause());
         assertTrue(ex.getMessage().contains(Integer.toString(ntrec)), "message should contain the invalid ntrec value");
     }
 
@@ -122,11 +120,14 @@ class DumpArchiveInputStreamTest extends AbstractTest {
 
     @Test
     void testInvalidCompressType() {
-        final ArchiveException ex = assertThrows(ArchiveException.class, () -> DumpArchiveInputStream.builder()
+        assertThrows(UnsupportedCompressionAlgorithmException.class, () -> DumpArchiveInputStream
+                // @formatter:off
+                .builder()
                 .setURI(getURI("org/apache/commons/compress/dump/invalid_compression_type-fail.dump"))
                 .get()
-                .close());
-        assertInstanceOf(UnsupportedCompressionAlgorithmException.class, ex.getCause());
+                .close()
+                // @formatter:on
+        );
     }
 
     @Test
@@ -176,26 +177,13 @@ class DumpArchiveInputStreamTest extends AbstractTest {
 
     @Test
     void testNotADumpArchive() {
-        final ArchiveException ex = assertThrows(
-                ArchiveException.class,
-                () -> DumpArchiveInputStream.builder()
-                        .setURI(getURI("bla.zip"))
-                        .get()
-                        .close(),
-                "expected an exception");
-        assertTrue(ex.getCause() instanceof ShortFileException);
+        assertThrows(ShortFileException.class, () -> DumpArchiveInputStream.builder().setURI(getURI("bla.zip")).get().close(), "expected an exception");
     }
 
     @Test
-    void testNotADumpArchiveButBigEnough() throws Exception {
-        final ArchiveException ex = assertThrows(
-                ArchiveException.class,
-                () -> DumpArchiveInputStream.builder()
-                        .setURI(getURI("zip64support.tar.bz2"))
-                        .get()
-                        .close(),
+    void testNotADumpArchiveButBigEnough() {
+        assertThrows(UnrecognizedFormatException.class, () -> DumpArchiveInputStream.builder().setURI(getURI("zip64support.tar.bz2")).get().close(),
                 "expected an exception");
-        assertInstanceOf(UnrecognizedFormatException.class, ex.getCause());
     }
 
     @Test

@@ -406,6 +406,7 @@ class TarArchiveInputStreamTest extends AbstractTest {
     void testParseTarWithSpecialPaxHeaders() throws IOException {
         try (TarArchiveInputStream archive = getTestStream("COMPRESS-530-fail.tar")) {
             assertThrows(ArchiveException.class, () -> archive.getNextEntry());
+            // The PAX header is truncated
             assertThrows(EOFException.class, () -> IOUtils.toByteArray(archive));
         }
     }
