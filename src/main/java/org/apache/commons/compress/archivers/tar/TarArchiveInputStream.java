@@ -176,36 +176,8 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
 
     private final boolean lenient;
 
-    @SuppressWarnings("resource") // caller closes.
     private TarArchiveInputStream(final Builder builder) throws IOException {
-        this(builder.getInputStream(), builder);
-    }
-
-    /**
-     * Constructs a new instance.
-     *
-     * @param inputStream the input stream to use.
-     */
-    public TarArchiveInputStream(final InputStream inputStream) {
-        this(inputStream, builder());
-    }
-
-    /**
-     * Constructs a new instance with default values.
-     *
-     * @param inputStream the input stream to use.
-     * @param lenient     when set to true illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
-     *                    {@link TarArchiveEntry#UNKNOWN}. When set to false such illegal fields cause an exception instead.
-     * @since 1.19
-     * @deprecated Since 1.29.0, use {@link #builder()}.
-     */
-    @Deprecated
-    public TarArchiveInputStream(final InputStream inputStream, final boolean lenient) {
-        this(inputStream, builder().setLenient(lenient));
-    }
-
-    private TarArchiveInputStream(final InputStream inputStream, final Builder builder) {
-        super(inputStream, builder);
+        super(builder);
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(builder.getCharset());
         this.recordBuffer = new byte[builder.getRecordSize()];
         this.blockSize = builder.getBlockSize();
@@ -215,48 +187,84 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
     /**
      * Constructs a new instance.
      *
+     * <p>Since 1.29.0: throws {@link IOException}.</p>
+     *
      * @param inputStream the input stream to use.
-     * @param blockSize   the block size to use.
+     */
+    public TarArchiveInputStream(final InputStream inputStream) throws IOException {
+        this(builder().setInputStream(inputStream));
+    }
+
+    /**
+     * Constructs a new instance with default values.
+     *
+     * <p>Since 1.29.0: throws {@link IOException}.</p>
+     *
+     * @param inputStream the input stream to use.
+     * @param lenient     when set to true illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
+     *                    {@link TarArchiveEntry#UNKNOWN}. When set to false such illegal fields cause an exception instead.
+     * @throws IOException if an I/O error occurs.
+     * @since 1.19
      * @deprecated Since 1.29.0, use {@link #builder()}.
      */
     @Deprecated
-    public TarArchiveInputStream(final InputStream inputStream, final int blockSize) {
-        this(inputStream, builder().setBlockSize(blockSize));
+    public TarArchiveInputStream(final InputStream inputStream, final boolean lenient) throws IOException {
+        this(builder().setInputStream(inputStream).setLenient(lenient));
     }
 
     /**
      * Constructs a new instance.
      *
+     * <p>Since 1.29.0: throws {@link IOException}.</p>
+     *
      * @param inputStream the input stream to use.
      * @param blockSize   the block size to use.
-     * @param recordSize  the record size to use.
+     * @throws IOException if an I/O error occurs.
      * @deprecated Since 1.29.0, use {@link #builder()}.
      */
     @Deprecated
-    public TarArchiveInputStream(final InputStream inputStream, final int blockSize, final int recordSize) {
-        this(inputStream, builder().setBlockSize(blockSize).setRecordSize(recordSize));
+    public TarArchiveInputStream(final InputStream inputStream, final int blockSize) throws IOException {
+        this(builder().setInputStream(inputStream).setBlockSize(blockSize));
     }
 
     /**
      * Constructs a new instance.
+     *
+     * <p>Since 1.29.0: throws {@link IOException}.</p>
+     *
+     * @param inputStream the input stream to use.
+     * @param blockSize   the block size to use.
+     * @param recordSize  the record size to use.
+     * @throws IOException if an I/O error occurs.
+     * @deprecated Since 1.29.0, use {@link #builder()}.
+     */
+    @Deprecated
+    public TarArchiveInputStream(final InputStream inputStream, final int blockSize, final int recordSize) throws IOException {
+        this(builder().setInputStream(inputStream).setBlockSize(blockSize).setRecordSize(recordSize));
+    }
+
+    /**
+     * Constructs a new instance.
+     *
+     * <p>Since 1.29.0: throws {@link IOException}.</p>
      *
      * @param inputStream the input stream to use.
      * @param blockSize   the block size to use.
      * @param recordSize  the record size to use.
      * @param encoding    name of the encoding to use for file names.
+     * @throws IOException if an I/O error occurs.
      * @since 1.4
      * @deprecated Since 1.29.0, use {@link #builder()}.
      */
     @Deprecated
-    public TarArchiveInputStream(
-            final InputStream inputStream, final int blockSize, final int recordSize, final String encoding) {
-        this(
-                inputStream,
-                builder().setBlockSize(blockSize).setRecordSize(recordSize).setCharset(encoding));
+    public TarArchiveInputStream(final InputStream inputStream, final int blockSize, final int recordSize, final String encoding) throws IOException {
+        this(builder().setInputStream(inputStream).setBlockSize(blockSize).setRecordSize(recordSize).setCharset(encoding));
     }
 
     /**
      * Constructs a new instance.
+     *
+     * <p>Since 1.29.0: throws {@link IOException}.</p>
      *
      * @param inputStream the input stream to use.
      * @param blockSize   the block size to use.
@@ -264,13 +272,16 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      * @param encoding    name of the encoding to use for file names.
      * @param lenient     when set to true illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
      *                    {@link TarArchiveEntry#UNKNOWN}. When set to false such illegal fields cause an exception instead.
+     * @throws IOException if an I/O error occurs.
      * @since 1.19
      * @deprecated Since 1.29.0, use {@link #builder()}.
      */
     @Deprecated
-    public TarArchiveInputStream(final InputStream inputStream, final int blockSize, final int recordSize, final String encoding, final boolean lenient) {
+    public TarArchiveInputStream(final InputStream inputStream, final int blockSize, final int recordSize, final String encoding,
+            final boolean lenient) throws IOException {
         // @formatter:off
-        this(inputStream, builder()
+        this(builder()
+                .setInputStream(inputStream)
                 .setBlockSize(blockSize)
                 .setRecordSize(recordSize)
                 .setCharset(encoding)
@@ -281,28 +292,34 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
     /**
      * Constructs a new instance.
      *
+     * <p>Since 1.29.0: throws {@link IOException}.</p>
+     *
      * @param inputStream the input stream to use.
      * @param blockSize   the block size to use.
      * @param encoding    name of the encoding to use for file names.
+     * @throws IOException if an I/O error occurs.
      * @since 1.4
      * @deprecated Since 1.29.0, use {@link #builder()}.
      */
     @Deprecated
-    public TarArchiveInputStream(final InputStream inputStream, final int blockSize, final String encoding) {
-        this(inputStream, builder().setBlockSize(blockSize).setCharset(encoding));
+    public TarArchiveInputStream(final InputStream inputStream, final int blockSize, final String encoding) throws IOException {
+        this(builder().setInputStream(inputStream).setBlockSize(blockSize).setCharset(encoding));
     }
 
     /**
      * Constructs a new instance.
      *
+     * <p>Since 1.29.0: throws {@link IOException}.</p>
+     *
      * @param inputStream the input stream to use.
      * @param encoding    name of the encoding to use for file names.
+     * @throws IOException if an I/O error occurs.
      * @since 1.4
      * @deprecated Since 1.29.0, use {@link #builder()}.
      */
     @Deprecated
-    public TarArchiveInputStream(final InputStream inputStream, final String encoding) {
-        this(inputStream, builder().setCharset(encoding));
+    public TarArchiveInputStream(final InputStream inputStream, final String encoding) throws IOException {
+        this(builder().setInputStream(inputStream).setCharset(encoding));
     }
 
     /**

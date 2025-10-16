@@ -101,7 +101,10 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
 
     /**
      * Constructs a new instance.
+     *
+     * @deprecated Since 1.29.0, use {@link #ArchiveInputStream(AbstractArchiveBuilder)} instead.
      */
+    @Deprecated
     @SuppressWarnings("resource")
     public ArchiveInputStream() {
         this(new NullInputStream(), Charset.defaultCharset().name());
@@ -114,23 +117,8 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
      * @throws IOException Thrown if an I/O error occurs.
      * @since 1.29.0
      */
-    protected ArchiveInputStream(AbstractArchiveBuilder<?, ?> builder) throws IOException {
-        this(builder.getInputStream(), builder);
-    }
-
-    /**
-     * Constructs a new instance from a builder and an input stream.
-     *
-     * <p><strong>Note:</strong> This overload exists to support legacy constructors that did not declare
-     * {@link IOException}. For new constructors, prefer
-     * {@link #ArchiveInputStream(AbstractArchiveBuilder)} and propagate I/O errors to callers.</p>
-     *
-     * @param inputStream The underlying input stream, or {@code null} if this instance is to be created without an underlying stream.
-     * @param builder The builder.
-     * @since 1.29.0
-     */
-    protected ArchiveInputStream(final InputStream inputStream, final AbstractArchiveBuilder<?, ?> builder) {
-        super(inputStream);
+    protected ArchiveInputStream(final AbstractArchiveBuilder<?, ?> builder) throws IOException {
+        super(builder.getInputStream());
         this.charset = builder.getCharset();
         this.maxEntryNameLength = builder.getMaxEntryNameLength();
     }
@@ -141,7 +129,9 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
      * @param inputStream the underlying input stream, or {@code null} if this instance is to be created without an underlying stream.
      * @param charsetName charset name.
      * @since 1.26.0
+     * @deprecated Since 1.29.0, use {@link #ArchiveInputStream(AbstractArchiveBuilder)} instead.
      */
+    @Deprecated
     protected ArchiveInputStream(final InputStream inputStream, final String charsetName) {
         super(inputStream == null ? new NullInputStream() : inputStream);
         this.charset = Charsets.toCharset(charsetName);

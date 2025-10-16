@@ -106,6 +106,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory">SeekableInMemoryByteChannel.position(), size(), and truncate() now comply with the SeekableByteChannel contract and throw ClosedChannelException.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">SeekableInMemoryByteChannel.position(long) now throws IllegalArgumentException instead of IOException when the position request is negative, complying with the SeekableByteChannel.position(long) contract.</action>
       <action type="fix" dev="pkarwasz" due-to="Piotr P. Karwasz">Makes TarUtils final and cleans up protected methods #712.</action>
+      <action type="fix" dev="pkarwasz" due-to="Piotr P. Karwasz">All archive input stream constructors now throw IOException.</action>
       <!-- ADD -->
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add MemoryLimitException.MemoryLimitException(long, long).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add CompressException.CompressException(String, Object...).</action>
@@ -123,7 +124,6 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add Pack200Exception.addExact(int, long).</action>
       <action type="add" issue="COMPRESS-705" dev="ggregory" due-to="Gary Gregory">Add GzipCompressorInputStream.Builder.setIgnoreExtraField(boolean).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add SnappyCompressorInputStream.getUncompressedSize() and deprecate getSize().</action>
-      <action type="add" dev="ggregory" due-to="Gary Gregory">Add ArchiveInputStream.ArchiveInputStream(InputStream, Charset) as a public constructor, it was private.</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory, Piotr P. Karwasz">Introduce builders for all ArchiveInputStream implementations and deprecate some constructors.</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">TarFile now implements IOIterable&lt;TarArchiveEntry&gt;.</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add a builder for the TarFile class and deprecate some constructors.</action>

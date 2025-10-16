@@ -24,7 +24,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
 
 import java.io.BufferedInputStream;
 import java.io.EOFException;
@@ -221,8 +220,7 @@ class ArArchiveInputStreamTest extends AbstractTest {
 
     @Test
     void testSingleArgumentConstructor() throws Exception {
-        final InputStream inputStream = mock(InputStream.class);
-        try (ArArchiveInputStream archiveStream = new ArArchiveInputStream(inputStream)) {
+        try (ArArchiveInputStream archiveStream = ArArchiveInputStream.builder().setURI(getURI("bla.ar")).get()) {
             assertEquals(US_ASCII, archiveStream.getCharset());
         }
     }
