@@ -68,6 +68,11 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
             setCharset(ENCODING_NAME);
         }
 
+        @Override
+        public ArjArchiveInputStream get() throws IOException {
+            return new ArjArchiveInputStream(this);
+        }
+
         /**
          * Enables compatibility with self-extracting (SFX) ARJ files.
          *
@@ -88,11 +93,6 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
         public Builder setSelfExtracting(final boolean selfExtracting) {
             this.selfExtracting = selfExtracting;
             return asThis();
-        }
-
-        @Override
-        public ArjArchiveInputStream get() throws IOException {
-            return new ArjArchiveInputStream(this);
         }
     }
 
@@ -120,6 +120,14 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
      */
     public static boolean matches(final byte[] signature, final int length) {
         return length >= 2 && (0xff & signature[0]) == ARJ_MAGIC_1 && (0xff & signature[1]) == ARJ_MAGIC_2;
+    }
+
+    private static int readUnsignedByte(InputStream in) throws IOException {
+        final int value = in.read();
+        if (value == -1) {
+            throw new EOFException();
+        }
+        return value & 0xff;
     }
 
     private final MainHeader mainHeader;
@@ -171,6 +179,52 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
     @Override
     public boolean canReadEntryData(final ArchiveEntry ae) {
         return ae instanceof ArjArchiveEntry && ((ArjArchiveEntry) ae).getMethod() == LocalFileHeader.Methods.STORED;
+    }
+
+    /**
+     * Verifies the CRC32 checksum of the given data against the next four bytes read from the input stream.
+     *
+     * @param data The data to verify.
+     * @return true if the checksum matches, false otherwise.
+     * @throws EOFException If the end of the stream is reached before reading the checksum.
+     * @throws IOException If an I/O error occurs.
+     */
+    @SuppressWarnings("Since15")
+    private boolean checkCRC32(final byte[] data) throws IOException {
+        final CRC32 crc32 = new CRC32();
+        crc32.update(data);
+        final long expectedCrc32 = readSwappedUnsignedInteger();
+        return crc32.getValue() == expectedCrc32;
+    }
+
+    /**
+     * Scans for the next valid ARJ header.
+     *
+     * @return The header bytes.
+     * @throws EOFException If the end of the stream is reached before a valid header is found.
+     * @throws IOException If an I/O error occurs.
+     */
+    private byte[] findMainHeader() throws IOException {
+        byte[] basicHeaderBytes;
+        while (true) {
+            int first;
+            int second = readUnsignedByte();
+            do {
+                first = second;
+                second = readUnsignedByte();
+            } while (first != ARJ_MAGIC_1 && second != ARJ_MAGIC_2);
+            final int basicHeaderSize = readSwappedUnsignedShort();
+            // At least two bytes are required for the null-terminated name and comment
+            // The value 2600 is taken from the reference implementation
+            if (MIN_FIRST_HEADER_SIZE + 2 <= basicHeaderSize && basicHeaderSize <= 2600) {
+                basicHeaderBytes = org.apache.commons.io.IOUtils.toByteArray(in, basicHeaderSize);
+                count(basicHeaderSize);
+                if (checkCRC32(basicHeaderBytes)) {
+                    return basicHeaderBytes;
+                }
+            }
+            // CRC32 failed, continue scanning
+        }
     }
 
     /**
@@ -252,78 +306,6 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
             throw new ArchiveException("Unsupported compression method '%s'", currentLocalFileHeader.method);
         }
         return currentInputStream.read(b, off, len);
-    }
-
-    /**
-     * Verifies the CRC32 checksum of the given data against the next four bytes read from the input stream.
-     *
-     * @param data The data to verify.
-     * @return true if the checksum matches, false otherwise.
-     * @throws EOFException If the end of the stream is reached before reading the checksum.
-     * @throws IOException If an I/O error occurs.
-     */
-    @SuppressWarnings("Since15")
-    private boolean checkCRC32(final byte[] data) throws IOException {
-        final CRC32 crc32 = new CRC32();
-        crc32.update(data);
-        final long expectedCrc32 = readSwappedUnsignedInteger();
-        return crc32.getValue() == expectedCrc32;
-    }
-
-    /**
-     * Scans for the next valid ARJ header.
-     *
-     * @return The header bytes.
-     * @throws EOFException If the end of the stream is reached before a valid header is found.
-     * @throws IOException If an I/O error occurs.
-     */
-    private byte[] findMainHeader() throws IOException {
-        byte[] basicHeaderBytes;
-        while (true) {
-            int first;
-            int second = readUnsignedByte();
-            do {
-                first = second;
-                second = readUnsignedByte();
-            } while (first != ARJ_MAGIC_1 && second != ARJ_MAGIC_2);
-            final int basicHeaderSize = readSwappedUnsignedShort();
-            // At least two bytes are required for the null-terminated name and comment
-            // The value 2600 is taken from the reference implementation
-            if (MIN_FIRST_HEADER_SIZE + 2 <= basicHeaderSize && basicHeaderSize <= 2600) {
-                basicHeaderBytes = org.apache.commons.io.IOUtils.toByteArray(in, basicHeaderSize);
-                count(basicHeaderSize);
-                if (checkCRC32(basicHeaderBytes)) {
-                    return basicHeaderBytes;
-                }
-            }
-            // CRC32 failed, continue scanning
-        }
-    }
-
-    private static int readUnsignedByte(InputStream in) throws IOException {
-        final int value = in.read();
-        if (value == -1) {
-            throw new EOFException();
-        }
-        return value & 0xff;
-    }
-
-    private int readSwappedUnsignedShort() throws IOException {
-        final int value = EndianUtils.readSwappedUnsignedShort(in);
-        count(2);
-        return value;
-    }
-
-    private long readSwappedUnsignedInteger() throws IOException {
-        final long value = EndianUtils.readSwappedUnsignedInteger(in);
-        count(4);
-        return value;
-    }
-
-    private int readUnsignedByte() throws IOException {
-        final int value = readUnsignedByte(in);
-        count(1);
-        return value & 0xff;
     }
 
     private byte[] readHeader() throws IOException {
@@ -472,5 +454,23 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
             }
             return buffer.toString(getCharset().name());
         }
+    }
+
+    private long readSwappedUnsignedInteger() throws IOException {
+        final long value = EndianUtils.readSwappedUnsignedInteger(in);
+        count(4);
+        return value;
+    }
+
+    private int readSwappedUnsignedShort() throws IOException {
+        final int value = EndianUtils.readSwappedUnsignedShort(in);
+        count(2);
+        return value;
+    }
+
+    private int readUnsignedByte() throws IOException {
+        final int value = readUnsignedByte(in);
+        count(1);
+        return value & 0xff;
     }
 }
