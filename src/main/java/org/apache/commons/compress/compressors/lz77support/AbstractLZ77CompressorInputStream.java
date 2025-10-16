@@ -84,13 +84,13 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
      */
     private final byte[] buf;
 
-    /** One behind the index of the last byte in the buffer that was written, i.e. the next position to write to */
+    /** One behind the index of the last byte in the buffer that was written, i.e. the next position to write to. */
     private int writeIndex;
 
     /** Index of the next byte to be read. */
     private int readIndex;
 
-    /** The underlying stream to read compressed data from */
+    /** The underlying stream to read compressed data from. */
     private final BoundedInputStream in;
 
     /** Number of bytes still to be read from the current literal or back-reference. */
@@ -102,7 +102,7 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
     /** Uncompressed size */
     private int size;
 
-    // used in no-arg read method
+    /** Used in no-arg read method. */
     private final byte[] oneByte = new byte[1];
 
     /**
@@ -113,9 +113,9 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
     /**
      * Creates a new LZ77 input stream.
      *
-     * @param is         An InputStream to read compressed data from
+     * @param is         An InputStream to read compressed data from.
      * @param windowSize Size of the window kept for back-references, must be bigger than the biggest offset expected.
-     * @throws IllegalArgumentException if windowSize is not bigger than 0
+     * @throws IllegalArgumentException if windowSize is not bigger than 0.
      */
     public AbstractLZ77CompressorInputStream(final InputStream is, final int windowSize) {
         this.in = BoundedInputStream.builder().setInputStream(is).asSupplier().get();
@@ -149,9 +149,9 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
     }
 
     /**
-     * Gets the uncompressed size of the stream
+     * Gets the uncompressed size of the stream.
      *
-     * @return the uncompressed size
+     * @return the uncompressed size.
      */
     public int getSize() {
         return size;
@@ -175,7 +175,7 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
      * </p>
      *
      * @param data the data to fill the window with.
-     * @throws IllegalStateException if the stream has already started to read data
+     * @throws IllegalStateException if the stream has already started to read data.
      */
     public void prefill(final byte[] data) {
         if (writeIndex != 0) {
@@ -198,12 +198,12 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
     /**
      * Reads data from the current back-reference.
      *
-     * @param b   buffer to write data to
-     * @param off offset to start writing to
-     * @param len maximum amount of data to read
-     * @return number of bytes read, may be 0. Will never return -1 as EOF-detection is the responsibility of the subclass
-     * @throws NullPointerException      if {@code b} is null
-     * @throws IndexOutOfBoundsException if {@code off} is negative, {@code len} is negative, or {@code len} is greater than {@code b.length - off}
+     * @param b   buffer to write data to.
+     * @param off offset to start writing to.
+     * @param len maximum amount of data to read.
+     * @return number of bytes read, may be 0. Will never return -1 as EOF-detection is the responsibility of the subclass.
+     * @throws NullPointerException      if {@code b} is null.
+     * @throws IndexOutOfBoundsException if {@code off} is negative, {@code len} is negative, or {@code len} is greater than {@code b.length - off}.
      */
     protected final int readBackReference(final byte[] b, final int off, final int len) {
         final int avail = available();
@@ -229,13 +229,13 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
     /**
      * Reads data from the current literal block.
      *
-     * @param b   buffer to write data to
-     * @param off offset to start writing to
-     * @param len maximum amount of data to read
-     * @return number of bytes read, may be 0. Will never return -1 as EOF-detection is the responsibility of the subclass
-     * @throws IOException               if the underlying stream throws or signals an EOF before the amount of data promised for the block have been read
-     * @throws NullPointerException      if {@code b} is null
-     * @throws IndexOutOfBoundsException if {@code off} is negative, {@code len} is negative, or {@code len} is greater than {@code b.length - off}
+     * @param b   buffer to write data to.
+     * @param off offset to start writing to.
+     * @param len maximum amount of data to read.
+     * @return number of bytes read, may be 0. Will never return -1 as EOF-detection is the responsibility of the subclass.
+     * @throws IOException               if the underlying stream throws or signals an EOF before the amount of data promised for the block have been read.
+     * @throws NullPointerException      if {@code b} is null.
+     * @throws IndexOutOfBoundsException if {@code off} is negative, {@code len} is negative, or {@code len} is greater than {@code b.length - off}.
      */
     protected final int readLiteral(final byte[] b, final int off, final int len) throws IOException {
         final int avail = available();
@@ -249,7 +249,7 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
      * Reads a single byte from the real input stream and ensures the data is accounted for.
      *
      * @return the byte read as value between 0 and 255 or -1 if EOF has been reached.
-     * @throws IOException if the underlying stream throws
+     * @throws IOException if the underlying stream throws.
      */
     protected final int readOneByte() throws IOException {
         final int b = in.read();
@@ -269,9 +269,9 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
     /**
      * Used by subclasses to signal the next block contains a back-reference with the given coordinates.
      *
-     * @param offset the offset of the back-reference
-     * @param length the length of the back-reference
-     * @throws IllegalArgumentException if offset not bigger than 0 or bigger than the number of bytes available for back-references or if length is negative
+     * @param offset the offset of the back-reference.
+     * @param length the length of the back-reference.
+     * @throws IllegalArgumentException if offset not bigger than 0 or bigger than the number of bytes available for back-references or if length is negative.
      */
     protected final void startBackReference(final int offset, final long length) {
         if (offset <= 0 || offset > writeIndex) {
@@ -287,8 +287,8 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
     /**
      * Used by subclasses to signal the next block contains the given amount of literal data.
      *
-     * @param length the length of the block
-     * @throws IllegalArgumentException if length is negative
+     * @param length the length of the block.
+     * @throws IllegalArgumentException if length is negative.
      */
     protected final void startLiteral(final long length) {
         if (length < 0) {
