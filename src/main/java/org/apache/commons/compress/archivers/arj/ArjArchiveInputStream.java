@@ -31,7 +31,6 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.utils.ArchiveUtils;
-import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.io.EndianUtils;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.io.input.ChecksumInputStream;
@@ -396,15 +395,6 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
         }
 
         return header;
-    }
-
-    private byte[] readRange(final InputStream in, final int len) throws IOException {
-        final byte[] b = IOUtils.readRange(in, len);
-        count(b.length);
-        if (b.length < len) {
-            throw new EOFException();
-        }
-        return b;
     }
 
     private ByteArrayOutputStream readString(final InputStream dataIn) throws IOException {
