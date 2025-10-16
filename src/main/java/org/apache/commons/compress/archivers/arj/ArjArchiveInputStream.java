@@ -100,6 +100,15 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
     private static final String ENCODING_NAME = "CP437";
     private static final int ARJ_MAGIC_1 = 0x60;
     private static final int ARJ_MAGIC_2 = 0xEA;
+    /**
+     * Maximum size of the basic header, in bytes.
+     *
+     * <p>The value is taken from the reference implementation</p>
+     */
+    private static final int MAX_BASIC_HEADER_SIZE = 2600;
+    /**
+     * Minimum size of the first header (the fixed-size part of the basic header), in bytes.
+     */
     private static final int MIN_FIRST_HEADER_SIZE = 30;
 
     /**
@@ -213,8 +222,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
                 } while (first != ARJ_MAGIC_1 && second != ARJ_MAGIC_2);
                 final int basicHeaderSize = readSwappedUnsignedShort();
                 // At least two bytes are required for the null-terminated name and comment
-                // The value 2600 is taken from the reference implementation
-                if (MIN_FIRST_HEADER_SIZE + 2 <= basicHeaderSize && basicHeaderSize <= 2600) {
+                if (MIN_FIRST_HEADER_SIZE + 2 <= basicHeaderSize && basicHeaderSize <= MAX_BASIC_HEADER_SIZE) {
                     basicHeaderBytes = org.apache.commons.io.IOUtils.toByteArray(in, basicHeaderSize);
                     count(basicHeaderSize);
                     if (checkCRC32(basicHeaderBytes)) {
@@ -338,8 +346,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
             return null;
         }
         // At least two bytes are required for the null-terminated name and comment
-        // The value 2600 is taken from the reference implementation
-        if (basicHeaderSize < MIN_FIRST_HEADER_SIZE + 2 || basicHeaderSize > 2600) {
+        if (basicHeaderSize < MIN_FIRST_HEADER_SIZE + 2 || basicHeaderSize > MAX_BASIC_HEADER_SIZE) {
             throw new ArchiveException("Corrupted ARJ archive: invalid ARJ header size %,d", basicHeaderSize);
         }
         final byte[] basicHeaderBytes = org.apache.commons.io.IOUtils.toByteArray(in, basicHeaderSize);
