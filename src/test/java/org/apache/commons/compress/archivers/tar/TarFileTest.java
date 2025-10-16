@@ -26,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -225,7 +226,7 @@ class TarFileTest extends AbstractArchiveFileTest<TarArchiveEntry> {
 
     @Test
     void testParseTarWithSpecialPaxHeaders() {
-        assertThrows(ArchiveException.class, () -> TarFile.builder().setURI(getURI("COMPRESS-530-fail.tar")).get());
+        assertThrows(EOFException.class, () -> TarFile.builder().setURI(getURI("COMPRESS-530-fail.tar")).get());
     }
 
     @Test

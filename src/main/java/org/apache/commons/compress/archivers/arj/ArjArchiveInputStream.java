@@ -30,6 +30,7 @@ import org.apache.commons.compress.archivers.AbstractArchiveBuilder;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
+import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.io.EndianUtils;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.io.input.ChecksumInputStream;
@@ -122,6 +123,17 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
         return length >= 2 && (0xff & signature[0]) == ARJ_MAGIC_1 && (0xff & signature[1]) == ARJ_MAGIC_2;
     }
 
+    private static void readExtraData(final int firstHeaderSize, final InputStream firstHeader, final LocalFileHeader localFileHeader) throws IOException {
+        if (firstHeaderSize >= 33) {
+            localFileHeader.extendedFilePosition = EndianUtils.readSwappedInteger(firstHeader);
+            if (firstHeaderSize >= 45) {
+                localFileHeader.dateTimeAccessed = EndianUtils.readSwappedInteger(firstHeader);
+                localFileHeader.dateTimeCreated = EndianUtils.readSwappedInteger(firstHeader);
+                localFileHeader.originalSizeEvenForVolumes = EndianUtils.readSwappedInteger(firstHeader);
+            }
+        }
+    }
+
     private static int readUnsignedByte(InputStream in) throws IOException {
         final int value = in.read();
         if (value == -1) {
@@ -135,45 +147,41 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
     private InputStream currentInputStream;
 
     private ArjArchiveInputStream(final Builder builder) throws IOException {
-        this(builder.getInputStream(), builder);
+        super(builder);
+        mainHeader = readMainHeader(builder.selfExtracting);
+        if ((mainHeader.arjFlags & MainHeader.Flags.GARBLED) != 0) {
+            throw new ArchiveException("Encrypted ARJ files are unsupported");
+        }
+        if ((mainHeader.arjFlags & MainHeader.Flags.VOLUME) != 0) {
+            throw new ArchiveException("Multi-volume ARJ files are unsupported");
+        }
     }
 
     /**
      * Constructs the ArjInputStream, taking ownership of the inputStream that is passed in, and using the CP437 character encoding.
      *
+     * <p>Since 1.29.0: throws {@link IOException}.</p>
+     *
      * @param inputStream the underlying stream, whose ownership is taken
-     * @throws ArchiveException if an exception occurs while reading
+     * @throws IOException if an exception occurs while reading
      */
-    public ArjArchiveInputStream(final InputStream inputStream) throws ArchiveException {
-        this(inputStream, builder());
-    }
-
-    private ArjArchiveInputStream(final InputStream inputStream, final Builder builder) throws ArchiveException {
-        super(inputStream, builder);
-        try {
-            mainHeader = readMainHeader(builder.selfExtracting);
-            if ((mainHeader.arjFlags & MainHeader.Flags.GARBLED) != 0) {
-                throw new ArchiveException("Encrypted ARJ files are unsupported");
-            }
-            if ((mainHeader.arjFlags & MainHeader.Flags.VOLUME) != 0) {
-                throw new ArchiveException("Multi-volume ARJ files are unsupported");
-            }
-        } catch (final IOException e) {
-            throw e instanceof ArchiveException ? (ArchiveException) e : new ArchiveException(e.getMessage(), (Throwable) e);
-        }
+    public ArjArchiveInputStream(final InputStream inputStream) throws IOException {
+        this(builder().setInputStream(inputStream));
     }
 
     /**
      * Constructs the ArjInputStream, taking ownership of the inputStream that is passed in.
      *
+     * <p>Since 1.29.0: throws {@link IOException}.</p>
+     *
      * @param inputStream the underlying stream, whose ownership is taken
      * @param charsetName the charset used for file names and comments in the archive. May be {@code null} to use the platform default.
-     * @throws ArchiveException if an exception occurs while reading
+     * @throws IOException if an exception occurs while reading
      * @deprecated Since 1.29.0, use {@link #builder()}.
      */
     @Deprecated
-    public ArjArchiveInputStream(final InputStream inputStream, final String charsetName) throws ArchiveException {
-        this(inputStream, builder().setCharset(charsetName));
+    public ArjArchiveInputStream(final InputStream inputStream, final String charsetName) throws IOException {
+        this(builder().setInputStream(inputStream).setCharset(charsetName));
     }
 
     @Override
@@ -206,24 +214,28 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
      */
     private byte[] findMainHeader() throws IOException {
         byte[] basicHeaderBytes;
-        while (true) {
-            int first;
-            int second = readUnsignedByte();
-            do {
-                first = second;
-                second = readUnsignedByte();
-            } while (first != ARJ_MAGIC_1 && second != ARJ_MAGIC_2);
-            final int basicHeaderSize = readSwappedUnsignedShort();
-            // At least two bytes are required for the null-terminated name and comment
-            // The value 2600 is taken from the reference implementation
-            if (MIN_FIRST_HEADER_SIZE + 2 <= basicHeaderSize && basicHeaderSize <= 2600) {
-                basicHeaderBytes = org.apache.commons.io.IOUtils.toByteArray(in, basicHeaderSize);
-                count(basicHeaderSize);
-                if (checkCRC32(basicHeaderBytes)) {
-                    return basicHeaderBytes;
+        try {
+            while (true) {
+                int first;
+                int second = readUnsignedByte();
+                do {
+                    first = second;
+                    second = readUnsignedByte();
+                } while (first != ARJ_MAGIC_1 && second != ARJ_MAGIC_2);
+                final int basicHeaderSize = readSwappedUnsignedShort();
+                // At least two bytes are required for the null-terminated name and comment
+                // The value 2600 is taken from the reference implementation
+                if (MIN_FIRST_HEADER_SIZE + 2 <= basicHeaderSize && basicHeaderSize <= 2600) {
+                    basicHeaderBytes = org.apache.commons.io.IOUtils.toByteArray(in, basicHeaderSize);
+                    count(basicHeaderSize);
+                    if (checkCRC32(basicHeaderBytes)) {
+                        return basicHeaderBytes;
+                    }
                 }
+                // CRC32 failed, continue scanning
             }
-            // CRC32 failed, continue scanning
+        } catch (EOFException e) {
+            throw new ArchiveException("Corrupted ARJ archive: unable to find valid main header");
         }
     }
 
@@ -308,6 +320,23 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
         return currentInputStream.read(b, off, len);
     }
 
+    private String readComment(final InputStream dataIn) throws IOException {
+        return new String(readString(dataIn).toByteArray(), getCharset());
+    }
+
+    private String readEntryName(final InputStream dataIn) throws IOException {
+        final ByteArrayOutputStream buffer = readString(dataIn);
+        ArchiveUtils.checkEntryNameLength(buffer.size(), getMaxEntryNameLength(), "ARJ");
+        return new String(buffer.toByteArray(), getCharset());
+    }
+
+    /**
+     * Scans for the next valid ARJ header.
+     *
+     * @return The header bytes, or {@code null} if end of archive.
+     * @throws EOFException If the end of the stream is reached before a valid header is found.
+     * @throws IOException If an I/O error occurs.
+     */
     private byte[] readHeader() throws IOException {
         final int first = readUnsignedByte();
         final int second = readUnsignedByte();
@@ -372,8 +401,8 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
                 }
             }
 
-            localFileHeader.name = readString(basicHeader);
-            localFileHeader.comment = readString(basicHeader);
+            localFileHeader.name = readEntryName(basicHeader);
+            localFileHeader.comment = readComment(basicHeader);
         }
 
         final ArrayList<byte[]> extendedHeaders = new ArrayList<>();
@@ -392,12 +421,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
     }
 
     private MainHeader readMainHeader(final boolean selfExtracting) throws IOException {
-        final byte[] basicHeaderBytes;
-        try {
-            basicHeaderBytes = selfExtracting ? findMainHeader() : readHeader();
-        } catch (final EOFException e) {
-            throw new ArchiveException("Archive ends without any headers", (Throwable) e);
-        }
+        final byte[] basicHeaderBytes = selfExtracting ? findMainHeader() : readHeader();
         final MainHeader header = new MainHeader();
         try (InputStream basicHeader = new ByteArrayInputStream(basicHeaderBytes)) {
 
@@ -430,8 +454,8 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
                 }
             }
 
-            header.name = readString(basicHeader);
-            header.comment = readString(basicHeader);
+            header.name = readEntryName(basicHeader);
+            header.comment = readComment(basicHeader);
         }
 
         final int extendedHeaderSize = readSwappedUnsignedShort();
@@ -446,13 +470,13 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
         return header;
     }
 
-    private String readString(final InputStream dataIn) throws IOException {
+    private ByteArrayOutputStream readString(final InputStream dataIn) throws IOException {
         try (ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
             int nextByte;
             while ((nextByte = readUnsignedByte(dataIn)) != 0) {
                 buffer.write(nextByte);
             }
-            return buffer.toString(getCharset().name());
+            return buffer;
         }
     }
 

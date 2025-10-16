@@ -22,7 +22,6 @@ package org.apache.commons.compress.archivers.arj;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -431,9 +430,7 @@ class ArjArchiveInputStreamTest extends AbstractTest {
                 .setURI(getURI("bla.arj"))
                 .setMaxCount(maxCount)
                 .get()) {
-            final ArchiveException ex = assertThrows(ArchiveException.class, () -> ArjArchiveInputStream.builder().setInputStream(input).get());
-            final Throwable cause = ex.getCause();
-            assertInstanceOf(EOFException.class, cause, "Expected EOFException as cause of ArchiveException.");
+            assertThrows(EOFException.class, () -> ArjArchiveInputStream.builder().setInputStream(input).get());
         }
     }
 }

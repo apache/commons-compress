@@ -49,11 +49,6 @@ public final class IOUtils {
     public static final LinkOption[] EMPTY_LINK_OPTIONS = {};
 
     /**
-     * The {@code SOFT_MAX_ARRAY_LENGTH} constant from Java's internal ArraySupport class.
-     */
-    private static final int SOFT_MAX_ARRAY_LENGTH = Integer.MAX_VALUE - 8;
-
-    /**
      * Closes the given Closeable and swallows any IOException that may occur.
      *
      * @param c Closeable to close, can be null.
@@ -235,7 +230,7 @@ public final class IOUtils {
      */
     public static byte[] readRange(final InputStream input, final int length) throws IOException {
         final ByteArrayOutputStream output = new ByteArrayOutputStream();
-        org.apache.commons.io.IOUtils.copyLarge(input, output, 0, MemoryLimitException.checkBytes(length, SOFT_MAX_ARRAY_LENGTH));
+        org.apache.commons.io.IOUtils.copyLarge(input, output, 0, MemoryLimitException.checkBytes(length, org.apache.commons.io.IOUtils.SOFT_MAX_ARRAY_LENGTH));
         return output.toByteArray();
     }
 
