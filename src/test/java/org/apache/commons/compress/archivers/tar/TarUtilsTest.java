@@ -49,6 +49,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class TarUtilsTest extends AbstractTest {
 
@@ -116,12 +117,6 @@ class TarUtilsTest extends AbstractTest {
                 Arguments.of("POSIX (padded)", posixLongName, paddedUtf8Bytes(posixLongName)));
     }
 
-    static Stream<Arguments> testReadLongNameThrowsOnTruncation() {
-        return Stream.of(
-                Arguments.of(Integer.MAX_VALUE, "truncated long name"),
-                Arguments.of(Long.MAX_VALUE, "invalid long name"));
-    }
-
     private static byte[] utf8Bytes(final String s) {
         return s.getBytes(UTF_8);
     }
@@ -152,6 +147,11 @@ class TarUtilsTest extends AbstractTest {
         TarUtils.formatLongOctalOrBinaryBytes(value, buffer, 0, buffer.length);
         final long parseValue = TarUtils.parseOctalOrBinary(buffer, 0, buffer.length);
         assertEquals(value, parseValue);
+    }
+
+    private static Map<String, String> parsePaxHeaders(final byte[] data, final List<TarArchiveStructSparse> sparseHeaders,
+            final Map<String, String> globalPaxHeaders) throws IOException {
+        return TarUtils.parsePaxHeaders(new ByteArrayInputStream(data), globalPaxHeaders, data.length, Short.MAX_VALUE, sparseHeaders);
     }
 
     @Test
@@ -399,8 +399,7 @@ class TarUtilsTest extends AbstractTest {
     @Test
     void testPaxHeaderEntryWithEmptyValueRemovesKey() throws Exception {
         final byte[] bytes = "11 foo=bar\n7 foo=\n".getBytes(UTF_8);
-        final Map<String, String> headers =
-                TarUtils.parsePaxHeaders(new ByteArrayInputStream(bytes), emptyList(), emptyMap(), bytes.length);
+        final Map<String, String> headers = parsePaxHeaders(bytes, emptyList(), emptyMap());
         assertEquals(0, headers.size());
     }
 
@@ -414,7 +413,7 @@ class TarUtilsTest extends AbstractTest {
         Arrays.fill(dataWithGarbage, data.length, dataWithGarbage.length, (byte) 0xFF);
 
         try (InputStream in = new ByteArrayInputStream(dataWithGarbage)) {
-            final String actualName = TarUtils.readLongName(in, ZipEncodingHelper.getZipEncoding(UTF_8), entry);
+            final String actualName = TarUtils.readLongName(in, ZipEncodingHelper.getZipEncoding(UTF_8), Integer.MAX_VALUE, entry);
             assertEquals(
                     expectedName,
                     actualName,
@@ -423,20 +422,15 @@ class TarUtilsTest extends AbstractTest {
     }
 
     @ParameterizedTest(name = "readLongName of {0} bytes throws ArchiveException")
-    @MethodSource
-    void testReadLongNameThrowsOnTruncation(final long size, final CharSequence expectedMessage) throws IOException {
+    @ValueSource(longs = { Integer.MAX_VALUE, Long.MAX_VALUE })
+    void testReadLongNameThrowsOnTruncation(final long size) throws IOException {
         final TarArchiveEntry entry = new TarArchiveEntry("test");
         entry.setSize(size); // absurdly large so any finite stream truncates
         try (InputStream in = new NullInputStream()) {
-            final ArchiveException ex = assertThrows(
-                    ArchiveException.class,
-                    () -> TarUtils.readLongName(in, TarUtils.DEFAULT_ENCODING, entry),
-                    "Expected ArchiveException due to truncated long name, but no exception was thrown");
+            final IOException ex = assertThrows(IOException.class, () -> TarUtils.readLongName(in, TarUtils.DEFAULT_ENCODING, Integer.MAX_VALUE, entry),
+                    "Expected IOException due to out of range size for Java byte arrays");
             final String actualMessage = StringUtils.toRootLowerCase(ex.getMessage());
             assertNotNull(actualMessage, "Exception message should not be null");
-            assertTrue(
-                    actualMessage.contains(expectedMessage),
-                    () -> "Expected exception message to contain '" + expectedMessage + "', but got: " + actualMessage);
             assertTrue(
                     actualMessage.contains(String.format("%,d", size)),
                     () -> "Expected exception message to mention '" + size + "', but got: " + actualMessage);
@@ -462,8 +456,7 @@ class TarUtilsTest extends AbstractTest {
         final String line = "11 path=" + ae + "\n";
         final byte[] bytes = line.getBytes(UTF_8);
         assertEquals(11, bytes.length);
-        final Map<String, String> headers =
-                TarUtils.parsePaxHeaders(new ByteArrayInputStream(bytes), emptyList(), emptyMap(), 11);
+        final Map<String, String> headers = parsePaxHeaders(bytes, emptyList(), emptyMap());
         assertEquals(1, headers.size());
         assertEquals(ae, headers.get("path"));
     }
@@ -472,7 +465,7 @@ class TarUtilsTest extends AbstractTest {
     void testReadPax00SparseHeader() throws Exception {
         final byte[] header = "23 GNU.sparse.offset=0\n26 GNU.sparse.numbytes=10\n".getBytes(UTF_8);
         final List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
-        TarUtils.parsePaxHeaders(new ByteArrayInputStream(header), sparseHeaders, emptyMap(), header.length);
+        parsePaxHeaders(header, sparseHeaders, emptyMap());
         assertEquals(1, sparseHeaders.size());
         assertEquals(0, sparseHeaders.get(0).getOffset());
         assertEquals(10, sparseHeaders.get(0).getNumbytes());
@@ -482,7 +475,7 @@ class TarUtilsTest extends AbstractTest {
     void testReadPax00SparseHeaderMakesNumbytesOptional() throws Exception {
         final byte[] header = "23 GNU.sparse.offset=0\n24 GNU.sparse.offset=10\n".getBytes(UTF_8);
         final List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
-        TarUtils.parsePaxHeaders(new ByteArrayInputStream(header), sparseHeaders, emptyMap(), header.length);
+        parsePaxHeaders(header, sparseHeaders, emptyMap());
         assertEquals(2, sparseHeaders.size());
         assertEquals(0, sparseHeaders.get(0).getOffset());
         assertEquals(0, sparseHeaders.get(0).getNumbytes());
@@ -517,14 +510,13 @@ class TarUtilsTest extends AbstractTest {
         final byte[] bytes = header.getBytes(UTF_8);
         assertThrows(
                 ArchiveException.class,
-                () -> TarUtils.parsePaxHeaders(new ByteArrayInputStream(bytes), emptyList(), emptyMap(), bytes.length));
+                () -> parsePaxHeaders(bytes, emptyList(), emptyMap()));
     }
 
     @Test
     void testReadPaxHeaderWithEmbeddedNewline() throws Exception {
         final byte[] header = "28 comment=line1\nline2\nand3\n".getBytes(UTF_8);
-        final Map<String, String> headers =
-                TarUtils.parsePaxHeaders(new ByteArrayInputStream(header), emptyList(), emptyMap(), header.length);
+        final Map<String, String> headers = parsePaxHeaders(header, emptyList(), emptyMap());
         assertEquals(1, headers.size());
         assertEquals("line1\nline2\nand3", headers.get("comment"));
     }
@@ -532,8 +524,7 @@ class TarUtilsTest extends AbstractTest {
     @Test
     void testReadSimplePaxHeader() throws Exception {
         final byte[] header = "30 atime=1321711775.972059463\n".getBytes(UTF_8);
-        final Map<String, String> headers =
-                TarUtils.parsePaxHeaders(new ByteArrayInputStream(header), emptyList(), emptyMap(), header.length);
+        final Map<String, String> headers = parsePaxHeaders(header, emptyList(), emptyMap());
         assertEquals(1, headers.size());
         assertEquals("1321711775.972059463", headers.get("atime"));
     }
@@ -649,8 +640,7 @@ class TarUtilsTest extends AbstractTest {
     @Test
     void testSecondEntryWinsWhenPaxHeaderContainsDuplicateKey() throws Exception {
         final byte[] header = "11 foo=bar\n11 foo=baz\n".getBytes(UTF_8);
-        final Map<String, String> headers =
-                TarUtils.parsePaxHeaders(new ByteArrayInputStream(header), emptyList(), emptyMap(), header.length);
+        final Map<String, String> headers = parsePaxHeaders(header, emptyList(), emptyMap());
         assertEquals(1, headers.size());
         assertEquals("baz", headers.get("foo"));
     }

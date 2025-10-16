@@ -25,6 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
+import org.apache.commons.compress.MemoryLimitException;
 import org.apache.commons.compress.archivers.AbstractArchiveBuilder;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
@@ -169,19 +170,20 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
 
     private ArArchiveInputStream(final Builder builder) throws IOException {
         super(builder);
+        // Fail-fast if there is no signature
+        skipGlobalSignature();
     }
 
     /**
      * Constructs an Ar input stream with the referenced stream
      *
+     * <p>Since 1.29.0: throws {@link IOException}.</p>
+     *
      * @param inputStream the ar input stream
+     * @throws IOException if an I/O error has occurred.
      */
-    public ArArchiveInputStream(final InputStream inputStream) {
-        this(inputStream, builder());
-    }
-
-    private ArArchiveInputStream(final InputStream inputStream, final Builder builder) {
-        super(inputStream, builder);
+    public ArArchiveInputStream(final InputStream inputStream) throws IOException {
+        this(builder().setInputStream(inputStream));
     }
 
     private int asInt(final byte[] byteArray, final int offset, final int len, final boolean treatBlankAsZero) throws IOException {
@@ -245,7 +247,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
      * @since 1.3
      */
     private String getBSDLongName(final String bsdLongName) throws IOException {
-        final int nameLen = ParsingUtils.parseIntValue(bsdLongName.substring(BSD_LONGNAME_PREFIX_LEN));
+        final int nameLen = checkEntryNameLength(ParsingUtils.parseIntValue(bsdLongName.substring(BSD_LONGNAME_PREFIX_LEN)));
         final byte[] name = IOUtils.readRange(in, nameLen);
         final int read = name.length;
         count(read);
@@ -277,12 +279,16 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
                 }
                 // Check there is a something to return, otherwise break out of the loop
                 if (i > offset) {
-                    return ArchiveUtils.toAsciiString(namebuffer, offset, i - offset);
+                    return ArchiveUtils.toAsciiString(namebuffer, offset, checkEntryNameLength(i - offset));
                 }
                 break;
             }
         }
         throw new ArchiveException("Failed to read GNU long file name at offset " + offset);
+    }
+
+    private int checkEntryNameLength(final int nameLength) throws ArchiveException, MemoryLimitException {
+        return ArchiveUtils.checkEntryNameLength(nameLength, getMaxEntryNameLength(), "AR");
     }
 
     /**
@@ -307,8 +313,6 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
      */
     @Override
     public ArArchiveEntry getNextEntry() throws IOException {
-        skipGlobalSignature();
-
         // Handle special GNU ar entries
         boolean foundGNUStringTable = false;
         do {
@@ -485,20 +489,17 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
      * @throws IOException if an I/O error occurs while reading the stream or if the signature is invalid.
      */
     private void skipGlobalSignature() throws IOException {
-        final long offset = getBytesRead();
-        if (offset == 0) {
-            final byte[] expectedMagic = ArArchiveEntry.HEADER_BYTES;
-            final byte[] actualMagic = IOUtils.readRange(in, expectedMagic.length);
-            count(actualMagic.length);
-            if (expectedMagic.length != actualMagic.length) {
-                throw new EOFException(String.format(
-                        "Premature end of ar archive: incomplete global header (expected %d bytes, got %d).",
-                        expectedMagic.length, actualMagic.length));
-            }
-            if (!Arrays.equals(expectedMagic, actualMagic)) {
-                throw new ArchiveException(
-                        "Invalid global ar archive header: " + ArchiveUtils.toAsciiString(actualMagic));
-            }
+        final byte[] expectedMagic = ArArchiveEntry.HEADER_BYTES;
+        final byte[] actualMagic = IOUtils.readRange(in, expectedMagic.length);
+        count(actualMagic.length);
+        if (expectedMagic.length != actualMagic.length) {
+            throw new EOFException(String.format(
+                    "Premature end of ar archive: incomplete global header (expected %d bytes, got %d).",
+                    expectedMagic.length, actualMagic.length));
+        }
+        if (!Arrays.equals(expectedMagic, actualMagic)) {
+            throw new ArchiveException(
+                    "Invalid global ar archive header: " + ArchiveUtils.toAsciiString(actualMagic));
         }
     }
 

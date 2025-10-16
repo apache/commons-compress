@@ -99,15 +99,6 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
         }
     }
 
-    /**
-     * Like {@link #size()} but never throws {@link ClosedChannelException}.
-     *
-     * @return See {@link #size()}.
-     */
-    public long getSize() {
-        return size;
-    }
-
     @Override
     public boolean isOpen() {
         return !closed.get();

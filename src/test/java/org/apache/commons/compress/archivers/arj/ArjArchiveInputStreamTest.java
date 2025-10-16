@@ -25,8 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.EOFException;
 import java.io.IOException;
@@ -89,15 +87,8 @@ class ArjArchiveInputStreamTest extends AbstractTest {
 
     @Test
     void testFirstHeaderSizeSetToZero() {
-        final ArchiveException ex = assertThrows(ArchiveException.class, () -> {
-            try (ArjArchiveInputStream archive = ArjArchiveInputStream.builder()
-                    .setURI(getURI("org/apache/commons/compress/arj/zero_sized_headers-fail.arj"))
-                    .get()) {
-                // Do nothing, ArchiveException already thrown
-                fail("ArchiveException not thrown.");
-            }
-        });
-        assertTrue(ex.getCause() instanceof IOException);
+        assertThrows(IOException.class,
+                () -> ArjArchiveInputStream.builder().setURI(getURI("org/apache/commons/compress/arj/zero_sized_headers-fail.arj")).get().close());
     }
 
     @Test
