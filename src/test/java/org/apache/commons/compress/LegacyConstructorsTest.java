@@ -65,7 +65,7 @@ class LegacyConstructorsTest extends AbstractTest {
         return (InputStream) readField(is, "in", true);
     }
 
-    static Stream<Arguments> testCpioConstructors() {
+    static Stream<Arguments> testCpioConstructors() throws IOException {
         final InputStream inputStream = mock(InputStream.class);
         return Stream.of(
                 Arguments.of(new CpioArchiveInputStream(inputStream, 1024), inputStream, "US-ASCII", 1024),
@@ -73,7 +73,7 @@ class LegacyConstructorsTest extends AbstractTest {
                 Arguments.of(new CpioArchiveInputStream(inputStream, "UTF-8"), inputStream, "UTF-8", 512));
     }
 
-    static Stream<Arguments> testTarConstructors() {
+    static Stream<Arguments> testTarConstructors() throws IOException {
         final InputStream inputStream = mock(InputStream.class);
         final String defaultEncoding = Charset.defaultCharset().name();
         final String otherEncoding = "UTF-8".equals(defaultEncoding) ? "US-ASCII" : "UTF-8";
@@ -87,7 +87,7 @@ class LegacyConstructorsTest extends AbstractTest {
                 Arguments.of(new TarArchiveInputStream(inputStream, otherEncoding), inputStream, 10240, 512, otherEncoding, false));
     }
 
-    static Stream<Arguments> testZipConstructors() {
+    static Stream<Arguments> testZipConstructors() throws IOException {
         final InputStream inputStream = mock(InputStream.class);
         return Stream.of(
                 Arguments.of(new ZipArchiveInputStream(inputStream, "US-ASCII"), inputStream, "US-ASCII", true, false, false),
@@ -101,7 +101,7 @@ class LegacyConstructorsTest extends AbstractTest {
         try (InputStream inputStream = Files.newInputStream(getPath("bla.arj"));
                 ArjArchiveInputStream archiveInputStream = new ArjArchiveInputStream(inputStream, "US-ASCII")) {
             // Arj wraps the input stream in a DataInputStream
-            assertEquals(inputStream, getNestedInputStream(getNestedInputStream(archiveInputStream)));
+            assertEquals(inputStream, getNestedInputStream(archiveInputStream));
             assertEquals(US_ASCII, archiveInputStream.getCharset());
         }
     }

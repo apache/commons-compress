@@ -57,6 +57,7 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.deflate64.Deflate64CompressorInputStream;
 import org.apache.commons.compress.compressors.xz.XZCompressorInputStream;
 import org.apache.commons.compress.compressors.zstandard.ZstdCompressorInputStream;
+import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.BoundedArchiveInputStream;
 import org.apache.commons.compress.utils.BoundedSeekableByteChannelInputStream;
 import org.apache.commons.compress.utils.IOUtils;
@@ -731,6 +732,8 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
 
     private long firstLocalFileHeaderOffset;
 
+    private final int maxEntryNameLength;
+
     private ZipFile(final Builder builder) throws IOException {
         SeekableByteChannel archive;
         try {
@@ -746,13 +749,16 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
             this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
             this.useUnicodeExtraFields = builder.useUnicodeExtraFields;
             this.zstdInputStreamFactory = builder.zstdInputStreamFactory;
+            this.maxEntryNameLength = builder.getMaxEntryNameLength();
             final Map<ZipArchiveEntry, NameAndComment> entriesWithoutUTF8Flag = populateFromCentralDirectory();
             if (!builder.ignoreLocalFileHeader) {
                 resolveLocalFileHeaderData(entriesWithoutUTF8Flag);
             }
             fillNameMap();
         } catch (final IOException e) {
-            final ArchiveException archiveException = new ArchiveException("Error reading Zip content from " + builder.getName(), (Throwable) e);
+            final ArchiveException archiveException = e instanceof ArchiveException
+                    ? (ArchiveException) e
+                    : new ArchiveException("Error reading Zip content from " + builder.getName(), (Throwable) e);
             this.closed = true;
             try {
                 this.archive.close();
@@ -1511,7 +1517,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
         ze.setSize(size);
         off += ZipConstants.WORD;
 
-        final int fileNameLen = ZipShort.getValue(cfhBuf, off);
+        final int fileNameLen = ArchiveUtils.checkEntryNameLength(ZipShort.getValue(cfhBuf, off), maxEntryNameLength, "ZIP");
         off += ZipConstants.SHORT;
         if (fileNameLen < 0) {
             throw new ArchiveException("Broken archive, entry with negative fileNameLen");

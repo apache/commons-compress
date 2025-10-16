@@ -95,26 +95,19 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
     /** The number of bytes read in this stream. */
     private long bytesRead;
 
-    private Charset charset;
+    private final Charset charset;
 
-    /**
-     * Constructs a new instance.
-     */
-    @SuppressWarnings("resource")
-    public ArchiveInputStream() {
-        this(new NullInputStream(), Charset.defaultCharset().name());
-    }
+    private final int maxEntryNameLength;
 
     /**
      * Constructs a new instance.
      *
-     * @param inputStream the underlying input stream, or {@code null} if this instance is to be created without an underlying stream.
-     * @param charsetName charset name.
-     * @since 1.26.0
+     * @deprecated Since 1.29.0, use {@link #ArchiveInputStream(AbstractArchiveBuilder)} instead.
      */
-    protected ArchiveInputStream(final InputStream inputStream, final String charsetName) {
-        super(inputStream == null ? new NullInputStream() : inputStream);
-        this.charset = Charsets.toCharset(charsetName);
+    @Deprecated
+    @SuppressWarnings("resource")
+    public ArchiveInputStream() {
+        this(new NullInputStream(), Charset.defaultCharset().name());
     }
 
     /**
@@ -124,24 +117,25 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
      * @throws IOException Thrown if an I/O error occurs.
      * @since 1.29.0
      */
-    protected ArchiveInputStream(AbstractArchiveBuilder<?, ?> builder) throws IOException {
-        this(builder.getInputStream(), builder);
+    protected ArchiveInputStream(final AbstractArchiveBuilder<?, ?> builder) throws IOException {
+        super(builder.getInputStream());
+        this.charset = builder.getCharset();
+        this.maxEntryNameLength = builder.getMaxEntryNameLength();
     }
 
     /**
-     * Constructs a new instance from a builder and an input stream.
+     * Constructs a new instance.
      *
-     * <p><strong>Note:</strong> This overload exists to support legacy constructors that did not declare
-     * {@link IOException}. For new constructors, prefer
-     * {@link #ArchiveInputStream(AbstractArchiveBuilder)} and propagate I/O errors to callers.</p>
-     *
-     * @param inputStream The underlying input stream, or {@code null} if this instance is to be created without an underlying stream.
-     * @param builder The builder.
-     * @since 1.29.0
+     * @param inputStream the underlying input stream, or {@code null} if this instance is to be created without an underlying stream.
+     * @param charsetName charset name.
+     * @since 1.26.0
+     * @deprecated Since 1.29.0, use {@link #ArchiveInputStream(AbstractArchiveBuilder)} instead.
      */
-    protected ArchiveInputStream(final InputStream inputStream, final AbstractArchiveBuilder<?, ?> builder) {
-        super(inputStream);
-        this.charset = builder.getCharset();
+    @Deprecated
+    protected ArchiveInputStream(final InputStream inputStream, final String charsetName) {
+        super(inputStream == null ? new NullInputStream() : inputStream);
+        this.charset = Charsets.toCharset(charsetName);
+        this.maxEntryNameLength = Short.MAX_VALUE;
     }
 
     /**
@@ -224,6 +218,16 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
     @Deprecated
     public int getCount() {
         return (int) bytesRead;
+    }
+
+    /**
+     * Gets the maximum length of an archive entry name.
+     *
+     * @return The maximum length of an archive entry name.
+     * @since 1.29.0
+     */
+    protected int getMaxEntryNameLength() {
+        return maxEntryNameLength;
     }
 
     /**

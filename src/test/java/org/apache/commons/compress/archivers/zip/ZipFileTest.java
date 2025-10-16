@@ -66,6 +66,7 @@ import org.apache.commons.io.function.IORunnable;
 import org.apache.commons.lang3.ArrayFill;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.SystemUtils;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.Assume;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assumptions;
@@ -500,7 +501,8 @@ class ZipFileTest extends AbstractArchiveFileTest<ZipArchiveEntry> {
 
             }
 
-            try (ZipFile zf = ZipFile.builder().setByteArray(Arrays.copyOfRange(zipContent.array(), 0, (int) zipContent.getSize())).get()) {
+            try (ZipFile zf = ZipFile.builder().setByteArray(Arrays.copyOfRange(zipContent.array(), 0, (int) FieldUtils.readDeclaredField(zipContent, "size",
+                    true))).get()) {
                 final ZipArchiveEntry inflatedEntry = zf.getEntry("inflated.txt");
                 final ResourceAlignmentExtraField inflatedAlignmentEx = (ResourceAlignmentExtraField) inflatedEntry
                         .getExtraField(ResourceAlignmentExtraField.ID);
