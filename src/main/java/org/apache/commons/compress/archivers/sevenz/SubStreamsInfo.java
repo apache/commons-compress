@@ -54,7 +54,9 @@ final class SubStreamsInfo {
             throw new CompressException("Cannot create allocation request for a SubStreamsInfo of totalUnpackStreams %,d, maxMemoryLimitKiB %,d: %s",
                     totalUnpackStreams, maxMemoryLimitKiB, e);
         }
-        MemoryLimitException.checkKiB(SevenZFile.bytesToKiB(alloc), maxMemoryLimitKiB);
+        // Avoid false positives.
+        // Not a reliable check in old VMs or in low memory VMs.
+        // MemoryLimitException.checkKiB(SevenZFile.bytesToKiB(alloc), maxMemoryLimitKiB);
         this.hasCrc = new BitSet(totalUnpackStreams);
         this.crcs = new long[totalUnpackStreams];
         this.unpackSizes = new long[totalUnpackStreams];
