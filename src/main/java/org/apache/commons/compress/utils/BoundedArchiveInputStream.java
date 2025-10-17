@@ -78,15 +78,9 @@ public abstract class BoundedArchiveInputStream extends InputStream {
         if (loc >= end) {
             return -1;
         }
-        final long maxLen = Math.min(len, end - loc);
-        if (maxLen <= 0) {
-            return 0;
-        }
-        if (off < 0 || off > b.length || maxLen > b.length - off) {
-            throw new IndexOutOfBoundsException("offset or len are out of bounds");
-        }
-
-        final ByteBuffer buf = ByteBuffer.wrap(b, off, (int) maxLen);
+        // Both len and end - loc are guaranteed to be > 0 here and at least len is <= Integer.MAX_VALUE.
+        final int maxLen = (int) Math.min(len, end - loc);
+        final ByteBuffer buf = ByteBuffer.wrap(b, off, maxLen);
         final int ret = read(loc, buf);
         if (ret > 0) {
             loc += ret;
@@ -95,12 +89,15 @@ public abstract class BoundedArchiveInputStream extends InputStream {
     }
 
     /**
-     * Reads content of the stream into a {@link ByteBuffer}.
+     * Reads bytes from this stream into the given {@link ByteBuffer}, starting at the specified position.
      *
-     * @param pos position to start the read.
-     * @param buf buffer to add the read content.
-     * @return number of read bytes.
-     * @throws IOException if I/O fails.
+     * <p>The caller is responsible for ensuring that the requested range
+     * {@code [pos, pos + buf.remaining())} lies within the valid bounds of the stream.</p>
+     *
+     * @param pos the position within the stream at which to begin reading
+     * @param buf the buffer into which bytes are read; bytes are written starting at the buffer’s current position
+     * @return the number of bytes read into the buffer
+     * @throws IOException if an I/O error occurs while reading
      */
     protected abstract int read(long pos, ByteBuffer buf) throws IOException;
 }
