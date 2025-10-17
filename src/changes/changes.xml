@@ -57,6 +57,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Don't loose precision while reading folders from a SevenZFile.</action>
       <action type="fix" dev="ggregory" due-to="Roel van Dijk, Gary Gregory">Improve some exception messages in TarUtils and TarArchiveEntry.</action>
       <action type="fix" dev="pkarwasz" due-to="Piotr P. Karwasz">SevenZFile now enforces the same folder and coder limits as the CPP implementation.</action>
+      <action type="fix" dev="pkarwasz" due-to="Piotr P. Karwasz">Refactor unsigned number parsing and header validation in SevenZFile.</action>
       <!-- FIX bzip2 -->      
       <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">BZip2CompressorInputStream now throw CompressorException (a subclass of IOException) for invalid or corrupted data, providing more specific error reporting.</action>
       <action type="fix" dev="pkarwasz" due-to="Tyler Nighswander, Piotr P. Karwasz">BZip2 input streams treat Huffman codes longer than 20 bits as corrupted data, matching the behavior of the reference implementation.</action>

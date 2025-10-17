@@ -29,7 +29,9 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -66,6 +68,7 @@ import org.apache.commons.io.input.ChecksumInputStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 class SevenZFileTest extends AbstractArchiveFileTest<SevenZArchiveEntry> {
@@ -121,6 +124,63 @@ class SevenZFileTest extends AbstractArchiveFileTest<SevenZArchiveEntry> {
                     final Coder coder = new Coder(new byte[]{0x03}, 2, 1, null);
                     writeFolder(buf, new Coder[]{ coder, coder }, false, false, false, true);
                 }
+        );
+    }
+
+    static Stream<byte[]> testReadRealUint64_Invalid() {
+        final byte m = (byte) 0xff;
+        return Stream.of(
+                new byte[] { (byte) 0b11111111, 0, 0, 0, 0, 0, 0, (byte) 0x80 },
+                new byte[] { (byte) 0b11111111, m, m, m, m, m, m, m }
+        );
+    }
+
+    static Stream<Arguments> testReadRealUint64_Valid() {
+        final byte m = (byte) 0xff;
+        return Stream.of(
+                Arguments.of(new byte[] { 0, 1, 2, 3, 4, 5, 6, 7 }, 0x0706_0504_0302_0100L),
+                Arguments.of(new byte[] { m, m, m, m, m, m, m, Byte.MAX_VALUE }, 0x7FFF_FFFF_FFFF_FFFFL)
+        );
+    }
+
+    static Stream<Arguments> testReadUint32_Valid() {
+        final byte m = (byte) 0xff;
+        return Stream.of(
+                Arguments.of(new byte[] { 0, 1, 2, 3 }, 0x0302_0100L),
+                Arguments.of(new byte[] { m, m, m, Byte.MAX_VALUE }, 0x7FFF_FFFFL),
+                Arguments.of(new byte[] { m, m, m, m }, 0xFFFF_FFFFL)
+        );
+    }
+
+    static Stream<byte[]> testReadUint64_Overflow() {
+        final byte m = (byte) 0xff;
+        return Stream.of(
+                new byte[] { (byte) 0b11111111, 0, 0, 0, 0, 0, 0, 0, (byte) 0x80 },
+                new byte[] { (byte) 0b11111111, m, m, m, m, m, m, m, m }
+        );
+    }
+
+    static Stream<Arguments> testReadUint64_Valid() {
+        final byte m = (byte) 0xff;
+        return Stream.of(
+                Arguments.of(new byte[] { 0 }, 0L),
+                Arguments.of(new byte[] { Byte.MAX_VALUE }, 0x7FL),
+                Arguments.of(new byte[] { (byte) 0b10_000001, 2 }, 0x0102L),
+                Arguments.of(new byte[] { (byte) 0b10_111111, m }, 0x3FFFL),
+                Arguments.of(new byte[] { (byte) 0b110_00001, 3, 2 }, 0x01_0203L),
+                Arguments.of(new byte[] { (byte) 0b110_11111, m, m }, 0x1F_FFFFL),
+                Arguments.of(new byte[] { (byte) 0b1110_0001, 4, 3, 2 }, 0x0102_0304L),
+                Arguments.of(new byte[] { (byte) 0b1110_1111, m, m, m }, 0x0FFF_FFFFL),
+                Arguments.of(new byte[] { (byte) 0b11110_001, 5, 4, 3, 2 }, 0x01_0203_0405L),
+                Arguments.of(new byte[] { (byte) 0b11110_111, m, m, m, m }, 0x07_FFFF_FFFFL),
+                Arguments.of(new byte[] { (byte) 0b111110_01, 6, 5, 4, 3, 2 }, 0x0102_0304_0506L),
+                Arguments.of(new byte[] { (byte) 0b111110_11, m, m, m, m, m }, 0x03FF_FFFF_FFFFL),
+                Arguments.of(new byte[] { (byte) 0b1111110_1, 7, 6, 5, 4, 3, 2 }, 0x01_0203_0405_0607L),
+                Arguments.of(new byte[] { (byte) 0b1111110_1, m, m, m, m, m, m }, 0x01_FFFF_FFFF_FFFFL),
+                Arguments.of(new byte[] { (byte) 0b11111110, 7, 6, 5, 4, 3, 2, 1 }, 0x01_0203_0405_0607L),
+                Arguments.of(new byte[] { (byte) 0b11111110, m, m, m, m, m, m, m }, 0xFF_FFFF_FFFF_FFFFL),
+                Arguments.of(new byte[] { (byte) 0b11111111, 8, 7, 6, 5, 4, 3, 2, 1 }, 0x0102_0304_0506_0708L),
+                Arguments.of(new byte[] { (byte) 0b11111111, m, m, m, m, m, m, m, Byte.MAX_VALUE }, 0x7FFF_FFFF_FFFF_FFFFL)
         );
     }
 
@@ -1028,6 +1088,23 @@ class SevenZFileTest extends AbstractArchiveFileTest<SevenZArchiveEntry> {
         }
     }
 
+    @ParameterizedTest
+    @MethodSource
+    void testReadRealUint64_Invalid(final byte[] input) throws IOException {
+        try (DataInputStream dis = new DataInputStream(new ByteArrayInputStream(input))) {
+            assertThrows(IOException.class, () -> SevenZFile.readRealUint64(dis));
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void testReadRealUint64_Valid(final byte[] input, final long expected) throws IOException {
+        try (DataInputStream dis = new DataInputStream(new ByteArrayInputStream(input))) {
+            final long actual = SevenZFile.readRealUint64(dis);
+            assertEquals(expected, actual);
+        }
+    }
+
     @Test
     void testReadTimesFromFile() throws IOException {
         try (SevenZFile sevenZFile = getSevenZFile("times.7z")) {
@@ -1052,6 +1129,33 @@ class SevenZFileTest extends AbstractArchiveFileTest<SevenZArchiveEntry> {
             entry = sevenZFile.getNextEntry();
             assertNull(entry);
         }
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void testReadUint32_Valid(final byte[] input, final long expected) throws IOException {
+        try (DataInputStream dis = new DataInputStream(new ByteArrayInputStream(input))) {
+            final long actual = SevenZFile.readUint32(dis);
+            assertEquals(expected, actual);
+        }
+        final ByteBuffer buf = ByteBuffer.wrap(input).order(ByteOrder.LITTLE_ENDIAN);
+        final long actual = SevenZFile.readUint32(buf);
+        assertEquals(expected, actual);
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void testReadUint64_Overflow(final byte[] bytes) {
+        final ByteBuffer buf = ByteBuffer.wrap(bytes);
+        final ArchiveException ex = assertThrows(ArchiveException.class, () -> SevenZFile.readUint64(buf));
+        assertTrue(ex.getMessage().contains("Unsupported 7-Zip archive"));
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void testReadUint64_Valid(final byte[] bytes, final long expected) throws IOException {
+        final ByteBuffer buf = ByteBuffer.wrap(bytes);
+        assertEquals(expected, SevenZFile.readUint64(buf));
     }
 
     @Test
