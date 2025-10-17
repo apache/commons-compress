@@ -46,6 +46,7 @@ import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.io.function.IOStream;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -111,12 +112,15 @@ public class MaxNameEntryLengthTest extends AbstractTest {
 
     static Stream<Arguments> testTruncatedTarFiles() throws IOException {
         return Stream.of(
-                Arguments.of(TarFile.builder()
-                        .setMaxEntryNameLength(Integer.MAX_VALUE)
-                        .setURI(getURI("synthetic/long-name/pax-fail.tar"))),
-                Arguments.of(TarFile.builder()
-                        .setMaxEntryNameLength(Integer.MAX_VALUE)
-                        .setURI(getURI("synthetic/long-name/gnu-fail.tar"))));
+                Arguments.of(
+                        TarFile.builder().setMaxEntryNameLength(Integer.MAX_VALUE).setURI(getURI("synthetic/long-name/pax-fail.tar")),
+                        Integer.MAX_VALUE
+                ),
+                Arguments.of(
+                        TarFile.builder().setMaxEntryNameLength(Integer.MAX_VALUE).setURI(getURI("synthetic/long-name/gnu-fail.tar")),
+                        SOFT_MAX_ARRAY_LENGTH
+                )
+        );
     }
 
     static Stream<Arguments> testValidStreams() throws IOException {
@@ -175,10 +179,18 @@ public class MaxNameEntryLengthTest extends AbstractTest {
 
     @ParameterizedTest
     @MethodSource
-    void testTruncatedTarFiles(final TarFile.Builder tarFileBuilder) {
-        // Since the real size of the archive is known, the truncation is detected
-        // much earlier and before trying to read file names.
-        assertThrows(EOFException.class, () -> tarFileBuilder.get().getEntries());
+    void testTruncatedTarFiles(final TarFile.Builder tarFileBuilder, final long expectedLength) {
+        // If the file name length exceeds available memory, the stream fails fast with MemoryLimitException.
+        // Otherwise, it fails with EOFException when the stream ends unexpectedly.
+        final Executable action = () -> tarFileBuilder.get().entries();
+        if (Runtime.getRuntime().totalMemory() < expectedLength) {
+            final MemoryLimitException exception = assertThrows(MemoryLimitException.class, action);
+            final String message = exception.getMessage();
+            assertNotNull(message);
+            assertTrue(message.contains(String.format("%,d", expectedLength)), "Message mentions expected length (" + expectedLength + "): " + message);
+        } else {
+            assertThrows(EOFException.class, action);
+        }
     }
 
     @Test

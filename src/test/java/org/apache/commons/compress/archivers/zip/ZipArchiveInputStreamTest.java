@@ -221,8 +221,7 @@ class ZipArchiveInputStreamTest extends AbstractTest {
     @Test
     void testGetFirstEntryEmptyZip() throws IOException {
         try (ZipArchiveInputStream zin = ZipArchiveInputStream.builder().setByteArray(ArrayUtils.EMPTY_BYTE_ARRAY).get()) {
-            final ZipArchiveEntry entry = zin.getNextEntry();
-            assertNull(entry);
+            assertNull(zin.getNextEntry());
         }
     }
 

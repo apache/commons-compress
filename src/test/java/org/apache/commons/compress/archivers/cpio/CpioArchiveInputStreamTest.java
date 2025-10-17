@@ -36,16 +36,6 @@ import org.junitpioneer.jupiter.Issue;
 
 class CpioArchiveInputStreamTest extends AbstractTest {
 
-    private long consumeEntries(final CpioArchiveInputStream in) throws IOException {
-        long count = 0;
-        CpioArchiveEntry entry;
-        while ((entry = in.getNextEntry()) != null) {
-            count++;
-            assertNotNull(entry);
-        }
-        return count;
-    }
-
     @Test
     void testCpioUnarchive() throws Exception {
         final StringBuilder expected = new StringBuilder();

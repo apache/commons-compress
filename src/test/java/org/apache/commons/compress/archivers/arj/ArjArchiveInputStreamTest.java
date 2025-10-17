@@ -151,9 +151,7 @@ class ArjArchiveInputStreamTest extends AbstractTest {
     void testGetBytesRead(final String resource) throws IOException {
         final Path path = getPath(resource);
         try (ArjArchiveInputStream in = ArjArchiveInputStream.builder().setPath(path).get()) {
-            while (in.getNextEntry() != null) {
-                // nop
-            }
+            consumeEntries(in);
             final long expected = Files.size(path);
             assertEquals(expected, in.getBytesRead(), "getBytesRead() did not return the expected value");
         }
