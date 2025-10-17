@@ -1897,6 +1897,8 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         final int numFoldersInt = readUint64ToIntExact(header, "numFolders");
         /* final int external = */ getUnsignedByte(header);
         // Verify available header bytes and memory limit before allocating array
+        // A folder requires at least 3 bytes: the number of coders (1 byte), the flag byte for the coder (1 byte),
+        // and at least 1 byte for the method id (1 byte)
         ensureRemaining(header, 3L * numFoldersInt);
         // Assumes compressed pointer
         MemoryLimitException.checkKiB(bytesToKiB(numFoldersInt * 4L), maxMemoryLimitKiB);
