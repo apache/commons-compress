@@ -135,7 +135,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
     private static int readUnsignedByte(InputStream in) throws IOException {
         final int value = in.read();
         if (value == -1) {
-            throw new EOFException();
+            throw new EOFException("Truncated ARJ archive: expected more data");
         }
         return value & 0xff;
     }
