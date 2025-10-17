@@ -116,9 +116,7 @@ class ArjArchiveInputStreamTest extends AbstractTest {
     void testGetBytesRead(final String resource) throws IOException {
         final Path path = getPath(resource);
         try (ArjArchiveInputStream in = ArjArchiveInputStream.builder().setPath(path).get()) {
-            while (in.getNextEntry() != null) {
-                // nop
-            }
+            consumeEntries(in);
             final long expected = Files.size(path);
             assertEquals(expected, in.getBytesRead(), "getBytesRead() did not return the expected value");
         }
@@ -321,7 +319,7 @@ class ArjArchiveInputStreamTest extends AbstractTest {
             // One byte before the first file’s data
             0x95
     })
-    void testTruncatedLocalHeader(long maxCount) throws Exception {
+    void testTruncatedLocalHeader(final long maxCount) throws Exception {
         try (InputStream input = BoundedInputStream.builder().setURI(getURI("bla.arj")).setMaxCount(maxCount).get();
              ArjArchiveInputStream archive = ArjArchiveInputStream.builder().setInputStream(input).get()) {
             assertThrows(EOFException.class, () -> {
@@ -363,7 +361,7 @@ class ArjArchiveInputStreamTest extends AbstractTest {
             0x30, 0x33,
             // Inside the extended-header length (2 bytes)
             0x34})
-    void testTruncatedMainHeader(long maxCount) throws Exception {
+    void testTruncatedMainHeader(final long maxCount) throws Exception {
         try (InputStream input = BoundedInputStream.builder()
                 .setURI(getURI("bla.arj"))
                 .setMaxCount(maxCount)
