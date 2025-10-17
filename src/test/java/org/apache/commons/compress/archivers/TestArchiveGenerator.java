@@ -39,6 +39,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 public final class TestArchiveGenerator {
 
+    private static final byte[] USTAR_TRAILER = new byte[1024];
     private static final int FILE_MODE = 0100644;
     private static final int GROUP_ID = 0;
     private static final String GROUP_NAME = "group";
@@ -376,12 +377,7 @@ public final class TestArchiveGenerator {
     }
 
     private static void writeUstarTrailer(final OutputStream out) throws IOException {
-        int offset = 0;
-        // 1024 bytes of zero
-        while (offset < 1024) {
-            out.write(0);
-            offset++;
-        }
+        out.write(USTAR_TRAILER);
     }
 
     private TestArchiveGenerator() {
