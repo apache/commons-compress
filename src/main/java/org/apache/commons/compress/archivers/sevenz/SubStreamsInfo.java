@@ -22,7 +22,6 @@ package org.apache.commons.compress.archivers.sevenz;
 import java.util.BitSet;
 
 import org.apache.commons.compress.CompressException;
-import org.apache.commons.compress.MemoryLimitException;
 
 /**
  * Properties for non-empty files.
