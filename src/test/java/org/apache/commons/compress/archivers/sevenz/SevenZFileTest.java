@@ -668,7 +668,7 @@ class SevenZFileTest extends AbstractArchiveFileTest<SevenZArchiveEntry> {
                     // do nothing
                 }
             }, "Expected IOException: start header corrupt and unable to guess end header");
-            assertEquals("Start header corrupt and unable to guess end header", e.getMessage());
+            assertEquals("7z archive: Start header corrupt and unable to guess end header", e.getMessage());
         }
     }
 
@@ -1023,7 +1023,7 @@ class SevenZFileTest extends AbstractArchiveFileTest<SevenZArchiveEntry> {
             final ArchiveException e = assertThrows(ArchiveException.class, () -> {
                 file.readFolder(buffer);
             });
-            assertTrue(e.getMessage().contains("Unsupported 7z archive"));
+            assertTrue(e.getMessage().contains("7z archive: Unsupported"));
         }
     }
 
@@ -1148,7 +1148,7 @@ class SevenZFileTest extends AbstractArchiveFileTest<SevenZArchiveEntry> {
     void testReadUint64_Overflow(final byte[] bytes) {
         final ByteBuffer buf = ByteBuffer.wrap(bytes);
         final ArchiveException ex = assertThrows(ArchiveException.class, () -> SevenZFile.readUint64(buf));
-        assertTrue(ex.getMessage().contains("Unsupported 7-Zip archive"));
+        assertTrue(ex.getMessage().contains("7z archive: Unsupported"), ex.getMessage());
     }
 
     @ParameterizedTest

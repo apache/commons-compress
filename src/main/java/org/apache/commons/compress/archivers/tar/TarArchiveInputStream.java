@@ -322,7 +322,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
         count(read);
         // Check for truncated entries
         if (read == -1 && entryOffset < currEntry.getSize()) {
-            throw new EOFException(String.format("Truncated TAR archive: entry '%s' expected %,d bytes, actual %,d", currEntry.getName(), currEntry.getSize(),
+            throw new EOFException(String.format("Truncated TAR archive: Entry '%s' expected %,d bytes, actual %,d", currEntry.getName(), currEntry.getSize(),
                     entryOffset));
         }
         entryOffset += Math.max(0, read);
@@ -757,7 +757,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
             final long skipped = org.apache.commons.io.IOUtils.skip(in, padding);
             count(skipped);
             if (skipped != padding) {
-                throw new EOFException(String.format("Truncated TAR archive: failed to skip record padding for entry '%s'", currEntry.getName()));
+                throw new EOFException(String.format("Truncated TAR archive: Failed to skip record padding for entry '%s'", currEntry.getName()));
             }
         }
     }

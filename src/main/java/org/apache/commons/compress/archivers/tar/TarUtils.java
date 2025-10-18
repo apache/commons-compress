@@ -851,7 +851,7 @@ public final class TarUtils {
         final byte[] name = IOUtils.readRange(input, declaredLength);
         int actualLength = name.length;
         if (actualLength != declaredLength) {
-            throw new EOFException(String.format("Truncated long name entry: expected %,d bytes, read %,d bytes.", declaredLength, actualLength));
+            throw new EOFException(String.format("Truncated long name entry: Expected %,d bytes, read %,d bytes.", declaredLength, actualLength));
         }
         while (actualLength > 0 && name[actualLength - 1] == 0) {
             actualLength--;
@@ -872,7 +872,7 @@ public final class TarUtils {
                     throw new ArchiveException("Corrupted TAR archive: Sparse entry with negative offset.");
                 }
                 if (sparseHeader.getNumbytes() < 0) {
-                    throw new ArchiveException("Corrupted TAR archive: sparse entry with negative numbytes.");
+                    throw new ArchiveException("Corrupted TAR archive: Sparse entry with negative numbytes.");
                 }
                 sparseHeaders.add(sparseHeader);
             } catch (final IllegalArgumentException e) {

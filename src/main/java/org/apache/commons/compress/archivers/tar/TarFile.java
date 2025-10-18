@@ -81,7 +81,7 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
             final int totalRead = channel.read(buf);
             if (totalRead == -1) {
                 if (buf.remaining() > 0) {
-                    throw new EOFException(String.format("Truncated TAR archive: expected at least %d bytes, but got only %d bytes",
+                    throw new EOFException(String.format("Truncated TAR archive: Expected at least %d bytes, but got only %d bytes",
                             end, channel.position()));
                 }
                 // Marks the TarFile as having reached EOF.
@@ -637,7 +637,7 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
      */
     private void throwExceptionIfPositionIsNotInArchive() throws IOException {
         if (archive.size() < archive.position()) {
-            throw new EOFException("Truncated TAR archive: archive should be at least " + archive.position() + " bytes but was " + archive.size() + " bytes");
+            throw new EOFException("Truncated TAR archive: Archive should be at least " + archive.position() + " bytes but was " + archive.size() + " bytes");
         }
     }
 
