@@ -56,12 +56,15 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
      * ArjArchiveInputStream in = ArjArchiveInputStream.builder()
      *     .setPath(inputPath)
      *     .setCharset(StandardCharsets.UTF_8)
+     *     .setSelfExtracting(false)
      *     .get();
      * }</pre>
      *
      * @since 1.29.0
      */
     public static final class Builder extends AbstractArchiveBuilder<ArjArchiveInputStream, Builder> {
+
+        private boolean selfExtracting;
 
         private Builder() {
             setCharset(ENCODING_NAME);
@@ -71,11 +74,45 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
         public ArjArchiveInputStream get() throws IOException {
             return new ArjArchiveInputStream(this);
         }
+
+        /**
+         * Enables compatibility with self-extracting (SFX) ARJ files, default to {@code false}.
+         *
+         * <p>When {@code true}, the stream is scanned forward to locate the first
+         * valid ARJ main header. All bytes before that point are ignored, which
+         * allows reading ARJ data embedded in an executable stub.</p>
+         *
+         * <p><strong>Caveat:</strong> This lenient pre-scan can mask corruption that
+         * would otherwise be reported at the start of a normal {@code .arj} file.
+         * Enable only when you expect an SFX input.</p>
+         *
+         * <p>Default to {@code false}.</p>
+         *
+         * @param selfExtracting {@code true} if the input stream is for a self-extracting archive.
+         * @return {@code this} instance.
+         * @since 1.29.0
+         */
+        public Builder setSelfExtracting(final boolean selfExtracting) {
+            this.selfExtracting = selfExtracting;
+            return asThis();
+        }
     }
 
     private static final String ENCODING_NAME = "CP437";
     private static final int ARJ_MAGIC_1 = 0x60;
     private static final int ARJ_MAGIC_2 = 0xEA;
+
+    /**
+     * Maximum size of the basic header, in bytes.
+     *
+     * <p>The value is taken from the reference implementation</p>
+     */
+    private static final int MAX_BASIC_HEADER_SIZE = 2600;
+
+    /**
+     * Minimum size of the first header (the fixed-size part of the basic header), in bytes.
+     */
+    private static final int MIN_FIRST_HEADER_SIZE = 30;
 
     /**
      * Creates a new builder.
@@ -90,29 +127,18 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
     /**
      * Checks if the signature matches what is expected for an arj file.
      *
-     * @param signature the bytes to check
-     * @param length    the number of bytes to check
-     * @return true, if this stream is an arj archive stream, false otherwise
+     * @param signature the bytes to check.
+     * @param length    the number of bytes to check.
+     * @return true, if this stream is an arj archive stream, false otherwise.
      */
     public static boolean matches(final byte[] signature, final int length) {
         return length >= 2 && (0xff & signature[0]) == ARJ_MAGIC_1 && (0xff & signature[1]) == ARJ_MAGIC_2;
     }
 
-    private static void readExtraData(final int firstHeaderSize, final InputStream firstHeader, final LocalFileHeader localFileHeader) throws IOException {
-        if (firstHeaderSize >= 33) {
-            localFileHeader.extendedFilePosition = EndianUtils.readSwappedInteger(firstHeader);
-            if (firstHeaderSize >= 45) {
-                localFileHeader.dateTimeAccessed = EndianUtils.readSwappedInteger(firstHeader);
-                localFileHeader.dateTimeCreated = EndianUtils.readSwappedInteger(firstHeader);
-                localFileHeader.originalSizeEvenForVolumes = EndianUtils.readSwappedInteger(firstHeader);
-            }
-        }
-    }
-
-    private static int readUnsignedByte(InputStream in) throws IOException {
+    private static int readUnsignedByte(final InputStream in) throws IOException {
         final int value = in.read();
         if (value == -1) {
-            throw new EOFException();
+            throw new EOFException("Truncated ARJ archive: Expected more data");
         }
         return value & 0xff;
     }
@@ -123,7 +149,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
 
     private ArjArchiveInputStream(final Builder builder) throws IOException {
         super(builder);
-        mainHeader = readMainHeader();
+        mainHeader = readMainHeader(builder.selfExtracting);
         if ((mainHeader.arjFlags & MainHeader.Flags.GARBLED) != 0) {
             throw new ArchiveException("Encrypted ARJ files are unsupported");
         }
@@ -135,10 +161,10 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
     /**
      * Constructs the ArjInputStream, taking ownership of the inputStream that is passed in, and using the CP437 character encoding.
      *
-     * <p>Since 1.29.0: throws {@link IOException}.</p>
+     * <p>Since 1.29.0: Throws {@link IOException}.</p>
      *
-     * @param inputStream the underlying stream, whose ownership is taken
-     * @throws IOException if an exception occurs while reading
+     * @param inputStream the underlying stream, whose ownership is taken.
+     * @throws IOException if an exception occurs while reading.
      */
     public ArjArchiveInputStream(final InputStream inputStream) throws IOException {
         this(builder().setInputStream(inputStream));
@@ -147,9 +173,9 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
     /**
      * Constructs the ArjInputStream, taking ownership of the inputStream that is passed in.
      *
-     * <p>Since 1.29.0: throws {@link IOException}.</p>
+     * <p>Since 1.29.0: Throws {@link IOException}.</p>
      *
-     * @param inputStream the underlying stream, whose ownership is taken
+     * @param inputStream the underlying stream, whose ownership is taken.
      * @param charsetName the charset used for file names and comments in the archive. May be {@code null} to use the platform default.
      * @throws IOException if an exception occurs while reading
      * @deprecated Since 1.29.0, use {@link #builder()}.
@@ -162,6 +188,55 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
     @Override
     public boolean canReadEntryData(final ArchiveEntry ae) {
         return ae instanceof ArjArchiveEntry && ((ArjArchiveEntry) ae).getMethod() == LocalFileHeader.Methods.STORED;
+    }
+
+    /**
+     * Verifies the CRC32 checksum of the given data against the next four bytes read from the input stream.
+     *
+     * @param data The data to verify.
+     * @return true if the checksum matches, false otherwise.
+     * @throws EOFException If the end of the stream is reached before reading the checksum.
+     * @throws IOException If an I/O error occurs.
+     */
+    @SuppressWarnings("Since15")
+    private boolean checkCRC32(final byte[] data) throws IOException {
+        final CRC32 crc32 = new CRC32();
+        crc32.update(data);
+        final long expectedCrc32 = readSwappedUnsignedInteger();
+        return crc32.getValue() == expectedCrc32;
+    }
+
+    /**
+     * Scans for the next valid ARJ header.
+     *
+     * @return The header bytes.
+     * @throws EOFException If the end of the stream is reached before a valid header is found.
+     * @throws IOException If an I/O error occurs.
+     */
+    private byte[] findMainHeader() throws IOException {
+        byte[] basicHeaderBytes;
+        try {
+            while (true) {
+                int first;
+                int second = readUnsignedByte();
+                do {
+                    first = second;
+                    second = readUnsignedByte();
+                } while (first != ARJ_MAGIC_1 && second != ARJ_MAGIC_2);
+                final int basicHeaderSize = readSwappedUnsignedShort();
+                // At least two bytes are required for the null-terminated name and comment
+                if (MIN_FIRST_HEADER_SIZE + 2 <= basicHeaderSize && basicHeaderSize <= MAX_BASIC_HEADER_SIZE) {
+                    basicHeaderBytes = org.apache.commons.io.IOUtils.toByteArray(in, basicHeaderSize);
+                    count(basicHeaderSize);
+                    if (checkCRC32(basicHeaderBytes)) {
+                        return basicHeaderBytes;
+                    }
+                }
+                // CRC32 failed, continue scanning
+            }
+        } catch (final EOFException e) {
+            throw new ArchiveException("Corrupted ARJ archive: Unable to find valid main header");
+        }
     }
 
     /**
@@ -204,7 +279,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
                     .setAfterRead(read -> {
                         if (read < 0) {
                             throw new EOFException(String.format(
-                                    "Truncated ARJ archive: entry '%s' expected %,d bytes, but only %,d were read.",
+                                    "Truncated ARJ archive: Entry '%s' expected %,d bytes, but only %,d were read.",
                                     currentLocalFileHeader.name,
                                     currentLocalFileHeader.compressedSize,
                                     getBytesRead() - currentPosition
@@ -256,40 +331,33 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
     }
 
     /**
-     * Scans for the next valid ARJ header.
+     * Reads the next valid ARJ header.
      *
      * @return The header bytes, or {@code null} if end of archive.
      * @throws EOFException If the end of the stream is reached before a valid header is found.
      * @throws IOException If an I/O error occurs.
      */
     private byte[] readHeader() throws IOException {
-        byte[] basicHeaderBytes;
-        // TODO: Explain why we are scanning for a valid ARJ header
-        //       and don't throw, when an invalid/corrupted header is found,
-        //       which might indicate a corrupted archive.
-        while (true) {
-            int first;
-            int second = readUnsignedByte();
-            do {
-                first = second;
-                second = readUnsignedByte();
-            } while (first != ARJ_MAGIC_1 && second != ARJ_MAGIC_2);
-            final int basicHeaderSize = readSwappedUnsignedShort();
-            if (basicHeaderSize == 0) {
-                // end of archive
-                return null;
-            } else if (basicHeaderSize <= 2600) {
-                basicHeaderBytes = org.apache.commons.io.IOUtils.toByteArray(in, basicHeaderSize);
-                count(basicHeaderSize);
-                final long basicHeaderCrc32 = EndianUtils.readSwappedUnsignedInteger(in);
-                count(4);
-                final CRC32 crc32 = new CRC32();
-                crc32.update(basicHeaderBytes);
-                if (basicHeaderCrc32 == crc32.getValue()) {
-                    return basicHeaderBytes;
-                }
-            }
+        final int first = readUnsignedByte();
+        final int second = readUnsignedByte();
+        if (first != ARJ_MAGIC_1 || second != ARJ_MAGIC_2) {
+            throw new ArchiveException("Corrupted ARJ archive: Invalid ARJ header signature 0x%02X 0x%02X", first, second);
         }
+        final int basicHeaderSize = readSwappedUnsignedShort();
+        if (basicHeaderSize == 0) {
+            // End of archive
+            return null;
+        }
+        // At least two bytes are required for the null-terminated name and comment
+        if (basicHeaderSize < MIN_FIRST_HEADER_SIZE + 2 || basicHeaderSize > MAX_BASIC_HEADER_SIZE) {
+            throw new ArchiveException("Corrupted ARJ archive: Invalid ARJ header size %,d", basicHeaderSize);
+        }
+        final byte[] basicHeaderBytes = org.apache.commons.io.IOUtils.toByteArray(in, basicHeaderSize);
+        count(basicHeaderSize);
+        if (!checkCRC32(basicHeaderBytes)) {
+            throw new ArchiveException("Corrupted ARJ archive: Invalid ARJ header CRC32 checksum");
+        }
+        return basicHeaderBytes;
     }
 
     private LocalFileHeader readLocalFileHeader() throws IOException {
@@ -299,10 +367,8 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
         }
         final LocalFileHeader localFileHeader = new LocalFileHeader();
         try (InputStream basicHeader = new ByteArrayInputStream(basicHeaderBytes)) {
-
             final int firstHeaderSize = readUnsignedByte(basicHeader);
             try (InputStream firstHeader = BoundedInputStream.builder().setInputStream(basicHeader).setMaxCount(firstHeaderSize - 1).get()) {
-
                 localFileHeader.archiverVersionNumber = readUnsignedByte(firstHeader);
                 localFileHeader.minVersionToExtract = readUnsignedByte(firstHeader);
                 localFileHeader.hostOS = readUnsignedByte(firstHeader);
@@ -318,41 +384,41 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
                 localFileHeader.fileAccessMode = EndianUtils.readSwappedShort(firstHeader);
                 localFileHeader.firstChapter = readUnsignedByte(firstHeader);
                 localFileHeader.lastChapter = readUnsignedByte(firstHeader);
-
-                readExtraData(firstHeaderSize, firstHeader, localFileHeader);
+                // Total read (including size byte): 10 + 4 * 4 + 2 * 2 = 30 bytes
+                if (firstHeaderSize >= MIN_FIRST_HEADER_SIZE + 4) {
+                    localFileHeader.extendedFilePosition = EndianUtils.readSwappedInteger(firstHeader);
+                    // Total read (including size byte): 30 + 4 = 34 bytes
+                    if (firstHeaderSize >= MIN_FIRST_HEADER_SIZE + 4 + 12) {
+                        localFileHeader.dateTimeAccessed = EndianUtils.readSwappedInteger(firstHeader);
+                        localFileHeader.dateTimeCreated = EndianUtils.readSwappedInteger(firstHeader);
+                        localFileHeader.originalSizeEvenForVolumes = EndianUtils.readSwappedInteger(firstHeader);
+                        // Total read (including size byte): 34 + 12 = 46 bytes
+                    }
+                }
             }
-
             localFileHeader.name = readEntryName(basicHeader);
             localFileHeader.comment = readComment(basicHeader);
         }
-
         final ArrayList<byte[]> extendedHeaders = new ArrayList<>();
         int extendedHeaderSize;
         while ((extendedHeaderSize = readSwappedUnsignedShort()) > 0) {
             final byte[] extendedHeaderBytes = org.apache.commons.io.IOUtils.toByteArray(in, extendedHeaderSize);
             count(extendedHeaderSize);
-            final long extendedHeaderCrc32 = EndianUtils.readSwappedUnsignedInteger(in);
-            count(4);
-            final CRC32 crc32 = new CRC32();
-            crc32.update(extendedHeaderBytes);
-            if (extendedHeaderCrc32 != crc32.getValue()) {
-                throw new ArchiveException("Extended header CRC32 verification failure");
+            if (!checkCRC32(extendedHeaderBytes)) {
+                throw new ArchiveException("Corrupted ARJ archive: Extended header CRC32 verification failure");
             }
             extendedHeaders.add(extendedHeaderBytes);
         }
         localFileHeader.extendedHeaders = extendedHeaders.toArray(new byte[0][]);
-
         return localFileHeader;
     }
 
-    private MainHeader readMainHeader() throws IOException {
-        final byte[] basicHeaderBytes = readHeader();
+    private MainHeader readMainHeader(final boolean selfExtracting) throws IOException {
+        final byte[] basicHeaderBytes = selfExtracting ? findMainHeader() : readHeader();
         final MainHeader header = new MainHeader();
         try (InputStream basicHeader = new ByteArrayInputStream(basicHeaderBytes)) {
-
             final int firstHeaderSize = readUnsignedByte(basicHeader);
             try (InputStream firstHeader = BoundedInputStream.builder().setInputStream(basicHeader).setMaxCount(firstHeaderSize - 1).get()) {
-
                 header.archiverVersionNumber = readUnsignedByte(firstHeader);
                 header.minVersionToExtract = readUnsignedByte(firstHeader);
                 header.hostOS = readUnsignedByte(firstHeader);
@@ -368,32 +434,26 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
                 header.securityEnvelopeLength = EndianUtils.readSwappedShort(firstHeader);
                 header.encryptionVersion = readUnsignedByte(firstHeader);
                 header.lastChapter = readUnsignedByte(firstHeader);
-
-                if (firstHeaderSize >= 33) {
+                // Total read (including size byte): 10 + 4 * 4 + 2 * 2 = 30 bytes
+                if (firstHeaderSize >= MIN_FIRST_HEADER_SIZE + 4) {
                     header.arjProtectionFactor = readUnsignedByte(firstHeader);
                     header.arjFlags2 = readUnsignedByte(firstHeader);
                     readUnsignedByte(firstHeader);
                     readUnsignedByte(firstHeader);
+                    // Total read (including size byte): 30 + 4 = 34 bytes
                 }
             }
-
             header.name = readEntryName(basicHeader);
             header.comment = readComment(basicHeader);
         }
-
         final int extendedHeaderSize = readSwappedUnsignedShort();
         if (extendedHeaderSize > 0) {
             header.extendedHeaderBytes = org.apache.commons.io.IOUtils.toByteArray(in, extendedHeaderSize);
             count(extendedHeaderSize);
-            final long extendedHeaderCrc32 = EndianUtils.readSwappedUnsignedInteger(in);
-            count(4);
-            final CRC32 crc32 = new CRC32();
-            crc32.update(header.extendedHeaderBytes);
-            if (extendedHeaderCrc32 != crc32.getValue()) {
-                throw new ArchiveException("Extended header CRC32 verification failure");
+            if (!checkCRC32(header.extendedHeaderBytes)) {
+                throw new ArchiveException("Corrupted ARJ archive: Extended header CRC32 verification failure");
             }
         }
-
         return header;
     }
 
@@ -405,6 +465,12 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
             }
             return buffer;
         }
+    }
+
+    private long readSwappedUnsignedInteger() throws IOException {
+        final long value = EndianUtils.readSwappedUnsignedInteger(in);
+        count(4);
+        return value;
     }
 
     private int readSwappedUnsignedShort() throws IOException {
