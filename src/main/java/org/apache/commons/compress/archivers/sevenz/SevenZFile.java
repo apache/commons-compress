@@ -161,7 +161,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         @Override
         public String toString() {
             return String.format("Archive with %,d entries in %,d folders, estimated size %,d KiB.", numberOfEntries, numberOfFolders,
-                    kbToKiB(estimateSizeBytes()));
+                    bytesToKiB(estimateSizeBytes()));
         }
     }
 
@@ -226,7 +226,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
          * @return {@code this} instance.
          */
         public Builder setMaxMemoryLimitKb(final int maxMemoryLimitKb) {
-            this.maxMemoryLimitKiB = kbToKiB(maxMemoryLimitKb);
+            this.maxMemoryLimitKiB = maxMemoryLimitKb * 1000 / 1024;
             return this;
         }
 
@@ -363,6 +363,51 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
      */
     private static final int MAX_CODER_STREAMS_PER_FOLDER = 64;
 
+    /** Minimum number of bytes a 7z UINT64 can occupy. */
+    private static final long MIN_UINT64_BYTES = 1L;
+
+    /** Number of bytes a 7z UINT32 occupies. */
+    private static final long UINT32_BYTES = 4L;
+
+    /** Number of bytes a 7z REAL_UINT64 occupies. */
+    private static final long REAL_UINT64_BYTES = 8L;
+
+    /**
+     * Computes a partial count or sum of 7z objects, throwing ArchiveException if any limit is exceeded.
+     *
+     * @param sum         current sum
+     * @param y           second integer
+     * @param description description of the value being added, for error messages
+     * @return the new sum
+     * @throws ArchiveException if the sum overflows an int
+     */
+    private static int accumulate(final int sum, final int y, final String description) throws ArchiveException {
+        try {
+            return Math.addExact(sum, y);
+        } catch (final ArithmeticException e) {
+            throw new ArchiveException("Unsupported 7-Zip archive: cannot handle more than %,d %s, but %,d present", Integer.MAX_VALUE, description,
+                    Long.sum(sum, y));
+        }
+    }
+
+    /**
+     * Computes a partial count or sum of 7z objects, throwing ArchiveException if any limit is exceeded.
+     *
+     * @param sum         current sum
+     * @param y           second integer
+     * @param description description of the value being added, for error messages
+     * @return the new sum
+     * @throws ArchiveException if the sum overflows an int
+     */
+    private static long accumulate(final long sum, final long y, final String description) throws ArchiveException {
+        try {
+            return Math.addExact(sum, y);
+        } catch (final ArithmeticException e) {
+            throw new ArchiveException("Unsupported 7-Zip archive: cannot handle more than %,d %s, but %,d present", Integer.MAX_VALUE, description,
+                    Long.sum(sum, y));
+        }
+    }
+
     /**
      * Creates a new Builder.
      *
@@ -377,46 +422,47 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         return bytes / 1024;
     }
 
-    private static ByteBuffer checkEndOfFile(final ByteBuffer buf, final int expectRemaining) throws EOFException {
-        final int remaining = buf.remaining();
-        if (remaining < expectRemaining) {
-            throw new EOFException(String.format("remaining %,d < expectRemaining %,d", remaining, expectRemaining));
+    /**
+     * Checks that there are at least {@code expectRemaining} bytes remaining in the header.
+     *
+     * @param header          The buffer containing the 7z header.
+     * @param expectRemaining The number of bytes expected to be remaining.
+     * @return {@code header} for easy chaining.
+     * @throws ArchiveException if there are not enough bytes remaining, implying that the 7z header is incomplete or corrupted.
+     */
+    private static ByteBuffer ensureRemaining(final ByteBuffer header, final long expectRemaining) throws ArchiveException {
+        if (expectRemaining > header.remaining()) {
+            throw new ArchiveException("Corrupted 7z archive: expecting %,d bytes, remaining header size %,d", expectRemaining, header.remaining());
         }
-        return buf;
-    }
-
-    private static void get(final ByteBuffer buf, final byte[] to) throws EOFException {
-        checkEndOfFile(buf, to.length).get(to);
-    }
-
-    private static int getInt(final ByteBuffer buf) throws EOFException {
-        return checkEndOfFile(buf, Integer.BYTES).getInt();
-    }
-
-    private static long getLong(final ByteBuffer buf) throws EOFException {
-        return checkEndOfFile(buf, Long.BYTES).getLong();
+        return header;
     }
 
     /**
-     * Gets the next unsigned byte as an int.
-     *
-     * @param buf the byte source.
-     * @return the next unsigned byte as an int.
-     * @throws EOFException Thrown if the given buffer doesn't have a remaining byte.
+     * Wrapper of {@link ByteBuffer#get(byte[])} that checks remaining bytes first.
      */
-    private static int getUnsignedByte(final ByteBuffer buf) throws EOFException {
-        if (!buf.hasRemaining()) {
-            throw new EOFException();
-        }
-        return buf.get() & 0xff;
+    private static void get(final ByteBuffer buf, final byte[] to) throws ArchiveException {
+        ensureRemaining(buf, to.length).get(to);
     }
 
-    private static int kbToKiB(final int kilobytes) {
-        return kilobytes * 1000 / 1024;
+    /**
+     * Wrapper of {@link ByteBuffer#getInt()} that checks remaining bytes first.
+     */
+    private static int getInt(final ByteBuffer buf) throws ArchiveException {
+        return ensureRemaining(buf, Integer.BYTES).getInt();
     }
 
-    static long kbToKiB(final long kilobytes) {
-        return kilobytes * 1000 / 1024;
+    /**
+     * Wrapper of {@link ByteBuffer#getLong()} that checks remaining bytes first.
+     */
+    private static long getLong(final ByteBuffer buf) throws ArchiveException {
+        return ensureRemaining(buf, Long.BYTES).getLong();
+    }
+
+    /**
+     * Checks remaining bytes and reads one unsigned byte.
+     */
+    private static int getUnsignedByte(final ByteBuffer header) throws ArchiveException {
+        return Byte.toUnsignedInt(ensureRemaining(header, Byte.BYTES).get());
     }
 
     /**
@@ -431,50 +477,131 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         return ArrayUtils.startsWith(buffer, SIGNATURE);
     }
 
-    private static long readUint64(final ByteBuffer in) throws IOException {
-        // long rather than int as it might get shifted beyond the range of an int
-        final long firstByte = getUnsignedByte(in);
-        int mask = 0x80;
-        long value = 0;
-        for (int i = 0; i < 8; i++) {
-            if ((firstByte & mask) == 0) {
-                return value | (firstByte & mask - 1) << 8 * i;
-            }
-            final long nextByte = getUnsignedByte(in);
-            value |= nextByte << 8 * i;
-            mask >>>= 1;
+    /**
+     * Reads the size of a header field and validates that it is not larger than the remaining bytes in the header buffer.
+     *
+     * @param header the buffer containing the 7z header.
+     * @return a non-negative int.
+     * @throws ArchiveException if the value is truncated, too large, or exceeds the remaining bytes in the header buffer.
+     */
+    static int readFieldSize(final ByteBuffer header) throws ArchiveException {
+        final long propertySize = readUint64(header);
+        ensureRemaining(header, propertySize);
+        // propertySize is not larger than header.remaining() which is an int
+        return (int) propertySize;
+    }
+
+    /**
+     * Reads a 7z REAL_UINT64 from the stream.
+     *
+     * @param inputStream the input stream containing the 7z header.
+     * @return a non-negative long.
+     * @throws ArchiveException if the value is truncated or too large.
+     */
+    static long readRealUint64(final DataInputStream inputStream) throws IOException {
+        final long value = Long.reverseBytes(inputStream.readLong());
+        if (value < 0) {
+            throw new ArchiveException("Unsupported 7-Zip archive: cannot handle integer larger then %d, but was %s", Integer.MAX_VALUE,
+                    Long.toUnsignedString(value));
         }
         return value;
     }
 
-    private static int readUint64ToIntExact(final ByteBuffer in) throws IOException {
-        return ArchiveException.toIntExact(readUint64(in));
+    /**
+     * Reads a 7z UINT32 from the header.
+     *
+     * @param header the buffer containing the 7z header.
+     * @return a non-negative long.
+     * @throws ArchiveException if the value is truncated.
+     */
+    static long readUint32(final ByteBuffer header) throws ArchiveException {
+        return Integer.toUnsignedLong(getInt(header));
     }
 
-    private static long skipBytesFully(final ByteBuffer input, long bytesToSkip) {
-        if (bytesToSkip < 1) {
-            return 0;
-        }
-        final int current = input.position();
-        final int maxSkip = input.remaining();
-        if (maxSkip < bytesToSkip) {
-            bytesToSkip = maxSkip;
-        }
-        input.position(current + (int) bytesToSkip);
-        return bytesToSkip;
+
+    /**
+     * Reads a 7z UINT32 from the stream.
+     *
+     * @param inputStream the input stream containing the 7z header.
+     * @return a non-negative long.
+     * @throws ArchiveException if the value is truncated.
+     */
+    static long readUint32(final DataInputStream inputStream) throws IOException {
+        return Integer.toUnsignedLong(Integer.reverseBytes(inputStream.readInt()));
     }
 
     /**
-     * Throws IOException if the given value is not in {@code [0, Integer.MAX_VALUE]}.
+     * Reads a 7z UINT64 from the header.
      *
-     * @param description A description for the IOException.
-     * @param value The value to check.
-     * @return The given value as an int.
-     * @throws IOException Thrown if the given value is not in {@code [0, Integer.MAX_VALUE]}.
+     * @param header the buffer containing the 7z header.
+     * @return a non-negative long.
+     * @throws ArchiveException if the value is truncated or too large.
      */
-    private static int toNonNegativeInt(final String description, final long value) throws IOException {
-        if (value > Integer.MAX_VALUE || value < 0) {
-            throw new ArchiveException("Cannot handle %s %,d", description, value);
+    static long readUint64(final ByteBuffer header) throws ArchiveException {
+        // long rather than int as it might get shifted beyond the range of an int
+        final long firstByte = getUnsignedByte(header);
+        int mask = 0x80;
+        long value = 0;
+        for (int i = 0; i < 8; i++) {
+            if ((firstByte & mask) == 0) {
+                value |= (firstByte & mask - 1) << 8 * i;
+                break;
+            }
+            final long nextByte = getUnsignedByte(header);
+            value |= nextByte << 8 * i;
+            mask >>>= 1;
+        }
+        if (value < 0) {
+            throw new ArchiveException("Unsupported 7-Zip archive: can not handle integer values larger than %,d", Long.MAX_VALUE);
+        }
+        return value;
+    }
+
+    /**
+     * Reads a 7z UINT64 from the header.
+     *
+     * <p>If the value is used as the length of a header field, use {@link #readFieldSize} instead, which also validates it against the number of remaining
+     * bytes in the header.</p>
+     *
+     * @param header the buffer containing the 7z header.
+     * @return a non-negative int.
+     * @throws ArchiveException if the value is truncated or too large.
+     * @see #readFieldSize(ByteBuffer)
+     */
+    private static int readUint64ToIntExact(final ByteBuffer header, final String description) throws ArchiveException {
+        final long value = readUint64(header);
+        // Values larger than Integer.MAX_VALUE are not formally forbidden, but we cannot handle them.
+        if (value > Integer.MAX_VALUE) {
+            throw new ArchiveException("Unsupported 7-Zip archive: cannot handle %s larger then %,d, but was %,d", description, Integer.MAX_VALUE, value);
+        }
+        return (int) value;
+    }
+
+    /**
+     * Skips the given number of bytes of an unsupported property.
+     *
+     * @param header       the 7z header buffer.
+     * @param propertySize the number of bytes to skip.
+     * @throws ArchiveException if the property size exceeds the remaining bytes in the header buffer.
+     */
+    private static void skipBytesFully(final ByteBuffer header, final long propertySize) throws ArchiveException {
+        // propertySize is not larger than header.remaining(), which is an int
+        ensureRemaining(header, propertySize).position(header.position() + (int) propertySize);
+    }
+
+    /**
+     * Throws ArchiveException if the given value is not in {@code [0, Integer.MAX_VALUE]}.
+     *
+     * @param description A description for the exception.
+     * @param value       The value to check, interpreted as unsigned.
+     * @return The given value as an int.
+     * @throws ArchiveException Thrown if the given value is not in {@code [0, Integer.MAX_VALUE]}.
+     */
+    private static int toNonNegativeInt(final String description, final long value) throws ArchiveException {
+        assert value >= 0 : "value is supposed to be non-negative";
+        if (value > Integer.MAX_VALUE) {
+            throw new ArchiveException("Unsupported 7-Zip archive: cannot handle %s larger then %d, but was %s", description, Integer.MAX_VALUE,
+                    Long.toUnsignedString(value));
         }
         return (int) value;
     }
@@ -769,7 +896,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         InputStream inputStreamStack = new FilterInputStream(
                 new BufferedInputStream(new BoundedSeekableByteChannelInputStream(channel, archive.packSizes[firstPackStreamIndex]))) {
             private void count(final int c) throws ArchiveException {
-                compressedBytesReadFromCurrentEntry = ArchiveException.addExact(compressedBytesReadFromCurrentEntry, c);
+                compressedBytesReadFromCurrentEntry = accumulate(compressedBytesReadFromCurrentEntry, c, "compressed bytes read from current entry");
             }
 
             @Override
@@ -901,21 +1028,21 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
 
     private void calculateStreamMap(final Archive archive) throws IOException {
         int nextFolderPackStreamIndex = 0;
-        final int numFolders = ArrayUtils.getLength(archive.folders);
-        final int[] folderFirstPackStreamIndex = new int[checkIntArray(numFolders)];
+        final int numFolders = archive.folders.length;
+        final int[] folderFirstPackStreamIndex = intArray(numFolders);
         for (int i = 0; i < numFolders; i++) {
             folderFirstPackStreamIndex[i] = nextFolderPackStreamIndex;
-            nextFolderPackStreamIndex = ArchiveException.addExact(nextFolderPackStreamIndex, archive.folders[i].packedStreams.length);
+            nextFolderPackStreamIndex = accumulate(nextFolderPackStreamIndex, archive.folders[i].packedStreams.length, "nextFolderPackStreamIndex");
         }
         long nextPackStreamOffset = 0;
         final int numPackSizes = archive.packSizes.length;
-        final long[] packStreamOffsets = new long[checkLongArray(numPackSizes)];
+        final long[] packStreamOffsets = longArray(numPackSizes);
         for (int i = 0; i < numPackSizes; i++) {
             packStreamOffsets[i] = nextPackStreamOffset;
-            nextPackStreamOffset = ArchiveException.addExact(nextPackStreamOffset, archive.packSizes[i]);
+            nextPackStreamOffset = accumulate(nextPackStreamOffset, archive.packSizes[i], "nextPackStreamOffset");
         }
-        final int[] folderFirstFileIndex = new int[checkIntArray(numFolders)];
-        final int[] fileFolderIndex = new int[checkIntArray(archive.files.length)];
+        final int[] folderFirstFileIndex = intArray(numFolders);
+        final int[] fileFolderIndex = intArray(archive.files.length);
         int nextFolderIndex = 0;
         int nextFolderUnpackStreamIndex = 0;
         for (int i = 0; i < archive.files.length; i++) {
@@ -945,26 +1072,6 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
             }
         }
         archive.streamMap = new StreamMap(folderFirstPackStreamIndex, packStreamOffsets, folderFirstFileIndex, fileFolderIndex);
-    }
-
-    int checkByteArray(final int size) throws MemoryLimitException {
-        MemoryLimitException.checkKiB(bytesToKiB(size * Byte.BYTES), maxMemoryLimitKiB);
-        return size;
-    }
-
-    int checkIntArray(final int size) throws MemoryLimitException {
-        MemoryLimitException.checkKiB(bytesToKiB(size * Integer.BYTES), maxMemoryLimitKiB);
-        return size;
-    }
-
-    int checkLongArray(final int size) throws MemoryLimitException {
-        MemoryLimitException.checkKiB(bytesToKiB(size * Long.BYTES), maxMemoryLimitKiB);
-        return size;
-    }
-
-    int checkObjectArray(final int size) throws MemoryLimitException {
-        MemoryLimitException.checkKiB(bytesToKiB(size * 4), maxMemoryLimitKiB); // assume compressed pointer
-        return size;
     }
 
     /**
@@ -1144,14 +1251,13 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     }
 
     private Archive initializeArchive(final StartHeader startHeader, final byte[] password, final boolean verifyCrc) throws IOException {
-        final int nextHeaderSizeInt = toNonNegativeInt("startHeader.nextHeaderSize", startHeader.nextHeaderSize);
-        MemoryLimitException.checkKiB(bytesToKiB(nextHeaderSizeInt), Math.min(bytesToKiB(org.apache.commons.io.IOUtils.SOFT_MAX_ARRAY_LENGTH),
+        MemoryLimitException.checkKiB(bytesToKiB(startHeader.nextHeaderSize), Math.min(bytesToKiB(org.apache.commons.io.IOUtils.SOFT_MAX_ARRAY_LENGTH),
                 maxMemoryLimitKiB));
         channel.position(SIGNATURE_HEADER_SIZE + startHeader.nextHeaderOffset);
         if (verifyCrc) {
             final long position = channel.position();
             final CheckedInputStream cis = new CheckedInputStream(Channels.newInputStream(channel), new CRC32());
-            if (cis.skip(nextHeaderSizeInt) != nextHeaderSizeInt) {
+            if (cis.skip(startHeader.nextHeaderSize) != startHeader.nextHeaderSize) {
                 throw new ArchiveException("Problem computing NextHeader CRC-32");
             }
             if (startHeader.nextHeaderCrc != cis.getChecksum().getValue()) {
@@ -1160,7 +1266,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
             channel.position(position);
         }
         Archive archive = new Archive();
-        ByteBuffer buf = ByteBuffer.allocate(nextHeaderSizeInt).order(ByteOrder.LITTLE_ENDIAN);
+        ByteBuffer buf = ByteBuffer.allocate(startHeader.nextHeaderSize).order(ByteOrder.LITTLE_ENDIAN);
         readFully(buf);
         int nid = getUnsignedByte(buf);
         if (nid == NID.kEncodedHeader) {
@@ -1175,6 +1281,30 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         readHeader(buf, archive);
         archive.subStreamsInfo = null;
         return archive;
+    }
+
+    /**
+     * Creates an int array while checking memory limits.
+     *
+     * @param size the size of the array
+     * @return the int array
+     * @throws MemoryLimitException if memory limit is exceeded
+     */
+    private int[] intArray(final int size) throws MemoryLimitException {
+        MemoryLimitException.checkKiB(bytesToKiB((long) size * Integer.BYTES), maxMemoryLimitKiB);
+        return new int[size];
+    }
+
+    /**
+     * Creates a long array while checking memory limits.
+     *
+     * @param size the size of the array
+     * @return the long array
+     * @throws MemoryLimitException if memory limit is exceeded
+     */
+    private long[] longArray(final int size) throws MemoryLimitException {
+        MemoryLimitException.checkKiB(bytesToKiB((long) size * Long.BYTES), maxMemoryLimitKiB);
+        return new long[size];
     }
 
     /**
@@ -1219,7 +1349,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         @SuppressWarnings("resource") // does not allocate
         final int current = getCurrentStream().read(b, off, len);
         if (current > 0) {
-            uncompressedBytesReadFromCurrentEntry = ArchiveException.addExact(uncompressedBytesReadFromCurrentEntry, current);
+            uncompressedBytesReadFromCurrentEntry = accumulate(uncompressedBytesReadFromCurrentEntry, current, "uncompressedBytesReadFromCurrentEntry");
         }
         return current;
     }
@@ -1238,18 +1368,19 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         return bits;
     }
 
-    private void readArchiveProperties(final ByteBuffer input) throws IOException {
+    private void readArchiveProperties(final ByteBuffer header) throws IOException {
         // FIXME: the reference implementation just throws them away?
-        long nid = readUint64(input);
+        long nid = readUint64(header);
         while (nid != NID.kEnd) {
-            final int propertySize = readUint64ToIntExact(input);
-            final byte[] property = new byte[checkByteArray(propertySize)];
-            get(input, property);
-            nid = readUint64(input);
+            // We validate the size but ignore the value
+            final int propertySize = readFieldSize(header);
+            skipBytesFully(header, propertySize);
+            nid = readUint64(header);
         }
     }
 
     private BitSet readBits(final ByteBuffer header, final int size) throws IOException {
+        ensureRemaining(header, (size + 7) / 8);
         final BitSet bits = new BitSet(size);
         int mask = 0;
         int cache = 0;
@@ -1310,7 +1441,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     }
 
     private void readFilesInfo(final ByteBuffer header, final Archive archive) throws IOException {
-        final int numFilesInt = readUint64ToIntExact(header);
+        final int numFilesInt = readUint64ToIntExact(header, "numFiles");
         final Map<Integer, SevenZArchiveEntry> fileMap = new LinkedHashMap<>();
         BitSet isEmptyStream = null;
         BitSet isEmptyFile = null;
@@ -1318,14 +1449,11 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         final int originalLimit = header.limit();
         while (true) {
             final int propertyType = getUnsignedByte(header);
-            if (propertyType == 0) {
+            if (propertyType == NID.kEnd) {
                 break;
             }
-            final int size = readUint64ToIntExact(header);
-            if (size < 0 || size > header.remaining()) {
-                throw new ArchiveException("Corrupted 7z archive: property size %,d, but only %,d bytes available", size, header.remaining());
-            }
-            // Limit the buffer to the size of the property
+            final int size = readFieldSize(header);
+            // Limit the buffer to the size of the property, so we don't read beyond it
             header.limit(header.position() + size);
             switch (propertyType) {
             case NID.kEmptyStream: {
@@ -1426,6 +1554,10 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
                 break;
             }
             }
+            // We should have consumed all the bytes by now
+            if (header.remaining() > 0) {
+                throw new ArchiveException("Unsupported 7z archive: property 0x%02d has %d trailing bytes.", propertyType, header.remaining());
+            }
             // Restore original limit
             header.limit(originalLimit);
         }
@@ -1446,9 +1578,6 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
                 entryAtIndex.setHasCrc(archive.subStreamsInfo.hasCrc.get(nonEmptyFileCounter));
                 entryAtIndex.setCrcValue(archive.subStreamsInfo.crcs[nonEmptyFileCounter]);
                 entryAtIndex.setSize(archive.subStreamsInfo.unpackSizes[nonEmptyFileCounter]);
-                if (entryAtIndex.getSize() < 0) {
-                    throw new ArchiveException("Broken archive, entry with negative size");
-                }
                 ++nonEmptyFileCounter;
             } else {
                 entryAtIndex.setDirectory(isEmptyFile == null || !isEmptyFile.get(emptyFileCounter));
@@ -1477,8 +1606,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
             final boolean isSimple = (bits & 0x10) == 0;
             final boolean hasAttributes = (bits & 0x20) != 0;
             final boolean moreAlternativeMethods = (bits & 0x80) != 0;
-            final byte[] decompressionMethodId = new byte[idSize];
-            get(header, decompressionMethodId);
+            final byte[] decompressionMethodId = toByteArray(header, idSize);
             final long numInStreams;
             final long numOutStreams;
             if (isSimple) {
@@ -1501,9 +1629,8 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
             totalOutStreams += (int) numOutStreams;
             byte[] properties = null;
             if (hasAttributes) {
-                final long propertiesSize = readUint64(header);
-                properties = new byte[checkByteArray(ArchiveException.toIntExact(propertiesSize))];
-                get(header, properties);
+                final int propertiesSize = readFieldSize(header);
+                properties = toByteArray(header, propertiesSize);
             }
             // would need to keep looping as above:
             if (moreAlternativeMethods) {
@@ -1596,7 +1723,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
             throw new ArchiveException("Unsupported 7z version (%d,%d)", archiveVersionMajor, archiveVersionMinor);
         }
         boolean headerLooksValid = false; // See https://www.7-zip.org/recover.html - "There is no correct End Header at the end of archive"
-        final long startHeaderCrc = 0xffffFFFFL & buf.getInt();
+        final long startHeaderCrc = readUint32(buf);
         if (startHeaderCrc == 0) {
             // This is an indication of a corrupt header - peek the next 20 bytes
             final long currentPosition = channel.position();
@@ -1626,10 +1753,11 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
 
     private void readPackInfo(final ByteBuffer header, final Archive archive) throws IOException {
         archive.packPos = readUint64(header);
-        final int numPackStreamsInt = readUint64ToIntExact(header);
+        final int numPackStreamsInt = readUint64ToIntExact(header, "numPackStreams");
         int nid = getUnsignedByte(header);
         if (nid == NID.kSize) {
-            archive.packSizes = new long[checkLongArray(numPackStreamsInt)];
+            ensureRemaining(header, MIN_UINT64_BYTES * numPackStreamsInt);
+            archive.packSizes = longArray(numPackStreamsInt);
             for (int i = 0; i < archive.packSizes.length; i++) {
                 archive.packSizes[i] = readUint64(header);
             }
@@ -1637,10 +1765,11 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         }
         if (nid == NID.kCRC) {
             archive.packCrcsDefined = readAllOrBits(header, numPackStreamsInt);
-            archive.packCrcs = new long[checkLongArray(numPackStreamsInt)];
+            ensureRemaining(header, UINT32_BYTES * archive.packCrcsDefined.cardinality());
+            archive.packCrcs = longArray(numPackStreamsInt);
             for (int i = 0; i < numPackStreamsInt; i++) {
                 if (archive.packCrcsDefined.get(i)) {
-                    archive.packCrcs[i] = 0xffffFFFFL & getInt(header);
+                    archive.packCrcs[i] = readUint32(header);
                 }
             }
             // read one more
@@ -1658,16 +1787,15 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
                 .setExpectedChecksumValue(startHeaderCrc)
                 .get())) {
                 // @formatter:on
-            final long nextHeaderOffset = Long.reverseBytes(dataInputStream.readLong());
-            if (nextHeaderOffset < 0 || nextHeaderOffset + SIGNATURE_HEADER_SIZE > channel.size()) {
+            final long nextHeaderOffset = readRealUint64(dataInputStream);
+            if (nextHeaderOffset > channel.size() - SIGNATURE_HEADER_SIZE) {
                 throw new ArchiveException("nextHeaderOffset is out of bounds");
             }
-            final long nextHeaderSize = Long.reverseBytes(dataInputStream.readLong());
-            final long nextHeaderEnd = nextHeaderOffset + nextHeaderSize;
-            if (nextHeaderEnd < nextHeaderOffset || nextHeaderEnd + SIGNATURE_HEADER_SIZE > channel.size()) {
+            final int nextHeaderSize = toNonNegativeInt("nextHeaderSize", readRealUint64(dataInputStream));
+            if (nextHeaderSize > channel.size() - SIGNATURE_HEADER_SIZE - nextHeaderOffset) {
                 throw new ArchiveException("nextHeaderSize is out of bounds");
             }
-            final long nextHeaderCrc = 0xffffFFFFL & Integer.reverseBytes(dataInputStream.readInt());
+            final long nextHeaderCrc = readUint32(dataInputStream);
             return new StartHeader(nextHeaderOffset, nextHeaderSize, nextHeaderCrc);
         }
     }
@@ -1695,14 +1823,13 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         for (final Folder folder : archive.folders) {
             folder.numUnpackSubStreams = 1;
         }
-        long unpackStreamsCount = archive.folders.length;
+        int unpackStreamsCount = archive.folders.length;
         int nid = getUnsignedByte(header);
         if (nid == NID.kNumUnpackStream) {
             unpackStreamsCount = 0;
             for (final Folder folder : archive.folders) {
-                final long numStreams = readUint64(header);
-                folder.numUnpackSubStreams = (int) numStreams;
-                unpackStreamsCount = ArchiveException.addExact(unpackStreamsCount, numStreams);
+                folder.numUnpackSubStreams = readUint64ToIntExact(header, "numUnpackSubStreams");
+                unpackStreamsCount = accumulate(unpackStreamsCount, folder.numUnpackSubStreams, "numUnpackStreams");
             }
             nid = getUnsignedByte(header);
         }
@@ -1712,18 +1839,19 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
             if (folder.numUnpackSubStreams == 0) {
                 continue;
             }
-            long sum = 0;
+            long totalUnpackSize = 0;
             if (nid == NID.kSize) {
+                ensureRemaining(header, MIN_UINT64_BYTES * (folder.numUnpackSubStreams - 1));
                 for (int i = 0; i < folder.numUnpackSubStreams - 1; i++) {
                     final long size = readUint64(header);
                     subStreamsInfo.unpackSizes[nextUnpackStream++] = size;
-                    sum = ArchiveException.addExact(sum, size);
+                    totalUnpackSize = accumulate(totalUnpackSize, size, "unpackSize");
                 }
             }
-            if (sum > folder.getUnpackSize()) {
+            if (totalUnpackSize > folder.getUnpackSize()) {
                 throw new ArchiveException("Sum of unpack sizes of folder exceeds total unpack size");
             }
-            subStreamsInfo.unpackSizes[nextUnpackStream++] = folder.getUnpackSize() - sum;
+            subStreamsInfo.unpackSizes[nextUnpackStream++] = folder.getUnpackSize() - totalUnpackSize;
         }
         if (nid == NID.kSize) {
             nid = getUnsignedByte(header);
@@ -1731,15 +1859,16 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         int numDigests = 0;
         for (final Folder folder : archive.folders) {
             if (folder.numUnpackSubStreams != 1 || !folder.hasCrc) {
-                numDigests = ArchiveException.addExact(numDigests, folder.numUnpackSubStreams);
+                numDigests = accumulate(numDigests, folder.numUnpackSubStreams, "numDigests");
             }
         }
         if (nid == NID.kCRC) {
             final BitSet hasMissingCrc = readAllOrBits(header, numDigests);
-            final long[] missingCrcs = new long[checkLongArray(numDigests)];
+            ensureRemaining(header, UINT32_BYTES * hasMissingCrc.cardinality());
+            final long[] missingCrcs = longArray(numDigests);
             for (int i = 0; i < numDigests; i++) {
                 if (hasMissingCrc.get(i)) {
-                    missingCrcs[i] = 0xffffFFFFL & getInt(header);
+                    missingCrcs[i] = readUint32(header);
                 }
             }
             int nextCrc = 0;
@@ -1765,16 +1894,23 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
 
     private void readUnpackInfo(final ByteBuffer header, final Archive archive) throws IOException {
         int nid = getUnsignedByte(header);
-        final int numFoldersInt = readUint64ToIntExact(header);
-        final Folder[] folders = new Folder[checkObjectArray(numFoldersInt)];
-        archive.folders = folders;
+        final int numFoldersInt = readUint64ToIntExact(header, "numFolders");
         /* final int external = */ getUnsignedByte(header);
+        // Verify available header bytes and memory limit before allocating array
+        // A folder requires at least 3 bytes: the number of coders (1 byte), the flag byte for the coder (1 byte),
+        // and at least 1 byte for the method id (1 byte)
+        ensureRemaining(header, 3L * numFoldersInt);
+        // Assumes compressed pointer
+        MemoryLimitException.checkKiB(bytesToKiB(numFoldersInt * 4L), maxMemoryLimitKiB);
+        final Folder[] folders = new Folder[numFoldersInt];
+        archive.folders = folders;
         for (int i = 0; i < numFoldersInt; i++) {
             folders[i] = readFolder(header);
         }
         nid = getUnsignedByte(header);
         for (final Folder folder : folders) {
-            folder.unpackSizes = new long[checkLongArray(toNonNegativeInt("totalOutputStreams", folder.totalOutputStreams))];
+            ensureRemaining(header, folder.totalOutputStreams);
+            folder.unpackSizes = longArray(folder.totalOutputStreams);
             for (int i = 0; i < folder.totalOutputStreams; i++) {
                 folder.unpackSizes[i] = readUint64(header);
             }
@@ -1782,10 +1918,11 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         nid = getUnsignedByte(header);
         if (nid == NID.kCRC) {
             final BitSet crcsDefined = readAllOrBits(header, numFoldersInt);
+            ensureRemaining(header, UINT32_BYTES * crcsDefined.cardinality());
             for (int i = 0; i < numFoldersInt; i++) {
                 if (crcsDefined.get(i)) {
                     folders[i].hasCrc = true;
-                    folders[i].crc = 0xffffFFFFL & getInt(header);
+                    folders[i].crc = readUint32(header);
                 } else {
                     folders[i].hasCrc = false;
                 }
@@ -1841,27 +1978,23 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     private void sanityCheckArchiveProperties(final ByteBuffer header) throws IOException {
         long nid = readUint64(header);
         while (nid != NID.kEnd) {
-            final int propertySize = toNonNegativeInt("propertySize", readUint64(header));
-            if (skipBytesFully(header, propertySize) < propertySize) {
-                throw new ArchiveException("Invalid property size");
-            }
+            // We validate the size but ignore the value
+            final int propertySize = readFieldSize(header);
+            skipBytesFully(header, propertySize);
             nid = readUint64(header);
         }
     }
 
     private void sanityCheckFilesInfo(final ByteBuffer header, final ArchiveStatistics stats) throws IOException {
-        stats.numberOfEntries = toNonNegativeInt("numFiles", readUint64(header));
+        stats.numberOfEntries = readUint64ToIntExact(header, "numFiles");
         int emptyStreams = -1;
         final int originalLimit = header.limit();
         while (true) {
             final int propertyType = getUnsignedByte(header);
-            if (propertyType == 0) {
+            if (propertyType == NID.kEnd) {
                 break;
             }
-            final int size = readUint64ToIntExact(header);
-            if (size < 0 || size > header.remaining()) {
-                throw new ArchiveException("Corrupted 7z archive: property size %,d, but only %,d bytes available", size, header.remaining());
-            }
+            final int size = readFieldSize(header);
             // Limit the buffer to the size of the property
             header.limit(header.position() + size);
             switch (propertyType) {
@@ -1873,14 +2006,14 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
                 if (emptyStreams == -1) {
                     throw new ArchiveException("Header format error: kEmptyStream must appear before kEmptyFile");
                 }
-                readBits(header, emptyStreams);
+                skipBytesFully(header, size);
                 break;
             }
             case NID.kAnti: {
                 if (emptyStreams == -1) {
                     throw new ArchiveException("Header format error: kEmptyStream must appear before kAnti");
                 }
-                readBits(header, emptyStreams);
+                skipBytesFully(header, size);
                 break;
             }
             case NID.kName: {
@@ -1904,48 +2037,16 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
                 }
                 break;
             }
-            case NID.kCTime: {
-                final int timesDefined = readAllOrBits(header, stats.numberOfEntries).cardinality();
-                final int external = getUnsignedByte(header);
-                if (external != 0) {
-                    throw new ArchiveException("Not implemented");
-                }
-                if (skipBytesFully(header, 8 * timesDefined) < 8 * timesDefined) {
-                    throw new ArchiveException("Invalid creation dates size");
-                }
-                break;
-            }
-            case NID.kATime: {
-                final int timesDefined = readAllOrBits(header, stats.numberOfEntries).cardinality();
-                final int external = getUnsignedByte(header);
-                if (external != 0) {
-                    throw new ArchiveException("Not implemented");
-                }
-                if (skipBytesFully(header, 8 * timesDefined) < 8 * timesDefined) {
-                    throw new ArchiveException("Invalid access dates size");
-                }
-                break;
-            }
-            case NID.kMTime: {
-                final int timesDefined = readAllOrBits(header, stats.numberOfEntries).cardinality();
-                final int external = getUnsignedByte(header);
-                if (external != 0) {
-                    throw new ArchiveException("Not implemented");
-                }
-                if (skipBytesFully(header, 8 * timesDefined) < 8 * timesDefined) {
-                    throw new ArchiveException("Invalid modification dates size");
-                }
-                break;
-            }
+            case NID.kCTime:
+            case NID.kATime:
+            case NID.kMTime:
             case NID.kWinAttributes: {
-                final int attributesDefined = readAllOrBits(header, stats.numberOfEntries).cardinality();
+                final int definedCount = readAllOrBits(header, stats.numberOfEntries).cardinality();
                 final int external = getUnsignedByte(header);
                 if (external != 0) {
                     throw new ArchiveException("Not implemented");
                 }
-                if (skipBytesFully(header, 4 * attributesDefined) < 4 * attributesDefined) {
-                    throw new ArchiveException("Invalid windows attributes size");
-                }
+                skipBytesFully(header, (propertyType == NID.kWinAttributes ? UINT32_BYTES : REAL_UINT64_BYTES) * definedCount);
                 break;
             }
             case NID.kStartPos: {
@@ -1954,18 +2055,18 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
             case NID.kDummy: {
                 // 7z 9.20 asserts the content is all zeros and ignores the property
                 // Compress up to 1.8.1 would throw an exception, now we ignore it (see COMPRESS-287
-                if (skipBytesFully(header, size) < size) {
-                    throw new ArchiveException("Incomplete kDummy property");
-                }
+                skipBytesFully(header, size);
                 break;
             }
             default: {
                 // Compress up to 1.8.1 would throw an exception, now we ignore it (see COMPRESS-287
-                if (skipBytesFully(header, size) < size) {
-                    throw new ArchiveException("Incomplete property of type " + propertyType);
-                }
+                skipBytesFully(header, size);
                 break;
             }
+            }
+            // We should have consumed all the bytes by now
+            if (header.remaining() > 0) {
+                throw new ArchiveException("Unsupported 7z archive: property 0x%02d has %d trailing bytes.", propertyType, header.remaining());
             }
             // Restore original limit
             header.limit(originalLimit);
@@ -1974,17 +2075,16 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     }
 
     private long sanityCheckFolder(final ByteBuffer header, final ArchiveStatistics stats) throws IOException {
-        final int numCoders = toNonNegativeInt("numCoders", readUint64(header));
-        if (numCoders == 0) {
-            throw new ArchiveException("Folder without coders");
+        final long numCoders = readUint64(header);
+        if (numCoders == 0 || numCoders > MAX_CODERS_PER_FOLDER) {
+            throw new ArchiveException("Unsupported 7z archive: %,d coders in folder.", numCoders);
         }
-        stats.numberOfCoders = ArchiveException.addExact(stats.numberOfCoders, numCoders);
-        long totalOutStreams = 0;
-        long totalInStreams = 0;
+        stats.numberOfCoders = accumulate(stats.numberOfCoders, numCoders, "numCoders");
+        int totalInStreams = 0;
         for (int i = 0; i < numCoders; i++) {
             final int bits = getUnsignedByte(header);
             final int idSize = bits & 0xf;
-            get(header, new byte[idSize]);
+            skipBytesFully(header, idSize);
             final boolean isSimple = (bits & 0x10) == 0;
             final boolean hasAttributes = (bits & 0x20) != 0;
             final boolean moreAlternativeMethods = (bits & 0x80) != 0;
@@ -1993,37 +2093,36 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
             }
             if (isSimple) {
                 totalInStreams++;
-                totalOutStreams++;
             } else {
-                totalInStreams = ArchiveException.addExact(totalInStreams, toNonNegativeInt("numInStreams", readUint64(header)));
-                totalOutStreams = ArchiveException.addExact(totalOutStreams, toNonNegativeInt("numOutStreams", readUint64(header)));
+                final long numInStreams = readUint64(header);
+                if (numInStreams > MAX_CODER_STREAMS_PER_FOLDER) {
+                    throw new ArchiveException("Unsupported 7z archive: %,d coder input streams in folder.", numInStreams);
+                }
+                if (readUint64(header) != 1) {
+                    throw new ArchiveException("Unsupported 7z archive: %,d coder output streams in folder.", readUint64(header));
+                }
+                totalInStreams += (int) numInStreams;
             }
             if (hasAttributes) {
-                final int propertiesSize = toNonNegativeInt("propertiesSize", readUint64(header));
-                if (skipBytesFully(header, propertiesSize) < propertiesSize) {
-                    throw new ArchiveException("Invalid propertiesSize in folder");
-                }
+                final int propertiesSize = readFieldSize(header);
+                skipBytesFully(header, propertiesSize);
             }
         }
-        toNonNegativeInt("totalInStreams", totalInStreams);
-        toNonNegativeInt("totalOutStreams", totalOutStreams);
-        stats.numberOfOutStreams = ArchiveException.addExact(stats.numberOfOutStreams, totalOutStreams);
-        stats.numberOfInStreams = ArchiveException.addExact(stats.numberOfInStreams, totalInStreams);
-        if (totalOutStreams == 0) {
-            throw new ArchiveException("Total output streams can't be 0");
-        }
-        final int numBindPairs = toNonNegativeInt("numBindPairs", totalOutStreams - 1);
+        final int totalOutStreams = (int) numCoders;
+        stats.numberOfOutStreams = accumulate(stats.numberOfOutStreams, numCoders, "numOutStreams");
+        stats.numberOfInStreams = accumulate(stats.numberOfInStreams, totalInStreams, "numInStreams");
+        final int numBindPairs = totalOutStreams - 1;
         if (totalInStreams < numBindPairs) {
             throw new ArchiveException("Total input streams can't be less than the number of bind pairs");
         }
-        final BitSet inStreamsBound = new BitSet((int) totalInStreams);
+        final BitSet inStreamsBound = new BitSet(totalInStreams);
         for (int i = 0; i < numBindPairs; i++) {
-            final int inIndex = toNonNegativeInt("inIndex", readUint64(header));
+            final int inIndex = readUint64ToIntExact(header, "inIndex");
             if (totalInStreams <= inIndex) {
                 throw new ArchiveException("inIndex is bigger than number of inStreams");
             }
             inStreamsBound.set(inIndex);
-            final int outIndex = toNonNegativeInt("outIndex", readUint64(header));
+            final int outIndex = readUint64ToIntExact(header, "outIndex");
             if (totalOutStreams <= outIndex) {
                 throw new ArchiveException("outIndex is bigger than number of outStreams");
             }
@@ -2035,7 +2134,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
             }
         } else {
             for (int i = 0; i < numPackedStreams; i++) {
-                final int packedStreamIndex = toNonNegativeInt("packedStreamIndex", readUint64(header));
+                final int packedStreamIndex = readUint64ToIntExact(header, "packedStreamIndex");
                 if (packedStreamIndex >= totalInStreams) {
                     throw new ArchiveException("packedStreamIndex is bigger than number of totalInStreams");
                 }
@@ -2046,19 +2145,19 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
 
     private void sanityCheckPackInfo(final ByteBuffer header, final ArchiveStatistics stats) throws IOException {
         final long packPos = readUint64(header);
-        if (packPos < 0 || SIGNATURE_HEADER_SIZE + packPos > channel.size() || SIGNATURE_HEADER_SIZE + packPos < 0) {
+        if (packPos > channel.size() - SIGNATURE_HEADER_SIZE) {
             throw new ArchiveException("packPos (%,d) is out of range", packPos);
         }
-        final long numPackStreams = readUint64(header);
-        stats.numberOfPackedStreams = toNonNegativeInt("numPackStreams", numPackStreams);
+        stats.numberOfPackedStreams = readUint64ToIntExact(header, "numPackStreams");
         int nid = getUnsignedByte(header);
         if (nid == NID.kSize) {
             long totalPackSizes = 0;
+            ensureRemaining(header, MIN_UINT64_BYTES * stats.numberOfPackedStreams);
             for (int i = 0; i < stats.numberOfPackedStreams; i++) {
                 final long packSize = readUint64(header);
-                totalPackSizes = ArchiveException.addExact(totalPackSizes, packSize);
-                final long endOfPackStreams = SIGNATURE_HEADER_SIZE + packPos + totalPackSizes;
-                if (packSize < 0 || endOfPackStreams > channel.size() || endOfPackStreams < packPos) {
+                totalPackSizes = accumulate(totalPackSizes, packSize, "packSize");
+                // We check the total pack size against the file size.
+                if (totalPackSizes > channel.size() - SIGNATURE_HEADER_SIZE - packPos) {
                     throw new ArchiveException("packSize (%,d) is out of range", packSize);
                 }
             }
@@ -2066,9 +2165,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         }
         if (nid == NID.kCRC) {
             final int crcsDefined = readAllOrBits(header, stats.numberOfPackedStreams).cardinality();
-            if (skipBytesFully(header, 4 * crcsDefined) < 4 * crcsDefined) {
-                throw new ArchiveException("Invalid number of CRCs in PackInfo");
-            }
+            skipBytesFully(header, 4L * crcsDefined);
             nid = getUnsignedByte(header);
         }
         if (nid != NID.kEnd) {
@@ -2100,7 +2197,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         final List<Integer> numUnpackSubStreamsPerFolder = new LinkedList<>();
         if (nid == NID.kNumUnpackStream) {
             for (int i = 0; i < stats.numberOfFolders; i++) {
-                numUnpackSubStreamsPerFolder.add(toNonNegativeInt("numStreams", readUint64(header)));
+                numUnpackSubStreamsPerFolder.add(readUint64ToIntExact(header, "numStreams"));
             }
             stats.numberOfUnpackSubStreams = numUnpackSubStreamsPerFolder.stream().mapToLong(Integer::longValue).sum();
             nid = getUnsignedByte(header);
@@ -2114,10 +2211,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
                     continue;
                 }
                 for (int i = 0; i < numUnpackSubStreams - 1; i++) {
-                    final long size = readUint64(header);
-                    if (size < 0) {
-                        throw new ArchiveException("Negative unpackSize");
-                    }
+                    readUint64(header);
                 }
             }
             nid = getUnsignedByte(header);
@@ -2129,16 +2223,13 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
             int folderIdx = 0;
             for (final int numUnpackSubStreams : numUnpackSubStreamsPerFolder) {
                 if (numUnpackSubStreams != 1 || stats.folderHasCrc == null || !stats.folderHasCrc.get(folderIdx++)) {
-                    numDigests = ArchiveException.addExact(numDigests, numUnpackSubStreams);
+                    numDigests = accumulate(numDigests, numUnpackSubStreams, "numDigests");
                 }
             }
         }
         if (nid == NID.kCRC) {
-            toNonNegativeInt("numDigests", numDigests);
             final int missingCrcs = readAllOrBits(header, numDigests).cardinality();
-            if (skipBytesFully(header, 4 * missingCrcs) < 4 * missingCrcs) {
-                throw new ArchiveException("Invalid number of missing CRCs in SubStreamInfo");
-            }
+            skipBytesFully(header, UINT32_BYTES * missingCrcs);
             nid = getUnsignedByte(header);
         }
         if (nid != NID.kEnd) {
@@ -2151,8 +2242,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         if (nid != NID.kFolder) {
             throw new ArchiveException("Expected NID.kFolder, got %s", nid);
         }
-        final long numFolders = readUint64(header);
-        stats.numberOfFolders = toNonNegativeInt("numFolders", numFolders);
+        stats.numberOfFolders = readUint64ToIntExact(header, "numFolders");
         final int external = getUnsignedByte(header);
         if (external != 0) {
             throw new ArchiveException("External unsupported");
@@ -2172,19 +2262,14 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         }
         for (final long numberOfOutputStreams : numberOfOutputStreamsPerFolder) {
             for (long i = 0; i < numberOfOutputStreams; i++) {
-                final long unpackSize = readUint64(header);
-                if (unpackSize < 0) {
-                    throw new IllegalArgumentException("Negative unpackSize");
-                }
+                readUint64(header);
             }
         }
         nid = getUnsignedByte(header);
         if (nid == NID.kCRC) {
             stats.folderHasCrc = readAllOrBits(header, stats.numberOfFolders);
             final int crcsDefined = stats.folderHasCrc.cardinality();
-            if (skipBytesFully(header, 4 * crcsDefined) < 4 * crcsDefined) {
-                throw new ArchiveException("Invalid number of CRCs in UnpackInfo");
-            }
+            skipBytesFully(header, UINT32_BYTES * crcsDefined);
             nid = getUnsignedByte(header);
         }
         if (nid != NID.kEnd) {
@@ -2273,6 +2358,22 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         return IOStream.of(archive.files);
     }
 
+    /**
+     * Converts the given ByteBuffer to a byte array of the given size.
+     *
+     * @param header The buffer containing the 7z header data.
+     * @param size  The size of the byte array to create.
+     * @return A byte array containing the data from the buffer.
+     * @throws IOException if there are insufficient resources to allocate the array or insufficient data in the buffer.
+     */
+    private byte[] toByteArray(final ByteBuffer header, final int size) throws IOException {
+        // Check if we have enough resources to allocate the array
+        MemoryLimitException.checkKiB(bytesToKiB(size * Byte.BYTES), maxMemoryLimitKiB);
+        final byte[] result = new byte[size];
+        get(header, result);
+        return result;
+    }
+
     @Override
     public String toString() {
         return archive.toString();
@@ -2305,8 +2406,9 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
                 try {
                     // Try to initialize Archive structure from here
                     final long nextHeaderOffset = pos - previousDataSize;
+                    // Smaller than 1 MiB, so fits in an int
                     final long nextHeaderSize = channel.size() - pos;
-                    final StartHeader startHeader = new StartHeader(nextHeaderOffset, nextHeaderSize, 0);
+                    final StartHeader startHeader = new StartHeader(nextHeaderOffset, (int) nextHeaderSize, 0);
                     final Archive result = initializeArchive(startHeader, password, false);
                     // Sanity check: There must be some data...
                     if (result.packSizes.length > 0 && result.files.length > 0) {
