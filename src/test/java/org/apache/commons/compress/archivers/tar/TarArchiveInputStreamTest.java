@@ -167,7 +167,7 @@ class TarArchiveInputStreamTest extends AbstractTest {
         final ExecutorService executorService = Executors.newFixedThreadPool(10);
         try {
             final List<Future<?>> tasks = IntStream.range(0, 200).mapToObj(index -> executorService.submit(() -> {
-                TarArchiveEntry tarEntry = null;
+                final TarArchiveEntry tarEntry = null;
                 try (InputStream inputStream = getClass().getResourceAsStream(localPath);
                      // @formatter:off
                      TarArchiveInputStream tarInputStream = TarArchiveInputStream.builder()
@@ -176,9 +176,7 @@ class TarArchiveInputStreamTest extends AbstractTest {
                              .setRecordSize(TarConstants.DEFAULT_RCDSIZE)
                              .get()) {
                     // @formatter:on
-                    while ((tarEntry = tarInputStream.getNextEntry()) != null) {
-                        assertNotNull(tarEntry);
-                    }
+                    consumeEntries(tarInputStream);
                 } catch (final IOException e) {
                     fail(Objects.toString(tarEntry), e);
                 }

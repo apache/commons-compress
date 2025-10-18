@@ -19,6 +19,7 @@
 package org.apache.commons.compress;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.BufferedInputStream;
@@ -222,6 +223,16 @@ public abstract class AbstractTest extends AbstractTempDirTest {
 
     protected void closeQuietly(final Closeable closeable) {
         IOUtils.closeQuietly(closeable);
+    }
+
+    protected <E extends ArchiveEntry> long consumeEntries(final ArchiveInputStream<E> in) throws IOException {
+        long count = 0;
+        E entry;
+        while ((entry = in.getNextEntry()) != null) {
+            count++;
+            assertNotNull(entry);
+        }
+        return count;
     }
 
     /**
