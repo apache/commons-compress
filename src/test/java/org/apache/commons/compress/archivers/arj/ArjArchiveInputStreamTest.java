@@ -56,7 +56,7 @@ import org.junitpioneer.jupiter.cartesian.CartesianTest;
  */
 class ArjArchiveInputStreamTest extends AbstractTest {
 
-    private static byte[] createArjArchiveHeader(int size, boolean computeCrc) {
+    private static byte[] createArjArchiveHeader(final int size, final boolean computeCrc) {
         // Enough space for the fixed-size portion of the header plus:
         // - signature (2 bytes)
         // - the 2-byte basic header size field itself (2 bytes)
@@ -301,7 +301,7 @@ class ArjArchiveInputStreamTest extends AbstractTest {
 
     @ParameterizedTest
     @MethodSource
-    void testSelfExtractingArchive(byte[] junk) throws Exception {
+    void testSelfExtractingArchive(final byte[] junk) throws Exception {
         final Path validArj = getPath("bla.arj");
         try (InputStream first = new ByteArrayInputStream(junk);
              InputStream second = Files.newInputStream(validArj);
@@ -340,7 +340,7 @@ class ArjArchiveInputStreamTest extends AbstractTest {
     @CartesianTest
     void testSmallFirstHeaderSize(
             // 30 is the minimum valid size
-            @CartesianTest.Values(ints = {0, 1, 10, 29}) int size, @CartesianTest.Values(booleans = {false, true}) boolean selfExtracting) {
+            @CartesianTest.Values(ints = {0, 1, 10, 29}) final int size, @CartesianTest.Values(booleans = {false, true}) final boolean selfExtracting) {
         final byte[] bytes = createArjArchiveHeader(size, true);
         assertThrows(ArchiveException.class, () -> ArjArchiveInputStream.builder().setByteArray(bytes).setSelfExtracting(selfExtracting).get());
     }
@@ -381,7 +381,7 @@ class ArjArchiveInputStreamTest extends AbstractTest {
             // One byte before the first file’s data
             0x95
     })
-    void testTruncatedLocalHeader(long maxCount) throws Exception {
+    void testTruncatedLocalHeader(final long maxCount) throws Exception {
         try (InputStream input = BoundedInputStream.builder().setURI(getURI("bla.arj")).setMaxCount(maxCount).get();
              ArjArchiveInputStream archive = ArjArchiveInputStream.builder().setInputStream(input).get()) {
             assertThrows(EOFException.class, () -> {
@@ -423,7 +423,7 @@ class ArjArchiveInputStreamTest extends AbstractTest {
             0x30, 0x33,
             // Inside the extended-header length (2 bytes)
             0x34})
-    void testTruncatedMainHeader(long maxCount) throws Exception {
+    void testTruncatedMainHeader(final long maxCount) throws Exception {
         try (InputStream input = BoundedInputStream.builder()
                 .setURI(getURI("bla.arj"))
                 .setMaxCount(maxCount)
