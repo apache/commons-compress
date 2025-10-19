@@ -742,7 +742,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
             throw new IllegalStateException("No current tar entry");
         }
         // Use Apache Commons IO to skip as it handles skipping fully
-        return org.apache.commons.io.IOUtils.skip(currentInputStream, n);
+        return IOUtils.skip(currentInputStream, n);
     }
 
     /**
@@ -754,7 +754,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
         final long entrySize = currEntry != null ? currEntry.getSize() : 0;
         if (!isDirectory() && entrySize > 0 && entrySize % getRecordSize() != 0) {
             final long padding = getRecordSize() - (entrySize % getRecordSize());
-            final long skipped = org.apache.commons.io.IOUtils.skip(in, padding);
+            final long skipped = IOUtils.skip(in, padding);
             count(skipped);
             if (skipped != padding) {
                 throw new EOFException(String.format("Truncated TAR archive: Failed to skip record padding for entry '%s'", currEntry.getName()));
