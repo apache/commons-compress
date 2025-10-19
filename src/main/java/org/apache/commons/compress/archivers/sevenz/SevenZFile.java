@@ -1767,11 +1767,13 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     private StartHeader readStartHeader(final ByteBuffer startHeader) throws IOException {
         final long nextHeaderOffset = readRealUint64(startHeader);
         if (nextHeaderOffset > channel.size() - SIGNATURE_HEADER_SIZE) {
-            throw new ArchiveException("nextHeaderOffset is out of bounds");
+            throw new ArchiveException("Truncated 7z archive: next header offset %,d exceeds file size (%,d bytes).",
+                    nextHeaderOffset + SIGNATURE_HEADER_SIZE, channel.size());
         }
         final int nextHeaderSize = toNonNegativeInt("header", readRealUint64(startHeader));
         if (nextHeaderSize > channel.size() - SIGNATURE_HEADER_SIZE - nextHeaderOffset) {
-            throw new ArchiveException("nextHeaderSize is out of bounds");
+            throw new ArchiveException("Truncated 7z archive: next header size %,d at offset %,d exceeds file size (%,d bytes).", nextHeaderSize,
+                    nextHeaderOffset + SIGNATURE_HEADER_SIZE, channel.size());
         }
         final long nextHeaderCrc = readUint32(startHeader);
         return new StartHeader(nextHeaderOffset, nextHeaderSize, nextHeaderCrc);
