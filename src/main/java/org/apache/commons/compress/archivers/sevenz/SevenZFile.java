@@ -435,7 +435,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         return header;
     }
 
-    private static long computeChecksum(final ByteBuffer header) {
+    private static long crc32(final ByteBuffer header) {
         final int currentPosition = header.position();
         final CRC32 crc = new CRC32();
         crc.update(header);
@@ -1247,7 +1247,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     private Archive initializeArchive(final StartHeader startHeader, final byte[] password, final boolean verifyCrc) throws IOException {
         Archive archive = new Archive();
         ByteBuffer header = mapNextHeader(startHeader);
-        if (verifyCrc && startHeader.nextHeaderCrc != computeChecksum(header)) {
+        if (verifyCrc && startHeader.nextHeaderCrc != crc32(header)) {
             throw new ArchiveException("Corrupted 7z archive: CRC error in next header");
         }
         int nid = getUnsignedByte(header);
@@ -1726,7 +1726,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
             throw new ArchiveException("7z archive: Unsupported 7z version (%d,%d)", archiveVersionMajor, archiveVersionMinor);
         }
         final long startHeaderCrc = readUint32(startHeader);
-        if (startHeaderCrc == computeChecksum(startHeader)) {
+        if (startHeaderCrc == crc32(startHeader)) {
             return initializeArchive(readStartHeader(startHeader), password, true);
         }
         // See https://www.7-zip.org/recover.html - "There is no correct End Header at the end of archive"
