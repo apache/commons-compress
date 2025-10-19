@@ -20,7 +20,6 @@ package org.apache.commons.compress.archivers.sevenz;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FilterInputStream;
@@ -28,7 +27,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
 import java.nio.channels.SeekableByteChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,7 +38,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.zip.CRC32;
-import java.util.zip.CheckedInputStream;
 
 import org.apache.commons.compress.MemoryLimitException;
 import org.apache.commons.compress.archivers.AbstractArchiveBuilder;
@@ -437,6 +435,14 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         return header;
     }
 
+    private static long crc32(final ByteBuffer header) {
+        final int currentPosition = header.position();
+        final CRC32 crc = new CRC32();
+        crc.update(header);
+        header.position(currentPosition);
+        return crc.getValue();
+    }
+
     /**
      * Wrapper of {@link ByteBuffer#get(byte[])} that checks remaining bytes first.
      */
@@ -492,14 +498,14 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     }
 
     /**
-     * Reads a 7z REAL_UINT64 from the stream.
+     * Reads a 7z REAL_UINT64 from the header.
      *
-     * @param inputStream the input stream containing the 7z header.
+     * @param header the buffer containing the 7z header.
      * @return a non-negative long.
      * @throws ArchiveException if the value is truncated or too large.
      */
-    static long readRealUint64(final DataInputStream inputStream) throws IOException {
-        final long value = Long.reverseBytes(inputStream.readLong());
+    static long readRealUint64(final ByteBuffer header) throws IOException {
+        final long value = header.getLong();
         if (value < 0) {
             throw new ArchiveException("7z archive: Unsupported, cannot handle integer larger then %d, but was %s", Integer.MAX_VALUE,
                     Long.toUnsignedString(value));
@@ -516,18 +522,6 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
      */
     static long readUint32(final ByteBuffer header) throws ArchiveException {
         return Integer.toUnsignedLong(getInt(header));
-    }
-
-
-    /**
-     * Reads a 7z UINT32 from the stream.
-     *
-     * @param inputStream the input stream containing the 7z header.
-     * @return a non-negative long.
-     * @throws ArchiveException if the value is truncated.
-     */
-    static long readUint32(final DataInputStream inputStream) throws IOException {
-        return Integer.toUnsignedLong(Integer.reverseBytes(inputStream.readInt()));
     }
 
     /**
@@ -1251,33 +1245,22 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     }
 
     private Archive initializeArchive(final StartHeader startHeader, final byte[] password, final boolean verifyCrc) throws IOException {
-        MemoryLimitException.checkKiB(bytesToKiB(startHeader.nextHeaderSize), Math.min(bytesToKiB(IOUtils.SOFT_MAX_ARRAY_LENGTH), maxMemoryLimitKiB));
-        channel.position(SIGNATURE_HEADER_SIZE + startHeader.nextHeaderOffset);
-        if (verifyCrc) {
-            final long position = channel.position();
-            final CheckedInputStream cis = new CheckedInputStream(Channels.newInputStream(channel), new CRC32());
-            if (cis.skip(startHeader.nextHeaderSize) != startHeader.nextHeaderSize) {
-                throw new ArchiveException("Problem computing NextHeader CRC-32");
-            }
-            if (startHeader.nextHeaderCrc != cis.getChecksum().getValue()) {
-                throw new ArchiveException("NextHeader CRC-32 mismatch");
-}
-            channel.position(position);
-        }
         Archive archive = new Archive();
-        ByteBuffer buf = ByteBuffer.allocate(startHeader.nextHeaderSize).order(ByteOrder.LITTLE_ENDIAN);
-        readFully(buf);
-        int nid = getUnsignedByte(buf);
+        ByteBuffer header = mapNextHeader(startHeader);
+        if (verifyCrc && startHeader.nextHeaderCrc != crc32(header)) {
+            throw new ArchiveException("Corrupted 7z archive: CRC error in next header");
+        }
+        int nid = getUnsignedByte(header);
         if (nid == NID.kEncodedHeader) {
-            buf = readEncodedHeader(buf, archive, password);
+            header = readEncodedHeader(header, archive, password);
             // Archive gets rebuilt with the new header
             archive = new Archive();
-            nid = getUnsignedByte(buf);
+            nid = getUnsignedByte(header);
         }
         if (nid != NID.kHeader) {
             throw new ArchiveException("7z archive: Broken or unsupported, no Header");
         }
-        readHeader(buf, archive);
+        readHeader(header, archive);
         archive.subStreamsInfo = null;
         return archive;
     }
@@ -1304,6 +1287,27 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     private long[] longArray(final int size) throws MemoryLimitException {
         MemoryLimitException.checkKiB(bytesToKiB((long) size * Long.BYTES), maxMemoryLimitKiB);
         return new long[size];
+    }
+
+    /**
+     * Maps the next header into memory.
+     *
+     * @param startHeader the start header
+     * @return the mapped ByteBuffer
+     * @throws IOException if an I/O error occurs
+     */
+    private ByteBuffer mapNextHeader(final StartHeader startHeader) throws IOException {
+        MemoryLimitException.checkKiB(bytesToKiB(startHeader.nextHeaderSize), Math.min(bytesToKiB(org.apache.commons.io.IOUtils.SOFT_MAX_ARRAY_LENGTH),
+                maxMemoryLimitKiB));
+        // startHeader is already within the channel's bounds
+        if (channel instanceof FileChannel) {
+            final FileChannel fileChannel = (FileChannel) channel;
+            return fileChannel.map(FileChannel.MapMode.READ_ONLY, startHeader.position(), startHeader.nextHeaderSize).order(ByteOrder.LITTLE_ENDIAN);
+        }
+        channel.position(startHeader.position());
+        final ByteBuffer buf = ByteBuffer.allocate(startHeader.nextHeaderSize).order(ByteOrder.LITTLE_ENDIAN);
+        readFully(buf);
+        return buf;
     }
 
     /**
@@ -1410,7 +1414,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         // FIXME: merge with buildDecodingStream()/buildDecoderStack() at some stage?
         final Folder folder = archive.folders[0];
         final int firstPackStreamIndex = 0;
-        final long folderOffset = SIGNATURE_HEADER_SIZE + archive.packPos + 0;
+        final long folderOffset = SIGNATURE_HEADER_SIZE + archive.packPos;
         channel.position(folderOffset);
         InputStream inputStreamStack = new BoundedSeekableByteChannelInputStream(channel, archive.packSizes[firstPackStreamIndex]);
         for (final Coder coder : folder.getOrderedCoders()) {
@@ -1430,7 +1434,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
                     .get();
             // @formatter:on
         }
-        final int unpackSize = toNonNegativeInt("unpackSize", folder.getUnpackSize());
+        final int unpackSize = toNonNegativeInt("header", folder.getUnpackSize());
         final byte[] nextHeader = org.apache.commons.compress.utils.IOUtils.readRange(inputStreamStack, unpackSize);
         if (nextHeader.length < unpackSize) {
             throw new ArchiveException("Premature end of stream");
@@ -1679,7 +1683,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
 
     private void readFully(final ByteBuffer buf) throws IOException {
         buf.rewind();
-        IOUtils.readFully(channel, buf);
+        org.apache.commons.io.IOUtils.read(channel, buf);
         buf.flip();
     }
 
@@ -1708,40 +1712,24 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     }
 
     private Archive readHeaders(final byte[] password) throws IOException {
-        final ByteBuffer buf = ByteBuffer.allocate(12 /* signature + 2 bytes version + 4 bytes CRC */).order(ByteOrder.LITTLE_ENDIAN);
-        readFully(buf);
-        final byte[] signature = new byte[6];
-        buf.get(signature);
+        final ByteBuffer startHeader = ByteBuffer.allocate(SIGNATURE_HEADER_SIZE).order(ByteOrder.LITTLE_ENDIAN);
+        readFully(startHeader);
+        final byte[] signature = new byte[SIGNATURE.length];
+        startHeader.get(signature);
         if (!Arrays.equals(signature, SIGNATURE)) {
             throw new ArchiveException("Bad 7z signature");
         }
         // 7zFormat.txt has it wrong - it's first major then minor
-        final byte archiveVersionMajor = buf.get();
-        final byte archiveVersionMinor = buf.get();
+        final byte archiveVersionMajor = startHeader.get();
+        final byte archiveVersionMinor = startHeader.get();
         if (archiveVersionMajor != 0) {
             throw new ArchiveException("7z archive: Unsupported 7z version (%d,%d)", archiveVersionMajor, archiveVersionMinor);
         }
-        boolean headerLooksValid = false; // See https://www.7-zip.org/recover.html - "There is no correct End Header at the end of archive"
-        final long startHeaderCrc = readUint32(buf);
-        if (startHeaderCrc == 0) {
-            // This is an indication of a corrupt header - peek the next 20 bytes
-            final long currentPosition = channel.position();
-            final ByteBuffer peekBuf = ByteBuffer.allocate(20);
-            readFully(peekBuf);
-            channel.position(currentPosition);
-            // Header invalid if all data is 0
-            while (peekBuf.hasRemaining()) {
-                if (peekBuf.get() != 0) {
-                    headerLooksValid = true;
-                    break;
-                }
-            }
-        } else {
-            headerLooksValid = true;
+        final long startHeaderCrc = readUint32(startHeader);
+        if (startHeaderCrc == crc32(startHeader)) {
+            return initializeArchive(readStartHeader(startHeader), password, true);
         }
-        if (headerLooksValid) {
-            return initializeArchive(readStartHeader(startHeaderCrc), password, true);
-        }
+        // See https://www.7-zip.org/recover.html - "There is no correct End Header at the end of archive"
         // No valid header found - probably first file of multipart archive was removed too early. Scan for end header.
         if (tryToRecoverBrokenArchives) {
             return tryToLocateEndHeader(password);
@@ -1776,27 +1764,19 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         }
     }
 
-    private StartHeader readStartHeader(final long startHeaderCrc) throws IOException {
-        // using Stream rather than ByteBuffer for the benefit of the built-in CRC check
-        try (DataInputStream dataInputStream = new DataInputStream(ChecksumInputStream.builder()
-                // @formatter:off
-                .setChecksum(new CRC32())
-                .setInputStream(new BoundedSeekableByteChannelInputStream(channel, 20))
-                .setCountThreshold(20L)
-                .setExpectedChecksumValue(startHeaderCrc)
-                .get())) {
-                // @formatter:on
-            final long nextHeaderOffset = readRealUint64(dataInputStream);
-            if (nextHeaderOffset > channel.size() - SIGNATURE_HEADER_SIZE) {
-                throw new ArchiveException("nextHeaderOffset is out of bounds");
-            }
-            final int nextHeaderSize = toNonNegativeInt("nextHeaderSize", readRealUint64(dataInputStream));
-            if (nextHeaderSize > channel.size() - SIGNATURE_HEADER_SIZE - nextHeaderOffset) {
-                throw new ArchiveException("nextHeaderSize is out of bounds");
-            }
-            final long nextHeaderCrc = readUint32(dataInputStream);
-            return new StartHeader(nextHeaderOffset, nextHeaderSize, nextHeaderCrc);
+    private StartHeader readStartHeader(final ByteBuffer startHeader) throws IOException {
+        final long nextHeaderOffset = readRealUint64(startHeader);
+        if (nextHeaderOffset > channel.size() - SIGNATURE_HEADER_SIZE) {
+            throw new ArchiveException("Truncated 7z archive: next header offset %,d exceeds file size (%,d bytes).",
+                    nextHeaderOffset + SIGNATURE_HEADER_SIZE, channel.size());
         }
+        final int nextHeaderSize = toNonNegativeInt("header", readRealUint64(startHeader));
+        if (nextHeaderSize > channel.size() - SIGNATURE_HEADER_SIZE - nextHeaderOffset) {
+            throw new ArchiveException("Truncated 7z archive: next header size %,d at offset %,d exceeds file size (%,d bytes).", nextHeaderSize,
+                    nextHeaderOffset + SIGNATURE_HEADER_SIZE, channel.size());
+        }
+        final long nextHeaderCrc = readUint32(startHeader);
+        return new StartHeader(nextHeaderOffset, nextHeaderSize, nextHeaderCrc);
     }
 
     private void readStreamsInfo(final ByteBuffer header, final Archive archive) throws IOException {
@@ -2382,15 +2362,8 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     private Archive tryToLocateEndHeader(final byte[] password) throws IOException {
         final ByteBuffer nidBuf = ByteBuffer.allocate(1);
         final long searchLimit = 1024L * 1024 * 1;
-        // Main header, plus bytes that readStartHeader would read
-        final long previousDataSize = channel.position() + 20;
-        final long minPos;
         // Determine minimal position - can't start before current position
-        if (channel.position() + searchLimit > channel.size()) {
-            minPos = channel.position();
-        } else {
-            minPos = channel.size() - searchLimit;
-        }
+        final long minPos = Math.max(channel.position(), channel.size() - searchLimit);
         long pos = channel.size() - 1;
         // Loop: Try from end of archive
         while (pos > minPos) {
@@ -2405,7 +2378,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
             if (nid == NID.kEncodedHeader || nid == NID.kHeader) {
                 try {
                     // Try to initialize Archive structure from here
-                    final long nextHeaderOffset = pos - previousDataSize;
+                    final long nextHeaderOffset = pos - SIGNATURE_HEADER_SIZE;
                     // Smaller than 1 MiB, so fits in an int
                     final long nextHeaderSize = channel.size() - pos;
                     final StartHeader startHeader = new StartHeader(nextHeaderOffset, (int) nextHeaderSize, 0);

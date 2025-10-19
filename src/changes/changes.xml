@@ -89,6 +89,7 @@ The <action> type attribute can be add,update,fix,remove.
       <!-- FIX pack200 -->      
       <action type="fix" dev="ggregory" due-to="Gary Gregory, Igor Morgenstern">org.apache.commons.compress.harmony.pack200 now throws Pack200Exception, IllegalArgumentException, IllegalStateException, instead of other runtime exceptions and Error.</action>
       <action type="fix" dev="ppkarwasz" due-to="Raeps">Extract duplicate code in org.apache.commons.compress.harmony.pack200.IntList.</action>
+      <action type="fix" dev="pkarwasz" due-to="Piotr P. Karwasz">Simplify `PackingUtils` by leveraging Commons IO.</action>
       <!-- FIX cpio -->
       <action type="fix" dev="ggregory" due-to="Stan, Gary Gregory">CpioArchiveEntry now throws ArchiveException instead of Arithmetic exception.</action>
       <action type="fix" dev="ggregory" due-to="Stan, Gary Gregory">CpioArchiveInputStream.getNextEntry() now throws a MemoryLimitException instead of OutOfMemoryError when it can't process input greater than available memory.</action>

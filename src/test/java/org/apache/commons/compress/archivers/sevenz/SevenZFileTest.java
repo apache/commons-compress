@@ -29,9 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -1091,18 +1089,16 @@ class SevenZFileTest extends AbstractArchiveFileTest<SevenZArchiveEntry> {
     @ParameterizedTest
     @MethodSource
     void testReadRealUint64_Invalid(final byte[] input) throws IOException {
-        try (DataInputStream dis = new DataInputStream(new ByteArrayInputStream(input))) {
-            assertThrows(IOException.class, () -> SevenZFile.readRealUint64(dis));
-        }
+        final ByteBuffer buf = ByteBuffer.wrap(input).order(ByteOrder.LITTLE_ENDIAN);
+        assertThrows(IOException.class, () -> SevenZFile.readRealUint64(buf));
     }
 
     @ParameterizedTest
     @MethodSource
     void testReadRealUint64_Valid(final byte[] input, final long expected) throws IOException {
-        try (DataInputStream dis = new DataInputStream(new ByteArrayInputStream(input))) {
-            final long actual = SevenZFile.readRealUint64(dis);
-            assertEquals(expected, actual);
-        }
+        final ByteBuffer buf = ByteBuffer.wrap(input).order(ByteOrder.LITTLE_ENDIAN);
+        final long actual = SevenZFile.readRealUint64(buf);
+        assertEquals(expected, actual);
     }
 
     @Test
@@ -1134,10 +1130,6 @@ class SevenZFileTest extends AbstractArchiveFileTest<SevenZArchiveEntry> {
     @ParameterizedTest
     @MethodSource
     void testReadUint32_Valid(final byte[] input, final long expected) throws IOException {
-        try (DataInputStream dis = new DataInputStream(new ByteArrayInputStream(input))) {
-            final long actual = SevenZFile.readUint32(dis);
-            assertEquals(expected, actual);
-        }
         final ByteBuffer buf = ByteBuffer.wrap(input).order(ByteOrder.LITTLE_ENDIAN);
         final long actual = SevenZFile.readUint32(buf);
         assertEquals(expected, actual);
