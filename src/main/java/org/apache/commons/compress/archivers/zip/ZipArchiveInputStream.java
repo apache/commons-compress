@@ -50,8 +50,8 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.deflate64.Deflate64CompressorInputStream;
 import org.apache.commons.compress.compressors.zstandard.ZstdCompressorInputStream;
 import org.apache.commons.compress.utils.ArchiveUtils;
-import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -1047,7 +1047,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
 
     @Override
     public int read(final byte[] buffer, final int offset, final int length) throws IOException {
-        org.apache.commons.io.IOUtils.checkFromIndexSize(buffer, offset, length);
+        IOUtils.checkFromIndexSize(buffer, offset, length);
         if (length == 0) {
             return 0;
         }
@@ -1231,7 +1231,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
 
     private void readFully(final byte[] b, final int off) throws IOException {
         final int len = b.length - off;
-        final int count = IOUtils.readFully(in, b, off, len);
+        final int count = IOUtils.read(in, b, off, len);
         count(count);
         if (count < len) {
             throw new EOFException();
@@ -1268,7 +1268,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     }
 
     private byte[] readRange(final int len) throws IOException {
-        final byte[] ret = IOUtils.readRange(in, len);
+        final byte[] ret = org.apache.commons.compress.utils.IOUtils.readRange(in, len);
         count(ret.length);
         if (ret.length < len) {
             throw new EOFException();

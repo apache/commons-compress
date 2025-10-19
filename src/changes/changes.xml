@@ -140,6 +140,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="update" dev="ggregory" due-to="Gary Gregory">Bump org.apache.commons:commons-parent from 85 to 88 #707.</action>
       <action type="update" dev="ggregory" due-to="Gary Gregory">Bump org.apache.commons:commons-lang3 from 3.18.0 to 3.19.0.</action>
       <!-- REMOVE -->
+      <action type="remove" dev="pkarwasz" due-to="Piotr P. Karwasz">Deprecate IOUtils.readFully and IOUtils.skip.</action>
     </release>
     <release version="1.28.0" date="2025-07-26" description="This is a feature and maintenance release. Java 8 or later is required.">
       <!-- FIX -->

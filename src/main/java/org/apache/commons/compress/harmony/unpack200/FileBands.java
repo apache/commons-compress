@@ -23,7 +23,6 @@ import java.io.InputStream;
 
 import org.apache.commons.compress.harmony.pack200.Codec;
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
-import org.apache.commons.compress.utils.IOUtils;
 
 /**
  * Parses the file band headers (not including the actual bits themselves). At the end of this parse call, the input stream will be positioned at the start of
@@ -83,7 +82,7 @@ public class FileBands extends BandSet {
         fileBits = new byte[numberOfFiles][];
         for (int i = 0; i < numberOfFiles; i++) {
             final int size = (int) fileSize[i];
-            fileBits[i] = IOUtils.readRange(in, size);
+            fileBits[i] = org.apache.commons.compress.utils.IOUtils.readRange(in, size);
             final int read = fileBits[i].length;
             if (size != 0 && read < size) {
                 throw new Pack200Exception("Expected to read " + size + " bytes but read " + read);

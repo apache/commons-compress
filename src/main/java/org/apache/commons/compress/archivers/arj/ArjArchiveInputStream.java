@@ -32,6 +32,7 @@ import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.io.EndianUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.io.input.ChecksumInputStream;
 
@@ -226,7 +227,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
                 final int basicHeaderSize = readSwappedUnsignedShort();
                 // At least two bytes are required for the null-terminated name and comment
                 if (MIN_FIRST_HEADER_SIZE + 2 <= basicHeaderSize && basicHeaderSize <= MAX_BASIC_HEADER_SIZE) {
-                    basicHeaderBytes = org.apache.commons.io.IOUtils.toByteArray(in, basicHeaderSize);
+                    basicHeaderBytes = IOUtils.toByteArray(in, basicHeaderSize);
                     count(basicHeaderSize);
                     if (checkCRC32(basicHeaderBytes)) {
                         return basicHeaderBytes;
@@ -262,7 +263,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
         if (currentInputStream != null) {
             // return value ignored as IOUtils.skip ensures the stream is drained completely
             final InputStream input = currentInputStream;
-            org.apache.commons.io.IOUtils.skip(input, Long.MAX_VALUE);
+            IOUtils.skip(input, Long.MAX_VALUE);
             currentInputStream.close();
             currentLocalFileHeader = null;
             currentInputStream = null;
@@ -307,7 +308,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
 
     @Override
     public int read(final byte[] b, final int off, final int len) throws IOException {
-        org.apache.commons.io.IOUtils.checkFromIndexSize(b, off, len);
+        IOUtils.checkFromIndexSize(b, off, len);
         if (len == 0) {
             return 0;
         }
@@ -352,7 +353,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
         if (basicHeaderSize < MIN_FIRST_HEADER_SIZE + 2 || basicHeaderSize > MAX_BASIC_HEADER_SIZE) {
             throw new ArchiveException("Corrupted ARJ archive: Invalid ARJ header size %,d", basicHeaderSize);
         }
-        final byte[] basicHeaderBytes = org.apache.commons.io.IOUtils.toByteArray(in, basicHeaderSize);
+        final byte[] basicHeaderBytes = IOUtils.toByteArray(in, basicHeaderSize);
         count(basicHeaderSize);
         if (!checkCRC32(basicHeaderBytes)) {
             throw new ArchiveException("Corrupted ARJ archive: Invalid ARJ header CRC32 checksum");
@@ -402,7 +403,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
         final ArrayList<byte[]> extendedHeaders = new ArrayList<>();
         int extendedHeaderSize;
         while ((extendedHeaderSize = readSwappedUnsignedShort()) > 0) {
-            final byte[] extendedHeaderBytes = org.apache.commons.io.IOUtils.toByteArray(in, extendedHeaderSize);
+            final byte[] extendedHeaderBytes = IOUtils.toByteArray(in, extendedHeaderSize);
             count(extendedHeaderSize);
             if (!checkCRC32(extendedHeaderBytes)) {
                 throw new ArchiveException("Corrupted ARJ archive: Extended header CRC32 verification failure");
@@ -448,7 +449,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
         }
         final int extendedHeaderSize = readSwappedUnsignedShort();
         if (extendedHeaderSize > 0) {
-            header.extendedHeaderBytes = org.apache.commons.io.IOUtils.toByteArray(in, extendedHeaderSize);
+            header.extendedHeaderBytes = IOUtils.toByteArray(in, extendedHeaderSize);
             count(extendedHeaderSize);
             if (!checkCRC32(header.extendedHeaderBytes)) {
                 throw new ArchiveException("Corrupted ARJ archive: Extended header CRC32 verification failure");

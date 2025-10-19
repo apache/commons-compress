@@ -113,8 +113,8 @@ public final class ZipTest extends AbstractTest {
 
                 try (InputStream actualIs = actual.getInputStream(actualElement);
                         InputStream expectedIs = expected.getInputStream(expectedElement)) {
-                    org.apache.commons.compress.utils.IOUtils.readFully(expectedIs, expectedBuf);
-                    org.apache.commons.compress.utils.IOUtils.readFully(actualIs, actualBuf);
+                    IOUtils.read(expectedIs, expectedBuf);
+                    IOUtils.read(actualIs, actualBuf);
                 }
                 assertArrayEquals(expectedBuf, actualBuf); // Buffers are larger than payload. don't care
             }

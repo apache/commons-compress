@@ -25,7 +25,6 @@ import java.io.InputStream;
 import org.apache.commons.compress.harmony.pack200.BHSDCodec;
 import org.apache.commons.compress.harmony.pack200.Codec;
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
-import org.apache.commons.compress.utils.IOUtils;
 
 /**
  * SegmentHeader is the header band of a {@link Segment}.
@@ -301,7 +300,7 @@ public class SegmentHeader {
         parseCpCounts(in);
         parseClassCounts(in);
         if (getBandHeadersSize() > 0) {
-            setBandHeadersData(IOUtils.readRange(in, getBandHeadersSize()));
+            setBandHeadersData(org.apache.commons.compress.utils.IOUtils.readRange(in, getBandHeadersSize()));
         }
         archiveSizeOffset -= in.available();
     }

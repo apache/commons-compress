@@ -42,7 +42,6 @@ import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry;
 import org.apache.commons.compress.archivers.sevenz.SevenZOutputFile;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
-import org.apache.commons.compress.utils.IOUtils;
 
 /**
  * Provides a high level API for creating archives.
@@ -61,7 +60,7 @@ public class Archiver {
         private ArchiverFileVisitor(final O target, final Path directory, final LinkOption... linkOptions) {
             this.outputStream = target;
             this.directory = directory;
-            this.linkOptions = linkOptions == null ? IOUtils.EMPTY_LINK_OPTIONS : linkOptions.clone();
+            this.linkOptions = linkOptions == null ? org.apache.commons.compress.utils.IOUtils.EMPTY_LINK_OPTIONS : linkOptions.clone();
         }
 
         @Override

@@ -43,8 +43,8 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
-import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.Sets;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -218,7 +218,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
         in.mark(signature.length);
         int signatureLength = -1;
         try {
-            signatureLength = IOUtils.readFully(in, signature);
+            signatureLength = IOUtils.read(in, signature);
             in.reset();
         } catch (final IOException e) {
             throw new ArchiveException("Failure reading signature.", (Throwable) e);
@@ -247,7 +247,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
         final byte[] dumpsig = new byte[DUMP_SIGNATURE_SIZE];
         in.mark(dumpsig.length);
         try {
-            signatureLength = IOUtils.readFully(in, dumpsig);
+            signatureLength = IOUtils.read(in, dumpsig);
             in.reset();
         } catch (final IOException e) {
             throw new ArchiveException("IOException while reading dump signature", (Throwable) e);
@@ -259,7 +259,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
         final byte[] tarHeader = new byte[TAR_HEADER_SIZE];
         in.mark(tarHeader.length);
         try {
-            signatureLength = IOUtils.readFully(in, tarHeader);
+            signatureLength = IOUtils.read(in, tarHeader);
             in.reset();
         } catch (final IOException e) {
             throw new ArchiveException("IOException while reading tar signature", (Throwable) e);

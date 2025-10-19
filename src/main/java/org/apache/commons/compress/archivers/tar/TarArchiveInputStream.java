@@ -43,7 +43,7 @@ import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.utils.ArchiveUtils;
-import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
 
 /**
@@ -651,7 +651,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      */
     @Override
     public int read(final byte[] buf, final int offset, int numToRead) throws IOException {
-        org.apache.commons.io.IOUtils.checkFromIndexSize(buf, offset, numToRead);
+        IOUtils.checkFromIndexSize(buf, offset, numToRead);
         if (numToRead == 0) {
             return 0;
         }
@@ -690,7 +690,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      * @throws IOException on error.
      */
     protected byte[] readRecord() throws IOException {
-        final int readCount = IOUtils.readFully(in, recordBuffer);
+        final int readCount = IOUtils.read(in, recordBuffer);
         count(readCount);
         if (readCount != getRecordSize()) {
             return null;
@@ -742,7 +742,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
             throw new IllegalStateException("No current tar entry");
         }
         // Use Apache Commons IO to skip as it handles skipping fully
-        return org.apache.commons.io.IOUtils.skip(currentInputStream, n);
+        return IOUtils.skip(currentInputStream, n);
     }
 
     /**
@@ -754,7 +754,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
         final long entrySize = currEntry != null ? currEntry.getSize() : 0;
         if (!isDirectory() && entrySize > 0 && entrySize % getRecordSize() != 0) {
             final long padding = getRecordSize() - (entrySize % getRecordSize());
-            final long skipped = org.apache.commons.io.IOUtils.skip(in, padding);
+            final long skipped = IOUtils.skip(in, padding);
             count(skipped);
             if (skipped != padding) {
                 throw new EOFException(String.format("Truncated TAR archive: Failed to skip record padding for entry '%s'", currEntry.getName()));

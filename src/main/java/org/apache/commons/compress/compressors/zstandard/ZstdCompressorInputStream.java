@@ -24,6 +24,7 @@ import java.io.InputStream;
 
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.utils.InputStreamStatistics;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
 
 import com.github.luben.zstd.BufferPool;
@@ -125,7 +126,7 @@ public class ZstdCompressorInputStream extends CompressorInputStream implements 
 
     @Override
     public long skip(final long n) throws IOException {
-        return org.apache.commons.io.IOUtils.skip(decIS, n);
+        return IOUtils.skip(decIS, n);
     }
 
     @Override
