@@ -318,7 +318,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
         do {
             // If there is a current entry, skip any unread data and padding
             if (currentEntry != null) {
-                IOUtils.skip(this, Long.MAX_VALUE); // Skip to end of current entry
+                IOUtils.consume(this); // Skip to end of current entry
                 skipRecordPadding(); // Skip padding to align to the next record
             }
 

@@ -309,19 +309,6 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
     }
 
     /**
-     * Closes the current CPIO entry and positions the stream for reading the next entry.
-     *
-     * @throws IOException if an I/O error has occurred or if a CPIO file error has occurred
-     */
-    private void closeEntry() throws IOException {
-        // the skip implementation of this class will not skip more
-        // than Integer.MAX_VALUE bytes
-        while (skip((long) Integer.MAX_VALUE) == Integer.MAX_VALUE) { // NOPMD NOSONAR
-            // do nothing
-        }
-    }
-
-    /**
      * Reads the next CPIO file entry and positions stream at the beginning of the entry data.
      *
      * @return the CpioArchiveEntry just read
@@ -332,7 +319,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
     public CpioArchiveEntry getNextCPIOEntry() throws IOException {
         checkOpen();
         if (entry != null) {
-            closeEntry();
+            IOUtils.consume(this);
         }
         readFully(buffer2, 0, buffer2.length);
         if (CpioUtil.byteArray2long(buffer2, false) == MAGIC_OLD_BINARY) {
