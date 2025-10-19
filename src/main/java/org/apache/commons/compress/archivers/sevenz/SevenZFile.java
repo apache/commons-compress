@@ -1297,8 +1297,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
      * @throws IOException if an I/O error occurs
      */
     private ByteBuffer mapNextHeader(final StartHeader startHeader) throws IOException {
-        MemoryLimitException.checkKiB(bytesToKiB(startHeader.nextHeaderSize), Math.min(bytesToKiB(org.apache.commons.io.IOUtils.SOFT_MAX_ARRAY_LENGTH),
-                maxMemoryLimitKiB));
+        MemoryLimitException.checkKiB(bytesToKiB(startHeader.nextHeaderSize), Math.min(bytesToKiB(IOUtils.SOFT_MAX_ARRAY_LENGTH), maxMemoryLimitKiB));
         // startHeader is already within the channel's bounds
         if (channel instanceof FileChannel) {
             final FileChannel fileChannel = (FileChannel) channel;
@@ -1306,7 +1305,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         }
         channel.position(startHeader.position());
         final ByteBuffer buf = ByteBuffer.allocate(startHeader.nextHeaderSize).order(ByteOrder.LITTLE_ENDIAN);
-        readFully(buf);
+        readFully(buf, "next header");
         return buf;
     }
 
@@ -1681,10 +1680,13 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         return folder;
     }
 
-    private void readFully(final ByteBuffer buf) throws IOException {
-        buf.rewind();
-        org.apache.commons.io.IOUtils.read(channel, buf);
-        buf.flip();
+    private void readFully(final ByteBuffer buf, final String description) throws IOException {
+        try {
+            IOUtils.readFully(channel, buf);
+            buf.flip();
+        } catch (final EOFException e) {
+            throw new ArchiveException("Truncated 7z archive: end of file reached while reading %s.", description);
+        }
     }
 
     private void readHeader(final ByteBuffer header, final Archive archive) throws IOException {
@@ -1713,7 +1715,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
 
     private Archive readHeaders(final byte[] password) throws IOException {
         final ByteBuffer startHeader = ByteBuffer.allocate(SIGNATURE_HEADER_SIZE).order(ByteOrder.LITTLE_ENDIAN);
-        readFully(startHeader);
+        readFully(startHeader, "signature header");
         final byte[] signature = new byte[SIGNATURE.length];
         startHeader.get(signature);
         if (!Arrays.equals(signature, SIGNATURE)) {
