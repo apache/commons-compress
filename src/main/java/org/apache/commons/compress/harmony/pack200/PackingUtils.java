@@ -18,7 +18,6 @@
  */
 package org.apache.commons.compress.harmony.pack200;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,6 +39,8 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
 import org.apache.commons.compress.harmony.pack200.Archive.PackingFile;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.function.IOConsumer;
 
 public class PackingUtils {
 
@@ -97,16 +98,12 @@ public class PackingUtils {
     public static void copyThroughJar(final JarFile jarFile, final OutputStream outputStream) throws IOException {
         try (JarOutputStream jarOutputStream = new JarOutputStream(outputStream)) {
             jarOutputStream.setComment("PACK200");
-            final byte[] bytes = new byte[16384];
             final Enumeration<JarEntry> entries = jarFile.entries();
             while (entries.hasMoreElements()) {
                 final JarEntry jarEntry = entries.nextElement();
                 jarOutputStream.putNextEntry(jarEntry);
                 try (InputStream inputStream = jarFile.getInputStream(jarEntry)) {
-                    int bytesRead;
-                    while ((bytesRead = inputStream.read(bytes)) != -1) {
-                        jarOutputStream.write(bytes, 0, bytesRead);
-                    }
+                    IOUtils.copyLarge(inputStream, jarOutputStream);
                     jarOutputStream.closeEntry();
                     log("Packed " + jarEntry.getName());
                 }
@@ -128,14 +125,10 @@ public class PackingUtils {
             jarOutputStream.setComment("PACK200");
             log("Packed " + JarFile.MANIFEST_NAME);
 
-            final byte[] bytes = new byte[16384];
             JarEntry jarEntry;
-            int bytesRead;
             while ((jarEntry = jarInputStream.getNextJarEntry()) != null) {
                 jarOutputStream.putNextEntry(jarEntry);
-                while ((bytesRead = jarInputStream.read(bytes)) != -1) {
-                    jarOutputStream.write(bytes, 0, bytesRead);
-                }
+                IOUtils.copyLarge(jarInputStream, jarOutputStream);
                 log("Packed " + jarEntry.getName());
             }
             jarInputStream.close();
@@ -144,14 +137,11 @@ public class PackingUtils {
 
     public static List<PackingFile> getPackingFileListFromJar(final JarFile jarFile, final boolean keepFileOrder) throws IOException {
         final List<PackingFile> packingFileList = new ArrayList<>();
-        final Enumeration<JarEntry> jarEntries = jarFile.entries();
-        while (jarEntries.hasMoreElements()) {
-            final JarEntry jarEntry = jarEntries.nextElement();
+        IOConsumer.forEach(jarFile.stream(), jarEntry -> {
             try (InputStream inputStream = jarFile.getInputStream(jarEntry)) {
-                final byte[] bytes = readJarEntry(jarEntry, new BufferedInputStream(inputStream));
-                packingFileList.add(new PackingFile(bytes, jarEntry));
+                packingFileList.add(new PackingFile(readJarEntry(jarEntry, inputStream), jarEntry));
             }
-        }
+        });
 
         // check whether it need reorder packing file list
         if (!keepFileOrder) {
@@ -173,10 +163,8 @@ public class PackingUtils {
 
         // add rest of entries in the jar
         JarEntry jarEntry;
-        byte[] bytes;
         while ((jarEntry = jarInputStream.getNextJarEntry()) != null) {
-            bytes = readJarEntry(jarEntry, new BufferedInputStream(jarInputStream));
-            packingFileList.add(new PackingFile(bytes, jarEntry));
+            packingFileList.add(new PackingFile(readJarEntry(jarEntry, jarInputStream), jarEntry));
         }
 
         // check whether it need reorder packing file list
@@ -191,19 +179,13 @@ public class PackingUtils {
     }
 
     private static byte[] readJarEntry(final JarEntry jarEntry, final InputStream inputStream) throws IOException {
-        long size = jarEntry.getSize();
+        final long size = jarEntry.getSize();
         if (size > Integer.MAX_VALUE) {
             // TODO: Should probably allow this
             throw new IllegalArgumentException("Large Class!");
         }
-        if (size < 0) {
-            size = 0;
-        }
-        final byte[] bytes = new byte[(int) size];
-        if (inputStream.read(bytes) != size) {
-            throw new IllegalArgumentException("Error reading from stream");
-        }
-        return bytes;
+        // Negative size means unknown size
+        return size < 0 ? IOUtils.toByteArray(inputStream) : IOUtils.toByteArray(inputStream, (int) size, IOUtils.DEFAULT_BUFFER_SIZE);
     }
 
     private static void reorderPackingFiles(final List<PackingFile> packingFileList) {
