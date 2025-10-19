@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.compress.archivers.ArchiveException;
-import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.lang3.ArrayFill;
 
 /**
@@ -53,7 +52,7 @@ final class BinaryTree {
             throw new ArchiveException("Cannot read the size of the encoded tree, unexpected end of stream");
         }
 
-        final byte[] encodedTree = IOUtils.readRange(inputStream, size);
+        final byte[] encodedTree = org.apache.commons.compress.utils.IOUtils.readRange(inputStream, size);
         if (encodedTree.length != size) {
             throw new EOFException();
         }

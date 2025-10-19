@@ -60,9 +60,9 @@ import org.apache.commons.compress.compressors.zstandard.ZstdCompressorInputStre
 import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.BoundedArchiveInputStream;
 import org.apache.commons.compress.utils.BoundedSeekableByteChannelInputStream;
-import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.function.IOFunction;
 import org.apache.commons.io.function.IOStream;
 import org.apache.commons.io.input.BoundedInputStream;
@@ -500,7 +500,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
      * @param zipFile file to close, can be null
      */
     public static void closeQuietly(final ZipFile zipFile) {
-        org.apache.commons.io.IOUtils.closeQuietly(zipFile);
+        IOUtils.closeQuietly(zipFile);
     }
 
     private static SeekableByteChannel openZipChannel(final Path path, final long maxNumberOfDisks, final OpenOption[] openOptions) throws IOException {
@@ -551,7 +551,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
                 return lowercase;
             }).collect(Collectors.toList()), openOptions);
         } catch (final Throwable ex) {
-            org.apache.commons.io.IOUtils.closeQuietly(channel);
+            IOUtils.closeQuietly(channel);
             throw ex;
         }
     }
@@ -1323,7 +1323,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
     public String getUnixSymlink(final ZipArchiveEntry entry) throws IOException {
         if (entry != null && entry.isUnixSymlink()) {
             try (InputStream in = getInputStream(entry)) {
-                return zipEncoding.decode(org.apache.commons.io.IOUtils.toByteArray(in));
+                return zipEncoding.decode(IOUtils.toByteArray(in));
             }
         }
         return null;
@@ -1544,7 +1544,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
         ze.setExternalAttributes(ZipLong.getValue(cfhBuf, off));
         off += ZipConstants.WORD;
 
-        final byte[] fileName = IOUtils.readRange(archive, fileNameLen);
+        final byte[] fileName = org.apache.commons.compress.utils.IOUtils.readRange(archive, fileNameLen);
         if (fileName.length < fileNameLen) {
             throw new EOFException();
         }
@@ -1555,7 +1555,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
         // data offset will be filled later
         entries.add(ze);
 
-        final byte[] cdExtraData = IOUtils.readRange(archive, extraLen);
+        final byte[] cdExtraData = org.apache.commons.compress.utils.IOUtils.readRange(archive, extraLen);
         if (cdExtraData.length < extraLen) {
             throw new EOFException();
         }
@@ -1568,7 +1568,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
         setSizesAndOffsetFromZip64Extra(ze);
         sanityCheckLFHOffset(ze);
 
-        final byte[] comment = IOUtils.readRange(archive, commentLen);
+        final byte[] comment = org.apache.commons.compress.utils.IOUtils.readRange(archive, commentLen);
         if (comment.length < commentLen) {
             throw new EOFException();
         }
@@ -1595,7 +1595,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
             final int fileNameLen = lens[0];
             final int extraFieldLen = lens[1];
             skipBytes(fileNameLen);
-            final byte[] localExtraData = IOUtils.readRange(archive, extraFieldLen);
+            final byte[] localExtraData = org.apache.commons.compress.utils.IOUtils.readRange(archive, extraFieldLen);
             if (localExtraData.length < extraFieldLen) {
                 throw new EOFException();
             }

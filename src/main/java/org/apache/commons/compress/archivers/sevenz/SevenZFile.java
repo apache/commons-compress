@@ -46,8 +46,8 @@ import org.apache.commons.compress.archivers.AbstractArchiveBuilder;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveFile;
 import org.apache.commons.compress.utils.ArchiveUtils;
-import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.function.IOStream;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.io.input.ChecksumInputStream;
@@ -1110,7 +1110,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
             // streams to get access to an entry. We defer this until really needed
             // so that entire blocks can be skipped without wasting time for decompression.
             try (InputStream stream = deferredBlockStreams.remove(0)) {
-                org.apache.commons.io.IOUtils.skip(stream, Long.MAX_VALUE, org.apache.commons.io.IOUtils::byteArray);
+                IOUtils.skip(stream, Long.MAX_VALUE);
             }
             compressedBytesReadFromCurrentEntry = 0;
         }
@@ -1251,8 +1251,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     }
 
     private Archive initializeArchive(final StartHeader startHeader, final byte[] password, final boolean verifyCrc) throws IOException {
-        MemoryLimitException.checkKiB(bytesToKiB(startHeader.nextHeaderSize), Math.min(bytesToKiB(org.apache.commons.io.IOUtils.SOFT_MAX_ARRAY_LENGTH),
-                maxMemoryLimitKiB));
+        MemoryLimitException.checkKiB(bytesToKiB(startHeader.nextHeaderSize), Math.min(bytesToKiB(IOUtils.SOFT_MAX_ARRAY_LENGTH), maxMemoryLimitKiB));
         channel.position(SIGNATURE_HEADER_SIZE + startHeader.nextHeaderOffset);
         if (verifyCrc) {
             final long position = channel.position();
@@ -1432,7 +1431,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
             // @formatter:on
         }
         final int unpackSize = toNonNegativeInt("unpackSize", folder.getUnpackSize());
-        final byte[] nextHeader = IOUtils.readRange(inputStreamStack, unpackSize);
+        final byte[] nextHeader = org.apache.commons.compress.utils.IOUtils.readRange(inputStreamStack, unpackSize);
         if (nextHeader.length < unpackSize) {
             throw new ArchiveException("Premature end of stream");
         }

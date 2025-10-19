@@ -28,8 +28,8 @@ import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.ArchiveUtils;
-import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.ParsingUtils;
+import org.apache.commons.io.IOUtils;
 
 /**
  * CpioArchiveInputStream is a stream for reading cpio streams. All formats of cpio are supported (old ASCII, old binary, new portable format and the new
@@ -386,7 +386,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
      */
     @Override
     public int read(final byte[] b, final int off, final int len) throws IOException {
-        org.apache.commons.io.IOUtils.checkFromIndexSize(b, off, len);
+        IOUtils.checkFromIndexSize(b, off, len);
         if (len == 0) {
             return 0;
         }
@@ -443,7 +443,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
     }
 
     private int readFully(final byte[] b, final int off, final int len) throws IOException {
-        final int count = IOUtils.readFully(in, b, off, len);
+        final int count = IOUtils.read(in, b, off, len);
         count(count);
         if (count < len) {
             throw new EOFException();
@@ -558,7 +558,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
     }
 
     private byte[] readRange(final int len) throws IOException {
-        final byte[] b = IOUtils.readRange(in, len);
+        final byte[] b = org.apache.commons.compress.utils.IOUtils.readRange(in, len);
         count(b.length);
         if (b.length < len) {
             throw new EOFException();

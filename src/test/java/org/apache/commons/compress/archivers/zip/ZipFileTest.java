@@ -258,7 +258,7 @@ class ZipFileTest extends AbstractArchiveFileTest<ZipArchiveEntry> {
             try (InputStream inputStream = zf.getInputStream(ze)) {
                 assertNotNull(inputStream);
                 assertFalse(zf.isUsed());
-                final int bytesRead = org.apache.commons.compress.utils.IOUtils.readFully(inputStream, buffer);
+                final int bytesRead = IOUtils.read(inputStream, buffer);
                 assertEquals(6066, bytesRead);
                 assertTrue(zf.isUsed());
             }
@@ -271,7 +271,7 @@ class ZipFileTest extends AbstractArchiveFileTest<ZipArchiveEntry> {
             try (InputStream inputStream = builtZipFile.getInputStream(ze)) {
                 assertTrue(inputStream instanceof ZstdInputStream);
                 assertNotNull(inputStream);
-                final int bytesRead = org.apache.commons.compress.utils.IOUtils.readFully(inputStream, buffer);
+                final int bytesRead = IOUtils.read(inputStream, buffer);
                 assertEquals(6066, bytesRead);
             }
         }
@@ -905,7 +905,7 @@ class ZipFileTest extends AbstractArchiveFileTest<ZipArchiveEntry> {
             }
 
             try (InputStream inputStream = Files.newInputStream(extractedFile.toPath())) {
-                bytesRead = org.apache.commons.compress.utils.IOUtils.readFully(inputStream, buffer);
+                bytesRead = IOUtils.read(inputStream, buffer);
                 assertEquals(testData.length, bytesRead);
                 assertArrayEquals(testData, Arrays.copyOfRange(buffer, 0, bytesRead));
             }

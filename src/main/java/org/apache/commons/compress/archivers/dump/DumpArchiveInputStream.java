@@ -36,7 +36,7 @@ import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.ArchiveUtils;
-import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.io.IOUtils;
 
 /**
  * The DumpArchiveInputStream reads a Unix dump archive as an InputStream. Methods are provided to position at each successive entry in the archive, and the
@@ -400,7 +400,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
      */
     @Override
     public int read(final byte[] buf, int off, int len) throws IOException {
-        org.apache.commons.io.IOUtils.checkFromIndexSize(buf, off, len);
+        IOUtils.checkFromIndexSize(buf, off, len);
         if (len == 0) {
             return 0;
         }
@@ -527,7 +527,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
             final int datalen = DumpArchiveConstants.TP_SIZE * entry.getHeaderCount();
 
             if (blockBuffer.length < datalen) {
-                blockBuffer = IOUtils.readRange(raw, datalen);
+                blockBuffer = org.apache.commons.compress.utils.IOUtils.readRange(raw, datalen);
                 if (blockBuffer.length != datalen) {
                     throw new EOFException();
                 }

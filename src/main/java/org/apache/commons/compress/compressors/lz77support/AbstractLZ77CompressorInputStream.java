@@ -25,8 +25,8 @@ import java.util.Arrays;
 import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.utils.ByteUtils;
-import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
 
 /**
@@ -332,7 +332,7 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
     private void tryToReadLiteral(final int bytesToRead) throws IOException {
         // min of "what is still inside the literal", "what does the user want" and "how much can fit into the buffer"
         final int reallyTryToRead = Math.min((int) Math.min(bytesToRead, bytesRemaining), buf.length - writeIndex);
-        final int bytesRead = reallyTryToRead > 0 ? IOUtils.readFully(in, buf, writeIndex, reallyTryToRead) : 0 /* happens for bytesRemaining == 0 */;
+        final int bytesRead = reallyTryToRead > 0 ? IOUtils.read(in, buf, writeIndex, reallyTryToRead) : 0 /* happens for bytesRemaining == 0 */;
         count(bytesRead);
         if (reallyTryToRead != bytesRead) {
             throw new CompressorException("Premature end of stream reading literal");

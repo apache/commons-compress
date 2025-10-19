@@ -39,8 +39,8 @@ import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.utils.ArchiveUtils;
-import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.ParsingUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 
 /**
@@ -726,8 +726,7 @@ public final class TarUtils {
                                 if (TarArchiveEntry.PAX_NAME_KEY.equals(keyword) || TarArchiveEntry.PAX_LINK_NAME_KEY.equals(keyword)) {
                                     ArchiveUtils.checkEntryNameLength(restLen - 1, maxEntryPathLength, "TAR");
                                 }
-                                final byte[] rest = org.apache.commons.io.IOUtils.toByteArray(inputStream, restLen,
-                                        org.apache.commons.io.IOUtils.DEFAULT_BUFFER_SIZE);
+                                final byte[] rest = IOUtils.toByteArray(inputStream, restLen, IOUtils.DEFAULT_BUFFER_SIZE);
                                 totalRead += restLen;
                                 // Drop trailing NL
                                 if (rest[restLen - 1] != '\n') {
@@ -848,7 +847,7 @@ public final class TarUtils {
     static String readLongName(final InputStream input, final ZipEncoding encoding, final int maxEntryNameLength,
             final TarArchiveEntry entry) throws IOException {
         final int declaredLength = ArchiveUtils.checkEntryNameLength(entry.getSize(), maxEntryNameLength, "TAR");
-        final byte[] name = IOUtils.readRange(input, declaredLength);
+        final byte[] name = org.apache.commons.compress.utils.IOUtils.readRange(input, declaredLength);
         int actualLength = name.length;
         if (actualLength != declaredLength) {
             throw new EOFException(String.format("Truncated long name entry: Expected %,d bytes, read %,d bytes.", declaredLength, actualLength));

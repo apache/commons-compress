@@ -43,7 +43,7 @@ import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.utils.ArchiveUtils;
-import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
 
 /**
@@ -651,7 +651,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      */
     @Override
     public int read(final byte[] buf, final int offset, int numToRead) throws IOException {
-        org.apache.commons.io.IOUtils.checkFromIndexSize(buf, offset, numToRead);
+        IOUtils.checkFromIndexSize(buf, offset, numToRead);
         if (numToRead == 0) {
             return 0;
         }
@@ -690,7 +690,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      * @throws IOException on error.
      */
     protected byte[] readRecord() throws IOException {
-        final int readCount = IOUtils.readFully(in, recordBuffer);
+        final int readCount = IOUtils.read(in, recordBuffer);
         count(readCount);
         if (readCount != getRecordSize()) {
             return null;
