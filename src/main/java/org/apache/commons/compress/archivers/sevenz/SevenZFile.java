@@ -1104,7 +1104,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
             // streams to get access to an entry. We defer this until really needed
             // so that entire blocks can be skipped without wasting time for decompression.
             try (InputStream stream = deferredBlockStreams.remove(0)) {
-                IOUtils.skip(stream, Long.MAX_VALUE);
+                IOUtils.consume(stream);
             }
             compressedBytesReadFromCurrentEntry = 0;
         }

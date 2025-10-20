@@ -494,7 +494,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
         do {
             // If there is a current entry, skip any unread data and padding
             if (currentInputStream != null) {
-                IOUtils.skip(currentInputStream, Long.MAX_VALUE); // Skip to end of current entry
+                IOUtils.consume(currentInputStream); // Skip to end of current entry
                 skipRecordPadding(); // Skip padding to align to the next record
             }
             // Read the next header record
