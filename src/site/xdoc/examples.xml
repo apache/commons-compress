@@ -946,7 +946,7 @@ in.close();
       <subsection name="LZ4">
 
         <p>There are two different "formats" used for <a
-        href="http://lz4.github.io/lz4/">lz4</a>. The format called
+        href="https://lz4.github.io/lz4/">lz4</a>. The format called
         "block format" only contains the raw compressed data while the
         other provides a higher level "frame format" - Commons
         Compress offers two different stream classes for reading or

@@ -63,7 +63,7 @@
           many other tar implementations like the ones of OpenBSD,
           Solaris or MacOS X.</li> 
           <li><code>LONGFILE_POSIX</code>: use a PAX <a
-          href="http://pubs.opengroup.org/onlinepubs/009695399/utilities/pax.html#tag_04_100_13_03">extended
+          href="https://pubs.opengroup.org/onlinepubs/009695399/utilities/pax.html#tag_04_100_13_03">extended
           header</a> as defined by POSIX 1003.1.  Most modern tar
           implementations are able to extract such archives. <em>since
           Commons Compress 1.4</em></li>
@@ -88,11 +88,11 @@
           entry is added.  This is the default.</li>
           <li><code>BIGNUMBER_STAR</code>: use a variant first
           introduced by J&#xf6;rg Schilling's <a
-          href="http://developer.berlios.de/projects/star">star</a>
+          href="https://developer.berlios.de/projects/star">star</a>
           and later adopted by GNU and BSD tar.  This method is not
           supported by all implementations.</li>
           <li><code>BIGNUMBER_POSIX</code>: use a PAX <a
-          href="http://pubs.opengroup.org/onlinepubs/009695399/utilities/pax.html#tag_04_100_13_03">extended
+          href="https://pubs.opengroup.org/onlinepubs/009695399/utilities/pax.html#tag_04_100_13_03">extended
           header</a> as defined by POSIX 1003.1.  Most modern tar
           implementations are able to extract such archives.</li>
         </ul>

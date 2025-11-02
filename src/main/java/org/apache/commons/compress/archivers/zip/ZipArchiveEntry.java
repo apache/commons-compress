@@ -45,7 +45,7 @@ import org.apache.commons.lang3.ArrayUtils;
  * Extension that adds better handling of extra fields and provides access to the internal and external file attributes.
  *
  * <p>
- * The extra data is expected to follow the recommendation of <a href="http://www.pkware.com/documents/casestudies/APPNOTE.TXT">APPNOTE.TXT</a>:
+ * The extra data is expected to follow the recommendation of <a href="https://www.pkware.com/documents/casestudies/APPNOTE.TXT">APPNOTE.TXT</a>:
  * </p>
  * <ul>
  * <li>the extra byte array consists of a sequence of extra fields</li>

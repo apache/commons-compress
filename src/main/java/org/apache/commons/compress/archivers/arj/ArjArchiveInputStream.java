@@ -40,7 +40,7 @@ import org.apache.commons.io.input.ChecksumInputStream;
  * Implements the "arj" archive format as an InputStream.
  * <ul>
  * <li><a href="https://github.com/FarGroup/FarManager/blob/master/plugins/multiarc/arc.doc/arj.txt">Reference 1</a></li>
- * <li><a href="http://www.fileformat.info/format/arj/corion.htm">Reference 2</a></li>
+ * <li><a href="https://www.fileformat.info/format/arj/corion.htm">Reference 2</a></li>
  * </ul>
  *
  * @NotThreadSafe
