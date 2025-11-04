@@ -91,14 +91,19 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <checkstyle.resourceExcludes>LICENSE.txt, NOTICE.txt, **/maven-archiver/pom.properties</checkstyle.resourceExcludes>
   </properties>
   <repositories>
+    <!-- Central before Apache releases to prevent too many 404 errors on the latter -->
+    <repository>
+      <id>central</id>
+      <url>https://repo.maven.apache.org/maven2/</url>
+    </repository>
     <!-- TEMP for branch commons_io... -->
-  	<repository>
-      <id>apache.snapshots</id>
-      <name>Apache Snapshot Repository</name>
-      <url>https://repository.apache.org/content/groups/snapshots</url>
-      <releases>
+    <repository>
+      <id>apache.staging</id>
+      <name>Apache Staging Repository</name>
+      <url>https://repository.apache.org/content/repositories/orgapachecommons-1871/</url>
+      <snapshots>
         <enabled>false</enabled>
-      </releases>
+      </snapshots>
     </repository>
   </repositories>
   <issueManagement>
@@ -214,7 +219,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
-      <version>2.21.0-SNAPSHOT</version>
+      <version>2.21.0</version>
     </dependency>    
     <dependency>
       <groupId>org.apache.commons</groupId>
