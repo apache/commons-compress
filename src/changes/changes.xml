@@ -141,6 +141,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="update" dev="ggregory" due-to="Gary Gregory">Bump org.apache.commons:commons-lang3 from 3.18.0 to 3.19.0.</action>
       <action type="update" dev="ggregory" due-to="Gary Gregory, Dependabot">Bump com.github.luben:zstd-jni from 1.5.7-4 to 1.5.7-6 #717, #740.</action>
       <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump com.github.marschall:memoryfilesystem from 2.8.1 to 2.8.2 #727.</action>
+      <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump commons-codec:commons-codec from 1.19.0 to 1.20.0 #745.</action>
       <!-- REMOVE -->
       <action type="remove" dev="pkarwasz" due-to="Piotr P. Karwasz">Deprecate IOUtils.readFully and IOUtils.skip.</action>
     </release>
