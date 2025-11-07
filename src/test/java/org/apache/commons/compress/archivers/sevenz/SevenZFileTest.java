@@ -33,6 +33,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
@@ -47,13 +49,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import javax.crypto.Cipher;
 
-import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.MemoryLimitException;
 import org.apache.commons.compress.PasswordRequiredException;
+import org.apache.commons.compress.archivers.AbstractArchiveFileTest;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.utils.MultiReadOnlySeekableByteChannel;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
@@ -61,12 +65,180 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.ChecksumInputStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
-class SevenZFileTest extends AbstractTest {
+class SevenZFileTest extends AbstractArchiveFileTest<SevenZArchiveEntry> {
     private static final String TEST2_CONTENT = "<?xml version = '1.0'?>\r\n<!DOCTYPE connections>\r\n<meinxml>\r\n\t<leer />\r\n</meinxml>\n";
 
     private static boolean isStrongCryptoAvailable() throws NoSuchAlgorithmException {
         return Cipher.getMaxAllowedKeyLength("AES/ECB/PKCS5Padding") >= 256;
+    }
+
+    static Stream<Consumer<ByteBuffer>> testReadFolder_Unsupported() {
+        return Stream.of(
+                // Folder with no coders
+                buf -> writeFolder(buf, new Coder[0]),
+                // Folder with too many coders
+                buf -> {
+                    final Coder[] coders = new Coder[65];
+                    final Coder simpleCoder = new Coder(new byte[] { 0x03 }, 1, 1, null);
+                    Arrays.fill(coders, simpleCoder);
+                    writeFolder(buf, coders);
+                },
+                // Folder with too many input streams per coder
+                buf -> {
+                    final Coder coder = new Coder(new byte[] { 0x03 }, 65, 1, null);
+                    writeFolder(buf, new Coder[] { coder });
+                },
+                // Folder with more than one output stream per coder
+                buf -> {
+                    final Coder coder = new Coder(new byte[] { 0x03 }, 1, 2, null);
+                    writeFolder(buf, new Coder[] { coder });
+                },
+                // Folder with too many total input streams
+                buf -> {
+                    final Coder coder = new Coder(new byte[] { 0x03 }, 2, 1, null);
+                    final Coder[] coders = new Coder[33];
+                    Arrays.fill(coders, coder);
+                    writeFolder(buf, coders);
+                },
+                // Folder with more alternative methods (not supported yet)
+                buf -> writeFolder(buf, new Coder[]{new Coder(new byte[]{0x03}, 1, 1, null)},
+                        true, false, false, false),
+                // Folder with unsupported bind pair in index
+                buf -> {
+                    final Coder coder = new Coder(new byte[] { 0x03 }, 1, 1, null);
+                    writeFolder(buf, new Coder[] { coder, coder }, false, true, false, false);
+                },
+                // Folder with unsupported bind pair out index
+                buf -> {
+                    final Coder coder = new Coder(new byte[] { 0x03 }, 1, 1, null);
+                    writeFolder(buf, new Coder[] { coder, coder }, false, false, true, false);
+                },
+                // Folder with unsupported packed stream index
+                buf -> {
+                    final Coder coder = new Coder(new byte[]{0x03}, 2, 1, null);
+                    writeFolder(buf, new Coder[]{ coder, coder }, false, false, false, true);
+                }
+        );
+    }
+
+    static Stream<byte[]> testReadRealUint64_Invalid() {
+        final byte m = (byte) 0xff;
+        return Stream.of(
+                new byte[] { (byte) 0b11111111, 0, 0, 0, 0, 0, 0, (byte) 0x80 },
+                new byte[] { (byte) 0b11111111, m, m, m, m, m, m, m }
+        );
+    }
+
+    static Stream<Arguments> testReadRealUint64_Valid() {
+        final byte m = (byte) 0xff;
+        return Stream.of(
+                Arguments.of(new byte[] { 0, 1, 2, 3, 4, 5, 6, 7 }, 0x0706_0504_0302_0100L),
+                Arguments.of(new byte[] { m, m, m, m, m, m, m, Byte.MAX_VALUE }, 0x7FFF_FFFF_FFFF_FFFFL)
+        );
+    }
+
+    static Stream<Arguments> testReadUint32_Valid() {
+        final byte m = (byte) 0xff;
+        return Stream.of(
+                Arguments.of(new byte[] { 0, 1, 2, 3 }, 0x0302_0100L),
+                Arguments.of(new byte[] { m, m, m, Byte.MAX_VALUE }, 0x7FFF_FFFFL),
+                Arguments.of(new byte[] { m, m, m, m }, 0xFFFF_FFFFL)
+        );
+    }
+
+    static Stream<byte[]> testReadUint64_Overflow() {
+        final byte m = (byte) 0xff;
+        return Stream.of(
+                new byte[] { (byte) 0b11111111, 0, 0, 0, 0, 0, 0, 0, (byte) 0x80 },
+                new byte[] { (byte) 0b11111111, m, m, m, m, m, m, m, m }
+        );
+    }
+
+    static Stream<Arguments> testReadUint64_Valid() {
+        final byte m = (byte) 0xff;
+        return Stream.of(
+                Arguments.of(new byte[] { 0 }, 0L),
+                Arguments.of(new byte[] { Byte.MAX_VALUE }, 0x7FL),
+                Arguments.of(new byte[] { (byte) 0b10_000001, 2 }, 0x0102L),
+                Arguments.of(new byte[] { (byte) 0b10_111111, m }, 0x3FFFL),
+                Arguments.of(new byte[] { (byte) 0b110_00001, 3, 2 }, 0x01_0203L),
+                Arguments.of(new byte[] { (byte) 0b110_11111, m, m }, 0x1F_FFFFL),
+                Arguments.of(new byte[] { (byte) 0b1110_0001, 4, 3, 2 }, 0x0102_0304L),
+                Arguments.of(new byte[] { (byte) 0b1110_1111, m, m, m }, 0x0FFF_FFFFL),
+                Arguments.of(new byte[] { (byte) 0b11110_001, 5, 4, 3, 2 }, 0x01_0203_0405L),
+                Arguments.of(new byte[] { (byte) 0b11110_111, m, m, m, m }, 0x07_FFFF_FFFFL),
+                Arguments.of(new byte[] { (byte) 0b111110_01, 6, 5, 4, 3, 2 }, 0x0102_0304_0506L),
+                Arguments.of(new byte[] { (byte) 0b111110_11, m, m, m, m, m }, 0x03FF_FFFF_FFFFL),
+                Arguments.of(new byte[] { (byte) 0b1111110_1, 7, 6, 5, 4, 3, 2 }, 0x01_0203_0405_0607L),
+                Arguments.of(new byte[] { (byte) 0b1111110_1, m, m, m, m, m, m }, 0x01_FFFF_FFFF_FFFFL),
+                Arguments.of(new byte[] { (byte) 0b11111110, 7, 6, 5, 4, 3, 2, 1 }, 0x01_0203_0405_0607L),
+                Arguments.of(new byte[] { (byte) 0b11111110, m, m, m, m, m, m, m }, 0xFF_FFFF_FFFF_FFFFL),
+                Arguments.of(new byte[] { (byte) 0b11111111, 8, 7, 6, 5, 4, 3, 2, 1 }, 0x0102_0304_0506_0708L),
+                Arguments.of(new byte[] { (byte) 0b11111111, m, m, m, m, m, m, m, Byte.MAX_VALUE }, 0x7FFF_FFFF_FFFF_FFFFL)
+        );
+    }
+
+    private static void writeBindPair(final ByteBuffer buffer, final long inIndex, final long outIndex) {
+        writeUint64(buffer, inIndex);
+        writeUint64(buffer, outIndex);
+    }
+
+    private static void writeCoder(final ByteBuffer buffer, final byte[] methodId, final long numInStreams, final long numOutStreams,
+            final boolean moreAlternativeMethods) {
+        final boolean isComplex = numInStreams != 1 || numOutStreams != 1;
+        int flag = methodId.length;
+        if (isComplex) {
+            flag |= 0x10;
+        }
+        if (moreAlternativeMethods) {
+            flag |= 0x80;
+        }
+        // coder
+        buffer.put((byte) flag);
+        buffer.put(methodId);
+        if (isComplex) {
+            writeUint64(buffer, numInStreams);
+            writeUint64(buffer, numOutStreams);
+        }
+    }
+
+    private static void writeFolder(final ByteBuffer buffer, final Coder[] coders) {
+        writeFolder(buffer, coders, false, false, false, false);
+    }
+
+    private static void writeFolder(final ByteBuffer buffer, final Coder[] coders, final boolean moreAlternativeMethods, final boolean unsupportedBindPairIn,
+            final boolean unsupportedBindPairOut, final boolean unsupportedPackedStreams) {
+        writeUint64(buffer, coders.length);
+        long totalInStreams = 0;
+        long totalOutStreams = 0;
+        for (final Coder coder : coders) {
+            writeCoder(buffer, coder.decompressionMethodId, coder.numInStreams, coder.numOutStreams, moreAlternativeMethods);
+            totalInStreams += coder.numInStreams;
+            totalOutStreams += coder.numOutStreams;
+        }
+        long i = 0;
+        // Bind pairs: one less than number of total out streams
+        for (; i < totalOutStreams - 1; i++) {
+            final long inIndex = (unsupportedBindPairIn ? totalInStreams : 0) + i;
+            final long outIndex = (unsupportedBindPairOut ? totalOutStreams : 0) + i + 1;
+            writeBindPair(buffer, inIndex, outIndex);
+        }
+        // Packed streams: one per in stream that is not bound
+        if (totalInStreams > i + 1) {
+            for (; i < totalInStreams; i++) {
+                final long packedStreamIndex = (unsupportedPackedStreams ? totalInStreams : 0) + i;
+                writeUint64(buffer, packedStreamIndex);
+            }
+        }
+    }
+
+    private static void writeUint64(final ByteBuffer buffer, final long value) {
+        buffer.put((byte) 0b1111_1111);
+        buffer.putLong(value);
     }
 
     private void assertDate(final SevenZArchiveEntry entry, final String value, final Function<SevenZArchiveEntry, Boolean> hasValue,
@@ -111,6 +283,11 @@ class SevenZFileTest extends AbstractTest {
             assertEquals("Hello, world!\n", new String(contents, UTF_8));
             assertNull(sevenZFile.getNextEntry());
         }
+    }
+
+    @Override
+    protected SevenZFile getArchiveFile() throws IOException {
+        return SevenZFile.builder().setPath(getPath("bla.7z")).get();
     }
 
     private SevenZFile getSevenZFile(final String specialPath) throws IOException {
@@ -160,10 +337,6 @@ class SevenZFileTest extends AbstractTest {
 
     @Test
     void test7zMultiVolumeUnarchive() throws Exception {
-        try (@SuppressWarnings("deprecation")
-        SevenZFile sevenZFile = new SevenZFile(MultiReadOnlySeekableByteChannel.forFiles(getFile("bla-multi.7z.001"), getFile("bla-multi.7z.002")))) {
-            test7zUnarchive(sevenZFile, SevenZMethod.LZMA2);
-        }
         try (SevenZFile sevenZFile = SevenZFile.builder()
                 .setSeekableByteChannel(MultiReadOnlySeekableByteChannel.forFiles(getFile("bla-multi.7z.001"), getFile("bla-multi.7z.002"))).get()) {
             test7zUnarchive(sevenZFile, SevenZMethod.LZMA2);
@@ -184,10 +357,6 @@ class SevenZFileTest extends AbstractTest {
     }
 
     private void test7zUnarchive(final File file, final SevenZMethod method, final byte[] password) throws Exception {
-        try (@SuppressWarnings("deprecation")
-        SevenZFile sevenZFile = new SevenZFile(file, password)) {
-            test7zUnarchive(sevenZFile, method);
-        }
         try (SevenZFile sevenZFile = SevenZFile.builder().setFile(file).setPassword(password).get()) {
             test7zUnarchive(sevenZFile, method);
         }
@@ -198,11 +367,6 @@ class SevenZFileTest extends AbstractTest {
     }
 
     private void test7zUnarchive(final File file, final SevenZMethod m, final char[] password, final boolean tryToRecoverBrokenArchives) throws Exception {
-        try (@SuppressWarnings("deprecation")
-        SevenZFile sevenZFile = new SevenZFile(file, password,
-                SevenZFileOptions.builder().withTryToRecoverBrokenArchives(tryToRecoverBrokenArchives).build())) {
-            test7zUnarchive(sevenZFile, m);
-        }
         try (SevenZFile sevenZFile = SevenZFile.builder().setFile(file).setPassword(password).setTryToRecoverBrokenArchives(tryToRecoverBrokenArchives).get()) {
             test7zUnarchive(sevenZFile, m);
         }
@@ -324,8 +488,7 @@ class SevenZFileTest extends AbstractTest {
 
     @Test
     void testExtractSpecifiedFileDeprecated() throws Exception {
-        try (@SuppressWarnings("deprecation")
-        SevenZFile sevenZFile = new SevenZFile(getFile("COMPRESS-256.7z"))) {
+        try (SevenZFile sevenZFile = SevenZFile.builder().setURI(getURI("COMPRESS-256.7z")).get()) {
             // @formatter:off
             final String testTxtContents =
                     "111111111111111111111111111000101011\n"
@@ -363,10 +526,6 @@ class SevenZFileTest extends AbstractTest {
         }
         try (SevenZFile sevenZFile = SevenZFile.builder().setSeekableByteChannel(Files.newByteChannel(getFile("bla.deflate64.7z").toPath())).get()) {
             assertNull(sevenZFile.getDefaultName());
-        }
-        try (@SuppressWarnings("deprecation")
-        SevenZFile sevenZFile = new SevenZFile(Files.newByteChannel(getFile("bla.deflate64.7z").toPath()), "foo")) {
-            assertEquals("foo~", sevenZFile.getDefaultName());
         }
         try (SevenZFile sevenZFile = SevenZFile.builder().setSeekableByteChannel(Files.newByteChannel(getFile("bla.deflate64.7z").toPath()))
                 .setDefaultName("foo").get()) {
@@ -407,16 +566,6 @@ class SevenZFileTest extends AbstractTest {
 
     @Test
     void testGivenNameWinsOverDefaultName() throws Exception {
-        try (@SuppressWarnings("deprecation")
-        SevenZFile sevenZFile = new SevenZFile(getFile("bla.7z"), SevenZFileOptions.builder().withUseDefaultNameForUnnamedEntries(true).build())) {
-            SevenZArchiveEntry ae = sevenZFile.getNextEntry();
-            assertNotNull(ae);
-            assertEquals("test1.xml", ae.getName());
-            ae = sevenZFile.getNextEntry();
-            assertNotNull(ae);
-            assertEquals("test2.xml", ae.getName());
-            assertNull(sevenZFile.getNextEntry());
-        }
         try (SevenZFile sevenZFile = SevenZFile.builder().setFile(getFile("bla.7z")).setUseDefaultNameForUnnamedEntries(true).get()) {
             SevenZArchiveEntry ae = sevenZFile.getNextEntry();
             assertNotNull(ae);
@@ -512,25 +661,12 @@ class SevenZFileTest extends AbstractTest {
         testFiles.add(getPath("COMPRESS-542-endheadercorrupted.7z"));
         testFiles.add(getPath("COMPRESS-542-endheadercorrupted2.7z"));
         for (final Path file : testFiles) {
-            {
-                final IOException e = assertThrows(ArchiveException.class, () -> {
-                    try (@SuppressWarnings("deprecation")
-                    SevenZFile sevenZFile = new SevenZFile(Files.newByteChannel(file),
-                            SevenZFileOptions.builder().withTryToRecoverBrokenArchives(true).build())) {
-                        // do nothing
-                    }
-                }, "Expected IOException: start header corrupt and unable to guess end header");
-                assertEquals("Start header corrupt and unable to guess end header", e.getMessage());
-            }
-            {
-                final IOException e = assertThrows(ArchiveException.class, () -> {
-                    try (SevenZFile sevenZFile = SevenZFile.builder().setSeekableByteChannel(Files.newByteChannel(file)).setTryToRecoverBrokenArchives(true)
-                            .get()) {
-                        // do nothing
-                    }
-                }, "Expected IOException: start header corrupt and unable to guess end header");
-                assertEquals("Start header corrupt and unable to guess end header", e.getMessage());
-            }
+            final IOException e = assertThrows(ArchiveException.class, () -> {
+                try (SevenZFile sevenZFile = SevenZFile.builder().setPath(file).setTryToRecoverBrokenArchives(true).get()) {
+                    // do nothing
+                }
+            }, "Expected IOException: start header corrupt and unable to guess end header");
+            assertEquals("7z archive: Start header corrupt and unable to guess end header", e.getMessage());
         }
     }
 
@@ -554,8 +690,6 @@ class SevenZFileTest extends AbstractTest {
                     .setPassword(password)
                     .setTryToRecoverBrokenArchives(true)
                     .get().close());
-        assertThrows(ArchiveException.class,
-                () -> new SevenZFile(new File(fixture), password).close());
         // @formatter:on
     }
 
@@ -876,6 +1010,21 @@ class SevenZFileTest extends AbstractTest {
         }
     }
 
+    @ParameterizedTest
+    @MethodSource
+    void testReadFolder_Unsupported(final Consumer<ByteBuffer> folderWriter) throws IOException {
+        try (SevenZFile file = SevenZFile.builder().setURI(getURI("bla.7z")).get()) {
+            // Allocate a buffer large enough to hold the folder data
+            final ByteBuffer buffer = ByteBuffer.allocate(8192).order(ByteOrder.LITTLE_ENDIAN);
+            folderWriter.accept(buffer);
+            buffer.flip();
+            final ArchiveException e = assertThrows(ArchiveException.class, () -> {
+                file.readFolder(buffer);
+            });
+            assertTrue(e.getMessage().contains("7z archive: Unsupported"));
+        }
+    }
+
     /**
      * Test case for <a href="https://issues.apache.org/jira/browse/COMPRESS-681">COMPRESS-681</a>.
      */
@@ -937,6 +1086,21 @@ class SevenZFileTest extends AbstractTest {
         }
     }
 
+    @ParameterizedTest
+    @MethodSource
+    void testReadRealUint64_Invalid(final byte[] input) throws IOException {
+        final ByteBuffer buf = ByteBuffer.wrap(input).order(ByteOrder.LITTLE_ENDIAN);
+        assertThrows(IOException.class, () -> SevenZFile.readRealUint64(buf));
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void testReadRealUint64_Valid(final byte[] input, final long expected) throws IOException {
+        final ByteBuffer buf = ByteBuffer.wrap(input).order(ByteOrder.LITTLE_ENDIAN);
+        final long actual = SevenZFile.readRealUint64(buf);
+        assertEquals(expected, actual);
+    }
+
     @Test
     void testReadTimesFromFile() throws IOException {
         try (SevenZFile sevenZFile = getSevenZFile("times.7z")) {
@@ -961,6 +1125,29 @@ class SevenZFileTest extends AbstractTest {
             entry = sevenZFile.getNextEntry();
             assertNull(entry);
         }
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void testReadUint32_Valid(final byte[] input, final long expected) throws IOException {
+        final ByteBuffer buf = ByteBuffer.wrap(input).order(ByteOrder.LITTLE_ENDIAN);
+        final long actual = SevenZFile.readUint32(buf);
+        assertEquals(expected, actual);
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void testReadUint64_Overflow(final byte[] bytes) {
+        final ByteBuffer buf = ByteBuffer.wrap(bytes);
+        final ArchiveException ex = assertThrows(ArchiveException.class, () -> SevenZFile.readUint64(buf));
+        assertTrue(ex.getMessage().contains("7z archive: Unsupported"), ex.getMessage());
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void testReadUint64_Valid(final byte[] bytes, final long expected) throws IOException {
+        final ByteBuffer buf = ByteBuffer.wrap(bytes);
+        assertEquals(expected, SevenZFile.readUint64(buf));
     }
 
     @Test

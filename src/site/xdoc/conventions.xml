@@ -36,7 +36,7 @@
             </p>
             <p>
             We use some of the annotations from 
-            <a href="http://jcip.net/annotations/doc/net/jcip/annotations/package-summary.html">JCIP</a>
+            <a href="https://jcip.net/annotations/doc/net/jcip/annotations/package-summary.html">JCIP</a>
             as Javadoc tags. The used tags are: 
             </p>
             <ul>

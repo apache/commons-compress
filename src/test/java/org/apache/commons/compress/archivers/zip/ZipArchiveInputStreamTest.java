@@ -69,7 +69,7 @@ class ZipArchiveInputStreamTest extends AbstractTest {
 
         private boolean used;
 
-        private AirliftZipArchiveInputStream(final InputStream inputStream) {
+        private AirliftZipArchiveInputStream(final InputStream inputStream) throws IOException {
             super(inputStream);
         }
 
@@ -221,8 +221,7 @@ class ZipArchiveInputStreamTest extends AbstractTest {
     @Test
     void testGetFirstEntryEmptyZip() throws IOException {
         try (ZipArchiveInputStream zin = ZipArchiveInputStream.builder().setByteArray(ArrayUtils.EMPTY_BYTE_ARRAY).get()) {
-            final ZipArchiveEntry entry = zin.getNextEntry();
-            assertNull(entry);
+            assertNull(zin.getNextEntry());
         }
     }
 

@@ -45,12 +45,11 @@ import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.compress.compressors.gzip.ExtraField.SubField;
 import org.apache.commons.compress.compressors.gzip.GzipParameters.OS;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayFill;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-
-import shaded.org.apache.commons.io.IOUtils;
 
 /**
  * Tests {@link GzipCompressorOutputStream}.

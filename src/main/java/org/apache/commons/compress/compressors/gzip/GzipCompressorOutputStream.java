@@ -29,6 +29,7 @@ import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorOutputStream;
+import org.apache.commons.io.IOUtils;
 
 /**
  * Compressed output stream using the gzip format. This implementation improves over the standard {@link GZIPOutputStream} class by allowing the configuration
@@ -127,6 +128,7 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
      */
     @Override
     public void write(final byte[] buffer, final int offset, final int length) throws IOException {
+        IOUtils.checkFromIndexSize(buffer, offset, length);
         checkOpen();
         if (deflater.finished()) {
             throw new CompressorException("Cannot write more data, the end of the compressed data stream has been reached.");

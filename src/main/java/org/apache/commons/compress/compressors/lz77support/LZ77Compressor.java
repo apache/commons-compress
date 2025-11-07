@@ -21,6 +21,7 @@ package org.apache.commons.compress.compressors.lz77support;
 import java.io.IOException;
 import java.util.Objects;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayFill;
 
 /**
@@ -178,7 +179,7 @@ public class LZ77Compressor {
         /**
          * Constructs a new typeless instance.
          *
-         * @deprecated Use {@link #Block()}.
+         * @deprecated Use {@link #Block(BlockType)}.
          */
         @Deprecated
         public Block() {
@@ -414,9 +415,12 @@ public class LZ77Compressor {
      * @param data the data to compress - must not be null
      * @param off  the start offset of the data
      * @param len  the number of bytes to compress
+     * @throws NullPointerException if data is {@code null}
+     * @throws IndexOutOfBoundsException if {@code off} or {@code len} are negative, or if {@code off + len} is bigger than {@code data.length}.
      * @throws IOException if the callback throws an exception
      */
     public void compress(final byte[] data, int off, int len) throws IOException {
+        IOUtils.checkFromIndexSize(data, off, len);
         final int wSize = params.getWindowSize();
         while (len > wSize) { // chop into windowSize sized chunks
             doCompress(data, off, wSize);

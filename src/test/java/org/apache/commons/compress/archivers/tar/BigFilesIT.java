@@ -94,7 +94,7 @@ public class BigFilesIT extends AbstractTest {
                 GzipCompressorInputStream gzin = new GzipCompressorInputStream(in)) {
             Files.copy(gzin, output, StandardCopyOption.REPLACE_EXISTING);
         }
-        try (TarFile tarFile = new TarFile(output)) {
+        try (TarFile tarFile = TarFile.builder().setPath(output).get()) {
             final List<TarArchiveEntry> entries = tarFile.getEntries();
             assertEquals(1, entries.size());
             assertNotNull(entries.get(0));

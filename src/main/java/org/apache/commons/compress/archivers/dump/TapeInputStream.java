@@ -29,7 +29,7 @@ import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
 import org.apache.commons.compress.archivers.ArchiveException;
-import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.io.IOUtils;
 
 /**
  * Filter stream that mimics a physical tape drive capable of compressing the data stream.
@@ -127,10 +127,10 @@ final class TapeInputStream extends FilterInputStream {
      * </p>
      *
      * @param len length to read, must be a multiple of the stream's record size.
-     * @throws IOException Thrown if an I/O error occurs.
      */
     @Override
     public int read(final byte[] b, int off, final int len) throws IOException {
+        IOUtils.checkFromIndexSize(b, off, len);
         if (len == 0) {
             return 0;
         }
@@ -245,14 +245,14 @@ final class TapeInputStream extends FilterInputStream {
      * @throws IOException Thrown if an I/O error occurs.
      */
     private void readFully(final byte[] b, final int off, final int len) throws IOException {
-        final int count = IOUtils.readFully(in, b, off, len);
+        final int count = IOUtils.read(in, b, off, len);
         if (count < len) {
             throw new ShortFileException();
         }
     }
 
     private byte[] readRange(final int len) throws IOException {
-        final byte[] ret = IOUtils.readRange(in, len);
+        final byte[] ret = org.apache.commons.compress.utils.IOUtils.readRange(in, len);
         if (ret.length < len) {
             throw new ShortFileException();
         }

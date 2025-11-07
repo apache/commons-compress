@@ -29,22 +29,12 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.compress.AbstractTest;
-import org.apache.commons.compress.MemoryLimitException;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
+import org.junitpioneer.jupiter.Issue;
 
 class CpioArchiveInputStreamTest extends AbstractTest {
-
-    private long consumeEntries(final CpioArchiveInputStream in) throws IOException {
-        long count = 0;
-        CpioArchiveEntry entry;
-        while ((entry = in.getNextEntry()) != null) {
-            count++;
-            assertNotNull(entry);
-        }
-        return count;
-    }
 
     @Test
     void testCpioUnarchive() throws Exception {
@@ -91,29 +81,15 @@ class CpioArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
-    void testEndOfFileInEntry_c_namesize_0x7FFFFFFF() throws Exception {
-        // CPIO header with c_namesize = 0x7FFFFFFF
-        // @formatter:off
-        final String header =
-                "070701" + // c_magic
-                "00000000" + // c_ino
-                "000081A4" + // c_mode
-                "00000000" + // c_uid
-                "00000000" + // c_gid
-                "00000001" + // c_nlink
-                "00000000" + // c_mtime
-                "00000000" + // c_filesize
-                "00000000" + // c_devmajor
-                "00000000" + // c_devminor
-                "00000000" + // c_rdevmajor
-                "00000000" + // c_rdevminor
-                "7FFFFFFF" + // c_namesize
-                "00000000"; // c_check
-        // @formatter:on
-        final byte[] data = new byte[header.getBytes(StandardCharsets.US_ASCII).length + 1];
-        System.arraycopy(header.getBytes(), 0, data, 0, header.getBytes().length);
-        try (CpioArchiveInputStream cpio = CpioArchiveInputStream.builder().setByteArray(data).get()) {
-            assertThrows(MemoryLimitException.class, () -> cpio.getNextEntry());
+    @Issue("https://issues.apache.org/jira/browse/COMPRESS-711")
+    void testCrcVerification() throws Exception {
+        try (CpioArchiveInputStream archive = CpioArchiveInputStream.builder().setURI(getURI("bla.cpio")).get()) {
+            assertNotNull(archive.getNextEntry());
+            final byte[] buffer = new byte[1024];
+            // Read with an offset to test that the right bytes are checksummed
+            while (archive.read(buffer, 1, 1023) != -1) {
+                // noop
+            }
         }
     }
 

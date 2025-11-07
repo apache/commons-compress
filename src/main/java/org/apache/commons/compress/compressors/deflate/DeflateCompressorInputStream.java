@@ -25,6 +25,7 @@ import java.util.zip.InflaterInputStream;
 
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.utils.InputStreamStatistics;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
 
 /**
@@ -110,12 +111,8 @@ public class DeflateCompressorInputStream extends CompressorInputStream implemen
         return ret;
     }
 
-    /** {@inheritDoc} */
     @Override
     public int read(final byte[] buf, final int off, final int len) throws IOException {
-        if (len == 0) {
-            return 0;
-        }
         final int ret = in.read(buf, off, len);
         count(ret);
         return ret;
@@ -124,6 +121,6 @@ public class DeflateCompressorInputStream extends CompressorInputStream implemen
     /** {@inheritDoc} */
     @Override
     public long skip(final long n) throws IOException {
-        return org.apache.commons.io.IOUtils.skip(in, n);
+        return IOUtils.skip(in, n);
     }
 }

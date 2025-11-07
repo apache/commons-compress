@@ -18,31 +18,31 @@
  */
 package org.apache.commons.compress.archivers.tar;
 
-import java.io.Closeable;
+import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.SequenceInputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
-import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.compress.archivers.ArchiveFile;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.BoundedArchiveInputStream;
-import org.apache.commons.compress.utils.BoundedSeekableByteChannelInputStream;
-import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
-import org.apache.commons.io.function.IOIterable;
-import org.apache.commons.io.function.IOIterator;
+import org.apache.commons.io.function.IOStream;
 import org.apache.commons.io.input.BoundedInputStream;
 
 /**
@@ -50,92 +50,46 @@ import org.apache.commons.io.input.BoundedInputStream;
  *
  * @since 1.21
  */
-public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
+public class TarFile implements ArchiveFile<TarArchiveEntry> {
 
+    /**
+     * InputStream that reads a specific entry from the archive.
+     *
+     * <p>It ensures that:</p>
+     * <ul>
+     * <li>No more than the specified number of bytes are read from the underlying channel.</li>
+     * <li>If the end of the entry is reached before the expected number of bytes, an {@link EOFException} is thrown.</li>
+     * </ul>
+     */
     private final class BoundedTarEntryInputStream extends BoundedArchiveInputStream {
 
         private final SeekableByteChannel channel;
 
-        private final TarArchiveEntry entry;
+        private final long end;
 
-        private long entryOffset;
-
-        private int currentSparseInputStreamIndex;
-
-        BoundedTarEntryInputStream(final TarArchiveEntry entry, final SeekableByteChannel channel) throws IOException {
-            super(entry.getDataOffset(), entry.getRealSize());
-            if (channel.size() - entry.getSize() < entry.getDataOffset()) {
-                throw new ArchiveException("Entry size exceeds archive size");
-            }
-            this.entry = entry;
+        BoundedTarEntryInputStream(final long start, final long remaining, final SeekableByteChannel channel) {
+            super(start, remaining);
+            this.end = start + remaining;
             this.channel = channel;
         }
 
         @Override
         protected int read(final long pos, final ByteBuffer buf) throws IOException {
-            if (entryOffset >= entry.getRealSize()) {
-                return -1;
-            }
-            final int totalRead;
-            if (entry.isSparse()) {
-                totalRead = readSparse(entryOffset, buf, buf.limit());
-            } else {
-                totalRead = readArchive(pos, buf);
-            }
+            Objects.requireNonNull(buf, "ByteBuffer");
+            // The caller ensures that [pos, pos + buf.remaining()] is within [start, end]
+            channel.position(pos);
+            final int totalRead = channel.read(buf);
             if (totalRead == -1) {
-                if (buf.array().length > 0) {
-                    throw new ArchiveException("Truncated TAR archive");
+                if (buf.remaining() > 0) {
+                    throw new EOFException(String.format("Truncated TAR archive: Expected at least %d bytes, but got only %d bytes",
+                            end, channel.position()));
                 }
+                // Marks the TarFile as having reached EOF.
                 setAtEOF(true);
             } else {
-                entryOffset += totalRead;
                 buf.flip();
             }
             return totalRead;
-        }
-
-        private int readArchive(final long pos, final ByteBuffer buf) throws IOException {
-            channel.position(pos);
-            return channel.read(buf);
-        }
-
-        private int readSparse(final long pos, final ByteBuffer buf, final int numToRead) throws IOException {
-            // if there are no actual input streams, just read from the original archive
-            final List<InputStream> entrySparseInputStreams = sparseInputStreams.get(entry.getName());
-            if (entrySparseInputStreams == null || entrySparseInputStreams.isEmpty()) {
-                return readArchive(entry.getDataOffset() + pos, buf);
-            }
-            if (currentSparseInputStreamIndex >= entrySparseInputStreams.size()) {
-                return -1;
-            }
-            final InputStream currentInputStream = entrySparseInputStreams.get(currentSparseInputStreamIndex);
-            final byte[] bufArray = new byte[numToRead];
-            final int readLen = currentInputStream.read(bufArray);
-            if (readLen != -1) {
-                buf.put(bufArray, 0, readLen);
-            }
-            // if the current input stream is the last input stream,
-            // just return the number of bytes read from current input stream
-            if (currentSparseInputStreamIndex == entrySparseInputStreams.size() - 1) {
-                return readLen;
-            }
-            // if EOF of current input stream is meet, open a new input stream and recursively call read
-            if (readLen == -1) {
-                currentSparseInputStreamIndex++;
-                return readSparse(pos, buf, numToRead);
-            }
-            // if the rest data of current input stream is not long enough, open a new input stream
-            // and recursively call read
-            if (readLen < numToRead) {
-                currentSparseInputStreamIndex++;
-                final int readLenOfNext = readSparse(pos + readLen, buf, numToRead - readLen);
-                if (readLenOfNext == -1) {
-                    return readLen;
-                }
-                return readLen + readLenOfNext;
-            }
-            // if the rest data of current input stream is enough(which means readLen == len), just return readLen
-            return readLen;
         }
     }
 
@@ -159,32 +113,18 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
      */
     // @formatter:on
     public static final class Builder extends AbstractTarBuilder<TarFile, Builder> {
-
-        private SeekableByteChannel channel;
-
         /**
          * Constructs a new instance.
          */
         private Builder() {
-            // empty
+            // Default options
+            setOpenOptions(StandardOpenOption.READ);
         }
 
         @Override
         public TarFile get() throws IOException {
             return new TarFile(this);
         }
-
-        /**
-         * Sets the SeekableByteChannel.
-         *
-         * @param channel  the SeekableByteChannel.
-         * @return {@code this} instance.
-         */
-        public Builder setSeekableByteChannel(final SeekableByteChannel channel) {
-            this.channel = channel;
-            return asThis();
-        }
-
     }
 
     /**
@@ -233,14 +173,32 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
 
     private final Map<String, List<InputStream>> sparseInputStreams = new HashMap<>();
 
+    private final int maxEntryNameLength;
+
     private TarFile(final Builder builder) throws IOException {
-        this.archive = builder.channel != null ? builder.channel : Files.newByteChannel(builder.getPath());
-        this.zipEncoding = ZipEncodingHelper.getZipEncoding(builder.getCharset());
-        this.recordSize = builder.getRecordSize();
-        this.recordBuffer = ByteBuffer.allocate(this.recordSize);
-        this.blockSize = builder.getBlockSize();
-        this.lenient = builder.isLenient();
-        forEach(entries::add);
+        this.archive = builder.getChannel(SeekableByteChannel.class);
+        try {
+            this.zipEncoding = ZipEncodingHelper.getZipEncoding(builder.getCharset());
+            this.recordSize = builder.getRecordSize();
+            this.recordBuffer = ByteBuffer.allocate(this.recordSize);
+            this.blockSize = builder.getBlockSize();
+            this.lenient = builder.isLenient();
+            this.maxEntryNameLength = builder.getMaxEntryNameLength();
+            // Populate `entries` explicitly here instead of using `forEach`/`stream`,
+            // because both rely on `entries` internally.
+            // Using them would cause a self-referential loop and leave `entries` empty.
+            TarArchiveEntry entry;
+            while ((entry = getNextTarEntry()) != null) {
+                entries.add(entry);
+            }
+        } catch (final IOException ex) {
+            try {
+                this.archive.close();
+            } catch (final IOException e) {
+                ex.addSuppressed(e);
+            }
+            throw ex;
+        }
     }
 
     /**
@@ -252,7 +210,7 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
      */
     @Deprecated
     public TarFile(final byte[] content) throws IOException {
-        this(new SeekableInMemoryByteChannel(content));
+        this(builder().setByteArray(content));
     }
 
     /**
@@ -266,7 +224,7 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
      */
     @Deprecated
     public TarFile(final byte[] content, final boolean lenient) throws IOException {
-        this(new SeekableInMemoryByteChannel(content), TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, null, lenient);
+        this(builder().setByteArray(content).setLenient(lenient));
     }
 
     /**
@@ -279,7 +237,7 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
      */
     @Deprecated
     public TarFile(final byte[] content, final String encoding) throws IOException {
-        this(new SeekableInMemoryByteChannel(content), TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, encoding, false);
+        this(builder().setByteArray(content).setCharset(encoding));
     }
 
     /**
@@ -291,7 +249,7 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
      */
     @Deprecated
     public TarFile(final File archive) throws IOException {
-        this(archive.toPath());
+        this(builder().setFile(archive));
     }
 
     /**
@@ -305,7 +263,7 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
      */
     @Deprecated
     public TarFile(final File archive, final boolean lenient) throws IOException {
-        this(archive.toPath(), lenient);
+        this(builder().setFile(archive).setLenient(lenient));
     }
 
     /**
@@ -318,7 +276,7 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
      */
     @Deprecated
     public TarFile(final File archive, final String encoding) throws IOException {
-        this(archive.toPath(), encoding);
+        this(builder().setFile(archive).setCharset(encoding));
     }
 
     /**
@@ -328,7 +286,7 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
      * @throws IOException when reading the tar archive fails.
      */
     public TarFile(final Path archivePath) throws IOException {
-        this(Files.newByteChannel(archivePath), TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, null, false);
+        this(builder().setPath(archivePath));
     }
 
     /**
@@ -342,7 +300,7 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
      */
     @Deprecated
     public TarFile(final Path archivePath, final boolean lenient) throws IOException {
-        this(Files.newByteChannel(archivePath), TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, null, lenient);
+        this(builder().setPath(archivePath).setLenient(lenient));
     }
 
     /**
@@ -355,7 +313,7 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
      */
     @Deprecated
     public TarFile(final Path archivePath, final String encoding) throws IOException {
-        this(Files.newByteChannel(archivePath), TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, encoding, false);
+        this(builder().setPath(archivePath).setCharset(encoding));
     }
 
     /**
@@ -367,7 +325,7 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
      */
     @Deprecated
     public TarFile(final SeekableByteChannel content) throws IOException {
-        this(content, TarConstants.DEFAULT_BLKSIZE, TarConstants.DEFAULT_RCDSIZE, null, false);
+        this(builder().setChannel(content));
     }
 
     /**
@@ -385,7 +343,7 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
     @Deprecated
     public TarFile(final SeekableByteChannel archive, final int blockSize, final int recordSize, final String encoding, final boolean lenient)
             throws IOException {
-        this(builder().setSeekableByteChannel(archive).setBlockSize(blockSize).setRecordSize(recordSize).setCharset(encoding).setLenient(lenient));
+        this(builder().setChannel(archive).setBlockSize(blockSize).setRecordSize(recordSize).setCharset(encoding).setLenient(lenient));
     }
 
     /**
@@ -421,7 +379,7 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
                     // possible integer overflow
                     throw new ArchiveException("Unreadable TAR archive, sparse block offset or length too big");
                 }
-                streams.add(new BoundedSeekableByteChannelInputStream(start, sparseHeader.getNumbytes(), archive));
+                streams.add(new BoundedTarEntryInputStream(start, sparseHeader.getNumbytes(), archive));
             }
             offset = sparseHeader.getOffset() + sparseHeader.getNumbytes();
         }
@@ -448,7 +406,9 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
      * Gets all TAR Archive Entries from the TarFile.
      *
      * @return All entries from the tar file.
+     * @deprecated Since 1.29.0, use {@link #entries()} or {@link #stream()}.
      */
+    @Deprecated
     public List<TarArchiveEntry> getEntries() {
         return new ArrayList<>(entries);
     }
@@ -460,9 +420,16 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
      * @return Input stream of the provided entry.
      * @throws IOException Corrupted TAR archive. Can't read entry.
      */
+    @Override
     public InputStream getInputStream(final TarArchiveEntry entry) throws IOException {
         try {
-            return new BoundedTarEntryInputStream(entry, archive);
+            // Sparse entries are composed of multiple fragments: wrap them in a SequenceInputStream
+            if (entry.isSparse()) {
+                final List<InputStream> streams = sparseInputStreams.get(entry.getName());
+                return new SequenceInputStream(streams != null ? Collections.enumeration(streams) : Collections.emptyEnumeration());
+            }
+            // Regular entries are bounded: wrap in BoundedTarEntryInputStream to enforce size and detect premature EOF
+            return new BoundedTarEntryInputStream(entry.getDataOffset(), entry.getSize(), archive);
         } catch (final RuntimeException e) {
             throw new ArchiveException("Corrupted TAR archive. Can't read entry", (Throwable) e);
         }
@@ -484,6 +451,7 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
         final List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
         // Handle special tar records
         boolean lastWasSpecial = false;
+        InputStream currentStream;
         do {
             // If there is a current entry, skip any unread data and padding
             if (currEntry != null) {
@@ -504,10 +472,11 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
             // Parse the header into a new entry
             final long position = archive.position();
             currEntry = new TarArchiveEntry(globalPaxHeaders, headerBuf.array(), zipEncoding, lenient, position);
+            currentStream = new BoundedTarEntryInputStream(currEntry.getDataOffset(), currEntry.getSize(), archive);
             lastWasSpecial = TarUtils.isSpecialTarRecord(currEntry);
             if (lastWasSpecial) {
                 // Handle PAX, GNU long name, or other special records
-                TarUtils.handleSpecialTarRecord(getInputStream(currEntry), zipEncoding, currEntry, paxHeaders, sparseHeaders, globalPaxHeaders,
+                TarUtils.handleSpecialTarRecord(currentStream, zipEncoding, maxEntryNameLength, currEntry, paxHeaders, sparseHeaders, globalPaxHeaders,
                         globalSparseHeaders);
             }
         } while (lastWasSpecial);
@@ -515,11 +484,21 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
         TarUtils.applyPaxHeadersToEntry(currEntry, paxHeaders, sparseHeaders, globalPaxHeaders, globalSparseHeaders);
         // Handle sparse files
         if (currEntry.isSparse()) {
+            // These sparse formats have the sparse headers in the entry
             if (currEntry.isOldGNUSparse()) {
+                // Old GNU sparse format uses extra header blocks for metadata.
+                // These blocks are not included in the entry’s size, so we cannot
+                // rely on BoundedTarEntryInputStream here.
                 readOldGNUSparse();
+                // Reposition to the start of the entry data to correctly compute the sparse streams
+                currEntry.setDataOffset(archive.position());
             } else if (currEntry.isPaxGNU1XSparse()) {
-                currEntry.setSparseHeaders(TarUtils.parsePAX1XSparseHeaders(getInputStream(currEntry), recordSize));
-                currEntry.setDataOffset(currEntry.getDataOffset() + recordSize);
+                final long position = archive.position();
+                currEntry.setSparseHeaders(TarUtils.parsePAX1XSparseHeaders(currentStream, recordSize));
+                // Adjust the current entry to point to the start of the sparse file data
+                final long sparseHeadersSize = archive.position() - position;
+                currEntry.setSize(currEntry.getSize() - sparseHeadersSize);
+                currEntry.setDataOffset(currEntry.getDataOffset() + sparseHeadersSize);
             }
             // sparse headers are all done reading, we need to build
             // sparse input streams using these sparse headers
@@ -573,38 +552,6 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
         return headerBuf == null || ArchiveUtils.isArrayZero(headerBuf.array(), recordSize);
     }
 
-    @Override
-    public IOIterator<TarArchiveEntry> iterator() {
-        return new IOIterator<TarArchiveEntry>() {
-
-            private TarArchiveEntry next;
-
-            @Override
-            public boolean hasNext() throws IOException {
-                if (next == null) {
-                    next = getNextTarEntry();
-                }
-                return next != null;
-            }
-
-            @Override
-            public TarArchiveEntry next() throws IOException {
-                if (next == null) {
-                    next = getNextTarEntry();
-                }
-                final TarArchiveEntry tmp = next;
-                next = null;
-                return tmp;
-            }
-
-            @Override
-            public Iterator<TarArchiveEntry> unwrap() {
-                return null;
-            }
-
-        };
-    }
-
     /**
      * Adds the sparse chunks from the current entry to the sparse chunks, including any additional sparse entries following the current entry.
      *
@@ -620,12 +567,8 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
                 }
                 entry = new TarArchiveSparseEntry(headerBuf.array());
                 currEntry.getSparseHeaders().addAll(entry.getSparseHeaders());
-                currEntry.setDataOffset(currEntry.getDataOffset() + recordSize);
             } while (entry.isExtended());
         }
-        // sparse headers are all done reading, we need to build
-        // sparse input streams using these sparse headers
-        buildSparseInputStreams();
     }
 
     /**
@@ -671,11 +614,20 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
      */
     private void skipRecordPadding() throws IOException {
         if (!isDirectory() && currEntry.getSize() > 0 && currEntry.getSize() % recordSize != 0) {
-            final long numRecords = currEntry.getSize() / recordSize + 1;
-            final long padding = numRecords * recordSize - currEntry.getSize();
+            final long padding = recordSize - (currEntry.getSize() % recordSize);
             repositionForwardBy(padding);
             throwExceptionIfPositionIsNotInArchive();
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @since 1.29.0
+     */
+    @Override
+    public IOStream<? extends TarArchiveEntry> stream() {
+        return IOStream.of(entries);
     }
 
     /**
@@ -685,7 +637,7 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
      */
     private void throwExceptionIfPositionIsNotInArchive() throws IOException {
         if (archive.size() < archive.position()) {
-            throw new ArchiveException("Truncated TAR archive");
+            throw new EOFException("Truncated TAR archive: Archive should be at least " + archive.position() + " bytes but was " + archive.size() + " bytes");
         }
     }
 
@@ -710,12 +662,4 @@ public class TarFile implements Closeable, IOIterable<TarArchiveEntry> {
             }
         }
     }
-
-    @Override
-    public Iterable<TarArchiveEntry> unwrap() {
-        // Commons IO 2.21.0:
-        // return asIterable();
-        return null;
-    }
-
 }

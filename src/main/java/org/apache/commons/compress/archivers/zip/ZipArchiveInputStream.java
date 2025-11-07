@@ -42,6 +42,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 
 import org.apache.commons.compress.MemoryLimitException;
+import org.apache.commons.compress.archivers.AbstractArchiveBuilder;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
@@ -49,8 +50,8 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.deflate64.Deflate64CompressorInputStream;
 import org.apache.commons.compress.compressors.zstandard.ZstdCompressorInputStream;
 import org.apache.commons.compress.utils.ArchiveUtils;
-import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -85,7 +86,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
      * @since 1.29.0
      */
     public abstract static class AbstractBuilder<T extends ZipArchiveInputStream, B extends AbstractBuilder<T, B>>
-            extends ArchiveInputStream.AbstractBuilder<T, B> {
+            extends AbstractArchiveBuilder<T, B> {
 
         private boolean useUnicodeExtraFields = true;
         private boolean supportStoredEntryDataDescriptor;
@@ -408,21 +409,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
      * @since 1.29.0
      */
     protected ZipArchiveInputStream(final AbstractBuilder<?, ?> builder) throws IOException {
-        this(builder.getInputStream(), builder);
-    }
-
-    /**
-     * Constructs an instance using UTF-8 encoding.
-     *
-     * @param inputStream the stream to wrap.
-     */
-    public ZipArchiveInputStream(final InputStream inputStream) {
-        this(inputStream, builder());
-    }
-
-    private ZipArchiveInputStream(final InputStream inputStream, final AbstractBuilder<?, ?> builder) {
-        super(inputStream, builder.getCharset());
-        this.in = new PushbackInputStream(inputStream, buf.capacity());
+        super(builder);
+        this.in = new PushbackInputStream(in, buf.capacity());
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(builder.getCharset());
         this.useUnicodeExtraFields = builder.isUseUnicodeExtraFields();
         this.supportStoredEntryDataDescriptor = builder.isSupportStoredEntryDataDescriptor();
@@ -432,38 +420,59 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     }
 
     /**
+     * Constructs an instance using UTF-8 encoding.
+     *
+     * <p>Since 1.29.0: throws {@link IOException}.</p>
+     *
+     * @param inputStream the stream to wrap.
+     * @throws IOException if an I/O error occurs.
+     */
+    public ZipArchiveInputStream(final InputStream inputStream) throws IOException {
+        this(builder().setInputStream(inputStream));
+    }
+
+    /**
      * Constructs an instance using the specified encoding.
+     *
+     * <p>Since 1.29.0: throws {@link IOException}.</p>
      *
      * @param inputStream the stream to wrap.
      * @param encoding    the encoding to use for file names, use null for the platform's default encoding.
+     * @throws IOException if an I/O error occurs.
      * @since 1.5
      * @deprecated Since 1.29.0, use {@link #builder()}.
      */
     @Deprecated
-    public ZipArchiveInputStream(final InputStream inputStream, final String encoding) {
-        this(inputStream, builder().setCharset(encoding));
+    public ZipArchiveInputStream(final InputStream inputStream, final String encoding) throws IOException {
+        this(builder().setInputStream(inputStream).setCharset(encoding));
     }
 
     /**
      * Constructs an instance using the specified encoding.
      *
+     * <p>Since 1.29.0: throws {@link IOException}.</p>
+     *
      * @param inputStream           the stream to wrap.
      * @param encoding              the encoding to use for file names, use null for the platform's default encoding.
      * @param useUnicodeExtraFields whether to use InfoZIP Unicode Extra Fields (if present) to set the file names.
+     * @throws IOException if an I/O error occurs.
      * @deprecated Since 1.29.0, use {@link #builder()}.
      */
     @Deprecated
-    public ZipArchiveInputStream(final InputStream inputStream, final String encoding, final boolean useUnicodeExtraFields) {
-        this(inputStream, builder().setCharset(encoding).setUseUnicodeExtraFields(useUnicodeExtraFields));
+    public ZipArchiveInputStream(final InputStream inputStream, final String encoding, final boolean useUnicodeExtraFields) throws IOException {
+        this(builder().setInputStream(inputStream).setCharset(encoding).setUseUnicodeExtraFields(useUnicodeExtraFields));
     }
 
     /**
      * Constructs an instance using the specified encoding.
+     *
+     * <p>Since 1.29.0: throws {@link IOException}.</p>
      *
      * @param inputStream                      the stream to wrap.
      * @param encoding                         the encoding to use for file names, use null for the platform's default encoding.
      * @param useUnicodeExtraFields            whether to use InfoZIP Unicode Extra Fields (if present) to set the file names.
      * @param supportStoredEntryDataDescriptor whether the stream will try to read STORED entries that use a data descriptor.
+     * @throws IOException if an I/O error occurs.
      * @since 1.1
      * @deprecated Since 1.29.0, use {@link #builder()}.
      */
@@ -472,9 +481,10 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
             final InputStream inputStream,
             final String encoding,
             final boolean useUnicodeExtraFields,
-            final boolean supportStoredEntryDataDescriptor) {
+            final boolean supportStoredEntryDataDescriptor) throws IOException {
         // @formatter:off
-        this(inputStream, builder()
+        this(builder()
+                .setInputStream(inputStream)
                 .setCharset(encoding)
                 .setUseUnicodeExtraFields(useUnicodeExtraFields)
                 .setSupportStoredEntryDataDescriptor(supportStoredEntryDataDescriptor));
@@ -484,12 +494,15 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     /**
      * Constructs an instance using the specified encoding.
      *
+     * <p>Since 1.29.0: throws {@link IOException}.</p>
+     *
      * @param inputStream                      the stream to wrap.
      * @param encoding                         the encoding to use for file names, use null for the platform's default encoding.
      * @param useUnicodeExtraFields            whether to use InfoZIP Unicode Extra Fields (if present) to set the file names.
      * @param supportStoredEntryDataDescriptor whether the stream will try to read STORED entries that use a data descriptor.
      * @param skipSplitSignature               Whether the stream will try to skip the zip split signature(08074B50) at the beginning.
      *                                         You will need to set this to true if you want to read a split archive.
+     * @throws IOException if an I/O error occurs.
      * @since 1.20
      * @deprecated Since 1.29.0, use {@link #builder()}.
      */
@@ -499,9 +512,10 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
             final String encoding,
             final boolean useUnicodeExtraFields,
             final boolean supportStoredEntryDataDescriptor,
-            final boolean skipSplitSignature) {
+            final boolean skipSplitSignature) throws IOException {
         // @formatter:off
-        this(inputStream, builder()
+        this(builder()
+                .setInputStream(inputStream)
                 .setCharset(encoding)
                 .setUseUnicodeExtraFields(useUnicodeExtraFields)
                 .setSupportStoredEntryDataDescriptor(supportStoredEntryDataDescriptor)
@@ -861,7 +875,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
         } else {
             off += 3 * WORD;
         }
-        final int fileNameLen = ZipShort.getValue(lfhBuf, off);
+        final int fileNameLen = ArchiveUtils.checkEntryNameLength(ZipShort.getValue(lfhBuf, off), getMaxEntryNameLength(), "ZIP");
         off += SHORT;
         final int extraLen = ZipShort.getValue(lfhBuf, off);
         final byte[] fileName = readRange(fileNameLen);
@@ -1033,6 +1047,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
 
     @Override
     public int read(final byte[] buffer, final int offset, final int length) throws IOException {
+        IOUtils.checkFromIndexSize(buffer, offset, length);
         if (length == 0) {
             return 0;
         }
@@ -1216,7 +1231,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
 
     private void readFully(final byte[] b, final int off) throws IOException {
         final int len = b.length - off;
-        final int count = IOUtils.readFully(in, b, off, len);
+        final int count = IOUtils.read(in, b, off, len);
         count(count);
         if (count < len) {
             throw new EOFException();
@@ -1253,7 +1268,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     }
 
     private byte[] readRange(final int len) throws IOException {
-        final byte[] ret = IOUtils.readRange(in, len);
+        final byte[] ret = org.apache.commons.compress.utils.IOUtils.readRange(in, len);
         count(ret.length);
         if (ret.length < len) {
             throw new EOFException();

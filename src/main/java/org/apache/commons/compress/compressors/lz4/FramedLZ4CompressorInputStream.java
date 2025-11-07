@@ -26,8 +26,8 @@ import java.util.zip.CheckedInputStream;
 import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.utils.ByteUtils;
-import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
 
 /**
@@ -159,7 +159,7 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream implem
     @Override
     public void close() throws IOException {
         try {
-            org.apache.commons.io.IOUtils.close(currentBlock);
+            IOUtils.close(currentBlock);
             currentBlock = null;
         } finally {
             inputStream.close();
@@ -235,9 +235,9 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream implem
         return read(oneByte, 0, 1) == -1 ? -1 : oneByte[0] & 0xFF;
     }
 
-    /** {@inheritDoc} */
     @Override
     public int read(final byte[] b, final int off, final int len) throws IOException {
+        IOUtils.checkFromIndexSize(b, off, len);
         if (len == 0) {
             return 0;
         }
@@ -289,7 +289,7 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream implem
         contentHash.update(bdByte);
         if (expectContentSize) { // for now, we don't care, contains the uncompressed size
             final byte[] contentSize = new byte[8];
-            final int skipped = IOUtils.readFully(inputStream, contentSize);
+            final int skipped = IOUtils.read(inputStream, contentSize);
             count(skipped);
             if (8 != skipped) {
                 throw new CompressorException("Premature end of stream while reading content size");
@@ -332,7 +332,7 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream implem
     private boolean readSignature(final boolean firstFrame) throws IOException {
         final String garbageMessage = firstFrame ? "Not a LZ4 frame stream" : "LZ4 frame stream followed by garbage";
         final byte[] b = new byte[4];
-        int read = IOUtils.readFully(inputStream, b);
+        int read = IOUtils.read(inputStream, b);
         count(read);
         if (0 == read && !firstFrame) {
             // good LZ4 frame and nothing after it
@@ -369,12 +369,12 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream implem
             if (len < 0) {
                 throw new CompressorException("Found illegal skippable frame with negative size");
             }
-            final long skipped = org.apache.commons.io.IOUtils.skip(inputStream, len);
+            final long skipped = IOUtils.skip(inputStream, len);
             count(skipped);
             if (len != skipped) {
                 throw new CompressorException("Premature end of stream while skipping frame");
             }
-            read = IOUtils.readFully(inputStream, b);
+            read = IOUtils.read(inputStream, b);
             count(read);
         }
         return read;
@@ -382,7 +382,7 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream implem
 
     private void verifyChecksum(final org.apache.commons.codec.digest.XXHash32 hash, final String kind) throws IOException {
         final byte[] checksum = new byte[4];
-        final int read = IOUtils.readFully(inputStream, checksum);
+        final int read = IOUtils.read(inputStream, checksum);
         count(read);
         if (4 != read) {
             throw new CompressorException("Premature end of stream while reading %s checksum", kind);

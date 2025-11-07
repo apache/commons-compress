@@ -29,11 +29,14 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Stack;
 
+import org.apache.commons.compress.MemoryLimitException;
+import org.apache.commons.compress.archivers.AbstractArchiveBuilder;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
-import org.apache.commons.compress.utils.IOUtils;
+import org.apache.commons.compress.utils.ArchiveUtils;
+import org.apache.commons.io.IOUtils;
 
 /**
  * The DumpArchiveInputStream reads a Unix dump archive as an InputStream. Methods are provided to position at each successive entry in the archive, and the
@@ -60,7 +63,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
      *
      * @since 1.29.0
      */
-    public static final class Builder extends AbstractBuilder<DumpArchiveInputStream, Builder> {
+    public static final class Builder extends AbstractArchiveBuilder<DumpArchiveInputStream, Builder> {
 
         private Builder() {
         }
@@ -88,9 +91,9 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
      * Look at the first few bytes of the file to decide if it's a dump archive. With 32 bytes we can look at the magic value, with a full 1k we can verify the
      * checksum.
      *
-     * @param buffer data to match
-     * @param length length of data
-     * @return whether the buffer seems to contain dump data
+     * @param buffer data to match.
+     * @param length length of data.
+     * @return whether the buffer seems to contain dump data.
      */
     public static boolean matches(final byte[] buffer, final int length) {
         // do we have enough of the header?
@@ -110,7 +113,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
     private final DumpArchiveSummary summary;
     private DumpArchiveEntry active;
     private boolean isClosed;
-    private boolean hasHitEOF;
+    private boolean eof;
     private long entrySize;
     private long entryOffset;
     private int readIdx;
@@ -139,48 +142,30 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
     private final ZipEncoding zipEncoding;
 
     private DumpArchiveInputStream(final Builder builder) throws IOException {
-        this(builder.getInputStream(), builder);
-    }
-
-    /**
-     * Constructor using the platform's default encoding for file names.
-     *
-     * @param is stream to read from
-     * @throws ArchiveException on error
-     */
-    public DumpArchiveInputStream(final InputStream is) throws ArchiveException {
-        this(is, builder());
-    }
-
-    private DumpArchiveInputStream(final InputStream is, final Builder builder) throws ArchiveException {
-        super(is, builder.getCharset());
-        this.raw = new TapeInputStream(is);
-        this.hasHitEOF = false;
+        super(builder);
+        this.raw = new TapeInputStream(in);
+        this.eof = false;
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(builder.getCharset());
 
-        try {
-            // read header, verify it's a dump archive.
-            final byte[] headerBytes = raw.readRecord();
+        // read header, verify it's a dump archive.
+        final byte[] headerBytes = raw.readRecord();
 
-            if (!DumpArchiveUtil.verify(headerBytes)) {
-                throw new UnrecognizedFormatException();
-            }
-
-            // get summary information
-            summary = new DumpArchiveSummary(headerBytes, this.zipEncoding);
-
-            // reset buffer with actual block size.
-            raw.resetBlockSize(summary.getNTRec(), summary.isCompressed());
-
-            // allocate our read buffer.
-            blockBuffer = new byte[4 * DumpArchiveConstants.TP_SIZE];
-
-            // skip past CLRI and BITS segments since we don't handle them yet.
-            readCLRI();
-            readBITS();
-        } catch (final IOException e) {
-            throw new ArchiveException(e.getMessage(), (Throwable) e);
+        if (!DumpArchiveUtil.verify(headerBytes)) {
+            throw new UnrecognizedFormatException();
         }
+
+        // get summary information
+        summary = new DumpArchiveSummary(headerBytes, this.zipEncoding);
+
+        // reset buffer with actual block size.
+        raw.resetBlockSize(summary.getNTRec(), summary.isCompressed());
+
+        // allocate our read buffer.
+        blockBuffer = new byte[4 * DumpArchiveConstants.TP_SIZE];
+
+        // skip past CLRI and BITS segments since we don't handle them yet.
+        readCLRI();
+        readBITS();
 
         // put in a dummy record for the root node.
         final Dirent root = new Dirent(2, 2, 4, CURRENT_PATH_SEGMENT);
@@ -198,17 +183,36 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
     }
 
     /**
+     * Constructor using the platform's default encoding for file names.
+     *
+     * <p>Since 1.29.0: throws {@link IOException}.</p>
+     *
+     * @param is stream to read from.
+     * @throws IOException on error.
+     */
+    public DumpArchiveInputStream(final InputStream is) throws IOException {
+        this(builder().setInputStream(is));
+    }
+
+    /**
      * Constructs a new instance.
      *
-     * @param is       stream to read from
-     * @param encoding the encoding to use for file names, use null for the platform's default encoding
-     * @throws ArchiveException on error
+     * <p>Since 1.29.0: throws {@link IOException}.</p>
+     *
+     * @param is       stream to read from.
+     * @param encoding the encoding to use for file names, use null for the platform's default encoding.
+     * @throws IOException on error.
      * @since 1.6
      * @deprecated Since 1.29.0, use {@link #builder()}.
      */
     @Deprecated
-    public DumpArchiveInputStream(final InputStream is, final String encoding) throws ArchiveException {
-        this(is, builder().setCharset(encoding));
+    public DumpArchiveInputStream(final InputStream is, final String encoding) throws IOException {
+        this(builder().setInputStream(is).setCharset(encoding));
+    }
+
+    private DumpArchiveEntry checkEntry(final DumpArchiveEntry entry) throws ArchiveException, MemoryLimitException {
+        ArchiveUtils.checkEntryNameLength(entry.getName().length(), getMaxEntryNameLength(), "DUMP");
+        return entry;
     }
 
     /**
@@ -236,8 +240,8 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
     /**
      * Reads the next entry.
      *
-     * @return the next entry
-     * @throws IOException on error
+     * @return the next entry.
+     * @throws IOException on error.
      * @deprecated Use {@link #getNextEntry()}.
      */
     @Deprecated
@@ -252,11 +256,11 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
 
         // is there anything in the queue?
         if (!queue.isEmpty()) {
-            return queue.remove();
+            return checkEntry(queue.remove());
         }
 
         while (entry == null) {
-            if (hasHitEOF) {
+            if (eof) {
                 return null;
             }
 
@@ -302,7 +306,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
 
             // check if this is an end-of-volume marker.
             if (DumpArchiveConstants.SEGMENT_TYPE.END == active.getHeaderType()) {
-                hasHitEOF = true;
+                eof = true;
 
                 return null;
             }
@@ -335,13 +339,13 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
         entry.setSimpleName(names.get(entry.getIno()).getName());
         entry.setOffset(filepos);
 
-        return entry;
+        return checkEntry(entry);
     }
 
     /**
      * Gets full path for specified archive entry, or null if there's a gap.
      *
-     * @param entry
+     * @param entry The entry to query.
      * @return full path for specified archive entry, or null if there's a gap.
      * @throws DumpArchiveException Infinite loop detected in directory entries.
      */
@@ -383,31 +387,26 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
     /**
      * Gets the archive summary information.
      *
-     * @return the summary
+     * @return the summary.
      */
     public DumpArchiveSummary getSummary() {
         return summary;
     }
 
     /**
-     * Reads bytes from the current dump archive entry.
+     * {@inheritDoc}
      *
-     * This method is aware of the boundaries of the current entry in the archive and will deal with them as if they were this stream's start and EOF.
-     *
-     * @param buf The buffer into which to place bytes read.
-     * @param off The offset at which to place bytes read.
-     * @param len The number of bytes to read.
-     * @return The number of bytes read, or -1 at EOF.
-     * @throws IOException on error
+     * <p>This method is aware of the boundaries of the current entry in the archive and will deal with them as if they were this stream's start and EOF.</p>
      */
     @Override
     public int read(final byte[] buf, int off, int len) throws IOException {
+        IOUtils.checkFromIndexSize(buf, off, len);
         if (len == 0) {
             return 0;
         }
         int totalRead = 0;
 
-        if (hasHitEOF || isClosed || entryOffset >= entrySize) {
+        if (eof || isClosed || entryOffset >= entrySize) {
             return -1;
         }
 
@@ -528,7 +527,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
             final int datalen = DumpArchiveConstants.TP_SIZE * entry.getHeaderCount();
 
             if (blockBuffer.length < datalen) {
-                blockBuffer = IOUtils.readRange(raw, datalen);
+                blockBuffer = org.apache.commons.compress.utils.IOUtils.readRange(raw, datalen);
                 if (blockBuffer.length != datalen) {
                     throw new EOFException();
                 }
@@ -588,5 +587,4 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
             size -= DumpArchiveConstants.TP_SIZE;
         }
     }
-
 }

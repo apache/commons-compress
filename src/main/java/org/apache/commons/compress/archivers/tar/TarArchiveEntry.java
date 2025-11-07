@@ -50,7 +50,6 @@ import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.EntryStreamOffsets;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
 import org.apache.commons.compress.utils.ArchiveUtils;
-import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.ParsingUtils;
 import org.apache.commons.io.file.attribute.FileTimes;
 import org.apache.commons.lang3.StringUtils;
@@ -221,6 +220,20 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * </p>
      */
     private static final Pattern PAX_EXTENDED_HEADER_FILE_TIMES_PATTERN = Pattern.compile("-?\\d{1,19}(?:\\.\\d{1,19})?");
+
+    /**
+     * PAX header key for the path (file name) of the entry.
+     *
+     * @see #getName()
+     */
+    static final String PAX_NAME_KEY = "path";
+
+    /**
+     * PAX header key for the link path (link name) of the entry.
+     *
+     * @see #getLinkName()
+     */
+    static final String PAX_LINK_NAME_KEY = "linkpath";
 
     private static FileTime fileTimeFromOptionalSeconds(final long seconds) {
         return seconds <= 0 ? null : FileTimes.fromUnixTime(seconds);
@@ -393,7 +406,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         }
         this.userName = user;
         this.file = null;
-        this.linkOptions = IOUtils.EMPTY_LINK_OPTIONS;
+        this.linkOptions = org.apache.commons.compress.utils.IOUtils.EMPTY_LINK_OPTIONS;
         this.preserveAbsolutePath = preserveAbsolutePath;
     }
 
@@ -488,7 +501,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     public TarArchiveEntry(final File file, final String fileName) {
         final String normalizedName = normalizeFileName(fileName, false);
         this.file = file.toPath();
-        this.linkOptions = IOUtils.EMPTY_LINK_OPTIONS;
+        this.linkOptions = org.apache.commons.compress.utils.IOUtils.EMPTY_LINK_OPTIONS;
         try {
             readFileMode(this.file, normalizedName);
         } catch (final IOException e) {
@@ -578,7 +591,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     public TarArchiveEntry(final Path file, final String fileName, final LinkOption... linkOptions) throws IOException {
         final String normalizedName = normalizeFileName(fileName, false);
         this.file = file;
-        this.linkOptions = linkOptions == null ? IOUtils.EMPTY_LINK_OPTIONS : linkOptions;
+        this.linkOptions = linkOptions == null ? org.apache.commons.compress.utils.IOUtils.EMPTY_LINK_OPTIONS : linkOptions;
         readFileMode(file, normalizedName, linkOptions);
         this.userName = "";
         readOsSpecificProperties(file);
@@ -1051,7 +1064,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * when the entry represents a sparse file.
      * </p>
      *
-     * @return This entry's file size.
+     * @return This entry's file size, always &gt;= 0.
      */
     @Override
     public long getSize() {
@@ -1629,10 +1642,10 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
          * If called from addExtraPaxHeader, these additional headers must be already present.
          */
         switch (key) {
-        case "path":
+        case PAX_NAME_KEY:
             setName(val);
             break;
-        case "linkpath":
+        case PAX_LINK_NAME_KEY:
             setLinkName(val);
             break;
         case "gid":

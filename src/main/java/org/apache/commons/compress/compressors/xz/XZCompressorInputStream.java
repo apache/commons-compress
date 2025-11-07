@@ -26,6 +26,7 @@ import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.compressors.lzma.LZMACompressorInputStream;
 import org.apache.commons.compress.compressors.lzma.LZMACompressorOutputStream;
 import org.apache.commons.compress.utils.InputStreamStatistics;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.build.AbstractStreamBuilder;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.tukaani.xz.LZMA2Options;
@@ -240,9 +241,6 @@ public class XZCompressorInputStream extends CompressorInputStream implements In
 
     @Override
     public int read(final byte[] buf, final int off, final int len) throws IOException {
-        if (len == 0) {
-            return 0;
-        }
         try {
             final int ret = in.read(buf, off, len);
             count(ret);
@@ -256,7 +254,7 @@ public class XZCompressorInputStream extends CompressorInputStream implements In
     @Override
     public long skip(final long n) throws IOException {
         try {
-            return org.apache.commons.io.IOUtils.skip(in, n);
+            return IOUtils.skip(in, n);
         } catch (final org.tukaani.xz.MemoryLimitException e) {
             // Convert to Commons Compress MemoryLimtException
             throw newMemoryLimitException(e);

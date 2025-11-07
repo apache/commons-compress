@@ -24,7 +24,7 @@ package org.apache.commons.compress.archivers.cpio;
  * Based on code from the <a href="jrpm.sourceforge.net">jRPM project</a>.
  * </p>
  * <p>
- * A list of the {@code C_xxx} constants is <a href="http://www.opengroup.org/onlinepubs/9699919799/basedefs/cpio.h.html">here</a>.
+ * A list of the {@code C_xxx} constants is <a href="https://www.opengroup.org/onlinepubs/9699919799/basedefs/cpio.h.html">here</a>.
  * </p>
  * <p>
  * TODO Next major version: Update to a class.

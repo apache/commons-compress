@@ -57,8 +57,8 @@ import org.apache.commons.compress.compressors.z.ZCompressorInputStream;
 import org.apache.commons.compress.compressors.zstandard.ZstdCompressorInputStream;
 import org.apache.commons.compress.compressors.zstandard.ZstdCompressorOutputStream;
 import org.apache.commons.compress.compressors.zstandard.ZstdUtils;
-import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.compress.utils.Sets;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -236,7 +236,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
         inputStream.mark(signature.length);
         int signatureLength = -1;
         try {
-            signatureLength = IOUtils.readFully(inputStream, signature);
+            signatureLength = IOUtils.read(inputStream, signature);
             inputStream.reset();
         } catch (final IOException e) {
             throw new CompressorException("Failed to read signature.", e);

@@ -81,14 +81,18 @@ public class JarArchiveInputStream extends ZipArchiveInputStream {
     /**
      * Creates an instance from the input stream using the default encoding.
      *
+     * <p>Since 1.29.0: throws {@link IOException}.</p>
+     *
      * @param inputStream the input stream to wrap
      */
-    public JarArchiveInputStream(final InputStream inputStream) {
-        super(inputStream);
+    public JarArchiveInputStream(final InputStream inputStream) throws IOException {
+        this(jarInputStreamBuilder().setInputStream(inputStream));
     }
 
     /**
      * Creates an instance from the input stream using the specified encoding.
+     *
+     * <p>Since 1.29.0: throws {@link IOException}.</p>
      *
      * @param inputStream the input stream to wrap
      * @param encoding    the encoding to use
@@ -96,8 +100,8 @@ public class JarArchiveInputStream extends ZipArchiveInputStream {
      * @deprecated Since 1.29.0, use {@link #jarInputStreamBuilder()}.
      */
     @Deprecated
-    public JarArchiveInputStream(final InputStream inputStream, final String encoding) {
-        super(inputStream, encoding);
+    public JarArchiveInputStream(final InputStream inputStream, final String encoding) throws IOException {
+        this(jarInputStreamBuilder().setInputStream(inputStream).setCharset(encoding));
     }
 
     @Override

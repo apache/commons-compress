@@ -21,20 +21,33 @@ package org.apache.commons.compress;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 import static org.apache.commons.lang3.reflect.FieldUtils.readDeclaredField;
 import static org.apache.commons.lang3.reflect.FieldUtils.readField;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.stream.Stream;
 
 import org.apache.commons.compress.archivers.arj.ArjArchiveInputStream;
 import org.apache.commons.compress.archivers.cpio.CpioArchiveInputStream;
 import org.apache.commons.compress.archivers.dump.DumpArchiveInputStream;
 import org.apache.commons.compress.archivers.jar.JarArchiveInputStream;
+import org.apache.commons.compress.archivers.sevenz.SevenZFile;
+import org.apache.commons.compress.archivers.sevenz.SevenZFileOptions;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.archivers.tar.TarFile;
 import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
+import org.apache.commons.compress.archivers.zip.ZipEncoding;
+import org.apache.commons.compress.archivers.zip.ZipFile;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -52,7 +65,7 @@ class LegacyConstructorsTest extends AbstractTest {
         return (InputStream) readField(is, "in", true);
     }
 
-    static Stream<Arguments> testCpioConstructors() {
+    static Stream<Arguments> testCpioConstructors() throws IOException {
         final InputStream inputStream = mock(InputStream.class);
         return Stream.of(
                 Arguments.of(new CpioArchiveInputStream(inputStream, 1024), inputStream, "US-ASCII", 1024),
@@ -60,7 +73,7 @@ class LegacyConstructorsTest extends AbstractTest {
                 Arguments.of(new CpioArchiveInputStream(inputStream, "UTF-8"), inputStream, "UTF-8", 512));
     }
 
-    static Stream<Arguments> testTarConstructors() {
+    static Stream<Arguments> testTarConstructors() throws IOException {
         final InputStream inputStream = mock(InputStream.class);
         final String defaultEncoding = Charset.defaultCharset().name();
         final String otherEncoding = "UTF-8".equals(defaultEncoding) ? "US-ASCII" : "UTF-8";
@@ -74,7 +87,7 @@ class LegacyConstructorsTest extends AbstractTest {
                 Arguments.of(new TarArchiveInputStream(inputStream, otherEncoding), inputStream, 10240, 512, otherEncoding, false));
     }
 
-    static Stream<Arguments> testZipConstructors() {
+    static Stream<Arguments> testZipConstructors() throws IOException {
         final InputStream inputStream = mock(InputStream.class);
         return Stream.of(
                 Arguments.of(new ZipArchiveInputStream(inputStream, "US-ASCII"), inputStream, "US-ASCII", true, false, false),
@@ -87,8 +100,7 @@ class LegacyConstructorsTest extends AbstractTest {
     void testArjConstructor() throws Exception {
         try (InputStream inputStream = Files.newInputStream(getPath("bla.arj"));
                 ArjArchiveInputStream archiveInputStream = new ArjArchiveInputStream(inputStream, "US-ASCII")) {
-            // Arj wraps the input stream in a DataInputStream
-            assertEquals(inputStream, getNestedInputStream(getNestedInputStream(archiveInputStream)));
+            assertEquals(inputStream, getNestedInputStream(archiveInputStream));
             assertEquals(US_ASCII, archiveInputStream.getCharset());
         }
     }
@@ -120,6 +132,63 @@ class LegacyConstructorsTest extends AbstractTest {
         }
     }
 
+    static Stream<Arguments> testSevenZFileContructors() throws IOException {
+        final Path path = getPath("bla.7z");
+        final String defaultName = "unknown archive";
+        final String otherName = path.toAbsolutePath().toString();
+        final String customName = "customName";
+        final int defaultMemoryLimit = SevenZFileOptions.DEFAULT.getMaxMemoryLimitInKb();
+        final boolean defaultUseDefaultNameForUnnamedEntries = SevenZFileOptions.DEFAULT.getUseDefaultNameForUnnamedEntries();
+        final boolean defaultTryToRecoverBrokenArchives = SevenZFileOptions.DEFAULT.getTryToRecoverBrokenArchives();
+        final SevenZFileOptions otherOptions =
+                SevenZFileOptions.builder().withMaxMemoryLimitInKb(42).withTryToRecoverBrokenArchives(true).withUseDefaultNameForUnnamedEntries(true).build();
+        final char[] otherPassword = "password".toCharArray();
+        final byte[] otherPasswordBytes = "password".getBytes(StandardCharsets.UTF_16LE);
+        return Stream.of(
+                // From File
+                Arguments.of(new SevenZFile(path.toFile()), otherName, defaultMemoryLimit, defaultUseDefaultNameForUnnamedEntries,
+                        defaultTryToRecoverBrokenArchives, null),
+                Arguments.of(new SevenZFile(path.toFile(), otherPasswordBytes), otherName, defaultMemoryLimit, defaultUseDefaultNameForUnnamedEntries,
+                        defaultTryToRecoverBrokenArchives, otherPasswordBytes),
+                Arguments.of(new SevenZFile(path.toFile(), otherPassword), otherName, defaultMemoryLimit, defaultUseDefaultNameForUnnamedEntries,
+                        defaultTryToRecoverBrokenArchives, otherPasswordBytes),
+                Arguments.of(new SevenZFile(path.toFile(), otherPassword, otherOptions), otherName, 42, true, true, otherPasswordBytes),
+                Arguments.of(new SevenZFile(path.toFile(), otherOptions), otherName, 42, true, true, null),
+                // From SeekableByteChannel
+                Arguments.of(new SevenZFile(Files.newByteChannel(path, StandardOpenOption.READ)), defaultName, defaultMemoryLimit,
+                        defaultUseDefaultNameForUnnamedEntries, defaultTryToRecoverBrokenArchives, null),
+                Arguments.of(new SevenZFile(Files.newByteChannel(path, StandardOpenOption.READ), otherPasswordBytes), defaultName, defaultMemoryLimit,
+                        defaultUseDefaultNameForUnnamedEntries, defaultTryToRecoverBrokenArchives, otherPasswordBytes),
+                Arguments.of(new SevenZFile(Files.newByteChannel(path, StandardOpenOption.READ), otherPassword), defaultName, defaultMemoryLimit,
+                        defaultUseDefaultNameForUnnamedEntries, defaultTryToRecoverBrokenArchives, otherPasswordBytes),
+                Arguments.of(new SevenZFile(Files.newByteChannel(path, StandardOpenOption.READ), otherPassword, otherOptions), defaultName, 42, true, true,
+                        otherPasswordBytes),
+                Arguments.of(new SevenZFile(Files.newByteChannel(path, StandardOpenOption.READ), otherOptions), defaultName, 42, true, true, null),
+                // From SeekableByteChannel with custom name
+                Arguments.of(new SevenZFile(Files.newByteChannel(path, StandardOpenOption.READ), customName), customName, defaultMemoryLimit,
+                        defaultUseDefaultNameForUnnamedEntries, defaultTryToRecoverBrokenArchives, null),
+                Arguments.of(new SevenZFile(Files.newByteChannel(path, StandardOpenOption.READ), customName, otherPasswordBytes), customName,
+                        defaultMemoryLimit, defaultUseDefaultNameForUnnamedEntries, defaultTryToRecoverBrokenArchives, otherPasswordBytes),
+                Arguments.of(new SevenZFile(Files.newByteChannel(path, StandardOpenOption.READ), customName, otherPassword), customName, defaultMemoryLimit,
+                        defaultUseDefaultNameForUnnamedEntries, defaultTryToRecoverBrokenArchives, otherPasswordBytes),
+                Arguments.of(new SevenZFile(Files.newByteChannel(path, StandardOpenOption.READ), customName, otherPassword, otherOptions), customName, 42,
+                        true, true, otherPasswordBytes),
+                Arguments.of(new SevenZFile(Files.newByteChannel(path, StandardOpenOption.READ), customName, otherOptions), customName, 42, true,
+                        true, null));
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void testSevenZFileContructors(final SevenZFile archiveFile, final String expectedName, final int expectedMemoryLimit,
+            final boolean expectedUseDefaultNameForUnnamedEntries, final boolean expectedTryToRecoverBrokenArchives,
+            final byte[] expectedPassword) throws Exception {
+        assertEquals(expectedName, readDeclaredField(archiveFile, "fileName", true));
+        assertEquals(expectedMemoryLimit, readDeclaredField(archiveFile, "maxMemoryLimitKiB", true));
+        assertEquals(expectedUseDefaultNameForUnnamedEntries, readDeclaredField(archiveFile, "useDefaultNameForUnnamedEntries", true));
+        assertEquals(expectedTryToRecoverBrokenArchives, readDeclaredField(archiveFile, "tryToRecoverBrokenArchives", true));
+        assertArrayEquals(expectedPassword, (byte[]) readDeclaredField(archiveFile, "password", true));
+    }
+
     @ParameterizedTest
     @MethodSource
     void testTarConstructors(final TarArchiveInputStream archiveStream, final InputStream expectedInput, final int expectedBlockSize,
@@ -130,6 +199,35 @@ class LegacyConstructorsTest extends AbstractTest {
         assertEquals(expectedRecordSize, recordBuffer.length);
         assertEquals(Charset.forName(expectedEncoding), archiveStream.getCharset());
         assertEquals(expectedLenient, readField(archiveStream, "lenient", true));
+    }
+
+    static Stream<Arguments> testTarFileConstructors() throws IOException {
+        final Path path = getPath("bla.tar");
+        final File file = getFile("bla.tar");
+        final SeekableByteChannel channel = mock(SeekableByteChannel.class);
+        final String defaultEncoding = Charset.defaultCharset().name();
+        final String otherEncoding = "UTF-8".equals(defaultEncoding) ? "US-ASCII" : "UTF-8";
+        return Stream.of(
+                Arguments.of(new TarFile(IOUtils.EMPTY_BYTE_ARRAY), defaultEncoding, false),
+                Arguments.of(new TarFile(IOUtils.EMPTY_BYTE_ARRAY, true), defaultEncoding, true),
+                Arguments.of(new TarFile(IOUtils.EMPTY_BYTE_ARRAY, otherEncoding), otherEncoding, false),
+                Arguments.of(new TarFile(file), defaultEncoding, false),
+                Arguments.of(new TarFile(file, true), defaultEncoding, true),
+                Arguments.of(new TarFile(file, otherEncoding), otherEncoding, false),
+                Arguments.of(new TarFile(path), defaultEncoding, false),
+                Arguments.of(new TarFile(path, true), defaultEncoding, true),
+                Arguments.of(new TarFile(path, otherEncoding), otherEncoding, false),
+                Arguments.of(new TarFile(channel), defaultEncoding, false),
+                Arguments.of(new TarFile(channel, 1024, 1024, otherEncoding, true), otherEncoding, true));
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void testTarFileConstructors(final TarFile tarFile, final String expectedEncoding, final boolean expectedLenient) throws Exception {
+        final ZipEncoding encoding = (ZipEncoding) readDeclaredField(tarFile, "zipEncoding", true);
+        final Charset charset = (Charset) readDeclaredField(encoding, "charset", true);
+        assertEquals(Charset.forName(expectedEncoding), charset);
+        assertEquals(expectedLenient, readDeclaredField(tarFile, "lenient", true));
     }
 
     @ParameterizedTest
@@ -143,5 +241,35 @@ class LegacyConstructorsTest extends AbstractTest {
         assertEquals(expectedUseUnicodeExtraFields, readDeclaredField(archiveStream, "useUnicodeExtraFields", true));
         assertEquals(expectedSupportStoredEntryDataDescriptor, readDeclaredField(archiveStream, "supportStoredEntryDataDescriptor", true));
         assertEquals(expectedSkipSplitSignature, readDeclaredField(archiveStream, "skipSplitSignature", true));
+    }
+
+    static Stream<Arguments> testZipFileConstructors() throws IOException {
+        final Path path = getPath("bla.zip");
+        final String defaultEncoding = StandardCharsets.UTF_8.name();
+        final String otherEncoding = "UTF-8".equals(defaultEncoding) ? "US-ASCII" : "UTF-8";
+        return Stream.of(
+                Arguments.of(new ZipFile(path.toFile()), defaultEncoding, true),
+                Arguments.of(new ZipFile(path.toFile(), otherEncoding), otherEncoding, true),
+                Arguments.of(new ZipFile(path.toFile(), otherEncoding, false), otherEncoding, false),
+                Arguments.of(new ZipFile(path.toFile(), otherEncoding, false, true), otherEncoding, false),
+                Arguments.of(new ZipFile(path), defaultEncoding, true),
+                Arguments.of(new ZipFile(path, otherEncoding), otherEncoding, true),
+                Arguments.of(new ZipFile(path, otherEncoding, false), otherEncoding, false),
+                Arguments.of(new ZipFile(path, otherEncoding, false, true), otherEncoding, false),
+                Arguments.of(new ZipFile(Files.newByteChannel(path, StandardOpenOption.READ)), defaultEncoding, true),
+                Arguments.of(new ZipFile(Files.newByteChannel(path, StandardOpenOption.READ), otherEncoding), otherEncoding, true),
+                Arguments.of(new ZipFile(Files.newByteChannel(path, StandardOpenOption.READ), null, otherEncoding, false),
+                        otherEncoding, false),
+                Arguments.of(new ZipFile(Files.newByteChannel(path, StandardOpenOption.READ), null, otherEncoding, false, true),
+                        otherEncoding, false),
+                Arguments.of(new ZipFile(path.toAbsolutePath().toString()), defaultEncoding, true),
+                Arguments.of(new ZipFile(path.toAbsolutePath().toString(), otherEncoding), otherEncoding, true));
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void testZipFileConstructors(final ZipFile zipFile, final String expectedEncoding, final boolean expectedUseUnicodeExtraFields) throws Exception {
+        assertEquals(Charset.forName(expectedEncoding), readDeclaredField(zipFile, "encoding", true));
+        assertEquals(expectedUseUnicodeExtraFields, readDeclaredField(zipFile, "useUnicodeExtraFields", true));
     }
 }

@@ -53,12 +53,12 @@ class SevenZFolderTest {
     @Test
     void testGetUnpackSizeOne() throws ArchiveException {
         final Folder folder = new Folder();
-        folder.totalOutputStreams = 266L;
+        folder.totalOutputStreams = 266;
         final BindPair[] bindPairArray = new BindPair[1];
         final BindPair bindPair = new BindPair(0, 0);
         bindPairArray[0] = bindPair;
         folder.bindPairs = bindPairArray;
-        folder.totalOutputStreams = 1L;
+        folder.totalOutputStreams = 1;
         assertEquals(0L, folder.getUnpackSize());
     }
 

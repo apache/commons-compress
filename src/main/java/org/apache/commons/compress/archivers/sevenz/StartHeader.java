@@ -21,12 +21,25 @@ package org.apache.commons.compress.archivers.sevenz;
 final class StartHeader {
 
     final long nextHeaderOffset;
-    final long nextHeaderSize;
+    final int nextHeaderSize;
     final long nextHeaderCrc;
 
-    StartHeader(final long nextHeaderOffset, final long nextHeaderSize, final long nextHeaderCrc) {
+    StartHeader(final long nextHeaderOffset, final int nextHeaderSize, final long nextHeaderCrc) {
+        // The interval [SIGNATURE_HEADER_SIZE + nextHeaderOffset, SIGNATURE_HEADER_SIZE + nextHeaderOffset + nextHeaderSize)
+        // must be a valid range of the file, in particular must be within [0, Long.MAX_VALUE).
+        assert nextHeaderOffset >= 0 && nextHeaderOffset <= Long.MAX_VALUE - SevenZFile.SIGNATURE_HEADER_SIZE;
+        assert nextHeaderSize >= 0 && nextHeaderSize <= Long.MAX_VALUE - SevenZFile.SIGNATURE_HEADER_SIZE - nextHeaderOffset;
         this.nextHeaderOffset = nextHeaderOffset;
         this.nextHeaderSize = nextHeaderSize;
         this.nextHeaderCrc = nextHeaderCrc;
+    }
+
+    /**
+     * Gets the position of the next header in the file.
+     *
+     * @return the position of the next header
+     */
+    long position() {
+        return SevenZFile.SIGNATURE_HEADER_SIZE + nextHeaderOffset;
     }
 }

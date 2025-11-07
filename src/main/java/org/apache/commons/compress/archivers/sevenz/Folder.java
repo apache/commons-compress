@@ -37,13 +37,23 @@ final class Folder {
 
     /**
      * Total number of input streams across all coders. This field is currently unused but technically part of the 7z API.
+     *
+     * <p>Currently limited to {@code MAX_CODER_STREAMS_PER_FOLDER}</p>
      */
-    long totalInputStreams;
+    int totalInputStreams;
 
-    /** Total number of output streams across all coders. */
-    long totalOutputStreams;
+    /**
+     * Total number of output streams across all coders.
+     *
+     * <p>Currently limited to {@code MAX_CODER_STREAMS_PER_FOLDER}</p>
+     */
+    int totalOutputStreams;
 
-    /** Mapping between input and output streams. */
+    /**
+     * Mapping between input and output streams.
+     *
+     * <p>Its size is equal to {@code totalOutputStreams - 1}</p>
+     */
     BindPair[] bindPairs;
 
     /** Indices of input streams, one per input stream not listed in bindPairs. */

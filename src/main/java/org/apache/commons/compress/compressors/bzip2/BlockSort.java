@@ -62,10 +62,10 @@ import java.util.BitSet;
  * For more information see for example:
  * </p>
  * <ul>
- * <li><a href="http://www.hpl.hp.com/techreports/Compaq-DEC/SRC-RR-124.pdf">Burrows, M. and Wheeler, D.: A Block-sorting Lossless Data Compression
+ * <li><a href="https://www.hpl.hp.com/techreports/Compaq-DEC/SRC-RR-124.pdf">Burrows, M. and Wheeler, D.: A Block-sorting Lossless Data Compression
  * Algorithm</a></li>
- * <li><a href="http://webglimpse.net/pubs/suffix.pdf">Manber, U. and Myers, G.: Suffix arrays: A new method for on-line string searches</a></li>
- * <li><a href="http://www.cs.tufts.edu/~nr/comp150fp/archive/bob-sedgewick/fast-strings.pdf">Bentley, J.L. and Sedgewick, R.: Fast Algorithms for Sorting and
+ * <li><a href="https://webglimpse.net/pubs/suffix.pdf">Manber, U. and Myers, G.: Suffix arrays: A new method for on-line string searches</a></li>
+ * <li><a href="https://www.cs.tufts.edu/~nr/comp150fp/archive/bob-sedgewick/fast-strings.pdf">Bentley, J.L. and Sedgewick, R.: Fast Algorithms for Sorting and
  * Searching Strings</a></li>
  * </ul>
  *

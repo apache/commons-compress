@@ -49,11 +49,6 @@ public final class IOUtils {
     public static final LinkOption[] EMPTY_LINK_OPTIONS = {};
 
     /**
-     * The {@code SOFT_MAX_ARRAY_LENGTH} constant from Java's internal ArraySupport class.
-     */
-    private static final int SOFT_MAX_ARRAY_LENGTH = Integer.MAX_VALUE - 8;
-
-    /**
      * Closes the given Closeable and swallows any IOException that may occur.
      *
      * @param c Closeable to close, can be null.
@@ -164,7 +159,7 @@ public final class IOUtils {
     @Deprecated
     public static int read(final File file, final byte[] array) throws IOException {
         try (InputStream inputStream = Files.newInputStream(file.toPath())) {
-            return readFully(inputStream, array, 0, array.length);
+            return org.apache.commons.io.IOUtils.read(inputStream, array, 0, array.length);
         }
     }
 
@@ -178,9 +173,11 @@ public final class IOUtils {
      * @param array buffer to fill.
      * @return the number of bytes actually read.
      * @throws IOException Thrown if an I/O error occurs.
+     * @deprecated Since 1.29.0, use {@link org.apache.commons.io.IOUtils#read(InputStream, byte[])} instead.
      */
+    @Deprecated
     public static int readFully(final InputStream input, final byte[] array) throws IOException {
-        return readFully(input, array, 0, array.length);
+        return org.apache.commons.io.IOUtils.read(input, array);
     }
 
     /**
@@ -195,11 +192,10 @@ public final class IOUtils {
      * @param length    of bytes to read.
      * @return the number of bytes actually read.
      * @throws IOException Thrown if an I/O error occurs.
+     * @deprecated Since 1.29.0, use {@link org.apache.commons.io.IOUtils#read(InputStream, byte[], int, int)} instead.
      */
+    @Deprecated
     public static int readFully(final InputStream input, final byte[] array, final int offset, final int length) throws IOException {
-        if (length < 0 || offset < 0 || length + offset > array.length || length + offset < 0) {
-            throw new IndexOutOfBoundsException();
-        }
         return org.apache.commons.io.IOUtils.read(input, array, offset, length);
     }
 
@@ -214,13 +210,11 @@ public final class IOUtils {
      * @param byteBuffer the buffer into which the data is read.
      * @throws IOException Thrown if an I/O error occurs.
      * @throws EOFException if the channel reaches the end before reading all the bytes.
+     * @deprecated Since 1.29.0, use {@link org.apache.commons.io.IOUtils#readFully(ReadableByteChannel, ByteBuffer)} instead.
      */
+    @Deprecated
     public static void readFully(final ReadableByteChannel channel, final ByteBuffer byteBuffer) throws IOException {
-        final int expectedLength = byteBuffer.remaining();
-        final int read = org.apache.commons.io.IOUtils.read(channel, byteBuffer);
-        if (read < expectedLength) {
-            throw new EOFException();
-        }
+        org.apache.commons.io.IOUtils.readFully(channel, byteBuffer);
     }
 
     /**
@@ -235,7 +229,7 @@ public final class IOUtils {
      */
     public static byte[] readRange(final InputStream input, final int length) throws IOException {
         final ByteArrayOutputStream output = new ByteArrayOutputStream();
-        org.apache.commons.io.IOUtils.copyLarge(input, output, 0, MemoryLimitException.checkBytes(length, SOFT_MAX_ARRAY_LENGTH));
+        org.apache.commons.io.IOUtils.copyLarge(input, output, 0, MemoryLimitException.checkBytes(length, org.apache.commons.io.IOUtils.SOFT_MAX_ARRAY_LENGTH));
         return output.toByteArray();
     }
 
@@ -277,9 +271,11 @@ public final class IOUtils {
      * @param toSkip the number of bytes to skip.
      * @return the number of bytes actually skipped.
      * @throws IOException Thrown if an I/O error occurs.
+     * @deprecated Since 1.29.0, use {@link org.apache.commons.io.IOUtils#skip(InputStream, long)} instead.
      */
+    @Deprecated
     public static long skip(final InputStream input, final long toSkip) throws IOException {
-        return org.apache.commons.io.IOUtils.skip(input, toSkip, org.apache.commons.io.IOUtils::byteArray);
+        return org.apache.commons.io.IOUtils.skip(input, toSkip);
     }
 
     /**

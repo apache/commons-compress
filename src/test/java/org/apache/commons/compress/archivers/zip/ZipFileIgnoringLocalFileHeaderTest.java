@@ -25,7 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Enumeration;
 
@@ -38,16 +37,10 @@ class ZipFileIgnoringLocalFileHeaderTest {
     private static ZipFile openZipWithoutLocalFileHeader(final String fileName) throws IOException {
         // @formatter:off
         return ZipFile.builder()
-                .setFile(AbstractTest.getFile(fileName))
-                .setCharset(StandardCharsets.UTF_8.name())
-                .setUseUnicodeExtraFields(true)
+                .setURI(AbstractTest.getURI(fileName))
                 .setIgnoreLocalFileHeader(true)
                 .get();
         // @formatter:on
-    }
-
-    private static ZipFile openZipWithoutLocalFileHeaderDeprecated(final String fileName) throws IOException {
-        return new ZipFile(AbstractTest.getFile(fileName), StandardCharsets.UTF_8.name(), true, true);
     }
 
     @TempDir
@@ -104,7 +97,7 @@ class ZipFileIgnoringLocalFileHeaderTest {
      */
     @Test
     void testZipUnarchive() throws Exception {
-        try (ZipFile zipFile = openZipWithoutLocalFileHeaderDeprecated("bla.zip")) {
+        try (ZipFile zipFile = openZipWithoutLocalFileHeader("bla.zip")) {
             zipFile.stream().forEach(entry -> {
                 try (InputStream inputStream = zipFile.getInputStream(entry)) {
                     Files.copy(inputStream, new File(dir, entry.getName()).toPath());

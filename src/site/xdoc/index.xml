@@ -41,13 +41,13 @@
                 Apache goes. The tar package is originally Tim Endres'
                 public domain package. The bzip2 package is based on
                 the work done by Keiron Liddle as well as Julian Seward's
-                <a href="http://www.bzip.org/index.html">libbzip2</a>.
+                <a href="https://www.bzip.org/index.html">libbzip2</a>.
                 It has migrated
                 via:<br/> Ant -&gt; Avalon-Excalibur -&gt; Commons-IO
                 -&gt; Commons-Compress.</li>
               <li>The cpio package has been contributed by Michael Kuss
                 and
-                the <a href="http://jrpm.sourceforge.net/">jRPM</a>
+                the <a href="https://jrpm.sourceforge.net/">jRPM</a>
                 project.</li>
               <li>The pack200 code has originally been part of the now
                 retired <a href="https://harmony.apache.org/">Apache
