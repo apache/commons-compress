@@ -91,7 +91,6 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <checkstyle.resourceExcludes>LICENSE.txt, NOTICE.txt, **/maven-archiver/pom.properties</checkstyle.resourceExcludes>
   </properties>
   <issueManagement>
-    <system>jira</system>
     <url>https://issues.apache.org/jira/browse/COMPRESS</url>
   </issueManagement>
   <dependencies>
