@@ -20,7 +20,7 @@
   <parent>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-parent</artifactId>
-    <version>91</version>
+    <version>92</version>
   </parent>
   <artifactId>commons-compress</artifactId>
   <version>1.29.0-SNAPSHOT</version>
@@ -90,6 +90,22 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <checkstyle.suppress.file>${basedir}/src/conf/checkstyle/checkstyle-suppressions.xml</checkstyle.suppress.file>
     <checkstyle.resourceExcludes>LICENSE.txt, NOTICE.txt, **/maven-archiver/pom.properties</checkstyle.resourceExcludes>
   </properties>
+  <repositories>
+    <!-- Central before Apache releases to prevent too many 404 errors on the latter -->
+    <repository>
+      <id>central</id>
+      <url>https://repo.maven.apache.org/maven2/</url>
+    </repository>
+    <!-- TEMP for branch commons-parent... -->
+    <repository>
+      <id>apache.staging</id>
+      <name>Apache Staging Repository</name>
+      <url>https://repository.apache.org/content/repositories/orgapachecommons-1872/</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
   <issueManagement>
     <system>jira</system>
     <url>https://issues.apache.org/jira/browse/COMPRESS</url>
