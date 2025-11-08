@@ -352,10 +352,10 @@ class ArjArchiveInputStreamTest extends AbstractTest {
      * <p>The test archive is crafted so that the local file header of the first entry begins at
      * byte offset {@code 0x0035}. Within that header:</p>
      * <ul>
-     *   <li><b>Basic header size</b> (2 bytes at offsets 0x02–0x03) = {@code 0x0039}.</li>
-     *   <li><b>Fixed header size</b> (aka {@code first_hdr_size}, 1 byte at 0x04) = {@code 0x2E}.</li>
+     *   <li><strong>Basic header size</strong> (2 bytes at offsets 0x02–0x03) = {@code 0x0039}.</li>
+     *   <li><strong>Fixed header size</strong> (aka {@code first_hdr_size}, 1 byte at 0x04) = {@code 0x2E}.</li>
      *   <li>The filename and comment C-strings follow the fixed header and complete the basic header.</li>
-     *   <li>A 4-byte <b>basic header CRC-32</b> follows the basic header.</li>
+     *   <li>A 4-byte <strong>basic header CRC-32</strong> follows the basic header.</li>
      * </ul>
      *
      * @param maxCount absolute truncation point (number of readable bytes from the start of the file)
@@ -397,10 +397,10 @@ class ArjArchiveInputStreamTest extends AbstractTest {
      *
      * <p>The main archive header is at the beginning of the file. Within that header:</p>
      * <ul>
-     *   <li><b>Basic header size</b> (2 bytes at offsets 0x02–0x03) = {@code 0x002b}.</li>
-     *   <li><b>Fixed header size</b> (aka {@code first_hdr_size}, 1 byte at 0x04) = {@code 0x22}.</li>
+     *   <li><strong>Basic header size</strong> (2 bytes at offsets 0x02–0x03) = {@code 0x002b}.</li>
+     *   <li><strong>Fixed header size</strong> (aka {@code first_hdr_size}, 1 byte at 0x04) = {@code 0x22}.</li>
      *   <li>The archive name and comment C-strings follow the fixed header and complete the basic header.</li>
-     *   <li>A 4-byte <b>basic header CRC-32</b> follows the basic header.</li>
+     *   <li>A 4-byte <strong>basic header CRC-32</strong> follows the basic header.</li>
      * </ul>
      *
      * @param maxCount absolute truncation point (number of readable bytes from the start of the file)

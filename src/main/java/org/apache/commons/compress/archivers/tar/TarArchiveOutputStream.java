@@ -498,7 +498,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
     /**
      * Puts an entry on the output stream. This writes the entry's header record and positions the output stream for writing the contents of the entry. Once
      * this method is called, the stream is ready for calls to write() to write the entry's contents. Once the contents are written, closeArchiveEntry()
-     * <B>MUST</B> be called to ensure that all buffered data is completely written to the output stream.
+     * <strong>MUST</strong> be called to ensure that all buffered data is completely written to the output stream.
      *
      * @param archiveEntry The TarEntry to be written to the archive.
      * @throws IOException              on error
