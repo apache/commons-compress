@@ -95,7 +95,8 @@ public final class AttributeLayoutUtils {
                 // bc_offset
                 "O" + tag, "OS" + tag,
                 // flag
-                "F" + tag)); INTEGRAL_TAGS = Collections.unmodifiableSet(integralTags);
+                "F" + tag));
+        INTEGRAL_TAGS = Collections.unmodifiableSet(integralTags);
         final Set<String> referenceTags = new HashSet<>();
         Collections.addAll(referenceTags,
                 // constant_ref
