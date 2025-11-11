@@ -174,7 +174,7 @@ public class NewAttributeBands extends BandSet {
          * @param body the body of the callable.
          * @throws Pack200Exception If the body is empty.
          */
-        public Callable(final List<LayoutElement> body) throws  Pack200Exception {
+        public Callable(final List<LayoutElement> body) throws Pack200Exception {
             if (body.isEmpty()) {
                 throw new Pack200Exception("Corrupted Pack200 archive: Callable body is empty");
             }
@@ -631,11 +631,11 @@ public class NewAttributeBands extends BandSet {
         private final List<Range<Integer>> tagRanges;
         private final List<LayoutElement> body;
 
-        public UnionCase(final List<Integer> tags) throws IOException {
+        public UnionCase(final List<Integer> tags) {
             this(tags, Collections.emptyList());
         }
 
-        public UnionCase(final List<Integer> tags, final List<LayoutElement> body) throws IOException {
+        public UnionCase(final List<Integer> tags, final List<LayoutElement> body) {
             this(AttributeLayoutUtils.toRanges(tags), body, false);
         }
 
