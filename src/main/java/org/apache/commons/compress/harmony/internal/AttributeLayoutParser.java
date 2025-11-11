@@ -286,7 +286,7 @@ public final class AttributeLayoutParser<ATTRIBUTE_LAYOUT_ELEMENT, LAYOUT_ELEMEN
             if (!Character.isDigit(peek())) {
                 break;
             }
-            result = result * 10 + (next() - '0');
+            result = result * 10 + next() - '0';
             // Check for overflow
             if (result > Integer.MAX_VALUE) {
                 throw new Pack200Exception("Corrupted Pack200 archive: numeral value out of range.");
