@@ -20,6 +20,7 @@ package org.apache.commons.compress.harmony.unpack200;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
@@ -53,6 +54,11 @@ class NewAttributeBandsTest extends AbstractBandsTest {
         }
     }
 
+    private MockNewAttributeBands createNewAttributeBands(final String layoutStr) throws IOException, Pack200Exception {
+        return new MockNewAttributeBands(new MockSegment(),
+                new AttributeLayout("test", AttributeLayout.CONTEXT_CLASS, layoutStr, 25));
+    }
+
     @Test
     void testEmptyLayout() throws IOException, Pack200Exception {
         final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(new MockSegment(),
@@ -62,7 +68,17 @@ class NewAttributeBandsTest extends AbstractBandsTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "B", "FB", "SB", "H", "FH", "SH", "I", "FI", "SI", "PB", "OB", "OSB", "POB", "PH", "OH", "OSH", "POH", "PI", "OI", "OSI", "POI" })
+    @ValueSource(strings = {
+            // unsigned_int
+            "B", "H", "I", "V",
+            // signed_int
+            "SB", "SH", "SI", "SV",
+            // bc_index
+            "PB", "PH", "PI", "PV", "POB", "POH", "POI", "POV",
+            // bc_offset
+            "OB", "OH", "OI", "OV",
+            // flag
+            "FB", "FH", "FI", "FV"})
     void testIntegralLayout(final String layoutStr) throws IOException, Pack200Exception {
         final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(new MockSegment(),
                 new AttributeLayout("test", AttributeLayout.CONTEXT_CLASS, layoutStr, 25));
@@ -125,7 +141,7 @@ class NewAttributeBandsTest extends AbstractBandsTest {
     void testLayoutWithCalls() throws IOException, Pack200Exception {
         // @formatter:off
         final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(new MockSegment(), new AttributeLayout("test", AttributeLayout.CONTEXT_FIELD,
-            "[NH[(1)]][RSH NH[RUH(1)]][TB(66,67,73,83,90)[KIH](68)[KDH](70)[KFH](74)[KJH](99)[RSH](101)[RSH RUH](115)[RUH](91)[NH[(0)]](64)[RSH[RUH(0)]]()[]]",
+            "[NH[(1)]][RSHNH[RUH(1)]][TB(66,67,73,83,90)[KIH](68)[KDH](70)[KFH](74)[KJH](99)[RSH](101)[RSHRUH](115)[RUH](91)[NH[(0)]](64)[RSHNH[RUH(0)]]()[]]",
             26));
         // @formatter:on
         final List layoutElements = newAttributeBands.getLayoutElements();
@@ -178,6 +194,15 @@ class NewAttributeBandsTest extends AbstractBandsTest {
         assertEquals("RSH", fourthElement.getTag());
         final Integral fifthElement = (Integral) replicatedElements.get(4);
         assertEquals("H", fifthElement.getTag());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"NH[]", "[]"})
+    void testEmptyBodyFails(final String layout) {
+        final Pack200Exception ex = assertThrows(Pack200Exception.class, () -> createNewAttributeBands(layout));
+        assertTrue(ex.getMessage().contains(layout), "Unexpected exception message: " + ex.getMessage());
+        final Throwable cause = ex.getCause();
+        assertTrue(cause.getMessage().contains("empty"), "Unexpected exception message: " + cause.getMessage());
     }
 
     @Test

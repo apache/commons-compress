@@ -183,7 +183,7 @@ class NewAttributeBandsTest {
         final CPUTF8 name = new CPUTF8("TestAttribute");
         // @formatter:off
         final CPUTF8 layout = new CPUTF8(
-          "[NH[(1)]][RSH NH[RUH(1)]][TB(66,67,73,83,90)[KIH](68)[KDH](70)[KFH](74)[KJH](99)[RSH](101)[RSH RUH](115)[RUH](91)[NH[(0)]](64)[RSH[RUH(0)]]()[]]"
+          "[NH[(1)]][RSHNH[RUH(1)]][TB(66,67,73,83,90)[KIH](68)[KDH](70)[KFH](74)[KJH](99)[RSH](101)[RSHRUH](115)[RUH](91)[NH[(0)]](64)[RSHNH[RUH(0)]]()[]]"
         );
         // @formatter:on
         final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1, null, null,
