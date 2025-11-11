@@ -111,7 +111,7 @@ public final class AttributeLayoutUtils {
     }
 
     /**
-     * Validates that the given tag matches the {@code unsigned_int} layout definition production rule.
+     * Validates that the given tag matches the {@code any_int} layout definition production rule.
      *
      * @param tag the layout tag to validate
      * @return the validated tag
