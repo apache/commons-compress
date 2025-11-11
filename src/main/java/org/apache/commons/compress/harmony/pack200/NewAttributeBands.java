@@ -59,6 +59,11 @@ public class NewAttributeBands extends BandSet {
 
     private class AttributeLayoutFactory implements AttributeLayoutParser.Factory<AttributeLayoutElement, LayoutElement> {
 
+        /**
+         * The last P-type integral seen (for use with subsequent O and PO types)
+         */
+        private Integral lastPIntegral;
+
         @Override
         public LayoutElement createCall(int callableIndex) {
             return new Call(callableIndex);
@@ -71,7 +76,16 @@ public class NewAttributeBands extends BandSet {
 
         @Override
         public LayoutElement createIntegral(String tag) {
-            return new Integral(tag);
+            final Integral integral;
+            if (tag.startsWith("O") || tag.startsWith("PO")) {
+                integral = new Integral(tag, lastPIntegral);
+            } else {
+                integral = new Integral(tag);
+            }
+            if (tag.startsWith("P")) {
+                lastPIntegral = integral;
+            }
+            return integral;
         }
 
         @Override
@@ -626,9 +640,6 @@ public class NewAttributeBands extends BandSet {
     private final AttributeDefinition def;
 
     private boolean usedAtLeastOnce;
-
-    // used when parsing
-    private Integral lastPIntegral;
 
     private final AttributeLayoutFactory attributeLayoutFactory = new AttributeLayoutFactory();
 
