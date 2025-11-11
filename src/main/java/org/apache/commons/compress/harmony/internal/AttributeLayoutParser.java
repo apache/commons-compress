@@ -41,16 +41,58 @@ public final class AttributeLayoutParser<ATTRIBUTE_LAYOUT_ELEMENT, LAYOUT_ELEMEN
      * Factory interface for creating attribute layout elements.
      */
     public interface Factory<ATTRIBUTE_LAYOUT_ELEMENT, LAYOUT_ELEMENT extends ATTRIBUTE_LAYOUT_ELEMENT> {
+        /**
+         * Creates a {@code call} layout element.
+         *
+         * @param callableIndex Index of the callable to call.
+         * @return A {@code call} layout element.
+         */
         LAYOUT_ELEMENT createCall(int callableIndex);
 
+        /**
+         * Creates a {@code callable} attribute layout element.
+         *
+         * @param body Body of the callable.
+         * @return A {@code callable} attribute layout element.
+         * @throws Pack200Exception If the callable body is invalid.
+         */
         ATTRIBUTE_LAYOUT_ELEMENT createCallable(String body) throws Pack200Exception;
 
+        /**
+         * Creates an {@code integral} layout element.
+         *
+         * @param tag Integral tag.
+         * @return An {@code integral} layout element.
+         */
         LAYOUT_ELEMENT createIntegral(String tag);
 
+        /**
+         * Creates a {@code reference} layout element.
+         *
+         * @param tag Reference tag.
+         * @return A {@code reference} layout element.
+         */
         LAYOUT_ELEMENT createReference(String tag);
 
+        /**
+         * Creates a {@code replication} layout element.
+         *
+         * @param unsignedInt Unsigned int layout definition for the replication count.
+         * @param body        Body of the replication.
+         * @return A {@code replication} layout element.
+         * @throws Pack200Exception If the replication body is invalid.
+         */
         LAYOUT_ELEMENT createReplication(String unsignedInt, String body) throws Pack200Exception;
 
+        /**
+         * Creates a {@code union} layout element.
+         *
+         * @param anyInt Any int layout definition for the union tag.
+         * @param cases  List of union cases.
+         * @param body   Body of the union.
+         * @return A {@code union} layout element.
+         * @throws Pack200Exception If the union body is invalid.
+         */
         LAYOUT_ELEMENT createUnion(String anyInt, List<UnionCaseData> cases, String body) throws Pack200Exception;
     }
 
@@ -58,7 +100,14 @@ public final class AttributeLayoutParser<ATTRIBUTE_LAYOUT_ELEMENT, LAYOUT_ELEMEN
      * Data class representing a union case in an attribute layout definition.
      */
     public static final class UnionCaseData {
+        /**
+         * Body of the union case.
+         */
         public final String body;
+
+        /**
+         * List of tag ranges for the union case.
+         */
         public final List<Range<Integer>> tagRanges;
 
         private UnionCaseData(final List<Range<Integer>> tagRanges, final String body) {
