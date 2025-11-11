@@ -121,7 +121,7 @@ public final class AttributeLayoutUtils {
         if (UNSIGNED_INT_TAGS.contains(tag) || tag.startsWith("S") && UNSIGNED_INT_TAGS.contains(tag.substring(1))) {
             return tag;
         }
-        throw new IllegalArgumentException("Invalid unsigned int layout tag: " + tag);
+        throw new IllegalArgumentException("Invalid any_int layout tag: " + tag);
     }
 
     /**
