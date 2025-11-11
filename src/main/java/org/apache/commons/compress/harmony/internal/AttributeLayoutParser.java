@@ -267,9 +267,9 @@ public final class AttributeLayoutParser<ATTRIBUTE_LAYOUT_ELEMENT, LAYOUT_ELEMEN
      * </pre>
      *
      * @return A number from the stream.
-     * @throws IOException If an I/O error occurs.
+     * @throws Pack200Exception If the numeral is invalid or out of range.
      */
-    private int readNumeral() throws IOException {
+    private int readNumeral() throws Pack200Exception {
         // Determine if the number is negative
         final char first = peek();
         final boolean negative = first == '-';
@@ -295,6 +295,12 @@ public final class AttributeLayoutParser<ATTRIBUTE_LAYOUT_ELEMENT, LAYOUT_ELEMEN
         return (int) (negative ? -result : result);
     }
 
+    /**
+     * Reads a reference tag from the stream.
+     *
+     * @return A reference tag from the stream.
+     * @throws Pack200Exception If the reference tag is invalid.
+     */
     private String readReferenceTag() throws Pack200Exception {
         final char[] buf = new char[4];
         int len = 0;
@@ -322,9 +328,9 @@ public final class AttributeLayoutParser<ATTRIBUTE_LAYOUT_ELEMENT, LAYOUT_ELEMEN
      * </pre>
      *
      * @return A UnionCase from the stream or {@code null} if the default case is encountered.
-     * @throws IOException If an I/O error occurs.
+     * @throws Pack200Exception If the union case is invalid.
      */
-    private UnionCaseData readUnionCase() throws IOException {
+    private UnionCaseData readUnionCase() throws Pack200Exception {
         // Check for default case
         expect('(');
         char c = peek();
@@ -356,6 +362,12 @@ public final class AttributeLayoutParser<ATTRIBUTE_LAYOUT_ELEMENT, LAYOUT_ELEMEN
         return new UnionCaseData(tagRanges, body);
     }
 
+    /**
+     * Reads an {@code unsigned_int} layout definition from the stream.
+     *
+     * @return an {@code unsigned_int} layout definition from the stream.
+     * @throws Pack200Exception If the definition is invalid.
+     */
     private String readUnsignedInt() throws Pack200Exception {
         return AttributeLayoutUtils.checkUnsignedIntTag(String.valueOf(next()));
     }
