@@ -182,8 +182,6 @@ public final class AttributeLayoutUtils {
      *
      * @param definition the attribute layout definition body.
      * @param factory the factory to create AttributeLayoutElements.
-     * @param <ALE>> the type of AttributeLayoutElement.
-     * @param <LE> the type of LayoutElement.
      * @return not empty list of LayoutElements from the body or, if the stream is empty, an empty list.
      * @throws Pack200Exception If the layout definition is invalid.
      */
@@ -210,8 +208,6 @@ public final class AttributeLayoutUtils {
      *
      * @param body the attribute layout definition body.
      * @param factory the factory to create LayoutElements.
-     * @param <ALE>> the type of AttributeLayoutElement.
-     * @param <LE> the type of LayoutElement.
      * @return not empty list of LayoutElements from the body or, if the stream is empty, an empty list.
      * @throws Pack200Exception If the layout definition is invalid.
      */
