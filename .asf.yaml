@@ -16,6 +16,11 @@
 github:
   description: "Apache Commons Compress"
   homepage: https://commons.apache.org/compress/
+  # Branch protection rules:
+  # https://github.com/apache/infrastructure-asfyaml?tab=readme-ov-file#branchpro
+  protected_branches:
+    # Temporary rule to test if branch protection covers branch deletion
+    deletion-test: { }
 
 notifications:
     commits:      commits@commons.apache.org
