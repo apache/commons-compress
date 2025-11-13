@@ -57,7 +57,7 @@ public class NewAttributeBands extends BandSet {
 
     }
 
-    private class AttributeLayoutFactory implements AttributeLayoutParser.Factory<AttributeLayoutElement, LayoutElement> {
+    private class AttributeLayoutFactory implements AttributeLayoutParser.Factory<LayoutElement> {
 
         /**
          * The last P-type integral seen (for use with subsequent O and PO types)
@@ -70,7 +70,7 @@ public class NewAttributeBands extends BandSet {
         }
 
         @Override
-        public AttributeLayoutElement createCallable(String body) throws Pack200Exception {
+        public LayoutElement createCallable(String body) throws Pack200Exception {
             return new Callable(AttributeLayoutUtils.readBody(body, attributeLayoutFactory));
         }
 
@@ -151,7 +151,7 @@ public class NewAttributeBands extends BandSet {
         }
     }
 
-    public class Callable implements AttributeLayoutElement {
+    public class Callable extends LayoutElement {
 
         private final List<LayoutElement> body;
 
@@ -631,7 +631,7 @@ public class NewAttributeBands extends BandSet {
         }
     }
 
-    protected List<AttributeLayoutElement> attributeLayoutElements;
+    protected List<LayoutElement> attributeLayoutElements;
 
     private int[] backwardsCallCounts;
 

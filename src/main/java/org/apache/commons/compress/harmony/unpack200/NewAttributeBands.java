@@ -78,7 +78,7 @@ public class NewAttributeBands extends BandSet {
 
     }
 
-    private class AttributeLayoutFactory implements AttributeLayoutParser.Factory<AttributeLayoutElement, LayoutElement> {
+    private class AttributeLayoutFactory implements AttributeLayoutParser.Factory<LayoutElement> {
 
         @Override
         public LayoutElement createCall(int callableIndex) {
@@ -86,7 +86,7 @@ public class NewAttributeBands extends BandSet {
         }
 
         @Override
-        public AttributeLayoutElement createCallable(String body) throws Pack200Exception {
+        public LayoutElement createCallable(String body) throws Pack200Exception {
             return new Callable(AttributeLayoutUtils.readBody(body, attributeLayoutFactory));
         }
 
@@ -156,7 +156,7 @@ public class NewAttributeBands extends BandSet {
         }
     }
 
-    public static class Callable implements AttributeLayoutElement {
+    public static class Callable extends LayoutElement {
 
         private final List<LayoutElement> body;
 
@@ -676,7 +676,7 @@ public class NewAttributeBands extends BandSet {
 
     private int backwardsCallCount;
 
-    protected List<AttributeLayoutElement> attributeLayoutElements;
+    protected List<LayoutElement> attributeLayoutElements;
 
     private final AttributeLayoutFactory attributeLayoutFactory = new AttributeLayoutFactory();
 
@@ -721,7 +721,7 @@ public class NewAttributeBands extends BandSet {
      * @param elements TODO
      * @return attribute at the given index.
      */
-    private Attribute getOneAttribute(final int index, final List<AttributeLayoutElement> elements) {
+    private Attribute getOneAttribute(final int index, final List<LayoutElement> elements) {
         final NewAttribute attribute = new NewAttribute(segment.getCpBands().cpUTF8Value(attributeLayout.getName()), attributeLayout.getIndex());
         for (final AttributeLayoutElement element : elements) {
             element.addToAttribute(index, attribute);

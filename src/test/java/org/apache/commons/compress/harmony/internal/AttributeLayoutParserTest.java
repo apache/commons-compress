@@ -32,15 +32,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 public class AttributeLayoutParserTest {
 
-    private static class AttributeLayoutElement {
-        private AttributeLayoutElement() {
-        }
-
-        private AttributeLayoutElement(String body) {
-        }
-    }
-
-    private static class AttributeLayoutFactory implements AttributeLayoutParser.Factory<AttributeLayoutElement, LayoutElement> {
+    private static class AttributeLayoutFactory implements AttributeLayoutParser.Factory<LayoutElement> {
 
         @Override
         public LayoutElement createCall(int callableIndex) {
@@ -48,8 +40,8 @@ public class AttributeLayoutParserTest {
         }
 
         @Override
-        public AttributeLayoutElement createCallable(String body) throws Pack200Exception {
-            return new AttributeLayoutElement(body);
+        public LayoutElement createCallable(String body) {
+            return new LayoutElement(body);
         }
 
         @Override
@@ -63,17 +55,17 @@ public class AttributeLayoutParserTest {
         }
 
         @Override
-        public LayoutElement createReplication(String unsignedInt, String body) throws Pack200Exception {
+        public LayoutElement createReplication(String unsignedInt, String body) {
             return new LayoutElement(unsignedInt, body);
         }
 
         @Override
-        public LayoutElement createUnion(String anyInt, List<AttributeLayoutParser.UnionCaseData> cases, String body) throws Pack200Exception {
+        public LayoutElement createUnion(String anyInt, List<AttributeLayoutParser.UnionCaseData> cases, String body) {
             return new LayoutElement(anyInt, cases, body);
         }
     }
 
-    private static class LayoutElement extends AttributeLayoutElement {
+    private static class LayoutElement {
         private LayoutElement(int callableIndex) {
         }
 
@@ -127,8 +119,8 @@ public class AttributeLayoutParserTest {
             // Invalid call layouts
             "()", "(A)", "(-A)", "(9999999999999999999999)", "(1234"})
     void testInvalidLayout(String layout) {
-        final AttributeLayoutParser<AttributeLayoutElement, LayoutElement> parser = new AttributeLayoutParser<>(layout, FACTORY);
-        final Pack200Exception ex = assertThrows(Pack200Exception.class, () -> parser.readAttributeLayoutElement());
+        final AttributeLayoutParser<LayoutElement> parser = new AttributeLayoutParser<>(layout, FACTORY);
+        final Pack200Exception ex = assertThrows(Pack200Exception.class, parser::readAttributeLayoutElement);
         assertTrue(ex.getMessage().contains("Corrupted Pack200 archive"), "Unexpected exception message: " + ex.getMessage());
         assertTrue(ex.getMessage().contains(layout), "Unexpected exception message: " + ex.getMessage());
     }
@@ -136,7 +128,7 @@ public class AttributeLayoutParserTest {
     @ParameterizedTest
     @MethodSource({"validLayouts", "validCallableLayouts"})
     void testReadAttributeLayoutElement(String layout) throws Pack200Exception {
-        final List<AttributeLayoutElement> result = AttributeLayoutUtils.readAttributeLayout(layout, FACTORY);
+        final List<LayoutElement> result = AttributeLayoutUtils.readAttributeLayout(layout, FACTORY);
         assertFalse(result.isEmpty(), "Expected at least one LayoutElement for layout: " + layout);
     }
 

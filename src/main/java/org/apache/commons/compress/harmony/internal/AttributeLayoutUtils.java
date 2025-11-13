@@ -183,16 +183,15 @@ public final class AttributeLayoutUtils {
      *
      * @param definition the attribute layout definition body.
      * @param factory the factory to create AttributeLayoutElements.
-     * @param <ALE> the type of AttributeLayoutElement.
-     * @param <LE> the type of LayoutElement.
+     * @param <T> a common type shared by {@code attribute_layout} and {@code callable}.
      * @return not empty list of LayoutElements from the body or, if the stream is empty, an empty list.
      * @throws Pack200Exception If the layout definition is invalid.
      */
-    public static <ALE, LE extends ALE> List<ALE> readAttributeLayout(final String definition,
-            final AttributeLayoutParser.Factory<ALE, LE> factory) throws Pack200Exception {
-        final List<ALE> layoutElements = new ArrayList<>();
-        final AttributeLayoutParser<ALE, LE> parser = new AttributeLayoutParser<>(definition, factory);
-        ALE e;
+    public static <T> List<T> readAttributeLayout(final String definition,
+            final AttributeLayoutParser.Factory<T> factory) throws Pack200Exception {
+        final List<T> layoutElements = new ArrayList<>();
+        final AttributeLayoutParser<T> parser = new AttributeLayoutParser<>(definition, factory);
+        T e;
         while ((e = parser.readAttributeLayoutElement()) != null) {
             layoutElements.add(e);
         }
@@ -211,15 +210,14 @@ public final class AttributeLayoutUtils {
      *
      * @param body the attribute layout definition body.
      * @param factory the factory to create LayoutElements.
-     * @param <ALE> the type of AttributeLayoutElement.
-     * @param <LE> the type of LayoutElement.
+     * @param <T> a common type shared by {@code attribute_layout} and {@code callable}.
      * @return not empty list of LayoutElements from the body or, if the stream is empty, an empty list.
      * @throws Pack200Exception If the layout definition is invalid.
      */
-    public static <ALE, LE extends ALE> List<LE> readBody(final String body, final AttributeLayoutParser.Factory<ALE, LE> factory) throws Pack200Exception {
-        final List<LE> layoutElements = new ArrayList<>();
-        final AttributeLayoutParser<ALE, LE> parser = new AttributeLayoutParser<>(body, factory);
-        LE e;
+    public static <T> List<T> readBody(final String body, final AttributeLayoutParser.Factory<T> factory) throws Pack200Exception {
+        final List<T> layoutElements = new ArrayList<>();
+        final AttributeLayoutParser<T> parser = new AttributeLayoutParser<>(body, factory);
+        T e;
         while ((e = parser.readLayoutElement()) != null) {
             layoutElements.add(e);
         }

@@ -31,23 +31,21 @@ import org.apache.commons.lang3.Range;
  * <p>Previously the parsing logic was duplicated in {@link org.apache.commons.compress.harmony.pack200.NewAttributeBands} and
  * {@link org.apache.commons.compress.harmony.unpack200.NewAttributeBands}.</p>
  *
- * @param <LAYOUT_ELEMENT>           the type corresponding to the {@code layout_element} production
- * @param <ATTRIBUTE_LAYOUT_ELEMENT> the type corresponding to the elements of the {@code attribute_layout} production: either {@code layout_element} or
- *                                   {@code callable}
+ * @param <T> a common type shared by {@code attribute_layout} and {@code callable}.
  */
-public final class AttributeLayoutParser<ATTRIBUTE_LAYOUT_ELEMENT, LAYOUT_ELEMENT extends ATTRIBUTE_LAYOUT_ELEMENT> {
+public final class AttributeLayoutParser<T> {
 
     /**
      * Factory interface for creating attribute layout elements.
      */
-    public interface Factory<ATTRIBUTE_LAYOUT_ELEMENT, LAYOUT_ELEMENT extends ATTRIBUTE_LAYOUT_ELEMENT> {
+    public interface Factory<T> {
         /**
          * Creates a {@code call} layout element.
          *
          * @param callableIndex Index of the callable to call.
          * @return A {@code call} layout element.
          */
-        LAYOUT_ELEMENT createCall(int callableIndex);
+        T createCall(int callableIndex);
 
         /**
          * Creates a {@code callable} attribute layout element.
@@ -56,7 +54,7 @@ public final class AttributeLayoutParser<ATTRIBUTE_LAYOUT_ELEMENT, LAYOUT_ELEMEN
          * @return A {@code callable} attribute layout element.
          * @throws Pack200Exception If the callable body is invalid.
          */
-        ATTRIBUTE_LAYOUT_ELEMENT createCallable(String body) throws Pack200Exception;
+        T createCallable(String body) throws Pack200Exception;
 
         /**
          * Creates an {@code integral} layout element.
@@ -64,7 +62,7 @@ public final class AttributeLayoutParser<ATTRIBUTE_LAYOUT_ELEMENT, LAYOUT_ELEMEN
          * @param tag Integral tag.
          * @return An {@code integral} layout element.
          */
-        LAYOUT_ELEMENT createIntegral(String tag);
+        T createIntegral(String tag);
 
         /**
          * Creates a {@code reference} layout element.
@@ -72,7 +70,7 @@ public final class AttributeLayoutParser<ATTRIBUTE_LAYOUT_ELEMENT, LAYOUT_ELEMEN
          * @param tag Reference tag.
          * @return A {@code reference} layout element.
          */
-        LAYOUT_ELEMENT createReference(String tag);
+        T createReference(String tag);
 
         /**
          * Creates a {@code replication} layout element.
@@ -82,7 +80,7 @@ public final class AttributeLayoutParser<ATTRIBUTE_LAYOUT_ELEMENT, LAYOUT_ELEMEN
          * @return A {@code replication} layout element.
          * @throws Pack200Exception If the replication body is invalid.
          */
-        LAYOUT_ELEMENT createReplication(String unsignedInt, String body) throws Pack200Exception;
+        T createReplication(String unsignedInt, String body) throws Pack200Exception;
 
         /**
          * Creates a {@code union} layout element.
@@ -93,7 +91,7 @@ public final class AttributeLayoutParser<ATTRIBUTE_LAYOUT_ELEMENT, LAYOUT_ELEMEN
          * @return A {@code union} layout element.
          * @throws Pack200Exception If the union body is invalid.
          */
-        LAYOUT_ELEMENT createUnion(String anyInt, List<UnionCaseData> cases, String body) throws Pack200Exception;
+        T createUnion(String anyInt, List<UnionCaseData> cases, String body) throws Pack200Exception;
     }
 
     /**
@@ -117,10 +115,10 @@ public final class AttributeLayoutParser<ATTRIBUTE_LAYOUT_ELEMENT, LAYOUT_ELEMEN
     }
 
     private final CharSequence definition;
-    private final Factory<ATTRIBUTE_LAYOUT_ELEMENT, LAYOUT_ELEMENT> factory;
+    private final Factory<T> factory;
     private int p;
 
-    public AttributeLayoutParser(final CharSequence definition, final Factory<ATTRIBUTE_LAYOUT_ELEMENT, LAYOUT_ELEMENT> factory) {
+    public AttributeLayoutParser(final CharSequence definition, final Factory<T> factory) {
         this.definition = definition;
         this.factory = factory;
     }
@@ -173,7 +171,7 @@ public final class AttributeLayoutParser<ATTRIBUTE_LAYOUT_ELEMENT, LAYOUT_ELEMEN
      * @return next AttributeLayoutElement from the stream or {@code null} if end of stream is reached.
      * @throws Pack200Exception If the layout definition is invalid.
      */
-    public ATTRIBUTE_LAYOUT_ELEMENT readAttributeLayoutElement() throws Pack200Exception {
+    public T readAttributeLayoutElement() throws Pack200Exception {
         if (eof()) {
             return null;
         }
@@ -239,7 +237,7 @@ public final class AttributeLayoutParser<ATTRIBUTE_LAYOUT_ELEMENT, LAYOUT_ELEMEN
      * @return next LayoutElement from the stream or {@code null} if end of stream is reached.
      * @throws Pack200Exception If the layout definition is invalid.
      */
-    public LAYOUT_ELEMENT readLayoutElement() throws Pack200Exception {
+    public T readLayoutElement() throws Pack200Exception {
         if (eof()) {
             return null;
         }
