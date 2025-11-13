@@ -539,6 +539,9 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
 
             for (int i = 0; i < datalen - 8 && i < size - 8; i += recLen) {
                 final int ino = DumpArchiveUtil.convert32(blockBuffer, i);
+                if (ino < 0) {
+                    throw new DumpArchiveException("ino must be >= 0");
+                }
                 recLen = DumpArchiveUtil.convert16(blockBuffer, i + 4);
                 if (recLen == 0) {
                     throw new DumpArchiveException("recLen cannot be 0");
