@@ -81,10 +81,10 @@ final class DumpArchiveUtil {
      * Decodes a byte array to a string.
      */
     static String decode(final ZipEncoding encoding, final byte[] b, final int offset, final int len) throws IOException {
-            if (offset > offset + len) {
-                throw new ArchiveException("Invalid offset/length combination");
-            }
-            return encoding.decode(Arrays.copyOfRange(b, offset, offset + len));
+        if (offset > offset + len) {
+            throw new ArchiveException("Invalid offset/length combination");
+        }
+        return encoding.decode(Arrays.copyOfRange(b, offset, offset + len));
     }
 
     /**
