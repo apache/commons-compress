@@ -22,4 +22,5 @@
  * <p>This package is not exported and must not be used by external code.
  * Its contents may change or be removed at any time without notice.</p>
  */
-package org.apache.commons.compress.harmony.archive.internal.nls;
+
+package org.apache.commons.compress.harmony.internal;

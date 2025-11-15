@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.compress.harmony.pack200.AttributeDefinitionBands.AttributeDefinition;
-import org.apache.commons.compress.harmony.pack200.NewAttributeBands.AttributeLayoutElement;
 import org.apache.commons.compress.harmony.pack200.NewAttributeBands.Call;
 import org.apache.commons.compress.harmony.pack200.NewAttributeBands.Callable;
 import org.apache.commons.compress.harmony.pack200.NewAttributeBands.Integral;
@@ -52,7 +51,7 @@ class NewAttributeBandsTest {
             super(effort, cpBands, header, def);
         }
 
-        public List<AttributeLayoutElement> getLayoutElements() {
+        public List<LayoutElement> getLayoutElements() {
             return attributeLayoutElements;
         }
     }
@@ -109,7 +108,7 @@ class NewAttributeBandsTest {
         final CPUTF8 layout = new CPUTF8("");
         final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1, null, null,
                 new AttributeDefinition(35, AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
-        final List<AttributeLayoutElement> layoutElements = newAttributeBands.getLayoutElements();
+        final List<LayoutElement> layoutElements = newAttributeBands.getLayoutElements();
         assertEquals(0, layoutElements.size());
     }
 
@@ -120,7 +119,7 @@ class NewAttributeBandsTest {
         final CPUTF8 layout = new CPUTF8(layoutStr);
         final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1, null, null,
                 new AttributeDefinition(35, AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
-        final List<AttributeLayoutElement> layoutElements = newAttributeBands.getLayoutElements();
+        final List<LayoutElement> layoutElements = newAttributeBands.getLayoutElements();
         assertEquals(1, layoutElements.size());
         final Integral element = (Integral) layoutElements.get(0);
         assertEquals(layoutStr, element.getTag());
@@ -132,7 +131,7 @@ class NewAttributeBandsTest {
         CPUTF8 layout = new CPUTF8("[NH[(1)]][KIH][(-1)]");
         MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1, null, null,
                 new AttributeDefinition(35, AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
-        List<AttributeLayoutElement> layoutElements = newAttributeBands.getLayoutElements();
+        List<LayoutElement> layoutElements = newAttributeBands.getLayoutElements();
         assertEquals(3, layoutElements.size());
         Callable firstCallable = (Callable) layoutElements.get(0);
         Callable secondCallable = (Callable) layoutElements.get(1);
@@ -183,12 +182,12 @@ class NewAttributeBandsTest {
         final CPUTF8 name = new CPUTF8("TestAttribute");
         // @formatter:off
         final CPUTF8 layout = new CPUTF8(
-          "[NH[(1)]][RSH NH[RUH(1)]][TB(66,67,73,83,90)[KIH](68)[KDH](70)[KFH](74)[KJH](99)[RSH](101)[RSH RUH](115)[RUH](91)[NH[(0)]](64)[RSH[RUH(0)]]()[]]"
+          "[NH[(1)]][RSHNH[RUH(1)]][TB(66,67,73,83,90)[KIH](68)[KDH](70)[KFH](74)[KJH](99)[RSH](101)[RSHRUH](115)[RUH](91)[NH[(0)]](64)[RSHNH[RUH(0)]]()[]]"
         );
         // @formatter:on
         final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1, null, null,
                 new AttributeDefinition(35, AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
-        final List<AttributeLayoutElement> layoutElements = newAttributeBands.getLayoutElements();
+        final List<LayoutElement> layoutElements = newAttributeBands.getLayoutElements();
         assertEquals(3, layoutElements.size());
         final Callable firstCallable = (Callable) layoutElements.get(0);
         final Callable secondCallable = (Callable) layoutElements.get(1);
@@ -213,7 +212,7 @@ class NewAttributeBandsTest {
         final CPUTF8 layout = new CPUTF8(layoutStr);
         final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1, null, null,
                 new AttributeDefinition(35, AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
-        final List<AttributeLayoutElement> layoutElements = newAttributeBands.getLayoutElements();
+        final List<LayoutElement> layoutElements = newAttributeBands.getLayoutElements();
         assertEquals(1, layoutElements.size());
         final Reference element = (Reference) layoutElements.get(0);
         assertEquals(layoutStr, element.getTag());
@@ -225,7 +224,7 @@ class NewAttributeBandsTest {
         final CPUTF8 layout = new CPUTF8("NH[PHOHRUHRSHH]");
         final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1, null, null,
                 new AttributeDefinition(35, AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
-        final List<AttributeLayoutElement> layoutElements = newAttributeBands.getLayoutElements();
+        final List<LayoutElement> layoutElements = newAttributeBands.getLayoutElements();
         assertEquals(1, layoutElements.size());
         final Replication element = (Replication) layoutElements.get(0);
         final Integral countElement = element.getCountElement();
@@ -250,7 +249,7 @@ class NewAttributeBandsTest {
         final CPUTF8 layout = new CPUTF8("TB(55)[FH](23)[]()[RSH]");
         final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(1, null, null,
                 new AttributeDefinition(35, AttributeDefinitionBands.CONTEXT_CLASS, name, layout));
-        final List<AttributeLayoutElement> layoutElements = newAttributeBands.getLayoutElements();
+        final List<LayoutElement> layoutElements = newAttributeBands.getLayoutElements();
         assertEquals(1, layoutElements.size());
         final Union element = (Union) layoutElements.get(0);
         final Integral tag = element.getUnionTag();

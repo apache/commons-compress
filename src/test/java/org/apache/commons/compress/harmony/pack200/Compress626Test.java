@@ -19,7 +19,7 @@
 
 package org.apache.commons.compress.harmony.pack200;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,7 +37,7 @@ class Compress626Test {
     void test() throws Exception {
         final CPUTF8 name = new CPUTF8("");
         final CPUTF8 layout = new CPUTF8("[");
-        assertDoesNotThrow(() -> new NewAttributeBands(1, null, null,
+        assertThrows(Pack200Exception.class, () -> new NewAttributeBands(1, null, null,
                 new AttributeDefinitionBands.AttributeDefinition(35, AttributeDefinitionBands.CONTEXT_CLASS, name, layout)));
     }
 
@@ -45,7 +45,7 @@ class Compress626Test {
     void testJar() throws IOException {
         try (InputStream inputStream = Files.newInputStream(Paths.get("src/test/resources/org/apache/commons/compress/COMPRESS-626/compress-626-pack200.jar"));
                 JarOutputStream out = new JarOutputStream(NullOutputStream.INSTANCE);) {
-            Pack200.newUnpacker().unpack(inputStream, out);
+            assertThrows(Pack200Exception.class, () -> Pack200.newUnpacker().unpack(inputStream, out));
         }
     }
 }
