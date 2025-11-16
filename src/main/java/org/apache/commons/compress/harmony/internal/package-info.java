@@ -17,10 +17,12 @@
  * under the License.
  */
 /**
- * Internal implementation details.
+ * Internal implementation package, <strong>not for public use</strong>.
  *
- * <p>This package is not exported and must not be used by external code.
- * Its contents may change or be removed at any time without notice.</p>
+ * <p>This package is deliberately <strong>not exported</strong> in either the OSGi manifest or the JPMS module descriptor, preventing access from external code
+ * and other modules.</p>
+ *
+ * <p>All classes and methods in this package are implementation details and may change or be removed at any time without notice. External code must not depend
+ * on them.</p>
  */
-
 package org.apache.commons.compress.harmony.internal;
