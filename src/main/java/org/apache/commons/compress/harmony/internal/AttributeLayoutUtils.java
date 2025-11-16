@@ -25,7 +25,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
-import org.apache.commons.lang3.Range;
+import org.apache.commons.lang3.IntegerRange;
 
 /**
  * Utility methods for {@code attribute_layout} parsing and validation.
@@ -224,8 +224,8 @@ public final class AttributeLayoutUtils {
      * @param tags the list of integer tags
      * @return a list of ranges representing the tags
      */
-    public static List<Range<Integer>> toRanges(final List<Integer> tags) {
-        return tags.stream().map(n -> Range.of(n, n)).collect(Collectors.toList());
+    public static List<IntegerRange> toRanges(final List<Integer> tags) {
+        return tags.stream().map(n -> IntegerRange.of(n, n)).collect(Collectors.toList());
     }
 
     /**
@@ -235,7 +235,7 @@ public final class AttributeLayoutUtils {
      * @param tag       the tag to check
      * @return {@code true} if any range contains the tag, {@code false} otherwise
      */
-    public static boolean unionCaseMatches(final List<Range<Integer>> tagRanges, final int tag) {
+    public static boolean unionCaseMatches(final List<IntegerRange> tagRanges, final int tag) {
         return tagRanges.stream().anyMatch(r -> r.contains(tag));
     }
 

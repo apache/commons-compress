@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang3.Range;
+import org.apache.commons.lang3.IntegerRange;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -56,16 +56,16 @@ class AttributeLayoutUtilsTest {
     @Test
     void testToRanges() {
         final List<Integer> integers = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9);
-        final List<Range<Integer>> ranges = AttributeLayoutUtils.toRanges(integers);
+        final List<IntegerRange> ranges = AttributeLayoutUtils.toRanges(integers);
         assertEquals(ranges.size(), integers.size());
         for (int i = 0; i < ranges.size(); i++) {
-            assertEquals(Range.of(integers.get(i), integers.get(i)), ranges.get(i), "Range at index " + i + " should be a single value range.");
+            assertEquals(IntegerRange.of(integers.get(i), integers.get(i)), ranges.get(i), "Range at index " + i + " should be a single value range.");
         }
     }
 
     @Test
     void testUnionCaseMatches() {
-        final List<Range<Integer>> ranges = Arrays.asList(Range.of(1, 2), Range.of(4, 5), Range.of(7, 8));
+        final List<IntegerRange> ranges = Arrays.asList(IntegerRange.of(1, 2), IntegerRange.of(4, 5), IntegerRange.of(7, 8));
         assertTrue(AttributeLayoutUtils.unionCaseMatches(ranges, 1));
         assertTrue(AttributeLayoutUtils.unionCaseMatches(ranges, 2));
         assertFalse(AttributeLayoutUtils.unionCaseMatches(ranges, 3));

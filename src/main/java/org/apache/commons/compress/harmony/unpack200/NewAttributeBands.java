@@ -43,7 +43,7 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.CPNameAndType;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPString;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPUTF8;
 import org.apache.commons.compress.harmony.unpack200.bytecode.NewAttribute;
-import org.apache.commons.lang3.Range;
+import org.apache.commons.lang3.IntegerRange;
 
 /**
  * Sets of bands relating to a non-predefined attribute
@@ -632,7 +632,7 @@ public class NewAttributeBands extends BandSet {
      */
     public class UnionCase extends LayoutElement {
 
-        private final List<Range<Integer>> tagRanges;
+        private final List<IntegerRange> tagRanges;
         private final List<LayoutElement> body;
 
         public UnionCase(final List<Integer> tags) {
@@ -643,7 +643,7 @@ public class NewAttributeBands extends BandSet {
             this(AttributeLayoutUtils.toRanges(tags), body, false);
         }
 
-        private UnionCase(final List<Range<Integer>> tagRanges, final List<LayoutElement> body, final boolean ignored) {
+        private UnionCase(final List<IntegerRange> tagRanges, final List<LayoutElement> body, final boolean ignored) {
             this.tagRanges = tagRanges;
             this.body = body;
         }

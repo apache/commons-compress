@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
-import org.apache.commons.lang3.Range;
+import org.apache.commons.lang3.IntegerRange;
 
 /**
  * Encapsulates parsing of attribute layout definitions.
@@ -106,9 +106,9 @@ public final class AttributeLayoutParser<T> {
         /**
          * List of tag ranges for the union case.
          */
-        public final List<Range<Integer>> tagRanges;
+        public final List<IntegerRange> tagRanges;
 
-        private UnionCaseData(final List<Range<Integer>> tagRanges, final List<T> body) {
+        private UnionCaseData(final List<IntegerRange> tagRanges, final List<T> body) {
             this.tagRanges = Collections.unmodifiableList(tagRanges);
             this.body = body;
         }
@@ -410,7 +410,7 @@ public final class AttributeLayoutParser<T> {
             return null;
         }
         // Read the tag ranges
-        final List<Range<Integer>> tagRanges = new ArrayList<>();
+        final List<IntegerRange> tagRanges = new ArrayList<>();
         int nextTag;
         Integer startTag = null;
         do {
@@ -420,10 +420,10 @@ public final class AttributeLayoutParser<T> {
                 if (c == '-') {
                     startTag = nextTag;
                 } else {
-                    tagRanges.add(Range.of(nextTag, nextTag));
+                    tagRanges.add(IntegerRange.of(nextTag, nextTag));
                 }
             } else { // Second number of a range
-                tagRanges.add(Range.of(startTag, nextTag));
+                tagRanges.add(IntegerRange.of((int) startTag, nextTag));
                 startTag = null;
             }
         } while (c != ')');
