@@ -87,7 +87,7 @@ public class AttributeLayoutParserTest {
     static Stream<String> validCallableLayouts() {
         return Stream.of(
                 // Valid callable layouts
-                "[SIK]", "[NI[SIK]O]");
+                "[SIKLI]", "[NI[SIKLI]OH]");
     }
 
     static Stream<String> validLayouts() {
