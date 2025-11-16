@@ -187,7 +187,7 @@ class NewAttributeBandsTest extends AbstractBandsTest {
     @ValueSource(strings = {"NH[", "TH()["})
     void testRecursiveReplicationLayout(String prefix) {
         final String layout = createRecursiveLayout(8192, prefix);
-        assertThrows(Pack200Exception.class, () ->createNewAttributeBands(layout));
+        assertThrows(Pack200Exception.class, () -> createNewAttributeBands(layout));
     }
 
     @ParameterizedTest
