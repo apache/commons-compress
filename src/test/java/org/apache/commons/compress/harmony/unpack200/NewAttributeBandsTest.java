@@ -54,9 +54,30 @@ class NewAttributeBandsTest extends AbstractBandsTest {
         }
     }
 
+    private static String createRecursiveLayout(int level, String prefix) {
+        final StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < level; i++) {
+            sb.append(prefix);
+        }
+        sb.append("H");
+        for (int i = 0; i < level; i++) {
+            sb.append("]");
+        }
+        return sb.toString();
+    }
+
     private MockNewAttributeBands createNewAttributeBands(final String layoutStr) throws IOException, Pack200Exception {
         return new MockNewAttributeBands(new MockSegment(),
                 new AttributeLayout("test", AttributeLayout.CONTEXT_CLASS, layoutStr, 25));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"NH[]", "[]"})
+    void testEmptyBodyFails(final String layout) {
+        final Pack200Exception ex = assertThrows(Pack200Exception.class, () -> createNewAttributeBands(layout));
+        assertTrue(ex.getMessage().contains(layout), "Unexpected exception message: " + ex.getMessage());
+        final Throwable cause = ex.getCause();
+        assertTrue(cause.getMessage().contains("empty"), "Unexpected exception message: " + cause.getMessage());
     }
 
     @Test
@@ -163,6 +184,13 @@ class NewAttributeBandsTest extends AbstractBandsTest {
     }
 
     @ParameterizedTest
+    @ValueSource(strings = {"NH[", "TH()["})
+    void testRecursiveReplicationLayout(String prefix) throws IOException {
+        final String layout = createRecursiveLayout(8192, prefix);
+        createNewAttributeBands(layout);
+    }
+
+    @ParameterizedTest
     @ValueSource(strings = { "KIB", "KIH", "KII", "KINH", "KJH", "KDH", "KSH", "KQH", "RCH", "RSH", "RDH", "RFH", "RMH", "RIH", "RUH", "RQH", "RQNH", "RQNI" })
     void testReferenceLayouts(final String layout) throws IOException, Pack200Exception {
         final MockNewAttributeBands newAttributeBands = new MockNewAttributeBands(new MockSegment(),
@@ -194,15 +222,6 @@ class NewAttributeBandsTest extends AbstractBandsTest {
         assertEquals("RSH", fourthElement.getTag());
         final Integral fifthElement = (Integral) replicatedElements.get(4);
         assertEquals("H", fifthElement.getTag());
-    }
-
-    @ParameterizedTest
-    @ValueSource(strings = {"NH[]", "[]"})
-    void testEmptyBodyFails(final String layout) {
-        final Pack200Exception ex = assertThrows(Pack200Exception.class, () -> createNewAttributeBands(layout));
-        assertTrue(ex.getMessage().contains(layout), "Unexpected exception message: " + ex.getMessage());
-        final Throwable cause = ex.getCause();
-        assertTrue(cause.getMessage().contains("empty"), "Unexpected exception message: " + cause.getMessage());
     }
 
     @Test
