@@ -189,13 +189,8 @@ public final class AttributeLayoutUtils {
      */
     public static <T> List<T> readAttributeLayout(final String definition,
             final AttributeLayoutParser.Factory<T> factory) throws Pack200Exception {
-        final List<T> layoutElements = new ArrayList<>();
         final AttributeLayoutParser<T> parser = new AttributeLayoutParser<>(definition, factory);
-        T e;
-        while ((e = parser.readAttributeLayoutElement()) != null) {
-            layoutElements.add(e);
-        }
-        return layoutElements;
+        return parser.readAttributeLayout();
     }
 
     /**
@@ -215,13 +210,10 @@ public final class AttributeLayoutUtils {
      * @throws Pack200Exception If the layout definition is invalid.
      */
     public static <T> List<T> readBody(final String body, final AttributeLayoutParser.Factory<T> factory) throws Pack200Exception {
-        final List<T> layoutElements = new ArrayList<>();
         final AttributeLayoutParser<T> parser = new AttributeLayoutParser<>(body, factory);
-        T e;
-        while ((e = parser.readLayoutElement()) != null) {
-            layoutElements.add(e);
-        }
-        return layoutElements;
+        // At depth 0, callables are allowed; increment depth to only allow layout_elements.
+        parser.incrementDepth();
+        return parser.readAttributeLayout();
     }
 
     /**

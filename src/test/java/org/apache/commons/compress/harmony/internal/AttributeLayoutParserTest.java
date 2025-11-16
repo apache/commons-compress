@@ -40,7 +40,7 @@ public class AttributeLayoutParserTest {
         }
 
         @Override
-        public LayoutElement createCallable(String body) {
+        public LayoutElement createCallable(List<LayoutElement> body) {
             return new LayoutElement(body);
         }
 
@@ -55,12 +55,12 @@ public class AttributeLayoutParserTest {
         }
 
         @Override
-        public LayoutElement createReplication(String unsignedInt, String body) {
+        public LayoutElement createReplication(String unsignedInt, List<LayoutElement> body) {
             return new LayoutElement(unsignedInt, body);
         }
 
         @Override
-        public LayoutElement createUnion(String anyInt, List<AttributeLayoutParser.UnionCaseData> cases, String body) {
+        public LayoutElement createUnion(String anyInt, List<AttributeLayoutParser.UnionCaseData<LayoutElement>> cases, List<LayoutElement> body) {
             return new LayoutElement(anyInt, cases, body);
         }
     }
@@ -69,13 +69,16 @@ public class AttributeLayoutParserTest {
         private LayoutElement(int callableIndex) {
         }
 
-        private LayoutElement(String body) {
+        private LayoutElement(String tag) {
         }
 
-        private LayoutElement(String anyInt, List<AttributeLayoutParser.UnionCaseData> cases, String body) {
+        private LayoutElement(List<LayoutElement> body) {
         }
 
-        private LayoutElement(String unsignedInt, String body) {
+        private LayoutElement(String anyInt, List<AttributeLayoutParser.UnionCaseData<LayoutElement>> cases, List<LayoutElement> body) {
+        }
+
+        private LayoutElement(String unsignedInt, List<LayoutElement> body) {
         }
     }
 
@@ -120,14 +123,14 @@ public class AttributeLayoutParserTest {
             "()", "(A)", "(-A)", "(9999999999999999999999)", "(1234"})
     void testInvalidLayout(String layout) {
         final AttributeLayoutParser<LayoutElement> parser = new AttributeLayoutParser<>(layout, FACTORY);
-        final Pack200Exception ex = assertThrows(Pack200Exception.class, parser::readAttributeLayoutElement);
+        final Pack200Exception ex = assertThrows(Pack200Exception.class, parser::readElement);
         assertTrue(ex.getMessage().contains("Corrupted Pack200 archive"), "Unexpected exception message: " + ex.getMessage());
         assertTrue(ex.getMessage().contains(layout), "Unexpected exception message: " + ex.getMessage());
     }
 
     @ParameterizedTest
     @MethodSource({"validLayouts", "validCallableLayouts"})
-    void testReadAttributeLayoutElement(String layout) throws Pack200Exception {
+    void testReadElement(String layout) throws Pack200Exception {
         final List<LayoutElement> result = AttributeLayoutUtils.readAttributeLayout(layout, FACTORY);
         assertFalse(result.isEmpty(), "Expected at least one LayoutElement for layout: " + layout);
     }

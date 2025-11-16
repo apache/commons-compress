@@ -70,8 +70,8 @@ public class NewAttributeBands extends BandSet {
         }
 
         @Override
-        public LayoutElement createCallable(String body) throws Pack200Exception {
-            return new Callable(AttributeLayoutUtils.readBody(body, attributeLayoutFactory));
+        public LayoutElement createCallable(List<LayoutElement> body) throws Pack200Exception {
+            return new Callable(body);
         }
 
         @Override
@@ -94,17 +94,17 @@ public class NewAttributeBands extends BandSet {
         }
 
         @Override
-        public LayoutElement createReplication(String unsignedInt, String body) throws Pack200Exception {
+        public LayoutElement createReplication(String unsignedInt, List<LayoutElement> body) throws Pack200Exception {
             return new Replication(unsignedInt, body);
         }
 
         @Override
-        public LayoutElement createUnion(String anyInt, List<UnionCaseData> cases, String body) throws Pack200Exception {
+        public LayoutElement createUnion(String anyInt, List<UnionCaseData<LayoutElement>> cases, List<LayoutElement> body) throws Pack200Exception {
             final List<UnionCase> unionCases = new ArrayList<>();
-            for (final UnionCaseData unionCaseData : cases) {
-                unionCases.add(new UnionCase(unionCaseData.tagRanges, AttributeLayoutUtils.readBody(unionCaseData.body, attributeLayoutFactory), false));
+            for (final UnionCaseData<LayoutElement> unionCaseData : cases) {
+                unionCases.add(new UnionCase(unionCaseData.tagRanges, unionCaseData.body, false));
             }
-            return new Union(anyInt, unionCases, AttributeLayoutUtils.readBody(body, attributeLayoutFactory));
+            return new Union(anyInt, unionCases, body);
         }
     }
 
@@ -463,8 +463,12 @@ public class NewAttributeBands extends BandSet {
          * @throws Pack200Exception If the contents are invalid.
          */
         public Replication(final String tag, final String contents) throws Pack200Exception {
+            this(tag, AttributeLayoutUtils.readBody(contents, attributeLayoutFactory));
+        }
+
+        private Replication(final String tag, final List<LayoutElement> contents) throws Pack200Exception {
             this.countElement = new Integral(tag);
-            this.layoutElements = AttributeLayoutUtils.readBody(contents, attributeLayoutFactory);
+            this.layoutElements = contents;
             if (layoutElements.isEmpty()) {
                 throw new Pack200Exception("Corrupted Pack200 archive: Replication body is empty");
             }

@@ -54,7 +54,7 @@ public final class AttributeLayoutParser<T> {
          * @return A {@code callable} attribute layout element.
          * @throws Pack200Exception If the callable body is invalid.
          */
-        T createCallable(String body) throws Pack200Exception;
+        T createCallable(List<T> body) throws Pack200Exception;
 
         /**
          * Creates an {@code integral} layout element.
@@ -80,7 +80,7 @@ public final class AttributeLayoutParser<T> {
          * @return A {@code replication} layout element.
          * @throws Pack200Exception If the replication body is invalid.
          */
-        T createReplication(String unsignedInt, String body) throws Pack200Exception;
+        T createReplication(String unsignedInt, List<T> body) throws Pack200Exception;
 
         /**
          * Creates a {@code union} layout element.
@@ -91,36 +91,46 @@ public final class AttributeLayoutParser<T> {
          * @return A {@code union} layout element.
          * @throws Pack200Exception If the union body is invalid.
          */
-        T createUnion(String anyInt, List<UnionCaseData> cases, String body) throws Pack200Exception;
+        T createUnion(String anyInt, List<UnionCaseData<T>> cases, List<T> body) throws Pack200Exception;
     }
 
     /**
      * Data class representing a union case in an attribute layout definition.
      */
-    public static final class UnionCaseData {
+    public static final class UnionCaseData<T> {
         /**
          * Body of the union case.
          */
-        public final String body;
+        public final List<T> body;
 
         /**
          * List of tag ranges for the union case.
          */
         public final List<Range<Integer>> tagRanges;
 
-        private UnionCaseData(final List<Range<Integer>> tagRanges, final String body) {
+        private UnionCaseData(final List<Range<Integer>> tagRanges, final List<T> body) {
             this.tagRanges = Collections.unmodifiableList(tagRanges);
             this.body = body;
         }
     }
 
+    private static final int MAX_DEPTH = 64;
+
     private final CharSequence definition;
     private final Factory<T> factory;
     private int p;
+    private int depth;
 
     public AttributeLayoutParser(final CharSequence definition, final Factory<T> factory) {
         this.definition = definition;
         this.factory = factory;
+    }
+
+    private void decrementDepth() throws Pack200Exception {
+        depth--;
+        if (depth < 0) {
+            throw new Pack200Exception("Invalid attribute layout definition: unmatched closing bracket.");
+        }
     }
 
     private void ensureNotEof() throws Pack200Exception {
@@ -143,6 +153,13 @@ public final class AttributeLayoutParser<T> {
         throw new Pack200Exception("Invalid attribute layout definition: expected one of " + new String(expected) + ", found '" + c + "'");
     }
 
+    void incrementDepth() throws Pack200Exception {
+        depth++;
+        if (depth > MAX_DEPTH) {
+            throw new Pack200Exception("Invalid attribute layout definition: maximum nesting depth exceeded.");
+        }
+    }
+
     private char next() throws Pack200Exception {
         ensureNotEof();
         return definition.charAt(p++);
@@ -159,6 +176,30 @@ public final class AttributeLayoutParser<T> {
     }
 
     /**
+     * Reads an {@code attribute_layout} definition from the stream.
+     *
+     * @return A {@code attribute_layout} definition.
+     * @throws Pack200Exception If the layout definition is invalid.
+     */
+    List<T> readAttributeLayout() throws Pack200Exception {
+        final List<T> elements = new ArrayList<>();
+        T element;
+        while ((element = readElement()) != null) {
+            elements.add(element);
+        }
+        return elements;
+    }
+
+    private List<T> readBody() throws Pack200Exception {
+        expect('[');
+        incrementDepth();
+        final List<T> bodyElements = readAttributeLayout();
+        decrementDepth();
+        expect(']');
+        return bodyElements;
+    }
+
+    /**
      * Reads the next {@code attribute_layout_element} from the stream.
      *
      * <pre>
@@ -171,14 +212,14 @@ public final class AttributeLayoutParser<T> {
      * @return next AttributeLayoutElement from the stream or {@code null} if end of stream is reached.
      * @throws Pack200Exception If the layout definition is invalid.
      */
-    public T readAttributeLayoutElement() throws Pack200Exception {
+    T readElement() throws Pack200Exception {
         if (eof()) {
             return null;
         }
         final char first = peek();
-        if (first == '[') {
+        if (depth == 0 && first == '[') {
             try {
-                final String body = readBody();
+                final List<T> body = readBody();
                 if (body.isEmpty()) {
                     throw new Pack200Exception("Corrupted Pack200 archive: Callable body cannot be empty.");
                 }
@@ -188,26 +229,6 @@ public final class AttributeLayoutParser<T> {
             }
         }
         return readLayoutElement();
-    }
-
-    private String readBody() throws Pack200Exception {
-        expect('[');
-        int depth = 1;
-        final StringBuilder body = new StringBuilder();
-        char c;
-        while (true) {
-            c = next();
-            if (c == '[') {
-                depth++;
-            } else if (c == ']') {
-                depth--;
-                if (depth == 0) {
-                    break;
-                }
-            }
-            body.append(c);
-        }
-        return body.toString();
     }
 
     private String readIntegralTag() throws Pack200Exception {
@@ -237,7 +258,7 @@ public final class AttributeLayoutParser<T> {
      * @return next LayoutElement from the stream or {@code null} if end of stream is reached.
      * @throws Pack200Exception If the layout definition is invalid.
      */
-    public T readLayoutElement() throws Pack200Exception {
+    T readLayoutElement() throws Pack200Exception {
         if (eof()) {
             return null;
         }
@@ -257,7 +278,7 @@ public final class AttributeLayoutParser<T> {
                 case 'N': {
                     next();
                     final String integral = readUnsignedInt();
-                    final String body = readBody();
+                    final List<T> body = readBody();
                     if (body.isEmpty()) {
                         throw new Pack200Exception("Corrupted Pack200 archive: Replication body cannot be empty.");
                     }
@@ -267,14 +288,14 @@ public final class AttributeLayoutParser<T> {
                 case 'T': {
                     next();
                     final String anyInt = readAnyInt();
-                    final List<UnionCaseData> unionCases = new ArrayList<>();
-                    UnionCaseData data;
+                    final List<UnionCaseData<T>> unionCases = new ArrayList<>();
+                    UnionCaseData<T> data;
                     while ((data = readUnionCase()) != null) {
                         unionCases.add(data);
                     }
                     expect('(');
                     expect(')');
-                    final String body = readBody();
+                    final List<T> body = readBody();
                     return factory.createUnion(anyInt, unionCases, body);
                 }
                 // Call
@@ -289,6 +310,9 @@ public final class AttributeLayoutParser<T> {
                 case 'R': {
                     return factory.createReference(readReferenceTag());
                 }
+                // End of body
+                case ']':
+                    return null;
                 default: {
                     throw new Pack200Exception("Unexpected character '" + peek() + "' in attribute layout definition.");
                 }
@@ -376,7 +400,7 @@ public final class AttributeLayoutParser<T> {
      * @return A UnionCase from the stream or {@code null} if the default case is encountered.
      * @throws Pack200Exception If the union case is invalid.
      */
-    private UnionCaseData readUnionCase() throws Pack200Exception {
+    private UnionCaseData<T> readUnionCase() throws Pack200Exception {
         // Check for default case
         expect('(');
         char c = peek();
@@ -404,8 +428,8 @@ public final class AttributeLayoutParser<T> {
             }
         } while (c != ')');
         // Read the body
-        final String body = readBody();
-        return new UnionCaseData(tagRanges, body);
+        final List<T> body = readBody();
+        return new UnionCaseData<>(tagRanges, body);
     }
 
     /**
