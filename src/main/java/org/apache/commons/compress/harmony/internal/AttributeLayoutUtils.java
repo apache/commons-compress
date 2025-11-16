@@ -18,7 +18,6 @@
  */
 package org.apache.commons.compress.harmony.internal;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -28,6 +27,9 @@ import java.util.stream.Collectors;
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.lang3.Range;
 
+/**
+ * Utility methods for {@code attribute_layout} parsing and validation.
+ */
 public final class AttributeLayoutUtils {
 
     /**
