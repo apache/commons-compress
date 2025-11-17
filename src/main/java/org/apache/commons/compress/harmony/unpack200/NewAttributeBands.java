@@ -20,11 +20,13 @@ package org.apache.commons.compress.harmony.unpack200;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.compress.harmony.internal.AttributeLayoutParser;
+import org.apache.commons.compress.harmony.internal.AttributeLayoutParser.UnionCaseData;
+import org.apache.commons.compress.harmony.internal.AttributeLayoutUtils;
 import org.apache.commons.compress.harmony.pack200.BHSDCodec;
 import org.apache.commons.compress.harmony.pack200.Codec;
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
@@ -41,7 +43,7 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.CPNameAndType;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPString;
 import org.apache.commons.compress.harmony.unpack200.bytecode.CPUTF8;
 import org.apache.commons.compress.harmony.unpack200.bytecode.NewAttribute;
-import org.apache.commons.compress.utils.ParsingUtils;
+import org.apache.commons.lang3.IntegerRange;
 
 /**
  * Sets of bands relating to a non-predefined attribute
@@ -74,6 +76,43 @@ public class NewAttributeBands extends BandSet {
          */
         void readBands(InputStream in, int count) throws IOException, Pack200Exception;
 
+    }
+
+    private class AttributeLayoutFactory implements AttributeLayoutParser.Factory<LayoutElement> {
+
+        @Override
+        public LayoutElement createCall(int callableIndex) {
+            return new Call(callableIndex);
+        }
+
+        @Override
+        public LayoutElement createCallable(List<LayoutElement> body) throws Pack200Exception {
+            return new Callable(body);
+        }
+
+        @Override
+        public LayoutElement createIntegral(String tag) {
+            return new Integral(tag);
+        }
+
+        @Override
+        public LayoutElement createReference(String tag) {
+            return new Reference(tag);
+        }
+
+        @Override
+        public LayoutElement createReplication(String unsignedInt, List<LayoutElement> body) throws Pack200Exception {
+            return new Replication(unsignedInt, body);
+        }
+
+        @Override
+        public LayoutElement createUnion(String anyInt, List<UnionCaseData<LayoutElement>> cases, List<LayoutElement> body) throws Pack200Exception {
+            final List<UnionCase> unionCases = new ArrayList<>();
+            for (final UnionCaseData<LayoutElement> unionCaseData : cases) {
+                unionCases.add(new UnionCase(unionCaseData.tagRanges, unionCaseData.body, false));
+            }
+            return new Union(anyInt, unionCases, body);
+        }
     }
 
     public class Call extends LayoutElement {
@@ -117,7 +156,7 @@ public class NewAttributeBands extends BandSet {
         }
     }
 
-    public static class Callable implements AttributeLayoutElement {
+    public static class Callable extends LayoutElement {
 
         private final List<LayoutElement> body;
 
@@ -129,7 +168,16 @@ public class NewAttributeBands extends BandSet {
 
         private int index;
 
-        public Callable(final List<LayoutElement> body) {
+        /**
+         * Constructs a new Callable layout element with the given body.
+         *
+         * @param body the body of the callable.
+         * @throws Pack200Exception If the body is empty.
+         */
+        public Callable(final List<LayoutElement> body) throws Pack200Exception {
+            if (body.isEmpty()) {
+                throw new Pack200Exception("Corrupted Pack200 archive: Callable body is empty");
+            }
             this.body = body;
         }
 
@@ -203,8 +251,14 @@ public class NewAttributeBands extends BandSet {
 
         private int[] band;
 
+        /**
+         * Constructs a new Integral layout element with the given tag.
+         *
+         * @param tag The tag.
+         * @throws IllegalArgumentException If the tag is invalid.
+         */
         public Integral(final String tag) {
-            this.tag = tag;
+            this.tag = AttributeLayoutUtils.checkIntegralTag(tag);
         }
 
         @Override
@@ -317,8 +371,14 @@ public class NewAttributeBands extends BandSet {
 
         private final int length;
 
+        /**
+         * Constructs a new Reference layout element with the given tag.
+         *
+         * @param tag The tag.
+         * @throws IllegalArgumentException If the tag is invalid.
+         */
         public Reference(final String tag) {
-            this.tag = tag;
+            this.tag = AttributeLayoutUtils.checkReferenceTag(tag);
             length = getLength(tag.charAt(tag.length() - 1));
         }
 
@@ -393,14 +453,25 @@ public class NewAttributeBands extends BandSet {
 
         private final Integral countElement;
 
-        private final List<LayoutElement> layoutElements = new ArrayList<>();
+        private final List<LayoutElement> layoutElements;
 
-        public Replication(final String tag, final String contents) throws IOException {
+        /**
+         * Constructs a new Replication layout element.
+         *
+         * @param tag the tag of the Integral element.
+         * @param contents the contents of the replication.
+         * @throws IllegalArgumentException If the tag is invalid or the contents are empty.
+         * @throws Pack200Exception If the contents are invalid.
+         */
+        public Replication(final String tag, final String contents) throws Pack200Exception {
+            this(tag, AttributeLayoutUtils.readBody(contents, attributeLayoutFactory));
+        }
+
+        private Replication(final String tag, final List<LayoutElement> layoutElements) throws Pack200Exception {
             this.countElement = new Integral(tag);
-            final StringReader stream = new StringReader(contents);
-            LayoutElement e;
-            while ((e = readNextLayoutElement(stream)) != null) {
-                layoutElements.add(e);
+            this.layoutElements = layoutElements;
+            if (layoutElements.isEmpty()) {
+                throw new Pack200Exception("Corrupted Pack200 archive: Replication body is empty");
             }
         }
 
@@ -454,6 +525,14 @@ public class NewAttributeBands extends BandSet {
         private int[] caseCounts;
         private int defaultCount;
 
+        /**
+         * Constructs a new Union layout element.
+         *
+         * @param tag the tag of the Integral element.
+         * @param unionCases the union cases.
+         * @param body the default case body.
+         * @throws IllegalArgumentException If the tag is invalid.
+         */
         public Union(final String tag, final List<UnionCase> unionCases, final List<LayoutElement> body) {
             this.unionTag = new Integral(tag);
             this.unionCases = unionCases;
@@ -553,55 +632,57 @@ public class NewAttributeBands extends BandSet {
      */
     public class UnionCase extends LayoutElement {
 
-        private List<LayoutElement> body;
-
-        private final List<Integer> tags;
+        private final List<IntegerRange> tagRanges;
+        private final List<LayoutElement> body;
 
         public UnionCase(final List<Integer> tags) {
-            this.tags = tags;
+            this(tags, Collections.emptyList());
         }
 
         public UnionCase(final List<Integer> tags, final List<LayoutElement> body) {
-            this.tags = tags;
+            this(AttributeLayoutUtils.toRanges(tags), body, false);
+        }
+
+        private UnionCase(final List<IntegerRange> tagRanges, final List<LayoutElement> body, final boolean ignored) {
+            this.tagRanges = tagRanges;
             this.body = body;
         }
 
         @Override
         public void addToAttribute(final int index, final NewAttribute attribute) {
-            if (body != null) {
-                for (final LayoutElement element : body) {
-                    element.addToAttribute(index, attribute);
-                }
+            for (final LayoutElement element : body) {
+                element.addToAttribute(index, attribute);
             }
         }
 
         public List<LayoutElement> getBody() {
-            return body == null ? Collections.EMPTY_LIST : body;
+            return body;
         }
 
         public boolean hasTag(final int i) {
-            return tags.contains(Integer.valueOf(i));
+            return AttributeLayoutUtils.unionCaseMatches(tagRanges, i);
         }
 
         public boolean hasTag(final long l) {
-            return tags.contains(Integer.valueOf((int) l));
+            return hasTag((int) l);
         }
 
         @Override
         public void readBands(final InputStream in, final int count) throws IOException, Pack200Exception {
-            if (body != null) {
-                for (final LayoutElement element : body) {
-                    element.readBands(in, count);
-                }
+            for (final LayoutElement element : body) {
+                element.readBands(in, count);
             }
         }
     }
+
 
     private final AttributeLayout attributeLayout;
 
     private int backwardsCallCount;
 
-    protected List<AttributeLayoutElement> attributeLayoutElements;
+    protected List<LayoutElement> attributeLayoutElements;
+
+    private final AttributeLayoutFactory attributeLayoutFactory = new AttributeLayoutFactory();
 
     public NewAttributeBands(final Segment segment, final AttributeLayout attributeLayout) throws IOException {
         super(segment);
@@ -644,41 +725,12 @@ public class NewAttributeBands extends BandSet {
      * @param elements TODO
      * @return attribute at the given index.
      */
-    private Attribute getOneAttribute(final int index, final List<AttributeLayoutElement> elements) {
+    private Attribute getOneAttribute(final int index, final List<LayoutElement> elements) {
         final NewAttribute attribute = new NewAttribute(segment.getCpBands().cpUTF8Value(attributeLayout.getName()), attributeLayout.getIndex());
         for (final AttributeLayoutElement element : elements) {
             element.addToAttribute(index, attribute);
         }
         return attribute;
-    }
-
-    /**
-     * Utility method to get the contents of the given stream, up to the next {@code ]}, (ignoring pairs of brackets {@code [} and {@code ]})
-     *
-     * @param stream
-     * @return
-     * @throws IOException If an I/O error occurs.
-     */
-    private StringReader getStreamUpToMatchingBracket(final StringReader stream) throws IOException {
-        final StringBuilder sb = new StringBuilder();
-        int foundBracket = -1;
-        while (foundBracket != 0) {
-            final int read = stream.read();
-            if (read == -1) {
-                break;
-            }
-            final char c = (char) read;
-            if (c == ']') {
-                foundBracket++;
-            }
-            if (c == '[') {
-                foundBracket--;
-            }
-            if (!(foundBracket == 0)) {
-                sb.append(c);
-            }
-        }
-        return new StringReader(sb.toString());
     }
 
     /**
@@ -709,12 +761,7 @@ public class NewAttributeBands extends BandSet {
      */
     private void parseLayout() throws IOException {
         if (attributeLayoutElements == null) {
-            attributeLayoutElements = new ArrayList<>();
-            final StringReader stream = new StringReader(attributeLayout.getLayout());
-            AttributeLayoutElement e;
-            while ((e = readNextAttributeElement(stream)) != null) {
-                attributeLayoutElements.add(e);
-            }
+            attributeLayoutElements = AttributeLayoutUtils.readAttributeLayout(attributeLayout.getLayout(), attributeLayoutFactory);
             resolveCalls();
         }
     }
@@ -727,212 +774,6 @@ public class NewAttributeBands extends BandSet {
     @Override
     public void read(final InputStream in) throws IOException, Pack200Exception {
         // does nothing - use parseAttributes instead
-    }
-
-    /**
-     * Reads a 'body' section of the layout from the given stream
-     *
-     * @param stream
-     * @return List of LayoutElements
-     * @throws IOException If an I/O error occurs.
-     */
-    private List<LayoutElement> readBody(final StringReader stream) throws IOException {
-        final List<LayoutElement> layoutElements = new ArrayList<>();
-        LayoutElement e;
-        while ((e = readNextLayoutElement(stream)) != null) {
-            layoutElements.add(e);
-        }
-        return layoutElements;
-    }
-
-    private AttributeLayoutElement readNextAttributeElement(final StringReader stream) throws IOException {
-        stream.mark(1);
-        final int next = stream.read();
-        if (next == -1) {
-            return null;
-        }
-        if (next == '[') {
-            return new Callable(readBody(getStreamUpToMatchingBracket(stream)));
-        }
-        stream.reset();
-        return readNextLayoutElement(stream);
-    }
-
-    private LayoutElement readNextLayoutElement(final StringReader stream) throws IOException {
-        final int nextChar = stream.read();
-        if (nextChar == -1) {
-            return null;
-        }
-        switch (nextChar) {
-        // Integrals
-        case 'B':
-        case 'H':
-        case 'I':
-        case 'V':
-            return new Integral(new String(new char[] { (char) nextChar }));
-        case 'S':
-        case 'F':
-            return new Integral(new String(new char[] { (char) nextChar, (char) stream.read() }));
-        case 'P':
-            stream.mark(1);
-            if (stream.read() != 'O') {
-                stream.reset();
-                return new Integral("P" + (char) stream.read());
-            }
-            return new Integral("PO" + (char) stream.read());
-        case 'O':
-            stream.mark(1);
-            if (stream.read() != 'S') {
-                stream.reset();
-                return new Integral("O" + (char) stream.read());
-            }
-            return new Integral("OS" + (char) stream.read());
-
-        // Replication
-        case 'N':
-            final char uintType = (char) stream.read();
-            stream.read(); // '['
-            final String str = readUpToMatchingBracket(stream);
-            return new Replication("" + uintType, str);
-
-        // Union
-        case 'T':
-            String intType = "" + (char) stream.read();
-            if (intType.equals("S")) {
-                intType += (char) stream.read();
-            }
-            final List<UnionCase> unionCases = new ArrayList<>();
-            UnionCase c;
-            while ((c = readNextUnionCase(stream)) != null) {
-                unionCases.add(c);
-            }
-            stream.read(); // '('
-            stream.read(); // ')'
-            stream.read(); // '['
-            List<LayoutElement> body = null;
-            stream.mark(1);
-            final char next = (char) stream.read();
-            if (next != ']') {
-                stream.reset();
-                body = readBody(getStreamUpToMatchingBracket(stream));
-            }
-            return new Union(intType, unionCases, body);
-
-        // Call
-        case '(':
-            final int number = readNumber(stream).intValue();
-            stream.read(); // ')'
-            return new Call(number);
-        // Reference
-        case 'K':
-        case 'R':
-            final StringBuilder string = new StringBuilder("").append((char) nextChar).append((char) stream.read());
-            final char nxt = (char) stream.read();
-            string.append(nxt);
-            if (nxt == 'N') {
-                string.append((char) stream.read());
-            }
-            return new Reference(string.toString());
-        }
-        return null;
-    }
-
-    /**
-     * Reads a UnionCase from the stream.
-     *
-     * @param stream source stream.
-     * @return A UnionCase from the stream.
-     * @throws IOException If an I/O error occurs.
-     */
-    private UnionCase readNextUnionCase(final StringReader stream) throws IOException {
-        stream.mark(2);
-        stream.read(); // '('
-        final int next = stream.read();
-        char ch = (char) next;
-        if (ch == ')' || next == -1) {
-            stream.reset();
-            return null;
-        }
-        stream.reset();
-        stream.read(); // '('
-        final List<Integer> tags = new ArrayList<>();
-        Integer nextTag;
-        do {
-            nextTag = readNumber(stream);
-            if (nextTag != null) {
-                tags.add(nextTag);
-                stream.read(); // ',' or ')'
-            }
-        } while (nextTag != null);
-        stream.read(); // '['
-        stream.mark(1);
-        ch = (char) stream.read();
-        if (ch == ']') {
-            return new UnionCase(tags);
-        }
-        stream.reset();
-        return new UnionCase(tags, readBody(getStreamUpToMatchingBracket(stream)));
-    }
-
-    /**
-     * Reads a number from the stream and return it
-     *
-     * @param stream
-     * @return
-     * @throws IOException If an I/O error occurs.
-     */
-    private Integer readNumber(final StringReader stream) throws IOException {
-        stream.mark(1);
-        final char first = (char) stream.read();
-        final boolean negative = first == '-';
-        if (!negative) {
-            stream.reset();
-        }
-        stream.mark(100);
-        int i;
-        int length = 0;
-        while ((i = stream.read()) != -1 && Character.isDigit((char) i)) {
-            length++;
-        }
-        stream.reset();
-        if (length == 0) {
-            return null;
-        }
-        final char[] digits = new char[length];
-        final int read = stream.read(digits);
-        if (read != digits.length) {
-            throw new Pack200Exception("Error reading from the input stream");
-        }
-        return ParsingUtils.parseIntValue((negative ? "-" : "") + new String(digits));
-    }
-
-    /**
-     * Gets the contents of the given stream, up to the next {@code ]}, (ignoring pairs of brackets {@code [} and {@code ]})
-     *
-     * @param stream input stream.
-     * @return the contents of the given stream.
-     * @throws IOException If an I/O error occurs.
-     */
-    private String readUpToMatchingBracket(final StringReader stream) throws IOException {
-        final StringBuilder sb = new StringBuilder();
-        int foundBracket = -1;
-        while (foundBracket != 0) {
-            final int read = stream.read();
-            if (read == -1) {
-                break;
-            }
-            final char c = (char) read;
-            if (c == ']') {
-                foundBracket++;
-            }
-            if (c == '[') {
-                foundBracket--;
-            }
-            if (!(foundBracket == 0)) {
-                sb.append(c);
-            }
-        }
-        return sb.toString();
     }
 
     /**

@@ -50,6 +50,11 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <commons.distSvnStagingUrl>scm:svn:https://dist.apache.org/repos/dist/dev/commons/${commons.componentid}</commons.distSvnStagingUrl>
     <commons.manifestlocation>${project.build.outputDirectory}/META-INF</commons.manifestlocation>
     <commons.manifestfile>${commons.manifestlocation}/MANIFEST.MF</commons.manifestfile>
+    <!-- Don't export internal packages in OSGi manifest -->
+    <commons.osgi.export>
+      !org.apache.commons.*.internal.*,
+      org.apache.commons.*;version=${project.version};-noimport:=true
+    </commons.osgi.export>
     <commons.osgi.import>
       org.tukaani.xz;resolution:=optional,
       org.brotli.dec;resolution:=optional,
@@ -540,7 +545,8 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
       </build>
     </profile>
     <profile>
-      <id>java9+</id>
+      <!-- Same id as the `commons-parent` profile it extends -->
+      <id>java-9-up</id>
       <activation>
         <jdk>[9,)</jdk>
       </activation>
@@ -548,6 +554,33 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
         <maven.compiler.release>8</maven.compiler.release>
         <animal.sniffer.skip>true</animal.sniffer.skip>
       </properties>
+      <!--
+        Excludes internal packages from the list of exported packages.
+      -->
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.moditect</groupId>
+            <artifactId>moditect-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>add-module-infos</id>
+                <configuration>
+                  <module>
+                    <moduleInfo>
+                      <exports>
+                        !org.apache.commons.compress.harmony.internal.*;
+                        !org.apache.commons.compress.harmony.archive.internal.*;
+                        *;
+                      </exports>
+                    </moduleInfo>
+                  </module>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
     <profile>
       <id>java17</id>
