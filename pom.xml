@@ -130,7 +130,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <dependency>
       <groupId>org.tukaani</groupId>
       <artifactId>xz</artifactId>
-      <version>1.10</version>
+      <version>1.11</version>
       <optional>true</optional>
     </dependency>
     <dependency>
