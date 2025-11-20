@@ -103,9 +103,9 @@ public class LZ77Compressor {
         }
 
         /**
-         * Gets the offset of the reference.
+         * Gets the length of the reference.
          *
-         * @return the length
+         * @return the length of the reference.
          */
         public int getLength() {
             return length;
@@ -114,7 +114,7 @@ public class LZ77Compressor {
         /**
          * Gets the offset of the reference.
          *
-         * @return the offset
+         * @return the offset of the reference.
          */
         public int getOffset() {
             return offset;
@@ -179,7 +179,7 @@ public class LZ77Compressor {
         /**
          * Constructs a new typeless instance.
          *
-         * @deprecated Use {@link #Block(BlockType)}.
+         * @deprecated Use {@code LZ77Compressor.Block#Block(BlockType)}.
          */
         @Deprecated
         public Block() {
@@ -223,8 +223,8 @@ public class LZ77Compressor {
         /**
          * Consumes a block.
          *
-         * @param b the block to consume
-         * @throws IOException in case of an error
+         * @param b the block to consume.
+         * @throws IOException in case of an error.
          */
         void accept(Block b) throws IOException;
     }
@@ -402,8 +402,8 @@ public class LZ77Compressor {
     /**
      * Feeds bytes into the compressor which in turn may emit zero or more blocks to the callback during the execution of this method.
      *
-     * @param data the data to compress - must not be null
-     * @throws IOException if the callback throws an exception
+     * @param data the data to compress - must not be null.
+     * @throws IOException if the callback throws an exception.
      */
     public void compress(final byte[] data) throws IOException {
         compress(data, 0, data.length);
@@ -412,12 +412,12 @@ public class LZ77Compressor {
     /**
      * Feeds bytes into the compressor which in turn may emit zero or more blocks to the callback during the execution of this method.
      *
-     * @param data the data to compress - must not be null
-     * @param off  the start offset of the data
-     * @param len  the number of bytes to compress
-     * @throws NullPointerException if data is {@code null}
+     * @param data the data to compress - must not be null.
+     * @param off  the start offset of the data.
+     * @param len  the number of bytes to compress.
+     * @throws NullPointerException if data is {@code null}.
      * @throws IndexOutOfBoundsException if {@code off} or {@code len} are negative, or if {@code off + len} is bigger than {@code data.length}.
-     * @throws IOException if the callback throws an exception
+     * @throws IOException if the callback throws an exception.
      */
     public void compress(final byte[] data, int off, int len) throws IOException {
         IOUtils.checkFromIndexSize(data, off, len);
@@ -588,7 +588,7 @@ public class LZ77Compressor {
      * </p>
      *
      * @param data the data to fill the window with.
-     * @throws IllegalStateException if the compressor has already started to accept data
+     * @throws IllegalStateException if the compressor has already started to accept data.
      */
     public void prefill(final byte[] data) {
         if (currentPosition != 0 || lookahead != 0) {
