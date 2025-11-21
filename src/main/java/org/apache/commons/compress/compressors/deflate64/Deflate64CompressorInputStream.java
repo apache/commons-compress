@@ -35,11 +35,11 @@ import org.apache.commons.io.IOUtils;
  */
 public class Deflate64CompressorInputStream extends CompressorInputStream implements InputStreamStatistics {
     private InputStream originalStream;
-    private HuffmanDecoder decoder;
+    private Deflate64Decoder decoder;
     private long compressedBytesRead;
     private final byte[] oneByte = new byte[1];
 
-    Deflate64CompressorInputStream(final HuffmanDecoder decoder) {
+    Deflate64CompressorInputStream(final Deflate64Decoder decoder) {
         this.decoder = decoder;
     }
 
@@ -49,7 +49,7 @@ public class Deflate64CompressorInputStream extends CompressorInputStream implem
      * @param in the stream to read from
      */
     public Deflate64CompressorInputStream(final InputStream in) {
-        this(new HuffmanDecoder(in));
+        this(new Deflate64Decoder(in));
         originalStream = in;
     }
 
