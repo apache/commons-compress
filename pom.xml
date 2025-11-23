@@ -278,14 +278,14 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
           <artifactId>apache-rat-plugin</artifactId>
           <version>${commons.rat.version}</version>
           <configuration>
-            <excludes>
+            <inputExcludes>
               <!-- files used during tests -->
-              <exclude>src/test/resources/**</exclude>
-              <exclude>.pmd</exclude>
-              <exclude>.projectile</exclude>
-              <exclude>.mvn/**</exclude>
-              <exclude>.gitattributes</exclude>
-            </excludes>
+              <inputExclude>src/test/resources/**</inputExclude>
+              <inputExclude>.pmd</inputExclude>
+              <inputExclude>.projectile</inputExclude>
+              <inputExclude>.mvn/**</inputExclude>
+              <inputExclude>.gitattributes</inputExclude>
+            </inputExcludes>
           </configuration>
         </plugin>
         <plugin>
