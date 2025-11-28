@@ -91,4 +91,4 @@ jobs:
         mvn clean package -ntp -f "pom.xml" -B -V -e -Dfindbugs.skip -Dcheckstyle.skip -Dpmd.skip=true -Dspotbugs.skip -Denforcer.skip -Dmaven.javadoc.skip -DskipTests -Dmaven.test.skip.exec -Dlicense.skip=true -Drat.skip=true -Dspotless.check.skip=true
 
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@e12f0178983d466f2f6028f5cc7a6d786fd97f4b # 4.31.4
+      uses: github/codeql-action/analyze@fdbfb4d2750291e159f0156def62b853c2798ca2 # 4.31.5
