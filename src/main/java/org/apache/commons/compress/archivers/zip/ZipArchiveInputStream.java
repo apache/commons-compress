@@ -838,7 +838,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
         }
         final ZipLong sig = new ZipLong(lfhBuf);
         if (!sig.equals(ZipLong.LFH_SIG)) {
-            if (sig.equals(ZipLong.CFH_SIG) || sig.equals(ZipLong.AED_SIG) || isApkSigningBlock(lfhBuf)) {
+            if (sig.equals(ZipLong.CFH_SIG) || sig.equals(ZipLong.AED_SIG) || isApkSigningBlock(lfhBuf) || sig.equals(ZipLong.ZERO)) {
                 hitCentralDirectory = true;
                 skipRemainderOfArchive();
                 return null;
