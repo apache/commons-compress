@@ -755,15 +755,15 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
                 resolveLocalFileHeaderData(entriesWithoutUTF8Flag);
             }
             fillNameMap();
-        } catch (final IOException e) {
-            final ArchiveException archiveException = e instanceof ArchiveException
-                    ? (ArchiveException) e
+        } catch (final IOException | IllegalArgumentException e) {
+            final IOException archiveException = e instanceof IOException
+                    ? (IOException) e
                     : new ArchiveException("Error reading Zip content from " + builder.getName(), (Throwable) e);
             this.closed = true;
             try {
                 this.archive.close();
-            } catch (final IOException ioException) {
-                archiveException.addSuppressed(ioException);
+            } catch (final IOException closeException) {
+                archiveException.addSuppressed(closeException);
             }
             throw archiveException;
         }

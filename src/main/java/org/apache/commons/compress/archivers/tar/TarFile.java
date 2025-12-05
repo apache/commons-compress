@@ -191,13 +191,16 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
             while ((entry = getNextTarEntry()) != null) {
                 entries.add(entry);
             }
-        } catch (final IOException ex) {
+        } catch (final IOException | IllegalArgumentException e) {
+            final IOException buildException = e instanceof IOException
+                    ? (IOException) e
+                    : new ArchiveException("Error reading Zip content from " + builder, (Throwable) e);
             try {
                 this.archive.close();
-            } catch (final IOException e) {
-                ex.addSuppressed(e);
+            } catch (final IOException closeException) {
+                buildException.addSuppressed(closeException);
             }
-            throw ex;
+            throw buildException;
         }
     }
 
