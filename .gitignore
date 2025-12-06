@@ -10,3 +10,7 @@ target
 /.externalToolBuilders/
 /maven-eclipse.xml
 /.java-version
+
+# NetBeans files
+nb-configuration.xml
+nbactions.xml
