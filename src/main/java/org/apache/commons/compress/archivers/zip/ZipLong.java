@@ -50,6 +50,8 @@ public final class ZipLong implements Cloneable, Serializable {
      */
     public static final ZipLong DD_SIG = new ZipLong(0X08074B50L);
 
+    static final ZipLong ZERO = new ZipLong(0);
+
     /**
      * Value stored in size and similar fields if ZIP64 extensions are used.
      *
