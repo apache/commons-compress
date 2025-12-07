@@ -19,6 +19,9 @@
 
 package org.apache.commons.compress.archivers.zip;
 
+import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.IOException;
 
 import org.apache.commons.io.function.IOConsumer;
@@ -36,9 +39,32 @@ class ZipCompress715Test {
      */
     @Test
     void testCompress715() throws IOException {
-        try (ZipArchiveInputStream zip = ZipArchiveInputStream.builder().setPath("src/test/resources/org/apache/commons/compress/COMPRESS-715/compress715.zip")
+        try (ZipArchiveInputStream inputStream = ZipArchiveInputStream.builder().setPath("src/test/resources/org/apache/commons/compress/COMPRESS-715/compress715.zip")
                 .get()) {
-            zip.forEach(IOConsumer.noop());
+            inputStream.forEach(IOConsumer.noop());
+        }
+        try (ZipArchiveInputStream inputStream = ZipArchiveInputStream.builder().setPath("src/test/resources/org/apache/commons/compress/COMPRESS-715/compress715.zip")
+                .get()) {
+            ZipArchiveEntry nextEntry = inputStream.getNextEntry();
+            assertEquals("50700006_82901717_20240318–162450_Speichergruppe-14_Monitoring_AMT_M5190M_12394_986197575850.mf4", nextEntry.getName());
+            assertEquals(341_552, nextEntry.getSize());
+            nextEntry = inputStream.getNextEntry();
+            assertEquals("50700006_82901717_20240318–162450_Speichergruppe-11_Monitoring_CAN_M5190M_7651_986197575850.mf4", nextEntry.getName());
+            assertEquals(641_560, nextEntry.getSize());
+            nextEntry = inputStream.getNextEntry();
+            assertEquals("50700006_82901717_20240318–162450_MEA_5190.dmp", nextEntry.getName());
+            assertEquals(37_280, nextEntry.getSize());
+            nextEntry = inputStream.getNextEntry();
+            assertEquals("50700006_82901717_20240318–162450_CFG_5190.ilf", nextEntry.getName());
+            assertEquals(405_692, nextEntry.getSize());
+            nextEntry = inputStream.getNextEntry();
+            assertEquals("50700006_82901717_20240318–162450_CFG_5190.zip", nextEntry.getName());
+            assertEquals(847_104, nextEntry.getSize());
+            nextEntry = inputStream.getNextEntry();
+            assertEquals("50700006_82901717_20240318–162450_MEA_5190.LOG", nextEntry.getName());
+            assertEquals(11107, nextEntry.getSize());
+            nextEntry = inputStream.getNextEntry();
+            assertNull(nextEntry);
         }
     }
 }
