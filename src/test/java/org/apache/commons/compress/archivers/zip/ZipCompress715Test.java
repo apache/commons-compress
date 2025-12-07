@@ -23,8 +23,11 @@ import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
+import java.util.zip.CRC32;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.function.IOConsumer;
+import org.apache.commons.io.input.ChecksumInputStream;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -32,20 +35,39 @@ import org.junit.jupiter.api.Test;
  */
 class ZipCompress715Test {
 
-    private void assertNextEntry(final ZipArchiveInputStream inputStream, final String expectedName, final int expectedSize) throws IOException {
+    private void assertNextEntry(final ZipArchiveInputStream inputStream, final String expectedName, final int expectedSize, final String expectedCrcRadix16)
+            throws IOException {
         final ZipArchiveEntry nextEntry = inputStream.getNextEntry();
         assertEquals(expectedName, nextEntry.getName());
         assertEquals(expectedSize, nextEntry.getSize());
+        final long crc = nextEntry.getCrc();
+        final long expectedCrc = Long.parseUnsignedLong(expectedCrcRadix16, 16);
+        assertEquals(expectedCrc, crc, () -> String.format("0x%x", crc));
+        // @formatter:off
+        @SuppressWarnings("resource")
+        final ChecksumInputStream checksum = ChecksumInputStream.builder()
+                .setInputStream(inputStream)
+                .setChecksum(new CRC32())
+                .setExpectedChecksumValue(expectedCrc)
+                .setCountThreshold(expectedSize)
+                .get();
+        // @formatter:on
+        IOUtils.consume(checksum);
     }
 
     /**
      * The test fixture unzips OK using {@code UnZip 6.00 of 20 April 2009, by Info-ZIP, with modifications by Apple Inc.}
+     *
+     * <p>
+     * Running:
+     * </p>
      * <pre>
      * unzip -lv compress715.zip
      * </pre>
      * <p>
      * returns:
      * </p>
+     *
      * <pre>
      * Archive:  compress715.zip
      *  Length   Method    Size  Cmpr    Date    Time   CRC-32   Name
@@ -69,12 +91,12 @@ class ZipCompress715Test {
             inputStream.forEach(IOConsumer.noop());
         }
         try (ZipArchiveInputStream inputStream = ZipArchiveInputStream.builder().setPath(fixture).get()) {
-            assertNextEntry(inputStream, "50700006_82901717_20240318–162450_Speichergruppe-14_Monitoring_AMT_M5190M_12394_986197575850.mf4", 341_552);
-            assertNextEntry(inputStream, "50700006_82901717_20240318–162450_Speichergruppe-11_Monitoring_CAN_M5190M_7651_986197575850.mf4", 641_560);
-            assertNextEntry(inputStream, "50700006_82901717_20240318–162450_MEA_5190.dmp", 37_280);
-            assertNextEntry(inputStream, "50700006_82901717_20240318–162450_CFG_5190.ilf", 405_692);
-            assertNextEntry(inputStream, "50700006_82901717_20240318–162450_CFG_5190.zip", 847_104);
-            assertNextEntry(inputStream, "50700006_82901717_20240318–162450_MEA_5190.LOG", 11_107);
+            assertNextEntry(inputStream, "50700006_82901717_20240318–162450_Speichergruppe-14_Monitoring_AMT_M5190M_12394_986197575850.mf4", 341_552, "88cbd694");
+            assertNextEntry(inputStream, "50700006_82901717_20240318–162450_Speichergruppe-11_Monitoring_CAN_M5190M_7651_986197575850.mf4", 641_560, "ef0dba37");
+            assertNextEntry(inputStream, "50700006_82901717_20240318–162450_MEA_5190.dmp", 37_280, "ba89ba80");
+            assertNextEntry(inputStream, "50700006_82901717_20240318–162450_CFG_5190.ilf", 405_692, "1e1402e5");
+            assertNextEntry(inputStream, "50700006_82901717_20240318–162450_CFG_5190.zip", 847_104, "d0b8c08d");
+            assertNextEntry(inputStream, "50700006_82901717_20240318–162450_MEA_5190.LOG", 11_107, "bb2f0f57");
             assertNull(inputStream.getNextEntry());
         }
     }
