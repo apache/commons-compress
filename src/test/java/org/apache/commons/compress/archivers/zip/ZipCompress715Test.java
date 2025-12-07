@@ -39,12 +39,12 @@ class ZipCompress715Test {
      */
     @Test
     void testCompress715() throws IOException {
-        try (ZipArchiveInputStream inputStream = ZipArchiveInputStream.builder().setPath("src/test/resources/org/apache/commons/compress/COMPRESS-715/compress715.zip")
-                .get()) {
+        try (ZipArchiveInputStream inputStream = ZipArchiveInputStream.builder()
+                .setPath("src/test/resources/org/apache/commons/compress/COMPRESS-715/compress715.zip").get()) {
             inputStream.forEach(IOConsumer.noop());
         }
-        try (ZipArchiveInputStream inputStream = ZipArchiveInputStream.builder().setPath("src/test/resources/org/apache/commons/compress/COMPRESS-715/compress715.zip")
-                .get()) {
+        try (ZipArchiveInputStream inputStream = ZipArchiveInputStream.builder()
+                .setPath("src/test/resources/org/apache/commons/compress/COMPRESS-715/compress715.zip").get()) {
             ZipArchiveEntry nextEntry = inputStream.getNextEntry();
             assertEquals("50700006_82901717_20240318–162450_Speichergruppe-14_Monitoring_AMT_M5190M_12394_986197575850.mf4", nextEntry.getName());
             assertEquals(341_552, nextEntry.getSize());
