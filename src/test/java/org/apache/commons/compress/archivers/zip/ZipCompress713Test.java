@@ -25,6 +25,7 @@ import java.io.ByteArrayInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 
+import org.apache.commons.compress.CompressException;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.io.function.IOConsumer;
 import org.junit.jupiter.api.Test;
@@ -40,7 +41,8 @@ public class ZipCompress713Test {
                 -1, -33, 0, -1, 0, 5, 0, -1, -1, -1, -1, -1, -1, -1, 0, 122 };
         try (ZipArchiveInputStream inputStream = new ZipArchiveInputStream(new ByteArrayInputStream(data))) {
             inputStream.getNextEntry();
-            assertThrows(ArchiveException.class, () -> inputStream.read(new byte[1024]));
+            // Either the compressor fails properly or the archiver intercepts the unchecked exception
+            assertThrows(CompressException.class, () -> inputStream.read(new byte[1024]));
             assertThrows(EOFException.class, () -> inputStream.getNextEntry());
         }
     }
