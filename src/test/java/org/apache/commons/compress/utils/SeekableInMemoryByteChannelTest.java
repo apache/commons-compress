@@ -220,13 +220,19 @@ class SeekableInMemoryByteChannelTest {
     void testThrowWhenSettingIncorrectPosition() throws IOException {
         try (SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel()) {
             final ByteBuffer buffer = ByteBuffer.allocate(1);
+            // write
+            c.write(buffer);
+            assertEquals(1, c.position());
+            // bad pos A
             c.position(c.size() + 1);
             assertEquals(c.size() + 1, c.position());
             assertEquals(-1, c.read(buffer));
+            // bad pos B
             c.position(Integer.MAX_VALUE + 1L);
             assertEquals(Integer.MAX_VALUE + 1L, c.position());
             assertEquals(-1, c.read(buffer));
             assertThrows(IOException.class, () -> c.write(buffer));
+            // negative input is the only illegal input
             assertThrows(IllegalArgumentException.class, () -> c.position(-1));
             assertThrows(IllegalArgumentException.class, () -> c.position(Integer.MIN_VALUE));
             assertThrows(IllegalArgumentException.class, () -> c.position(Long.MIN_VALUE));
