@@ -182,7 +182,8 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
             throw new IOException("position > Integer.MAX_VALUE");
         }
         int wanted = b.remaining();
-        final int intPos = (int) position;
+        // intPos <= Integer.MAX_VALUE
+        int intPos = (int) position;
         final int possibleWithoutResize = size - intPos;
         if (wanted > possibleWithoutResize) {
             final int newSize = intPos + wanted;
@@ -194,10 +195,10 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
             }
         }
         b.get(data, intPos, wanted);
-        position += wanted;
-        final int intPos2 = (int) position;
-        if (size < intPos2) {
-            size = intPos2;
+        // intPos + wanted is at most (Integer.MAX_VALUE - intPos) + intPos
+        position = intPos += wanted;
+        if (size < intPos) {
+            size = intPos;
         }
         return wanted;
     }
