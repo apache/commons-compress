@@ -26,7 +26,6 @@ import java.io.EOFException;
 import java.io.IOException;
 
 import org.apache.commons.compress.CompressException;
-import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.io.function.IOConsumer;
 import org.junit.jupiter.api.Test;
 
