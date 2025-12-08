@@ -116,6 +116,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory">SeekableInMemoryByteChannel.position(long) now throws IllegalArgumentException instead of IOException when the position request is negative, complying with the SeekableByteChannel.position(long) contract.</action>
       <action type="fix" dev="pkarwasz" due-to="Piotr P. Karwasz">Makes TarUtils final and cleans up protected methods #712.</action>
       <action type="fix" dev="pkarwasz" due-to="Piotr P. Karwasz">All archive input stream constructors now throw IOException.</action>
+      <action type="fix" dev="pkarwasz" due-to="Gary Gregory, Piotr P. Karwasz">SeekableInMemoryByteChannel.position(long) shouldn't throw an IllegalArgumentException for a new positive position that's too large #756.</action>
       <!-- ADD -->
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add MemoryLimitException.MemoryLimitException(long, long).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add CompressException.CompressException(String, Object...).</action>
