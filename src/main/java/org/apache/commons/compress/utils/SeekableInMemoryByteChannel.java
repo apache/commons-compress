@@ -47,7 +47,7 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
     private static final int NAIVE_RESIZE_LIMIT = Integer.MAX_VALUE >> 1;
     private byte[] data;
     private final AtomicBoolean closed = new AtomicBoolean();
-    private int position;
+    private long position;
     private int size;
 
     /**
@@ -116,22 +116,25 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
         if (newPosition < 0L) {
             throw new IllegalArgumentException(String.format("New position is negative: %,d", newPosition));
         }
-        position = (int) newPosition;
+        position = newPosition;
         return this;
     }
 
     @Override
     public int read(final ByteBuffer buf) throws IOException {
         ensureOpen();
+        if (position > Integer.MAX_VALUE) {
+            return -1;
+        }
         int wanted = buf.remaining();
-        final int possible = size - position;
+        final int possible = size - (int) position;
         if (possible <= 0) {
             return -1;
         }
         if (wanted > possible) {
             wanted = possible;
         }
-        buf.put(data, position, wanted);
+        buf.put(data, (int) position, wanted);
         position += wanted;
         return wanted;
     }
@@ -160,14 +163,14 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
     @Override
     public SeekableByteChannel truncate(final long newSize) throws ClosedChannelException {
         ensureOpen();
-        if (newSize < 0L || newSize > Integer.MAX_VALUE) {
-            throw new IllegalArgumentException("Size must be range [0.." + Integer.MAX_VALUE + "]");
+        if (newSize < 0L) {
+            throw new IllegalArgumentException(String.format("New size is negative: %,d", newSize));
         }
         if (size > newSize) {
             size = (int) newSize;
         }
         if (position > newSize) {
-            position = (int) newSize;
+            position = newSize;
         }
         return this;
     }
@@ -175,21 +178,26 @@ public class SeekableInMemoryByteChannel implements SeekableByteChannel {
     @Override
     public int write(final ByteBuffer b) throws IOException {
         ensureOpen();
+        if (position > Integer.MAX_VALUE) {
+            throw new IOException("position > Integer.MAX_VALUE");
+        }
         int wanted = b.remaining();
-        final int possibleWithoutResize = size - position;
+        final int intPos = (int) position;
+        final int possibleWithoutResize = size - intPos;
         if (wanted > possibleWithoutResize) {
-            final int newSize = position + wanted;
+            final int newSize = intPos + wanted;
             if (newSize < 0) { // overflow
                 resize(Integer.MAX_VALUE);
-                wanted = Integer.MAX_VALUE - position;
+                wanted = Integer.MAX_VALUE - intPos;
             } else {
                 resize(newSize);
             }
         }
-        b.get(data, position, wanted);
+        b.get(data, intPos, wanted);
         position += wanted;
-        if (size < position) {
-            size = position;
+        final int intPos2 = (int) position;
+        if (size < intPos2) {
+            size = intPos2;
         }
         return wanted;
     }
