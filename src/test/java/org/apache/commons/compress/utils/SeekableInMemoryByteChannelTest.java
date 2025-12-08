@@ -152,16 +152,33 @@ class SeekableInMemoryByteChannelTest {
     }
 
     @Test
-    void testShouldThrowExceptionWhenSettingIncorrectPosition() {
+    void testShouldThrowWhenSettingIncorrectPosition() throws IOException {
         try (SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel()) {
-            assertThrows(IllegalArgumentException.class, () -> c.position(Integer.MAX_VALUE + 1L));
+            final ByteBuffer buffer = ByteBuffer.allocate(1);
+            c.position(c.size() + 1);
+            assertEquals(c.size() + 1, c.position());
+            assertEquals(-1, c.read(buffer));
+            c.position(Integer.MAX_VALUE + 1L);
+            assertEquals(Integer.MAX_VALUE + 1L, c.position());
+            assertEquals(-1, c.read(buffer));
+            assertThrows(IOException.class, () -> c.write(buffer));
+            assertThrows(IllegalArgumentException.class, () -> c.position(-1));
+            assertThrows(IllegalArgumentException.class, () -> c.position(Integer.MIN_VALUE));
+            assertThrows(IllegalArgumentException.class, () -> c.position(Long.MIN_VALUE));
         }
     }
 
     @Test
-    void testShouldThrowExceptionWhenTruncatingToIncorrectSize() {
+    void testShouldThrowWhenTruncatingToIncorrectSize() throws IOException {
         try (SeekableInMemoryByteChannel c = new SeekableInMemoryByteChannel()) {
-            assertThrows(IllegalArgumentException.class, () -> c.truncate(Integer.MAX_VALUE + 1L));
+            final ByteBuffer buffer = ByteBuffer.allocate(1);
+            c.truncate(c.size() + 1);
+            assertEquals(1, c.read(buffer));
+            c.truncate(Integer.MAX_VALUE + 1L);
+            assertEquals(0, c.read(buffer));
+            assertThrows(IllegalArgumentException.class, () -> c.truncate(-1));
+            assertThrows(IllegalArgumentException.class, () -> c.truncate(Integer.MIN_VALUE));
+            assertThrows(IllegalArgumentException.class, () -> c.truncate(Long.MIN_VALUE));
         }
     }
 
