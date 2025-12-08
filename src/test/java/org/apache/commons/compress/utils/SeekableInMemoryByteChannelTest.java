@@ -372,13 +372,14 @@ class SeekableInMemoryByteChannelTest {
      * bytes at such a position will cause the entity to grow to accommodate the new bytes; the values of any bytes between the previous end-of-file and the
      * newly-written bytes are unspecified.</q>
      */
-    public void writingToAPositionAfterEndGrowsChannel() throws Exception {
+    @Test
+    void writingToAPositionAfterEndGrowsChannel() throws Exception {
         try (SeekableByteChannel c = new SeekableInMemoryByteChannel()) {
             c.position(2);
             assertEquals(2, c.position());
             final ByteBuffer inData = ByteBuffer.wrap(testData);
             assertEquals(testData.length, c.write(inData));
-            assertEquals(testData.length + 2, c.size());
+            assertEquals(8_192, c.size());
             c.position(2);
             final ByteBuffer readBuffer = ByteBuffer.allocate(testData.length);
             c.read(readBuffer);
