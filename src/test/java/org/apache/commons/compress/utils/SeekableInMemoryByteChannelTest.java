@@ -338,7 +338,7 @@ class SeekableInMemoryByteChannelTest {
      * <q>ClosedChannelException - If this channel is closed</q>
      */
     @Test
-    public void throwsClosedChannelExceptionWhenPositionIsReadOnClosedChannel() throws Exception {
+    void throwsClosedChannelExceptionWhenPositionIsReadOnClosedChannel() throws Exception {
         try (SeekableByteChannel c = new SeekableInMemoryByteChannel()) {
             c.close();
             assertThrows(ClosedChannelException.class, c::position);
@@ -349,7 +349,7 @@ class SeekableInMemoryByteChannelTest {
      * <q>ClosedChannelException - If this channel is closed</q>
      */
     @Test
-    public void throwsClosedChannelExceptionWhenSizeIsReadOnClosedChannel() throws Exception {
+    void throwsClosedChannelExceptionWhenSizeIsReadOnClosedChannel() throws Exception {
         try (SeekableByteChannel c = new SeekableInMemoryByteChannel()) {
             c.close();
             assertThrows(ClosedChannelException.class, c::size);
@@ -360,7 +360,7 @@ class SeekableInMemoryByteChannelTest {
      * <q>ClosedChannelException - If this channel is closed</q>
      */
     @Test
-    public void throwsClosedChannelExceptionWhenTruncateIsCalledOnClosedChannel() throws Exception {
+    void throwsClosedChannelExceptionWhenTruncateIsCalledOnClosedChannel() throws Exception {
         try (SeekableByteChannel c = new SeekableInMemoryByteChannel()) {
             c.close();
             assertThrows(ClosedChannelException.class, () -> c.truncate(0));
