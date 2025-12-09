@@ -11,3 +11,7 @@ target
 /maven-eclipse.xml
 /.java-version
 /.checkstyle
+
+# NetBeans files
+nb-configuration.xml
+nbactions.xml
