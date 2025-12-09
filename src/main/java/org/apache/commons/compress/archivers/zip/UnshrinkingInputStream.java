@@ -128,5 +128,8 @@ final class UnshrinkingInputStream extends LZWInputStream {
                 setPrefix(i, UNUSED_PREFIX);
             }
         }
+        // Resets previous code
+        // See COMPRESS-713
+        resetPreviousCode();
     }
 }

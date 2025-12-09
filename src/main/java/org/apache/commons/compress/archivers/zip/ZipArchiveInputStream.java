@@ -1076,7 +1076,11 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
             read = readDeflated(buffer, offset, length);
         } else if (method == ZipMethod.UNSHRINKING.getCode() || method == ZipMethod.IMPLODING.getCode() || method == ZipMethod.ENHANCED_DEFLATED.getCode()
                 || method == ZipMethod.BZIP2.getCode() || ZipMethod.isZstd(method) || method == ZipMethod.XZ.getCode()) {
-            read = current.checkInputStream().read(buffer, offset, length);
+            try {
+                read = current.checkInputStream().read(buffer, offset, length);
+            } catch (final RuntimeException e) {
+                throw new ArchiveException(e);
+            }
         } else {
             throw new UnsupportedZipFeatureException(ZipMethod.getMethodByCode(method), current.entry);
         }
