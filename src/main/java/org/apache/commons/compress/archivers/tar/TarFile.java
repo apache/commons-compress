@@ -42,6 +42,7 @@ import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.BoundedArchiveInputStream;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.function.IOStream;
 import org.apache.commons.io.input.BoundedInputStream;
 
@@ -192,11 +193,7 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
                 entries.add(entry);
             }
         } catch (final IOException ex) {
-            try {
-                this.archive.close();
-            } catch (final IOException e) {
-                ex.addSuppressed(e);
-            }
+            IOUtils.close(archive, ex::addSuppressed);
             throw ex;
         }
     }
