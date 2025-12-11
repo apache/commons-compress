@@ -760,11 +760,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
                     ? (ArchiveException) e
                     : new ArchiveException("Error reading Zip content from " + builder.getName(), (Throwable) e);
             this.closed = true;
-            try {
-                this.archive.close();
-            } catch (final IOException ioException) {
-                archiveException.addSuppressed(ioException);
-            }
+            IOUtils.close(archive, archiveException::addSuppressed);
             throw archiveException;
         }
     }
