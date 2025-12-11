@@ -408,6 +408,20 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
       </plugin>
     </plugins>
   </build>
+  <!-- TEMP in PR until IO is released. -->
+  <repositories>
+    <repository>
+      <id>apache.snapshots</id>
+      <name>Apache Development Snapshot Repository</name>
+      <url>https://repository.apache.org/content/repositories/snapshots/</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
   <reporting>
     <plugins>
       <plugin>
