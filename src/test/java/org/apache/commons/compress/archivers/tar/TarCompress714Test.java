@@ -21,9 +21,9 @@ package org.apache.commons.compress.archivers.tar;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.io.EOFException;
 import java.io.IOException;
 
-import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.junit.jupiter.api.Test;
 
@@ -48,7 +48,7 @@ public class TarCompress714Test {
                 -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -65,
                 -1, -126, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -128, -1, -1, -1, -1, 0, -122, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -128, 0, 0, 0, 0, 35, 0, 53, 0, 0, 0,
                 0, 0, 0, 32, 56, 0, 0, 0, 0, 0, 0, 0 };
-        assertThrows(ArchiveException.class, () -> TarFile.builder().setChannel(new SeekableInMemoryByteChannel(data)).get());
-        assertThrows(ArchiveException.class, () -> TarFile.builder().setByteArray(data).get());
+        assertThrows(EOFException.class, () -> TarFile.builder().setChannel(new SeekableInMemoryByteChannel(data)).get());
+        assertThrows(EOFException.class, () -> TarFile.builder().setByteArray(data).get());
     }
 }

@@ -21,9 +21,9 @@ package org.apache.commons.compress.archivers.zip;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.io.EOFException;
 import java.io.IOException;
 
-import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.junit.jupiter.api.Test;
 
@@ -35,7 +35,7 @@ public class ZipCompress714Test {
     @Test
     public void testIllegalPosition() throws IOException {
         final byte[] data = { 80, 75, 5, 6, -127, 80, 75, 5, 6, 7, -127, -127, -127, 80, 74, 7, 8, -127, -127, -127, -127, -127 };
-        assertThrows(ArchiveException.class, () -> ZipFile.builder().setChannel(new SeekableInMemoryByteChannel(data)).get());
-        assertThrows(ArchiveException.class, () -> ZipFile.builder().setByteArray(data).get());
+        assertThrows(EOFException.class, () -> ZipFile.builder().setChannel(new SeekableInMemoryByteChannel(data)).get());
+        assertThrows(EOFException.class, () -> ZipFile.builder().setByteArray(data).get());
     }
 }
