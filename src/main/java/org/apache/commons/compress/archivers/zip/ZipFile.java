@@ -117,7 +117,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
      * The channel will be opened for reading, assuming the specified encoding for file names.
      * </p>
      * <p>
-     * See {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} to read from an in-memory archive.
+     * See {@link org.apache.commons.io.channels.ByteArraySeekableByteChannel} to read from an in-memory archive.
      * </p>
      * <p>
      * By default, the central directory record and all local file headers of the archive will be read immediately which may take a considerable amount of time
@@ -896,7 +896,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
     /**
      * Opens the given channel for reading, assuming "UTF-8" for file names.
      * <p>
-     * {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} allows you to read from an in-memory archive.
+     * {@link org.apache.commons.io.channels.ByteArraySeekableByteChannel} allows you to read from an in-memory archive.
      * </p>
      *
      * @param channel the archive.
@@ -912,7 +912,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
     /**
      * Opens the given channel for reading, assuming the specified encoding for file names.
      * <p>
-     * {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} allows you to read from an in-memory archive.
+     * {@link org.apache.commons.io.channels.ByteArraySeekableByteChannel} allows you to read from an in-memory archive.
      * </p>
      *
      * @param channel  the archive.
@@ -929,7 +929,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
     /**
      * Opens the given channel for reading, assuming the specified encoding for file names.
      * <p>
-     * {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} allows you to read from an in-memory archive.
+     * {@link org.apache.commons.io.channels.ByteArraySeekableByteChannel} allows you to read from an in-memory archive.
      * </p>
      *
      * @param channel               the archive.
@@ -949,7 +949,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
     /**
      * Opens the given channel for reading, assuming the specified encoding for file names.
      * <p>
-     * {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} allows you to read from an in-memory archive.
+     * {@link org.apache.commons.io.channels.ByteArraySeekableByteChannel} allows you to read from an in-memory archive.
      * </p>
      * <p>
      * By default, the central directory record and all local file headers of the archive will be read immediately which may take a considerable amount of time

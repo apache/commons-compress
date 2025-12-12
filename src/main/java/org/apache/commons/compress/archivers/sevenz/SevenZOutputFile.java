@@ -158,7 +158,7 @@ public class SevenZOutputFile implements Closeable {
      * Prepares channel to write a 7z archive to.
      *
      * <p>
-     * {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} allows you to write to an in-memory archive.
+     * {@link org.apache.commons.io.channels.ByteArraySeekableByteChannel} allows you to write to an in-memory archive.
      * </p>
      *
      * @param channel the channel to write to
@@ -173,7 +173,7 @@ public class SevenZOutputFile implements Closeable {
      * Prepares channel to write a 7z archive to.
      *
      * <p>
-     * {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} allows you to write to an in-memory archive.
+     * {@link org.apache.commons.io.channels.ByteArraySeekableByteChannel} allows you to write to an in-memory archive.
      * </p>
      *
      * @param channel  the channel to write to

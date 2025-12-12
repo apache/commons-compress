@@ -470,7 +470,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * Creates a new ZIP OutputStream writing to a SeekableByteChannel.
      *
      * <p>
-     * {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} allows you to write to an in-memory archive using random access.
+     * {@link org.apache.commons.io.channels.ByteArraySeekableByteChannel} allows you to write to an in-memory archive using random access.
      * </p>
      *
      * @param channel the channel to ZIP to.

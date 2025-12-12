@@ -708,7 +708,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     /**
      * Reads a SeekableByteChannel as 7z archive
      * <p>
-     * {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} allows you to read from an in-memory archive.
+     * {@link org.apache.commons.io.channels.ByteArraySeekableByteChannel} allows you to read from an in-memory archive.
      * </p>
      *
      * @param channel the channel to read
@@ -724,7 +724,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     /**
      * Reads a SeekableByteChannel as 7z archive
      * <p>
-     * {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} allows you to read from an in-memory archive.
+     * {@link org.apache.commons.io.channels.ByteArraySeekableByteChannel} allows you to read from an in-memory archive.
      * </p>
      *
      * @param channel  the channel to read
@@ -741,7 +741,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     /**
      * Reads a SeekableByteChannel as 7z archive
      * <p>
-     * {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} allows you to read from an in-memory archive.
+     * {@link org.apache.commons.io.channels.ByteArraySeekableByteChannel} allows you to read from an in-memory archive.
      * </p>
      *
      * @param channel  the channel to read
@@ -758,7 +758,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     /**
      * Reads a SeekableByteChannel as 7z archive with additional options.
      * <p>
-     * {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} allows you to read from an in-memory archive.
+     * {@link org.apache.commons.io.channels.ByteArraySeekableByteChannel} allows you to read from an in-memory archive.
      * </p>
      *
      * @param channel  the channel to read
@@ -776,7 +776,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     /**
      * Reads a SeekableByteChannel as 7z archive with additional options.
      * <p>
-     * {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} allows you to read from an in-memory archive.
+     * {@link org.apache.commons.io.channels.ByteArraySeekableByteChannel} allows you to read from an in-memory archive.
      * </p>
      *
      * @param channel the channel to read
@@ -793,7 +793,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     /**
      * Reads a SeekableByteChannel as 7z archive
      * <p>
-     * {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} allows you to read from an in-memory archive.
+     * {@link org.apache.commons.io.channels.ByteArraySeekableByteChannel} allows you to read from an in-memory archive.
      * </p>
      *
      * @param channel  the channel to read
@@ -810,7 +810,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     /**
      * Reads a SeekableByteChannel as 7z archive
      * <p>
-     * {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} allows you to read from an in-memory archive.
+     * {@link org.apache.commons.io.channels.ByteArraySeekableByteChannel} allows you to read from an in-memory archive.
      * </p>
      *
      * @param channel  the channel to read
@@ -828,7 +828,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     /**
      * Reads a SeekableByteChannel as 7z archive
      * <p>
-     * {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} allows you to read from an in-memory archive.
+     * {@link org.apache.commons.io.channels.ByteArraySeekableByteChannel} allows you to read from an in-memory archive.
      * </p>
      *
      * @param channel  the channel to read
@@ -846,7 +846,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     /**
      * Reads a SeekableByteChannel as 7z archive with additional options.
      * <p>
-     * {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} allows you to read from an in-memory archive.
+     * {@link org.apache.commons.io.channels.ByteArraySeekableByteChannel} allows you to read from an in-memory archive.
      * </p>
      *
      * @param channel  the channel to read
@@ -865,7 +865,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     /**
      * Reads a SeekableByteChannel as 7z archive with additional options.
      * <p>
-     * {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} allows you to read from an in-memory archive.
+     * {@link org.apache.commons.io.channels.ByteArraySeekableByteChannel} allows you to read from an in-memory archive.
      * </p>
      *
      * @param channel  the channel to read
