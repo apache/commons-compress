@@ -185,6 +185,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      * <p>Since 1.29.0: throws {@link IOException}.</p>
      *
      * @param inputStream the input stream to use.
+     * @throws IOException If the builder fails to create the underlying {@link InputStream}.
      */
     public TarArchiveInputStream(final InputStream inputStream) throws IOException {
         this(builder().setInputStream(inputStream));

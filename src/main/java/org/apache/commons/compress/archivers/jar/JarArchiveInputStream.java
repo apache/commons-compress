@@ -83,7 +83,8 @@ public class JarArchiveInputStream extends ZipArchiveInputStream {
      *
      * <p>Since 1.29.0: throws {@link IOException}.</p>
      *
-     * @param inputStream the input stream to wrap
+     * @param inputStream the input stream to wrap.
+     * @throws IOException If the builder fails to create the underlying {@link InputStream}.
      */
     public JarArchiveInputStream(final InputStream inputStream) throws IOException {
         this(jarInputStreamBuilder().setInputStream(inputStream));
@@ -96,6 +97,7 @@ public class JarArchiveInputStream extends ZipArchiveInputStream {
      *
      * @param inputStream the input stream to wrap
      * @param encoding    the encoding to use
+     * @throws IOException If the builder fails to create the underlying {@link InputStream}.
      * @since 1.10
      * @deprecated Since 1.29.0, use {@link #jarInputStreamBuilder()}.
      */
