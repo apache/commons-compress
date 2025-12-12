@@ -29,7 +29,7 @@ import java.util.ServiceLoader;
  *
  * @param <E> The service to load
  * @since 1.13
- * @deprecated No longer needed.
+ * @deprecated No longer used.
  */
 @Deprecated
 public class ServiceLoaderIterator<E> implements Iterator<E> {
