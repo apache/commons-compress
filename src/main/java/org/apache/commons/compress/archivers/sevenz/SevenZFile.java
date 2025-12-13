@@ -629,9 +629,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
             archive = readHeaders(password);
             this.password = password != null ? Arrays.copyOf(password, password.length) : null;
         } catch (final ArithmeticException | IllegalArgumentException e) {
-            final ArchiveException archiveException = new ArchiveException(e);
-            IOUtils.close(channel, archiveException::addSuppressed);
-            throw archiveException;
+            throw IOUtils.closeQuietly(channel, new ArchiveException(e));
         }
     }
 
