@@ -38,9 +38,9 @@ import org.apache.commons.compress.CompressFilterOutputStream;
  * <li>optionally write SFX header (Zip only),</li>
  * <li>repeat as needed:
  * <ul>
- * <li>{@link #putArchiveEntry(ArchiveEntry)} (writes entry header),
- * <li>{@link #write(byte[])} (writes entry data, as often as needed),
- * <li>{@link #closeArchiveEntry()} (closes entry),
+ *   <li>{@link #putArchiveEntry(ArchiveEntry)} (writes entry header),</li>
+ *   <li>{@link #write(byte[])} (writes entry data, as often as needed),</li>
+ *   <li>{@link #closeArchiveEntry()} (closes entry),</li>
  * </ul>
  * </li>
  * <li>{@link #finish()} (ends the addition of entries),</li>

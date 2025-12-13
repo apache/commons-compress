@@ -296,7 +296,7 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream<ZstdOutpu
          * <li>3: w / 64</li>
          * <li>2: w / 128</li>
          * <li>1: no overlap</li>
-         * <li>0: default
+         * <li>0: default</li>
          * </ul>
          * <p>
          * The default value varies between 6 and 9, depending on the strategy.

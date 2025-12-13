@@ -1319,8 +1319,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
      * Caches a stored entry that uses the data descriptor.
      * <ul>
      * <li>Reads a stored entry until the signature of a local file header, central directory header or data descriptor has been found.</li>
-     * <li>Stores all entry data in lastStoredEntry.
-     * </p>
+     * <li>Stores all entry data in lastStoredEntry.</li>
      * <li>Rewinds the stream to position at the data descriptor.</li>
      * <li>reads the data descriptor</li>
      * </ul>
