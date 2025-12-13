@@ -37,6 +37,8 @@ public final class AttributeLayoutParser<T> {
 
     /**
      * Factory interface for creating attribute layout elements.
+     *
+     * @param <T> The list body element type.
      */
     public interface Factory<T> {
         /**
@@ -96,6 +98,8 @@ public final class AttributeLayoutParser<T> {
 
     /**
      * Data class representing a union case in an attribute layout definition.
+     *
+     * @param <T> The list body element type.
      */
     public static final class UnionCaseData<T> {
         /**
