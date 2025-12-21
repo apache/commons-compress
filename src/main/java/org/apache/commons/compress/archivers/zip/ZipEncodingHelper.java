@@ -106,4 +106,14 @@ public abstract class ZipEncodingHelper {
             return Charset.defaultCharset();
         }
     }
+
+    /**
+     * Constructs a new instance.
+     *
+     * @deprecated Will be removed in 4.0.
+     */
+    @Deprecated
+    public ZipEncodingHelper() {
+        // Utility class
+    }
 }
