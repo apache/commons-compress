@@ -193,4 +193,14 @@ public class ZstdConstants {
      */
     public static final int ZSTD_WINDOWLOG_MIN = Zstd.windowLogMin();
 
+    /**
+     * Constructs a new instance.
+     *
+     * @deprecated Will be removed in 4.0.
+     */
+    @Deprecated
+    public ZstdConstants() {
+        // Utility class
+    }
+
 }
