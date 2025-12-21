@@ -79,6 +79,13 @@ public class XZCompressorInputStream extends CompressorInputStream implements In
         private int memoryLimitKiB = -1;
         private boolean decompressConcatenated;
 
+        /**
+         * Constructs a new instance.
+         */
+        public Builder() {
+            // Default constructor
+        }
+
         @Override
         public XZCompressorInputStream get() throws IOException {
             return new XZCompressorInputStream(this);

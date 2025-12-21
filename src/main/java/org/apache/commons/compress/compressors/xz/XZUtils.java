@@ -212,7 +212,7 @@ public class XZUtils {
         }
     }
 
-    /** Private constructor to prevent instantiation of this utility class. */
+    /** Constructs a new instance. */
     private XZUtils() {
     }
 }
