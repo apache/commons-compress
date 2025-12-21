@@ -38,6 +38,13 @@ public final class UnparseableExtraFieldData implements ZipExtraField {
     private byte[] centralDirectoryData;
 
     /**
+     * Constructs a new instance.
+     */
+    public UnparseableExtraFieldData() {
+        // Default constructor
+    }
+
+    /**
      * The actual data to put into central directory.
      *
      * @return The CentralDirectoryData value
