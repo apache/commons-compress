@@ -60,6 +60,13 @@ public class LZMACompressorInputStream extends CompressorInputStream implements 
 
         private int memoryLimitKiB = -1;
 
+        /**
+         * Constructs a new instance.
+         */
+        public Builder() {
+            // Default constructor
+        }
+
         @Override
         public LZMACompressorInputStream get() throws IOException {
             return new LZMACompressorInputStream(this);
