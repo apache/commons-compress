@@ -182,6 +182,13 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         private boolean tryToRecoverBrokenArchives = TRY_TO_RECOVER_BROKEN_ARCHIVES;
 
         /**
+         * Constructs a new instance.
+         */
+        public Builder() {
+            // Default constructor
+        }
+
+        /**
          * Builds a new {@link SevenZFile}.
          *
          * @throws IOException Thrown if an I/O error occurs.
@@ -420,6 +427,14 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         return bytes / 1024;
     }
 
+    private static long crc32(final ByteBuffer header) {
+        final int currentPosition = header.position();
+        final CRC32 crc = new CRC32();
+        crc.update(header);
+        header.position(currentPosition);
+        return crc.getValue();
+    }
+
     /**
      * Checks that there are at least {@code expectRemaining} bytes remaining in the header.
      *
@@ -433,14 +448,6 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
             throw new ArchiveException("7z archive: Corrupted, expecting %,d bytes, remaining header size %,d", expectRemaining, header.remaining());
         }
         return header;
-    }
-
-    private static long crc32(final ByteBuffer header) {
-        final int currentPosition = header.position();
-        final CRC32 crc = new CRC32();
-        crc.update(header);
-        header.position(currentPosition);
-        return crc.getValue();
     }
 
     /**
