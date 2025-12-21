@@ -119,6 +119,9 @@ public final class ZipLong implements Cloneable, Serializable {
         ByteUtils.toLittleEndian(buf, value, offset, 4);
     }
 
+    /**
+     * The long value.
+     */
     private final long value;
 
     /**
