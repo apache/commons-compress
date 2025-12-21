@@ -315,6 +315,13 @@ public class GzipParameters {
     private long trailerCrc;
     private long trailerISize;
 
+    /**
+     * Constructs a new instance with default values.
+     */
+    public GzipParameters() {
+        // Default constructor
+    }
+
     @Override
     public boolean equals(final Object obj) {
         if (this == obj) {
