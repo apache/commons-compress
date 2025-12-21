@@ -40,6 +40,13 @@ public class SevenZFileOptions {
         private boolean tryToRecoverBrokenArchives = SevenZFile.Builder.TRY_TO_RECOVER_BROKEN_ARCHIVES;
 
         /**
+         * Constructs a new instance.
+         */
+        public Builder() {
+            // Default constructor
+        }
+
+        /**
          * Builds the {@link SevenZFileOptions}.
          *
          * @return configured {@link SevenZFileOptions}.
