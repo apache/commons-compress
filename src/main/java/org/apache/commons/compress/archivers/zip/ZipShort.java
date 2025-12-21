@@ -89,6 +89,9 @@ public final class ZipShort implements Cloneable, Serializable {
         ByteUtils.toLittleEndian(buf, value, offset, SIZE);
     }
 
+    /**
+     * The short value.
+     */
     private final int value;
 
     /**
