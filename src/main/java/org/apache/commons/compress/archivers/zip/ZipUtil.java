@@ -423,4 +423,14 @@ public abstract class ZipUtil {
         }
         return (byte) (i - 256);
     }
+
+    /**
+     * Constructs a new instance.
+     *
+     * @deprecated Will be removed in 4.0.
+     */
+    @Deprecated
+    public ZipUtil() {
+        // Utility class
+    }
 }
