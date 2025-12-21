@@ -63,21 +63,42 @@ public class UnsupportedZipFeatureException extends ZipException {
          */
         public static final Feature UNKNOWN_COMPRESSED_SIZE = new Feature("unknown compressed size");
 
+        /**
+         * The name of the feature.
+         */
         private final String name;
 
+        /**
+         * Constructs a new feature with the given name.
+         *
+         * @param name the name of the feature
+         */
         private Feature(final String name) {
             this.name = name;
         }
 
+        /**
+         * {@inheritDoc}
+         *
+         * @since 1.29.0
+         */
         @Override
         public String toString() {
-            return name;
+            return super.toString() + "[" + name + "]";
         }
+
     }
 
     private static final long serialVersionUID = 20161219L;
+
+    /**
+     * The unsupported feature.
+     */
     private final Feature reason;
 
+    /**
+     * The entry that uses the unsupported feature.
+     */
     private final transient ZipArchiveEntry entry;
 
     /**
