@@ -84,7 +84,7 @@ public class BrotliUtils {
         }
     }
 
-    /** Private constructor to prevent instantiation of this utility class. */
+    /** Constructs a new instance. */
     private BrotliUtils() {
     }
 }
