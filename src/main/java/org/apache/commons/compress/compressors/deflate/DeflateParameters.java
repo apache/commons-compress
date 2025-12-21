@@ -35,6 +35,13 @@ public class DeflateParameters {
     private int compressionLevel = Deflater.DEFAULT_COMPRESSION;
 
     /**
+     * Constructs a new instance.
+     */
+    public DeflateParameters() {
+        // Default constructor
+    }
+
+    /**
      * The compression level.
      *
      * @see #setCompressionLevel
