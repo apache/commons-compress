@@ -62,6 +62,13 @@ public class Expander {
     }
 
     /**
+     * Constructs a new instance.
+     */
+    public Expander() {
+        // Default constructor
+    }
+
+    /**
      * @param targetDirectory May be null to simulate output to dev/null on Linux and NUL on Windows.
      */
     private <T extends ArchiveEntry> void expand(final ArchiveEntrySupplier<T> supplier, final ArchiveEntryBiConsumer<T> writer, final Path targetDirectory)
