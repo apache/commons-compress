@@ -27,6 +27,9 @@ public class StreamingNotSupportedException extends ArchiveException {
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * The format name.
+     */
     private final String format;
 
     /**
