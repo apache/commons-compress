@@ -113,6 +113,13 @@ public class X000A_NTFS implements ZipExtraField {
 
     private ZipEightByteInteger createTime = ZipEightByteInteger.ZERO;
 
+    /**
+     * Constructs a new instance.
+     */
+    public X000A_NTFS() {
+        // Default constructor
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (o instanceof X000A_NTFS) {
