@@ -320,6 +320,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     private long time = -1;
 
     /**
+     * Constructs a new instance with an empty name.
      */
     protected ZipArchiveEntry() {
         this("");
