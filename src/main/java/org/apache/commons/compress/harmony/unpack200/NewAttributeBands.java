@@ -455,6 +455,14 @@ public class NewAttributeBands extends BandSet {
 
         private final List<LayoutElement> layoutElements;
 
+        private Replication(final String tag, final List<LayoutElement> layoutElements) throws Pack200Exception {
+            this.countElement = new Integral(tag);
+            this.layoutElements = layoutElements;
+            if (layoutElements.isEmpty()) {
+                throw new Pack200Exception("Corrupted Pack200 archive: Replication body is empty");
+            }
+        }
+
         /**
          * Constructs a new Replication layout element.
          *
@@ -465,14 +473,6 @@ public class NewAttributeBands extends BandSet {
          */
         public Replication(final String tag, final String contents) throws Pack200Exception {
             this(tag, AttributeLayoutUtils.readBody(contents, attributeLayoutFactory));
-        }
-
-        private Replication(final String tag, final List<LayoutElement> layoutElements) throws Pack200Exception {
-            this.countElement = new Integral(tag);
-            this.layoutElements = layoutElements;
-            if (layoutElements.isEmpty()) {
-                throw new Pack200Exception("Corrupted Pack200 archive: Replication body is empty");
-            }
         }
 
         @Override

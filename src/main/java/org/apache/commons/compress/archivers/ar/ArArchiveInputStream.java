@@ -206,6 +206,10 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
         return ParsingUtils.parseLongValue(ArchiveUtils.toAsciiString(byteArray, offset, len).trim());
     }
 
+    private int checkEntryNameLength(final int nameLength) throws ArchiveException, MemoryLimitException {
+        return ArchiveUtils.checkEntryNameLength(nameLength, getMaxEntryNameLength(), "AR");
+    }
+
     /**
      * Checks and skips the trailer of the current entry.
      *
@@ -285,10 +289,6 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
             }
         }
         throw new ArchiveException("Failed to read GNU long file name at offset " + offset);
-    }
-
-    private int checkEntryNameLength(final int nameLength) throws ArchiveException, MemoryLimitException {
-        return ArchiveUtils.checkEntryNameLength(nameLength, getMaxEntryNameLength(), "AR");
     }
 
     /**
