@@ -50,6 +50,8 @@ public interface ZipEncoding {
     boolean canEncode(String name);
 
     /**
+     * Decodes the given byte array to a string.
+     *
      * @param data The byte values to decode.
      * @return The decoded string.
      * @throws IOException on error
