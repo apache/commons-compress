@@ -47,6 +47,13 @@ public class UnrecognizedExtraField implements ZipExtraField {
     private byte[] centralData;
 
     /**
+     * Constructs a new instance.
+     */
+    public UnrecognizedExtraField() {
+        // Default constructor
+    }
+
+    /**
      * Gets the central data.
      *
      * @return the central data if present, else return the local file data
