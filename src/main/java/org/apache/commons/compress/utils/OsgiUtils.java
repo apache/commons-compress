@@ -58,4 +58,14 @@ public class OsgiUtils {
         return inOsgiEnvironment;
     }
 
+    /**
+     * Constructs a new instance.
+     *
+     * @deprecated Will be removed in 4.0.
+     */
+    @Deprecated
+    public OsgiUtils() {
+        // Utility class
+    }
+
 }
