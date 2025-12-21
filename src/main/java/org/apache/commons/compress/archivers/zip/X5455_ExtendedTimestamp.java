@@ -73,21 +73,26 @@ import org.apache.commons.io.file.attribute.FileTimes;
  * @since 1.5
  */
 public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serializable {
+
     private static final long serialVersionUID = 1L;
+
     /**
      * The header ID for this extra field.
      *
      * @since 1.23
      */
     public static final ZipShort HEADER_ID = new ZipShort(0x5455);
+
     /**
      * The bit set inside the flags by when the last modification time is present in this extra field.
      */
     public static final byte MODIFY_TIME_BIT = 1;
+
     /**
      * The bit set inside the flags by when the lasr access time is present in this extra field.
      */
     public static final byte ACCESS_TIME_BIT = 2;
+
     /**
      * The bit set inside the flags by when the original creation time is present in this extra field.
      */
@@ -137,16 +142,43 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
         return unixTime != null ? new Date(unixTime.getIntValue() * 1000L) : null;
     }
 
+    /**
+     * The flags byte.
+     */
     private byte flags;
+
     // Note: even if bit1 and bit2 are set, the Central data will still not contain
     // access/create fields: only local data ever holds those! This causes
     // some of our implementation to look a little odd, with seemingly spurious
     // != null and length checks.
+    /**
+     * Whether bit 0 is set (modify time present).
+     */
     private boolean bit0_modifyTimePresent;
+
+    /**
+     * Whether bit 1 is set (access time present).
+     */
     private boolean bit1_accessTimePresent;
+
+    /**
+     * Whether bit 2 is set (create time present).
+     */
     private boolean bit2_createTimePresent;
+
+    /**
+     * The modify time.
+     */
     private ZipLong modifyTime;
+
+    /**
+     * The access time.
+     */
     private ZipLong accessTime;
+
+    /**
+     * The create time.
+     */
     private ZipLong createTime;
 
     /**
