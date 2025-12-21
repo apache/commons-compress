@@ -296,7 +296,7 @@ public final class IOUtils {
         return org.apache.commons.io.IOUtils.toByteArray(input);
     }
 
-    /** Private constructor to prevent instantiation of this utility class. */
+    /** Constructs a new instance. */
     private IOUtils() {
     }
 
