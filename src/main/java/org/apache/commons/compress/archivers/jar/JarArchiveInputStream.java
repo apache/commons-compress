@@ -47,6 +47,14 @@ public class JarArchiveInputStream extends ZipArchiveInputStream {
      * @since 1.29.0
      */
     public static class Builder extends ZipArchiveInputStream.AbstractBuilder<JarArchiveInputStream, Builder> {
+
+        /**
+         * Constructs a new instance.
+         */
+        public Builder() {
+            // Default constructor
+        }
+
         @Override
         public JarArchiveInputStream get() throws IOException {
             return new JarArchiveInputStream(this);
