@@ -124,7 +124,7 @@ public abstract class BZip2Utils {
         return fileNameUtil.isCompressedFileName(fileName);
     }
 
-    /** Private constructor to prevent instantiation of this utility class. */
+    /** Constructs a new instance. */
     private BZip2Utils() {
     }
 
