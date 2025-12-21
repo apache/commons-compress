@@ -286,7 +286,7 @@ public class ArchiveUtils {
         return sb.toString();
     }
 
-    /** Private constructor to prevent instantiation of this utility class. */
+    /** Constructs a new instance. */
     private ArchiveUtils() {
     }
 
