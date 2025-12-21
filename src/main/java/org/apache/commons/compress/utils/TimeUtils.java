@@ -209,7 +209,7 @@ public final class TimeUtils {
         return FileTimes.fromUnixTime(time);
     }
 
-    /** Private constructor to prevent instantiation of this utility class. */
+    /** Constructs a new instance. */
     private TimeUtils() {
     }
 }
