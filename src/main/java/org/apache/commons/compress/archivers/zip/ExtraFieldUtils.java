@@ -389,4 +389,14 @@ public class ExtraFieldUtils {
             throw new IllegalArgumentException(clazz.toString(), e);
         }
     }
+
+    /**
+     * Constructs a new instance.
+     *
+     * @deprecated Will be removed in 4.0.
+     */
+    @Deprecated
+    public ExtraFieldUtils() {
+        // Utility class
+    }
 }
