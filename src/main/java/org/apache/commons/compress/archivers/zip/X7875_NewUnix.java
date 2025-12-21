@@ -113,14 +113,25 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
         return trimmedArray;
     }
 
-    private int version = 1; // always '1' according to current info-zip spec.
+    /**
+     * The version number, always {@code 1}, according to current info-zip spec.
+     */
+    private int version = 1;
+
+
     // BigInteger helps us with little-endian / big-endian conversions.
     // (thanks to BigInteger.toByteArray() and a reverse() method we created).
     // Also, the spec theoretically allows UID/GID up to 255 bytes long!
     //
     // NOTE: equals() and hashCode() currently assume these can never be null.
+    /**
+     * The user ID.
+     */
     private BigInteger uid;
 
+    /**
+     * The group ID.
+     */
     private BigInteger gid;
 
     /**
