@@ -120,4 +120,14 @@ public class CLI {
         System.out.println("Parameters: archive-name [list]");
     }
 
+    /**
+     * Constructs a new instance.
+     *
+     * @deprecated Will be removed in 4.0.
+     */
+    @Deprecated
+    public CLI() {
+        // Default constructor
+    }
+
 }
