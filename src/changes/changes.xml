@@ -121,6 +121,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Deprecate SeekableInMemoryByteChannel in favor of ByteArraySeekableByteChannel.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Deprecate org.apache.commons.compress.archivers.sevenz.CLI.CLI().</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Deprecate org.apache.commons.compress.archivers.zip.ExtraFieldUtils.ExtraFieldUtils().</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">Deprecate org.apache.commons.compress.utils.FileNameUtils.FileNameUtils().</action>
       <!-- ADD -->
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add MemoryLimitException.MemoryLimitException(long, long).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add CompressException.CompressException(String, Object...).</action>

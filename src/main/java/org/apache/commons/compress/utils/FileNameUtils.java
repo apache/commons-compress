@@ -100,4 +100,14 @@ public class FileNameUtils {
     public static String getExtension(final String fileName) {
         return FilenameUtils.getExtension(fileName);
     }
+
+    /**
+     * Constructs a new instance.
+     *
+     * @deprecated Will be removed in 4.0.
+     */
+    @Deprecated
+    public FileNameUtils() {
+        // Utility class
+    }
 }
