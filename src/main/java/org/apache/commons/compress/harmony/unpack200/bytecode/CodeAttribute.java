@@ -26,24 +26,68 @@ import java.util.List;
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.harmony.unpack200.Segment;
 
+/**
+ * Code attribute in a class file.
+ */
 public class CodeAttribute extends BCIRenumberedAttribute {
 
     private static CPUTF8 attributeName;
 
+    /**
+     * Sets the attribute name.
+     *
+     * @param attributeName the attribute name.
+     */
     public static void setAttributeName(final CPUTF8 attributeName) {
         CodeAttribute.attributeName = attributeName;
     }
 
+    /**
+     * The attributes.
+     */
     public List<Attribute> attributes = new ArrayList<>();
-    // instances
+
+    /**
+     * The bytecode offsets.
+     */
     public List<Integer> byteCodeOffsets = new ArrayList<>();
+
+    /**
+     * The bytecodes.
+     */
     public List<ByteCode> byteCodes = new ArrayList<>();
+
+    /**
+     * The code length.
+     */
     public int codeLength;
+
+    /**
+     * The exception table.
+     */
     public List<ExceptionTableEntry> exceptionTable;
+
+    /**
+     * The maximum number of local variables.
+     */
     public int maxLocals;
 
+    /**
+     * The maximum stack size.
+     */
     public int maxStack;
 
+    /**
+     * Constructs a new instance.
+     *
+     * @param maxStack the maximum stack size.
+     * @param maxLocals the maximum number of local variables.
+     * @param codePacked the packed code bytes.
+     * @param segment the segment.
+     * @param operandManager the operand manager.
+     * @param exceptionTable the exception table.
+     * @throws Pack200Exception if an error occurs.
+     */
     public CodeAttribute(final int maxStack, final int maxLocals, final byte[] codePacked, final Segment segment, final OperandManager operandManager,
             final List<ExceptionTableEntry> exceptionTable) throws Pack200Exception {
         super(attributeName);

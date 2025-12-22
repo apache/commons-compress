@@ -105,10 +105,21 @@ public class CpBands extends BandSet {
     private int methodOffset;
     private int imethodOffset;
 
+    /**
+     * Constructs a new instance.
+     *
+     * @param segment the segment.
+     */
     public CpBands(final Segment segment) {
         super(segment);
     }
 
+    /**
+     * Gets the CPClass value at the specified index.
+     *
+     * @param index the index.
+     * @return the CPClass value.
+     */
     public CPClass cpClassValue(final int index) {
         final String string = cpClass[index];
         final int utf8Index = cpClassInts[index];
@@ -116,6 +127,12 @@ public class CpBands extends BandSet {
         return stringsToCPClass.computeIfAbsent(string, k -> new CPClass(cpUTF8Value(utf8Index), globalIndex));
     }
 
+    /**
+     * Gets the CPClass value for the specified string.
+     *
+     * @param string the string.
+     * @return the CPClass value.
+     */
     public CPClass cpClassValue(final String string) {
         CPClass cpString = stringsToCPClass.get(string);
         if (cpString == null) {
@@ -129,34 +146,82 @@ public class CpBands extends BandSet {
         return cpString;
     }
 
+    /**
+     * Gets the CPDouble value at the specified index.
+     *
+     * @param index the index.
+     * @return the CPDouble value.
+     */
     public CPDouble cpDoubleValue(final int index) {
         return doublesToCPDoubles.computeIfAbsent(Double.valueOf(cpDouble[index]), k -> new CPDouble(k, index + doubleOffset));
     }
 
+    /**
+     * Gets the CPFieldRef value at the specified index.
+     *
+     * @param index the index.
+     * @return the CPFieldRef value.
+     */
     public CPFieldRef cpFieldValue(final int index) {
         return new CPFieldRef(cpClassValue(cpFieldClassInts[index]), cpNameAndTypeValue(cpFieldDescriptorInts[index]), index + fieldOffset);
     }
 
+    /**
+     * Gets the CPFloat value at the specified index.
+     *
+     * @param index the index.
+     * @return the CPFloat value.
+     */
     public CPFloat cpFloatValue(final int index) {
         return floatsToCPFloats.computeIfAbsent(Float.valueOf(cpFloat[index]), k -> new CPFloat(Float.valueOf(cpFloat[index]), index + floatOffset));
     }
 
+    /**
+     * Gets the CPInterfaceMethodRef value at the specified index.
+     *
+     * @param index the index.
+     * @return the CPInterfaceMethodRef value.
+     */
     public CPInterfaceMethodRef cpIMethodValue(final int index) {
         return new CPInterfaceMethodRef(cpClassValue(cpIMethodClassInts[index]), cpNameAndTypeValue(cpIMethodDescriptorInts[index]), index + imethodOffset);
     }
 
+    /**
+     * Gets the CPInteger value at the specified index.
+     *
+     * @param index the index.
+     * @return the CPInteger value.
+     */
     public CPInteger cpIntegerValue(final int index) {
         return integersToCPIntegers.computeIfAbsent(Integer.valueOf(cpInt[index]), k -> new CPInteger(k, index + intOffset));
     }
 
+    /**
+     * Gets the CPLong value at the specified index.
+     *
+     * @param index the index.
+     * @return the CPLong value.
+     */
     public CPLong cpLongValue(final int index) {
         return longsToCPLongs.computeIfAbsent(Long.valueOf(cpLong[index]), k -> new CPLong(k, index + longOffset));
     }
 
+    /**
+     * Gets the CPMethodRef value at the specified index.
+     *
+     * @param index the index.
+     * @return the CPMethodRef value.
+     */
     public CPMethodRef cpMethodValue(final int index) {
         return new CPMethodRef(cpClassValue(cpMethodClassInts[index]), cpNameAndTypeValue(cpMethodDescriptorInts[index]), index + methodOffset);
     }
 
+    /**
+     * Gets the CPNameAndType value at the specified index.
+     *
+     * @param index the index.
+     * @return the CPNameAndType value.
+     */
     public CPNameAndType cpNameAndTypeValue(final int index) {
         final String descriptor = cpDescriptor[index];
         return descriptorsToCPNameAndTypes.computeIfAbsent(descriptor, k -> {
@@ -168,6 +233,12 @@ public class CpBands extends BandSet {
         });
     }
 
+    /**
+     * Gets the CPNameAndType value for the specified descriptor.
+     *
+     * @param descriptor the descriptor.
+     * @return the CPNameAndType value.
+     */
     public CPNameAndType cpNameAndTypeValue(final String descriptor) {
         CPNameAndType cpNameAndType = descriptorsToCPNameAndTypes.get(descriptor);
         if (cpNameAndType == null) {
@@ -187,6 +258,12 @@ public class CpBands extends BandSet {
         return cpNameAndType;
     }
 
+    /**
+     * Gets the CPUTF8 signature value at the specified index.
+     *
+     * @param index the index.
+     * @return the CPUTF8 signature value.
+     */
     public CPUTF8 cpSignatureValue(final int index) {
         final int globalIndex;
         if (cpSignatureInts[index] != -1) {
@@ -197,6 +274,12 @@ public class CpBands extends BandSet {
         return stringsToCPUTF8.computeIfAbsent(cpSignature[index], k -> new CPUTF8(k, globalIndex));
     }
 
+    /**
+     * Gets the CPString value at the specified index.
+     *
+     * @param index the index.
+     * @return the CPString value.
+     */
     public CPString cpStringValue(final int index) {
         final String string = cpString[index];
         final int utf8Index = cpStringInts[index];
@@ -204,6 +287,12 @@ public class CpBands extends BandSet {
         return stringsToCPStrings.computeIfAbsent(string, k -> new CPString(cpUTF8Value(utf8Index), globalIndex));
     }
 
+    /**
+     * Gets the CPUTF8 value at the specified index.
+     *
+     * @param index the index.
+     * @return the CPUTF8 value.
+     */
     public CPUTF8 cpUTF8Value(final int index) {
         final String string = cpUTF8[index];
         CPUTF8 cputf8 = stringsToCPUTF8.get(string);
@@ -216,10 +305,23 @@ public class CpBands extends BandSet {
         return cputf8;
     }
 
+    /**
+     * Gets the CPUTF8 value for the specified string.
+     *
+     * @param string the string.
+     * @return the CPUTF8 value.
+     */
     public CPUTF8 cpUTF8Value(final String string) {
         return cpUTF8Value(string, true);
     }
 
+    /**
+     * Gets the CPUTF8 value for the specified string, optionally searching for index.
+     *
+     * @param string the string.
+     * @param searchForIndex whether to search for index.
+     * @return the CPUTF8 value.
+     */
     public CPUTF8 cpUTF8Value(final String string, final boolean searchForIndex) {
         CPUTF8 cputf8 = stringsToCPUTF8.get(string);
         if (cputf8 == null) {
@@ -242,54 +344,119 @@ public class CpBands extends BandSet {
         return cputf8;
     }
 
+    /**
+     * Gets the constant pool.
+     *
+     * @return the constant pool.
+     */
     public SegmentConstantPool getConstantPool() {
         return pool;
     }
 
+    /**
+     * Gets the cpClass array.
+     *
+     * @return the cpClass array.
+     */
     public String[] getCpClass() {
         return cpClass;
     }
 
+    /**
+     * Gets the cpDescriptor array.
+     *
+     * @return the cpDescriptor array.
+     */
     public String[] getCpDescriptor() {
         return cpDescriptor;
     }
 
+    /**
+     * Gets the cpDescriptorNameInts array.
+     *
+     * @return the cpDescriptorNameInts array.
+     */
     public int[] getCpDescriptorNameInts() {
         return cpDescriptorNameInts;
     }
 
+    /**
+     * Gets the cpDescriptorTypeInts array.
+     *
+     * @return the cpDescriptorTypeInts array.
+     */
     public int[] getCpDescriptorTypeInts() {
         return cpDescriptorTypeInts;
     }
 
+    /**
+     * Gets the cpFieldClass array.
+     *
+     * @return the cpFieldClass array.
+     */
     public String[] getCpFieldClass() {
         return cpFieldClass;
     }
 
+    /**
+     * Gets the cpIMethodClass array.
+     *
+     * @return the cpIMethodClass array.
+     */
     public String[] getCpIMethodClass() {
         return cpIMethodClass;
     }
 
+    /**
+     * Gets the cpInt array.
+     *
+     * @return the cpInt array.
+     */
     public int[] getCpInt() {
         return cpInt;
     }
 
+    /**
+     * Gets the cpLong array.
+     *
+     * @return the cpLong array.
+     */
     public long[] getCpLong() {
         return cpLong;
     }
 
+    /**
+     * Gets the cpMethodClass array.
+     *
+     * @return the cpMethodClass array.
+     */
     public String[] getCpMethodClass() {
         return cpMethodClass;
     }
 
+    /**
+     * Gets the cpMethodDescriptor array.
+     *
+     * @return the cpMethodDescriptor array.
+     */
     public String[] getCpMethodDescriptor() {
         return cpMethodDescriptor;
     }
 
+    /**
+     * Gets the cpSignature array.
+     *
+     * @return the cpSignature array.
+     */
     public String[] getCpSignature() {
         return cpSignature;
     }
 
+    /**
+     * Gets the cpUTF8 array.
+     *
+     * @return the cpUTF8 array.
+     */
     public String[] getCpUTF8() {
         return cpUTF8;
     }

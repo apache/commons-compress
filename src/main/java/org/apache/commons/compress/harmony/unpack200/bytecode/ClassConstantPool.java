@@ -41,7 +41,7 @@ public class ClassConstantPool {
      * Set containing all constant pool entries.
      */
     protected HashSet<ClassFileEntry> entriesContainsSet = new HashSet<>();
-    
+
     /**
      * Set containing other entries that are not in the constant pool.
      */

@@ -35,19 +35,44 @@ import java.util.Objects;
 public class IcTuple {
 
     private static final String[] EMPTY_STRING_ARRAY = {};
+
+    /**
+     * Nested class flag.
+     */
     public static final int NESTED_CLASS_FLAG = 0x00010000;
+
+    /**
+     * Empty IcTuple array.
+     */
     static final IcTuple[] EMPTY_ARRAY = {};
+
     private final int cIndex;
     private final int c2Index;
 
     private final int nIndex;
 
     private final int tIndex;
-    protected String C; // this class
 
-    protected int F; // flags
-    protected String C2; // outer class
-    protected String N; // name
+    /**
+     * This class name.
+     */
+    protected String C;
+
+    /**
+     * Flags.
+     */
+    protected int F;
+
+    /**
+     * Outer class name.
+     */
+    protected String C2;
+
+    /**
+     * Simple class name.
+     */
+    protected String N;
+
     private boolean predictSimple;
 
     private boolean predictOuter;
@@ -64,15 +89,16 @@ public class IcTuple {
     private int cachedHashCode;
 
     /**
+     * Constructs a new instance.
      *
-     * @param C       TODO
-     * @param F       TODO
-     * @param C2      TODO
-     * @param N       TODO
-     * @param cIndex  the index of C in cpClass
-     * @param c2Index the index of C2 in cpClass, or -1 if C2 is null
-     * @param nIndex  the index of N in cpUTF8, or -1 if N is null
-     * @param tIndex  TODO
+     * @param C       this class name.
+     * @param F       flags.
+     * @param C2      outer class name.
+     * @param N       simple class name.
+     * @param cIndex  the index of C in cpClass.
+     * @param c2Index the index of C2 in cpClass, or -1 if C2 is null.
+     * @param nIndex  the index of N in cpUTF8, or -1 if N is null.
+     * @param tIndex  the tuple index.
      */
     public IcTuple(final String C, final int F, final String C2, final String N, final int cIndex, final int c2Index, final int nIndex, final int tIndex) {
         this.C = C;
@@ -130,22 +156,47 @@ public class IcTuple {
         }
     }
 
+    /**
+     * Gets the this class name (C).
+     *
+     * @return the this class name.
+     */
     public String getC() {
         return C;
     }
 
+    /**
+     * Gets the outer class name (C2).
+     *
+     * @return the outer class name.
+     */
     public String getC2() {
         return C2;
     }
 
+    /**
+     * Gets the flags (F).
+     *
+     * @return the flags.
+     */
     public int getF() {
         return F;
     }
 
+    /**
+     * Gets the simple class name (N).
+     *
+     * @return the simple class name.
+     */
     public String getN() {
         return N;
     }
 
+    /**
+     * Gets the tuple index.
+     *
+     * @return the tuple index.
+     */
     public int getTupleIndex() {
         return tIndex;
     }
@@ -263,10 +314,20 @@ public class IcTuple {
         return true;
     }
 
+    /**
+     * Tests whether this is an anonymous inner class.
+     *
+     * @return true if this is an anonymous inner class.
+     */
     public boolean isAnonymous() {
         return anonymous;
     }
 
+    /**
+     * Tests whether this is a member class.
+     *
+     * @return true if this is a member class.
+     */
     public boolean isMember() {
         return member;
     }
@@ -280,6 +341,13 @@ public class IcTuple {
         return (F & NESTED_CLASS_FLAG) == NESTED_CLASS_FLAG;
     }
 
+    /**
+     * Tests whether the two strings are equal, treating null values as equal to each other.
+     *
+     * @param stringOne the first string.
+     * @param stringTwo the second string.
+     * @return true if the strings are equal or both null.
+     */
     public boolean nullSafeEquals(final String stringOne, final String stringTwo) {
         if (null == stringOne) {
             return null == stringTwo;
@@ -287,6 +355,11 @@ public class IcTuple {
         return stringOne.equals(stringTwo);
     }
 
+    /**
+     * Gets the outer class index.
+     *
+     * @return the outer class index.
+     */
     public int outerClassIndex() {
         return cachedOuterClassIndex;
     }
@@ -300,12 +373,17 @@ public class IcTuple {
         return cachedOuterClassString;
     }
 
+    /**
+     * Tests whether the outer class is anonymous.
+     *
+     * @return true if the outer class is anonymous.
+     */
     public boolean outerIsAnonymous() {
         return outerIsAnonymous;
     }
 
     /**
-     * Answer true if the receiver is predicted; answer false if the receiver is specified explicitly in the outer and name fields.
+     * Tests whether the receiver is predicted; answer false if the receiver is specified explicitly in the outer and name fields.
      *
      * @return true if the receiver is predicted; answer false if the receiver is specified explicitly in the outer and name fields.
      */
@@ -314,7 +392,7 @@ public class IcTuple {
     }
 
     /**
-     * Answer the inner class name for the receiver.
+     * Gets the inner class name for the receiver.
      *
      * @return String name of inner class
      */
@@ -322,10 +400,20 @@ public class IcTuple {
         return cachedSimpleClassName;
     }
 
+    /**
+     * Gets the simple class name index.
+     *
+     * @return the simple class name index.
+     */
     public int simpleClassNameIndex() {
         return cachedSimpleClassNameIndex;
     }
 
+    /**
+     * Gets the this class index.
+     *
+     * @return the this class index, or -1 if not predicted.
+     */
     public int thisClassIndex() {
         if (predicted()) {
             return cIndex;
