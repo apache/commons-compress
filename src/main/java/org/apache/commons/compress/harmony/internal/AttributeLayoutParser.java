@@ -125,6 +125,12 @@ public final class AttributeLayoutParser<T> {
     private int p;
     private int depth;
 
+    /**
+     * Constructs a new instance.
+     *
+     * @param definition the attribute layout definition.
+     * @param factory the factory for creating layout elements.
+     */
     public AttributeLayoutParser(final CharSequence definition, final Factory<T> factory) {
         this.definition = definition;
         this.factory = factory;

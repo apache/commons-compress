@@ -128,16 +128,32 @@ public class AttributeLayoutMap {
 
     private final Map<AttributeLayout, NewAttributeBands> layoutsToBands = new HashMap<>();
 
+    /**
+     * Constructs a new instance with default values.
+     *
+     * @throws Pack200Exception if an error occurs.
+     */
     public AttributeLayoutMap() throws Pack200Exception {
         for (final AttributeLayout defaultAttributeLayout : getDefaultAttributeLayouts()) {
             add(defaultAttributeLayout);
         }
     }
 
+    /**
+     * Adds an attribute layout to this map.
+     *
+     * @param layout the attribute layout to add.
+     */
     public void add(final AttributeLayout layout) {
         getLayout(layout.getContext()).put(Integer.valueOf(layout.getIndex()), layout);
     }
 
+    /**
+     * Adds an attribute layout and associates it with new attribute bands.
+     *
+     * @param layout the attribute layout to add.
+     * @param newBands the new attribute bands.
+     */
     public void add(final AttributeLayout layout, final NewAttributeBands newBands) {
         add(layout);
         layoutsToBands.put(layout, newBands);
@@ -168,15 +184,35 @@ public class AttributeLayoutMap {
         }
     }
 
+    /**
+     * Gets the attribute bands for the given layout.
+     *
+     * @param layout the attribute layout.
+     * @return the attribute bands.
+     */
     public NewAttributeBands getAttributeBands(final AttributeLayout layout) {
         return layoutsToBands.get(layout);
     }
 
+    /**
+     * Gets the attribute layout for the given index and context.
+     *
+     * @param index the index.
+     * @param context the context.
+     * @return the attribute layout.
+     */
     public AttributeLayout getAttributeLayout(final int index, final int context) {
         final Map<Integer, AttributeLayout> map = getLayout(context);
         return map.get(Integer.valueOf(index));
     }
 
+    /**
+     * Gets the attribute layout for the given name and context.
+     *
+     * @param name the attribute name.
+     * @param context the context.
+     * @return the attribute layout, or null if not found.
+     */
     public AttributeLayout getAttributeLayout(final String name, final int context) {
         final Map<Integer, AttributeLayout> map = getLayout(context);
         for (final AttributeLayout layout : map.values()) {

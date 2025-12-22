@@ -23,6 +23,12 @@ package org.apache.commons.compress.harmony.unpack200;
  */
 public interface IMatcher {
 
+    /**
+     * Tests whether the given value matches.
+     *
+     * @param value the value to test.
+     * @return true if the value matches, false otherwise.
+     */
     boolean matches(long value);
 
 }

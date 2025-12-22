@@ -124,86 +124,191 @@ public class BcBands extends BandSet {
         return codePacked >= 54 && codePacked <= 58;
     }
 
+    /**
+     * Gets the bcByte array.
+     *
+     * @return the bcByte array.
+     */
     public int[] getBcByte() {
         return bcByte;
     }
 
+    /**
+     * Gets the bcCaseCount array.
+     *
+     * @return the bcCaseCount array.
+     */
     public int[] getBcCaseCount() {
         return bcCaseCount;
     }
 
+    /**
+     * Gets the bcCaseValue array.
+     *
+     * @return the bcCaseValue array.
+     */
     public int[] getBcCaseValue() {
         return bcCaseValue;
     }
 
+    /**
+     * Gets the bcClassRef array.
+     *
+     * @return the bcClassRef array.
+     */
     public int[] getBcClassRef() {
         return bcClassRef;
     }
 
+    /**
+     * Gets the bcDoubleRef array.
+     *
+     * @return the bcDoubleRef array.
+     */
     public int[] getBcDoubleRef() {
         return bcDoubleRef;
     }
 
+    /**
+     * Gets the bcFieldRef array.
+     *
+     * @return the bcFieldRef array.
+     */
     public int[] getBcFieldRef() {
         return bcFieldRef;
     }
 
+    /**
+     * Gets the bcFloatRef array.
+     *
+     * @return the bcFloatRef array.
+     */
     public int[] getBcFloatRef() {
         return bcFloatRef;
     }
 
+    /**
+     * Gets the bcIMethodRef array.
+     *
+     * @return the bcIMethodRef array.
+     */
     public int[] getBcIMethodRef() {
         return bcIMethodRef;
     }
 
+    /**
+     * Gets the bcInitRef array.
+     *
+     * @return the bcInitRef array.
+     */
     public int[] getBcInitRef() {
         return bcInitRef;
     }
 
+    /**
+     * Gets the bcIntRef array.
+     *
+     * @return the bcIntRef array.
+     */
     public int[] getBcIntRef() {
         return bcIntRef;
     }
 
+    /**
+     * Gets the bcLabel array.
+     *
+     * @return the bcLabel array.
+     */
     public int[] getBcLabel() {
         return bcLabel;
     }
 
+    /**
+     * Gets the bcLocal array.
+     *
+     * @return the bcLocal array.
+     */
     public int[] getBcLocal() {
         return bcLocal;
     }
 
+    /**
+     * Gets the bcLongRef array.
+     *
+     * @return the bcLongRef array.
+     */
     public int[] getBcLongRef() {
         return bcLongRef;
     }
 
+    /**
+     * Gets the bcMethodRef array.
+     *
+     * @return the bcMethodRef array.
+     */
     public int[] getBcMethodRef() {
         return bcMethodRef;
     }
 
+    /**
+     * Gets the bcShort array.
+     *
+     * @return the bcShort array.
+     */
     public int[] getBcShort() {
         return bcShort;
     }
 
+    /**
+     * Gets the bcStringRef array.
+     *
+     * @return the bcStringRef array.
+     */
     public int[] getBcStringRef() {
         return bcStringRef;
     }
 
+    /**
+     * Gets the bcSuperField array.
+     *
+     * @return the bcSuperField array.
+     */
     public int[] getBcSuperField() {
         return bcSuperField;
     }
 
+    /**
+     * Gets the bcSuperMethod array.
+     *
+     * @return the bcSuperMethod array.
+     */
     public int[] getBcSuperMethod() {
         return bcSuperMethod;
     }
 
+    /**
+     * Gets the bcThisField array.
+     *
+     * @return the bcThisField array.
+     */
     public int[] getBcThisField() {
         return bcThisField;
     }
 
+    /**
+     * Gets the bcThisMethod array.
+     *
+     * @return the bcThisMethod array.
+     */
     public int[] getBcThisMethod() {
         return bcThisMethod;
     }
 
+    /**
+     * Gets the method bytecode packed data.
+     *
+     * @return the method bytecode packed data.
+     */
     public byte[][][] getMethodByteCodePacked() {
         return methodByteCodePacked;
     }

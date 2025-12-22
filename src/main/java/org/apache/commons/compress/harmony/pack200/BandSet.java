@@ -195,6 +195,9 @@ public abstract class BandSet {
     // Note: these values have been tuned - please test carefully if changing them
     private static final int[] effortThresholds = { 0, 0, 1000, 500, 100, 100, 100, 100, 100, 0 };
 
+    /**
+     * The segment header for this band set.
+     */
     protected final SegmentHeader segmentHeader;
     final int effort;
 
@@ -486,6 +489,17 @@ public abstract class BandSet {
 //        }
 //    }
 
+    /**
+     * Encodes flags using the given codecs.
+     *
+     * @param name the name of the band.
+     * @param flags the flags to encode.
+     * @param loCodec the low codec.
+     * @param hiCodec the high codec.
+     * @param haveHiFlags whether high flags are present.
+     * @return the encoded flags.
+     * @throws Pack200Exception if an error occurs.
+     */
     protected byte[] encodeFlags(final String name, final long[][] flags, final BHSDCodec loCodec, final BHSDCodec hiCodec, final boolean haveHiFlags)
             throws Pack200Exception {
         return encodeFlags(name, flatten(flags), loCodec, hiCodec, haveHiFlags);
