@@ -125,7 +125,9 @@ public class ClassBands extends BandSet {
     private boolean[] codeHasAttributes;
 
     /**
-     * @param segment TODO
+     * Constructs a new ClassBands instance.
+     *
+     * @param segment the segment.
      */
     public ClassBands(final Segment segment) {
         super(segment);

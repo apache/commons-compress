@@ -72,6 +72,12 @@ public class CodecEncoding {
         canonicalCodecsToSpecifiers = reverseMap;
     }
 
+    /**
+     * Gets the canonical codec for the given index.
+     *
+     * @param i the index.
+     * @return the canonical codec.
+     */
     public static BHSDCodec getCanonicalCodec(final int i) {
         return canonicalCodec[i];
     }
@@ -179,6 +185,13 @@ public class CodecEncoding {
         return new PopulationCodec(fCodec, tCodec, uCodec);
     }
 
+    /**
+     * Gets the specifier for the given codec and default for band.
+     *
+     * @param codec the codec.
+     * @param defaultForBand the default for band.
+     * @return the specifier array.
+     */
     public static int[] getSpecifier(final Codec codec, final Codec defaultForBand) {
         if (canonicalCodecsToSpecifiers.containsKey(codec)) {
             return new int[] { canonicalCodecsToSpecifiers.get(codec).intValue() };
@@ -288,7 +301,22 @@ public class CodecEncoding {
         return null;
     }
 
+    /**
+     * Gets the specifier for the default codec.
+     *
+     * @param defaultCodec the default codec.
+     * @return the specifier.
+     */
     public static int getSpecifierForDefaultCodec(final BHSDCodec defaultCodec) {
         return getSpecifier(defaultCodec, null)[0];
+    }
+
+    /**
+     * Constructs a new instance.
+     *
+     * @deprecated Will be removed in 4.0.
+     */
+    @Deprecated
+    public CodecEncoding() {
     }
 }

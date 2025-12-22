@@ -48,35 +48,67 @@ public class FileBands extends BandSet {
     private InputStream in;
 
     /**
-     * @param segment TODO
+     * Constructs a new FileBands instance.
+     *
+     * @param segment the segment.
      */
     public FileBands(final Segment segment) {
         super(segment);
         this.cpUTF8 = segment.getCpBands().getCpUTF8();
     }
 
+    /**
+     * Gets the file bits.
+     *
+     * @return the file bits.
+     */
     public byte[][] getFileBits() {
         return fileBits;
     }
 
+    /**
+     * Gets the file modification times.
+     *
+     * @return the file modification times.
+     */
     public int[] getFileModtime() {
         return fileModtime;
     }
 
+    /**
+     * Gets the file names.
+     *
+     * @return the file names.
+     */
     public String[] getFileName() {
         return fileName;
     }
 
+    /**
+     * Gets the file options.
+     *
+     * @return the file options.
+     */
     public int[] getFileOptions() {
         return fileOptions;
     }
 
+    /**
+     * Gets the file sizes.
+     *
+     * @return the file sizes.
+     */
     public long[] getFileSize() {
         return fileSize;
     }
 
-    // TODO: stream the file bits directly somehow
+    /**
+     * Processes the file bits.
+     *
+     * @throws IOException if an I/O error occurs.
+     */
     public void processFileBits() throws IOException {
+        // TODO: stream the file bits directly somehow
         // now read in the bytes
         final int numberOfFiles = header.getNumberOfFiles();
         fileBits = new byte[numberOfFiles][];

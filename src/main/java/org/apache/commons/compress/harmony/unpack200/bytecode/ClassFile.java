@@ -81,6 +81,12 @@ public class ClassFile {
     public Attribute[] attributes;
 
     /**
+     * Constructs a new ClassFile.
+     */
+    public ClassFile() {
+    }
+
+    /**
      * Writes this class file to the specified output stream.
      *
      * @param dos the data output stream.

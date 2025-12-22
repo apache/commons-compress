@@ -29,6 +29,12 @@ public abstract class ConstantPoolEntry {
     private int index = -1;
 
     /**
+     * Constructs a new ConstantPoolEntry.
+     */
+    public ConstantPoolEntry() {
+    }
+
+    /**
      * Gets the index.
      *
      * @return the index.
