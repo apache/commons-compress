@@ -126,6 +126,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Deprecate org.apache.commons.compress.archivers.zip.ZipEncodingHelper.ZipEncodingHelper().</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Deprecate org.apache.commons.compress.archivers.zip.ZipUtil.ZipUtil().</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Deprecate org.apache.commons.compress.compressors.zstandard.ZstdConstants.ZstdConstants().</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">Deprecate org.apache.commons.compress.harmony.archive.internal.nls.Messages.Messages().</action>
       <!-- ADD -->
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add MemoryLimitException.MemoryLimitException(long, long).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add CompressException.CompressException(String, Object...).</action>
