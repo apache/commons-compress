@@ -369,12 +369,12 @@ public class ClassBands extends BandSet {
     /**
      * Adds a class.
      *
-     * @param major the major version
-     * @param flags the class flags
-     * @param className the class name
-     * @param signature the signature
-     * @param superName the super class name
-     * @param interfaces the implemented interfaces
+     * @param major the major version.
+     * @param flags the class flags.
+     * @param className the class name.
+     * @param signature the signature.
+     * @param superName the super class name.
+     * @param interfaces the implemented interfaces.
      */
     public void addClass(final int major, final int flags, final String className, final String signature, final String superName, final String[] interfaces) {
         class_this[index] = cpBands.getCPClass(className);

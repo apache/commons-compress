@@ -383,6 +383,11 @@ public abstract class ByteCodeForm {
         operandLength = difference + 1;
     }
 
+    /**
+     * Gets the first operand index.
+     *
+     * @return the first operand index.
+     */
     public int firstOperandIndex() {
         return firstOperandIndex;
     }
@@ -459,6 +464,11 @@ public abstract class ByteCodeForm {
         return false;
     }
 
+    /**
+     * Tests whether nested entries must start in the class pool.
+     *
+     * @return true if nested must start in class pool.
+     */
     public boolean nestedMustStartClassPool() {
         return false;
     }
@@ -475,8 +485,8 @@ public abstract class ByteCodeForm {
     /**
      * Sets the rewrite of the byteCode.
      *
-     * @param byteCode       ByteCode to be updated (!)
-     * @param operandManager OperandTable from which to draw info
+     * @param byteCode       ByteCode to be updated (!).
+     * @param operandManager OperandTable from which to draw info.
      * @param codeLength     Length of bytes (excluding this bytecode) from the beginning of the method. Used in calculating padding for some variable-length
      *                       bytecodes (such as lookupswitch, tableswitch).
      * @throws Pack200Exception if a type is not supported or an index not in the range [0, {@link Integer#MAX_VALUE}].

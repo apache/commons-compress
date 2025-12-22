@@ -37,11 +37,21 @@ import org.apache.commons.compress.harmony.unpack200.Segment;
  */
 public class ClassConstantPool {
 
+    /**
+     * Set containing all constant pool entries.
+     */
     protected HashSet<ClassFileEntry> entriesContainsSet = new HashSet<>();
+    
+    /**
+     * Set containing other entries that are not in the constant pool.
+     */
     protected HashSet<ClassFileEntry> othersContainsSet = new HashSet<>();
 
     private final HashSet<ClassFileEntry> mustStartClassPool = new HashSet<>();
 
+    /**
+     * Index cache for fast lookup of entry positions.
+     */
     protected Map<ClassFileEntry, Integer> indexCache;
 
     private final List<ClassFileEntry> others = new ArrayList<>(500);
@@ -49,6 +59,19 @@ public class ClassConstantPool {
 
     private boolean resolved;
 
+    /**
+     * Constructs a new instance.
+     */
+    public ClassConstantPool() {
+        // Default constructor
+    }
+
+    /**
+     * Adds a class file entry to the constant pool.
+     *
+     * @param entry the entry to add.
+     * @return the added entry, or null if it's a ByteCode.
+     */
     public ClassFileEntry add(final ClassFileEntry entry) {
         if (entry instanceof ByteCode) {
             return null;
@@ -64,6 +87,9 @@ public class ClassConstantPool {
         return entry;
     }
 
+    /**
+     * Adds nested entries from all current entries in the pool.
+     */
     public void addNestedEntries() {
         boolean added = true;
 
@@ -112,6 +138,12 @@ public class ClassConstantPool {
         }
     }
 
+    /**
+     * Adds an entry along with all its nested entries recursively.
+     *
+     * @param entry the entry to add.
+     * @return the added entry.
+     */
     public ClassFileEntry addWithNestedEntries(final ClassFileEntry entry) {
         add(entry);
         for (final ClassFileEntry nestedEntry : entry.getNestedClassFileEntries()) {
@@ -120,10 +152,22 @@ public class ClassConstantPool {
         return entry;
     }
 
+    /**
+     * Gets an unmodifiable list of all entries.
+     *
+     * @return the list of entries.
+     */
     public List<ClassFileEntry> entries() {
         return Collections.unmodifiableList(entries);
     }
 
+    /**
+     * Gets the entry at the specified index (1-based).
+     *
+     * @param i the index (1-based).
+     * @return the entry at the index.
+     * @throws IllegalStateException if pool is not resolved.
+     */
     public ClassFileEntry get(int i) {
         if (!resolved) {
             throw new IllegalStateException("Constant pool is not yet resolved; this does not make any sense");
@@ -131,6 +175,13 @@ public class ClassConstantPool {
         return entries.get(--i);
     }
 
+    /**
+     * Gets the index of the given entry in the constant pool (1-based).
+     *
+     * @param entry the entry to find.
+     * @return the 1-based index, or -1 if not found.
+     * @throws IllegalStateException if pool is not resolved.
+     */
     public int indexOf(final ClassFileEntry entry) {
         if (!resolved) {
             throw new IllegalStateException("Constant pool is not yet resolved; this does not make any sense");
@@ -170,6 +221,11 @@ public class ClassConstantPool {
         entries.addAll(cpClassesNotInCpAll);
     }
 
+    /**
+     * Resolves all entries in the constant pool.
+     *
+     * @param segment the segment.
+     */
     public void resolve(final Segment segment) {
         initialSort();
         sortClassPool();
@@ -180,10 +236,20 @@ public class ClassConstantPool {
         others.forEach(entry -> entry.resolve(this));
     }
 
+    /**
+     * Gets the number of entries in the constant pool.
+     *
+     * @return the size of the pool.
+     */
     public int size() {
         return entries.size();
     }
 
+
+    /**
+     * Finalizes the sorting of the class pool, ensuring that all entries are in their
+     * correct order and that the index cache is up to date.
+     */
     protected void sortClassPool() {
         // Now that everything has been resolved, do one
         // final sort of the class pool. This fixes up
