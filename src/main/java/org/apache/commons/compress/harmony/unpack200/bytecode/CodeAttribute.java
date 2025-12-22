@@ -136,6 +136,11 @@ public class CodeAttribute extends BCIRenumberedAttribute {
         }
     }
 
+    /**
+     * Adds an attribute to this code attribute.
+     *
+     * @param attribute the attribute to add.
+     */
     public void addAttribute(final Attribute attribute) {
         attributes.add(attribute);
         if (attribute instanceof LocalVariableTableAttribute) {

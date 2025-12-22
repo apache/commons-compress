@@ -74,6 +74,12 @@ public class IntList {
         return true;
     }
 
+    /**
+     * Adds an integer at the specified location.
+     *
+     * @param location the location.
+     * @param object the integer to add.
+     */
     public void add(final int location, final int object) {
         final int size = lastIndex - firstIndex;
         if (0 < location && location < size) {
@@ -104,6 +110,11 @@ public class IntList {
         modCount++;
     }
 
+    /**
+     * Adds all integers from the specified list.
+     *
+     * @param list the list to add.
+     */
     public void addAll(final IntList list) {
         growAtEnd(list.size());
         for (int i = 0; i < list.size(); i++) {
@@ -111,6 +122,9 @@ public class IntList {
         }
     }
 
+    /**
+     * Clears all integers from this list.
+     */
     public void clear() {
         if (firstIndex != lastIndex) {
             Arrays.fill(array, firstIndex, lastIndex, -1);
@@ -119,6 +133,12 @@ public class IntList {
         }
     }
 
+    /**
+     * Gets the integer at the specified location.
+     *
+     * @param location the location.
+     * @return the integer at the location.
+     */
     public int get(final int location) {
         if (0 <= location && location < lastIndex - firstIndex) {
             return array[firstIndex + location];
@@ -185,6 +205,11 @@ public class IntList {
         array = newArray;
     }
 
+    /**
+     * Increments the integer at the specified location.
+     *
+     * @param location the location.
+     */
     public void increment(final int location) {
         if (0 > location || location >= lastIndex - firstIndex) {
             throw new IndexOutOfBoundsException("" + location);
@@ -192,10 +217,21 @@ public class IntList {
         array[firstIndex + location]++;
     }
 
+    /**
+     * Tests whether this list is empty.
+     *
+     * @return true if this list is empty.
+     */
     public boolean isEmpty() {
         return lastIndex == firstIndex;
     }
 
+    /**
+     * Removes and returns the integer at the specified location.
+     *
+     * @param location the location.
+     * @return the integer that was removed.
+     */
     public int remove(final int location) {
         final int result;
         final int size = lastIndex - firstIndex;
@@ -227,10 +263,20 @@ public class IntList {
         return result;
     }
 
+    /**
+     * Gets the number of integers in this list.
+     *
+     * @return the size of the list.
+     */
     public int size() {
         return lastIndex - firstIndex;
     }
 
+    /**
+     * Converts this list to an array.
+     *
+     * @return an array containing all integers in this list.
+     */
     public int[] toArray() {
         final int size = lastIndex - firstIndex;
         final int[] result = new int[size];
