@@ -35,7 +35,12 @@ public class CPMember extends ClassFileEntry {
     short flags;
     CPUTF8 name;
     transient int nameIndex;
+
+    /**
+     * The member descriptor.
+     */
     protected final CPUTF8 descriptor;
+
     transient int descriptorIndex;
 
     /**
