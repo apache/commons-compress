@@ -84,7 +84,7 @@ abstract class AbstractCoder {
     /**
      * Gets configuration options that have been used to create the given InputStream from the given Coder.
      *
-     * @return configuration options that have been used to create the given InputStream from the given Coder
+     * @return configuration options that have been used to create the given InputStream from the given Coder.
      * @throws IOException Optionally thrown by subclassses.
      */
     Object getOptionsFromCoder(final Coder coder, final InputStream in) throws IOException {
