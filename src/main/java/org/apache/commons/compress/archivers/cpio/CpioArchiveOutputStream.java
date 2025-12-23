@@ -103,7 +103,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
     /**
      * Constructs the cpio output stream. The format for this CPIO stream is the "new" format using ASCII encoding for file names
      *
-     * @param out The cpio stream
+     * @param out The cpio stream.
      */
     public CpioArchiveOutputStream(final OutputStream out) {
         this(out, FORMAT_NEW);
@@ -113,8 +113,8 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
      * Constructs the cpio output stream with a specified format, a blocksize of {@link CpioConstants#BLOCK_SIZE BLOCK_SIZE} and using ASCII as the file name
      * encoding.
      *
-     * @param out    The cpio stream
-     * @param format The format of the stream
+     * @param out    The cpio stream.
+     * @param format The format of the stream.
      */
     public CpioArchiveOutputStream(final OutputStream out, final short format) {
         this(out, format, BLOCK_SIZE, CpioUtil.DEFAULT_CHARSET.name());
@@ -123,8 +123,8 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
     /**
      * Constructs the cpio output stream with a specified format using ASCII as the file name encoding.
      *
-     * @param out       The cpio stream
-     * @param format    The format of the stream
+     * @param out       The cpio stream.
+     * @param format    The format of the stream.
      * @param blockSize The block size of the archive.
      * @since 1.1
      */
@@ -135,8 +135,8 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
     /**
      * Constructs the cpio output stream with a specified format using ASCII as the file name encoding.
      *
-     * @param out       The cpio stream
-     * @param format    The format of the stream
+     * @param out       The cpio stream.
+     * @param format    The format of the stream.
      * @param blockSize The block size of the archive.
      * @param encoding  The encoding of file names to write - use null for the platform's default.
      * @since 1.6
@@ -162,7 +162,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
     /**
      * Constructs the cpio output stream. The format for this CPIO stream is the "new" format.
      *
-     * @param out      The cpio stream
+     * @param out      The cpio stream.
      * @param encoding The encoding of file names to write - use null for the platform's default.
      * @since 1.6
      */
@@ -173,7 +173,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
     /**
      * Closes the CPIO output stream as well as the stream being filtered.
      *
-     * @throws IOException if an I/O error has occurred or if a CPIO file error has occurred
+     * @throws IOException if an I/O error has occurred or if a CPIO file error has occurred.
      */
     @Override
     public void close() throws IOException {
@@ -189,7 +189,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
     /*
      * (non-Javadoc)
      *
-     * @see org.apache.commons.compress.archivers.ArchiveOutputStream#closeArchiveEntry ()
+     * @see org.apache.commons.compress.archivers.ArchiveOutputStream#closeArchiveEntry()
      */
     @Override
     public void closeArchiveEntry() throws IOException {
@@ -236,9 +236,9 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
     /**
      * Encodes the given string using the configured encoding.
      *
-     * @param str the String to write
-     * @throws IOException if the string couldn't be written
-     * @return result of encoding the string
+     * @param str the String to write.
+     * @throws IOException if the string couldn't be written.
+     * @return result of encoding the string.
      */
     private byte[] encode(final String str) throws IOException {
         final ByteBuffer buf = zipEncoding.encode(str);
@@ -250,7 +250,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
      * Finishes writing the contents of the CPIO output stream without closing the underlying stream. Use this method when applying multiple filters in
      * succession to the same output stream.
      *
-     * @throws IOException if an I/O exception has occurred or if a CPIO file error has occurred
+     * @throws IOException if an I/O exception has occurred or if a CPIO file error has occurred.
      */
     @Override
     public void finish() throws IOException {
@@ -282,9 +282,9 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
      * Begins writing a new CPIO file entry and positions the stream to the start of the entry data. Closes the current entry if still active. The current time
      * will be used if the entry has no set modification time and the default header format will be used if no other format is specified in the entry.
      *
-     * @param entry the CPIO cpioEntry to be written
-     * @throws IOException        if an I/O error has occurred or if a CPIO file error has occurred
-     * @throws ClassCastException if entry is not an instance of CpioArchiveEntry
+     * @param entry the CPIO cpioEntry to be written.
+     * @throws IOException        if an I/O error has occurred or if a CPIO file error has occurred.
+     * @throws ClassCastException if entry is not an instance of CpioArchiveEntry.
      */
     @Override
     public void putArchiveEntry(final CpioArchiveEntry entry) throws IOException {
@@ -311,12 +311,12 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
     /**
      * Writes an array of bytes to the current CPIO entry data. This method will block until all the bytes are written.
      *
-     * @param b   the data to be written
-     * @param off the start offset in the data
-     * @param len the number of bytes that are written
-     * @throws NullPointerException      if b is null
+     * @param b   the data to be written.
+     * @param off the start offset in the data.
+     * @param len the number of bytes that are written.
+     * @throws NullPointerException      if b is null.
      * @throws IndexOutOfBoundsException if {@code off} or {@code len} are negative, or if {@code off + len} is greater than {@code b.length}.
-     * @throws IOException if an I/O error has occurred or if a CPIO file error has occurred
+     * @throws IOException if an I/O error has occurred or if a CPIO file error has occurred.
      */
     @Override
     public void write(final byte[] b, final int off, final int len) throws IOException {
@@ -374,8 +374,8 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
     /**
      * Writes an encoded string to the stream followed by \0
      *
-     * @param str the String to write
-     * @throws IOException if the string couldn't be written
+     * @param str the String to write.
+     * @throws IOException if the string couldn't be written.
      */
     private void writeCString(final byte[] str) throws IOException {
         out.write(str);
