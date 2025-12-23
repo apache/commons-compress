@@ -41,10 +41,27 @@ public class SegmentConstantPoolArrayCache {
      * which contain that value.
      */
     protected class CachedArray {
+
+        /**
+         * The primary array.
+         */
         String[] primaryArray;
+
+        /**
+         * The last known size.
+         */
         int lastKnownSize;
+
+        /**
+         * The primary table.
+         */
         HashMap<String, List<Integer>> primaryTable;
 
+        /**
+         * Constructs a new CachedArray.
+         *
+         * @param array the array to cache.
+         */
         public CachedArray(final String[] array) {
             this.primaryArray = array;
             this.lastKnownSize = array.length;
@@ -93,6 +110,12 @@ public class SegmentConstantPoolArrayCache {
     protected String lastKey;
 
     /**
+     * Constructs a new SegmentConstantPoolArrayCache.
+     */
+    public SegmentConstantPoolArrayCache() {
+    }
+
+    /**
      * Tests whether a String array is correctly cached. Return false if the array is not cached, or if the array cache is outdated.
      *
      * @param array of String
@@ -118,11 +141,11 @@ public class SegmentConstantPoolArrayCache {
     }
 
     /**
-     * Gets the indices for the given key in the given array. If no such key exists in the cached array, answer -1.
+     * Gets the indexes for the given key in the given array.
      *
-     * @param array String[] array to search for the value
-     * @param key   String value for which to search
-     * @return List collection of index positions in the array
+     * @param array the array.
+     * @param key the key.
+     * @return the list of indexes.
      */
     public List<Integer> indexesForArrayKey(final String[] array, final String key) {
         if (!arrayIsCached(array)) {
