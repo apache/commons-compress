@@ -53,18 +53,38 @@ public class MetadataBandGroup {
     private static CPUTF8 rvpaUTF8;
     private static CPUTF8 ripaUTF8;
 
+    /**
+     * Sets the RIA attribute name.
+     *
+     * @param cpUTF8Value the attribute name.
+     */
     public static void setRiaAttributeName(final CPUTF8 cpUTF8Value) {
         riaUTF8 = cpUTF8Value;
     }
 
+    /**
+     * Sets the RIPA attribute name.
+     *
+     * @param cpUTF8Value the attribute name.
+     */
     public static void setRipaAttributeName(final CPUTF8 cpUTF8Value) {
         ripaUTF8 = cpUTF8Value;
     }
 
+    /**
+     * Sets the RVA attribute name.
+     *
+     * @param cpUTF8Value the attribute name.
+     */
     public static void setRvaAttributeName(final CPUTF8 cpUTF8Value) {
         rvaUTF8 = cpUTF8Value;
     }
 
+    /**
+     * Sets the RVPA attribute name.
+     *
+     * @param cpUTF8Value the attribute name.
+     */
     public static void setRvpaAttributeName(final CPUTF8 cpUTF8Value) {
         rvpaUTF8 = cpUTF8Value;
     }
@@ -195,6 +215,12 @@ public class MetadataBandGroup {
 
     private int pair_N_Index;
 
+    /**
+     * Constructs a new MetadataBandGroup.
+     *
+     * @param type the metadata type.
+     * @param cpBands the constant pool bands.
+     */
     public MetadataBandGroup(final String type, final CpBands cpBands) {
         this.type = type;
         this.cpBands = cpBands;
