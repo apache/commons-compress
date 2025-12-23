@@ -41,6 +41,11 @@ public class CPLong extends CPConstant<CPLong> {
         return Long.compare(value, obj.value);
     }
 
+    /**
+     * Gets the long value.
+     *
+     * @return the long value.
+     */
     public long getLong() {
         return value;
     }
