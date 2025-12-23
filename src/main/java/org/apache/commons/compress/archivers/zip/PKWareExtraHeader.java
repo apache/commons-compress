@@ -136,8 +136,8 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
         /**
          * Returns the EncryptionAlgorithm for the given code or null if the method is not known.
          *
-         * @param code the code of the algorithm
-         * @return the EncryptionAlgorithm for the given code or null if the method is not known
+         * @param code the code of the algorithm.
+         * @return the EncryptionAlgorithm for the given code or null if the method is not known.
          */
         public static EncryptionAlgorithm getAlgorithmByCode(final int code) {
             return codeToEnum.get(code);
@@ -155,7 +155,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
         /**
          * Gets the algorithm ID.
          *
-         * @return the PKWare AlgorithmId
+         * @return the PKWare AlgorithmId.
          */
         public int getCode() {
             return code;
@@ -222,8 +222,8 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
         /**
          * Returns the HashAlgorithm for the given code or null if the method is not known.
          *
-         * @param code the code of the algorithm
-         * @return the HashAlgorithm for the given code or null if the method is not known
+         * @param code the code of the algorithm.
+         * @return the HashAlgorithm for the given code or null if the method is not known.
          */
         public static HashAlgorithm getAlgorithmByCode(final int code) {
             return codeToEnum.get(code);
@@ -241,7 +241,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
         /**
          * Gets the hash algorithm ID.
          *
-         * @return the PKWare hashAlg
+         * @return the PKWare hashAlg.
          */
         public int getCode() {
             return code;
@@ -285,7 +285,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
     /**
      * Gets the central data.
      *
-     * @return the central data if present, else return the local file data
+     * @return the central data if present, else return the local file data.
      */
     @Override
     public byte[] getCentralDirectoryData() {
@@ -298,7 +298,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
     /**
      * Gets the central data length. If there is no central data, get the local file data length.
      *
-     * @return the central data length
+     * @return the central data length.
      */
     @Override
     public ZipShort getCentralDirectoryLength() {
@@ -311,7 +311,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
     /**
      * Gets the header id.
      *
-     * @return the header id
+     * @return the header id.
      */
     @Override
     public ZipShort getHeaderId() {
@@ -321,7 +321,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
     /**
      * Gets the local data.
      *
-     * @return the local data
+     * @return the local data.
      */
     @Override
     public byte[] getLocalFileDataData() {
@@ -367,7 +367,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
     /**
      * Sets the extra field data in central directory.
      *
-     * @param data the data to use
+     * @param data the data to use.
      */
     public void setCentralDirectoryData(final byte[] data) {
         centralData = ZipUtil.copy(data);
@@ -376,7 +376,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
     /**
      * Sets the extra field data in the local file data - without Header-ID or length specifier.
      *
-     * @param data the field data to use
+     * @param data the field data to use.
      */
     public void setLocalFileDataData(final byte[] data) {
         localData = ZipUtil.copy(data);
