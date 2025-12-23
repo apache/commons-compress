@@ -153,7 +153,7 @@ public class FixedLengthBlockOutputStream extends OutputStream implements Writab
     /**
      * Potentially pads and then writes the current block to the underlying stream.
      *
-     * @throws IOException if writing fails
+     * @throws IOException if writing fails.
      */
     public void flushBlock() throws IOException {
         if (buffer.position() != 0) {
