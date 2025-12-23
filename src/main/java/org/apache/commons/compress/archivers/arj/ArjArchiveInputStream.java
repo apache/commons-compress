@@ -178,7 +178,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
      *
      * @param inputStream the underlying stream, whose ownership is taken.
      * @param charsetName the charset used for file names and comments in the archive. May be {@code null} to use the platform default.
-     * @throws IOException if an exception occurs while reading
+     * @throws IOException if an exception occurs while reading.
      * @deprecated Since 1.29.0, use {@link #builder()}.
      */
     @Deprecated
@@ -243,7 +243,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
     /**
      * Gets the archive's comment.
      *
-     * @return the archive's comment
+     * @return the archive's comment.
      */
     public String getArchiveComment() {
         return mainHeader.comment;
@@ -252,7 +252,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
     /**
      * Gets the archive's recorded name.
      *
-     * @return the archive's name
+     * @return the archive's name.
      */
     public String getArchiveName() {
         return mainHeader.name;
