@@ -33,8 +33,8 @@ final class DumpArchiveUtil {
     /**
      * Calculate checksum for buffer.
      *
-     * @param buffer buffer containing tape segment header
-     * @return checksum
+     * @param buffer buffer containing tape segment header.
+     * @return checksum.
      */
     public static int calculateChecksum(final byte[] buffer) {
         int calc = 0;
