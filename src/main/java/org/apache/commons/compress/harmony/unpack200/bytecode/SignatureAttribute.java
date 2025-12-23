@@ -30,6 +30,11 @@ public class SignatureAttribute extends Attribute {
 
     private static CPUTF8 attributeName;
 
+    /**
+     * Sets the attribute name.
+     *
+     * @param cpUTF8Value the attribute name.
+     */
     public static void setAttributeName(final CPUTF8 cpUTF8Value) {
         attributeName = cpUTF8Value;
     }
@@ -38,6 +43,11 @@ public class SignatureAttribute extends Attribute {
 
     private final CPUTF8 signature;
 
+    /**
+     * Constructs a new SignatureAttribute.
+     *
+     * @param value the signature value.
+     */
     public SignatureAttribute(final CPUTF8 value) {
         super(attributeName);
         this.signature = value;
