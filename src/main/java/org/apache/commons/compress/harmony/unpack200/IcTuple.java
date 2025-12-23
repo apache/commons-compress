@@ -280,8 +280,8 @@ public class IcTuple {
     /**
      * Break the receiver into components at $ boundaries.
      *
-     * @param className TODO
-     * @return TODO
+     * @param className the class name to break.
+     * @return array of class name components.
      */
     public String[] innerBreakAtDollar(final String className) {
         final List<String> resultList = new ArrayList<>();
