@@ -523,7 +523,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      *
      * @deprecated This method doesn't properly work for multi-byte encodings. And creates corrupt archives. Use {@link #getHeaderPadCount(Charset)} or
      *             {@link #getHeaderPadCount(long)} in any case.
-     * @return the number of bytes needed to pad the header (0,1,2,3)
+     * @return the number of bytes needed to pad the header (0,1,2,3).
      * @throws ArchiveException if a computation overflows an {@code int}.
      */
     @Deprecated
@@ -535,7 +535,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * Gets the number of bytes needed to pad the header to the alignment boundary.
      *
      * @param charset The character set used to encode the entry name in the stream.
-     * @return the number of bytes needed to pad the header (0,1,2,3)
+     * @return the number of bytes needed to pad the header (0,1,2,3).
      * @throws ArchiveException if a computation overflows an {@code int}.
      * @since 1.18
      */
@@ -553,7 +553,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * Gets the number of bytes needed to pad the header to the alignment boundary.
      *
      * @param nameSize The length of the name in bytes, as read in the stream. Without the trailing zero byte.
-     * @return the number of bytes needed to pad the header (0,1,2,3)
+     * @return the number of bytes needed to pad the header (0,1,2,3).
      * @throws ArchiveException if a computation overflows an {@code int}.
      * @since 1.18
      */
