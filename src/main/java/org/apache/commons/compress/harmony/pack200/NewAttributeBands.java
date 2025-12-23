@@ -65,17 +65,17 @@ public class NewAttributeBands extends BandSet {
         private Integral lastPIntegral;
 
         @Override
-        public LayoutElement createCall(int callableIndex) {
+        public LayoutElement createCall(final int callableIndex) {
             return new Call(callableIndex);
         }
 
         @Override
-        public LayoutElement createCallable(List<LayoutElement> body) throws Pack200Exception {
+        public LayoutElement createCallable(final List<LayoutElement> body) throws Pack200Exception {
             return new Callable(body);
         }
 
         @Override
-        public LayoutElement createIntegral(String tag) {
+        public LayoutElement createIntegral(final String tag) {
             final Integral integral;
             if (tag.startsWith("O") || tag.startsWith("PO")) {
                 integral = new Integral(tag, lastPIntegral);
@@ -89,17 +89,18 @@ public class NewAttributeBands extends BandSet {
         }
 
         @Override
-        public LayoutElement createReference(String tag) {
+        public LayoutElement createReference(final String tag) {
             return new Reference(tag);
         }
 
         @Override
-        public LayoutElement createReplication(String unsignedInt, List<LayoutElement> body) throws Pack200Exception {
+        public LayoutElement createReplication(final String unsignedInt, final List<LayoutElement> body) throws Pack200Exception {
             return new Replication(unsignedInt, body);
         }
 
         @Override
-        public LayoutElement createUnion(String anyInt, List<UnionCaseData<LayoutElement>> cases, List<LayoutElement> body) throws Pack200Exception {
+        public LayoutElement createUnion(final String anyInt, final List<UnionCaseData<LayoutElement>> cases, final List<LayoutElement> body)
+                throws Pack200Exception {
             final List<UnionCase> unionCases = new ArrayList<>();
             for (final UnionCaseData<LayoutElement> unionCaseData : cases) {
                 unionCases.add(new UnionCase(unionCaseData.tagRanges, unionCaseData.body, false));
