@@ -31,6 +31,9 @@ public class CPClass extends ConstantPoolEntry {
 
     private int index;
 
+    /**
+     * The class name.
+     */
     public String name;
 
     private final CPUTF8 utf8;
@@ -69,6 +72,11 @@ public class CPClass extends ConstantPoolEntry {
         cachedHashCode = utf8.hashCode();
     }
 
+    /**
+     * Gets the class name.
+     *
+     * @return the class name.
+     */
     public String getName() {
         return name;
     }
