@@ -41,6 +41,11 @@ public class CPFloat extends CPConstant<CPFloat> {
         return Float.compare(value, obj.value);
     }
 
+    /**
+     * Gets the float value.
+     *
+     * @return the float value.
+     */
     public float getFloat() {
         return value;
     }
