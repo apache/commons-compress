@@ -291,7 +291,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
     /**
      * Closes the underlying OutputStream.
      *
-     * @throws IOException on error
+     * @throws IOException on error.
      */
     @Override
     public void close() throws IOException {
@@ -309,7 +309,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
      * to satisfy the buffer's record based writes. Thus, there may be data fragments still being assembled that must be written to the output stream before
      * this entry is closed and the next entry written.
      *
-     * @throws IOException on error
+     * @throws IOException on error.
      */
     @Override
     public void closeArchiveEntry() throws IOException {
@@ -501,12 +501,12 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
      * <strong>MUST</strong> be called to ensure that all buffered data is completely written to the output stream.
      *
      * @param archiveEntry The TarEntry to be written to the archive.
-     * @throws IOException              on error
-     * @throws ClassCastException       if archiveEntry is not an instance of TarArchiveEntry
+     * @throws IOException              on error.
+     * @throws ClassCastException       if archiveEntry is not an instance of TarArchiveEntry.
      * @throws IllegalArgumentException if the {@link TarArchiveOutputStream#longFileMode} equals {@link TarArchiveOutputStream#LONGFILE_ERROR} and the file
-     *                                  name is too long
-     * @throws IllegalArgumentException if the {@link TarArchiveOutputStream#bigNumberMode} equals {@link TarArchiveOutputStream#BIGNUMBER_ERROR} and one of the
-     *                                  numeric values exceeds the limits of a traditional tar header.
+     *                                  name is too long.
+     * @throws IllegalArgumentException if the {@link TarArchiveOutputStream#bigNumberMode} equals {@link TarArchiveOutputStream#BIGNUMBER_ERROR} and one of
+     *                                  the numeric values exceeds the limits of a traditional tar header.
      */
     @Override
     public void putArchiveEntry(final TarArchiveEntry archiveEntry) throws IOException {
@@ -571,7 +571,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
      * Sets the big number mode. This can be BIGNUMBER_ERROR(0), BIGNUMBER_STAR(1) or BIGNUMBER_POSIX(2). This specifies the treatment of big files (sizes &gt;
      * TarConstants.MAXSIZE) and other numeric values too big to fit into a traditional tar header. Default is BIGNUMBER_ERROR.
      *
-     * @param bigNumberMode the mode to use
+     * @param bigNumberMode the mode to use.
      * @since 1.4
      */
     public void setBigNumberMode(final int bigNumberMode) {
@@ -628,10 +628,10 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
      * @param wBuf       The buffer to write to the archive.
      * @param wOffset    The offset in the buffer from which to get bytes.
      * @param numToWrite The number of bytes to write.
-     * @throws NullPointerException      if {@code wBuf} is null
+     * @throws NullPointerException      if {@code wBuf} is null.
      * @throws IndexOutOfBoundsException if {@code wOffset} or {@code numToWrite} are negative,
      *                                   or if {@code wOffset + numToWrite} is greater than {@code wBuf.length}.
-     * @throws IOException on error
+     * @throws IOException on error.
      */
     @Override
     public void write(final byte[] wBuf, final int wOffset, final int numToWrite) throws IOException {
