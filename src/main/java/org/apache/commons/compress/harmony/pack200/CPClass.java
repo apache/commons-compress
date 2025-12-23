@@ -52,10 +52,20 @@ public class CPClass extends CPConstant<CPClass> {
         return className.compareTo(arg0.className);
     }
 
+    /**
+     * Gets the index in the CP UTF8 pool.
+     *
+     * @return the index.
+     */
     public int getIndexInCpUtf8() {
         return value.getIndex();
     }
 
+    /**
+     * Tests whether this is an inner class.
+     *
+     * @return true if this is an inner class.
+     */
     public boolean isInnerClass() {
         return isInnerClass;
     }
