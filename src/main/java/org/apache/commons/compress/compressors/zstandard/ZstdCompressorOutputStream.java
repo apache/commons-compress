@@ -237,7 +237,7 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream<ZstdOutpu
          * </ul>
          *
          * @param level The compression level, from 0 to 9, where the default is {@link ZstdConstants#ZSTD_CLEVEL_DEFAULT}.
-         * @return {@code this} instance
+         * @return {@code this} instance.
          * @see ZstdConstants#ZSTD_CLEVEL_DEFAULT
          * @see ZstdConstants#ZSTD_CLEVEL_MIN
          * @see ZstdConstants#ZSTD_CLEVEL_MAX
