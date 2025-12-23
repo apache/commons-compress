@@ -179,6 +179,9 @@ public class NewAttributeBands extends BandSet {
         }
     }
 
+    /**
+     * Callable layout element that can be referenced and reused.
+     */
     public static class Callable extends LayoutElement {
 
         private final List<LayoutElement> body;
@@ -283,6 +286,9 @@ public class NewAttributeBands extends BandSet {
         }
     }
 
+    /**
+     * Integral layout element for integer values.
+     */
     public class Integral extends LayoutElement {
 
         private final String tag;
@@ -387,8 +393,17 @@ public class NewAttributeBands extends BandSet {
 
     }
 
+    /**
+     * Abstract base class for layout elements.
+     */
     private abstract static class LayoutElement implements AttributeLayoutElement {
 
+        /**
+         * Gets the length for the given unsigned int type.
+         *
+         * @param uintType the unsigned int type character.
+         * @return the length in bytes.
+         */
         protected int getLength(final char uintType) {
             int length = 0;
             switch (uintType) {
@@ -460,6 +475,11 @@ public class NewAttributeBands extends BandSet {
             }
         }
 
+        /**
+         * Gets the tag.
+         *
+         * @return the tag.
+         */
         public String getTag() {
             return tag;
         }
@@ -542,10 +562,20 @@ public class NewAttributeBands extends BandSet {
             }
         }
 
+        /**
+         * Gets the count element.
+         *
+         * @return the count element.
+         */
         public Integral getCountElement() {
             return countElement;
         }
 
+        /**
+         * Gets the layout elements.
+         *
+         * @return the layout elements.
+         */
         public List<LayoutElement> getLayoutElements() {
             return layoutElements;
         }
@@ -699,6 +729,11 @@ public class NewAttributeBands extends BandSet {
         private final List<IntegerRange> tagRanges;
         private final List<LayoutElement> body;
 
+        /**
+         * Constructs a new UnionCase with the given tags.
+         *
+         * @param tags the tags.
+         */
         public UnionCase(final List<Integer> tags) {
             this(tags, Collections.emptyList());
         }
@@ -744,6 +779,12 @@ public class NewAttributeBands extends BandSet {
             return AttributeLayoutUtils.unionCaseMatches(tagRanges, i);
         }
 
+        /**
+         * Tests whether this union case has the given tag.
+         *
+         * @param l the tag value.
+         * @return true if this case matches the tag.
+         */
         public boolean hasTag(final long l) {
             return hasTag((int) l);
         }
@@ -761,10 +802,23 @@ public class NewAttributeBands extends BandSet {
 
     private int backwardsCallCount;
 
+    /**
+     * The attribute layout elements.
+     */
     protected List<LayoutElement> attributeLayoutElements;
 
+    /**
+     * The attribute layout factory.
+     */
     private final AttributeLayoutFactory attributeLayoutFactory = new AttributeLayoutFactory();
 
+    /**
+     * Constructs new attribute bands for the given segment and layout.
+     *
+     * @param segment the segment.
+     * @param attributeLayout the attribute layout.
+     * @throws IOException if an I/O error occurs.
+     */
     public NewAttributeBands(final Segment segment, final AttributeLayout attributeLayout) throws IOException {
         super(segment);
         this.attributeLayout = attributeLayout;
@@ -772,6 +826,11 @@ public class NewAttributeBands extends BandSet {
         attributeLayout.setBackwardsCallCount(backwardsCallCount);
     }
 
+    /**
+     * Gets the backwards call count.
+     *
+     * @return the backwards call count.
+     */
     public int getBackwardsCallCount() {
         return backwardsCallCount;
     }
