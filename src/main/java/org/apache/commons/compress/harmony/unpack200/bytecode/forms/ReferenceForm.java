@@ -44,8 +44,19 @@ public abstract class ReferenceForm extends ByteCodeForm {
         super(opcode, name, rewrite);
     }
 
+    /**
+     * Gets the offset from the operand manager.
+     *
+     * @param operandManager the operand manager.
+     * @return the offset.
+     */
     protected abstract int getOffset(OperandManager operandManager);
 
+    /**
+     * Gets the pool ID for this reference.
+     *
+     * @return the pool ID.
+     */
     protected abstract int getPoolID();
 
     /*
