@@ -108,11 +108,19 @@ public class NewAttributeBands extends BandSet {
         }
     }
 
+    /**
+     * Represents a call to a callable layout element.
+     */
     public class Call extends LayoutElement {
 
         private final int callableIndex;
         private Callable callable;
 
+        /**
+         * Constructs a new Call.
+         *
+         * @param callableIndex the callable index.
+         */
         public Call(final int callableIndex) {
             this.callableIndex = callableIndex;
         }
