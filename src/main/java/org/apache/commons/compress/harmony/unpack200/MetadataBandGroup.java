@@ -75,25 +75,96 @@ public class MetadataBandGroup {
 
     private List<Attribute> attributes;
 
+    /**
+     * Parameter number of annotations.
+     */
     public int[] param_NB;
 
+    /**
+     * Annotation counts.
+     */
     public int[] anno_N;
+
+    /**
+     * Annotation types.
+     */
     public CPUTF8[][] type_RS;
+
+    /**
+     * Annotation pair counts.
+     */
     public int[][] pair_N;
+
+    /**
+     * Annotation pair names.
+     */
     public CPUTF8[] name_RU;
+
+    /**
+     * Annotation value tags.
+     */
     public int[] T;
+
+    /**
+     * Integer constant values.
+     */
     public CPInteger[] caseI_KI;
+
+    /**
+     * Double constant values.
+     */
     public CPDouble[] caseD_KD;
+
+    /**
+     * Float constant values.
+     */
     public CPFloat[] caseF_KF;
+
+    /**
+     * Long constant values.
+     */
     public CPLong[] caseJ_KJ;
+
+    /**
+     * Class constant values.
+     */
     public CPUTF8[] casec_RS;
+
+    /**
+     * Enum type values.
+     */
     public String[] caseet_RS;
+
+    /**
+     * Enum constant values.
+     */
     public String[] caseec_RU;
+
+    /**
+     * String constant values.
+     */
     public CPUTF8[] cases_RU;
+
+    /**
+     * Array element counts.
+     */
     public int[] casearray_N;
+
+    /**
+     * Nested annotation types.
+     */
     public CPUTF8[] nesttype_RS;
+
+    /**
+     * Nested annotation pair counts.
+     */
     public int[] nestpair_N;
+
+    /**
+     * Nested annotation pair names.
+     */
     public CPUTF8[] nestname_RU;
+
     private int caseI_KI_Index;
 
     private int caseD_KD_Index;
