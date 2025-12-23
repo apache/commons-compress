@@ -82,6 +82,12 @@ public class NewAttribute extends BCIRenumberedAttribute {
 
     private final int layoutIndex;
 
+    /**
+     * Constructs a new NewAttribute.
+     *
+     * @param attributeName the attribute name.
+     * @param layoutIndex the layout index.
+     */
     public NewAttribute(final CPUTF8 attributeName, final int layoutIndex) {
         super(attributeName);
         this.layoutIndex = layoutIndex;
