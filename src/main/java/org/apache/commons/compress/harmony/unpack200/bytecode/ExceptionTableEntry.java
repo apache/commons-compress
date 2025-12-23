@@ -58,10 +58,20 @@ public class ExceptionTableEntry {
         this.catchType = catchType;
     }
 
+    /**
+     * Gets the catch type.
+     *
+     * @return the catch type.
+     */
     public CPClass getCatchType() {
         return catchType;
     }
 
+    /**
+     * Renumbers the program counter values.
+     *
+     * @param byteCodeOffsets the byte code offsets.
+     */
     public void renumber(final List<Integer> byteCodeOffsets) {
         startPcRenumbered = byteCodeOffsets.get(startPC).intValue();
         final int endPcIndex = startPC + endPC;
@@ -70,6 +80,11 @@ public class ExceptionTableEntry {
         handlerPcRenumbered = byteCodeOffsets.get(handlerPcIndex).intValue();
     }
 
+    /**
+     * Resolves the catch type in the constant pool.
+     *
+     * @param pool the constant pool.
+     */
     public void resolve(final ClassConstantPool pool) {
         if (catchType == null) {
             // If the catch type is a finally clause
@@ -81,6 +96,12 @@ public class ExceptionTableEntry {
         catchTypeIndex = pool.indexOf(catchType);
     }
 
+    /**
+     * Writes this exception table entry to the output stream.
+     *
+     * @param dos the data output stream.
+     * @throws IOException if an I/O error occurs.
+     */
     public void write(final DataOutputStream dos) throws IOException {
         dos.writeShort(startPcRenumbered);
         dos.writeShort(endPcRenumbered);
