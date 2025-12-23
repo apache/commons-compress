@@ -42,12 +42,12 @@ public interface CompressorStreamProvider {
      *                           {@value org.apache.commons.compress.compressors.CompressorStreamFactory#SNAPPY_FRAMED},
      *                           {@value org.apache.commons.compress.compressors.CompressorStreamFactory#Z} or
      *                           {@value org.apache.commons.compress.compressors.CompressorStreamFactory#DEFLATE}
-     * @param in                 the input stream
+     * @param in                 the input stream.
      * @param decompressUntilEof if true, decompress until the end of the input; if false, stop after the first stream and leave the input position to point to
      *                           the next byte after the stream. This setting applies to the gzip, bzip2 and XZ formats only.
-     * @return compressor input stream
-     * @throws CompressorException      if the compressor name is not known
-     * @throws IllegalArgumentException if the name or input stream is null
+     * @return compressor input stream.
+     * @throws CompressorException      if the compressor name is not known.
+     * @throws IllegalArgumentException if the name or input stream is null.
      */
     CompressorInputStream createCompressorInputStream(String name, InputStream in, boolean decompressUntilEof) throws CompressorException;
 
@@ -60,24 +60,24 @@ public interface CompressorStreamProvider {
      *             {@value org.apache.commons.compress.compressors.CompressorStreamFactory#XZ},
      *             {@value org.apache.commons.compress.compressors.CompressorStreamFactory#PACK200} or
      *             {@value org.apache.commons.compress.compressors.CompressorStreamFactory#DEFLATE}
-     * @param out  the output stream
-     * @return the compressor output stream
-     * @throws CompressorException      if the archiver name is not known
-     * @throws IllegalArgumentException if the archiver name or stream is null
+     * @param out  the output stream.
+     * @return the compressor output stream.
+     * @throws CompressorException      if the archiver name is not known.
+     * @throws IllegalArgumentException if the archiver name or stream is null.
      */
     <T extends OutputStream> CompressorOutputStream<T> createCompressorOutputStream(String name, T out) throws CompressorException;
 
     /**
      * Gets all the input stream compressor names for this provider
      *
-     * @return all the input compressor names for this provider
+     * @return all the input compressor names for this provider.
      */
     Set<String> getInputStreamCompressorNames();
 
     /**
      * Gets all the output stream compressor names for this provider
      *
-     * @return all the output compressor names for this provider
+     * @return all the output compressor names for this provider.
      */
     Set<String> getOutputStreamCompressorNames();
 
