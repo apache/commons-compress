@@ -36,7 +36,7 @@ public class ChecksumCalculatingInputStream extends CheckedInputStream {
     /**
      * Constructs a new instance.
      *
-     * @param checksum    The checksum to update
+     * @param checksum    The checksum to update.
      * @param inputStream The input stream to read.
      * @deprecated Use {@link CheckedInputStream#CheckedInputStream(InputStream, Checksum)}.
      */
