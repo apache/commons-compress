@@ -46,8 +46,8 @@ final class Rand {
     /**
      * Gets the random number at a specific index.
      *
-     * @param i the index
-     * @return the random number
+     * @param i the index.
+     * @return the random number.
      */
     static int rNums(final int i) {
         return RNUMS[i];
