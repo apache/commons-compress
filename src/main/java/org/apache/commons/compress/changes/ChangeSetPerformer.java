@@ -119,7 +119,7 @@ public class ChangeSetPerformer<I extends ArchiveInputStream<E>, O extends Archi
     /**
      * Constructs a ChangeSetPerformer with the changes from this ChangeSet
      *
-     * @param changeSet the ChangeSet which operations are used for performing
+     * @param changeSet the ChangeSet which operations are used for performing.
      */
     public ChangeSetPerformer(final ChangeSet<E> changeSet) {
         this.changes = changeSet.getChanges();
@@ -128,10 +128,10 @@ public class ChangeSetPerformer<I extends ArchiveInputStream<E>, O extends Archi
     /**
      * Copies the ArchiveEntry to the Output stream
      *
-     * @param inputStream  the stream to read the data from
-     * @param outputStream the stream to write the data to
-     * @param archiveEntry the entry to write
-     * @throws IOException if data cannot be read or written
+     * @param inputStream  the stream to read the data from.
+     * @param outputStream the stream to write the data to.
+     * @param archiveEntry the entry to write.
+     * @throws IOException if data cannot be read or written.
      */
     private void copyStream(final InputStream inputStream, final O outputStream, final E archiveEntry) throws IOException {
         outputStream.putArchiveEntry(archiveEntry);
@@ -143,8 +143,8 @@ public class ChangeSetPerformer<I extends ArchiveInputStream<E>, O extends Archi
      * Checks if an ArchiveEntry is deleted later in the ChangeSet. This is necessary if a file is added with this ChangeSet, but later became deleted in the
      * same set.
      *
-     * @param entry the entry to check
-     * @return true, if this entry has a deletion change later, false otherwise
+     * @param entry the entry to check.
+     * @return true, if this entry has a deletion change later, false otherwise.
      */
     private boolean isDeletedLater(final Set<Change<E>> workingSet, final E entry) {
         final String source = entry.getName();
@@ -166,10 +166,10 @@ public class ChangeSetPerformer<I extends ArchiveInputStream<E>, O extends Archi
      *
      * This method finishes the stream, no other entries should be added after that.
      *
-     * @param entryIterator the entries to perform the changes on
-     * @param outputStream  the resulting OutputStream with all modifications
-     * @throws IOException if a read/write error occurs
-     * @return the results of this operation
+     * @param entryIterator the entries to perform the changes on.
+     * @param outputStream  the resulting OutputStream with all modifications.
+     * @throws IOException if a read/write error occurs.
+     * @return the results of this operation.
      */
     private ChangeSetResults perform(final ArchiveEntryIterator<E> entryIterator, final O outputStream) throws IOException {
         final ChangeSetResults results = new ChangeSetResults();
@@ -241,10 +241,10 @@ public class ChangeSetPerformer<I extends ArchiveInputStream<E>, O extends Archi
      *
      * This method finishes the stream, no other entries should be added after that.
      *
-     * @param inputStream  the InputStream to perform the changes on
-     * @param outputStream the resulting OutputStream with all modifications
-     * @throws IOException if a read/write error occurs
-     * @return the results of this operation
+     * @param inputStream  the InputStream to perform the changes on.
+     * @param outputStream the resulting OutputStream with all modifications.
+     * @throws IOException if a read/write error occurs.
+     * @return the results of this operation.
      */
     public ChangeSetResults perform(final I inputStream, final O outputStream) throws IOException {
         return perform(new ArchiveInputStreamIterator<>(inputStream), outputStream);
@@ -255,10 +255,10 @@ public class ChangeSetPerformer<I extends ArchiveInputStream<E>, O extends Archi
      *
      * This method finishes the stream, no other entries should be added after that.
      *
-     * @param zipFile      the ZipFile to perform the changes on
-     * @param outputStream the resulting OutputStream with all modifications
-     * @throws IOException if a read/write error occurs
-     * @return the results of this operation
+     * @param zipFile      the ZipFile to perform the changes on.
+     * @param outputStream the resulting OutputStream with all modifications.
+     * @throws IOException if a read/write error occurs.
+     * @return the results of this operation.
      * @since 1.5
      */
     public ChangeSetResults perform(final ZipFile zipFile, final O outputStream) throws IOException {
