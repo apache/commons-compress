@@ -120,8 +120,8 @@ public class XZCompressorOutputStream extends CompressorOutputStream<XZOutputStr
     /**
      * Creates a new XZ compressor using the default LZMA2 options. This is equivalent to {@code XZCompressorOutputStream(outputStream, 6)}.
      *
-     * @param outputStream the stream to wrap
-     * @throws IOException on error
+     * @param outputStream the stream to wrap.
+     * @throws IOException on error.
      */
     public XZCompressorOutputStream(final OutputStream outputStream) throws IOException {
         this(builder().setOutputStream(outputStream));
@@ -137,9 +137,9 @@ public class XZCompressorOutputStream extends CompressorOutputStream<XZOutputStr
      * uncompressed size of the file exceeds 8&nbsp;MiB, 16&nbsp;MiB, or 32&nbsp;MiB, it is waste of memory to use the presets 7, 8, or 9, respectively.
      * </p>
      *
-     * @param outputStream the stream to wrap
-     * @param preset       the preset
-     * @throws IOException on error
+     * @param outputStream the stream to wrap.
+     * @param preset       the preset.
+     * @throws IOException on error.
      * @deprecated Use {@link #builder()}.
      */
     @Deprecated
@@ -151,7 +151,7 @@ public class XZCompressorOutputStream extends CompressorOutputStream<XZOutputStr
     /**
      * Finishes compression without closing the underlying stream. No more data can be written to this stream after finishing.
      *
-     * @throws IOException on error
+     * @throws IOException on error.
      */
     @Override
     @SuppressWarnings("resource") // instance variable access
