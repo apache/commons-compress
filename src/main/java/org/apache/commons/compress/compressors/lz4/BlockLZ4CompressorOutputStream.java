@@ -177,7 +177,7 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream<Outpu
     /**
      * Returns a builder correctly configured for the LZ4 algorithm.
      *
-     * @return a builder correctly configured for the LZ4 algorithm
+     * @return a builder correctly configured for the LZ4 algorithm.
      */
     public static Parameters.Builder createParameterBuilder() {
         final int maxLen = BlockLZ4CompressorInputStream.WINDOW_SIZE - 1;
@@ -198,7 +198,7 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream<Outpu
     /**
      * Creates a new LZ4 output stream.
      *
-     * @param out An OutputStream to read compressed data from
+     * @param out An OutputStream to read compressed data from.
      */
     public BlockLZ4CompressorOutputStream(final OutputStream out) {
         this(out, createParameterBuilder().build());
@@ -207,7 +207,7 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream<Outpu
     /**
      * Creates a new LZ4 output stream.
      *
-     * @param out     An OutputStream to read compressed data from
+     * @param out     An OutputStream to read compressed data from.
      * @param params The parameters to use for LZ77 compression.
      */
     public BlockLZ4CompressorOutputStream(final OutputStream out, final Parameters params) {
@@ -345,7 +345,7 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream<Outpu
     /**
      * Compresses all remaining data and writes it to the stream, doesn't close the underlying stream.
      *
-     * @throws IOException if an error occurs
+     * @throws IOException if an error occurs.
      */
     @Override
     public void finish() throws IOException {
@@ -359,9 +359,9 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream<Outpu
      * Adds some initial data to fill the window with.
      *
      * @param data the data to fill the window with.
-     * @param off  offset of real data into the array
-     * @param len  amount of data
-     * @throws IllegalStateException if the stream has already started to write data
+     * @param off  offset of real data into the array.
+     * @param len  amount of data.
+     * @throws IllegalStateException if the stream has already started to write data.
      * @see LZ77Compressor#prefill
      */
     public void prefill(final byte[] data, final int off, final int len) {
