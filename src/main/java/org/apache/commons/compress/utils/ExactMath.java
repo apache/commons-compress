@@ -30,9 +30,9 @@ public class ExactMath {
      * Returns the int result of adding an int and a long, and throws an exception if the result overflows an int.
      *
      * @param x the first value, an int.
-     * @param y the second value, a long,
+     * @param y the second value, a long,.
      * @return the addition of both values.
-     * @throws IllegalArgumentException when y or the result overflows an int
+     * @throws IllegalArgumentException when y or the result overflows an int.
      */
     public static int add(final int x, final long y) {
         try {
