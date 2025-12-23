@@ -51,8 +51,8 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
     /**
      * Creates a gzip compressed output stream with the default parameters.
      *
-     * @param out the stream to compress to
-     * @throws IOException if writing fails
+     * @param out the stream to compress to.
+     * @throws IOException if writing fails.
      */
     public GzipCompressorOutputStream(final OutputStream out) throws IOException {
         this(out, new GzipParameters());
@@ -61,9 +61,9 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
     /**
      * Creates a gzip compressed output stream with the specified parameters.
      *
-     * @param out        the stream to compress to
-     * @param parameters the parameters to use
-     * @throws IOException if writing fails
+     * @param out        the stream to compress to.
+     * @param parameters the parameters to use.
+     * @throws IOException if writing fails.
      * @since 1.7
      */
     public GzipCompressorOutputStream(final OutputStream out, final GzipParameters parameters) throws IOException {
@@ -96,7 +96,7 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
     /**
      * Finishes writing compressed data to the underlying stream without closing it.
      *
-     * @throws IOException on error
+     * @throws IOException on error.
      * @since 1.7
      */
     @Override
