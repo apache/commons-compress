@@ -72,6 +72,21 @@ public class PackingUtils {
         LogManager.getLogManager().addLogger(packingLogger);
     }
 
+    /**
+     * Constructs new instance of PackingUtils.
+     *
+     * @deprecated Will be private in 4.0.
+     */
+    @Deprecated
+    public PackingUtils() {
+    }
+
+    /**
+     * Configures packing options.
+     *
+     * @param options the packing options.
+     * @throws IOException if an I/O error occurs.
+     */
     public static void config(final PackingOptions options) throws IOException {
         final String logFileName = options != null ? options.getLogFile() : null;
         if (fileHandler != null) {
@@ -135,6 +150,14 @@ public class PackingUtils {
         }
     }
 
+    /**
+     * Gets the packing file list from a JAR file.
+     *
+     * @param jarFile the JAR file.
+     * @param keepFileOrder whether to keep file order.
+     * @return the packing file list.
+     * @throws IOException if an I/O error occurs.
+     */
     public static List<PackingFile> getPackingFileListFromJar(final JarFile jarFile, final boolean keepFileOrder) throws IOException {
         final List<PackingFile> packingFileList = new ArrayList<>();
         IOConsumer.forEach(jarFile.stream(), jarEntry -> {
@@ -150,6 +173,14 @@ public class PackingUtils {
         return packingFileList;
     }
 
+    /**
+     * Gets the packing file list from a JAR input stream.
+     *
+     * @param jarInputStream the JAR input stream.
+     * @param keepFileOrder whether to keep file order.
+     * @return the packing file list.
+     * @throws IOException if an I/O error occurs.
+     */
     public static List<PackingFile> getPackingFileListFromJar(final JarInputStream jarInputStream, final boolean keepFileOrder) throws IOException {
         final List<PackingFile> packingFileList = new ArrayList<>();
 
@@ -174,6 +205,11 @@ public class PackingUtils {
         return packingFileList;
     }
 
+    /**
+     * Logs a message.
+     *
+     * @param message the message to log.
+     */
     public static void log(final String message) {
         packingLogger.log(Level.INFO, message);
     }
