@@ -69,8 +69,8 @@ public class XZUtils {
      * are automatically detected and correctly mapped. For example the name "package.tar" is mapped to "package.txz". If no custom mapping is applicable, then
      * the default ".xz" suffix is appended to the file name.
      *
-     * @param fileName name of a file
-     * @return name of the corresponding compressed file
+     * @param fileName name of a file.
+     * @return name of the corresponding compressed file.
      * @deprecated Use {@link #getCompressedFileName(String)}.
      */
     @Deprecated
@@ -83,8 +83,8 @@ public class XZUtils {
      * are automatically detected and correctly mapped. For example the name "package.tar" is mapped to "package.txz". If no custom mapping is applicable, then
      * the default ".xz" suffix is appended to the file name.
      *
-     * @param fileName name of a file
-     * @return name of the corresponding compressed file
+     * @param fileName name of a file.
+     * @return name of the corresponding compressed file.
      * @since 1.25.0
      */
     public static String getCompressedFileName(final String fileName) {
@@ -97,8 +97,8 @@ public class XZUtils {
      * generic ".xz" suffix (or any other generic xz suffix) is mapped to a name without that suffix. If no xz suffix is detected, then the file name is
      * returned unmapped.
      *
-     * @param fileName name of a file
-     * @return name of the corresponding uncompressed file
+     * @param fileName name of a file.
+     * @return name of the corresponding uncompressed file.
      * @deprecated Use {@link #getUncompressedFileName(String)}.
      */
     @Deprecated
@@ -112,8 +112,8 @@ public class XZUtils {
      * generic ".xz" suffix (or any other generic xz suffix) is mapped to a name without that suffix. If no xz suffix is detected, then the file name is
      * returned unmapped.
      *
-     * @param fileName name of a file
-     * @return name of the corresponding uncompressed file
+     * @param fileName name of a file.
+     * @return name of the corresponding uncompressed file.
      * @since 1.25.0
      */
     public static String getUncompressedFileName(final String fileName) {
@@ -132,8 +132,8 @@ public class XZUtils {
     /**
      * Detects common xz suffixes in the given file name.
      *
-     * @param fileName name of a file
-     * @return {@code true} if the file name has a common xz suffix, {@code false} otherwise
+     * @param fileName name of a file.
+     * @return {@code true} if the file name has a common xz suffix, {@code false} otherwise.
      * @deprecated Use {@link #isCompressedFileName(String)}.
      */
     @Deprecated
@@ -144,8 +144,8 @@ public class XZUtils {
     /**
      * Detects common xz suffixes in the given file name.
      *
-     * @param fileName name of a file
-     * @return {@code true} if the file name has a common xz suffix, {@code false} otherwise
+     * @param fileName name of a file.
+     * @return {@code true} if the file name has a common xz suffix, {@code false} otherwise.
      * @since 1.25.0
      */
     public static boolean isCompressedFileName(final String fileName) {
@@ -155,7 +155,7 @@ public class XZUtils {
     /**
      * Are the classes required to support XZ compression available?
      *
-     * @return true if the classes required to support XZ compression are available
+     * @return true if the classes required to support XZ compression are available.
      * @since 1.5
      */
     public static boolean isXZCompressionAvailable() {
@@ -173,9 +173,9 @@ public class XZUtils {
      * This is more or less a copy of the version found in {@link XZCompressorInputStream} but doesn't depend on the presence of XZ for Java.
      * </p>
      *
-     * @param signature the bytes to check
-     * @param length    the number of bytes to check
-     * @return true if signature matches the .xz magic bytes, false otherwise
+     * @param signature the bytes to check.
+     * @param length    the number of bytes to check.
+     * @return true if signature matches the .xz magic bytes, false otherwise.
      * @since 1.9
      */
     public static boolean matches(final byte[] signature, final int length) {
@@ -199,7 +199,7 @@ public class XZUtils {
      * This defaults to {@code false} in an OSGi environment and {@code true} otherwise.
      * </p>
      *
-     * @param doCache whether to cache the result
+     * @param doCache whether to cache the result.
      * @since 1.9
      */
     public static void setCacheXZAvailablity(final boolean doCache) {
