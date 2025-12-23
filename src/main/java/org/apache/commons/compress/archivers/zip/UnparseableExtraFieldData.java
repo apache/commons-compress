@@ -47,7 +47,7 @@ public final class UnparseableExtraFieldData implements ZipExtraField {
     /**
      * The actual data to put into central directory.
      *
-     * @return The CentralDirectoryData value
+     * @return The CentralDirectoryData value.
      */
     @Override
     public byte[] getCentralDirectoryData() {
@@ -57,7 +57,7 @@ public final class UnparseableExtraFieldData implements ZipExtraField {
     /**
      * Length of the complete extra field in the central directory.
      *
-     * @return The CentralDirectoryLength value
+     * @return The CentralDirectoryLength value.
      */
     @Override
     public ZipShort getCentralDirectoryLength() {
@@ -77,7 +77,7 @@ public final class UnparseableExtraFieldData implements ZipExtraField {
     /**
      * The actual data to put into local file data.
      *
-     * @return The LocalFileDataData value
+     * @return The LocalFileDataData value.
      */
     @Override
     public byte[] getLocalFileDataData() {
@@ -87,7 +87,7 @@ public final class UnparseableExtraFieldData implements ZipExtraField {
     /**
      * Length of the complete extra field in the local file data.
      *
-     * @return The LocalFileDataLength value
+     * @return The LocalFileDataLength value.
      */
     @Override
     public ZipShort getLocalFileDataLength() {
@@ -97,9 +97,9 @@ public final class UnparseableExtraFieldData implements ZipExtraField {
     /**
      * Populate data from this array as if it was in central directory data.
      *
-     * @param buffer the buffer to read data from
-     * @param offset offset into buffer to read data
-     * @param length the length of data
+     * @param buffer the buffer to read data from.
+     * @param offset offset into buffer to read data.
+     * @param length the length of data.
      */
     @Override
     public void parseFromCentralDirectoryData(final byte[] buffer, final int offset, final int length) {
@@ -112,9 +112,9 @@ public final class UnparseableExtraFieldData implements ZipExtraField {
     /**
      * Populate data from this array as if it was in local file data.
      *
-     * @param buffer the buffer to read data from
-     * @param offset offset into buffer to read data
-     * @param length the length of data
+     * @param buffer the buffer to read data from.
+     * @param offset offset into buffer to read data.
+     * @param length the length of data.
      */
     @Override
     public void parseFromLocalFileData(final byte[] buffer, final int offset, final int length) {
