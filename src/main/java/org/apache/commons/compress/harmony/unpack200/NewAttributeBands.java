@@ -115,11 +115,19 @@ public class NewAttributeBands extends BandSet {
         }
     }
 
+    /**
+     * Represents a call to a callable layout element.
+     */
     public class Call extends LayoutElement {
 
         private final int callableIndex;
         private Callable callable;
 
+        /**
+         * Constructs a new Call.
+         *
+         * @param callableIndex the callable index.
+         */
         public Call(final int callableIndex) {
             this.callableIndex = callableIndex;
         }
@@ -129,10 +137,20 @@ public class NewAttributeBands extends BandSet {
             callable.addNextToAttribute(attribute);
         }
 
+        /**
+         * Gets the callable.
+         *
+         * @return the callable.
+         */
         public Callable getCallable() {
             return callable;
         }
 
+        /**
+         * Gets the callable index.
+         *
+         * @return the callable index.
+         */
         public int getCallableIndex() {
             return callableIndex;
         }
@@ -148,6 +166,11 @@ public class NewAttributeBands extends BandSet {
             }
         }
 
+        /**
+         * Sets the callable.
+         *
+         * @param callable the callable.
+         */
         public void setCallable(final Callable callable) {
             this.callable = callable;
             if (callableIndex < 1) {
@@ -213,10 +236,20 @@ public class NewAttributeBands extends BandSet {
             }
         }
 
+        /**
+         * Gets the body of this callable.
+         *
+         * @return the body elements.
+         */
         public List<LayoutElement> getBody() {
             return body;
         }
 
+        /**
+         * Tests whether this is a backwards callable.
+         *
+         * @return true if backwards callable.
+         */
         public boolean isBackwardsCallable() {
             return isBackwardsCallable;
         }
@@ -234,12 +267,17 @@ public class NewAttributeBands extends BandSet {
         }
 
         /**
-         * Tells this Callable that it is a backwards callable
+         * Tells this Callable that it is a backwards callable.
          */
         public void setBackwardsCallable() {
             this.isBackwardsCallable = true;
         }
 
+        /**
+         * Sets whether this is the first callable.
+         *
+         * @param isFirstCallable true if first callable.
+         */
         public void setFirstCallable(final boolean isFirstCallable) {
             this.isFirstCallable = isFirstCallable;
         }
@@ -323,10 +361,21 @@ public class NewAttributeBands extends BandSet {
             }
         }
 
+        /**
+         * Gets the tag of this integral.
+         *
+         * @return the tag.
+         */
         public String getTag() {
             return tag;
         }
 
+        /**
+         * Gets the value at the specified index.
+         *
+         * @param index the index.
+         * @return the value.
+         */
         int getValue(final int index) {
             return band[index];
         }
@@ -579,14 +628,29 @@ public class NewAttributeBands extends BandSet {
             }
         }
 
+        /**
+         * Gets the default case body.
+         *
+         * @return the default case body.
+         */
         public List<LayoutElement> getDefaultCaseBody() {
             return defaultCaseBody;
         }
 
+        /**
+         * Gets the union cases.
+         *
+         * @return the union cases.
+         */
         public List<UnionCase> getUnionCases() {
             return unionCases;
         }
 
+        /**
+         * Gets the union tag.
+         *
+         * @return the union tag.
+         */
         public Integral getUnionTag() {
             return unionTag;
         }
@@ -639,6 +703,12 @@ public class NewAttributeBands extends BandSet {
             this(tags, Collections.emptyList());
         }
 
+        /**
+         * Constructs a new UnionCase.
+         *
+         * @param tags the tags.
+         * @param body the body elements.
+         */
         public UnionCase(final List<Integer> tags, final List<LayoutElement> body) {
             this(AttributeLayoutUtils.toRanges(tags), body, false);
         }
@@ -655,10 +725,21 @@ public class NewAttributeBands extends BandSet {
             }
         }
 
+        /**
+         * Gets the body of this union case.
+         *
+         * @return the body elements.
+         */
         public List<LayoutElement> getBody() {
             return body;
         }
 
+        /**
+         * Tests whether this union case has the given tag.
+         *
+         * @param i the tag value.
+         * @return true if this case matches the tag.
+         */
         public boolean hasTag(final int i) {
             return AttributeLayoutUtils.unionCaseMatches(tagRanges, i);
         }

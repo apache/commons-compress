@@ -49,10 +49,29 @@ public class NewAttributeBands extends BandSet {
      */
     public interface AttributeLayoutElement {
 
+        /**
+         * Adds an attribute to the band.
+         *
+         * @param attribute the attribute.
+         * @param inputStream the input stream.
+         */
         void addAttributeToBand(NewAttribute attribute, InputStream inputStream);
 
+        /**
+         * Packs the band to the output stream.
+         *
+         * @param ouputStream the output stream.
+         * @throws IOException if an I/O error occurs.
+         * @throws Pack200Exception if a Pack200 error occurs.
+         */
         void pack(OutputStream ouputStream) throws IOException, Pack200Exception;
 
+        /**
+         * Renumbers bytecode indexes.
+         *
+         * @param bciRenumbering the bytecode index renumbering.
+         * @param labelsToOffsets the labels to offsets map.
+         */
         void renumberBci(IntList bciRenumbering, Map<Label, Integer> labelsToOffsets);
 
     }
@@ -134,10 +153,20 @@ public class NewAttributeBands extends BandSet {
             }
         }
 
+        /**
+         * Gets the callable.
+         *
+         * @return the callable.
+         */
         public Callable getCallable() {
             return callable;
         }
 
+        /**
+         * Gets the callable index.
+         *
+         * @return the callable index.
+         */
         public int getCallableIndex() {
             return callableIndex;
         }
@@ -152,6 +181,11 @@ public class NewAttributeBands extends BandSet {
             // do nothing here as renumberBci will be called on the callable at another time
         }
 
+        /**
+         * Sets the callable.
+         *
+         * @param callable the callable.
+         */
         public void setCallable(final Callable callable) {
             this.callable = callable;
             if (callableIndex < 1) {
@@ -188,14 +222,27 @@ public class NewAttributeBands extends BandSet {
             }
         }
 
+        /**
+         * Adds a backwards call count.
+         */
         public void addBackwardsCall() {
             backwardsCallCounts[backwardsCallableIndex]++;
         }
 
+        /**
+         * Gets the body of this callable.
+         *
+         * @return the body elements.
+         */
         public List<LayoutElement> getBody() {
             return body;
         }
 
+        /**
+         * Tests whether this is a backwards callable.
+         *
+         * @return true if backwards callable.
+         */
         public boolean isBackwardsCallable() {
             return isBackwardsCallable;
         }
@@ -221,6 +268,11 @@ public class NewAttributeBands extends BandSet {
             this.isBackwardsCallable = true;
         }
 
+        /**
+         * Sets the backwards callable index.
+         *
+         * @param backwardsCallableIndex the index.
+         */
         public void setBackwardsCallableIndex(final int backwardsCallableIndex) {
             this.backwardsCallableIndex = backwardsCallableIndex;
         }
@@ -319,10 +371,20 @@ public class NewAttributeBands extends BandSet {
             band.add(val);
         }
 
+        /**
+         * Gets the tag of this integral.
+         *
+         * @return the tag.
+         */
         public String getTag() {
             return tag;
         }
 
+        /**
+         * Gets the latest value added to the band.
+         *
+         * @return the latest value.
+         */
         public int latestValue() {
             return ((Integer) band.get(band.size() - 1)).intValue();
         }
@@ -371,8 +433,23 @@ public class NewAttributeBands extends BandSet {
 
     }
 
+    /**
+     * Abstract base class for layout elements.
+     */
     public abstract class LayoutElement implements AttributeLayoutElement {
 
+        /**
+         * Constructs a new LayoutElement.
+         */
+        public LayoutElement() {
+        }
+
+        /**
+         * Gets the length for the given unsigned type.
+         *
+         * @param uint_type the unsigned type character.
+         * @return the length in bytes.
+         */
         protected int getLength(final char uint_type) {
             int length = 0;
             switch (uint_type) {
@@ -430,6 +507,11 @@ public class NewAttributeBands extends BandSet {
             // TODO method and field references
         }
 
+        /**
+         * Gets the tag of this reference.
+         *
+         * @return the tag.
+         */
         public String getTag() {
             return tag;
         }
@@ -494,10 +576,20 @@ public class NewAttributeBands extends BandSet {
             }
         }
 
+        /**
+         * Gets the count element.
+         *
+         * @return the count element.
+         */
         public Integral getCountElement() {
             return countElement;
         }
 
+        /**
+         * Gets the layout elements.
+         *
+         * @return the layout elements.
+         */
         public List<LayoutElement> getLayoutElements() {
             return layoutElements;
         }
@@ -559,14 +651,29 @@ public class NewAttributeBands extends BandSet {
             }
         }
 
+        /**
+         * Gets the default case body.
+         *
+         * @return the default case body.
+         */
         public List<LayoutElement> getDefaultCaseBody() {
             return defaultCaseBody;
         }
 
+        /**
+         * Gets the union cases.
+         *
+         * @return the union cases.
+         */
         public List<UnionCase> getUnionCases() {
             return unionCases;
         }
 
+        /**
+         * Gets the union tag.
+         *
+         * @return the union tag.
+         */
         public Integral getUnionTag() {
             return unionTag;
         }
@@ -601,10 +708,21 @@ public class NewAttributeBands extends BandSet {
         private final List<IntegerRange> tagRanges;
         private final List<LayoutElement> body;
 
+        /**
+         * Constructs a new UnionCase.
+         *
+         * @param tags the tags.
+         */
         public UnionCase(final List<Integer> tags) {
             this(tags, Collections.emptyList());
         }
 
+        /**
+         * Constructs a new UnionCase.
+         *
+         * @param tags the tags.
+         * @param body the body elements.
+         */
         public UnionCase(final List<Integer> tags, final List<LayoutElement> body) {
             this(AttributeLayoutUtils.toRanges(tags), body, false);
         }
@@ -621,10 +739,21 @@ public class NewAttributeBands extends BandSet {
             }
         }
 
+        /**
+         * Gets the body of this union case.
+         *
+         * @return the body elements.
+         */
         public List<LayoutElement> getBody() {
             return body;
         }
 
+        /**
+         * Tests whether this union case has the given tag.
+         *
+         * @param l the tag value.
+         * @return true if this case matches the tag.
+         */
         public boolean hasTag(final long l) {
             return AttributeLayoutUtils.unionCaseMatches(tagRanges, (int) l);
         }
@@ -656,6 +785,15 @@ public class NewAttributeBands extends BandSet {
 
     private final AttributeLayoutFactory attributeLayoutFactory = new AttributeLayoutFactory();
 
+    /**
+     * Constructs a new NewAttributeBands.
+     *
+     * @param effort the effort level.
+     * @param cpBands the constant pool bands.
+     * @param header the segment header.
+     * @param def the attribute definition.
+     * @throws IOException if an I/O error occurs.
+     */
     public NewAttributeBands(final int effort, final CpBands cpBands, final SegmentHeader header, final AttributeDefinition def) throws IOException {
         super(effort, header);
         this.def = def;
@@ -663,6 +801,11 @@ public class NewAttributeBands extends BandSet {
         parseLayout();
     }
 
+    /**
+     * Adds an attribute to the bands.
+     *
+     * @param attribute the attribute to add.
+     */
     public void addAttribute(final NewAttribute attribute) {
         usedAtLeastOnce = true;
         final InputStream stream = new ByteArrayInputStream(attribute.getBytes());
@@ -671,6 +814,11 @@ public class NewAttributeBands extends BandSet {
         }
     }
 
+    /**
+     * Gets the attribute name.
+     *
+     * @return the attribute name.
+     */
     public String getAttributeName() {
         return def.name.getUnderlyingString();
     }
@@ -697,14 +845,29 @@ public class NewAttributeBands extends BandSet {
         return Codec.UNSIGNED5;
     }
 
+    /**
+     * Gets the flag index.
+     *
+     * @return the flag index.
+     */
     public int getFlagIndex() {
         return def.index;
     }
 
+    /**
+     * Tests whether this attribute was used at least once.
+     *
+     * @return true if used at least once.
+     */
     public boolean isUsedAtLeastOnce() {
         return usedAtLeastOnce;
     }
 
+    /**
+     * Gets the number of backwards calls.
+     *
+     * @return the backwards call counts.
+     */
     public int[] numBackwardsCalls() {
         return backwardsCallCounts;
     }
