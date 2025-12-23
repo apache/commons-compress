@@ -162,14 +162,14 @@ public class MetadataBandGroup extends BandSet {
     /**
      * Add an annotation to this set of bands
      *
-     * @param desc       TODO
-     * @param nameRU     TODO
-     * @param tags       TODO
-     * @param values     TODO
-     * @param caseArrayN TODO
-     * @param nestTypeRS TODO
-     * @param nestNameRU TODO
-     * @param nestPairN  TODO
+     * @param desc       the descriptor.
+     * @param nameRU     the name RU list.
+     * @param tags       the tags list.
+     * @param values     the values list.
+     * @param caseArrayN the case array N list.
+     * @param nestTypeRS the nested type RS list.
+     * @param nestNameRU the nested name RU list.
+     * @param nestPairN  the nested pair N list.
      */
     public void addAnnotation(final String desc, final List<String> nameRU, final List<String> tags, final List<Object> values, final List<Integer> caseArrayN,
             final List<String> nestTypeRS, final List<String> nestNameRU, final List<Integer> nestPairN) {
@@ -233,17 +233,17 @@ public class MetadataBandGroup extends BandSet {
     /**
      * Add an annotation to this set of bands.
      *
-     * @param numParams  TODO
-     * @param annoN      TODO
-     * @param pairN      TODO
-     * @param typeRS     TODO
-     * @param nameRU     TODO
-     * @param tags       TODO
-     * @param values     TODO
-     * @param caseArrayN TODO
-     * @param nestTypeRS TODO
-     * @param nestNameRU TODO
-     * @param nestPairN  TODO
+     * @param numParams  the number of parameters.
+     * @param annoN      the annotation N array.
+     * @param pairN      the pair N list.
+     * @param typeRS     the type RS list.
+     * @param nameRU     the name RU list.
+     * @param tags       the tags list.
+     * @param values     the values list.
+     * @param caseArrayN the case array N list.
+     * @param nestTypeRS the nested type RS list.
+     * @param nestNameRU the nested name RU list.
+     * @param nestPairN  the nested pair N list.
      */
     public void addParameterAnnotation(final int numParams, final int[] annoN, final IntList pairN, final List<String> typeRS, final List<String> nameRU,
             final List<String> tags, final List<Object> values, final List<Integer> caseArrayN, final List<String> nestTypeRS, final List<String> nestNameRU,
