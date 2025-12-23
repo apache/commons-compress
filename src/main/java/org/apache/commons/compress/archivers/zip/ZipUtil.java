@@ -171,8 +171,8 @@ public abstract class ZipUtil {
     /**
      * Converts DOS time to Java time (number of milliseconds since epoch).
      *
-     * @param dosTime time to convert
-     * @return converted time
+     * @param dosTime time to convert.
+     * @return converted time.
      */
     public static long dosToJavaTime(final long dosTime) {
         return dosToJavaDate(dosTime).getTime();
@@ -218,8 +218,8 @@ public abstract class ZipUtil {
     /**
      * Tests whether a given time (in milliseconds since Epoch) can be safely represented as DOS time
      *
-     * @param time time in milliseconds since epoch
-     * @return true if the time can be safely represented as DOS time, false otherwise
+     * @param time time in milliseconds since epoch.
+     * @return true if the time can be safely represented as DOS time, false otherwise.
      * @since 1.23
      */
     public static boolean isDosTime(final long time) {
@@ -318,8 +318,8 @@ public abstract class ZipUtil {
     /**
      * Converts a signed byte into an unsigned integer representation (for example, -1 becomes 255).
      *
-     * @param b byte to convert to int
-     * @return int representation of the provided byte
+     * @param b byte to convert to int.
+     * @return int representation of the provided byte.
      * @since 1.5
      * @deprecated Use {@link Byte#toUnsignedInt(byte)}.
      */
@@ -331,7 +331,7 @@ public abstract class ZipUtil {
     /**
      * Tests if this library supports the encryption used by the given entry.
      *
-     * @return true if the entry isn't encrypted at all
+     * @return true if the entry isn't encrypted at all.
      */
     private static boolean supportsEncryptionOf(final ZipArchiveEntry entry) {
         return !entry.getGeneralPurposeBit().usesEncryption();
@@ -340,7 +340,7 @@ public abstract class ZipUtil {
     /**
      * Tests if this library supports the compression method used by the given entry.
      *
-     * @return true if the compression method is supported
+     * @return true if the compression method is supported.
      */
     private static boolean supportsMethodOf(final ZipArchiveEntry entry) {
         final int method = entry.getMethod();
@@ -354,8 +354,8 @@ public abstract class ZipUtil {
     /**
      * Converts a Date object to a DOS date/time field.
      *
-     * @param time the {@code Date} to convert
-     * @return the date as a {@code ZipLong}
+     * @param time the {@code Date} to convert.
+     * @return the date as a {@code ZipLong}.
      */
     public static ZipLong toDosTime(final Date time) {
         return new ZipLong(toDosTime(time.getTime()));
@@ -368,8 +368,8 @@ public abstract class ZipUtil {
      * Stolen from InfoZip's {@code fileio.c}
      * </p>
      *
-     * @param t number of milliseconds since the epoch
-     * @return the date as a byte array
+     * @param t number of milliseconds since the epoch.
+     * @return the date as a byte array.
      */
     public static byte[] toDosTime(final long t) {
         final byte[] result = new byte[4];
@@ -384,9 +384,9 @@ public abstract class ZipUtil {
      * Stolen from InfoZip's {@code fileio.c}
      * </p>
      *
-     * @param t      number of milliseconds since the epoch
-     * @param buf    the output buffer
-     * @param offset The offset within the output buffer of the first byte to be written. must be non-negative and no larger than {@code buf.length-4}
+     * @param t      number of milliseconds since the epoch.
+     * @param buf    the output buffer.
+     * @param offset The offset within the output buffer of the first byte to be written. must be non-negative and no larger than {@code buf.length-4}.
      */
     public static void toDosTime(final long t, final byte[] buf, final int offset) {
         ZipLong.putLong(javaToDosTime(t), buf, offset);
@@ -409,8 +409,8 @@ public abstract class ZipUtil {
     /**
      * Converts an unsigned integer to a signed byte (for example, 255 becomes -1).
      *
-     * @param i integer to convert to byte
-     * @return byte representation of the provided int
+     * @param i integer to convert to byte.
+     * @return byte representation of the provided int.
      * @throws IllegalArgumentException if the provided integer is not inside the range [0,255].
      * @since 1.5
      */
