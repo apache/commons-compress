@@ -194,6 +194,9 @@ public class NewAttributeBands extends BandSet {
         }
     }
 
+    /**
+     * Callable layout element that can be referenced and reused.
+     */
     public class Callable extends LayoutElement {
 
         private final List<LayoutElement> body;
@@ -278,6 +281,9 @@ public class NewAttributeBands extends BandSet {
         }
     }
 
+    /**
+     * Integral layout element for integer values.
+     */
     public class Integral extends LayoutElement {
 
         private final String tag;
@@ -773,6 +779,9 @@ public class NewAttributeBands extends BandSet {
         }
     }
 
+    /**
+     * The attribute layout elements.
+     */
     protected List<LayoutElement> attributeLayoutElements;
 
     private int[] backwardsCallCounts;
