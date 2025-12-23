@@ -43,6 +43,11 @@ public class CPString extends CPConstant<CPString> {
         return string.compareTo(arg0.string);
     }
 
+    /**
+     * Gets the index in the CP UTF8 pool.
+     *
+     * @return the index.
+     */
     public int getIndexInCpUtf8() {
         return value.getIndex();
     }
