@@ -602,7 +602,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     /**
      * Writes all necessary data for this entry.
      *
-     * @param phased This entry is second phase of a 2-phase ZIP creation, size, compressed size and CRC are known in ZipArchiveEntry
+     * @param phased This entry is second phase of a 2-phase ZIP creation, size, compressed size and CRC are known in ZipArchiveEntry.
      * @throws IOException            on error.
      * @throws Zip64RequiredException if the entry's uncompressed or compressed size exceeds 4 GByte and {@link #setUseZip64} is {@link Zip64Mode#Never}.
      */
@@ -1175,7 +1175,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * {@inheritDoc}
      *
      * @throws ClassCastException     if entry is not an instance of ZipArchiveEntry.
-     * @throws Zip64RequiredException if the entry's uncompressed or compressed size is known to exceed 4 GByte and {@link #setUseZip64} is
+     * @throws Zip64RequiredException if the entry's uncompressed or compressed size is known to exceed 4 GByte and {@link #setUseZip64} is.
      *                                {@link Zip64Mode#Never}.
      */
     @Override
@@ -1190,7 +1190,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * @param archiveEntry The archiveEntry.
      * @param phased       If true size, compressedSize and CRC required to be known up-front in the archiveEntry.
      * @throws ClassCastException     if entry is not an instance of ZipArchiveEntry.
-     * @throws Zip64RequiredException if the entry's uncompressed or compressed size is known to exceed 4 GByte and {@link #setUseZip64} is
+     * @throws Zip64RequiredException if the entry's uncompressed or compressed size is known to exceed 4 GByte and {@link #setUseZip64} is.
      *                                {@link Zip64Mode#Never}.
      */
     private void putArchiveEntry(final ZipArchiveEntry archiveEntry, final boolean phased) throws IOException {
@@ -1342,7 +1342,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * Defaults to UTF-8.
      * </p>
      *
-     * @param encoding the encoding to use for file names, use null for the platform's default encoding
+     * @param encoding the encoding to use for file names, use null for the platform's default encoding.
      */
     public void setEncoding(final String encoding) {
         setEncoding(Charsets.toCharset(encoding));
@@ -1386,7 +1386,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * Default is DEFLATED.
      * </p>
      *
-     * @param method an {@code int} from java.util.zip.ZipEntry
+     * @param method an {@code int} from java.util.zip.ZipEntry.
      */
     public void setMethod(final int method) {
         this.method = method;
@@ -1398,7 +1398,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * Defaults to true.
      * </p>
      *
-     * @param b whether to set the language encoding flag if the file name encoding is UTF-8
+     * @param b whether to set the language encoding flag if the file name encoding is UTF-8.
      */
     public void setUseLanguageEncodingFlag(final boolean b) {
         useUtf8Flag = b && ZipEncodingHelper.isUTF8(charset);
@@ -1488,7 +1488,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     /**
      * If the Zip64 mode is set to never, then all the data in End Of Central Directory should not exceed their limits.
      *
-     * @throws Zip64RequiredException if Zip64 is actually needed
+     * @throws Zip64RequiredException if Zip64 is actually needed.
      */
     private void validateIfZip64IsNeededInEOCD() throws Zip64RequiredException {
         // exception will only be thrown if the Zip64 mode is never while Zip64 is actually needed
@@ -1569,8 +1569,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * @param b      the byte array to write.
      * @param offset the start position to write from.
      * @param length the number of bytes to write.
-     * @throws NullPointerException      if {@code b} is null
-     * @throws IndexOutOfBoundsException if {@code offset} or {@code length} are negative,
+     * @throws NullPointerException      if {@code b} is null.
+     * @throws IndexOutOfBoundsException if {@code offset} or {@code length} are negative,.
      *                                   or if {@code offset + length} is greater than {@code b.length}.
      * @throws IOException on error.
      */
@@ -1589,7 +1589,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * Writes the &quot;End of central dir record&quot;.
      *
      * @throws IOException            on error.
-     * @throws Zip64RequiredException if the archive's size exceeds 4 GByte or there are more than 65535 entries inside the archive and
+     * @throws Zip64RequiredException if the archive's size exceeds 4 GByte or there are more than 65535 entries inside the archive and.
      *                                {@link #setUseZip64(Zip64Mode)} is {@link Zip64Mode#Never}.
      */
     protected void writeCentralDirectoryEnd() throws IOException {
