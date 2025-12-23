@@ -71,7 +71,7 @@ public class UnsupportedZipFeatureException extends ZipException {
         /**
          * Constructs a new feature with the given name.
          *
-         * @param name the name of the feature
+         * @param name the name of the feature.
          */
         private Feature(final String name) {
             this.name = name;
@@ -104,7 +104,7 @@ public class UnsupportedZipFeatureException extends ZipException {
     /**
      * Creates an exception when the whole archive uses an unsupported feature.
      *
-     * @param reason the feature that is not supported
+     * @param reason the feature that is not supported.
      * @since 1.5
      */
     public UnsupportedZipFeatureException(final Feature reason) {
@@ -116,8 +116,8 @@ public class UnsupportedZipFeatureException extends ZipException {
     /**
      * Creates an exception.
      *
-     * @param reason the feature that is not supported
-     * @param entry  the entry using the feature
+     * @param reason the feature that is not supported.
+     * @param entry  the entry using the feature.
      */
     public UnsupportedZipFeatureException(final Feature reason, final ZipArchiveEntry entry) {
         super("Unsupported feature " + reason + " used in entry " + entry.getName());
@@ -128,8 +128,8 @@ public class UnsupportedZipFeatureException extends ZipException {
     /**
      * Creates an exception for archives that use an unsupported compression algorithm.
      *
-     * @param method the method that is not supported
-     * @param entry  the entry using the feature
+     * @param method the method that is not supported.
+     * @param entry  the entry using the feature.
      * @since 1.5
      */
     public UnsupportedZipFeatureException(final ZipMethod method, final ZipArchiveEntry entry) {
