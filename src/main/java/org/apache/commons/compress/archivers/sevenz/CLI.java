@@ -123,7 +123,7 @@ public class CLI {
     /**
      * Constructs a new instance.
      *
-     * @deprecated Will be removed in 4.0.
+     * @deprecated Will be removed in 2.0.
      */
     @Deprecated
     public CLI() {
