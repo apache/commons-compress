@@ -51,8 +51,8 @@ public class Pack200Utils {
      * Note: this method implicitly sets the segment length to -1.
      * </p>
      *
-     * @param jar the JAR archive to normalize
-     * @throws IOException if reading or writing fails
+     * @param jar the JAR archive to normalize.
+     * @throws IOException if reading or writing fails.
      */
     public static void normalize(final File jar) throws IOException {
         normalize(jar, jar, null);
@@ -75,9 +75,9 @@ public class Pack200Utils {
      * Note: this method implicitly sets the segment length to -1.
      * </p>
      *
-     * @param from the JAR archive to normalize
-     * @param to   the normalized archive
-     * @throws IOException if reading or writing fails
+     * @param from the JAR archive to normalize.
+     * @param to   the normalized archive.
+     * @throws IOException if reading or writing fails.
      */
     public static void normalize(final File from, final File to) throws IOException {
         normalize(from, to, null);
@@ -96,10 +96,10 @@ public class Pack200Utils {
      * This method does not replace the existing archive but creates a new one.
      * </p>
      *
-     * @param from  the JAR archive to normalize
-     * @param to    the normalized archive
+     * @param from  the JAR archive to normalize.
+     * @param to    the normalized archive.
      * @param props properties to set for the pack operation. This method will implicitly set the segment limit to -1.
-     * @throws IOException if reading or writing fails
+     * @throws IOException if reading or writing fails.
      */
     public static void normalize(final File from, final File to, Map<String, String> props) throws IOException {
         if (props == null) {
@@ -132,9 +132,9 @@ public class Pack200Utils {
      * packing and unpacking it. This is what this method does.
      * </p>
      *
-     * @param jar   the JAR archive to normalize
+     * @param jar   the JAR archive to normalize.
      * @param props properties to set for the pack operation. This method will implicitly set the segment limit to -1.
-     * @throws IOException if reading or writing fails
+     * @throws IOException if reading or writing fails.
      */
     public static void normalize(final File jar, final Map<String, String> props) throws IOException {
         normalize(jar, jar, props);
