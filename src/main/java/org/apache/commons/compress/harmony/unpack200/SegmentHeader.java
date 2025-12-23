@@ -96,6 +96,11 @@ public class SegmentHeader {
 
     private int archiveSizeOffset;
 
+    /**
+     * Constructs a new SegmentHeader.
+     *
+     * @param segment the segment.
+     */
     public SegmentHeader(final Segment segment) {
         this.segment = segment;
     }
@@ -131,18 +136,38 @@ public class SegmentHeader {
         return codec.decodeInts(n, in);
     }
 
+    /**
+     * Gets the archive modification time.
+     *
+     * @return the archive modification time.
+     */
     public long getArchiveModtime() {
         return archiveModtime;
     }
 
+    /**
+     * Gets the archive size.
+     *
+     * @return the archive size.
+     */
     public long getArchiveSize() {
         return archiveSize;
     }
 
+    /**
+     * Gets the archive size offset.
+     *
+     * @return the archive size offset.
+     */
     public int getArchiveSizeOffset() {
         return archiveSizeOffset;
     }
 
+    /**
+     * Gets the attribute definition count.
+     *
+     * @return the attribute definition count.
+     */
     public int getAttributeDefinitionCount() {
         return attributeDefinitionCount;
     }
@@ -164,82 +189,182 @@ public class SegmentHeader {
 
     }
 
+    /**
+     * Gets the band headers size.
+     *
+     * @return the band headers size.
+     */
     public int getBandHeadersSize() {
         return bandHeadersSize;
     }
 
+    /**
+     * Gets the class count.
+     *
+     * @return the class count.
+     */
     public int getClassCount() {
         return classCount;
     }
 
+    /**
+     * Gets the CP class count.
+     *
+     * @return the CP class count.
+     */
     public int getCpClassCount() {
         return cpClassCount;
     }
 
+    /**
+     * Gets the CP descriptor count.
+     *
+     * @return the CP descriptor count.
+     */
     public int getCpDescriptorCount() {
         return cpDescriptorCount;
     }
 
+    /**
+     * Gets the CP double count.
+     *
+     * @return the CP double count.
+     */
     public int getCpDoubleCount() {
         return cpDoubleCount;
     }
 
+    /**
+     * Gets the CP field count.
+     *
+     * @return the CP field count.
+     */
     public int getCpFieldCount() {
         return cpFieldCount;
     }
 
+    /**
+     * Gets the CP float count.
+     *
+     * @return the CP float count.
+     */
     public int getCpFloatCount() {
         return cpFloatCount;
     }
 
+    /**
+     * Gets the CP interface method count.
+     *
+     * @return the CP interface method count.
+     */
     public int getCpIMethodCount() {
         return cpIMethodCount;
     }
 
+    /**
+     * Gets the CP int count.
+     *
+     * @return the CP int count.
+     */
     public int getCpIntCount() {
         return cpIntCount;
     }
 
+    /**
+     * Gets the CP long count.
+     *
+     * @return the CP long count.
+     */
     public int getCpLongCount() {
         return cpLongCount;
     }
 
+    /**
+     * Gets the CP method count.
+     *
+     * @return the CP method count.
+     */
     public int getCpMethodCount() {
         return cpMethodCount;
     }
 
+    /**
+     * Gets the CP signature count.
+     *
+     * @return the CP signature count.
+     */
     public int getCpSignatureCount() {
         return cpSignatureCount;
     }
 
+    /**
+     * Gets the CP string count.
+     *
+     * @return the CP string count.
+     */
     public int getCpStringCount() {
         return cpStringCount;
     }
 
+    /**
+     * Gets the CP UTF8 count.
+     *
+     * @return the CP UTF8 count.
+     */
     public int getCpUTF8Count() {
         return cpUTF8Count;
     }
 
+    /**
+     * Gets the default class major version.
+     *
+     * @return the default class major version.
+     */
     public int getDefaultClassMajorVersion() {
         return defaultClassMajorVersion;
     }
 
+    /**
+     * Gets the default class minor version.
+     *
+     * @return the default class minor version.
+     */
     public int getDefaultClassMinorVersion() {
         return defaultClassMinorVersion;
     }
 
+    /**
+     * Gets the inner class count.
+     *
+     * @return the inner class count.
+     */
     public int getInnerClassCount() {
         return innerClassCount;
     }
 
+    /**
+     * Gets the number of files.
+     *
+     * @return the number of files.
+     */
     public int getNumberOfFiles() {
         return numberOfFiles;
     }
 
+    /**
+     * Gets the segment options.
+     *
+     * @return the segment options.
+     */
     public SegmentOptions getOptions() {
         return options;
     }
 
+    /**
+     * Gets the number of segments remaining.
+     *
+     * @return the segments remaining.
+     */
     public int getSegmentsRemaining() {
         return segmentsRemaining;
     }
@@ -331,26 +456,54 @@ public class SegmentHeader {
         archiveMinor = version;
     }
 
+    /**
+     * Sets the archive modification time.
+     *
+     * @param archiveModtime the archive modification time.
+     */
     public void setArchiveModtime(final long archiveModtime) {
         this.archiveModtime = archiveModtime;
     }
 
+    /**
+     * Sets the archive size.
+     *
+     * @param archiveSize the archive size.
+     */
     public void setArchiveSize(final long archiveSize) {
         this.archiveSize = archiveSize;
     }
 
+    /**
+     * Sets the attribute definition count.
+     *
+     * @param valuie the attribute definition count.
+     */
     private void setAttributeDefinitionCount(final long valuie) {
         this.attributeDefinitionCount = (int) valuie;
     }
 
+    /**
+     * Sets the band headers data.
+     *
+     * @param bandHeaders the band headers data.
+     */
     private void setBandHeadersData(final byte[] bandHeaders) {
         this.bandHeadersInputStream = new ByteArrayInputStream(bandHeaders);
     }
 
+    /**
+     * Sets the number of segments remaining.
+     *
+     * @param value the number of segments remaining.
+     */
     public void setSegmentsRemaining(final long value) {
         segmentsRemaining = (int) value;
     }
 
+    /**
+     * Unpacks the segment header.
+     */
     public void unpack() {
 
     }
