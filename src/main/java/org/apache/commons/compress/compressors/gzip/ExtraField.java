@@ -225,7 +225,7 @@ public final class ExtraField implements Iterable<SubField> {
      * @return {@code this} instance.
      * @throws NullPointerException     if {@code id} is {@code null}.
      * @throws NullPointerException     if {@code payload} is {@code null}.
-     * @throws IllegalArgumentException if the subfield is not 2 characters or the payload is null
+     * @throws IllegalArgumentException if the subfield is not 2 characters or the payload is null.
      * @throws IOException              if appending this subfield would exceed the max size 65535 of the extra header.
      */
     public ExtraField addSubField(final String id, final byte[] payload) throws IOException {
