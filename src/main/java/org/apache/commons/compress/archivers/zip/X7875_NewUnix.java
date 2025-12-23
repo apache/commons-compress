@@ -159,7 +159,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
     /**
      * The actual data to put into central directory data - without Header-ID or length specifier.
      *
-     * @return get the data
+     * @return get the data.
      */
     @Override
     public byte[] getCentralDirectoryData() {
@@ -169,7 +169,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
     /**
      * Length of the extra field in the central directory data - without Header-ID or length specifier.
      *
-     * @return a {@code ZipShort} for the length of the data of this extra field
+     * @return a {@code ZipShort} for the length of the data of this extra field.
      */
     @Override
     public ZipShort getCentralDirectoryLength() {
@@ -189,7 +189,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
     /**
      * The Header-ID.
      *
-     * @return the value for the header id for this extrafield
+     * @return the value for the header id for this extrafield.
      */
     @Override
     public ZipShort getHeaderId() {
@@ -199,7 +199,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
     /**
      * The actual data to put into local file data - without Header-ID or length specifier.
      *
-     * @return get the data
+     * @return get the data.
      */
     @Override
     public byte[] getLocalFileDataData() {
@@ -242,7 +242,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
     /**
      * Length of the extra field in the local file data - without Header-ID or length specifier.
      *
-     * @return a {@code ZipShort} for the length of the data of this extra field
+     * @return a {@code ZipShort} for the length of the data of this extra field.
      */
     @Override
     public ZipShort getLocalFileDataLength() {
@@ -285,10 +285,10 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
     /**
      * Populate data from this array as if it was in local file data.
      *
-     * @param data   an array of bytes
-     * @param offset the start offset
-     * @param length the number of bytes in the array from offset
-     * @throws java.util.zip.ZipException on error
+     * @param data   an array of bytes.
+     * @param offset the start offset.
+     * @param length the number of bytes in the array from offset.
+     * @throws java.util.zip.ZipException on error.
      */
     @Override
     public void parseFromLocalFileData(final byte[] data, int offset, final int length) throws ZipException {
