@@ -42,6 +42,11 @@ import org.apache.commons.compress.harmony.pack200.Archive.PackingFile;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.function.IOConsumer;
 
+/**
+ * Pack200 packing operations.
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
+ */
 public class PackingUtils {
 
     /**
@@ -249,7 +254,7 @@ public class PackingUtils {
     /**
      * Constructs new instance of PackingUtils.
      *
-     * @deprecated Will be private in 4.0.
+     * @deprecated Will be private in 2.0.
      */
     @Deprecated
     public PackingUtils() {
