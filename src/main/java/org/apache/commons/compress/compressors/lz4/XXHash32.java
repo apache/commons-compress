@@ -39,7 +39,7 @@ public class XXHash32 extends org.apache.commons.codec.digest.XXHash32 {
     /**
      * Creates an XXHash32 instance.
      *
-     * @param seed the seed to use
+     * @param seed the seed to use.
      */
     public XXHash32(final int seed) {
         super(seed);
