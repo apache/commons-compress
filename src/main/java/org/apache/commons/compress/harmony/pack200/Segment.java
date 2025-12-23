@@ -139,6 +139,12 @@ public class Segment extends ClassVisitor {
 
         private static final long serialVersionUID = 1L;
 
+        /**
+         * Constructs a new PassException.
+         */
+        public PassException() {
+        }
+
     }
 
     /**
