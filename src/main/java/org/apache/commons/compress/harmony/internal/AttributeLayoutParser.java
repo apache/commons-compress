@@ -32,6 +32,7 @@ import org.apache.commons.lang3.IntegerRange;
  * {@link org.apache.commons.compress.harmony.unpack200.NewAttributeBands}.</p>
  *
  * @param <T> a common type shared by {@code attribute_layout} and {@code callable}.
+ * @since 1.29.0
  */
 public final class AttributeLayoutParser<T> {
 
