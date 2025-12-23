@@ -35,7 +35,7 @@ public class ScatterStatistics {
     /**
      * The number of milliseconds elapsed in the parallel compression phase
      *
-     * @return The number of milliseconds elapsed
+     * @return The number of milliseconds elapsed.
      */
     public long getCompressionElapsed() {
         return compressionElapsed;
@@ -44,7 +44,7 @@ public class ScatterStatistics {
     /**
      * The number of milliseconds elapsed in merging the results of the parallel compression, the IO phase
      *
-     * @return The number of milliseconds elapsed
+     * @return The number of milliseconds elapsed.
      */
     public long getMergingElapsed() {
         return mergingElapsed;
