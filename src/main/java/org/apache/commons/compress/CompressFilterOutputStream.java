@@ -41,7 +41,7 @@ public abstract class CompressFilterOutputStream<T extends OutputStream> extends
      *
      * @param os      the target output stream.
      * @param data    the data.
-     * @param charset The {@link Charset} to be used to encode the {@code String}
+     * @param charset The {@link Charset} to be used to encode the {@code String}.
      * @return the ASCII bytes.
      * @exception IOException if an I/O error occurs.
      * @see OutputStream#write(byte[])
