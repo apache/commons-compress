@@ -25,6 +25,21 @@ package org.apache.commons.compress.harmony.unpack200;
  */
 public final class SegmentUtils {
 
+    /**
+     * Construct a new instance.
+     *
+     * @deprecated Will be removed in 2.0.
+     */
+    @Deprecated
+    public SegmentUtils() {
+    }
+
+    /**
+     * Counts the number of arguments in the descriptor.
+     *
+     * @param descriptor the descriptor string.
+     * @return the number of arguments.
+     */
     public static int countArgs(final String descriptor) {
         return countArgs(descriptor, 1);
     }
@@ -71,6 +86,12 @@ public final class SegmentUtils {
         return count;
     }
 
+    /**
+     * Counts the number of bit 16 flags set.
+     *
+     * @param flags the flags array.
+     * @return the count.
+     */
     public static int countBit16(final int[] flags) {
         int count = 0;
         for (final int flag : flags) {
@@ -81,6 +102,12 @@ public final class SegmentUtils {
         return count;
     }
 
+    /**
+     * Counts the number of bit 16 flags set.
+     *
+     * @param flags the flags array.
+     * @return the count.
+     */
     public static int countBit16(final long[] flags) {
         int count = 0;
         for (final long flag : flags) {
@@ -91,6 +118,12 @@ public final class SegmentUtils {
         return count;
     }
 
+    /**
+     * Counts the number of bit 16 flags set.
+     *
+     * @param flags the flags array.
+     * @return the count.
+     */
     public static int countBit16(final long[][] flags) {
         int count = 0;
         for (final long[] flag : flags) {
@@ -103,10 +136,23 @@ public final class SegmentUtils {
         return count;
     }
 
+    /**
+     * Counts the number of invoke interface arguments.
+     *
+     * @param descriptor the descriptor string.
+     * @return the number of arguments.
+     */
     public static int countInvokeInterfaceArgs(final String descriptor) {
         return countArgs(descriptor, 2);
     }
 
+    /**
+     * Counts the number of matches.
+     *
+     * @param flags the flags array.
+     * @param matcher the matcher.
+     * @return the count.
+     */
     public static int countMatches(final long[] flags, final IMatcher matcher) {
         int count = 0;
         for (final long flag : flags) {
@@ -117,6 +163,13 @@ public final class SegmentUtils {
         return count;
     }
 
+    /**
+     * Counts the number of matches.
+     *
+     * @param flags the flags array.
+     * @param matcher the matcher.
+     * @return the count.
+     */
     public static int countMatches(final long[][] flags, final IMatcher matcher) {
         int count = 0;
         for (final long[] flag : flags) {
