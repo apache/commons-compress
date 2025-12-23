@@ -73,8 +73,8 @@ public final class GeneralPurposeBit implements Cloneable {
      * Parses the supported flags from the given archive data.
      *
      * @param data   local file header or a central directory entry.
-     * @param offset offset at which the general purpose bit starts
-     * @return parsed flags
+     * @param offset offset at which the general purpose bit starts.
+     * @return parsed flags.
      */
     public static GeneralPurposeBit parse(final byte[] data, final int offset) {
         final int generalPurposeFlag = ZipShort.getValue(data, offset);
@@ -115,7 +115,7 @@ public final class GeneralPurposeBit implements Cloneable {
     /**
      * Encodes the set bits in a form suitable for ZIP archives.
      *
-     * @return the encoded general purpose bits
+     * @return the encoded general purpose bits.
      */
     public byte[] encode() {
         final byte[] result = new byte[2];
@@ -126,8 +126,8 @@ public final class GeneralPurposeBit implements Cloneable {
     /**
      * Encodes the set bits in a form suitable for ZIP archives.
      *
-     * @param buf    the output buffer
-     * @param offset The offset within the output buffer of the first byte to be written. must be non-negative and no larger than {@code buf.length-2}
+     * @param buf    the output buffer.
+     * @param offset The offset within the output buffer of the first byte to be written. must be non-negative and no larger than {@code buf.length-2}.
      */
     public void encode(final byte[] buf, final int offset) {
         ZipShort.putShort((dataDescriptorFlag ? DATA_DESCRIPTOR_FLAG : 0) | (languageEncodingFlag ? UFT8_NAMES_FLAG : 0)
@@ -167,7 +167,7 @@ public final class GeneralPurposeBit implements Cloneable {
     /**
      * whether the current entry will use the data descriptor to store CRC and size information.
      *
-     * @param b whether the current entry will use the data descriptor to store CRC and size information
+     * @param b whether the current entry will use the data descriptor to store CRC and size information.
      */
     public void useDataDescriptor(final boolean b) {
         dataDescriptorFlag = b;
@@ -176,7 +176,7 @@ public final class GeneralPurposeBit implements Cloneable {
     /**
      * whether the current entry will be encrypted.
      *
-     * @param b whether the current entry will be encrypted
+     * @param b whether the current entry will be encrypted.
      */
     public void useEncryption(final boolean b) {
         encryptionFlag = b;
@@ -185,7 +185,7 @@ public final class GeneralPurposeBit implements Cloneable {
     /**
      * whether the current entry uses the data descriptor to store CRC and size information.
      *
-     * @return whether the current entry uses the data descriptor to store CRC and size information
+     * @return whether the current entry uses the data descriptor to store CRC and size information.
      */
     public boolean usesDataDescriptor() {
         return dataDescriptorFlag;
@@ -194,7 +194,7 @@ public final class GeneralPurposeBit implements Cloneable {
     /**
      * whether the current entry is encrypted.
      *
-     * @return whether the current entry is encrypted
+     * @return whether the current entry is encrypted.
      */
     public boolean usesEncryption() {
         return encryptionFlag;
@@ -203,7 +203,7 @@ public final class GeneralPurposeBit implements Cloneable {
     /**
      * whether the current entry is encrypted using strong encryption.
      *
-     * @return whether the current entry is encrypted using strong encryption
+     * @return whether the current entry is encrypted using strong encryption.
      */
     public boolean usesStrongEncryption() {
         return encryptionFlag && strongEncryptionFlag;
@@ -212,7 +212,7 @@ public final class GeneralPurposeBit implements Cloneable {
     /**
      * whether the current entry will be encrypted using strong encryption.
      *
-     * @param b whether the current entry will be encrypted using strong encryption
+     * @param b whether the current entry will be encrypted using strong encryption.
      */
     public void useStrongEncryption(final boolean b) {
         strongEncryptionFlag = b;
