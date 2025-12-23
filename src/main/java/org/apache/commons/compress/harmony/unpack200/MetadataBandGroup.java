@@ -254,6 +254,12 @@ public class MetadataBandGroup {
         return new RuntimeVisibleorInvisibleAnnotationsAttribute(type.equals("RVA") ? rvaUTF8 : riaUTF8, annotations);
     }
 
+    /**
+     * Gets the attributes.
+     *
+     * @return the attributes.
+     * @throws Pack200Exception if a Pack200 error occurs.
+     */
     public List<Attribute> getAttributes() throws Pack200Exception {
         // TODO: Optimize iterators!
         if (attributes == null) {
