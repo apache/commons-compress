@@ -410,6 +410,14 @@ public class SegmentHeader {
         cpIMethodCount = decodeScalar("cp_Imethod_count", in, Codec.UNSIGNED5);
     }
 
+    /**
+     * Reads the segment header from the input stream.
+     *
+     * @param in the input stream.
+     * @throws IOException if an I/O error occurs.
+     * @throws Error if an error occurs.
+     * @throws Pack200Exception if a Pack200 error occurs.
+     */
     public void read(final InputStream in) throws IOException, Error, Pack200Exception {
         final int[] word = decodeScalar("archive_magic_word", in, Codec.BYTE1, magic.length);
         for (int m = 0; m < magic.length; m++) {
