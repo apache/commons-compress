@@ -72,7 +72,7 @@ public final class Parameters {
          * Use this method after configuring "maximum back-reference length".
          * </p>
          *
-         * @return the builder
+         * @return the builder.
          */
         public Builder tunedForCompressionRatio() {
             niceBackReferenceLength = lazyThreshold = maxBackReferenceLength;
@@ -88,7 +88,7 @@ public final class Parameters {
          * Use this method after configuring "maximum back-reference length".
          * </p>
          *
-         * @return the builder
+         * @return the builder.
          */
         public Builder tunedForSpeed() {
             niceBackReferenceLength = Math.max(minBackReferenceLength, maxBackReferenceLength / 8);
@@ -108,8 +108,8 @@ public final class Parameters {
          * Lazy matching is enabled by default and disabled when tuning for speed.
          * </p>
          *
-         * @param lazy whether lazy matching should be performed
-         * @return the builder
+         * @param lazy whether lazy matching should be performed.
+         * @return the builder.
          */
         public Builder withLazyMatching(final boolean lazy) {
             lazyMatches = lazy;
@@ -123,8 +123,8 @@ public final class Parameters {
          * value.
          * </p>
          *
-         * @param threshold the threshold for lazy matching
-         * @return the builder
+         * @param threshold the threshold for lazy matching.
+         * @return the builder.
          */
         public Builder withLazyThreshold(final int threshold) {
             lazyThreshold = threshold;
@@ -140,7 +140,7 @@ public final class Parameters {
          *
          * @param maxBackReferenceLength maximal length of a back-reference found. A value smaller than {@code minBackReferenceLength} is interpreted as
          *                               {@code minBackReferenceLength}. {@code maxBackReferenceLength} is capped at {@code windowSize - 1}.
-         * @return the builder
+         * @return the builder.
          */
         public Builder withMaxBackReferenceLength(final int maxBackReferenceLength) {
             this.maxBackReferenceLength = maxBackReferenceLength < minBackReferenceLength ? minBackReferenceLength
@@ -157,7 +157,7 @@ public final class Parameters {
          *
          * @param maxLiteralLength maximal length of a literal block. Negative numbers and 0 as well as values bigger than {@code windowSize} are interpreted as
          *                         {@code windowSize}.
-         * @return the builder
+         * @return the builder.
          */
         public Builder withMaxLiteralLength(final int maxLiteralLength) {
             this.maxLiteralLength = maxLiteralLength < 1 ? windowSize : Math.min(maxLiteralLength, windowSize);
@@ -170,8 +170,8 @@ public final class Parameters {
          * This settings can be used to tune the tradeoff between compression speed and compression ratio.
          * </p>
          *
-         * @param maxCandidates maximum number of back-reference candidates
-         * @return the builder
+         * @param maxCandidates maximum number of back-reference candidates.
+         * @return the builder.
          */
         public Builder withMaxNumberOfCandidates(final int maxCandidates) {
             this.maxCandidates = maxCandidates;
@@ -187,7 +187,7 @@ public final class Parameters {
          *
          * @param maxOffset maximal offset of a back-reference. A non-positive value as well as values bigger than {@code windowSize - 1} are interpreted as
          *                  {@code windowSize * - 1}.
-         * @return the builder
+         * @return the builder.
          */
         public Builder withMaxOffset(final int maxOffset) {
             this.maxOffset = maxOffset < 1 ? windowSize - 1 : Math.min(maxOffset, windowSize - 1);
@@ -207,7 +207,7 @@ public final class Parameters {
          * @param minBackReferenceLength the minimal length of a back-reference found. A true minimum of 3 is hard-coded inside of this implementation but
          *                               bigger lengths can be configured.
          * @throws IllegalArgumentException if {@code windowSize} is smaller than {@code minBackReferenceLength}.
-         * @return the builder
+         * @return the builder.
          */
         public Builder withMinBackReferenceLength(final int minBackReferenceLength) {
             this.minBackReferenceLength = Math.max(TRUE_MIN_BACK_REFERENCE_LENGTH, minBackReferenceLength);
@@ -229,8 +229,8 @@ public final class Parameters {
          * This settings can be used to tune the tradeoff between compression speed and compression ratio.
          * </p>
          *
-         * @param niceLen the "nice length" of a back-reference
-         * @return the builder
+         * @param niceLen the "nice length" of a back-reference.
+         * @return the builder.
          */
         public Builder withNiceBackReferenceLength(final int niceLen) {
             niceBackReferenceLength = niceLen;
@@ -253,7 +253,7 @@ public final class Parameters {
      *
      * @param windowSize the size of the sliding window - this determines the maximum offset a back-reference can take. Must be a power of two.
      * @throws IllegalArgumentException if windowSize is not a power of two.
-     * @return a builder configured for the given window size
+     * @return a builder configured for the given window size.
      */
     public static Builder builder(final int windowSize) {
         return new Builder(windowSize);
@@ -291,7 +291,7 @@ public final class Parameters {
     /**
      * Gets whether to perform lazy matching.
      *
-     * @return whether to perform lazy matching
+     * @return whether to perform lazy matching.
      */
     public boolean getLazyMatching() {
         return lazyMatching;
@@ -300,7 +300,7 @@ public final class Parameters {
     /**
      * Gets the threshold for lazy matching.
      *
-     * @return the threshold for lazy matching
+     * @return the threshold for lazy matching.
      */
     public int getLazyMatchingThreshold() {
         return lazyThreshold;
@@ -309,7 +309,7 @@ public final class Parameters {
     /**
      * Gets the maximal length of a back-reference found.
      *
-     * @return the maximal length of a back-reference found
+     * @return the maximal length of a back-reference found.
      */
     public int getMaxBackReferenceLength() {
         return maxBackReferenceLength;
@@ -318,7 +318,7 @@ public final class Parameters {
     /**
      * Gets the maximum number of back-reference candidates to consider.
      *
-     * @return the maximum number of back-reference candidates to consider
+     * @return the maximum number of back-reference candidates to consider.
      */
     public int getMaxCandidates() {
         return maxCandidates;
@@ -327,7 +327,7 @@ public final class Parameters {
     /**
      * Gets the maximal length of a literal block.
      *
-     * @return the maximal length of a literal block
+     * @return the maximal length of a literal block.
      */
     public int getMaxLiteralLength() {
         return maxLiteralLength;
@@ -336,7 +336,7 @@ public final class Parameters {
     /**
      * Gets the maximal offset of a back-reference found.
      *
-     * @return the maximal offset of a back-reference found
+     * @return the maximal offset of a back-reference found.
      */
     public int getMaxOffset() {
         return maxOffset;
@@ -345,7 +345,7 @@ public final class Parameters {
     /**
      * Gets the minimal length of a back-reference found.
      *
-     * @return the minimal length of a back-reference found
+     * @return the minimal length of a back-reference found.
      */
     public int getMinBackReferenceLength() {
         return minBackReferenceLength;
@@ -354,7 +354,7 @@ public final class Parameters {
     /**
      * Gets the length of a back-reference that is considered nice enough to stop searching for longer ones.
      *
-     * @return the length of a back-reference that is considered nice enough to stop searching
+     * @return the length of a back-reference that is considered nice enough to stop searching.
      */
     public int getNiceBackReferenceLength() {
         return niceBackReferenceLength;
@@ -363,7 +363,7 @@ public final class Parameters {
     /**
      * Gets the size of the sliding window - this determines the maximum offset a back-reference can take.
      *
-     * @return the size of the sliding window
+     * @return the size of the sliding window.
      */
     public int getWindowSize() {
         return windowSize;
