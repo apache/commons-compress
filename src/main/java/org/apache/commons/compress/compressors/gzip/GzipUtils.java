@@ -63,8 +63,8 @@ public class GzipUtils {
      * versions are automatically detected and correctly mapped. For example the name "package.tar" is mapped to "package.tgz". If no custom mapping is
      * applicable, then the default ".gz" suffix is appended to the file name.
      *
-     * @param fileName name of a file
-     * @return name of the corresponding compressed file
+     * @param fileName name of a file.
+     * @return name of the corresponding compressed file.
      * @deprecated Use {@link #getCompressedFileName(String)}.
      */
     @Deprecated
@@ -76,8 +76,8 @@ public class GzipUtils {
      * versions are automatically detected and correctly mapped. For example the name "package.tar" is mapped to "package.tgz". If no custom mapping is
      * applicable, then the default ".gz" suffix is appended to the file name.
      *
-     * @param fileName name of a file
-     * @return name of the corresponding compressed file
+     * @param fileName name of a file.
+     * @return name of the corresponding compressed file.
      * @since 1.25.0
      */
     public static String getCompressedFileName(final String fileName) {
@@ -90,8 +90,8 @@ public class GzipUtils {
      * the generic ".gz" suffix (or any other generic gzip suffix) is mapped to a name without that suffix. If no gzip suffix is detected, then the file name is
      * returned unmapped.
      *
-     * @param fileName name of a file
-     * @return name of the corresponding uncompressed file
+     * @param fileName name of a file.
+     * @return name of the corresponding uncompressed file.
      * @deprecated Use {@link #getUncompressedFileName(String)}.
      */
     @Deprecated
@@ -105,8 +105,8 @@ public class GzipUtils {
      * the generic ".gz" suffix (or any other generic gzip suffix) is mapped to a name without that suffix. If no gzip suffix is detected, then the file name is
      * returned unmapped.
      *
-     * @param fileName name of a file
-     * @return name of the corresponding uncompressed file
+     * @param fileName name of a file.
+     * @return name of the corresponding uncompressed file.
      * @since 1.25.0
      */
     public static String getUncompressedFileName(final String fileName) {
@@ -116,8 +116,8 @@ public class GzipUtils {
     /**
      * Detects common gzip suffixes in the given file name.
      *
-     * @param fileName name of a file
-     * @return {@code true} if the file name has a common gzip suffix, {@code false} otherwise
+     * @param fileName name of a file.
+     * @return {@code true} if the file name has a common gzip suffix, {@code false} otherwise.
      * @deprecated Use {@link #isCompressedFileName(String)}.
      */
     @Deprecated
@@ -128,8 +128,8 @@ public class GzipUtils {
     /**
      * Detects common gzip suffixes in the given file name.
      *
-     * @param fileName name of a file
-     * @return {@code true} if the file name has a common gzip suffix, {@code false} otherwise
+     * @param fileName name of a file.
+     * @return {@code true} if the file name has a common gzip suffix, {@code false} otherwise.
      * @since 1.25.0
      */
     public static boolean isCompressedFileName(final String fileName) {
