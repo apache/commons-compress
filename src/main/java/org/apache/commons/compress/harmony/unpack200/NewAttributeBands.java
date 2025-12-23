@@ -69,8 +69,8 @@ public class NewAttributeBands extends BandSet {
         /**
          * Reads the bands associated with this part of the layout.
          *
-         * @param in    TODO
-         * @param count TODO
+         * @param in    the input stream to read from.
+         * @param count the number of elements to read.
          * @throws Pack200Exception Bad archive.
          * @throws IOException      If an I/O error occurs.
          */
@@ -210,7 +210,7 @@ public class NewAttributeBands extends BandSet {
         /**
          * Adds the count of a call to this callable (ie the number of calls)
          *
-         * @param count TODO
+         * @param count the count to add.
          */
         public void addCount(final int count) {
             this.count += count;
@@ -219,7 +219,7 @@ public class NewAttributeBands extends BandSet {
         /**
          * Used by calls when adding band contents to attributes, so they don't have to keep track of the internal index of the callable.
          *
-         * @param attribute TODO
+         * @param attribute the attribute to add to.
          */
         public void addNextToAttribute(final NewAttribute attribute) {
             for (final LayoutElement element : body) {
@@ -838,7 +838,7 @@ public class NewAttributeBands extends BandSet {
     /**
      * Returns the {@link BHSDCodec} that should be used for the given layout element.
      *
-     * @param layoutElement TODO
+     * @param layoutElement the layout element string.
      * @return the {@link BHSDCodec} that should be used for the given layout element.
      */
     public BHSDCodec getCodec(final String layoutElement) {
@@ -861,8 +861,8 @@ public class NewAttributeBands extends BandSet {
     /**
      * Gets one attribute at the given index from the various bands. The correct bands must have already been read in.
      *
-     * @param index    TODO
-     * @param elements TODO
+     * @param index    the index of the attribute.
+     * @param elements the layout elements.
      * @return attribute at the given index.
      */
     private Attribute getOneAttribute(final int index, final List<LayoutElement> elements) {
@@ -877,7 +877,7 @@ public class NewAttributeBands extends BandSet {
      * Parse the bands relating to this AttributeLayout and return the correct class file attributes as a List of {@link Attribute}.
      *
      * @param in              parse source.
-     * @param occurrenceCount TODO
+     * @param occurrenceCount the number of occurrences.
      * @return Class file attributes as a List of {@link Attribute}.
      * @throws IOException      If an I/O error occurs.
      * @throws Pack200Exception If a Pack200 semantic error occurs.
