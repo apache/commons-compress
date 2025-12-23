@@ -36,6 +36,12 @@ public class Pack200PackerAdapter extends Pack200Adapter implements Packer {
 
     private final PackingOptions options = new PackingOptions();
 
+    /**
+     * Constructs a new Pack200PackerAdapter.
+     */
+    public Pack200PackerAdapter() {
+    }
+
     @Override
     protected void firePropertyChange(final String propertyName, final Object oldValue, final Object newValue) throws IOException {
         super.firePropertyChange(propertyName, oldValue, newValue);
