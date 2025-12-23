@@ -24,5 +24,7 @@
  *
  * <p>All classes and methods in this package are implementation details and may change or be removed at any time without notice. External code must not depend
  * on them.</p>
+ *
+ * @since 1.29.0
  */
 package org.apache.commons.compress.harmony.internal;
