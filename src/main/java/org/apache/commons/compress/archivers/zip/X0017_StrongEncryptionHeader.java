@@ -300,7 +300,7 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
     /**
      * Gets encryption algorithm.
      *
-     * @return the encryption algorithm
+     * @return the encryption algorithm.
      */
     public EncryptionAlgorithm getEncryptionAlgorithm() {
         return algId;
@@ -309,7 +309,7 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
     /**
      * Gets hash algorithm.
      *
-     * @return the hash algorithm
+     * @return the hash algorithm.
      */
     public HashAlgorithm getHashAlgorithm() {
         return hashAlg;
@@ -318,7 +318,7 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
     /**
      * Gets record count.
      *
-     * @return the record count
+     * @return the record count.
      */
     public long getRecordCount() {
         return rcount;
@@ -327,10 +327,10 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
     /**
      * Parse central directory format.
      *
-     * @param data   the buffer to read data from
-     * @param offset offset into buffer to read data
-     * @param length the length of data
-     * @throws ZipException if an error occurs
+     * @param data   the buffer to read data from.
+     * @param offset offset into buffer to read data.
+     * @param length the length of data.
+     * @throws ZipException if an error occurs.
      */
     public void parseCentralDirectoryFormat(final byte[] data, final int offset, final int length) throws ZipException {
         assertMinimalLength(12, length);
@@ -355,10 +355,10 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
      * (Password only?)
      * </p>
      *
-     * @param data   the buffer to read data from
-     * @param offset offset into buffer to read data
-     * @param length the length of data
-     * @throws ZipException if an error occurs
+     * @param data   the buffer to read data from.
+     * @param offset offset into buffer to read data.
+     * @param length the length of data.
+     * @throws ZipException if an error occurs.
      */
     public void parseFileFormat(final byte[] data, final int offset, final int length) throws ZipException {
         assertMinimalLength(4, length);
