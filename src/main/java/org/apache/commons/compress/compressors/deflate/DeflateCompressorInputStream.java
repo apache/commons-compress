@@ -44,9 +44,9 @@ public class DeflateCompressorInputStream extends CompressorInputStream implemen
     /**
      * Checks if the signature matches what is expected for a zlib / deflated file with the zlib header.
      *
-     * @param signature the bytes to check
-     * @param length    the number of bytes to check
-     * @return true, if this stream is zlib / deflate compressed with a header stream, false otherwise
+     * @param signature the bytes to check.
+     * @param length    the number of bytes to check.
+     * @return true, if this stream is zlib / deflate compressed with a header stream, false otherwise.
      * @since 1.10
      */
     public static boolean matches(final byte[] signature, final int length) {
@@ -62,7 +62,7 @@ public class DeflateCompressorInputStream extends CompressorInputStream implemen
     /**
      * Creates a new input stream that decompresses Deflate-compressed data from the specified input stream.
      *
-     * @param inputStream where to read the compressed data
+     * @param inputStream where to read the compressed data.
      */
     public DeflateCompressorInputStream(final InputStream inputStream) {
         this(inputStream, new DeflateParameters());
@@ -71,8 +71,8 @@ public class DeflateCompressorInputStream extends CompressorInputStream implemen
     /**
      * Creates a new input stream that decompresses Deflate-compressed data from the specified input stream.
      *
-     * @param inputStream where to read the compressed data
-     * @param parameters  parameters
+     * @param inputStream where to read the compressed data.
+     * @param parameters  parameters.
      */
     public DeflateCompressorInputStream(final InputStream inputStream, final DeflateParameters parameters) {
         inflater = new Inflater(!parameters.withZlibHeader());
