@@ -335,7 +335,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      * Integer.MAX_VALUE is returned in case more than Integer.MAX_VALUE bytes are left in the current entry in the archive.
      *
      * @return The number of available bytes for the current entry.
-     * @throws IOException for signature
+     * @throws IOException for signature.
      */
     @Override
     public int available() throws IOException {
@@ -397,7 +397,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
     /**
      * Tests whether this class is able to read the given entry.
      *
-     * @return The implementation will return true if the {@link ArchiveEntry} is an instance of {@link TarArchiveEntry}
+     * @return The implementation will return true if the {@link ArchiveEntry} is an instance of {@link TarArchiveEntry}.
      */
     @Override
     public boolean canReadEntryData(final ArchiveEntry archiveEntry) {
@@ -645,10 +645,10 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      * @param offset    The offset at which to place bytes read.
      * @param numToRead The number of bytes to read.
      * @return The number of bytes read, or -1 at EOF.
-     * @throws NullPointerException      if {@code buf} is null
+     * @throws NullPointerException      if {@code buf} is null.
      * @throws IndexOutOfBoundsException if {@code offset} or {@code numToRead} are negative,
      *                                   or if {@code offset + numToRead} is greater than {@code buf.length}.
-     * @throws IOException on error
+     * @throws IOException on error.
      */
     @Override
     public int read(final byte[] buf, final int offset, int numToRead) throws IOException {
