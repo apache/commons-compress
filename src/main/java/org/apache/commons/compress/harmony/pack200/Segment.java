@@ -293,6 +293,9 @@ public class Segment extends ClassVisitor {
      */
     public class SegmentFieldVisitor extends FieldVisitor {
 
+        /**
+         * Constructs a new SegmentFieldVisitor.
+         */
         public SegmentFieldVisitor() {
             super(ASM_API);
         }
@@ -339,6 +342,9 @@ public class Segment extends ClassVisitor {
      */
     public class SegmentMethodVisitor extends MethodVisitor {
 
+        /**
+         * Constructs a new SegmentMethodVisitor.
+         */
         public SegmentMethodVisitor() {
             super(ASM_API);
         }
