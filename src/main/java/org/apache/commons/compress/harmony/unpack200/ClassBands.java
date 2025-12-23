@@ -655,8 +655,8 @@ public class ClassBands extends BandSet {
     /**
      * Parse the class metadata bands and return the number of backwards callables.
      *
-     * @param in             TODO
-     * @param classAttrCalls TODO
+     * @param in             the input stream to read from.
+     * @param classAttrCalls the class attribute calls array.
      * @return the number of backwards callables.
      * @throws Pack200Exception If a Pack200 semantic error occurs.
      * @throws IOException      If an I/O error occurs.
