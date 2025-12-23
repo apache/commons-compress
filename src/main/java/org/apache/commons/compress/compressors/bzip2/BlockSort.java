@@ -241,11 +241,11 @@ final class BlockSort {
      */
 
     /**
-     * @param fmap   points to the index of the starting point of a permutation inside the block of data in the current partially sorted order
+     * @param fmap   points to the index of the starting point of a permutation inside the block of data in the current partially sorted order.
      * @param eclass points from the index of a character inside the block to the first index in fmap that contains the bucket of its suffix that is sorted in
      *               this step.
-     * @param loSt   lower boundary of the fmap-interval to be sorted
-     * @param hiSt   upper boundary of the fmap-interval to be sorted
+     * @param loSt   lower boundary of the fmap-interval to be sorted.
+     * @param hiSt   upper boundary of the fmap-interval to be sorted.
      */
     private void fallbackQSort3(final int[] fmap, final int[] eclass, final int loSt, final int hiSt) {
         int lo;
@@ -355,11 +355,11 @@ final class BlockSort {
     /*---------------------------------------------*/
 
     /**
-     * @param fmap   points to the index of the starting point of a permutation inside the block of data in the current partially sorted order
+     * @param fmap   points to the index of the starting point of a permutation inside the block of data in the current partially sorted order.
      * @param eclass points from the index of a character inside the block to the first index in fmap that contains the bucket of its suffix that is sorted in
      *               this step.
-     * @param lo     lower boundary of the fmap-interval to be sorted
-     * @param hi     upper boundary of the fmap-interval to be sorted
+     * @param lo     lower boundary of the fmap-interval to be sorted.
+     * @param hi     upper boundary of the fmap-interval to be sorted.
      */
     private void fallbackSimpleSort(final int[] fmap, final int[] eclass, final int lo, final int hi) {
         if (lo == hi) {
@@ -415,9 +415,9 @@ final class BlockSort {
     --*/
 
     /**
-     * @param fmap   points to the index of the starting point of a permutation inside the block of data in the current partially sorted order
-     * @param block  the original data
-     * @param nblock size of the block
+     * @param fmap   points to the index of the starting point of a permutation inside the block of data in the current partially sorted order.
+     * @param block  the original data.
+     * @param nblock size of the block.
      */
     void fallbackSort(final int[] fmap, final byte[] block, final int nblock) {
         final int[] ftab = new int[257];
