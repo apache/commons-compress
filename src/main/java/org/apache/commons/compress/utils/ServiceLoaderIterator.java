@@ -27,7 +27,7 @@ import java.util.ServiceLoader;
 /**
  * Iterates all services for a given class through the standard {@link ServiceLoader} mechanism.
  *
- * @param <E> The service to load
+ * @param <E> The service to load.
  * @since 1.13
  * @deprecated No longer used.
  */
@@ -52,7 +52,7 @@ public class ServiceLoaderIterator<E> implements Iterator<E> {
      *
      * @param service     The interface or abstract class representing the service.
      * @param classLoader The class loader to be used to load provider-configuration files and provider classes, or {@code null} if the system class loader (or,
-     *                    failing that, the bootstrap class loader) is to be used
+     *                    failing that, the bootstrap class loader) is to be used.
      */
     public ServiceLoaderIterator(final Class<E> service, final ClassLoader classLoader) {
         this.service = service;
