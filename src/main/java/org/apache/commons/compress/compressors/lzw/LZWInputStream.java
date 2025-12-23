@@ -94,10 +94,10 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
     /**
      * Adds a new entry if the maximum table size hasn't been exceeded and returns the new index.
      *
-     * @param previousCode the previous code
-     * @param character    the character to append
-     * @param maxTableSize the maximum table size
-     * @return the new code or -1 if maxTableSize has been reached already
+     * @param previousCode the previous code.
+     * @param character    the character to append.
+     * @param maxTableSize the maximum table size.
+     * @return the new code or -1 if maxTableSize has been reached already.
      */
     protected int addEntry(final int previousCode, final byte character, final int maxTableSize) {
         if (tableSize < maxTableSize) {
@@ -222,7 +222,7 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
     /**
      * Initializes the arrays based on the maximum code size.
      *
-     * @param maxCodeSize maximum code size
+     * @param maxCodeSize maximum code size.
      * @throws IllegalArgumentException if {@code maxCodeSize} is out of bounds for {@code prefixes} and {@code characters}.
      */
     protected void initializeTables(final int maxCodeSize) {
@@ -247,7 +247,7 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
     /**
      * Initializes the arrays based on the maximum code size. First checks that the estimated memory usage is below memoryLimitInKb
      *
-     * @param maxCodeSize     maximum code size
+     * @param maxCodeSize     maximum code size.
      * @param memoryLimiKiB maximum allowed estimated memory usage in kibibytes (KiB).
      * @throws MemoryLimitException     if estimated memory usage is greater than memoryLimitKiB.
      * @throws IllegalArgumentException if {@code maxCodeSize} is not bigger than 0.
@@ -338,7 +338,7 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
     /**
      * Sets the clear code based on the code size.
      *
-     * @param codeSize code size
+     * @param codeSize code size.
      */
     protected void setClearCode(final int codeSize) {
         clearCode = 1 << codeSize - 1;
