@@ -667,7 +667,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream<OutputSt
     /**
      * Returns the blocksize parameter specified at construction time.
      *
-     * @return the blocksize parameter specified at construction time
+     * @return the blocksize parameter specified at construction time.
      */
     public final int getBlockSize() {
         return this.blockSize100k;
@@ -677,7 +677,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream<OutputSt
      * Writes magic bytes like BZ on the first position of the stream and bytes indicating the file-format, which is huffmanized, followed by a digit indicating
      * blockSize100k.
      *
-     * @throws IOException if the magic bytes could not been written
+     * @throws IOException if the magic bytes could not been written.
      */
     private void init() throws IOException {
         bsPutUByte('B');
