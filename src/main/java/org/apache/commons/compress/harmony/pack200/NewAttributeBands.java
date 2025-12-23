@@ -918,8 +918,8 @@ public class NewAttributeBands extends BandSet {
     /**
      * Renumber any bytecode indexes or offsets as described in section 5.5.2 of the pack200 specification
      *
-     * @param bciRenumbering  TODO
-     * @param labelsToOffsets TODO
+     * @param bciRenumbering  the BCI renumbering list.
+     * @param labelsToOffsets the map of labels to offsets.
      */
     public void renumberBci(final IntList bciRenumbering, final Map<Label, Integer> labelsToOffsets) {
         for (final AttributeLayoutElement attributeLayoutElement : attributeLayoutElements) {
