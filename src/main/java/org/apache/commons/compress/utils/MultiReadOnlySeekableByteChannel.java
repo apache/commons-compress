@@ -52,10 +52,10 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
     /**
      * Concatenates the given files.
      *
-     * @param files the files to concatenate
-     * @throws NullPointerException if files is null
-     * @throws IOException          if opening a channel for one of the files fails
-     * @return SeekableByteChannel that concatenates all provided files
+     * @param files the files to concatenate.
+     * @throws NullPointerException if files is null.
+     * @throws IOException          if opening a channel for one of the files fails.
+     * @return SeekableByteChannel that concatenates all provided files.
      */
     public static SeekableByteChannel forFiles(final File... files) throws IOException {
         final List<Path> paths = new ArrayList<>();
@@ -70,10 +70,10 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
      *
      * @param paths the file paths to concatenate, note that the LAST FILE of files should be the LAST SEGMENT(.zip) and these files should be added in correct
      *              order (for example: .z01, .z02... .z99, .zip)
-     * @return SeekableByteChannel that concatenates all provided files
-     * @throws NullPointerException if files is null
-     * @throws IOException          if opening a channel for one of the files fails
-     * @throws IOException          if the first channel doesn't seem to hold the beginning of a split archive
+     * @return SeekableByteChannel that concatenates all provided files.
+     * @throws NullPointerException if files is null.
+     * @throws IOException          if opening a channel for one of the files fails.
+     * @throws IOException          if the first channel doesn't seem to hold the beginning of a split archive.
      * @since 1.22
      */
     public static SeekableByteChannel forPaths(final Path... paths) throws IOException {
@@ -90,9 +90,9 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
     /**
      * Concatenates the given channels.
      *
-     * @param channels the channels to concatenate
-     * @throws NullPointerException if channels is null
-     * @return SeekableByteChannel that concatenates all provided channels
+     * @param channels the channels to concatenate.
+     * @throws NullPointerException if channels is null.
+     * @return SeekableByteChannel that concatenates all provided channels.
      */
     public static SeekableByteChannel forSeekableByteChannels(final SeekableByteChannel... channels) {
         if (Objects.requireNonNull(channels, "channels").length == 1) {
@@ -110,8 +110,8 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
     /**
      * Concatenates the given channels.
      *
-     * @param channels the channels to concatenate
-     * @throws NullPointerException if channels is null
+     * @param channels the channels to concatenate.
+     * @throws NullPointerException if channels is null.
      */
     public MultiReadOnlySeekableByteChannel(final List<SeekableByteChannel> channels) {
         this.channelList = Collections.unmodifiableList(new ArrayList<>(Objects.requireNonNull(channels, "channels")));
@@ -191,10 +191,10 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
     /**
      * Sets the position based on the given channel number and relative offset
      *
-     * @param channelNumber  the channel number
-     * @param relativeOffset the relative offset in the corresponding channel
-     * @return global position of all channels as if they are a single channel
-     * @throws IOException if positioning fails
+     * @param channelNumber  the channel number.
+     * @param relativeOffset the relative offset in the corresponding channel.
+     * @return global position of all channels as if they are a single channel.
+     * @throws IOException if positioning fails.
      */
     public synchronized SeekableByteChannel position(final long channelNumber, final long relativeOffset) throws IOException {
         if (!isOpen()) {
