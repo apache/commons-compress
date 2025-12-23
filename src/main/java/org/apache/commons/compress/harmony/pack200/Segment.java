@@ -644,7 +644,7 @@ public class Segment extends ClassVisitor {
     /**
      * The main method on Segment. Reads in all the class files, packs them and then writes the packed segment out to the given OutputStream.
      *
-     * @param segmentUnit TODO
+     * @param segmentUnit the segment unit containing files and classes to pack.
      * @param out         the OutputStream to write the packed Segment to.
      * @param options     packing options.
      * @throws IOException      If an I/O error occurs.
