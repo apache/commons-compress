@@ -427,7 +427,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * @param headerBuf The header bytes from a tar archive entry.
      * @param encoding  encoding to use for file names.
      * @throws IllegalArgumentException if any of the numeric fields have an invalid format.
-     * @throws IOException              on error
+     * @throws IOException              on error.
      * @since 1.4
      */
     public TarArchiveEntry(final byte[] headerBuf, final ZipEncoding encoding) throws IOException {
@@ -568,7 +568,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * </p>
      *
      * @param file The file that the entry represents.
-     * @throws IOException if an I/O error occurs
+     * @throws IOException if an I/O error occurs.
      * @since 1.21
      */
     public TarArchiveEntry(final Path file) throws IOException {
@@ -605,7 +605,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * Windows drive letters stripped.
      * </p>
      *
-     * @param name the entry name
+     * @param name the entry name.
      */
     public TarArchiveEntry(final String name) {
         this(name, false);
@@ -618,7 +618,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * letters are stripped if {@code preserveAbsolutePath} is {@code false}.
      * </p>
      *
-     * @param name                 the entry name
+     * @param name                 the entry name.
      * @param preserveAbsolutePath whether to allow leading slashes or drive letters in the name.
      * @since 1.1
      */
@@ -640,7 +640,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * Windows drive letters stripped.
      * </p>
      *
-     * @param name     the entry name
+     * @param name     the entry name.
      * @param linkFlag the entry link flag.
      */
     public TarArchiveEntry(final String name, final byte linkFlag) {
@@ -721,7 +721,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * Evaluates an entry's header format from a header buffer.
      *
      * @param header The tar entry header buffer to evaluate the format for.
-     * @return format type
+     * @return format type.
      */
     private int evaluateType(final Map<String, String> globalPaxHeaders, final byte[] header) {
         if (ArchiveUtils.matchAsciiBuffer(MAGIC_GNU, header, MAGIC_OFFSET, MAGICLEN)) {
@@ -839,7 +839,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Gets named extra PAX header
      *
-     * @param name The full name of an extended PAX header to retrieve
+     * @param name The full name of an extended PAX header to retrieve.
      * @return The value of the header, if any.
      * @since 1.15
      */
@@ -850,7 +850,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Gets extra PAX Headers
      *
-     * @return read-only map containing any extra PAX Headers
+     * @return read-only map containing any extra PAX Headers.
      * @since 1.15
      */
     public Map<String, String> getExtraPaxHeaders() {
@@ -995,8 +995,8 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Gets this entry's sparse headers ordered by offset with all empty sparse sections at the start filtered out.
      *
-     * @return immutable list of this entry's sparse headers, never null
-     * @throws IOException if the list of sparse headers contains blocks that overlap
+     * @return immutable list of this entry's sparse headers, never null.
+     * @throws IOException if the list of sparse headers contains blocks that overlap.
      * @since 1.21
      */
     public List<TarArchiveStructSparse> getOrderedSparseHeaders() throws IOException {
@@ -1074,7 +1074,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Gets this entry's sparse headers
      *
-     * @return This entry's sparse headers
+     * @return This entry's sparse headers.
      * @since 1.20
      */
     public List<TarArchiveStructSparse> getSparseHeaders() {
@@ -1114,7 +1114,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Hash codes are based on entry names.
      *
-     * @return the entry hash code
+     * @return the entry hash code.
      */
     @Override
     public int hashCode() {
@@ -1124,7 +1124,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Tests whether this is a block device entry.
      *
-     * @return whether this is a block device
+     * @return whether this is a block device.
      * @since 1.2
      */
     public boolean isBlockDevice() {
@@ -1134,7 +1134,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Tests whether this is a character device entry.
      *
-     * @return whether this is a character device
+     * @return whether this is a character device.
      * @since 1.2
      */
     public boolean isCharacterDevice() {
@@ -1144,7 +1144,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Tests whether this entry's checksum status.
      *
-     * @return if the header checksum is reasonably correct
+     * @return if the header checksum is reasonably correct.
      * @see TarUtils#verifyCheckSum(byte[], boolean)
      * @since 1.5
      */
@@ -1190,7 +1190,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Tests whether this is a FIFO (pipe) entry.
      *
-     * @return whether this is a FIFO entry
+     * @return whether this is a FIFO entry.
      * @since 1.2
      */
     public boolean isFIFO() {
@@ -1200,7 +1200,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Tests whether this is a "normal file"
      *
-     * @return whether this is a "normal file"
+     * @return whether this is a "normal file".
      * @since 1.2
      */
     public boolean isFile() {
@@ -1226,7 +1226,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Tests whether this entry is a GNU long linkname block
      *
-     * @return true if this is a long name extension provided by GNU tar
+     * @return true if this is a long name extension provided by GNU tar.
      */
     public boolean isGNULongLinkEntry() {
         return linkFlag == LF_GNUTYPE_LONGLINK;
@@ -1235,7 +1235,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Tests whether this entry is a GNU long name block
      *
-     * @return true if this is a long name extension provided by GNU tar
+     * @return true if this is a long name extension provided by GNU tar.
      */
     public boolean isGNULongNameEntry() {
         return linkFlag == LF_GNUTYPE_LONGNAME;
@@ -1244,7 +1244,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Tests whether this entry is a GNU sparse block.
      *
-     * @return true if this is a sparse extension provided by GNU tar
+     * @return true if this is a sparse extension provided by GNU tar.
      */
     public boolean isGNUSparse() {
         return isOldGNUSparse() || isPaxGNUSparse();
@@ -1289,7 +1289,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Tests whether this is a link entry.
      *
-     * @return whether this is a link entry
+     * @return whether this is a link entry.
      * @since 1.2
      */
     public boolean isLink() {
@@ -1299,7 +1299,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Tests whether this entry is a GNU or star sparse block using the oldgnu format.
      *
-     * @return true if this is a sparse extension provided by GNU tar or star
+     * @return true if this is a sparse extension provided by GNU tar or star.
      * @since 1.11
      */
     public boolean isOldGNUSparse() {
@@ -1309,7 +1309,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Tests whether this entry is a sparse file with 1.X PAX Format or not
      *
-     * @return True if this entry is a sparse file with 1.X PAX Format
+     * @return True if this entry is a sparse file with 1.X PAX Format.
      * @since 1.20
      */
     public boolean isPaxGNU1XSparse() {
@@ -1319,7 +1319,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Tests whether this entry is a GNU sparse block using one of the PAX formats.
      *
-     * @return true if this is a sparse extension provided by GNU tar
+     * @return true if this is a sparse extension provided by GNU tar.
      * @since 1.11
      */
     public boolean isPaxGNUSparse() {
@@ -1339,7 +1339,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Tests whether this is a sparse entry.
      *
-     * @return whether this is a sparse entry
+     * @return whether this is a sparse entry.
      * @since 1.11
      */
     public boolean isSparse() {
@@ -1349,7 +1349,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Tests whether this entry is a star sparse block using PAX headers.
      *
-     * @return true if this is a sparse extension provided by star
+     * @return true if this is a sparse extension provided by star.
      * @since 1.11
      */
     public boolean isStarSparse() {
@@ -1369,7 +1369,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Tests whether this is a symbolic link entry.
      *
-     * @return whether this is a symbolic link
+     * @return whether this is a symbolic link.
      * @since 1.2
      */
     public boolean isSymbolicLink() {
@@ -1441,7 +1441,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * Parses an entry's header information from a header buffer.
      *
      * @param header The tar entry header buffer to get information from.
-     * @throws IllegalArgumentException if any of the numeric fields have an invalid format
+     * @throws IllegalArgumentException if any of the numeric fields have an invalid format.
      */
     public void parseTarHeader(final byte[] header) {
         try {
@@ -1460,9 +1460,9 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * Parse an entry's header information from a header buffer.
      *
      * @param header   The tar entry header buffer to get information from.
-     * @param encoding encoding to use for file names
-     * @throws IllegalArgumentException if any of the numeric fields have an invalid format
-     * @throws IOException              on error
+     * @param encoding encoding to use for file names.
+     * @throws IllegalArgumentException if any of the numeric fields have an invalid format.
+     * @throws IOException              on error.
      * @since 1.4
      */
     public void parseTarHeader(final byte[] header, final ZipEncoding encoding) throws IOException {
@@ -1627,7 +1627,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * @param key     the header name.
      * @param val     the header value.
      * @param headers map of headers used for dealing with sparse file.
-     * @throws NumberFormatException if encountered errors when parsing the numbers
+     * @throws NumberFormatException if encountered errors when parsing the numbers.
      * @since 1.15
      */
     private void processPaxHeader(final String key, final String val, final Map<String, String> headers) throws IOException {
@@ -1957,7 +1957,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Sets this entry's sparse headers
      *
-     * @param sparseHeaders The new sparse headers
+     * @param sparseHeaders The new sparse headers.
      * @since 1.20
      */
     public void setSparseHeaders(final List<TarArchiveStructSparse> sparseHeaders) {
@@ -2015,7 +2015,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Update the entry using a map of pax headers.
      *
-     * @param headers
+     * @param headers.
      * @since 1.15
      */
     void updateEntryFromPaxHeaders(final Map<String, String> headers) throws IOException {
@@ -2051,8 +2051,8 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * @param outbuf   The tar entry header buffer to fill in.
      * @param encoding encoding to use when writing the file name.
      * @param starMode whether to use the star/GNU tar/BSD tar extension for numeric fields if their value doesn't fit in the maximum size of standard tar
-     *                 archives
-     * @throws IOException on error
+     *                 archives.
+     * @throws IOException on error.
      * @since 1.4
      */
     public void writeEntryHeader(final byte[] outbuf, final ZipEncoding encoding, final boolean starMode) throws IOException {
