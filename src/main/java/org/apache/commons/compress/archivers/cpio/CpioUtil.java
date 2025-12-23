@@ -34,10 +34,10 @@ final class CpioUtil {
     /**
      * Converts a byte array to a long. Halfwords can be swapped by setting swapHalfWord=true.
      *
-     * @param number       An array of bytes containing a number
-     * @param swapHalfWord Swap halfwords ([0][1][2][3]->[1][0][3][2])
-     * @return The long value
-     * @throws UnsupportedOperationException if number length is not a multiple of 2
+     * @param number       An array of bytes containing a number.
+     * @param swapHalfWord Swap halfwords ([0][1][2][3]->[1][0][3][2]).
+     * @return The long value.
+     * @throws UnsupportedOperationException if number length is not a multiple of 2.
      */
     static long byteArray2long(final byte[] number, final boolean swapHalfWord) {
         if (number.length % 2 != 0) {
@@ -72,11 +72,11 @@ final class CpioUtil {
     /**
      * Converts a long number to a byte array Halfwords can be swapped by setting swapHalfWord=true.
      *
-     * @param number       the input long number to be converted
-     * @param length       The length of the returned array
-     * @param swapHalfWord Swap halfwords ([0][1][2][3]->[1][0][3][2])
-     * @return The long value
-     * @throws UnsupportedOperationException if the length is not a positive multiple of two
+     * @param number       the input long number to be converted.
+     * @param length       The length of the returned array.
+     * @param swapHalfWord Swap halfwords ([0][1][2][3]->[1][0][3][2]).
+     * @return The long value.
+     * @throws UnsupportedOperationException if the length is not a positive multiple of two.
      */
     static byte[] long2byteArray(final long number, final int length, final boolean swapHalfWord) {
         final byte[] ret = new byte[length];
