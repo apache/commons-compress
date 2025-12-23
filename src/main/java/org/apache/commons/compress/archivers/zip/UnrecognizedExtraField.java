@@ -56,7 +56,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
     /**
      * Gets the central data.
      *
-     * @return the central data if present, else return the local file data
+     * @return the central data if present, else return the local file data.
      */
     @Override
     public byte[] getCentralDirectoryData() {
@@ -69,7 +69,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
     /**
      * Gets the central data length. If there is no central data, get the local file data length.
      *
-     * @return the central data length
+     * @return the central data length.
      */
     @Override
     public ZipShort getCentralDirectoryLength() {
@@ -82,7 +82,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
     /**
      * Gets the header id.
      *
-     * @return the header id
+     * @return the header id.
      */
     @Override
     public ZipShort getHeaderId() {
@@ -92,7 +92,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
     /**
      * Gets the local data.
      *
-     * @return the local data
+     * @return the local data.
      */
     @Override
     public byte[] getLocalFileDataData() {
@@ -102,7 +102,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
     /**
      * Gets the length of the local data.
      *
-     * @return the length of the local data
+     * @return the length of the local data.
      */
     @Override
     public ZipShort getLocalFileDataLength() {
@@ -138,7 +138,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
     /**
      * Sets the extra field data in central directory.
      *
-     * @param data the data to use
+     * @param data the data to use.
      */
     public void setCentralDirectoryData(final byte[] data) {
         centralData = ZipUtil.copy(data);
@@ -147,7 +147,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
     /**
      * Sets the header id.
      *
-     * @param headerId the header id to use
+     * @param headerId the header id to use.
      */
     public void setHeaderId(final ZipShort headerId) {
         this.headerId = headerId;
@@ -156,7 +156,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
     /**
      * Sets the extra field data in the local file data - without Header-ID or length specifier.
      *
-     * @param data the field data to use
+     * @param data the field data to use.
      */
     public void setLocalFileDataData(final byte[] data) {
         localData = ZipUtil.copy(data);
