@@ -213,6 +213,12 @@ public class BcBands extends BandSet {
         // out.write(encodeBandInt(integerListToArray(bcEscByte), Codec.BYTE1));
     }
 
+    /**
+     * Sets the current class and super class.
+     *
+     * @param name the class name.
+     * @param superName the super class name.
+     */
     public void setCurrentClass(final String name, final String superName) {
         currentClass = name;
         superClass = superName;
