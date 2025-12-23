@@ -721,6 +721,11 @@ public class ClassBands extends BandSet {
         }
     }
 
+    /**
+     * Records that the current class references an inner class.
+     *
+     * @param inner the inner class.
+     */
     public void currentClassReferencesInnerClass(final CPClass inner) {
         if (!(index >= class_this.length)) {
             final CPClass currentClass = class_this[index];
