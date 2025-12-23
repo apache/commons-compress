@@ -98,7 +98,7 @@ public class ParallelScatterZipCreator {
      * Constructs a ParallelScatterZipCreator
      *
      * @param executorService      The executorService to use. For technical reasons, this will be shut down by this class.
-     * @param backingStoreSupplier The supplier of backing store which shall be used
+     * @param backingStoreSupplier The supplier of backing store which shall be used.
      */
     public ParallelScatterZipCreator(final ExecutorService executorService, final ScatterGatherBackingStoreSupplier backingStoreSupplier) {
         this(executorService, backingStoreSupplier, Deflater.DEFAULT_COMPRESSION);
@@ -108,9 +108,9 @@ public class ParallelScatterZipCreator {
      * Constructs a ParallelScatterZipCreator
      *
      * @param executorService      The executorService to use. For technical reasons, this will be shut down by this class.
-     * @param backingStoreSupplier The supplier of backing store which shall be used
+     * @param backingStoreSupplier The supplier of backing store which shall be used.
      * @param compressionLevel     The compression level used in compression, this value should be -1(default level) or between 0~9.
-     * @throws IllegalArgumentException if the compression level is illegal
+     * @throws IllegalArgumentException if the compression level is illegal.
      * @since 1.21
      */
     public ParallelScatterZipCreator(final ExecutorService executorService, final ScatterGatherBackingStoreSupplier backingStoreSupplier,
@@ -131,7 +131,7 @@ public class ParallelScatterZipCreator {
      * </p>
      *
      * @param zipArchiveEntry The entry to add.
-     * @param source          The source input stream supplier
+     * @param source          The source input stream supplier.
      */
 
     public void addArchiveEntry(final ZipArchiveEntry zipArchiveEntry, final InputStreamSupplier source) {
@@ -170,7 +170,7 @@ public class ParallelScatterZipCreator {
      * files first. Since the creation of the {@link ExecutorService} is handled by the client, all of this is up to the client.
      *
      * @param zipArchiveEntry The entry to add.
-     * @param source          The source input stream supplier
+     * @param source          The source input stream supplier.
      * @return A callable that should subsequently be passed to #submitStreamAwareCallable, possibly in a wrapped/adapted from. The value of this callable is
      *         not used, but any exceptions happening inside the compression will be propagated through the callable.
      */
@@ -223,7 +223,7 @@ public class ParallelScatterZipCreator {
     /**
      * Gets a message describing the overall statistics of the compression run
      *
-     * @return A string
+     * @return A string.
      */
     public ScatterStatistics getStatisticsMessage() {
         return new ScatterStatistics(compressionDoneAt - startedAt, scatterDoneAt - compressionDoneAt);
@@ -263,10 +263,10 @@ public class ParallelScatterZipCreator {
      * submit}ted to this instance throws an exception, the archive cannot be created properly and this method will throw an exception.
      * </p>
      *
-     * @param targetStream The {@link ZipArchiveOutputStream} to receive the contents of the scatter streams
-     * @throws IOException          If writing fails
-     * @throws InterruptedException If we get interrupted
-     * @throws ExecutionException   If something happens in the parallel execution
+     * @param targetStream The {@link ZipArchiveOutputStream} to receive the contents of the scatter streams.
+     * @throws IOException          If writing fails.
+     * @throws InterruptedException If we get interrupted.
+     * @throws ExecutionException   If something happens in the parallel execution.
      */
     public void writeTo(final ZipArchiveOutputStream targetStream) throws IOException, InterruptedException, ExecutionException {
 
