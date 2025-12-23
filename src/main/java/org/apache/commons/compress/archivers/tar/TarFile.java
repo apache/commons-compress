@@ -214,7 +214,7 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
      * Constructor for TarFile.
      *
      * @param content the content to use.
-     * @param lenient when set to true illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
+     * @param lenient when set to true illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to.
      *                {@link TarArchiveEntry#UNKNOWN}. When set to false such illegal fields cause an exception instead.
      * @throws IOException when reading the tar archive fails.
      * @deprecated Use {@link #builder()} and {@link Builder}.
@@ -438,7 +438,7 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
      * the archive, null will be returned to indicate that the end of the archive has been reached.
      *
      * @return The next TarEntry in the archive, or null if there is no next entry.
-     * @throws IOException when reading the next TarEntry fails
+     * @throws IOException when reading the next TarEntry fails.
      */
     private TarArchiveEntry getNextTarEntry() throws IOException {
         if (isAtEOF()) {
@@ -518,7 +518,7 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
      * </p>
      *
      * @return The next TarEntry in the archive, or null if there is no next entry.
-     * @throws IOException when reading the next TarEntry fails
+     * @throws IOException when reading the next TarEntry fails.
      */
     private ByteBuffer getRecord() throws IOException {
         ByteBuffer headerBuf = readRecord();
@@ -552,7 +552,7 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
     /**
      * Adds the sparse chunks from the current entry to the sparse chunks, including any additional sparse entries following the current entry.
      *
-     * @throws IOException when reading the sparse entry fails
+     * @throws IOException when reading the sparse entry fails.
      */
     private void readOldGNUSparse() throws IOException {
         if (currEntry.isExtended()) {
@@ -572,7 +572,7 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
      * Reads a record from the input stream and return the data.
      *
      * @return The record data or null if EOF has been hit.
-     * @throws IOException if reading from the archive fails
+     * @throws IOException if reading from the archive fails.
      */
     private ByteBuffer readRecord() throws IOException {
         recordBuffer.rewind();
@@ -607,7 +607,7 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
     /**
      * The last record block should be written at the full size, so skip any additional space used to fill a record after an entry
      *
-     * @throws IOException when skipping the padding of the record fails
+     * @throws IOException when skipping the padding of the record fails.
      */
     private void skipRecordPadding() throws IOException {
         if (!isDirectory() && currEntry.getSize() > 0 && currEntry.getSize() % recordSize != 0) {
@@ -630,7 +630,7 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
     /**
      * Checks if the current position of the SeekableByteChannel is in the archive.
      *
-     * @throws IOException If the position is not in the archive
+     * @throws IOException If the position is not in the archive.
      */
     private void throwExceptionIfPositionIsNotInArchive() throws IOException {
         if (archive.size() < archive.position()) {
@@ -647,7 +647,7 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
      * archive anyway.
      * </p>
      *
-     * @throws IOException if reading the record of resetting the position in the archive fails
+     * @throws IOException if reading the record of resetting the position in the archive fails.
      */
     private void tryToConsumeSecondEOFRecord() throws IOException {
         boolean shouldReset = true;
