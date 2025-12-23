@@ -36,12 +36,26 @@ public class PopulationCodec extends Codec {
     private int l;
     private int[] favoured;
 
+    /**
+     * Constructs a new PopulationCodec.
+     *
+     * @param favouredCodec the favoured codec.
+     * @param tokenCodec the token codec.
+     * @param unvafouredCodec the unfavoured codec.
+     */
     public PopulationCodec(final Codec favouredCodec, final Codec tokenCodec, final Codec unvafouredCodec) {
         this.favouredCodec = favouredCodec;
         this.tokenCodec = tokenCodec;
         this.unfavouredCodec = unvafouredCodec;
     }
 
+    /**
+     * Constructs a new PopulationCodec.
+     *
+     * @param favouredCodec the favoured codec.
+     * @param l the L value.
+     * @param unfavouredCodec the unfavoured codec.
+     */
     public PopulationCodec(final Codec favouredCodec, final int l, final Codec unfavouredCodec) {
         if (l >= 256 || l <= 0) {
             throw new IllegalArgumentException("L must be between 1..255");
@@ -136,6 +150,15 @@ public class PopulationCodec extends Codec {
         throw new Pack200Exception("Population encoding does not work unless the number of elements are known");
     }
 
+    /**
+     * Encodes the values.
+     *
+     * @param favoured the favoured values.
+     * @param tokens the tokens.
+     * @param unfavoured the unfavoured values.
+     * @return the encoded bytes.
+     * @throws Pack200Exception if an error occurs.
+     */
     public byte[] encode(final int[] favoured, final int[] tokens, final int[] unfavoured) throws Pack200Exception {
         final int[] favoured2 = Arrays.copyOf(favoured, favoured.length + 1);
         favoured2[favoured2.length - 1] = favoured[favoured.length - 1]; // repeat last value;
@@ -149,18 +172,38 @@ public class PopulationCodec extends Codec {
         return band;
     }
 
+    /**
+     * Gets the favoured values.
+     *
+     * @return the favoured values.
+     */
     public int[] getFavoured() {
         return favoured;
     }
 
+    /**
+     * Gets the favoured codec.
+     *
+     * @return the favoured codec.
+     */
     public Codec getFavouredCodec() {
         return favouredCodec;
     }
 
+    /**
+     * Gets the token codec.
+     *
+     * @return the token codec.
+     */
     public Codec getTokenCodec() {
         return tokenCodec;
     }
 
+    /**
+     * Gets the unfavoured codec.
+     *
+     * @return the unfavoured codec.
+     */
     public Codec getUnfavouredCodec() {
         return unfavouredCodec;
     }
