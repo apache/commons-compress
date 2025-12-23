@@ -41,6 +41,11 @@ public class CPInt extends CPConstant<CPInt> {
         return Integer.compare(value, obj.value);
     }
 
+    /**
+     * Gets the int value.
+     *
+     * @return the int value.
+     */
     public int getInt() {
         return value;
     }
