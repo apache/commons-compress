@@ -41,6 +41,11 @@ public class CPDouble extends CPConstant<CPDouble> {
         return Double.compare(value, obj.value);
     }
 
+    /**
+     * Gets the double value.
+     *
+     * @return the double value.
+     */
     public double getDouble() {
         return value;
     }
