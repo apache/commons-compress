@@ -46,7 +46,7 @@ public class CountingOutputStream extends FilterOutputStream {
     /**
      * Increments the counter of already written bytes. Doesn't increment if the EOF has been hit (written == -1)
      *
-     * @param written the number of bytes written
+     * @param written the number of bytes written.
      */
     protected void count(final long written) {
         if (written != -1) {
@@ -57,7 +57,7 @@ public class CountingOutputStream extends FilterOutputStream {
     /**
      * Returns the current number of bytes written to this stream.
      *
-     * @return the number of written bytes
+     * @return the number of written bytes.
      */
     public long getBytesWritten() {
         return bytesWritten;
