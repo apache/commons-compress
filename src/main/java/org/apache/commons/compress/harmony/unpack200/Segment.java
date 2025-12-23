@@ -361,10 +361,20 @@ public class Segment {
         return result;
     }
 
+    /**
+     * Gets the attribute definition bands.
+     *
+     * @return the attribute definition bands.
+     */
     protected AttrDefinitionBands getAttrDefinitionBands() {
         return attrDefinitionBands;
     }
 
+    /**
+     * Gets the class bands.
+     *
+     * @return the class bands.
+     */
     protected ClassBands getClassBands() {
         return classBands;
     }
