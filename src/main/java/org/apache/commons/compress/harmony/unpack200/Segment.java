@@ -137,6 +137,12 @@ public class Segment {
 
     private InputStream internalBuffer;
 
+    /**
+     * Constructs a new Segment.
+     */
+    public Segment() {
+    }
+
     private ClassFile buildClassFile(final int classNum) {
         final ClassFile classFile = new ClassFile();
         final int[] major = classBands.getClassVersionMajor();
