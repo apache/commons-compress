@@ -103,8 +103,8 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      * <p/>
      * Also makes sure the converted ZipLong is not too big to fit in 32 unsigned bits.
      *
-     * @param d java.util.Date to convert to ZipLong
-     * @return ZipLong
+     * @param d java.util.Date to convert to ZipLong.
+     * @return ZipLong.
      */
     private static ZipLong dateToZipLong(final Date d) {
         if (d == null) {
@@ -118,8 +118,8 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      * <p/>
      * Also makes sure the converted ZipLong is not too big to fit in 32 unsigned bits.
      *
-     * @param time {@link FileTime} to convert to ZipLong
-     * @return ZipLong
+     * @param time {@link FileTime} to convert to ZipLong.
+     * @return ZipLong.
      */
     private static ZipLong fileTimeToZipLong(final FileTime time) {
         return time == null ? null : unixTimeToZipLong(FileTimes.toUnixTime(time));
@@ -237,7 +237,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
     /**
      * Gets the actual data to put into central directory data - without Header-ID or length specifier.
      *
-     * @return the central directory data
+     * @return the central directory data.
      */
     @Override
     public byte[] getCentralDirectoryData() {
@@ -253,7 +253,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      * For X5455 the central length is often smaller than the local length, because central cannot contain access or create timestamps.
      * </p>
      *
-     * @return a {@code ZipShort} for the length of the data of this extra field
+     * @return a {@code ZipShort} for the length of the data of this extra field.
      */
     @Override
     public ZipShort getCentralDirectoryLength() {
@@ -322,7 +322,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
     /**
      * Gets the Header-ID.
      *
-     * @return the value for the header id for this extrafield
+     * @return the value for the header id for this extrafield.
      */
     @Override
     public ZipShort getHeaderId() {
@@ -332,7 +332,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
     /**
      * Gets the actual data to put into local file data - without Header-ID or length specifier.
      *
-     * @return get the data
+     * @return get the data.
      */
     @Override
     public byte[] getLocalFileDataData() {
@@ -359,7 +359,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
     /**
      * Gets the length of the extra field in the local file data - without Header-ID or length specifier.
      *
-     * @return a {@code ZipShort} for the length of the data of this extra field
+     * @return a {@code ZipShort} for the length of the data of this extra field.
      */
     @Override
     public ZipShort getLocalFileDataLength() {
@@ -456,10 +456,10 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
     /**
      * Populate data from this array as if it was in local file data.
      *
-     * @param data   an array of bytes
-     * @param offset the start offset
-     * @param length the number of bytes in the array from offset
-     * @throws java.util.zip.ZipException on error
+     * @param data   an array of bytes.
+     * @param offset the start offset.
+     * @param length the number of bytes in the array from offset.
+     * @throws java.util.zip.ZipException on error.
      */
     @Override
     public void parseFromLocalFileData(final byte[] data, int offset, final int length) throws ZipException {
@@ -507,7 +507,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      * flags is also set.
      * </p>
      *
-     * @param time access time as {@link FileTime}
+     * @param time access time as {@link FileTime}.
      * @since 1.23
      */
     public void setAccessFileTime(final FileTime time) {
@@ -523,7 +523,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      * flags is also set.
      * </p>
      *
-     * @param d access time as java.util.Date
+     * @param d access time as java.util.Date.
      */
     public void setAccessJavaTime(final Date d) {
         setAccessTime(dateToZipLong(d));
@@ -538,7 +538,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      * flags is also set.
      * </p>
      *
-     * @param l ZipLong of the access time (seconds per epoch)
+     * @param l ZipLong of the access time (seconds per epoch).
      */
     public void setAccessTime(final ZipLong l) {
         bit1_accessTimePresent = l != null;
@@ -555,7 +555,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      * flags is also set.
      * </p>
      *
-     * @param time create time as {@link FileTime}
+     * @param time create time as {@link FileTime}.
      * @since 1.23
      */
     public void setCreateFileTime(final FileTime time) {
@@ -571,7 +571,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      * flags is also set.
      * </p>
      *
-     * @param d create time as java.util.Date
+     * @param d create time as java.util.Date.
      */
     public void setCreateJavaTime(final Date d) {
         setCreateTime(dateToZipLong(d));
@@ -586,7 +586,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      * flags is also set.
      * </p>
      *
-     * @param l ZipLong of the create time (seconds per epoch)
+     * @param l ZipLong of the create time (seconds per epoch).
      */
     public void setCreateTime(final ZipLong l) {
         bit2_createTimePresent = l != null;
@@ -623,7 +623,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      * flags is also set.
      * </p>
      *
-     * @param time modify time as {@link FileTime}
+     * @param time modify time as {@link FileTime}.
      * @since 1.23
      */
     public void setModifyFileTime(final FileTime time) {
@@ -639,7 +639,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      * flags is also set.
      * </p>
      *
-     * @param d modify time as java.util.Date
+     * @param d modify time as java.util.Date.
      */
     public void setModifyJavaTime(final Date d) {
         setModifyTime(dateToZipLong(d));
@@ -654,7 +654,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      * flags is also set.
      * </p>
      *
-     * @param l ZipLong of the modify time (seconds per epoch)
+     * @param l ZipLong of the modify time (seconds per epoch).
      */
     public void setModifyTime(final ZipLong l) {
         bit0_modifyTimePresent = l != null;
