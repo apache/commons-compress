@@ -287,7 +287,7 @@ public final class IOUtils {
      * @param input the {@code InputStream} to read from.
      * @return the requested byte array.
      * @throws NullPointerException Thrown if the input is null.
-     * @throws IOException          Thrown if an I/O error occurs or reads more than {@link Integer#MAX_VALUE} occurs
+     * @throws IOException          Thrown if an I/O error occurs or reads more than {@link Integer#MAX_VALUE} occurs.
      * @since 1.5
      * @deprecated Use {@link org.apache.commons.io.IOUtils#toByteArray(InputStream)}.
      */
