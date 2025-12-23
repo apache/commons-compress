@@ -103,10 +103,24 @@ public class SegmentConstantPoolArrayCache {
         }
     }
 
+    /**
+     * Map of known arrays.
+     */
     protected IdentityHashMap<String[], CachedArray> knownArrays = new IdentityHashMap<>(1000);
+
+    /**
+     * Last indexes found.
+     */
     protected List<Integer> lastIndexes;
+
+    /**
+     * Last array searched.
+     */
     protected String[] lastArray;
 
+    /**
+     * Last key searched.
+     */
     protected String lastKey;
 
     /**
