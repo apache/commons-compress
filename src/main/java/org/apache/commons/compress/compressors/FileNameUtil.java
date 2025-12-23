@@ -77,7 +77,7 @@ public class FileNameUtil {
      *                         ".tgz" to ".tar". This map also contains format-specific suffixes like ".gz" and "-z". These suffixes are mapped to the empty
      *                         string, as they should simply be removed from the file name when the file is uncompressed.
      *
-     * @param defaultExtension the format's default extension like ".gz"
+     * @param defaultExtension the format's default extension like ".gz".
      */
     public FileNameUtil(final Map<String, String> uncompressSuffix, final String defaultExtension) {
         this.uncompressSuffix = Collections.unmodifiableMap(uncompressSuffix);
@@ -118,8 +118,8 @@ public class FileNameUtil {
      * automatically detected and correctly mapped. For example the name "package.tar" is mapped to "package.tgz". If no custom mapping is applicable, then the
      * default ".gz" suffix is appended to the file name.
      *
-     * @param fileName name of a file
-     * @return name of the corresponding compressed file
+     * @param fileName name of a file.
+     * @return name of the corresponding compressed file.
      * @deprecated Use {@link #getCompressedFileName(String)}.
      */
     @Deprecated
@@ -132,8 +132,8 @@ public class FileNameUtil {
      * automatically detected and correctly mapped. For example the name "package.tar" is mapped to "package.tgz". If no custom mapping is applicable, then the
      * default ".gz" suffix is appended to the file name.
      *
-     * @param fileName name of a file
-     * @return name of the corresponding compressed file
+     * @param fileName name of a file.
+     * @return name of the corresponding compressed file.
      * @since 1.25.0
      */
     public String getCompressedFileName(final String fileName) {
@@ -155,8 +155,8 @@ public class FileNameUtil {
      * generic ".gz" suffix (or any other generic gzip suffix) is mapped to a name without that suffix. If no format suffix is detected, then the file name is
      * returned unmapped.
      *
-     * @param fileName name of a file
-     * @return name of the corresponding uncompressed file
+     * @param fileName name of a file.
+     * @return name of the corresponding uncompressed file.
      * @deprecated Use {@link #getUncompressedFileName(String)}.
      */
     @Deprecated
@@ -170,8 +170,8 @@ public class FileNameUtil {
      * generic ".gz" suffix (or any other generic gzip suffix) is mapped to a name without that suffix. If no format suffix is detected, then the file name is
      * returned unmapped.
      *
-     * @param fileName name of a file
-     * @return name of the corresponding uncompressed file
+     * @param fileName name of a file.
+     * @return name of the corresponding uncompressed file.
      * @since 1.25.0
      */
     public String getUncompressedFileName(final String fileName) {
@@ -189,8 +189,8 @@ public class FileNameUtil {
     /**
      * Detects common format suffixes in the given file name.
      *
-     * @param fileName name of a file
-     * @return {@code true} if the file name has a common format suffix, {@code false} otherwise
+     * @param fileName name of a file.
+     * @return {@code true} if the file name has a common format suffix, {@code false} otherwise.
      * @deprecated Use {@link #isCompressedFileName(String)}.
      */
     @Deprecated
@@ -201,8 +201,8 @@ public class FileNameUtil {
     /**
      * Detects common format suffixes in the given file name.
      *
-     * @param fileName name of a file
-     * @return {@code true} if the file name has a common format suffix, {@code false} otherwise
+     * @param fileName name of a file.
+     * @return {@code true} if the file name has a common format suffix, {@code false} otherwise.
      * @since 1.25.0
      */
     public boolean isCompressedFileName(final String fileName) {
