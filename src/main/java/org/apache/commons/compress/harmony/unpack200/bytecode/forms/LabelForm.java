@@ -29,6 +29,9 @@ import org.apache.commons.compress.harmony.unpack200.bytecode.OperandManager;
  */
 public class LabelForm extends ByteCodeForm {
 
+    /**
+     * Indicates whether this is a widened form.
+     */
     protected boolean widened;
 
     /**
