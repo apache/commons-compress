@@ -73,7 +73,7 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Compre
     /**
      * Constructs a new instance with the given backing OutputStream.
      *
-     * @param out the underlying output stream to be assigned to the field {@code this.out} for later use, or {@code null} if this instance is to be created
+     * @param out the underlying output stream to be assigned to the field {@code this.out} for later use, or {@code null} if this instance is to be created.
      *            without an underlying stream.
      * @since 1.27.0.
      */
@@ -88,7 +88,7 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Compre
      * Some archive formats support variants or details that are not supported (yet).
      * </p>
      *
-     * @param archiveEntry the entry to test
+     * @param archiveEntry the entry to test.
      * @return This implementation always returns true.
      * @since 1.1
      */
@@ -111,14 +111,14 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Compre
     /**
      * Closes the archive entry, writing any trailer information that may be required.
      *
-     * @throws IOException if an I/O error occurs
+     * @throws IOException if an I/O error occurs.
      */
     public abstract void closeArchiveEntry() throws IOException;
 
     /**
      * Increments the counter of already written bytes. Doesn't increment if EOF has been hit ({@code written == -1}).
      *
-     * @param written the number of bytes written
+     * @param written the number of bytes written.
      */
     protected void count(final int written) {
         count((long) written);
@@ -127,7 +127,7 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Compre
     /**
      * Increments the counter of already written bytes. Doesn't increment if EOF has been hit ({@code written == -1}).
      *
-     * @param written the number of bytes written
+     * @param written the number of bytes written.
      * @since 1.1
      */
     protected void count(final long written) {
@@ -139,10 +139,10 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Compre
     /**
      * Creates an archive entry using the inputFile and entryName provided.
      *
-     * @param inputFile the file to create the entry from
-     * @param entryName name to use for the entry
-     * @return the ArchiveEntry set up with details from the file
-     * @throws IOException if an I/O error occurs
+     * @param inputFile the file to create the entry from.
+     * @param entryName name to use for the entry.
+     * @return the ArchiveEntry set up with details from the file.
+     * @throws IOException if an I/O error occurs.
      */
     public abstract E createArchiveEntry(File inputFile, String entryName) throws IOException;
 
@@ -159,11 +159,11 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Compre
      * Subclasses should override this method.
      * </p>
      *
-     * @param inputPath the file to create the entry from
-     * @param entryName name to use for the entry
+     * @param inputPath the file to create the entry from.
+     * @param entryName name to use for the entry.
      * @param options   options indicating how symbolic links are handled.
-     * @return the ArchiveEntry set up with details from the file
-     * @throws IOException if an I/O error occurs
+     * @return the ArchiveEntry set up with details from the file.
+     * @throws IOException if an I/O error occurs.
      * @since 1.21
      */
     public E createArchiveEntry(final Path inputPath, final String entryName, final LinkOption... options) throws IOException {
@@ -173,7 +173,7 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Compre
     /**
      * Gets the current number of bytes written to this stream.
      *
-     * @return the number of written bytes
+     * @return the number of written bytes.
      * @since 1.1
      */
     public long getBytesWritten() {
@@ -183,7 +183,7 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Compre
     /**
      * Gets the current number of bytes written to this stream.
      *
-     * @return the number of written bytes
+     * @return the number of written bytes.
      * @deprecated this method may yield wrong results for large archives, use #getBytesWritten instead
      */
     @Deprecated
@@ -195,8 +195,8 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Compre
      * Writes the headers for an archive entry to the output stream. The caller must then write the content to the stream and call {@link #closeArchiveEntry()}
      * to complete the process.
      *
-     * @param entry describes the entry
-     * @throws IOException if an I/O error occurs
+     * @param entry describes the entry.
+     * @throws IOException if an I/O error occurs.
      */
     public abstract void putArchiveEntry(E entry) throws IOException;
 
@@ -210,7 +210,7 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Compre
      * MUST be overridden if the {@link #write(byte[], int, int)} method is not overridden; may be overridden otherwise.
      *
      * @param b The byte to be written.
-     * @throws IOException on error
+     * @throws IOException on error.
      */
     @Override
     public void write(final int b) throws IOException {
