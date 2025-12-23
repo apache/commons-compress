@@ -73,7 +73,7 @@ public class ZstdUtils {
     /**
      * Are the classes required to support Zstandard compression available?
      *
-     * @return true if the classes required to support Zstandard compression are available
+     * @return true if the classes required to support Zstandard compression are available.
      */
     public static boolean isZstdCompressionAvailable() {
         final CachedAvailability cachedResult = cachedZstdAvailability;
@@ -86,9 +86,9 @@ public class ZstdUtils {
     /**
      * Checks if the signature matches what is expected for a Zstandard file.
      *
-     * @param signature the bytes to check
-     * @param length    the number of bytes to check
-     * @return true if signature matches the Ztstandard or skippable frame magic bytes, false otherwise
+     * @param signature the bytes to check.
+     * @param length    the number of bytes to check.
+     * @return true if signature matches the Ztstandard or skippable frame magic bytes, false otherwise.
      */
     public static boolean matches(final byte[] signature, final int length) {
         if (length < ZSTANDARD_FRAME_MAGIC.length) {
@@ -123,7 +123,7 @@ public class ZstdUtils {
      * This defaults to {@code false} in an OSGi environment and {@code true} otherwise.
      * </p>
      *
-     * @param doCache whether to cache the result
+     * @param doCache whether to cache the result.
      */
     public static void setCacheZstdAvailablity(final boolean doCache) {
         if (!doCache) {
