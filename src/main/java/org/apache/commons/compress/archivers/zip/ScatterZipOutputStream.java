@@ -129,7 +129,7 @@ public class ScatterZipOutputStream implements Closeable {
      *
      * @param file The file to offload compressed data into.
      * @return A ScatterZipOutputStream that is ready for use.
-     * @throws FileNotFoundException if the file cannot be found
+     * @throws FileNotFoundException if the file cannot be found.
      */
     public static ScatterZipOutputStream fileBased(final File file) throws FileNotFoundException {
         return pathBased(file.toPath(), Deflater.DEFAULT_COMPRESSION);
@@ -139,9 +139,9 @@ public class ScatterZipOutputStream implements Closeable {
      * Creates a {@link ScatterZipOutputStream} that is backed by a file
      *
      * @param file             The file to offload compressed data into.
-     * @param compressionLevel The compression level to use, @see #Deflater
+     * @param compressionLevel The compression level to use, @see #Deflater.
      * @return A ScatterZipOutputStream that is ready for use.
-     * @throws FileNotFoundException if the file cannot be found
+     * @throws FileNotFoundException if the file cannot be found.
      */
     public static ScatterZipOutputStream fileBased(final File file, final int compressionLevel) throws FileNotFoundException {
         return pathBased(file.toPath(), compressionLevel);
@@ -152,7 +152,7 @@ public class ScatterZipOutputStream implements Closeable {
      *
      * @param path The path to offload compressed data into.
      * @return A ScatterZipOutputStream that is ready for use.
-     * @throws FileNotFoundException if the path cannot be found
+     * @throws FileNotFoundException if the path cannot be found.
      * @since 1.22
      */
     public static ScatterZipOutputStream pathBased(final Path path) throws FileNotFoundException {
@@ -163,9 +163,9 @@ public class ScatterZipOutputStream implements Closeable {
      * Creates a {@link ScatterZipOutputStream} that is backed by a file
      *
      * @param path             The path to offload compressed data into.
-     * @param compressionLevel The compression level to use, @see #Deflater
+     * @param compressionLevel The compression level to use, @see #Deflater.
      * @return A ScatterZipOutputStream that is ready for use.
-     * @throws FileNotFoundException if the path cannot be found
+     * @throws FileNotFoundException if the path cannot be found.
      * @since 1.22
      */
     public static ScatterZipOutputStream pathBased(final Path path, final int compressionLevel) throws FileNotFoundException {
@@ -200,7 +200,7 @@ public class ScatterZipOutputStream implements Closeable {
      * Adds an archive entry to this scatter stream.
      *
      * @param zipArchiveEntryRequest The entry to write.
-     * @throws IOException If writing fails
+     * @throws IOException If writing fails.
      */
     public void addArchiveEntry(final ZipArchiveEntryRequest zipArchiveEntryRequest) throws IOException {
         try (InputStream payloadStream = zipArchiveEntryRequest.getPayloadStream()) {
@@ -213,7 +213,7 @@ public class ScatterZipOutputStream implements Closeable {
     /**
      * Closes this stream, freeing all resources involved in the creation of this stream.
      *
-     * @throws IOException If closing fails
+     * @throws IOException If closing fails.
      */
     @Override
     public void close() throws IOException {
@@ -232,7 +232,7 @@ public class ScatterZipOutputStream implements Closeable {
      * Writes the contents of this scatter stream to a target archive.
      *
      * @param target The archive to receive the contents of this {@link ScatterZipOutputStream}.
-     * @throws IOException If writing fails
+     * @throws IOException If writing fails.
      * @see #zipEntryWriter()
      */
     public void writeTo(final ZipArchiveOutputStream target) throws IOException {
@@ -255,8 +255,8 @@ public class ScatterZipOutputStream implements Closeable {
     /**
      * Gets a ZIP entry writer for this scatter stream.
      *
-     * @throws IOException If getting scatter stream input stream
-     * @return the ZipEntryWriter created on first call of the method
+     * @throws IOException If getting scatter stream input stream.
+     * @return the ZipEntryWriter created on first call of the method.
      */
     public ZipEntryWriter zipEntryWriter() throws IOException {
         if (zipEntryWriter == null) {
