@@ -87,31 +87,66 @@ public class NewAttribute extends BCIRenumberedAttribute {
         this.layoutIndex = layoutIndex;
     }
 
+    /**
+     * Adds a bytecode index.
+     *
+     * @param length the length.
+     * @param value the value.
+     */
     public void addBCIndex(final int length, final int value) {
         lengths.add(Integer.valueOf(length));
         body.add(new BCIndex(value));
     }
 
+    /**
+     * Adds a bytecode length.
+     *
+     * @param length the length.
+     * @param value the value.
+     */
     public void addBCLength(final int length, final int value) {
         lengths.add(Integer.valueOf(length));
         body.add(new BCLength(value));
     }
 
+    /**
+     * Adds a bytecode offset.
+     *
+     * @param length the length.
+     * @param value the value.
+     */
     public void addBCOffset(final int length, final int value) {
         lengths.add(Integer.valueOf(length));
         body.add(new BCOffset(value));
     }
 
+    /**
+     * Adds an integer value.
+     *
+     * @param length the length.
+     * @param value the value.
+     */
     public void addInteger(final int length, final long value) {
         lengths.add(Integer.valueOf(length));
         body.add(Long.valueOf(value));
     }
 
+    /**
+     * Adds a value to the body.
+     *
+     * @param length the length.
+     * @param value the value.
+     */
     public void addToBody(final int length, final Object value) {
         lengths.add(Integer.valueOf(length));
         body.add(value);
     }
 
+    /**
+     * Gets the layout index.
+     *
+     * @return the layout index.
+     */
     public int getLayoutIndex() {
         return layoutIndex;
     }
