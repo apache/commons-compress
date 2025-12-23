@@ -75,7 +75,7 @@ public class JarArchiveEntry extends ZipArchiveEntry {
     /**
      * Gets a copy of the list of certificates or null if there are none.
      *
-     * @return Always returns null in the current implementation
+     * @return Always returns null in the current implementation.
      * @deprecated Since 1.5, not currently implemented
      */
     @Deprecated
