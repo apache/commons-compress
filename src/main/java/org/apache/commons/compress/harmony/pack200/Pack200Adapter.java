@@ -31,12 +31,20 @@ import java.util.TreeMap;
  */
 public abstract class Pack200Adapter {
 
+    /**
+     * Default buffer size.
+     */
     protected static final int DEFAULT_BUFFER_SIZE = 8192;
 
     private final PropertyChangeSupport support = new PropertyChangeSupport(this);
 
     private final SortedMap<String, String> properties = new TreeMap<>();
 
+    /**
+     * Adds a property change listener.
+     *
+     * @param listener the listener to add.
+     */
     public void addPropertyChangeListener(final PropertyChangeListener listener) {
         support.addPropertyChangeListener(listener);
     }
@@ -45,28 +53,38 @@ public abstract class Pack200Adapter {
      * Completion between 0..1.
      *
      * @param value Completion between 0..1.
-     * @throws IOException if the value cannot be parsed
+     * @throws IOException if the value cannot be parsed.
      */
     protected void completed(final double value) throws IOException {
         firePropertyChange("pack.progress", null, String.valueOf((int) (100 * value))); //$NON-NLS-1$
     }
 
     /**
-     * Reports a property update to listeners
+     * Reports a property update to listeners.
      *
-     * @param propertyName name of property being updated
-     * @param oldValue old property value
-     * @param newValue new property value
-     * @throws IOException if the values cannot be parsed
+     * @param propertyName name of property being updated.
+     * @param oldValue old property value.
+     * @param newValue new property value.
+     * @throws IOException if the values cannot be parsed.
      */
     protected void firePropertyChange(final String propertyName, final Object oldValue, final Object newValue) throws IOException {
         support.firePropertyChange(propertyName, oldValue, newValue);
     }
 
+    /**
+     * Gets the properties map.
+     *
+     * @return the properties.
+     */
     public SortedMap<String, String> properties() {
         return properties;
     }
 
+    /**
+     * Removes a property change listener.
+     *
+     * @param listener the listener to remove.
+     */
     public void removePropertyChangeListener(final PropertyChangeListener listener) {
         support.removePropertyChangeListener(listener);
     }
