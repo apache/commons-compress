@@ -131,9 +131,9 @@ public class XZCompressorInputStream extends CompressorInputStream implements In
     /**
      * Checks if the signature matches what is expected for a .xz file.
      *
-     * @param signature the bytes to check
-     * @param length    the number of bytes to check
-     * @return true if signature matches the .xz magic bytes, false otherwise
+     * @param signature the bytes to check.
+     * @param length    the number of bytes to check.
+     * @return true if signature matches the .xz magic bytes, false otherwise.
      */
     public static boolean matches(final byte[] signature, final int length) {
         if (length < XZ.HEADER_MAGIC.length) {
@@ -166,7 +166,7 @@ public class XZCompressorInputStream extends CompressorInputStream implements In
     /**
      * Creates a new input stream that decompresses XZ-compressed data from the specified input stream. This doesn't support concatenated .xz files.
      *
-     * @param inputStream where to read the compressed data
+     * @param inputStream where to read the compressed data.
      * @throws IOException if the input is not in the .xz format, the input is corrupt or truncated, the .xz headers specify options that are not supported by
      *                     this implementation, or the underlying {@code inputStream} throws an exception
      */
@@ -177,7 +177,7 @@ public class XZCompressorInputStream extends CompressorInputStream implements In
     /**
      * Creates a new input stream that decompresses XZ-compressed data from the specified input stream.
      *
-     * @param inputStream            where to read the compressed data
+     * @param inputStream            where to read the compressed data.
      * @param decompressConcatenated if true, decompress until the end of the input; if false, stop after the first .xz stream and leave the input position to
      *                               point to the next byte after the .xz stream
      *
@@ -193,7 +193,7 @@ public class XZCompressorInputStream extends CompressorInputStream implements In
     /**
      * Creates a new input stream that decompresses XZ-compressed data from the specified input stream.
      *
-     * @param inputStream            where to read the compressed data
+     * @param inputStream            where to read the compressed data.
      * @param decompressConcatenated if true, decompress until the end of the input; if false, stop after the first .xz stream and leave the input position to
      *                               point to the next byte after the .xz stream
      * @param memoryLimitKiB         The memory limit used when reading blocks. The memory usage limit is expressed in kibibytes (KiB) or {@code -1} to impose
