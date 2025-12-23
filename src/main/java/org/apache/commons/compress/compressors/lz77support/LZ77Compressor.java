@@ -277,7 +277,7 @@ public class LZ77Compressor {
          * This returns a live view of the actual data in order to avoid copying, modify the array at your own risk.
          * </p>
          *
-         * @return the data
+         * @return the data.
          */
         public byte[] getData() {
             return data;
@@ -334,9 +334,9 @@ public class LZ77Compressor {
     /**
      * Initializes a compressor with parameters and a callback.
      *
-     * @param params   the parameters
-     * @param callback the callback
-     * @throws NullPointerException if either parameter is {@code null}
+     * @param params   the parameters.
+     * @param callback the callback.
+     * @throws NullPointerException if either parameter is {@code null}.
      */
     public LZ77Compressor(final Parameters params, final Callback callback) {
         Objects.requireNonNull(params, "params");
