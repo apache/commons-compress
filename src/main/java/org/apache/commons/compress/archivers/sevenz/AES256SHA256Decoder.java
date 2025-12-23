@@ -225,8 +225,8 @@ final class AES256SHA256Decoder extends AbstractCoder {
     /**
      * Convenience method that encodes Unicode characters into bytes in UTF-16 (little-endian byte order) charset
      *
-     * @param chars characters to encode
-     * @return encoded characters
+     * @param chars characters to encode.
+     * @return encoded characters.
      */
     static byte[] utf16Decode(final char[] chars) {
         if (chars == null) {
