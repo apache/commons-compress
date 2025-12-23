@@ -26,15 +26,6 @@ package org.apache.commons.compress.harmony.unpack200;
 public final class SegmentUtils {
 
     /**
-     * Construct a new instance.
-     *
-     * @deprecated Will be removed in 2.0.
-     */
-    @Deprecated
-    public SegmentUtils() {
-    }
-
-    /**
      * Counts the number of arguments in the descriptor.
      *
      * @param descriptor the descriptor string.
@@ -176,6 +167,15 @@ public final class SegmentUtils {
             count += countMatches(flag, matcher);
         }
         return count;
+    }
+
+    /**
+     * Construct a new instance.
+     *
+     * @deprecated Will be removed in 2.0.
+     */
+    @Deprecated
+    public SegmentUtils() {
     }
 
 }

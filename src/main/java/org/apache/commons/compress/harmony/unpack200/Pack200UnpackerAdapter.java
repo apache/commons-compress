@@ -46,12 +46,6 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 public class Pack200UnpackerAdapter extends Pack200Adapter implements Unpacker {
 
     /**
-     * Constructs a new Pack200UnpackerAdapter.
-     */
-    public Pack200UnpackerAdapter() {
-    }
-
-    /**
      * Creates a new BoundedInputStream bound by the size of the given file.
      * <p>
      * The new BoundedInputStream wraps a new {@link BufferedInputStream}.
@@ -171,6 +165,12 @@ public class Pack200UnpackerAdapter extends Pack200Adapter implements Unpacker {
      */
     static InputStream unwrap(final InputStream inputStream) {
         return inputStream instanceof FilterInputStream ? unwrap((FilterInputStream) inputStream) : inputStream;
+    }
+
+    /**
+     * Constructs a new Pack200UnpackerAdapter.
+     */
+    public Pack200UnpackerAdapter() {
     }
 
     @Override

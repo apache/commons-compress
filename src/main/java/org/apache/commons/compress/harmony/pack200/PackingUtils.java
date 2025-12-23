@@ -76,15 +76,6 @@ public class PackingUtils {
     }
 
     /**
-     * Constructs new instance of PackingUtils.
-     *
-     * @deprecated Will be private in 4.0.
-     */
-    @Deprecated
-    public PackingUtils() {
-    }
-
-    /**
      * Configures packing options.
      *
      * @param options the packing options.
@@ -253,6 +244,15 @@ public class PackingUtils {
             }
             return fileName0.compareTo(fileName1);
         });
+    }
+
+    /**
+     * Constructs new instance of PackingUtils.
+     *
+     * @deprecated Will be private in 4.0.
+     */
+    @Deprecated
+    public PackingUtils() {
     }
 
 }
