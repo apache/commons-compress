@@ -34,10 +34,19 @@ public abstract class ByteCodeForm {
 
     private static final int BC_MAX = 256;
 
+    /**
+     * Indicates whether this is a widened form.
+     */
     protected static final boolean WIDENED = true;
 
+    /**
+     * Array of all bytecode forms.
+     */
     protected static final ByteCodeForm[] byteCodeArray = new ByteCodeForm[BC_MAX];
 
+    /**
+     * Map of bytecode forms by name.
+     */
     protected static final Map<String, ByteCodeForm> byteCodesByName = new HashMap<>(BC_MAX);
 
     static {
@@ -342,6 +351,9 @@ public abstract class ByteCodeForm {
         calculateOperandPosition();
     }
 
+    /**
+     * Calculates the operand position.
+     */
     protected void calculateOperandPosition() {
         firstOperandIndex = -1;
         operandLength = -1;
