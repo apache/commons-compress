@@ -44,6 +44,9 @@ import org.apache.commons.io.function.IOConsumer;
 
 public class PackingUtils {
 
+    /**
+     * Logger for packing operations.
+     */
     private static final class PackingLogger extends Logger {
 
         private boolean verbose;
