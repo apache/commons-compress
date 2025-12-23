@@ -63,18 +63,18 @@ final class AES256Options {
     private final Cipher cipher;
 
     /**
-     * @param password password used for encryption
+     * @param password password used for encryption.
      */
     AES256Options(final char[] password) {
         this(password, EMPTY_BYTE_ARRAY, randomBytes(16), 19);
     }
 
     /**
-     * @param password       password used for encryption
-     * @param salt           for password hash salting (enforce password security)
-     * @param iv             Initialization Vector (IV) used by cipher algorithm
+     * @param password       password used for encryption.
+     * @param salt           for password hash salting (enforce password security).
+     * @param iv             Initialization Vector (IV) used by cipher algorithm.
      * @param numCyclesPower another password security enforcer parameter that controls the cycles of password hashing. More the this number is high, more
-     *                       security you'll have but also high CPU usage
+     *                       security you'll have but also high CPU usage.
      */
     AES256Options(final char[] password, final byte[] salt, final byte[] iv, final int numCyclesPower) {
         this.salt = salt;
