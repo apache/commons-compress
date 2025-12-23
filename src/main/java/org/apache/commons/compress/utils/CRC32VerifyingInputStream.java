@@ -33,9 +33,9 @@ public class CRC32VerifyingInputStream extends ChecksumVerifyingInputStream {
     /**
      * Constructs a new instance.
      *
-     * @param in            the stream to wrap
-     * @param size          the of the stream's content
-     * @param expectedCrc32 the expected checksum
+     * @param in            the stream to wrap.
+     * @param size          the of the stream's content.
+     * @param expectedCrc32 the expected checksum.
      * @deprecated No longer used.
      */
     @Deprecated
@@ -46,9 +46,9 @@ public class CRC32VerifyingInputStream extends ChecksumVerifyingInputStream {
     /**
      * Constructs a new instance.
      *
-     * @param in            the stream to wrap
-     * @param size          the of the stream's content
-     * @param expectedCrc32 the expected checksum
+     * @param in            the stream to wrap.
+     * @param size          the of the stream's content.
+     * @param expectedCrc32 the expected checksum.
      * @since 1.7
      */
     public CRC32VerifyingInputStream(final InputStream in, final long size, final long expectedCrc32) {
