@@ -41,6 +41,12 @@ public abstract class Pack200Adapter {
     private final SortedMap<String, String> properties = new TreeMap<>();
 
     /**
+     * Constructs a new Pack200Adapter.
+     */
+    public Pack200Adapter() {
+    }
+
+    /**
      * Adds a property change listener.
      *
      * @param listener the listener to add.
