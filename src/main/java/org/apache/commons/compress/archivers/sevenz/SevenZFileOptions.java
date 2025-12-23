@@ -62,7 +62,7 @@ public class SevenZFileOptions {
          * </p>
          *
          * @param maxMemoryLimitKiB limit of the maximum amount of memory to use in kibibytes.
-         * @return the reconfigured builder
+         * @return the reconfigured builder.
          */
         public Builder withMaxMemoryLimitInKb(final int maxMemoryLimitKiB) {
             this.maxMemoryLimitKb = maxMemoryLimitKiB;
@@ -77,8 +77,8 @@ public class SevenZFileOptions {
          * option without setting {@link #withMaxMemoryLimitInKb} at the same time.
          * </p>
          *
-         * @param tryToRecoverBrokenArchives if true SevenZFile will try to recover archives that are broken in the specific way
-         * @return the reconfigured builder
+         * @param tryToRecoverBrokenArchives if true SevenZFile will try to recover archives that are broken in the specific way.
+         * @return the reconfigured builder.
          * @since 1.21
          */
         public Builder withTryToRecoverBrokenArchives(final boolean tryToRecoverBrokenArchives) {
@@ -89,8 +89,8 @@ public class SevenZFileOptions {
         /**
          * Sets whether entries without a name should get their names set to the archive's default file name.
          *
-         * @param useDefaultNameForUnnamedEntries if true the name of unnamed entries will be set to the archive's default name
-         * @return the reconfigured builder
+         * @param useDefaultNameForUnnamedEntries if true the name of unnamed entries will be set to the archive's default name.
+         * @return the reconfigured builder.
          */
         public Builder withUseDefaultNameForUnnamedEntries(final boolean useDefaultNameForUnnamedEntries) {
             this.useDefaultNameForUnnamedEntries = useDefaultNameForUnnamedEntries;
@@ -152,7 +152,7 @@ public class SevenZFileOptions {
     /**
      * Gets whether entries without a name should get their names set to the archive's default file name.
      *
-     * @return whether entries without a name should get their names set to the archive's default file name
+     * @return whether entries without a name should get their names set to the archive's default file name.
      */
     public boolean getUseDefaultNameForUnnamedEntries() {
         return useDefaultNameForUnnamedEntries;
