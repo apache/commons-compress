@@ -29,12 +29,21 @@ import java.util.Objects;
  */
 public abstract class CPRef extends ConstantPoolEntry {
 
+    /**
+     * The class name.
+     */
     CPClass className;
     transient int classNameIndex;
 
+    /**
+     * The name and type descriptor.
+     */
     protected CPNameAndType nameAndType;
     transient int nameAndTypeIndex;
 
+    /**
+     * Cached toString value.
+     */
     protected String cachedToString;
 
     /**
