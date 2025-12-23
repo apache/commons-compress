@@ -146,10 +146,10 @@ final class BinaryTree {
     /**
      * Adds a leaf to the tree.
      *
-     * @param node  the index of the node where the path is appended
-     * @param path  the path to the leaf (bits are parsed from the right to the left)
-     * @param depth the number of nodes in the path
-     * @param value the value of the leaf (must be positive)
+     * @param node  the index of the node where the path is appended.
+     * @param path  the path to the leaf (bits are parsed from the right to the left).
+     * @param depth the number of nodes in the path.
+     * @param value the value of the leaf (must be positive).
      */
     public void addLeaf(final int node, final int path, final int depth, final int value) {
         if (depth == 0) {
@@ -172,7 +172,7 @@ final class BinaryTree {
      * Reads a value from the specified bit stream.
      *
      * @param stream The data source.
-     * @return the value decoded, or -1 if the end of the stream is reached
+     * @return the value decoded, or -1 if the end of the stream is reached.
      * @throws IOException on error.
      */
     public int read(final BitStream stream) throws IOException {
