@@ -38,6 +38,13 @@ public class CPFieldRef extends ConstantPoolEntry {
 
     private int cachedHashCode;
 
+    /**
+     * Constructs a new CPFieldRef.
+     *
+     * @param className the class name.
+     * @param descriptor the field descriptor.
+     * @param globalIndex the global index.
+     */
     public CPFieldRef(final CPClass className, final CPNameAndType descriptor, final int globalIndex) {
         super(CP_Fieldref, globalIndex);
         this.className = className;
