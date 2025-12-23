@@ -28,6 +28,12 @@ public class CPNameAndType extends ConstantPoolEntry implements Comparable {
     private final CPUTF8 name;
     private final CPSignature signature;
 
+    /**
+     * Constructs a new CPNameAndType.
+     *
+     * @param name the name.
+     * @param signature the signature.
+     */
     public CPNameAndType(final CPUTF8 name, final CPSignature signature) {
         this.name = name;
         this.signature = signature;
@@ -46,14 +52,29 @@ public class CPNameAndType extends ConstantPoolEntry implements Comparable {
         return 0;
     }
 
+    /**
+     * Gets the name.
+     *
+     * @return the name.
+     */
     public String getName() {
         return name.getUnderlyingString();
     }
 
+    /**
+     * Gets the name index.
+     *
+     * @return the name index.
+     */
     public int getNameIndex() {
         return name.getIndex();
     }
 
+    /**
+     * Gets the type index.
+     *
+     * @return the type index.
+     */
     public int getTypeIndex() {
         return signature.getIndex();
     }
