@@ -32,6 +32,13 @@ public class CPSignature extends ConstantPoolEntry implements Comparable {
     private final String signature;
     private final boolean formStartsWithBracket;
 
+    /**
+     * Constructs a new CPSignature.
+     *
+     * @param signature the signature string.
+     * @param signatureForm the signature form.
+     * @param classes the list of classes.
+     */
     public CPSignature(final String signature, final CPUTF8 signatureForm, final List<CPClass> classes) {
         this.signature = signature;
         this.signatureForm = signatureForm;
@@ -66,18 +73,38 @@ public class CPSignature extends ConstantPoolEntry implements Comparable {
         return signature.compareTo(((CPSignature) arg0).signature);
     }
 
+    /**
+     * Gets the list of classes.
+     *
+     * @return the classes.
+     */
     public List<CPClass> getClasses() {
         return classes;
     }
 
+    /**
+     * Gets the index in the CP UTF8 pool.
+     *
+     * @return the index.
+     */
     public int getIndexInCpUtf8() {
         return signatureForm.getIndex();
     }
 
+    /**
+     * Gets the signature form.
+     *
+     * @return the signature form.
+     */
     public CPUTF8 getSignatureForm() {
         return signatureForm;
     }
 
+    /**
+     * Gets the underlying signature string.
+     *
+     * @return the signature string.
+     */
     public String getUnderlyingString() {
         return signature;
     }
