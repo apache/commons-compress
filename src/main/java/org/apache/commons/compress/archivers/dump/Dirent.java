@@ -30,10 +30,10 @@ final class Dirent {
     /**
      * Constructor
      *
-     * @param ino
-     * @param parentIno
-     * @param type
-     * @param name
+     * @param ino.
+     * @param parentIno.
+     * @param type.
+     * @param name.
      */
     Dirent(final int ino, final int parentIno, final int type, final String name) {
         this.ino = ino;
@@ -45,7 +45,7 @@ final class Dirent {
     /**
      * Gets ino.
      *
-     * @return the i-node
+     * @return the i-node.
      */
     int getIno() {
         return ino;
@@ -58,7 +58,7 @@ final class Dirent {
      * This method returns the raw name as it is stored inside of the archive.
      * </p>
      *
-     * @return the directory name
+     * @return the directory name.
      */
     String getName() {
         return name;
@@ -67,7 +67,7 @@ final class Dirent {
     /**
      * Gets ino of parent directory.
      *
-     * @return the parent i-node
+     * @return the parent i-node.
      */
     int getParentIno() {
         return parentIno;
@@ -76,7 +76,7 @@ final class Dirent {
     /**
      * Gets entry type.
      *
-     * @return the entry type
+     * @return the entry type.
      */
     int getType() {
         return type;
