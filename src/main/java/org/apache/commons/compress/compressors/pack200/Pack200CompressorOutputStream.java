@@ -40,8 +40,8 @@ public class Pack200CompressorOutputStream extends CompressorOutputStream<Output
     /**
      * Compresses the given stream, caching the compressed data in memory.
      *
-     * @param out the stream to write to
-     * @throws IOException if writing fails
+     * @param out the stream to write to.
+     * @throws IOException if writing fails.
      */
     public Pack200CompressorOutputStream(final OutputStream out) throws IOException {
         this(out, Pack200Strategy.IN_MEMORY);
@@ -50,9 +50,9 @@ public class Pack200CompressorOutputStream extends CompressorOutputStream<Output
     /**
      * Compresses the given stream, caching the compressed data in memory and using the given properties.
      *
-     * @param out   the stream to write to
-     * @param props Pack200 properties to use
-     * @throws IOException if writing fails
+     * @param out   the stream to write to.
+     * @param props Pack200 properties to use.
+     * @throws IOException if writing fails.
      */
     public Pack200CompressorOutputStream(final OutputStream out, final Map<String, String> props) throws IOException {
         this(out, Pack200Strategy.IN_MEMORY, props);
@@ -61,9 +61,9 @@ public class Pack200CompressorOutputStream extends CompressorOutputStream<Output
     /**
      * Compresses the given stream using the given strategy to cache the results.
      *
-     * @param out  the stream to write to
-     * @param mode the strategy to use
-     * @throws IOException if writing fails
+     * @param out  the stream to write to.
+     * @param mode the strategy to use.
+     * @throws IOException if writing fails.
      */
     public Pack200CompressorOutputStream(final OutputStream out, final Pack200Strategy mode) throws IOException {
         this(out, mode, null);
@@ -72,10 +72,10 @@ public class Pack200CompressorOutputStream extends CompressorOutputStream<Output
     /**
      * Compresses the given stream using the given strategy to cache the results and the given properties.
      *
-     * @param out   the stream to write to
-     * @param mode  the strategy to use
-     * @param props Pack200 properties to use
-     * @throws IOException if writing fails
+     * @param out   the stream to write to.
+     * @param mode  the strategy to use.
+     * @param props Pack200 properties to use.
+     * @throws IOException if writing fails.
      */
     public Pack200CompressorOutputStream(final OutputStream out, final Pack200Strategy mode, final Map<String, String> props) throws IOException {
         super(out);
