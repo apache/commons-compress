@@ -45,7 +45,7 @@ public class CPClass extends ConstantPoolEntry {
     /**
      * Creates a new CPClass
      *
-     * @param name        TODO
+     * @param name        the class name as a UTF8 constant pool entry.
      * @param globalIndex index in CpBands
      * @throws NullPointerException if name is null
      */
