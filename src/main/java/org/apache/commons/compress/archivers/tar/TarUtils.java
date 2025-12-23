@@ -671,16 +671,16 @@ public final class TarUtils {
      *       do not follow the key–value format of standard PAX entries.</li>
      * </ul>
      *
-     * @param inputStream        The input stream providing PAX header data
-     * @param globalPaxHeaders   The global PAX headers of the tar archive
-     * @param headerSize         The total size of the PAX header block; always non-negative
-     * @param maxEntryPathLength The maximum permitted length for entry paths
-     * @param sparseHeaders      Output list to collect any GNU sparse 0.0 headers found
-     * @return A map of PAX headers merged with the supplied global headers
-     * @throws EOFException          If the stream ends unexpectedly
-     * @throws MemoryLimitException  If the headers exceed memory limits
-     * @throws ArchiveException      If a header is malformed or contains invalid data
-     * @throws IOException           If an I/O error occurs while reading
+     * @param inputStream        The input stream providing PAX header data.
+     * @param globalPaxHeaders   The global PAX headers of the tar archive.
+     * @param headerSize         The total size of the PAX header block; always non-negative.
+     * @param maxEntryPathLength The maximum permitted length for entry paths.
+     * @param sparseHeaders      Output list to collect any GNU sparse 0.0 headers found.
+     * @return A map of PAX headers merged with the supplied global headers.
+     * @throws EOFException          If the stream ends unexpectedly.
+     * @throws MemoryLimitException  If the headers exceed memory limits.
+     * @throws ArchiveException      If a header is malformed or contains invalid data.
+     * @throws IOException           If an I/O error occurs while reading.
      */
     static Map<String, String> parsePaxHeaders(final InputStream inputStream, final Map<String, String> globalPaxHeaders, final long headerSize,
             final int maxEntryPathLength, final List<? super TarArchiveStructSparse> sparseHeaders) throws IOException {
@@ -918,7 +918,7 @@ public final class TarUtils {
      *
      * @param header tar header.
      * @param lenient Whether to allow out-of-spec formatting.
-     * @return whether the checksum is reasonably good
+     * @return whether the checksum is reasonably good.
      * @see <a href="https://en.wikipedia.org/wiki/Tar_(computing)#File_header">TAR header</a>
      * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-191">COMPRESS-191</a>
      * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-707">COMPRESS-707</a>
