@@ -39,7 +39,7 @@ public interface CharsetAccessor {
      * error handling for UTF-8.
      * </p>
      *
-     * @return the character set associated with this object
+     * @return the character set associated with this object.
      */
     Charset getCharset();
 }
