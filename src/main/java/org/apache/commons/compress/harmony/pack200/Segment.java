@@ -61,6 +61,9 @@ import org.objectweb.asm.Type;
  */
 public class Segment extends ClassVisitor {
 
+    /**
+     * Array visitor for annotation values.
+     */
     public class ArrayVisitor extends AnnotationVisitor {
 
         private final int indexInCaseArrayN;
@@ -69,6 +72,14 @@ public class Segment extends ClassVisitor {
         private final List<String> nameRU;
         private final List<String> tags;
 
+        /**
+         * Constructs a new ArrayVisitor.
+         *
+         * @param caseArrayN the case array.
+         * @param tags the tags.
+         * @param nameRU the name RU.
+         * @param values the values.
+         */
         public ArrayVisitor(final List<Integer> caseArrayN, final List<String> tags, final List<String> nameRU, final List<Object> values) {
             super(ASM_API);
 
@@ -148,11 +159,24 @@ public class Segment extends ClassVisitor {
         private final List<String> nestNameRU = new ArrayList<>();
         private final List<Integer> nestPairN = new ArrayList<>();
 
+        /**
+         * Constructs a new SegmentAnnotationVisitor.
+         *
+         * @param context the context.
+         */
         public SegmentAnnotationVisitor(final int context) {
             super(ASM_API);
             this.context = context;
         }
 
+        /**
+         * Constructs a new SegmentAnnotationVisitor.
+         *
+         * @param context the context.
+         * @param parameter the parameter.
+         * @param desc the descriptor.
+         * @param visible whether the annotation is visible.
+         */
         public SegmentAnnotationVisitor(final int context, final int parameter, final String desc, final boolean visible) {
             super(ASM_API);
             this.context = context;
@@ -161,6 +185,13 @@ public class Segment extends ClassVisitor {
             this.visible = visible;
         }
 
+        /**
+         * Constructs a new SegmentAnnotationVisitor.
+         *
+         * @param context the context.
+         * @param desc the descriptor.
+         * @param visible whether the annotation is visible.
+         */
         public SegmentAnnotationVisitor(final int context, final String desc, final boolean visible) {
             super(ASM_API);
             this.context = context;
@@ -493,6 +524,9 @@ public class Segment extends ClassVisitor {
 
     private Attribute[] nonStandardAttributePrototypes;
 
+    /**
+     * Constructs a new Segment.
+     */
     public Segment() {
         super(ASM_API);
     }
@@ -532,30 +566,65 @@ public class Segment extends ClassVisitor {
         }
     }
 
+    /**
+     * Gets the attribute bands.
+     *
+     * @return the attribute definition bands.
+     */
     public AttributeDefinitionBands getAttrBands() {
         return attributeDefinitionBands;
     }
 
+    /**
+     * Gets the class bands.
+     *
+     * @return the class bands.
+     */
     public ClassBands getClassBands() {
         return classBands;
     }
 
+    /**
+     * Gets the constant pool bands.
+     *
+     * @return the CP bands.
+     */
     public CpBands getCpBands() {
         return cpBands;
     }
 
+    /**
+     * Gets the current class reader.
+     *
+     * @return the current class reader.
+     */
     public Pack200ClassReader getCurrentClassReader() {
         return currentClassReader;
     }
 
+    /**
+     * Gets the inner class bands.
+     *
+     * @return the IC bands.
+     */
     public IcBands getIcBands() {
         return icBands;
     }
 
+    /**
+     * Gets the segment header.
+     *
+     * @return the segment header.
+     */
     public SegmentHeader getSegmentHeader() {
         return segmentHeader;
     }
 
+    /**
+     * Tests whether the last constant had a wide index.
+     *
+     * @return true if the last constant had a wide index.
+     */
     public boolean lastConstantHadWideIndex() {
         return currentClassReader.lastConstantHadWideIndex();
     }
