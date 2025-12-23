@@ -56,7 +56,7 @@ public class CompressorException extends CompressException {
     /**
      * Constructs a new exception with the specified detail message and cause.
      *
-     * @param message The message (which is saved for later retrieval by the {@link #getMessage()} method)
+     * @param message The message (which is saved for later retrieval by the {@link #getMessage()} method).
      * @param cause   The cause (which is saved for later retrieval by the {@link #getCause()} method). A null indicates that the cause is nonexistent or
      *                unknown.
      */
