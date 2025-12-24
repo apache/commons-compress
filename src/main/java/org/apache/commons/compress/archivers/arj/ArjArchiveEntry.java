@@ -172,7 +172,7 @@ public class ArjArchiveEntry implements ArchiveEntry {
      * File mode of this entry.
      *
      * <p>
-     * The format depends on the host os that created the entry.
+     * The format depends on the host operating system that created the entry.
      * </p>
      *
      * @return the file mode.
@@ -212,7 +212,8 @@ public class ArjArchiveEntry implements ArchiveEntry {
      * File mode of this entry as Unix stat value.
      *
      * <p>
-     * Will only be non-zero of the host os was Unix.
+     * Will only be non-zero of the host operating system was Unix.
+     * </p>
      *
      * @return the Unix mode.
      */
