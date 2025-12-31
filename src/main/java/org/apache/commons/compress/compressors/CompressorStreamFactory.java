@@ -783,8 +783,8 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
      * @param decompressConcatenated if true, decompress until the end of the input; if false, stop after the first stream and leave the input position to point
      *                               to the next byte after the stream.
      * @since 1.5
-     * @deprecated 1.10 use the {@link #CompressorStreamFactory(boolean)} constructor instead.
      * @throws IllegalStateException if the constructor {@link #CompressorStreamFactory(boolean)} was used to create the factory.
+     * @deprecated 1.10 use the {@link #CompressorStreamFactory(boolean)} constructor instead.
      */
     @Deprecated
     public void setDecompressConcatenated(final boolean decompressConcatenated) {

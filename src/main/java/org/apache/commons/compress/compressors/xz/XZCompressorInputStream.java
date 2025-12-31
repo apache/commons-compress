@@ -204,8 +204,8 @@ public class XZCompressorInputStream extends CompressorInputStream implements In
      * @throws IOException if the input is not in the .xz format, the input is corrupt or truncated, the .xz headers specify options that are not supported by
      *                     this implementation, or the underlying {@code inputStream} throws an exception
      *
-     * @deprecated Use {@link #builder()}.
      * @since 1.14
+     * @deprecated Use {@link #builder()}.
      */
     @Deprecated
     public XZCompressorInputStream(final InputStream inputStream, final boolean decompressConcatenated, final int memoryLimitKiB) throws IOException {

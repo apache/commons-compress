@@ -521,10 +521,10 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Gets the number of bytes needed to pad the header to the alignment boundary.
      *
-     * @deprecated This method doesn't properly work for multi-byte encodings. And creates corrupt archives. Use {@link #getHeaderPadCount(Charset)} or
-     *             {@link #getHeaderPadCount(long)} in any case.
      * @return the number of bytes needed to pad the header (0,1,2,3).
      * @throws ArchiveException if a computation overflows an {@code int}.
+     * @deprecated This method doesn't properly work for multi-byte encodings. And creates corrupt archives. Use {@link #getHeaderPadCount(Charset)} or
+     *             {@link #getHeaderPadCount(long)} in any case.
      */
     @Deprecated
     public int getHeaderPadCount() throws ArchiveException {

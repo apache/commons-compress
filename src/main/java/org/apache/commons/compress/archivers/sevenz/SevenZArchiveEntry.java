@@ -44,8 +44,8 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      *
      * @param date the Java time.
      * @return the NTFS time.
-     * @deprecated Use {@link FileTimes#toNtfsTime(Date)} instead.
      * @see FileTimes#toNtfsTime(Date)
+     * @deprecated Use {@link FileTimes#toNtfsTime(Date)} instead.
      */
     @Deprecated
     public static long javaTimeToNtfsTime(final Date date) {
@@ -57,8 +57,8 @@ public class SevenZArchiveEntry implements ArchiveEntry {
      *
      * @param ntfsTime the NTFS time in 100 nanosecond units.
      * @return the Java time.
-     * @deprecated Use {@link FileTimes#ntfsTimeToDate(long)} instead.
      * @see FileTimes#ntfsTimeToDate(long)
+     * @deprecated Use {@link FileTimes#ntfsTimeToDate(long)} instead.
      */
     @Deprecated
     public static Date ntfsTimeToJavaTime(final long ntfsTime) {
@@ -445,8 +445,8 @@ public class SevenZArchiveEntry implements ArchiveEntry {
     /**
      * Sets the compressed CRC.
      *
-     * @deprecated use setCompressedCrcValue instead.
      * @param crc the CRC.
+     * @deprecated use setCompressedCrcValue instead.
      */
     @Deprecated
     void setCompressedCrc(final int crc) {
