@@ -28,7 +28,7 @@ final class Dirent {
     private final String name;
 
     /**
-     * Constructor
+     * Constructs a new instance.
      *
      * @param ino.
      * @param parentIno.
