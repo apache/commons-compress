@@ -279,6 +279,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
      * <p>
      * The default value -1 means that the method has not been specified.
      * </p>
+     *
      * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-93">COMPRESS-93</a>
      */
     private int method = ZipMethod.UNKNOWN_CODE;

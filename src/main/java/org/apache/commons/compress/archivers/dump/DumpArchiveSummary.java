@@ -154,6 +154,7 @@ public class DumpArchiveSummary {
      * <p>
      *     This is typically either 10 (for standard density tapes) or 32 (for high density tapes).
      * </p>
+     *
      * @return the number of records per tape block.
      */
     public int getNTRec() {

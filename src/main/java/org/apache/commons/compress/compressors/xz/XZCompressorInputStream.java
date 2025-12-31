@@ -48,6 +48,7 @@ import org.tukaani.xz.XZInputStream;
  *   .get();
  * }
  * </pre>
+ *
  * @since 1.4
  */
 // @formatter:on

@@ -308,6 +308,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
      * <p>
      *    The method skips special AR file entries, such as those used by GNU.
      * </p>
+     *
      * @return The next AR file entry.
      * @throws IOException if the entry could not be read or is malformed.
      */

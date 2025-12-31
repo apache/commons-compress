@@ -60,6 +60,7 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream<ZstdOutpu
      * <p>
      * This class avoids making the underlying {@code zstd} classes part of the public or protected API.
      * </p>
+     *
      * @see #get()
      * @see ZstdConstants
      * @since 1.28.0
