@@ -394,7 +394,7 @@ public class NewAttributeBands extends BandSet {
     }
 
     /**
-     * Abstract base class for layout elements.
+     * Abstrac class for layout elements.
      */
     private abstract static class LayoutElement implements AttributeLayoutElement {
 
