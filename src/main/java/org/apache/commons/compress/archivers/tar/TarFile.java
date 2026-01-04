@@ -114,6 +114,7 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
      */
     // @formatter:on
     public static final class Builder extends AbstractTarBuilder<TarFile, Builder> {
+
         /**
          * Constructs a new instance.
          */

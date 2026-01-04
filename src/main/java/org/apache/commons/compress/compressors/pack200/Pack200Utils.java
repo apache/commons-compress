@@ -38,6 +38,7 @@ import org.apache.commons.compress.java.util.jar.Pack200;
  * @since 1.3
  */
 public class Pack200Utils {
+
     /**
      * Normalizes a JAR archive in-place, so it can be safely signed and packed.
      *

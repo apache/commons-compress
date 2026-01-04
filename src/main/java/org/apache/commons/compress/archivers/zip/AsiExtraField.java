@@ -68,14 +68,17 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
      * Standard Unix stat(2) file mode.
      */
     private int mode;
+
     /**
      * User ID.
      */
     private int uid;
+
     /**
      * Group ID.
      */
     private int gid;
+
     /**
      * File this entry points to, if it is a symbolic link.
      *
@@ -84,6 +87,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
      * </p>
      */
     private String link = "";
+
     /**
      * Is this an entry for a directory?
      */

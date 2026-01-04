@@ -364,10 +364,12 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
      * Index of the last char in the block, so the block size == last + 1.
      */
     private int last;
+
     /**
      * Index in zptr[] of original string after sorting.
      */
     private int origPtr;
+
     /**
      * always: in the range 0 .. 9. The current block size is 100000 * this number.
      */

@@ -47,10 +47,12 @@ public class ExtraFieldUtils {
          * Key for "throw an exception" action.
          */
         public static final int THROW_KEY = 0;
+
         /**
          * Key for "skip" action.
          */
         public static final int SKIP_KEY = 1;
+
         /**
          * Key for "read" action.
          */

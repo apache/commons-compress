@@ -71,6 +71,7 @@ public class GzipUtils {
     public static String getCompressedFilename(final String fileName) {
         return FNU_INSTANCE.getCompressedFileName(fileName);
     }
+
     /**
      * Maps the given file name to the name that the file should have after compression with gzip. Common file types with custom suffixes for compressed
      * versions are automatically detected and correctly mapped. For example the name "package.tar" is mapped to "package.tgz". If no custom mapping is

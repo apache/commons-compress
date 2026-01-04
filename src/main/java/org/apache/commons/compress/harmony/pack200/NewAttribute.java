@@ -29,11 +29,13 @@ import org.objectweb.asm.Label;
  * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
 public class NewAttribute extends Attribute {
+
     /**
      * ErrorAttribute extends {@code NewAttribute} and manages attributes encountered by ASM that have had an error action specified to pack200 (for example via
      * one of the -C, -M, -F or -D command line options such as -Cattribute-name=error)
      */
     public static class ErrorAttribute extends NewAttribute {
+
         /**
          * Constructs a new ErrorAttribute.
          *

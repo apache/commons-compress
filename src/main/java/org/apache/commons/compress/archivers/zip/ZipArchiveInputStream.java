@@ -266,18 +266,22 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
          * Current ZIP entry.
          */
         private final ZipArchiveEntry entry = new ZipArchiveEntry();
+
         /**
          * Does the entry use a data descriptor?
          */
         private boolean hasDataDescriptor;
+
         /**
          * Does the entry have a ZIP64 extended information extra field.
          */
         private boolean usesZip64;
+
         /**
          * Number of bytes of entry content read by the client if the entry is STORED.
          */
         private long bytesRead;
+
         /**
          * Number of bytes of entry content read from the stream.
          * <p>
@@ -286,10 +290,12 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
          * </p>
          */
         private long bytesReadFromStream;
+
         /**
          * The checksum calculated as the current entry is read.
          */
         private final CRC32 crc = new CRC32();
+
         /**
          * The input stream decompressing the data for shrunk and imploded entries.
          */
@@ -359,22 +365,30 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
 
     /** The ZIP encoding to use for file names and the file comment. */
     private final ZipEncoding zipEncoding;
+
     /** Whether to look for and use Unicode extra fields. */
     private final boolean useUnicodeExtraFields;
+
     /** Inflater used for all deflated entries. */
     private final Inflater inf = new Inflater(true);
+
     /** Buffer used to read from the wrapped stream. */
     private final ByteBuffer buf = ByteBuffer.allocate(ZipArchiveOutputStream.BUFFER_SIZE);
+
     /** The entry that is currently being read. */
     private CurrentEntry current;
+
     /** Whether the stream has been closed. */
     private boolean closed;
+
     /** Whether the stream has reached the central directory - and thus found all entries. */
     private boolean hitCentralDirectory;
+
     /**
      * When reading a stored entry that uses the data descriptor this stream has to read the full entry and caches it. This is the cache.
      */
     private ByteArrayInputStream lastStoredEntry;
+
     /**
      * Whether the stream will try to read STORED entries that use a data descriptor. Setting it to true means we will not stop reading an entry with the
      * compressed size, instead we will stop reading an entry when a data descriptor is met (by finding the Data Descriptor Signature). This will completely
@@ -385,10 +399,13 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
      * </p>
      */
     private final boolean supportStoredEntryDataDescriptor;
+
     /** Count decompressed bytes for current entry */
     private long uncompressedCount;
+
     /** Whether the stream will try to skip the ZIP split signature(08074B50) at the beginning. **/
     private final boolean skipSplitSignature;
+
     /** Cached buffers - must only be used locally in the class (COMPRESS-172 - reduce garbage collection). */
     private final byte[] lfhBuf = new byte[LFH_LEN];
     private final byte[] skipBuf = new byte[1024];
@@ -396,6 +413,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     private final byte[] wordBuf = new byte[WORD];
     private final byte[] twoDwordBuf = new byte[2 * DWORD];
     private int entriesRead;
+
     /**
      * The factory for extra fields or null.
      */

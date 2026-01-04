@@ -25,6 +25,7 @@ package org.apache.commons.compress.archivers.zip;
  * @since 1.10
  */
 public interface ZipArchiveEntryPredicate {
+
     /**
      * Indicate if the given entry should be included in the operation
      *

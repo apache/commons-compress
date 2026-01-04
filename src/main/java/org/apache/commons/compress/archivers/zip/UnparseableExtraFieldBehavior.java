@@ -26,6 +26,7 @@ import java.util.zip.ZipException;
  * @since 1.19
  */
 public interface UnparseableExtraFieldBehavior {
+
     /**
      * Decides what to do with extra field data that doesn't follow the recommended pattern.
      *

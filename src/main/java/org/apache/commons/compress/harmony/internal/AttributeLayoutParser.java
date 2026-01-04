@@ -42,6 +42,7 @@ public final class AttributeLayoutParser<T> {
      * @param <T> The list body element type.
      */
     public interface Factory<T> {
+
         /**
          * Creates a {@code call} layout element.
          *
@@ -103,6 +104,7 @@ public final class AttributeLayoutParser<T> {
      * @param <T> The list body element type.
      */
     public static final class UnionCaseData<T> {
+
         /**
          * Body of the union case.
          */

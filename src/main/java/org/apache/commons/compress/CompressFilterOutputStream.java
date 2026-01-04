@@ -56,6 +56,7 @@ public abstract class CompressFilterOutputStream<T extends OutputStream> extends
      * Whether this instance was successfully closed.
      */
     private final AtomicBoolean closed = new AtomicBoolean();
+
     /**
      * Whether this instance was successfully finished.
      * <p>

@@ -32,10 +32,12 @@ final class SubStreamsInfo {
      * Unpacked size of each unpacked stream.
      */
     final long[] unpackSizes;
+
     /**
      * Whether CRC is present for each unpacked stream.
      */
     final BitSet hasCrc;
+
     /**
      * CRCs of unpacked streams, if present.
      */

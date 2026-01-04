@@ -52,6 +52,7 @@ import java.util.List;
  */
 
 public class TarArchiveSparseEntry implements TarConstants {
+
     /** If an extension sparse header follows. */
     private final boolean isExtended;
 

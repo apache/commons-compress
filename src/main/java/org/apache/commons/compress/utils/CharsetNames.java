@@ -58,6 +58,7 @@ import java.nio.charset.StandardCharsets;
  */
 @Deprecated
 public class CharsetNames {
+
     /**
      * ISO Latin Alphabet No. 1, a.k.a. ISO-LATIN-1.
      * <p>

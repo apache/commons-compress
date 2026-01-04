@@ -372,6 +372,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream<OutputSt
      * Index of the last char in the block, so the block size == last + 1.
      */
     private int last;
+
     /**
      * Always: in the range 0 .. 9. The current block size is 100000 * this number.
      */
@@ -391,6 +392,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream<OutputSt
     private int combinedCRC;
 
     private final int allowableBlockSize;
+
     /**
      * All memory intensive stuff.
      */

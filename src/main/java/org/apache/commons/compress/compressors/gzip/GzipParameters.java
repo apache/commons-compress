@@ -85,7 +85,6 @@ public class GzipParameters {
          */
         CPM(OS_CPM),
 
-        // @formatter:off
         /**
          * 0: FAT filesystem (MS-DOS, OS/2, NT/Win32).
          */
@@ -140,7 +139,6 @@ public class GzipParameters {
          * 8: Z-System.
          */
         Z_SYSTEM(OS_Z_SYSTEM);
-        // @formatter:on
 
         /**
          * Gets the {@link OS} matching the given code.
@@ -302,6 +300,7 @@ public class GzipParameters {
     private String fileName;
     private Charset fileNameCharset = GzipUtils.GZIP_ENCODING;
     private boolean headerCrc;
+
     /**
      * The most recent modification time (MTIME) of the original file being compressed.
      * <p>

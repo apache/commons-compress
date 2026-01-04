@@ -37,24 +37,29 @@ public class UnsupportedZipFeatureException extends ZipException {
     public static class Feature implements Serializable {
 
         private static final long serialVersionUID = 4112582948775420359L;
+
         /**
          * The entry is encrypted.
          */
         public static final Feature ENCRYPTION = new Feature("encryption");
+
         /**
          * The entry used an unsupported compression method.
          */
         public static final Feature METHOD = new Feature("compression method");
+
         /**
          * The entry uses a data descriptor.
          */
         public static final Feature DATA_DESCRIPTOR = new Feature("data descriptor");
+
         /**
          * The archive uses splitting or spanning.
          *
          * @since 1.5
          */
         public static final Feature SPLITTING = new Feature("splitting");
+
         /**
          * The archive contains entries with unknown compressed size for a compression method that doesn't support detection of the end of the compressed
          * stream.

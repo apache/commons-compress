@@ -26,6 +26,7 @@ import java.io.IOException;
  * @since 1.10
  */
 public interface ScatterGatherBackingStoreSupplier {
+
     /**
      * Constructs a ScatterGatherBackingStore.
      *

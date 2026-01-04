@@ -30,6 +30,7 @@ import java.util.zip.CRC32;
  */
 @Deprecated
 public class CRC32VerifyingInputStream extends ChecksumVerifyingInputStream {
+
     /**
      * Constructs a new instance.
      *
