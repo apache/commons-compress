@@ -104,7 +104,6 @@ public class XZCompressorInputStream extends CompressorInputStream implements In
             return this;
         }
 
-
         /**
          * Sets a working memory threshold in kibibytes (KiB).
          *
