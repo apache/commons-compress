@@ -30,10 +30,8 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
-import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.function.Function;
 import java.util.zip.CRC32;
 import java.util.zip.DataFormatException;
@@ -327,8 +325,6 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     private static final byte[] LFH = ZipLong.LFH_SIG.getBytes();
     private static final byte[] CFH = ZipLong.CFH_SIG.getBytes();
     private static final byte[] DD = ZipLong.DD_SIG.getBytes();
-    private static final byte[] APK_SIGNING_BLOCK_MAGIC = { 'A', 'P', 'K', ' ', 'S', 'i', 'g', ' ', 'B', 'l', 'o', 'c', 'k', ' ', '4', '2', };
-    private static final BigInteger LONG_MAX = BigInteger.valueOf(Long.MAX_VALUE);
 
     /**
      * Creates a new builder.
@@ -838,12 +834,9 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
         }
         final ZipLong sig = new ZipLong(lfhBuf);
         if (!sig.equals(ZipLong.LFH_SIG)) {
-            if (sig.equals(ZipLong.CFH_SIG) || sig.equals(ZipLong.AED_SIG) || isApkSigningBlock(lfhBuf) || sig.equals(ZipLong.ZERO)) {
-                hitCentralDirectory = true;
-                skipRemainderOfArchive();
-                return null;
-            }
-            throw new ZipException(String.format("Unexpected record signature: 0x%x", sig.getValue()));
+            hitCentralDirectory = true;
+            skipRemainderOfArchive();
+            return null;
         }
         // off: go past the signature
         int off = WORD;
@@ -944,52 +937,6 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     @Override
     public long getUncompressedCount() {
         return uncompressedCount;
-    }
-
-    /**
-     * Checks whether this might be an APK Signing Block.
-     * <p>
-     * Unfortunately the APK signing block does not start with some kind of signature, it rather ends with one. It starts with a length, so what we do is parse
-     * the suspect length, skip ahead far enough, look for the signature and if we've found it, return true.
-     * </p>
-     *
-     * @param suspectLocalFileHeader the bytes read from the underlying stream in the expectation that they would hold the local file header of the next entry.
-     * @return true if this looks like an APK signing block.
-     * @see <a href="https://source.android.com/security/apksigning/v2">https://source.android.com/security/apksigning/v2</a>
-     */
-    private boolean isApkSigningBlock(final byte[] suspectLocalFileHeader) throws IOException {
-        // length of block excluding the size field itself
-        final BigInteger len = ZipEightByteInteger.getValue(suspectLocalFileHeader);
-        // LFH has already been read and all but the first eight bytes contain (part of) the APK signing block,
-        // also subtract 16 bytes in order to position us at the magic string
-        BigInteger toSkip = len.add(BigInteger.valueOf(DWORD - suspectLocalFileHeader.length - (long) APK_SIGNING_BLOCK_MAGIC.length));
-        final byte[] magic = new byte[APK_SIGNING_BLOCK_MAGIC.length];
-        try {
-            if (toSkip.signum() < 0) {
-                // suspectLocalFileHeader contains the start of suspect magic string
-                final int off = suspectLocalFileHeader.length + toSkip.intValue();
-                // length was shorter than magic length
-                if (off < DWORD) {
-                    return false;
-                }
-                final int bytesInBuffer = Math.abs(toSkip.intValue());
-                System.arraycopy(suspectLocalFileHeader, off, magic, 0, Math.min(bytesInBuffer, magic.length));
-                if (bytesInBuffer < magic.length) {
-                    readFully(magic, bytesInBuffer);
-                }
-            } else {
-                while (toSkip.compareTo(LONG_MAX) > 0) {
-                    realSkip(Long.MAX_VALUE);
-                    toSkip = toSkip.add(LONG_MAX.negate());
-                }
-                realSkip(toSkip.longValue());
-                readFully(magic);
-            }
-        } catch (final EOFException ex) { // NOSONAR
-            // length was invalid
-            return false;
-        }
-        return Arrays.equals(magic, APK_SIGNING_BLOCK_MAGIC);
     }
 
     private boolean isFirstByteOfEocdSig(final int b) {
