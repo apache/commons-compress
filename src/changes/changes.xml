@@ -62,6 +62,7 @@ The <action> type attribute can be add,update,fix,remove.
       <!-- FIX bzip2 -->
       <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">BZip2CompressorInputStream now throw CompressorException (a subclass of IOException) for invalid or corrupted data, providing more specific error reporting.</action>
       <action type="fix" dev="pkarwasz" due-to="Tyler Nighswander, Piotr P. Karwasz">BZip2 input streams treat Huffman codes longer than 20 bits as corrupted data, matching the behavior of the reference implementation.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory, Oti">Fix NullPointerException at BZip2CompressorOutputStream.writeRun() #757.</action>
       <!-- FIX dump -->      
       <action type="fix" dev="pkarwasz" due-to="Tyler Nighswander">Align DUMP archive block size with Linux `dump` utility.</action>
       <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">DumpArchiveInputStream.getNextEntry() throws an ArchiveException instead of ArrayIndexOutOfBoundsException.</action>
