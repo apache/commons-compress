@@ -540,7 +540,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream<OutputSt
 
     @Override
     public void finish() throws IOException {
-        if (!isClosed()) {
+        if (!isClosed() && !isFinished()) {
             try {
                 if (this.runLength > 0) {
                     writeRun();
@@ -551,6 +551,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream<OutputSt
             } finally {
                 this.blockSorter = null;
                 this.data = null;
+                super.finish();
             }
         }
     }
