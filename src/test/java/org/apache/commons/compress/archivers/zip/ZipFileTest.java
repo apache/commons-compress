@@ -463,6 +463,11 @@ class ZipFileTest extends AbstractArchiveFileTest<ZipArchiveEntry> {
         }
     }
 
+    @Test
+    void testEmptyCentralDirectory() throws Exception {
+        assertThrows(ArchiveException.class, () -> ZipFile.builder().setPath(getPath("org/apache/commons/compress/zip/ZipFile-method.zip")).get());
+    }
+
     /**
      * Test entries alignment.
      */
