@@ -180,7 +180,6 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Glavo">Update outdated links in ZipMethod Javadoc #619.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Deprecate ZipUtil.signedByteToUnsignedInt(byte) in favor of Byte.toUnsignedInt(byte).</action> 
       <action type="fix" dev="ggregory" due-to="Gary Gregory">ZipArchiveOutputStream.close() does not close its underlying output stream.</action> 
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">ZipArchiveOutputStream.close() does not close its underlying output stream.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Don't use deprecated code in TarArchiveInputStream.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Don't use deprecated code in TarFile.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">CpioArchiveInputStream.read(byte[], int, int) now throws an IOException on a data pad count mismatch.</action>
