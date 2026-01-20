@@ -30,13 +30,13 @@ class CpioArchiveEntryTest {
 
     @ParameterizedTest
     @ValueSource(shorts = {CpioConstants.FORMAT_NEW, CpioConstants.FORMAT_NEW_CRC, CpioConstants.FORMAT_OLD_BINARY})
-    void testCpioEntrySize_notOver4GiB_nonOldAsciiFormat(short format) {
+    void testCpioEntrySizeUnder4GiBNotOldAsciiFormat(short format) {
         final CpioArchiveEntry entry = new CpioArchiveEntry(format);
         assertThrows(IllegalArgumentException.class, () -> entry.setSize(0x1FFFFFFFFL));
     }
 
     @Test
-    void testCpioEntrySize_oldAsciiFormat_allowsOver4GiB() {
+    void testCpioEntrySizeOldAsciiFormatOver4GiB() {
         final CpioArchiveEntry entry = new CpioArchiveEntry(CpioConstants.FORMAT_OLD_ASCII);
         entry.setSize(0x1FFFFFFFFL);
     }
