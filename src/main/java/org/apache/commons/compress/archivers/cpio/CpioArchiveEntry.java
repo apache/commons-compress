@@ -911,7 +911,9 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @param size The file size to set.
      */
     public void setSize(final long size) {
-        if (size < 0 || size > 0xFFFFFFFFL) {
+        // When using the OLD_ASCII format, files can be up to 8GiB in size.
+        final long maxSize = this.fileFormat == FORMAT_OLD_ASCII ? 0x1FFFFFFFFL : 0xFFFFFFFFL;
+        if (size < 0 || size > maxSize) {
             throw new IllegalArgumentException("Invalid entry size <" + size + ">");
         }
         this.fileSize = size;
