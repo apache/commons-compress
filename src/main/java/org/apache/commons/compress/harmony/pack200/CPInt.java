@@ -41,6 +41,17 @@ public class CPInt extends CPConstant<CPInt> {
         return Integer.compare(value, obj.value);
     }
 
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof CPInt)) {
+            return false;
+        }
+        return compareTo((CPInt) obj) == 0;
+    }
+
     /**
      * Gets the int value.
      *
@@ -48,5 +59,10 @@ public class CPInt extends CPConstant<CPInt> {
      */
     public int getInt() {
         return value;
+    }
+
+    @Override
+    public int hashCode() {
+        return Integer.hashCode(value);
     }
 }

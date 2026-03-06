@@ -41,6 +41,17 @@ public class CPFloat extends CPConstant<CPFloat> {
         return Float.compare(value, obj.value);
     }
 
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof CPFloat)) {
+            return false;
+        }
+        return compareTo((CPFloat) obj) == 0;
+    }
+
     /**
      * Gets the float value.
      *
@@ -49,4 +60,10 @@ public class CPFloat extends CPConstant<CPFloat> {
     public float getFloat() {
         return value;
     }
+
+    @Override
+    public int hashCode() {
+        return Float.hashCode(value);
+    }
+
 }

@@ -18,6 +18,8 @@
  */
 package org.apache.commons.compress.harmony.pack200;
 
+import java.util.Objects;
+
 /**
  * Constant pool entry for a String.
  *
@@ -34,13 +36,24 @@ public class CPString extends CPConstant<CPString> {
      * @param value The value.
      */
     public CPString(final CPUTF8 value) {
-        this.value = value;
+        this.value = Objects.requireNonNull(value);
         this.string = value.getUnderlyingString();
     }
 
     @Override
     public int compareTo(final CPString arg0) {
         return string.compareTo(arg0.string);
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof CPString)) {
+            return false;
+        }
+        return compareTo((CPString) obj) == 0;
     }
 
     /**
@@ -50,6 +63,11 @@ public class CPString extends CPConstant<CPString> {
      */
     public int getIndexInCpUtf8() {
         return value.getIndex();
+    }
+
+    @Override
+    public int hashCode() {
+        return string.hashCode();
     }
 
     @Override
