@@ -29,7 +29,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 /**
- * Inner class bands (corresponds to the {@code ic_bands} set of bands in the pack200 specification)
+ * Inner class bands. Corresponds to the {@code ic_bands} set of bands in the pack200 specification.
  *
  * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
@@ -61,6 +61,10 @@ public class IcBands extends BandSet {
                 return C.equals(icT.C) && F == icT.F && Objects.equals(C2, icT.C2) && Objects.equals(N, icT.N);
             }
             return false;
+        }
+
+        public int hashCode() {
+            return Objects.hash(C, F, C2, N);
         }
 
         public boolean isAnonymous() {
