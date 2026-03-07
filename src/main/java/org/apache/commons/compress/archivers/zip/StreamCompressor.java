@@ -279,7 +279,7 @@ public abstract class StreamCompressor implements Closeable {
      * @param b      the byte array to write.
      * @param offset the start position to write from.
      * @param length the number of bytes to write.
-     * @param method the comrpession method to use.
+     * @param method the compression method to use.
      * @return the number of bytes written to the stream this time.
      * @throws IOException on error.
      */

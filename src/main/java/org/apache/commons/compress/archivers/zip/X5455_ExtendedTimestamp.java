@@ -500,7 +500,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
 
     /**
      * <p>
-     * Sets the acccess time as a {@link FileTime} of this ZIP entry. Supplied value is truncated to per-second precision (milliseconds zeroed-out).
+     * Sets the access time as a {@link FileTime} of this ZIP entry. Supplied value is truncated to per-second precision (milliseconds zeroed-out).
      * </p>
      * <p>
      * Note: the setters for flags and timestamps are decoupled. Even if the timestamp is not-null, it will only be written out if the corresponding bit in the
