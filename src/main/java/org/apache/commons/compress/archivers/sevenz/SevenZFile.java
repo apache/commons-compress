@@ -311,7 +311,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         /**
          * Sets whether {@link SevenZFile} will try to recover broken archives where the CRC of the file's metadata is 0.
          * <p>
-         * This special kind of broken archive is encountered when mutli volume archives are closed prematurely. If you enable this option SevenZFile will trust
+         * This special kind of broken archive is encountered when multi volume archives are closed prematurely. If you enable this option SevenZFile will trust
          * data that looks as if it could contain metadata of an archive and allocate big amounts of memory. It is strongly recommended to not enable this
          * option without setting {@link #setMaxMemoryLimitKb(int)} at the same time.
          * </p>

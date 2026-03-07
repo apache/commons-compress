@@ -105,7 +105,7 @@ final class SevenZHugeNextHeaderTest {
             // For example: -Xmx128m
             ignore.printStackTrace();
         } catch (final ArchiveException ignore) {
-            // If a MemoryLimitException isn't thrown beause a lot of memory is available, then we get this failure:
+            // If a MemoryLimitException isn't thrown because a lot of memory is available, then we get this failure:
             // org.apache.commons.compress.archivers.ArchiveException: Broken or unsupported archive: no Header
         }
     }

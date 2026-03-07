@@ -241,7 +241,7 @@ public class XZCompressorInputStream extends CompressorInputStream implements In
             count(ret == -1 ? -1 : 1);
             return ret;
         } catch (final org.tukaani.xz.MemoryLimitException e) {
-            // Convert to Commons Compress MemoryLimtException
+            // Convert to Commons Compress MemoryLimitException
             throw newMemoryLimitException(e);
         }
     }
@@ -253,7 +253,7 @@ public class XZCompressorInputStream extends CompressorInputStream implements In
             count(ret);
             return ret;
         } catch (final org.tukaani.xz.MemoryLimitException e) {
-            // Convert to Commons Compress MemoryLimtException
+            // Convert to Commons Compress MemoryLimitException
             throw newMemoryLimitException(e);
         }
     }
@@ -263,7 +263,7 @@ public class XZCompressorInputStream extends CompressorInputStream implements In
         try {
             return IOUtils.skip(in, n);
         } catch (final org.tukaani.xz.MemoryLimitException e) {
-            // Convert to Commons Compress MemoryLimtException
+            // Convert to Commons Compress MemoryLimitException
             throw newMemoryLimitException(e);
         }
     }

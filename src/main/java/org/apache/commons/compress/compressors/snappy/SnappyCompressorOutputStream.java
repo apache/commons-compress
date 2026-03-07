@@ -39,7 +39,7 @@ import org.apache.commons.compress.utils.ByteUtils;
  * The raw Snappy format requires the uncompressed size to be written at the beginning of the stream using a varint representation, i.e. the number of bytes
  * needed to write the information is not known before the uncompressed size is known. We've chosen to make the uncompressedSize a parameter of the constructor
  * in favor of buffering the whole output until the size is known. When using the {@link FramedSnappyCompressorOutputStream} this limitation is taken care of by
- * the warpping framing format.
+ * the wrapping framing format.
  * </p>
  *
  * @see <a href="https://github.com/google/snappy/blob/master/format_description.txt">Snappy compressed format description</a>
@@ -85,10 +85,10 @@ public class SnappyCompressorOutputStream extends CompressorOutputStream<OutputS
     private static final int MAX_MATCH_LENGTH = 64;
 
     /**
-     * Returns a builder correctly configured for the Snappy algorithm using the gven block size.
+     * Returns a builder correctly configured for the Snappy algorithm using the given block size.
      *
      * @param blockSize the block size.
-     * @return a builder correctly configured for the Snappy algorithm using the gven block size.
+     * @return a builder correctly configured for the Snappy algorithm using the given block size.
      */
     public static Parameters.Builder createParameterBuilder(final int blockSize) {
         // the max offset and max literal length defined by the format
