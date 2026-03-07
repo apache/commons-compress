@@ -136,6 +136,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory, Shan Jiang" issue="COMPRESS-719">CPConstant subclasses are missing optional hashCode() and equals() to match its Comparable.compareTo().</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">CPUTF8 is missing optional hashCode() and equals() to match its Comparable.compareTo().</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Pack200 class IcBands.IcTuple implements equals() but not hashCode().</action>
+      <action type="fix" dev="ggregory" due-to="Martin Wiesner">Fix typos in Javadoc and comments #761.</action>
       <!-- ADD -->
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add MemoryLimitException.MemoryLimitException(long, long).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add CompressException.CompressException(String, Object...).</action>
