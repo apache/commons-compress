@@ -25,7 +25,7 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.util.Enumeration;
 
-public class CompressZipFuzzer extends BaseTests {
+public class CompressZipFuzzer extends AbstractTests {
     public static void fuzzerTestOneInput(byte[] data) {
         try {
             ZipFile zf = new ZipFile(new SeekableInMemoryByteChannel(data));

@@ -23,7 +23,7 @@ import org.apache.commons.compress.archivers.tar.TarFile;
 import java.io.InputStream;
 import java.io.IOException;
 
-public class CompressTarFuzzer extends BaseTests {
+public class CompressTarFuzzer extends AbstractTests {
     public static void fuzzerTestOneInput(byte[] data) {
         try {
             TarFile tf = new TarFile(data);

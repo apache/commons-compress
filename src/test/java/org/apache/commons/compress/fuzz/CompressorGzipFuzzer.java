@@ -22,7 +22,7 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
-public class CompressorGzipFuzzer extends BaseTests {
+public class CompressorGzipFuzzer extends AbstractTests {
     public static void fuzzerTestOneInput(byte[] data) {
         try {
             fuzzCompressorInputStream(new GzipCompressorInputStream(new ByteArrayInputStream(data)));

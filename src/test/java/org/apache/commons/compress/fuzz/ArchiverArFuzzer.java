@@ -22,7 +22,7 @@ import org.apache.commons.compress.archivers.ar.ArArchiveInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
-public class ArchiverArFuzzer extends BaseTests {
+public class ArchiverArFuzzer extends AbstractTests {
     public static void fuzzerTestOneInput(byte[] data) {
         try {
             fuzzArchiveInputStream(new ArArchiveInputStream(new ByteArrayInputStream(data)));

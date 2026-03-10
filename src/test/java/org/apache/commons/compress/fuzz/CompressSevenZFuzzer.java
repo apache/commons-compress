@@ -25,7 +25,7 @@ import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import java.io.InputStream;
 import java.io.IOException;
 
-public class CompressSevenZFuzzer extends BaseTests {
+public class CompressSevenZFuzzer extends AbstractTests {
     private static final SevenZFileOptions options = new SevenZFileOptions.Builder()
         .withMaxMemoryLimitInKb(1_000_000)
         .build();

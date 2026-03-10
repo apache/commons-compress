@@ -23,7 +23,7 @@ import org.apache.commons.compress.compressors.snappy.SnappyCompressorInputStrea
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
-public class CompressorSnappyFuzzer extends BaseTests {
+public class CompressorSnappyFuzzer extends AbstractTests {
     // Test both Snappy classes
     public static void fuzzerTestOneInput(byte[] data) {
         try {

@@ -23,7 +23,7 @@ import org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStrea
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
-public class CompressorLZ4Fuzzer extends BaseTests {
+public class CompressorLZ4Fuzzer extends AbstractTests {
     // Test both LZ4 classes
     public static void fuzzerTestOneInput(byte[] data) {
         try {

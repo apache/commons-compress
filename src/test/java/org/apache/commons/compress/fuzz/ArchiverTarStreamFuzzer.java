@@ -22,7 +22,7 @@ import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
-public class ArchiverTarStreamFuzzer extends BaseTests {
+public class ArchiverTarStreamFuzzer extends AbstractTests {
     public static void fuzzerTestOneInput(byte[] data) {
         try {
             fuzzArchiveInputStream(new TarArchiveInputStream(new ByteArrayInputStream(data)));

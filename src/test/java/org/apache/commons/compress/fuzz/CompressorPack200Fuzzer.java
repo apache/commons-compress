@@ -22,7 +22,7 @@ import org.apache.commons.compress.compressors.pack200.Pack200CompressorInputStr
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
-public class CompressorPack200Fuzzer extends BaseTests {
+public class CompressorPack200Fuzzer extends AbstractTests {
     public static void fuzzerTestOneInput(byte[] data) {
         try {
             fuzzCompressorInputStream(new Pack200CompressorInputStream(new ByteArrayInputStream(data)));

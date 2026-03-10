@@ -22,7 +22,7 @@ import org.apache.commons.compress.compressors.deflate64.Deflate64CompressorInpu
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
-public class CompressorDeflate64Fuzzer extends BaseTests {
+public class CompressorDeflate64Fuzzer extends AbstractTests {
     public static void fuzzerTestOneInput(byte[] data) {
         try {
             fuzzCompressorInputStream(new Deflate64CompressorInputStream(new ByteArrayInputStream(data)));

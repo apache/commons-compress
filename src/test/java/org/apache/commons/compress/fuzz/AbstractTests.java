@@ -27,7 +27,7 @@ import java.util.logging.LogManager;
 /**
  * Class with common functionality shared among fuzzing harnesses.
  */
-public class BaseTests {
+public abstract class AbstractTests {
     public static void fuzzerInitialize() {
         LogManager.getLogManager().reset();
     }

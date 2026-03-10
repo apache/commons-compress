@@ -22,7 +22,7 @@ import org.apache.commons.compress.compressors.z.ZCompressorInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
-public class CompressorZFuzzer extends BaseTests {
+public class CompressorZFuzzer extends AbstractTests {
     public static void fuzzerTestOneInput(byte[] data) {
         try {
             // Setting limit to avoid out of memory errors

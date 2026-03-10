@@ -22,7 +22,7 @@ import org.apache.commons.compress.archivers.cpio.CpioArchiveInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
-public class ArchiverCpioFuzzer extends BaseTests {
+public class ArchiverCpioFuzzer extends AbstractTests {
     public static void fuzzerTestOneInput(byte[] data) {
         try {
             fuzzArchiveInputStream(new CpioArchiveInputStream(new ByteArrayInputStream(data)));
