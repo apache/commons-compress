@@ -31,6 +31,26 @@
         of the Commons project</a>.</p>
       </section>
 
+      <section name="Security Model">
+        <p>Commons Compress may be used to process untrusted input data.
+        This should not trigger network access, unbounded deserialization
+        or code execution. It may require processing power proportional to
+        the size of the input. An input causing an OutOfMemoryError,
+        StackOverflowError, or another Error may be accepted as a DoS
+        vulnerability when it is unexpected based on the size of the input
+        and the resources (RAM, disk, etc) allocated to the process.</p>
+
+        <p>Input causing any other RuntimeException is expected and not a
+        vulnerability, but may be a regular bug when a more appropriate
+        Exception is available</p>
+
+        <p>Regular API parameters are typically designed to work with input
+        that is either trusted or validated/sanitized by the application
+	using the library unless otherwise specified, in accordance with
+	the general <a href="https://commons.apache.org/security.html#Security_Model">
+	Apache Commons Security Model</a>.</p>
+      </section>
+
       <section name="Apache Commons Compress Security Vulnerabilities">
         <p>This page lists all security vulnerabilities fixed in
         released versions of Apache Commons Compress. Each
