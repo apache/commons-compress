@@ -42,7 +42,7 @@
 
         <p>Input causing any other RuntimeException is expected and not a
         vulnerability, but may be a regular bug when a more appropriate
-        Exception is available</p>
+        Exception is available.</p>
 
         <p>Regular API parameters are typically designed to work with input
         that is either trusted or validated/sanitized by the application
