@@ -35,6 +35,7 @@ import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -667,9 +668,14 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
     private final List<ZipArchiveEntry> entries = new LinkedList<>();
 
     /**
-     * Maps String to list of ZipArchiveEntrys, name -> actual entries.
+     * Maps a string to the first entry by that name.
      */
-    private final Map<String, LinkedList<ZipArchiveEntry>> nameMap = new HashMap<>(HASH_SIZE);
+    private final Map<String, ZipArchiveEntry> nameMap = new HashMap<>(HASH_SIZE);
+
+    /**
+     * If multiple entries have the same name, maps the name to entries by that name.
+     */
+    private Map<String, List<ZipArchiveEntry>> duplicateNameMap;
 
     /**
      * The encoding to use for file names and the file comment.
@@ -1079,8 +1085,22 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
             // entries are filled in populateFromCentralDirectory and
             // never modified
             final String name = ze.getName();
-            final LinkedList<ZipArchiveEntry> entriesOfThatName = nameMap.computeIfAbsent(name, k -> new LinkedList<>());
-            entriesOfThatName.addLast(ze);
+            final ZipArchiveEntry firstEntry = nameMap.putIfAbsent(name, ze);
+
+            if (firstEntry != null) {
+                if (duplicateNameMap == null) {
+                    duplicateNameMap = new HashMap<>();
+                }
+
+                final List<ZipArchiveEntry> entriesOfThatName = duplicateNameMap.computeIfAbsent(name, k -> {
+                    // Create a list when there are two entries with the same name
+                    final ArrayList<ZipArchiveEntry> list = new ArrayList<>(2);
+                    list.add(firstEntry);
+                    return list;
+                });
+
+                entriesOfThatName.add(ze);
+            }
         });
     }
 
@@ -1152,7 +1172,13 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
      * @since 1.6
      */
     public Iterable<ZipArchiveEntry> getEntries(final String name) {
-        return nameMap.getOrDefault(name, ZipArchiveEntry.EMPTY_LINKED_LIST);
+        final List<ZipArchiveEntry> entriesOfThatName = duplicateNameMap == null ? null : duplicateNameMap.get(name);
+        if (entriesOfThatName == null) {
+            final ZipArchiveEntry entry = nameMap.get(name);
+            return entry != null ? Collections.singletonList(entry) : Collections.emptyList();
+        } else {
+            return Collections.unmodifiableList(entriesOfThatName);
+        }
     }
 
     /**
@@ -1177,8 +1203,16 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
      * @since 1.6
      */
     public Iterable<ZipArchiveEntry> getEntriesInPhysicalOrder(final String name) {
-        final LinkedList<ZipArchiveEntry> linkedList = nameMap.getOrDefault(name, ZipArchiveEntry.EMPTY_LINKED_LIST);
-        return Arrays.asList(sortByOffset(linkedList.toArray(ZipArchiveEntry.EMPTY_ARRAY)));
+        if (duplicateNameMap != null) {
+            final List<ZipArchiveEntry> list = duplicateNameMap.get(name);
+            if (list != null) {
+                final ZipArchiveEntry[] entriesOfThatName = list.toArray(ZipArchiveEntry.EMPTY_ARRAY);
+                return Arrays.asList(sortByOffset(entriesOfThatName));
+            }
+        }
+
+        final ZipArchiveEntry entry = nameMap.get(name);
+        return entry != null ? Collections.singletonList(entry) : Collections.emptyList();
     }
 
     /**
@@ -1191,8 +1225,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
      * @return the ZipArchiveEntry corresponding to the given name - or {@code null} if not present.
      */
     public ZipArchiveEntry getEntry(final String name) {
-        final LinkedList<ZipArchiveEntry> entries = nameMap.get(name);
-        return entries != null ? entries.getFirst() : null;
+        return nameMap.get(name);
     }
 
     /**
