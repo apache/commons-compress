@@ -19,16 +19,12 @@
 
 package org.apache.commons.compress.fuzz;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-
-import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
-
-public class ArchiverZipStreamFuzzer extends AbstractTests {
-    public static void fuzzerTestOneInput(byte[] data) {
-        try {
-            fuzzArchiveInputStream(new ZipArchiveInputStream(new ByteArrayInputStream(data)));
-        } catch (IOException ignored) {
-        }
-    }
+/**
+ * Temporary shim to maintain compatibility with legacy OSS-Fuzz build scripts
+ * which hardcode the class name "BaseTests".
+ * 
+ * TODO: Remove this class once the oss-fuzz project configuration is updated
+ * to use AbstractTests.
+ */
+public abstract class BaseTests extends AbstractTests {
 }
