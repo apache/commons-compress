@@ -60,6 +60,36 @@ class ArchiveTest extends AbstractTempDirTest {
         new Archive(inputFile, outputFile).unpack();
     }
 
+    /**
+     * Tests that unpacking works when a FileInputStream is passed directly.
+     * This exercises the reflection-based path extraction code in Pack200UnpackerAdapter,
+     * which fails on Java 17+ due to strong encapsulation (InaccessibleObjectException).
+     */
+    @Test
+    void testWithFileInputStream() throws Exception {
+        final File inputFile = new File(Archive.class.getResource("/pack200/sql.pack.gz").toURI());
+        final File outputFile = createTempFile("sql", ".jar");
+        try (FileInputStream in = new FileInputStream(inputFile);
+                JarOutputStream out = new JarOutputStream(new FileOutputStream(outputFile))) {
+            new Archive(in, out).unpack();
+        }
+    }
+
+    /**
+     * Tests that unpacking works when a BufferedInputStream wrapping a FileInputStream is passed.
+     * This exercises the FilterInputStream unwrap reflection code in Pack200UnpackerAdapter,
+     * which fails on Java 17+ due to strong encapsulation (InaccessibleObjectException).
+     */
+    @Test
+    void testWithBufferedFileInputStream() throws Exception {
+        final File inputFile = new File(Archive.class.getResource("/pack200/sql.pack.gz").toURI());
+        final File outputFile = createTempFile("sql", ".jar");
+        try (InputStream in = new BufferedInputStream(new FileInputStream(inputFile));
+                JarOutputStream out = new JarOutputStream(new FileOutputStream(outputFile))) {
+            new Archive(in, out).unpack();
+        }
+    }
+
     @Test
     void testDeflateHint() throws Exception {
         File file = createTempFile("sql", ".jar");

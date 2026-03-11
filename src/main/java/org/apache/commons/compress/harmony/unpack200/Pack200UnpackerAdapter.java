@@ -161,6 +161,13 @@ public class Pack200UnpackerAdapter extends Pack200Adapter implements Unpacker {
             return (T) FieldUtils.readField(object, fieldName, true);
         } catch (final IllegalAccessException e) {
             return null;
+        } catch (final RuntimeException e) {
+            // InaccessibleObjectException (Java 9+) extends RuntimeException, not IllegalAccessException.
+            // Thrown when Java 17+ strong encapsulation blocks setAccessible on JDK internal fields.
+            if ("java.lang.reflect.InaccessibleObjectException".equals(e.getClass().getName())) {
+                return null;
+            }
+            throw e;
         }
     }
 
