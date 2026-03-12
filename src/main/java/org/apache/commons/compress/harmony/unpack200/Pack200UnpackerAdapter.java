@@ -186,16 +186,6 @@ public class Pack200UnpackerAdapter extends Pack200Adapter implements Unpacker {
     }
 
     /**
-     * Unwraps the given InputStream if it is an FilterInputStream to return its wrapped InputStream.
-     *
-     * @param inputStream The FilterInputStream to unwrap.
-     * @return The wrapped InputStream
-     */
-    static InputStream unwrap(final InputStream inputStream) {
-        return inputStream instanceof FilterInputStream ? unwrap((FilterInputStream) inputStream) : inputStream;
-    }
-
-    /**
      * Constructs a new Pack200UnpackerAdapter.
      */
     public Pack200UnpackerAdapter() {
