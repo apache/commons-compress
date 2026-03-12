@@ -606,6 +606,8 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
                   </argLine>
                   <excludes>
                     <exclude>**/harmony/unpack200/**</exclude>
+                    <!-- Needs low memory: -Xmx80m -->
+                    <exclude>**/SevenZReadSubStreamsInfoTest.java</exclude>
                   </excludes>
                 </configuration>
               </execution>
@@ -615,6 +617,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
                   <goal>test</goal>
                 </goals>
                 <configuration>
+                  <argLine>${argLine}</argLine>
                   <includes>
                     <include>**/harmony/unpack200/**</include>
                   </includes>
