@@ -49,8 +49,8 @@ public final class ParsingUtils {
     public static int parseIntValue(final String value, final int radix) throws IOException {
         try {
             return Integer.parseInt(value, radix);
-        } catch (final NumberFormatException exp) {
-            throw new IOException("Unable to parse int from string value: " + value);
+        } catch (final NumberFormatException e) {
+            throw new IOException("Unable to parse int from string value: " + value, e);
         }
     }
 
@@ -76,8 +76,8 @@ public final class ParsingUtils {
     public static long parseLongValue(final String value, final int radix) throws IOException {
         try {
             return Long.parseLong(value, radix);
-        } catch (final NumberFormatException exp) {
-            throw new IOException("Unable to parse long from string value: " + value);
+        } catch (final NumberFormatException e) {
+            throw new IOException("Unable to parse long from string value: " + value, e);
         }
     }
 
