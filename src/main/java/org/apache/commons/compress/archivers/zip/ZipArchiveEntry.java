@@ -206,7 +206,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     }
 
     /**
-     * Indicates how the name of this entry has been determined.
+     * Enumerates how the name of this entry has been determined.
      *
      * @since 1.16
      */
