@@ -59,8 +59,26 @@ public class Pack200UnpackerAdapter extends Pack200Adapter implements Unpacker {
         return newBoundedInputStream(file.toPath());
     }
 
+    @SuppressWarnings("resource") // Caller closes.
     private static BoundedInputStream newBoundedInputStream(final FileInputStream fileInputStream) throws IOException {
-        return newBoundedInputStream(readPathString(fileInputStream));
+        final String pathString = readPathString(fileInputStream);
+        if (pathString != null) {
+            return newBoundedInputStream(pathString);
+        }
+        // Reflection failed (e.g., Java 17+ strong encapsulation), fall back to channel size.
+        try {
+            final long size = fileInputStream.getChannel().size();
+            // @formatter:off
+            return BoundedInputStream.builder()
+                    .setInputStream(new BufferedInputStream(fileInputStream))
+                    .setMaxCount(size)
+                    .setPropagateClose(false)
+                    .get();
+            // @formatter:on
+        } catch (final IOException e) {
+            // No limit
+            return BoundedInputStream.builder().setInputStream(new BufferedInputStream(fileInputStream)).get();
+        }
     }
 
     @SuppressWarnings("resource") // Caller closes.
@@ -74,7 +92,10 @@ public class Pack200UnpackerAdapter extends Pack200Adapter implements Unpacker {
             return newBoundedInputStream(BoundedInputStream.builder().setInputStream(inputStream).get());
         }
         if (inputStream instanceof FilterInputStream) {
-            return newBoundedInputStream(unwrap((FilterInputStream) inputStream));
+            final InputStream unwrapped = unwrap((FilterInputStream) inputStream);
+            if (unwrapped != null) {
+                return newBoundedInputStream(unwrapped);
+            }
         }
         if (inputStream instanceof FileInputStream) {
             return newBoundedInputStream((FileInputStream) inputStream);
@@ -140,6 +161,13 @@ public class Pack200UnpackerAdapter extends Pack200Adapter implements Unpacker {
             return (T) FieldUtils.readField(object, fieldName, true);
         } catch (final IllegalAccessException e) {
             return null;
+        } catch (final RuntimeException e) {
+            // InaccessibleObjectException (Java 9+) extends RuntimeException, not IllegalAccessException.
+            // Thrown when Java 17+ strong encapsulation blocks setAccessible on JDK internal fields.
+            if ("java.lang.reflect.InaccessibleObjectException".equals(e.getClass().getName())) {
+                return null;
+            }
+            throw e;
         }
     }
 
