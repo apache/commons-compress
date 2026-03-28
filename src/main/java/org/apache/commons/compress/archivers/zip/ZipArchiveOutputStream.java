@@ -180,10 +180,12 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * and writes it to the underlying StreamCompressor as raw (already-compressed) bytes.
      */
     private class CompressorBridgeOutputStream extends OutputStream {
+        private final byte[] oneByte = new byte[1];
+
         @Override
         public void write(final int b) throws IOException {
-            final byte[] buf = { (byte) b };
-            write(buf, 0, 1);
+            oneByte[0] = (byte) (b & ZipConstants.BYTE_MASK);
+            write(oneByte, 0, 1);
         }
 
         @Override
