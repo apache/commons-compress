@@ -756,12 +756,8 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
             }
             fillNameMap();
         } catch (final IOException e) {
-            final ArchiveException archiveException = e instanceof ArchiveException
-                    ? (ArchiveException) e
-                    : new ArchiveException("Error reading Zip content from " + builder.getName(), (Throwable) e);
             this.closed = true;
-            IOUtils.close(archive, archiveException::addSuppressed);
-            throw archiveException;
+            throw IOUtils.closeQuietly(archive, e);
         }
     }
 
