@@ -37,11 +37,16 @@ import java.util.Map;
 import java.util.zip.Deflater;
 import java.util.zip.ZipException;
 
+import org.apache.commons.compress.archivers.AbstractArchiveBuilder;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
+import org.apache.commons.compress.compressors.CompressorOutputStream;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.build.AbstractOrigin;
+import org.apache.commons.io.build.AbstractOrigin.ChannelOrigin;
+import org.apache.commons.io.build.AbstractOrigin.OutputStreamOrigin;
 import org.apache.commons.lang3.ArrayUtils;
 
 /**
@@ -65,6 +70,129 @@ import org.apache.commons.lang3.ArrayUtils;
  * @NotThreadSafe
  */
 public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry> {
+
+    /**
+     * Abstract builder for derived classes of {@link ZipArchiveOutputStream}.
+     *
+     * @param <T> The type of the {@link ZipArchiveOutputStream}.
+     * @param <B> The type of the builder itself.
+     * @since 1.29.0
+     */
+    public abstract static class AbstractBuilder<T extends ZipArchiveOutputStream, B extends AbstractBuilder<T, B>>
+            extends AbstractArchiveBuilder<T, B> {
+
+        /**
+         * Maximum size of a single part of the split archive created by this stream. Must be between 64kB and about 4GB.
+         */
+        protected long zipSplitSize;
+
+        /**
+         * The options specifying how the file is opened.
+         */
+        protected OpenOption[] options;
+
+        /**
+         * Whether this stream automatically compresses entries using registered compressor factories.
+         */
+        protected boolean autoCompress;
+
+        /**
+         * Constructs a new instance.
+         */
+        protected AbstractBuilder() {
+            setCharset(StandardCharsets.UTF_8);
+        }
+
+        /**
+         * Sets the options specifying how the file is opened.
+         *
+         * <p>Null by default.</p>
+         *
+         * @param options the opem options.
+         * @return {@code this} instance.
+         */
+        public B setOptions(OpenOption... options) {
+            this.options = options;
+            return asThis();
+        }
+
+        /**
+         * Sets the maximum size of a single part of the split archive created by this stream. Must be between 64kB and about 4GB.
+         *
+         * <p>Zero by default that means there is no splitting.</p>
+         *
+         * @param zipSplitSize the size of a single split part.
+         * @return {@code this} instance.
+         */
+        public B setZipSplitSize(long zipSplitSize) {
+            this.zipSplitSize = zipSplitSize;
+            return asThis();
+        }
+
+        /**
+         * Sets whether this stream automatically compresses entries using registered compressor factories.
+         *
+         * <p>Disabled by default.</p>
+         *
+         * @param autoCompress {@code true} to automatically compress entries, {@code false} otherwise.
+         * @return {@code this} instance.
+         */
+        public B setAutoCompress(final boolean autoCompress) {
+            this.autoCompress = autoCompress;
+            return asThis();
+        }
+
+        @Override
+        protected AbstractOrigin<?, ?> getOrigin() {
+            return super.getOrigin();
+        }
+    }
+
+    /**
+     * Builds a new {@link ZipArchiveOutputStream}.
+     * <p>
+     *     For example:
+     * </p>
+     * <pre>{@code
+     * ZipArchiveOutputStream in = ZipArchiveOutputStream.builder()
+     *     .setPath(inputPath)
+     *     .setCharset(StandardCharsets.UTF_8)
+     *     .setAutoCompress(true)
+     *     .get();
+     * }</pre>
+     *
+     * @since 1.29.0
+     */
+    public static final class Builder extends AbstractBuilder<ZipArchiveOutputStream, Builder> {
+
+        private Builder() {
+            // empty
+        }
+
+        @Override
+        public ZipArchiveOutputStream get() throws IOException {
+            return new ZipArchiveOutputStream(this);
+        }
+    }
+
+    /**
+     * Bridge stream that receives compressed data from a CompressorOutputStream
+     * and writes it to the underlying StreamCompressor as raw (already-compressed) bytes.
+     */
+    private class CompressorBridgeOutputStream extends OutputStream {
+        private final byte[] oneByte = new byte[1];
+
+        @Override
+        public void write(final int b) throws IOException {
+            oneByte[0] = (byte) (b & ZipConstants.BYTE_MASK);
+            write(oneByte, 0, 1);
+        }
+
+        @Override
+        public void write(final byte[] b, final int off, final int len) throws IOException {
+            streamCompressor.writeCounted(b, off, len);
+        }
+    }
 
     /**
      * Structure collecting information for the entry that is currently being written.
@@ -92,7 +220,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
         private long bytesRead;
 
         /**
-         * Whether current entry was the first one using ZIP64 features.
+         * Whether the current entry was the first one using ZIP64 features.
          */
         private boolean causedUseOfZip64;
 
@@ -261,6 +389,16 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     static final byte[] ZIP64_EOCD_LOC_SIG = ZipLong.getBytes(0X07064B50L); // NOSONAR
 
     /**
+     * Creates a new builder.
+     *
+     * @return A new builder.
+     * @since 1.29.0
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    /**
      * Indicates if this archive is finished. protected for use in Jar implementation.
      *
      * @deprecated See {@link #isFinished()} and {@link #finish()}.
@@ -379,9 +517,63 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     private final boolean isSplitZip;
 
     /**
+     * Whether this stream automatically compresses entries using registered compressor factories.
+     *
+     * @since 1.29.0
+     */
+    private final boolean autoCompress;
+
+    /**
+     * Registry of compressor factories keyed by ZIP method code.
+     */
+    private Map<Integer, ZipCompressorStreamFactory> compressorFactories;
+
+    /**
+     * The active compressor output stream wrapping the current entry's data, or {@code null}.
+     */
+    private CompressorOutputStream<?> activeCompressorStream;
+
+    /**
      * Holds the number of Central Directories on each disk. This is used when writing Zip64 End Of Central Directory and End Of Central Directory.
      */
     private final Map<Integer, Integer> numberOfCDInDiskData = new HashMap<>();
+
+    /**
+     * Creates an instance from the given builder.
+     *
+     * @param builder The builder used to configure and create the stream.
+     * @throws IOException If the builder fails to create the underlying {@link OutputStream}.
+     * @since 1.29.0
+     */
+    protected ZipArchiveOutputStream(final AbstractBuilder<?, ?> builder) throws IOException {
+        final AbstractOrigin<?, ?> origin = builder.getOrigin();
+        if (origin instanceof OutputStreamOrigin) {
+            this.out = builder.getOutputStream();
+            this.isSplitZip = false;
+        } else if (origin instanceof ChannelOrigin) {
+            this.out = new SeekableChannelRandomAccessOutputStream(builder.getChannel(SeekableByteChannel.class));
+            this.isSplitZip = false;
+        } else {
+            final Path path = builder.getPath();
+            if (builder.zipSplitSize > 0) {
+                this.out = new ZipSplitOutputStream(path, builder.zipSplitSize);
+                this.isSplitZip = true;
+            } else {
+                OpenOption[] options = builder.getOpenOptions();
+                this.out = options.length == 0 ? new FileRandomAccessOutputStream(path) : new FileRandomAccessOutputStream(path, options);
+                this.isSplitZip = false;
+            }
+        }
+        if (this.out == null) {
+            throw new IOException("No output stream available");
+        }
+        this.def = new Deflater(level, true);
+        this.streamCompressor = StreamCompressor.create(this.out, def);
+        this.autoCompress = builder.autoCompress;
+        if (autoCompress) {
+            registerDefaultCompressorFactories();
+        }
+    }
 
     /**
      * Creates a new ZIP OutputStream writing to a File. Will use random access if possible.
@@ -411,7 +603,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * @throws IOException              on error.
      * @throws IllegalArgumentException if zipSplitSize is not in the required range.
      * @since 1.20
+     * @deprecated Since 1.29.0, use {@link #builder()}.
      */
+    @Deprecated
     public ZipArchiveOutputStream(final File file, final long zipSplitSize) throws IOException {
         this(file.toPath(), zipSplitSize);
     }
@@ -426,6 +620,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
         this.def = new Deflater(level, true);
         this.streamCompressor = StreamCompressor.create(out, def);
         this.isSplitZip = false;
+        this.autoCompress = false;
     }
 
     /**
@@ -444,12 +639,13 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * @throws IOException              on error.
      * @throws IllegalArgumentException if zipSplitSize is not in the required range.
      * @since 1.22
+     * @deprecated Since 1.29.0, use {@link #builder()}.
      */
+    @Deprecated
     public ZipArchiveOutputStream(final Path path, final long zipSplitSize) throws IOException {
-        this.def = new Deflater(level, true);
-        this.out = new ZipSplitOutputStream(path, zipSplitSize);
-        this.streamCompressor = StreamCompressor.create(this.out, def);
-        this.isSplitZip = true;
+        this(builder()
+                .setPath(path)
+                .setZipSplitSize(zipSplitSize));
     }
 
     /**
@@ -465,6 +661,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
         this.out = options.length == 0 ? new FileRandomAccessOutputStream(file) : new FileRandomAccessOutputStream(file, options);
         this.streamCompressor = StreamCompressor.create(out, def);
         this.isSplitZip = false;
+        this.autoCompress = false;
     }
 
     /**
@@ -482,6 +679,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
         this.def = new Deflater(level, true);
         this.streamCompressor = StreamCompressor.create(out, def);
         this.isSplitZip = false;
+        this.autoCompress = false;
     }
 
     /**
@@ -588,6 +786,12 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     @Override
     public void closeArchiveEntry() throws IOException {
         preClose();
+
+        if (activeCompressorStream != null) {
+            activeCompressorStream.flush();
+            activeCompressorStream.close();
+            activeCompressorStream = null;
+        }
 
         flushDeflater();
 
@@ -853,7 +1057,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
         ZipUtil.toDosTime(ze.getTime(), buf, LFH_TIME_OFFSET);
 
         // CRC
-        if (phased || !(zipMethod == DEFLATED || out instanceof RandomAccessOutputStream)) {
+        final boolean isAutoCompressed = autoCompress && compressorFactories.containsKey(zipMethod);
+        if (phased || !(zipMethod == DEFLATED || isAutoCompressed || out instanceof RandomAccessOutputStream)) {
             ZipLong.putLong(ze.getCrc(), buf, LFH_CRC_OFFSET);
         } else {
             System.arraycopy(LZERO, 0, buf, LFH_CRC_OFFSET, ZipConstants.WORD);
@@ -870,7 +1075,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
         } else if (phased) {
             ZipLong.putLong(ze.getCompressedSize(), buf, LFH_COMPRESSED_SIZE_OFFSET);
             ZipLong.putLong(ze.getSize(), buf, LFH_ORIGINAL_SIZE_OFFSET);
-        } else if (zipMethod == DEFLATED || out instanceof RandomAccessOutputStream) {
+        } else if (zipMethod == DEFLATED || isAutoCompressed || out instanceof RandomAccessOutputStream) {
             System.arraycopy(LZERO, 0, buf, LFH_COMPRESSED_SIZE_OFFSET, ZipConstants.WORD);
             System.arraycopy(LZERO, 0, buf, LFH_ORIGINAL_SIZE_OFFSET, ZipConstants.WORD);
         } else if (ZipMethod.isZstd(zipMethod) || zipMethod == ZipMethod.XZ.getCode()) {
@@ -929,7 +1134,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
         }
 
         if (entry != null) {
-            throw new ArchiveException("This archive contains unclosed entries.");
+            closeArchiveEntry();
         }
 
         final long cdOverallOffset = streamCompressor.getTotalBytesWritten();
@@ -1076,6 +1281,10 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
         final int zipMethod = entry.entry.getMethod();
         if (zipMethod == DEFLATED) {
             // It turns out def.getBytesRead() returns wrong values if the size exceeds 4 GB on Java < Java7 entry.entry.setSize(def.getBytesRead());
+            entry.entry.setSize(entry.bytesRead);
+            entry.entry.setCompressedSize(bytesWritten);
+            entry.entry.setCrc(crc);
+        } else if (autoCompress && compressorFactories.containsKey(zipMethod)) {
             entry.entry.setSize(entry.bytesRead);
             entry.entry.setCompressedSize(bytesWritten);
             entry.entry.setCrc(crc);
@@ -1239,6 +1448,16 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
             hasCompressionLevelChanged = false;
         }
         writeLocalFileHeader(archiveEntry, phased);
+
+        if (autoCompress && entry.entry.getMethod() != DEFLATED && entry.entry.getMethod() != STORED) {
+            final ZipCompressorStreamFactory factory = compressorFactories.get(entry.entry.getMethod());
+            if (factory != null) {
+                final CompressorConfig config = entry.entry.getCompressorConfig() != null
+                        ? entry.entry.getCompressorConfig()
+                        : factory.defaultConfig();
+                activeCompressorStream = factory.createCompressorOutputStream(new CompressorBridgeOutputStream(), config);
+            }
+        }
     }
 
     /**
@@ -1441,6 +1660,29 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     }
 
     /**
+     * Registers a compressor factory for a specific ZIP compression method.
+     * Only effective when {@code autoCompress} is enabled.
+     *
+     * @param method  the ZIP method to associate with this factory
+     * @param factory the factory to create compressor output streams
+     * @since 1.29.0
+     */
+    public void registerCompressorFactory(final ZipMethod method, final ZipCompressorStreamFactory factory) {
+        if (autoCompress) {
+            compressorFactories.put(method.getCode(), factory);
+        }
+    }
+
+    private void registerDefaultCompressorFactories() {
+        compressorFactories = new HashMap<>();
+        final ZstdZipCompressorStreamFactory zstdFactory = new ZstdZipCompressorStreamFactory();
+        compressorFactories.put(ZipMethod.ZSTD.getCode(), zstdFactory);
+        compressorFactories.put(ZipMethod.ZSTD_DEPRECATED.getCode(), zstdFactory);
+        compressorFactories.put(ZipMethod.BZIP2.getCode(), new BZip2ZipCompressorStreamFactory());
+        compressorFactories.put(ZipMethod.XZ.getCode(), new XZZipCompressorStreamFactory());
+    }
+
+    /**
      * Tests whether to add a Zip64 extended information extra field to the local file header.
      * <p>
      * Returns true if
@@ -1483,7 +1725,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     }
 
     private boolean usesDataDescriptor(final int zipMethod, final boolean phased) {
-        return !phased && zipMethod == DEFLATED && !(out instanceof RandomAccessOutputStream);
+        return !phased && (zipMethod == DEFLATED || autoCompress && compressorFactories.containsKey(zipMethod))
+                && !(out instanceof RandomAccessOutputStream);
     }
 
     /**
@@ -1582,8 +1825,14 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
             throw new IllegalStateException("No current entry");
         }
         ZipUtil.checkRequestedFeatures(entry.entry);
-        final long writtenThisTime = streamCompressor.write(b, offset, length, entry.entry.getMethod());
-        count(writtenThisTime);
+        if (activeCompressorStream != null) {
+            streamCompressor.updateCrc(b, offset, length);
+            streamCompressor.updateSourcePayloadLength(length);
+            activeCompressorStream.write(b, offset, length);
+        } else {
+            final long writtenThisTime = streamCompressor.write(b, offset, length, entry.entry.getMethod());
+            count(writtenThisTime);
+        }
     }
 
     /**
