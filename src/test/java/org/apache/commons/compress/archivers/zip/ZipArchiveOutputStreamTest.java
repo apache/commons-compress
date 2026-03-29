@@ -24,12 +24,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
 
 import org.apache.commons.compress.AbstractTempDirTest;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
+import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -75,6 +80,41 @@ class ZipArchiveOutputStreamTest extends AbstractTempDirTest {
             assertEquals(StandardCharsets.UTF_8.name(), outputStream.getEncoding());
             outputStream.setEncoding(null);
             assertEquals(Charset.defaultCharset().name(), outputStream.getEncoding());
+        }
+    }
+
+    @Test
+    void testBuilderSeekablePath() throws IOException {
+        try (ZipArchiveOutputStream zos = ZipArchiveOutputStream.builder(createTempFile().toPath()).setUseZip64(Zip64Mode.Never).build()) {
+            assertTrue(zos.isSeekable());
+        }
+    }
+
+    @Test
+    void testBuilderPayloadWriterRoundtrip() throws IOException {
+        final ByteArrayOutputStream raw = new ByteArrayOutputStream();
+        final byte[] plain = "zip builder bzip2".getBytes(StandardCharsets.UTF_8);
+        try (ZipArchiveOutputStream zos = ZipArchiveOutputStream.builder(raw)
+                .setEncoding(StandardCharsets.UTF_8)
+                .setUseZip64(Zip64Mode.Never)
+                .setCompressionPayloadWriterFactory(ZipMethod.BZIP2.getCode(), ZipCompressionPayloadWriters.bzip2())
+                .build()) {
+            assertFalse(zos.isSeekable());
+            final ZipArchiveEntry e = new ZipArchiveEntry("b.txt");
+            e.setMethod(ZipMethod.BZIP2.getCode());
+            zos.putArchiveEntry(e);
+            zos.write(plain);
+            zos.closeArchiveEntry();
+        }
+        try (SeekableByteChannel ch = new SeekableInMemoryByteChannel(raw.toByteArray());
+                ZipFile zf = ZipFile.builder().setSeekableByteChannel(ch).get()) {
+            final ZipArchiveEntry e = zf.getEntry("b.txt");
+            assertEquals(ZipMethod.BZIP2.getCode(), e.getMethod());
+            assertEquals(plain.length, e.getSize());
+            try (InputStream in = zf.getInputStream(e)) {
+                assertTrue(in instanceof BZip2CompressorInputStream);
+                assertEquals(new String(plain, StandardCharsets.UTF_8), new String(IOUtils.toByteArray(in), StandardCharsets.UTF_8));
+            }
         }
     }
 }

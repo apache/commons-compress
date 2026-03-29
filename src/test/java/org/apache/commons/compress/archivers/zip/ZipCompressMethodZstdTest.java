@@ -19,22 +19,30 @@
 package org.apache.commons.compress.archivers.zip;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.channels.SeekableByteChannel;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.zip.CRC32;
 
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.compressors.zstandard.ZstdCompressorInputStream;
 import org.apache.commons.compress.compressors.zstandard.ZstdCompressorOutputStream;
+import org.apache.commons.compress.compressors.zstandard.ZstdConstants;
 import org.apache.commons.compress.compressors.zstandard.ZstdUtils;
+import org.apache.commons.io.channels.ByteArraySeekableByteChannel;
 import org.apache.commons.io.IOUtils;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
@@ -138,6 +146,73 @@ class ZipCompressMethodZstdTest extends AbstractTest {
                 final byte[] compressedData = new byte[4];
                 fileInputStream.read(compressedData);
                 assertTrue("Compressed data must begin with the magic bytes of Zstd", ZstdUtils.matches(compressedData, 4));
+            }
+        }
+    }
+
+    /**
+     * Non-seekable ZIP: ZSTD payload via {@link ZipCompressionPayloadWriters} is buffered; local header and central directory contain CRC and sizes (no data
+     * descriptor).
+     */
+    @ParameterizedTest
+    @EnumSource(names = { "ZSTD", "ZSTD_DEPRECATED" })
+    void testZstdPayloadWriterByteArrayUnknownSize(final ZipMethod zipMethod) throws IOException {
+        Assumptions.assumeTrue(ZstdUtils.isZstdCompressionAvailable());
+        final String entryName = "plain.txt";
+        final byte[] plainText = "ZipCompressionPayloadWriter on BAOS.".getBytes(StandardCharsets.UTF_8);
+        final CRC32 expectedCrc = new CRC32();
+        expectedCrc.update(plainText);
+
+        final ByteArrayOutputStream rawOut = new ByteArrayOutputStream();
+        try (ZipArchiveOutputStream zipOutputStream = new ZipArchiveOutputStream(rawOut)) {
+            zipOutputStream.setCompressionPayloadWriterFactory(zipMethod.getCode(), ZipCompressionPayloadWriters.zstd(DEFAULT_LEVEL));
+            final ZipArchiveEntry archiveEntry = new ZipArchiveEntry(entryName);
+            archiveEntry.setMethod(zipMethod.getCode());
+            zipOutputStream.putArchiveEntry(archiveEntry);
+            zipOutputStream.write(plainText);
+            // close() (try-with-resources) calls finish(), which closes the open payload-compressed entry
+        }
+
+        try (SeekableByteChannel channel = ByteArraySeekableByteChannel.wrap(rawOut.toByteArray());
+                ZipFile zipFile = ZipFile.builder().setChannel(channel).get()) {
+            final ZipArchiveEntry entry = zipFile.getEntry(entryName);
+            assertEquals(zipMethod.getCode(), entry.getMethod());
+            assertEquals(expectedCrc.getValue(), entry.getCrc());
+            assertEquals(plainText.length, entry.getSize());
+            assertFalse(entry.getGeneralPurposeBit().usesDataDescriptor());
+            assertTrue(entry.getCompressedSize() > 0);
+            try (InputStream inputStream = zipFile.getInputStream(entry)) {
+                final byte[] readBack = IOUtils.toByteArray(inputStream);
+                assertEquals(new String(plainText, StandardCharsets.UTF_8), new String(readBack, StandardCharsets.UTF_8));
+            }
+        }
+    }
+
+    /**
+     * Two chunked {@link ZipArchiveOutputStream#write} calls on one payload-compressed entry; only {@link ZipArchiveOutputStream#finish}, no explicit {@link
+     * ZipArchiveOutputStream#closeArchiveEntry}.
+     */
+    @ParameterizedTest
+    @EnumSource(names = { "ZSTD", "ZSTD_DEPRECATED" })
+    void testZstdPayloadWriterMultiWriteThenFinish(final ZipMethod zipMethod) throws IOException {
+        Assumptions.assumeTrue(ZstdUtils.isZstdCompressionAvailable());
+        final ByteArrayOutputStream rawOut = new ByteArrayOutputStream();
+        final byte[] part1 = "Hello ".getBytes(StandardCharsets.UTF_8);
+        final byte[] part2 = "world.".getBytes(StandardCharsets.UTF_8);
+        try (ZipArchiveOutputStream zOut = new ZipArchiveOutputStream(rawOut)) {
+            zOut.setCompressionPayloadWriterFactory(zipMethod.getCode(), ZipCompressionPayloadWriters.zstd(DEFAULT_LEVEL));
+            final ZipArchiveEntry ze = new ZipArchiveEntry("chunked.txt");
+            ze.setMethod(zipMethod.getCode());
+            zOut.putArchiveEntry(ze);
+            zOut.write(part1);
+            zOut.write(part2);
+        }
+        try (SeekableByteChannel channel = ByteArraySeekableByteChannel.wrap(rawOut.toByteArray());
+                ZipFile zipFile = ZipFile.builder().setChannel(channel).get()) {
+            final ZipArchiveEntry entry = zipFile.getEntry("chunked.txt");
+            assertEquals(part1.length + part2.length, entry.getSize());
+            try (InputStream in = zipFile.getInputStream(entry)) {
+                assertEquals("Hello world.", new String(IOUtils.toByteArray(in), StandardCharsets.UTF_8));
             }
         }
     }
