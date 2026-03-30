@@ -87,11 +87,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
         protected long zipSplitSize;
 
         /**
-         * The options specifying how the file is opened.
-         */
-        protected OpenOption[] options;
-
-        /**
          * Whether this stream automatically compresses entries using registered compressor factories.
          */
         protected boolean autoCompress;
@@ -101,19 +96,6 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
          */
         protected AbstractBuilder() {
             setCharset(StandardCharsets.UTF_8);
-        }
-
-        /**
-         * Sets the options specifying how the file is opened.
-         *
-         * <p>Null by default.</p>
-         *
-         * @param options the opem options.
-         * @return {@code this} instance.
-         */
-        public B setOptions(OpenOption... options) {
-            this.options = options;
-            return asThis();
         }
 
         /**
@@ -180,10 +162,12 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * and writes it to the underlying StreamCompressor as raw (already-compressed) bytes.
      */
     private class CompressorBridgeOutputStream extends OutputStream {
+        private final byte[] oneByte = new byte[1];
+
         @Override
         public void write(final int b) throws IOException {
-            final byte[] buf = { (byte) b };
-            write(buf, 0, 1);
+            oneByte[0] = (byte) (b & ZipConstants.BYTE_MASK);
+            write(oneByte, 0, 1);
         }
 
         @Override
@@ -551,18 +535,17 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
         } else if (origin instanceof ChannelOrigin) {
             this.out = new SeekableChannelRandomAccessOutputStream(builder.getChannel(SeekableByteChannel.class));
             this.isSplitZip = false;
-        } else {
+        } else if (origin != null) {
             final Path path = builder.getPath();
             if (builder.zipSplitSize > 0) {
                 this.out = new ZipSplitOutputStream(path, builder.zipSplitSize);
                 this.isSplitZip = true;
             } else {
-                OpenOption[] options = builder.getOpenOptions();
+                final OpenOption[] options = builder.getOpenOptions();
                 this.out = options.length == 0 ? new FileRandomAccessOutputStream(path) : new FileRandomAccessOutputStream(path, options);
                 this.isSplitZip = false;
             }
-        }
-        if (this.out == null) {
+        } else {
             throw new IOException("No output stream available");
         }
         this.def = new Deflater(level, true);
@@ -655,11 +638,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * @since 1.21
      */
     public ZipArchiveOutputStream(final Path file, final OpenOption... options) throws IOException {
-        this.def = new Deflater(level, true);
-        this.out = options.length == 0 ? new FileRandomAccessOutputStream(file) : new FileRandomAccessOutputStream(file, options);
-        this.streamCompressor = StreamCompressor.create(out, def);
-        this.isSplitZip = false;
-        this.autoCompress = false;
+        this(builder()
+                .setPath(file)
+                .setOpenOptions(options));
     }
 
     /**
