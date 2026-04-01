@@ -594,11 +594,36 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin</artifactId>
-            <configuration>
-              <argLine>
-                ${argLine} --add-opens java.base/java.io=ALL-UNNAMED
-              </argLine>
-            </configuration>
+            <!-- we need jdk > 16 to pass on LegacyContstructorsTest so
+                 we need \-\-add-opens generally. However, we want to test
+                 that unpack200 works with jdk > 16 without \-\-add-opens-->
+            <executions>
+              <execution>
+                <id>default-test</id>
+                <configuration>
+                  <argLine>
+                    ${argLine} --add-opens java.base/java.io=ALL-UNNAMED
+                  </argLine>
+                  <excludes>
+                    <exclude>**/harmony/unpack200/**</exclude>
+                    <!-- Needs low memory: -Xmx80m -->
+                    <exclude>**/SevenZReadSubStreamsInfoTest.java</exclude>
+                  </excludes>
+                </configuration>
+              </execution>
+              <execution>
+                <id>pack200-tests</id>
+                <goals>
+                  <goal>test</goal>
+                </goals>
+                <configuration>
+                  <argLine>${argLine}</argLine>
+                  <includes>
+                    <include>**/harmony/unpack200/**</include>
+                  </includes>
+                </configuration>
+              </execution>
+            </executions>
           </plugin>
         </plugins>
       </build>
