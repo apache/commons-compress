@@ -1018,9 +1018,7 @@ class SevenZFileTest extends AbstractArchiveFileTest<SevenZArchiveEntry> {
             final ByteBuffer buffer = ByteBuffer.allocate(8192).order(ByteOrder.LITTLE_ENDIAN);
             folderWriter.accept(buffer);
             buffer.flip();
-            final ArchiveException e = assertThrows(ArchiveException.class, () -> {
-                file.readFolder(buffer);
-            });
+            final ArchiveException e = assertThrows(ArchiveException.class, () -> file.readFolder(buffer));
             assertTrue(e.getMessage().contains("7z archive: Unsupported"));
         }
     }
