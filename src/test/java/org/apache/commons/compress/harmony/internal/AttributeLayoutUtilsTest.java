@@ -42,9 +42,7 @@ class AttributeLayoutUtilsTest {
             // Extra characters
             "KIBB", "RCBB", "RUNNH"})
     void testCheckReferenceTag_Invalid(String tag) {
-        assertThrows(IllegalArgumentException.class, () -> {
-            AttributeLayoutUtils.checkReferenceTag(tag);
-        });
+        assertThrows(IllegalArgumentException.class, () -> AttributeLayoutUtils.checkReferenceTag(tag));
     }
 
     @ParameterizedTest
