@@ -320,6 +320,8 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
 
     private long time = -1;
 
+    private CompressorConfig compressorConfig;
+
     /**
      * Constructs a new instance with an empty name.
      */
@@ -852,6 +854,16 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     @Override
     public int getMethod() {
         return method;
+    }
+
+    /**
+     * Gets the compressor configuration for this entry.
+     *
+     * @return the compressor config, or {@code null} if not set
+     * @since 1.29.0
+     */
+    public CompressorConfig getCompressorConfig() {
+        return compressorConfig;
     }
 
     /**
@@ -1395,6 +1407,18 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
             throw new IllegalArgumentException("ZIP compression method cannot be negative: " + method);
         }
         this.method = method;
+    }
+
+    /**
+     * Sets the compressor configuration for this entry.
+     * When used with {@link ZipArchiveOutputStream} in auto-compress mode,
+     * this configuration overrides the factory's default.
+     *
+     * @param compressorConfig the compressor config, or {@code null} to use the factory default
+     * @since 1.29.0
+     */
+    public void setCompressorConfig(final CompressorConfig compressorConfig) {
+        this.compressorConfig = compressorConfig;
     }
 
     /**
