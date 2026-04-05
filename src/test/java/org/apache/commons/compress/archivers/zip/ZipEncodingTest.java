@@ -19,6 +19,7 @@
 
 package org.apache.commons.compress.archivers.zip;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -28,7 +29,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -43,11 +43,11 @@ class ZipEncodingTest {
 
     private static final String BAD_STRING_ENC = "%U2016%U2015%U2016%U2015%U2016%U2015%U2016%U2015%U2016%U2015%U2016";
 
-    private static void assertEquals(final byte[] expected, final ByteBuffer actual) {
-        Assertions.assertEquals(expected.length, actual.limit());
+    private static void assertEquals1By1(final byte[] expected, final ByteBuffer actual) {
+        assertEquals(expected.length, actual.limit());
         for (final byte anExpected : expected) {
             final byte a = actual.get();
-            Assertions.assertEquals(anExpected, a);
+            assertEquals(anExpected, a);
         }
     }
 
@@ -71,11 +71,11 @@ class ZipEncodingTest {
         final String decoded = enc.decode(testBytes);
         assertTrue(enc.canEncode(decoded));
         final ByteBuffer encoded = enc.encode(decoded);
-        assertEquals(testBytes, encoded);
+        assertEquals1By1(testBytes, encoded);
         assertFalse(enc.canEncode(UNENC_STRING));
-        assertEquals("%U2016".getBytes(name), enc.encode(UNENC_STRING));
+        assertEquals1By1("%U2016".getBytes(name), enc.encode(UNENC_STRING));
         assertFalse(enc.canEncode(BAD_STRING));
-        assertEquals(BAD_STRING_ENC.getBytes(name), enc.encode(BAD_STRING));
+        assertEquals1By1(BAD_STRING_ENC.getBytes(name), enc.encode(BAD_STRING));
     }
 
     @Test
@@ -89,7 +89,7 @@ class ZipEncodingTest {
         assertNotNull(ze);
         if (ze instanceof CharsetAccessor) {
             final CharsetAccessor hasCharset = (CharsetAccessor) ze;
-            Assertions.assertEquals(Charset.defaultCharset(), hasCharset.getCharset());
+            assertEquals(Charset.defaultCharset(), hasCharset.getCharset());
         }
     }
 
