@@ -538,7 +538,7 @@ class SevenZFileTest extends AbstractArchiveFileTest<SevenZArchiveEntry> {
     }
 
     @Test
-    void testGetEntriesOfUnarchiveInMemoryTest() throws IOException {
+    void testGetEntriesOfUnarchiveInMemory() throws IOException {
         final byte[] data = readAllBytes("bla.7z");
         try (SevenZFile sevenZFile = SevenZFile.builder().setSeekableByteChannel(new SeekableInMemoryByteChannel(data)).get()) {
             final Iterable<SevenZArchiveEntry> entries = sevenZFile.getEntries();
@@ -552,7 +552,7 @@ class SevenZFileTest extends AbstractArchiveFileTest<SevenZArchiveEntry> {
     }
 
     @Test
-    void testGetEntriesOfUnarchiveTest() throws IOException {
+    void testGetEntriesOfUnarchive() throws IOException {
         try (SevenZFile sevenZFile = getSevenZFile("bla.7z")) {
             final Iterable<SevenZArchiveEntry> entries = sevenZFile.getEntries();
             final Iterator<SevenZArchiveEntry> iter = entries.iterator();
