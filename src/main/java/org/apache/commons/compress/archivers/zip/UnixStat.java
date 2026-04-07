@@ -21,7 +21,7 @@ package org.apache.commons.compress.archivers.zip;
 /**
  * Constants from stat.h on Unix systems.
  * <p>
- * TODO This will be an class in 2.0.
+ * TODO This will be a class in 2.0.
  * </p>
  */
 // CheckStyle:InterfaceIsTypeCheck OFF - backward compatible
