@@ -218,7 +218,7 @@ public final class IOUtils {
     }
 
     /**
-     * Gets part of the contents of an {@code InputStream} as a {@code byte[]}.
+     * Reads part of the contents of an {@code InputStream} as a {@code byte[]}.
      *
      * @param input the {@code InputStream} to read from.
      * @param length   maximum amount of bytes to copy.
@@ -234,7 +234,7 @@ public final class IOUtils {
     }
 
     /**
-     * Gets part of the contents of an {@code ReadableByteChannel} as a {@code byte[]}.
+     * Reads part of the contents of an {@code ReadableByteChannel} as a {@code byte[]}.
      *
      * @param input the {@code ReadableByteChannel} to read from.
      * @param length   maximum amount of bytes to copy.
