@@ -82,7 +82,6 @@ public class SignatureAttribute extends Attribute {
      */
     @Override
     public String toString() {
-        // TODO Auto-generated method stub
         return "Signature: " + signature;
     }
 
