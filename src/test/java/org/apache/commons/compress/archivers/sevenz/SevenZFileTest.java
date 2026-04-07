@@ -62,6 +62,7 @@ import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.utils.MultiReadOnlySeekableByteChannel;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.channels.ByteArraySeekableByteChannel;
 import org.apache.commons.io.input.ChecksumInputStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -338,6 +339,14 @@ class SevenZFileTest extends AbstractArchiveFileTest<SevenZArchiveEntry> {
     @Test
     void test7zMultiVolumeUnarchive() throws Exception {
         try (SevenZFile sevenZFile = SevenZFile.builder()
+                .setChannel(MultiReadOnlySeekableByteChannel.forFiles(getFile("bla-multi.7z.001"), getFile("bla-multi.7z.002"))).get()) {
+            test7zUnarchive(sevenZFile, SevenZMethod.LZMA2);
+        }
+    }
+
+    @Test
+    void test7zMultiVolumeUnarchiveDeprecated() throws Exception {
+        try (SevenZFile sevenZFile = SevenZFile.builder()
                 .setSeekableByteChannel(MultiReadOnlySeekableByteChannel.forFiles(getFile("bla-multi.7z.001"), getFile("bla-multi.7z.002"))).get()) {
             test7zUnarchive(sevenZFile, SevenZMethod.LZMA2);
         }
@@ -539,6 +548,20 @@ class SevenZFileTest extends AbstractArchiveFileTest<SevenZArchiveEntry> {
 
     @Test
     void testGetEntriesOfUnarchiveInMemory() throws IOException {
+        final byte[] data = readAllBytes("bla.7z");
+        try (SevenZFile sevenZFile = SevenZFile.builder().setChannel(ByteArraySeekableByteChannel.wrap(data)).get()) {
+            final Iterable<SevenZArchiveEntry> entries = sevenZFile.getEntries();
+            final Iterator<SevenZArchiveEntry> iter = entries.iterator();
+            SevenZArchiveEntry entry = iter.next();
+            assertEquals("test1.xml", entry.getName());
+            entry = iter.next();
+            assertEquals("test2.xml", entry.getName());
+            assertFalse(iter.hasNext());
+        }
+    }
+
+    @Test
+    void testGetEntriesOfUnarchiveInMemoryDeprecacted() throws IOException {
         final byte[] data = readAllBytes("bla.7z");
         try (SevenZFile sevenZFile = SevenZFile.builder().setSeekableByteChannel(new SeekableInMemoryByteChannel(data)).get()) {
             final Iterable<SevenZArchiveEntry> entries = sevenZFile.getEntries();

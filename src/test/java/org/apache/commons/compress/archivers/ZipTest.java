@@ -59,6 +59,7 @@ import org.apache.commons.compress.archivers.zip.ZipSplitReadOnlySeekableByteCha
 import org.apache.commons.compress.utils.InputStreamStatistics;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.channels.ByteArraySeekableByteChannel;
 import org.junit.jupiter.api.Test;
 
 public final class ZipTest extends AbstractTest {
@@ -770,6 +771,40 @@ public final class ZipTest extends AbstractTest {
      */
     @Test
     void testZipArchiveCreationInMemory() throws Exception {
+        final byte[] file1Contents = readAllBytes("test1.xml");
+        final byte[] file2Contents = readAllBytes("test2.xml");
+        final List<byte[]> results = new ArrayList<>();
+        try (ByteArraySeekableByteChannel channel = new ByteArraySeekableByteChannel()) {
+            try (ZipArchiveOutputStream os = new ZipArchiveOutputStream(channel)) {
+                os.putArchiveEntry(new ZipArchiveEntry("testdata/test1.xml"));
+                os.write(file1Contents);
+                os.closeArchiveEntry();
+
+                os.putArchiveEntry(new ZipArchiveEntry("testdata/test2.xml"));
+                os.write(file2Contents);
+                os.closeArchiveEntry();
+            }
+            // Unarchive the same
+            try (ZipArchiveInputStream inputStream = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("zip", new ByteArrayInputStream(channel.array()))) {
+                ZipArchiveEntry entry;
+                while ((entry = inputStream.getNextEntry()) != null) {
+                    final byte[] result = new byte[(int) entry.getSize()];
+                    IOUtils.readFully(inputStream, result);
+                    results.add(result);
+                }
+            }
+        }
+        assertArrayEquals(results.get(0), file1Contents);
+        assertArrayEquals(results.get(1), file2Contents);
+    }
+
+    /**
+     * Archives 2 files and unarchives it again. If the file contents of result and source is the same, it looks like the operations have worked
+     *
+     * @throws Exception
+     */
+    @Test
+    void testZipArchiveCreationInMemoryDepreacted() throws Exception {
         final byte[] file1Contents = readAllBytes("test1.xml");
         final byte[] file2Contents = readAllBytes("test2.xml");
         final List<byte[]> results = new ArrayList<>();
