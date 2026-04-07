@@ -804,7 +804,7 @@ public final class ZipTest extends AbstractTest {
      * @throws Exception
      */
     @Test
-    void testZipArchiveCreationInMemoryDepreacted() throws Exception {
+    void testZipArchiveCreationInMemoryDeprecated() throws Exception {
         final byte[] file1Contents = readAllBytes("test1.xml");
         final byte[] file2Contents = readAllBytes("test2.xml");
         final List<byte[]> results = new ArrayList<>();
