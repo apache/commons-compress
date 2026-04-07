@@ -43,7 +43,7 @@ class UnshrinkingInputStreamTest {
         int bitBuffer = 0;
         int bitCount = 0;
 
-        for (int code : codes) {
+        for (final int code : codes) {
             bitBuffer |= (code & 0x1FF) << bitCount;
             bitCount += 9;
 

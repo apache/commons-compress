@@ -41,13 +41,13 @@ class AttributeLayoutUtilsTest {
             "KI", "RC", "RU", "KIN", "RCN", "RUN",
             // Extra characters
             "KIBB", "RCBB", "RUNNH"})
-    void testCheckReferenceTag_Invalid(String tag) {
+    void testCheckReferenceTag_Invalid(final String tag) {
         assertThrows(IllegalArgumentException.class, () -> AttributeLayoutUtils.checkReferenceTag(tag));
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"KIB", "KJH", "KFI", "KDV", "KSB", "KQV", "KMI", "KTI", "KLV", "RCB", "RCH", "RDI", "RFV", "RMI", "RII", "RYB", "RBNI"})
-    void testCheckReferenceTag_Valid(String tag) {
+    void testCheckReferenceTag_Valid(final String tag) {
         assertEquals(tag, AttributeLayoutUtils.checkReferenceTag(tag));
     }
 

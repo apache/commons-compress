@@ -54,7 +54,7 @@ class NewAttributeBandsTest extends AbstractBandsTest {
         }
     }
 
-    private static String createRecursiveLayout(int level, String prefix) {
+    private static String createRecursiveLayout(final int level, final String prefix) {
         final StringBuilder sb = new StringBuilder();
         for (int i = 0; i < level; i++) {
             sb.append(prefix);
@@ -185,7 +185,7 @@ class NewAttributeBandsTest extends AbstractBandsTest {
 
     @ParameterizedTest
     @ValueSource(strings = {"NH[", "TH()["})
-    void testRecursiveReplicationLayout(String prefix) {
+    void testRecursiveReplicationLayout(final String prefix) {
         final String layout = createRecursiveLayout(8192, prefix);
         assertThrows(Pack200Exception.class, () -> createNewAttributeBands(layout));
     }

@@ -36,7 +36,7 @@ class CpioArchiveEntryTest {
 
     @ParameterizedTest
     @ValueSource(shorts = {CpioConstants.FORMAT_NEW, CpioConstants.FORMAT_NEW_CRC, CpioConstants.FORMAT_OLD_BINARY})
-    void testCpioEntrySizeUnder4GiBNotOldAsciiFormat(short format) {
+    void testCpioEntrySizeUnder4GiBNotOldAsciiFormat(final short format) {
         final CpioArchiveEntry entry = new CpioArchiveEntry(format);
         assertThrows(IllegalArgumentException.class, () -> entry.setSize(0x1FFFFFFFFL));
     }
