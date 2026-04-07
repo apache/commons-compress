@@ -46,6 +46,7 @@ import org.apache.commons.compress.PasswordRequiredException;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.apache.commons.compress.utils.TimeUtilsTest;
+import org.apache.commons.io.channels.ByteArraySeekableByteChannel;
 import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.Test;
 import org.tukaani.xz.LZMA2Options;
@@ -99,6 +100,16 @@ class SevenZOutputFileTest extends AbstractTest {
         archive.closeArchiveEntry();
     }
 
+    private void createAndReadBack(final ByteArraySeekableByteChannel output, final Iterable<SevenZMethodConfiguration> methods) throws Exception {
+        try (SevenZOutputFile outArchive = new SevenZOutputFile(output)) {
+            outArchive.setContentMethods(methods);
+            addFile(outArchive, 0, true);
+        }
+        try (SevenZFile archive = SevenZFile.builder().setByteArray(output.array()).setDefaultName("in memory").get()) {
+            assertEquals(Boolean.TRUE, verifyFile(archive, 0, methods));
+        }
+    }
+
     private void createAndReadBack(final File output, final Iterable<SevenZMethodConfiguration> methods) throws Exception {
         try (SevenZOutputFile outArchive = new SevenZOutputFile(output)) {
             outArchive.setContentMethods(methods);
@@ -110,7 +121,7 @@ class SevenZOutputFileTest extends AbstractTest {
         }
     }
 
-    private void createAndReadBack(final SeekableInMemoryByteChannel output, final Iterable<SevenZMethodConfiguration> methods) throws Exception {
+    private void createAndReadBackDeprecated(final SeekableInMemoryByteChannel output, final Iterable<SevenZMethodConfiguration> methods) throws Exception {
         try (SevenZOutputFile outArchive = new SevenZOutputFile(output)) {
             outArchive.setContentMethods(methods);
             addFile(outArchive, 0, true);
@@ -600,8 +611,20 @@ class SevenZOutputFileTest extends AbstractTest {
         methods.add(new SevenZMethodConfiguration(SevenZMethod.COPY));
         methods.add(new SevenZMethodConfiguration(SevenZMethod.DEFLATE));
         methods.add(new SevenZMethodConfiguration(SevenZMethod.BZIP2));
-        try (SeekableInMemoryByteChannel channel = new SeekableInMemoryByteChannel()) {
+        try (ByteArraySeekableByteChannel channel = new ByteArraySeekableByteChannel()) {
             createAndReadBack(channel, methods);
+        }
+    }
+
+    @Test
+    void testStackOfContentCompressionsInMemoryDeprecated() throws Exception {
+        final ArrayList<SevenZMethodConfiguration> methods = new ArrayList<>();
+        methods.add(new SevenZMethodConfiguration(SevenZMethod.LZMA2));
+        methods.add(new SevenZMethodConfiguration(SevenZMethod.COPY));
+        methods.add(new SevenZMethodConfiguration(SevenZMethod.DEFLATE));
+        methods.add(new SevenZMethodConfiguration(SevenZMethod.BZIP2));
+        try (SeekableInMemoryByteChannel channel = new SeekableInMemoryByteChannel()) {
+            createAndReadBackDeprecated(channel, methods);
         }
     }
 

@@ -51,6 +51,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.zip.CRC32;
 import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
@@ -356,12 +358,16 @@ class ZipFileTest extends AbstractArchiveFileTest<ZipArchiveEntry> {
 
     @Test
     void testConcurrentReadSeekable() throws Exception {
+        testConcurrentReadSeekable(ByteArraySeekableByteChannel::wrap);
+    }
+
+    void testConcurrentReadSeekable(final Function<byte[], SeekableByteChannel> factory) throws Exception {
         // mixed.zip contains both inflated and stored files
         final byte[] data;
         try (InputStream fis = newInputStream("mixed.zip")) {
             data = IOUtils.toByteArray(fis);
         }
-        try (SeekableInMemoryByteChannel channel = new SeekableInMemoryByteChannel(data)) {
+        try (SeekableByteChannel channel = factory.apply(data)) {
             zf = ZipFile.builder().setChannel(channel).setCharset(StandardCharsets.UTF_8).get();
             final Map<String, byte[]> content = new HashMap<>();
             zf.stream().forEach(entry -> {
@@ -382,6 +388,11 @@ class ZipFileTest extends AbstractArchiveFileTest<ZipArchiveEntry> {
             t1.join();
             assertEquals(2, passedCount.get());
         }
+    }
+
+    @Test
+    void testConcurrentReadSeekableDeprecated() throws Exception {
+        testConcurrentReadSeekable(SeekableInMemoryByteChannel::new);
     }
 
     @Test
@@ -473,7 +484,11 @@ class ZipFileTest extends AbstractArchiveFileTest<ZipArchiveEntry> {
      */
     @Test
     void testEntryAlignment() throws Exception {
-        try (SeekableInMemoryByteChannel zipContent = new SeekableInMemoryByteChannel()) {
+        testEntryAlignment(ByteArraySeekableByteChannel::new, s -> ((ByteArraySeekableByteChannel) s).array());
+    }
+
+    private void testEntryAlignment(final Supplier<SeekableByteChannel> supplier, final Function<SeekableByteChannel, byte[]> arrayAccessor) throws Exception {
+        try (SeekableByteChannel zipContent = supplier.get()) {
             try (ZipArchiveOutputStream zipOutput = new ZipArchiveOutputStream(zipContent)) {
                 final ZipArchiveEntry inflatedEntry = new ZipArchiveEntry("inflated.txt");
                 inflatedEntry.setMethod(ZipEntry.DEFLATED);
@@ -481,14 +496,12 @@ class ZipFileTest extends AbstractArchiveFileTest<ZipArchiveEntry> {
                 zipOutput.putArchiveEntry(inflatedEntry);
                 zipOutput.writeUtf8("Hello Deflated\n");
                 zipOutput.closeArchiveEntry();
-
                 final ZipArchiveEntry storedEntry = new ZipArchiveEntry("stored.txt");
                 storedEntry.setMethod(ZipEntry.STORED);
                 storedEntry.setAlignment(1024);
                 zipOutput.putArchiveEntry(storedEntry);
                 zipOutput.writeUtf8("Hello Stored\n");
                 zipOutput.closeArchiveEntry();
-
                 final ZipArchiveEntry storedEntry2 = new ZipArchiveEntry("stored2.txt");
                 storedEntry2.setMethod(ZipEntry.STORED);
                 storedEntry2.setAlignment(1024);
@@ -496,18 +509,15 @@ class ZipFileTest extends AbstractArchiveFileTest<ZipArchiveEntry> {
                 zipOutput.putArchiveEntry(storedEntry2);
                 zipOutput.writeUtf8("Hello overload-alignment Stored\n");
                 zipOutput.closeArchiveEntry();
-
                 final ZipArchiveEntry storedEntry3 = new ZipArchiveEntry("stored3.txt");
                 storedEntry3.setMethod(ZipEntry.STORED);
                 storedEntry3.addExtraField(new ResourceAlignmentExtraField(1024));
                 zipOutput.putArchiveEntry(storedEntry3);
                 zipOutput.writeUtf8("Hello copy-alignment Stored\n");
                 zipOutput.closeArchiveEntry();
-
             }
-
-            try (ZipFile zf = ZipFile.builder().setByteArray(Arrays.copyOfRange(zipContent.array(), 0, (int) FieldUtils.readDeclaredField(zipContent, "size",
-                    true))).get()) {
+            try (ZipFile zf = ZipFile.builder()
+                    .setByteArray(Arrays.copyOfRange(arrayAccessor.apply(zipContent), 0, (int) FieldUtils.readDeclaredField(zipContent, "size", true))).get()) {
                 final ZipArchiveEntry inflatedEntry = zf.getEntry("inflated.txt");
                 final ResourceAlignmentExtraField inflatedAlignmentEx = (ResourceAlignmentExtraField) inflatedEntry
                         .getExtraField(ResourceAlignmentExtraField.ID);
@@ -531,7 +541,6 @@ class ZipFileTest extends AbstractArchiveFileTest<ZipArchiveEntry> {
                 try (InputStream stream = zf.getInputStream(storedEntry)) {
                     assertEquals("Hello Stored\n", new String(IOUtils.toByteArray(stream), UTF_8));
                 }
-
                 final ZipArchiveEntry storedEntry2 = zf.getEntry("stored2.txt");
                 final ResourceAlignmentExtraField stored2AlignmentEx = (ResourceAlignmentExtraField) storedEntry2.getExtraField(ResourceAlignmentExtraField.ID);
                 assertNotEquals(-1L, storedEntry2.getCompressedSize());
@@ -543,7 +552,6 @@ class ZipFileTest extends AbstractArchiveFileTest<ZipArchiveEntry> {
                 try (InputStream stream = zf.getInputStream(storedEntry2)) {
                     assertEquals("Hello overload-alignment Stored\n", new String(IOUtils.toByteArray(stream), UTF_8));
                 }
-
                 final ZipArchiveEntry storedEntry3 = zf.getEntry("stored3.txt");
                 final ResourceAlignmentExtraField stored3AlignmentEx = (ResourceAlignmentExtraField) storedEntry3.getExtraField(ResourceAlignmentExtraField.ID);
                 assertNotEquals(-1L, storedEntry3.getCompressedSize());
@@ -559,16 +567,36 @@ class ZipFileTest extends AbstractArchiveFileTest<ZipArchiveEntry> {
         }
     }
 
+    @Test
+    void testEntryAlignmentDeprecated() throws Exception {
+        testEntryAlignment(SeekableInMemoryByteChannel::new, s -> ((SeekableInMemoryByteChannel) s).array());
+    }
+
     /**
      * Test too big alignment, resulting into exceeding extra field limit.
      */
     @Test
     void testEntryAlignmentExceed() throws Exception {
-        try (SeekableInMemoryByteChannel zipContent = new SeekableInMemoryByteChannel();
-                ZipArchiveOutputStream zipOutput = new ZipArchiveOutputStream(zipContent)) {
+        try (SeekableByteChannel zipContent = new ByteArraySeekableByteChannel()) {
+            testEntryAlignmentExceed(zipContent);
+        }
+    }
+
+    private void testEntryAlignmentExceed(final SeekableByteChannel zipContent) throws IOException {
+        try (ZipArchiveOutputStream zipOutput = new ZipArchiveOutputStream(zipContent)) {
             final ZipArchiveEntry inflatedEntry = new ZipArchiveEntry("inflated.txt");
             inflatedEntry.setMethod(ZipEntry.STORED);
             assertThrows(IllegalArgumentException.class, () -> inflatedEntry.setAlignment(0x20000));
+        }
+    }
+
+    /**
+     * Test too big alignment, resulting into exceeding extra field limit.
+     */
+    @Test
+    void testEntryAlignmentExceedDeprecated() throws Exception {
+        try (SeekableByteChannel zipContent = new SeekableInMemoryByteChannel()) {
+            testEntryAlignmentExceed(zipContent);
         }
     }
 

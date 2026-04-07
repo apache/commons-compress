@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Random;
 
 import org.apache.commons.compress.archivers.zip.ZipSplitReadOnlySeekableByteChannel;
+import org.apache.commons.io.channels.ByteArraySeekableByteChannel;
 import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.Test;
 
@@ -147,6 +148,14 @@ class ZipSplitReadOnlySeekableByteChannelTest {
 
     @Test
     void testForOrderedSeekableByteChannelsReturnsIdentityForSingleElement() throws IOException {
+        try (SeekableByteChannel emptyChannel = ByteArraySeekableByteChannel.wrap(ArrayUtils.EMPTY_BYTE_ARRAY);
+                SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.forOrderedSeekableByteChannels(emptyChannel)) {
+            assertSame(emptyChannel, channel);
+        }
+    }
+
+    @Test
+    void testForOrderedSeekableByteChannelsReturnsIdentityForSingleElementDeprecated() throws IOException {
         try (SeekableByteChannel emptyChannel = new SeekableInMemoryByteChannel(ArrayUtils.EMPTY_BYTE_ARRAY);
                 SeekableByteChannel channel = ZipSplitReadOnlySeekableByteChannel.forOrderedSeekableByteChannels(emptyChannel)) {
             assertSame(emptyChannel, channel);

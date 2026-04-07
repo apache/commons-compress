@@ -35,6 +35,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.StandardCharsets;
 
+import org.apache.commons.io.channels.ByteArraySeekableByteChannel;
 import org.apache.commons.io.input.NullInputStream;
 import org.apache.commons.io.output.NullOutputStream;
 import org.apache.commons.lang3.ArrayUtils;
@@ -47,7 +48,7 @@ class IOUtilsTest {
     }
 
     private static void readFully(final byte[] source, final ByteBuffer b) throws IOException {
-        try (SeekableInMemoryByteChannel channel = new SeekableInMemoryByteChannel(source)) {
+        try (ByteArraySeekableByteChannel channel = ByteArraySeekableByteChannel.wrap(source)) {
             IOUtils.readFully(channel, b);
         }
     }
@@ -140,7 +141,7 @@ class IOUtilsTest {
 
     @Test
     void testReadRangeFromChannelDoesntReadMoreThanAskedFor() throws IOException {
-        try (ReadableByteChannel in = new SeekableInMemoryByteChannel(new byte[] { 1, 2, 3, 4, 5 })) {
+        try (ReadableByteChannel in = ByteArraySeekableByteChannel.wrap(new byte[] { 1, 2, 3, 4, 5 })) {
             final byte[] read = IOUtils.readRange(in, 3);
             assertArrayEquals(new byte[] { 1, 2, 3 }, read);
             final ByteBuffer b = ByteBuffer.allocate(1);
@@ -170,7 +171,7 @@ class IOUtilsTest {
 
     @Test
     void testReadRangeFromChannelStopsIfThereIsNothingToReadAnymore() throws IOException {
-        try (ReadableByteChannel in = new SeekableInMemoryByteChannel(new byte[] { 1, 2, 3, 4, 5 })) {
+        try (ReadableByteChannel in = ByteArraySeekableByteChannel.wrap(new byte[] { 1, 2, 3, 4, 5 })) {
             final byte[] read = IOUtils.readRange(in, 10);
             assertArrayEquals(new byte[] { 1, 2, 3, 4, 5 }, read);
             final ByteBuffer b = ByteBuffer.allocate(1);
@@ -198,6 +199,22 @@ class IOUtilsTest {
 
     @Test
     void testReadRangeMoreThanCopyBufferSize() throws Exception {
+        final int copyBufSize = org.apache.commons.io.IOUtils.DEFAULT_BUFFER_SIZE;
+
+        // Make an input that requires two read loops to trigger COMPRESS-585
+        final byte[] input = new byte[copyBufSize + 10];
+
+        try (ByteArraySeekableByteChannel in = ByteArraySeekableByteChannel.wrap(input)) {
+            // Ask for less than the input length, but more than the buffer size
+            final int toRead = copyBufSize + 1;
+            final byte[] read = IOUtils.readRange(in, toRead);
+            assertEquals(toRead, read.length);
+            assertEquals(toRead, in.position());
+        }
+    }
+
+    @Test
+    void testReadRangeMoreThanCopyBufferSizeDeprecated() throws Exception {
         final int copyBufSize = org.apache.commons.io.IOUtils.DEFAULT_BUFFER_SIZE;
 
         // Make an input that requires two read loops to trigger COMPRESS-585
