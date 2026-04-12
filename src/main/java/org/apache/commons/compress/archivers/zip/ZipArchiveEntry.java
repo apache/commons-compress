@@ -687,8 +687,8 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
      * Gets the external file attributes.
      *
      * <p>
-     * <strong>Note</strong>: {@link ZipArchiveInputStream} is unable to fill this field, you must use {@link ZipFile} if you want to read entries using this
-     * attribute.
+     * <strong>Note:</strong> This field is stored in the central directory only and is not populated when reading entries via
+     * {@link ZipArchiveInputStream}; use {@link ZipFile} instead.
      * </p>
      *
      * @return the external file attributes.
@@ -963,7 +963,12 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     /**
      * Gets the Unix permission.
      *
-     * @return the Unix permissions.
+     * <p>
+     * <strong>Note:</strong> This method relies on {@link #getExternalAttributes()}, which is not populated when reading entries via
+     * {@link ZipArchiveInputStream}; use {@link ZipFile} instead.
+     * </p>
+     *
+     * @return the Unix permissions, or 0 if the platform is not {@link #PLATFORM_UNIX}.
      */
     public int getUnixMode() {
         return platform != PLATFORM_UNIX ? 0 : (int) (getExternalAttributes() >> SHORT_SHIFT & SHORT_MASK);
@@ -1071,6 +1076,11 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
 
     /**
      * Tests whether this entry represents a Unix symlink, in which case the entry's content contains the target path for the symlink.
+     *
+     * <p>
+     * <strong>Note:</strong> This method relies on {@link #getExternalAttributes()}, which is not populated when reading entries via
+     * {@link ZipArchiveInputStream}; use {@link ZipFile} instead.
+     * </p>
      *
      * @return true if the entry represents a Unix symlink, false otherwise.
      * @since 1.5
