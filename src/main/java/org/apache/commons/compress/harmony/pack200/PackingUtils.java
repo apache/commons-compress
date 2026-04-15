@@ -217,7 +217,7 @@ public class PackingUtils {
         final long size = jarEntry.getSize();
         if (size > Integer.MAX_VALUE) {
             // TODO: Should probably allow this
-            throw new IllegalArgumentException("Large Class!");
+            throw new IllegalArgumentException("Large Class.");
         }
         // Negative size means unknown size
         return size < 0 ? IOUtils.toByteArray(inputStream) : IOUtils.toByteArray(inputStream, (int) size, IOUtils.DEFAULT_BUFFER_SIZE);

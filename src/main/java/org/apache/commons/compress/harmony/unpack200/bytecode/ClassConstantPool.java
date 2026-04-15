@@ -187,7 +187,7 @@ public class ClassConstantPool {
             throw new IllegalStateException("Constant pool is not yet resolved; this does not make any sense");
         }
         if (null == indexCache) {
-            throw new IllegalStateException("Index cache is not initialized!");
+            throw new IllegalStateException("Index cache is not initialized.");
         }
         final Integer entryIndex = indexCache.get(entry);
         // If the entry isn't found, answer -1, otherwise answer the entry.
