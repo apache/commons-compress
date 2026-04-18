@@ -42,6 +42,13 @@ public interface TarConstants {
     int DEFAULT_BLKSIZE = DEFAULT_RCDSIZE * 20;
 
     /**
+     * Default maximum PAX extended header size in bytes (10 MB).
+     *
+     * @since 1.29.0
+     */
+    long DEFAULT_MAX_PAX_HEADER_SIZE = 10 * 1024 * 1024;
+
+    /**
      * GNU format as per before tar 1.12.
      */
     int FORMAT_OLDGNU = 2;
