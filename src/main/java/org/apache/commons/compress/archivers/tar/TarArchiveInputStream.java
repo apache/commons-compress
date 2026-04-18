@@ -171,12 +171,15 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
 
     private final boolean lenient;
 
+    private final long maxPaxHeaderSize;
+
     private TarArchiveInputStream(final Builder builder) throws IOException {
         super(builder);
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(builder.getCharset());
         this.recordBuffer = new byte[builder.getRecordSize()];
         this.blockSize = builder.getBlockSize();
         this.lenient = builder.isLenient();
+        this.maxPaxHeaderSize = builder.getMaxPaxHeaderSize();
     }
 
     /**
@@ -521,8 +524,8 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
             lastWasSpecial = TarUtils.isSpecialTarRecord(currEntry);
             if (lastWasSpecial) {
                 // Handle PAX, GNU long name, or other special records
-                TarUtils.handleSpecialTarRecord(currentInputStream, zipEncoding, getMaxEntryNameLength(), currEntry, paxHeaders, sparseHeaders,
-                        globalPaxHeaders, globalSparseHeaders);
+                TarUtils.handleSpecialTarRecord(currentInputStream, zipEncoding, getMaxEntryNameLength(), maxPaxHeaderSize, currEntry, paxHeaders,
+                        sparseHeaders, globalPaxHeaders, globalSparseHeaders);
             }
         } while (lastWasSpecial);
         // Apply global and local PAX headers
