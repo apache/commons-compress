@@ -193,7 +193,7 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
                 entries.add(entry);
             }
         } catch (final IOException e) {
-            throw IOUtils.closeQuietly(archive, e);
+            throw IOUtils.closeQuietlySuppress(archive, e);
         }
     }
 

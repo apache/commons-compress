@@ -757,7 +757,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
             fillNameMap();
         } catch (final IOException e) {
             this.closed = true;
-            throw IOUtils.closeQuietly(archive, e);
+            throw IOUtils.closeQuietlySuppress(archive, e);
         }
     }
 
