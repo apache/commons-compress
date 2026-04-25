@@ -140,7 +140,7 @@ public class ArjArchiveEntry implements ArchiveEntry {
      * The operating system the archive has been created on.
      *
      * @see HostOs
-     * @return the host OS code
+     * @return the host OS code.
      */
     public int getHostOs() {
         return localFileHeader.hostOS;
@@ -156,7 +156,7 @@ public class ArjArchiveEntry implements ArchiveEntry {
      * the current time zone into account if the archive has been created on Unix.
      * </p>
      *
-     * @return the last modified date
+     * @return the last modified date.
      */
     @Override
     public Date getLastModifiedDate() {
@@ -172,10 +172,10 @@ public class ArjArchiveEntry implements ArchiveEntry {
      * File mode of this entry.
      *
      * <p>
-     * The format depends on the host os that created the entry.
+     * The format depends on the host operating system that created the entry.
      * </p>
      *
-     * @return the file mode
+     * @return the file mode.
      */
     public int getMode() {
         return localFileHeader.fileAccessMode;
@@ -212,9 +212,10 @@ public class ArjArchiveEntry implements ArchiveEntry {
      * File mode of this entry as Unix stat value.
      *
      * <p>
-     * Will only be non-zero of the host os was Unix.
+     * Will only be non-zero of the host operating system was Unix.
+     * </p>
      *
-     * @return the Unix mode
+     * @return the Unix mode.
      */
     public int getUnixMode() {
         return isHostOsUnix() ? getMode() : 0;
@@ -229,7 +230,7 @@ public class ArjArchiveEntry implements ArchiveEntry {
     /**
      * True if the entry refers to a directory.
      *
-     * @return True if the entry refers to a directory
+     * @return True if the entry refers to a directory.
      */
     @Override
     public boolean isDirectory() {
@@ -239,7 +240,7 @@ public class ArjArchiveEntry implements ArchiveEntry {
     /**
      * Is the operating system the archive has been created on one that is considered a Unix OS by arj?
      *
-     * @return whether the operating system the archive has been created on is considered a Unix OS by arj
+     * @return whether the operating system the archive has been created on is considered a Unix OS by arj.
      */
     public boolean isHostOsUnix() {
         return getHostOs() == HostOs.UNIX || getHostOs() == HostOs.NEXT;

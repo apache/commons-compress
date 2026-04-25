@@ -48,9 +48,9 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
     /**
      * Checks if the signature matches what is expected for a pack200 file (0xCAFED00D).
      *
-     * @param signature the bytes to check
-     * @param length    the number of bytes to check
-     * @return true, if this stream is a pack200 compressed stream, false otherwise
+     * @param signature the bytes to check.
+     * @param length    the number of bytes to check.
+     * @return true, if this stream is a pack200 compressed stream, false otherwise.
      */
     public static boolean matches(final byte[] signature, final int length) {
         if (length < SIG_LENGTH) {
@@ -73,8 +73,8 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
     /**
      * Decompresses the given file, caching the decompressed data in memory.
      *
-     * @param file the file to decompress
-     * @throws IOException if reading fails
+     * @param file the file to decompress.
+     * @throws IOException if reading fails.
      */
     public Pack200CompressorInputStream(final File file) throws IOException {
         this(file, Pack200Strategy.IN_MEMORY);
@@ -83,9 +83,9 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
     /**
      * Decompresses the given file, caching the decompressed data in memory and using the given properties.
      *
-     * @param file       the file to decompress
-     * @param properties Pack200 properties to use
-     * @throws IOException if reading fails
+     * @param file       the file to decompress.
+     * @param properties Pack200 properties to use.
+     * @throws IOException if reading fails.
      */
     public Pack200CompressorInputStream(final File file, final Map<String, String> properties) throws IOException {
         this(file, Pack200Strategy.IN_MEMORY, properties);
@@ -94,9 +94,9 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
     /**
      * Decompresses the given file using the given strategy to cache the results.
      *
-     * @param file the file to decompress
-     * @param mode the strategy to use
-     * @throws IOException if reading fails
+     * @param file the file to decompress.
+     * @param mode the strategy to use.
+     * @throws IOException if reading fails.
      */
     public Pack200CompressorInputStream(final File file, final Pack200Strategy mode) throws IOException {
         this(null, file, mode, null);
@@ -105,10 +105,10 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
     /**
      * Decompresses the given file using the given strategy to cache the results and the given properties.
      *
-     * @param file       the file to decompress
-     * @param mode       the strategy to use
-     * @param properties Pack200 properties to use
-     * @throws IOException if reading fails
+     * @param file       the file to decompress.
+     * @param mode       the strategy to use.
+     * @param properties Pack200 properties to use.
+     * @throws IOException if reading fails.
      */
     public Pack200CompressorInputStream(final File file, final Pack200Strategy mode, final Map<String, String> properties) throws IOException {
         this(null, file, mode, properties);
@@ -121,8 +121,8 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
      * When reading from a file the File-arg constructor may provide better performance.
      * </p>
      *
-     * @param inputStream the InputStream from which this object should be created
-     * @throws IOException if reading fails
+     * @param inputStream the InputStream from which this object should be created.
+     * @throws IOException if reading fails.
      */
     public Pack200CompressorInputStream(final InputStream inputStream) throws IOException {
         this(inputStream, Pack200Strategy.IN_MEMORY);
@@ -152,9 +152,9 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
      * When reading from a file the File-arg constructor may provide better performance.
      * </p>
      *
-     * @param inputStream the InputStream from which this object should be created
-     * @param properties  Pack200 properties to use
-     * @throws IOException if reading fails
+     * @param inputStream the InputStream from which this object should be created.
+     * @param properties  Pack200 properties to use.
+     * @throws IOException if reading fails.
      */
     public Pack200CompressorInputStream(final InputStream inputStream, final Map<String, String> properties) throws IOException {
         this(inputStream, Pack200Strategy.IN_MEMORY, properties);
@@ -167,9 +167,9 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
      * When reading from a file the File-arg constructor may provide better performance.
      * </p>
      *
-     * @param inputStream the InputStream from which this object should be created
-     * @param mode        the strategy to use
-     * @throws IOException if reading fails
+     * @param inputStream the InputStream from which this object should be created.
+     * @param mode        the strategy to use.
+     * @throws IOException if reading fails.
      */
     public Pack200CompressorInputStream(final InputStream inputStream, final Pack200Strategy mode) throws IOException {
         this(inputStream, null, mode, null);
@@ -182,10 +182,10 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
      * When reading from a file the File-arg constructor may provide better performance.
      * </p>
      *
-     * @param inputStream the InputStream from which this object should be created
-     * @param mode        the strategy to use
-     * @param properties  Pack200 properties to use
-     * @throws IOException if reading fails
+     * @param inputStream the InputStream from which this object should be created.
+     * @param mode        the strategy to use.
+     * @param properties  Pack200 properties to use.
+     * @throws IOException if reading fails.
      */
     public Pack200CompressorInputStream(final InputStream inputStream, final Pack200Strategy mode, final Map<String, String> properties) throws IOException {
         this(inputStream, null, mode, properties);

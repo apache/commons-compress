@@ -35,10 +35,30 @@ import org.objectweb.asm.Attribute;
 public class PackingOptions {
 
     private static final Attribute[] EMPTY_ATTRIBUTE_ARRAY = {};
+
+    /**
+     * Default segment limit.
+     */
     public static final long SEGMENT_LIMIT = 1_000_000L;
+
+    /**
+     * Strip action constant.
+     */
     public static final String STRIP = "strip";
+
+    /**
+     * Error action constant.
+     */
     public static final String ERROR = "error";
+
+    /**
+     * Pass action constant.
+     */
     public static final String PASS = "pass";
+
+    /**
+     * Keep action constant.
+     */
     public static final String KEEP = "keep";
 
     // All options are initially set to their defaults
@@ -60,18 +80,48 @@ public class PackingOptions {
 
     private Attribute[] unknownAttributeTypes;
 
+    /**
+     * Constructs a new PackingOptions.
+     */
+    public PackingOptions() {
+    }
+
+    /**
+     * Adds a class attribute action.
+     *
+     * @param attributeName the attribute name.
+     * @param action the action.
+     */
     public void addClassAttributeAction(final String attributeName, final String action) {
         classAttributeActions.put(attributeName, action);
     }
 
+    /**
+     * Adds a code attribute action.
+     *
+     * @param attributeName the attribute name.
+     * @param action the action.
+     */
     public void addCodeAttributeAction(final String attributeName, final String action) {
         codeAttributeActions.put(attributeName, action);
     }
 
+    /**
+     * Adds a field attribute action.
+     *
+     * @param attributeName the attribute name.
+     * @param action the action.
+     */
     public void addFieldAttributeAction(final String attributeName, final String action) {
         fieldAttributeActions.put(attributeName, action);
     }
 
+    /**
+     * Adds a method attribute action.
+     *
+     * @param attributeName the attribute name.
+     * @param action the action.
+     */
     public void addMethodAttributeAction(final String attributeName, final String action) {
         methodAttributeActions.put(attributeName, action);
     }
@@ -128,18 +178,38 @@ public class PackingOptions {
         passFiles.add(passFileName.replaceAll(fileSeparator, "/"));
     }
 
+    /**
+     * Gets the deflate hint.
+     *
+     * @return the deflate hint.
+     */
     public String getDeflateHint() {
         return deflateHint;
     }
 
+    /**
+     * Gets the effort level.
+     *
+     * @return the effort level.
+     */
     public int getEffort() {
         return effort;
     }
 
+    /**
+     * Gets the log file.
+     *
+     * @return the log file.
+     */
     public String getLogFile() {
         return logFile;
     }
 
+    /**
+     * Gets the modification time.
+     *
+     * @return the modification time.
+     */
     public String getModificationTime() {
         return modificationTime;
     }
@@ -148,14 +218,29 @@ public class PackingOptions {
         return map == null ? defaultValue : map.getOrDefault(type, defaultValue);
     }
 
+    /**
+     * Gets the segment limit.
+     *
+     * @return the segment limit.
+     */
     public long getSegmentLimit() {
         return segmentLimit;
     }
 
+    /**
+     * Gets the unknown attribute action.
+     *
+     * @return the unknown attribute action.
+     */
     public String getUnknownAttributeAction() {
         return unknownAttributeAction;
     }
 
+    /**
+     * Gets the unknown attribute prototypes.
+     *
+     * @return the attribute prototypes.
+     */
     public Attribute[] getUnknownAttributePrototypes() {
         if (unknownAttributeTypes == null) {
             final List<Attribute> prototypes = new ArrayList<>();
@@ -168,34 +253,79 @@ public class PackingOptions {
         return unknownAttributeTypes;
     }
 
+    /**
+     * Gets the unknown class attribute action.
+     *
+     * @param type the attribute type.
+     * @return the action.
+     */
     public String getUnknownClassAttributeAction(final String type) {
         return getOrDefault(classAttributeActions, type, unknownAttributeAction);
     }
 
+    /**
+     * Gets the unknown code attribute action.
+     *
+     * @param type the attribute type.
+     * @return the action.
+     */
     public String getUnknownCodeAttributeAction(final String type) {
         return getOrDefault(codeAttributeActions, type, unknownAttributeAction);
     }
 
+    /**
+     * Gets the unknown field attribute action.
+     *
+     * @param type the attribute type.
+     * @return the action.
+     */
     public String getUnknownFieldAttributeAction(final String type) {
         return getOrDefault(fieldAttributeActions, type, unknownAttributeAction);
     }
 
+    /**
+     * Gets the unknown method attribute action.
+     *
+     * @param type the attribute type.
+     * @return the action.
+     */
     public String getUnknownMethodAttributeAction(final String type) {
         return getOrDefault(methodAttributeActions, type, unknownAttributeAction);
     }
 
+    /**
+     * Tests whether gzip is enabled.
+     *
+     * @return true if gzip is enabled.
+     */
     public boolean isGzip() {
         return gzip;
     }
 
+    /**
+     * Tests whether deflate hint should be kept.
+     *
+     * @return true if deflate hint should be kept.
+     */
     public boolean isKeepDeflateHint() {
         return KEEP.equals(deflateHint);
     }
 
+    /**
+     * Tests whether file order should be kept.
+     *
+     * @return true if file order should be kept.
+     */
     public boolean isKeepFileOrder() {
         return keepFileOrder;
     }
 
+    /**
+     * Tests whether the file should be passed.
+     *
+     * @param passFileName the file name.
+     * @return true if the file should be passed.
+     */
     public boolean isPassFile(final String passFileName) {
         for (String pass : passFiles) {
             if (passFileName.equals(pass)) {
@@ -215,18 +345,38 @@ public class PackingOptions {
         return false;
     }
 
+    /**
+     * Tests whether debug info should be stripped.
+     *
+     * @return true if debug info should be stripped.
+     */
     public boolean isStripDebug() {
         return stripDebug;
     }
 
+    /**
+     * Tests whether verbose mode is enabled.
+     *
+     * @return true if verbose mode is enabled.
+     */
     public boolean isVerbose() {
         return verbose;
     }
 
+    /**
+     * Removes a pass file.
+     *
+     * @param passFileName the file name to remove.
+     */
     public void removePassFile(final String passFileName) {
         passFiles.remove(passFileName);
     }
 
+    /**
+     * Sets the deflate hint.
+     *
+     * @param deflateHint the deflate hint.
+     */
     public void setDeflateHint(final String deflateHint) {
         if (!KEEP.equals(deflateHint) && !"true".equals(deflateHint) && !"false".equals(deflateHint)) {
             throw new IllegalArgumentException("Bad argument: -H " + deflateHint + " ? deflate hint should be either true, false or keep (default)");
@@ -243,18 +393,38 @@ public class PackingOptions {
         this.effort = effort;
     }
 
+    /**
+     * Sets whether to use gzip.
+     *
+     * @param gzip true to enable gzip.
+     */
     public void setGzip(final boolean gzip) {
         this.gzip = gzip;
     }
 
+    /**
+     * Sets whether to keep file order.
+     *
+     * @param keepFileOrder true to keep file order.
+     */
     public void setKeepFileOrder(final boolean keepFileOrder) {
         this.keepFileOrder = keepFileOrder;
     }
 
+    /**
+     * Sets the log file.
+     *
+     * @param logFile the log file path.
+     */
     public void setLogFile(final String logFile) {
         this.logFile = logFile;
     }
 
+    /**
+     * Sets the modification time.
+     *
+     * @param modificationTime the modification time.
+     */
     public void setModificationTime(final String modificationTime) {
         if (!KEEP.equals(modificationTime) && !"latest".equals(modificationTime)) {
             throw new IllegalArgumentException("Bad argument: -m " + modificationTime + " ? transmit modtimes should be either latest or keep (default)");
@@ -262,6 +432,11 @@ public class PackingOptions {
         this.modificationTime = modificationTime;
     }
 
+    /**
+     * Sets quiet mode.
+     *
+     * @param quiet true for quiet mode.
+     */
     public void setQuiet(final boolean quiet) {
         this.verbose = !quiet;
     }
@@ -269,7 +444,7 @@ public class PackingOptions {
     /**
      * Sets the segment limit (equivalent to -S command line option)
      *
-     * @param segmentLimit   the limit in bytes
+     * @param segmentLimit the limit in bytes.
      */
     public void setSegmentLimit(final long segmentLimit) {
         this.segmentLimit = segmentLimit;
@@ -297,6 +472,11 @@ public class PackingOptions {
         }
     }
 
+    /**
+     * Sets verbose mode.
+     *
+     * @param verbose true for verbose mode.
+     */
     public void setVerbose(final boolean verbose) {
         this.verbose = verbose;
     }

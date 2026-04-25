@@ -47,10 +47,12 @@ public class ExtraFieldUtils {
          * Key for "throw an exception" action.
          */
         public static final int THROW_KEY = 0;
+
         /**
          * Key for "skip" action.
          */
         public static final int SKIP_KEY = 1;
+
         /**
          * Key for "read" action.
          */
@@ -80,7 +82,7 @@ public class ExtraFieldUtils {
         /**
          * Key of the action to take.
          *
-         * @return the key
+         * @return the key.
          */
         public int getKey() {
             return key;
@@ -140,8 +142,8 @@ public class ExtraFieldUtils {
     /**
      * Creates an instance of the appropriate ExtraField, falls back to {@link UnrecognizedExtraField UnrecognizedExtraField}.
      *
-     * @param headerId the header identifier
-     * @return an instance of the appropriate ExtraField
+     * @param headerId the header identifier.
+     * @return an instance of the appropriate ExtraField.
      */
     public static ZipExtraField createExtraField(final ZipShort headerId) {
         final ZipExtraField field = createExtraFieldNoDefault(headerId);
@@ -156,8 +158,8 @@ public class ExtraFieldUtils {
     /**
      * Creates an instance of the appropriate {@link ZipExtraField}.
      *
-     * @param headerId the header identifier
-     * @return an instance of the appropriate {@link ZipExtraField} or null if the id is not supported
+     * @param headerId the header identifier.
+     * @return an instance of the appropriate {@link ZipExtraField} or null if the id is not supported.
      * @since 1.19
      */
     public static ZipExtraField createExtraFieldNoDefault(final ZipShort headerId) {
@@ -173,14 +175,14 @@ public class ExtraFieldUtils {
      * {@link ArrayIndexOutOfBoundsException} thrown into a {@link ZipException}.
      * </p>
      *
-     * @param ze    the extra field instance to fill
-     * @param data  the array of extra field data
-     * @param off   offset into data where this field's data starts
-     * @param len   the length of this field's data
+     * @param ze    the extra field instance to fill.
+     * @param data  the array of extra field data.
+     * @param off   offset into data where this field's data starts.
+     * @param len   the length of this field's data.
      * @param local whether the extra field data stems from the local file header. If this is false then the data is part if the central directory header extra
      *              data.
-     * @return the filled field, will never be {@code null}
-     * @throws ZipException if an error occurs
+     * @return the filled field, will never be {@code null}.
+     * @throws ZipException if an error occurs.
      * @since 1.19
      */
     public static ZipExtraField fillExtraField(final ZipExtraField ze, final byte[] data, final int off, final int len, final boolean local)
@@ -200,8 +202,8 @@ public class ExtraFieldUtils {
     /**
      * Merges the central directory fields of the given ZipExtraFields.
      *
-     * @param data an array of ExtraFields
-     * @return an array of bytes
+     * @param data an array of ExtraFields.
+     * @return an array of bytes.
      */
     public static byte[] mergeCentralDirectoryData(final ZipExtraField[] data) {
         final int dataLength = data.length;
@@ -236,8 +238,8 @@ public class ExtraFieldUtils {
     /**
      * Merges the local file data fields of the given ZipExtraFields.
      *
-     * @param data an array of ExtraFiles
-     * @return an array of bytes
+     * @param data an array of ExtraFiles.
+     * @return an array of bytes.
      */
     public static byte[] mergeLocalFileDataData(final ZipExtraField[] data) {
         final int dataLength = data.length;
@@ -273,9 +275,9 @@ public class ExtraFieldUtils {
     /**
      * Parses the array into ExtraFields and populate them with the given data as local file data, throwing an exception if the data cannot be parsed.
      *
-     * @param data an array of bytes as it appears in local file data
-     * @return an array of ExtraFields
-     * @throws ZipException on error
+     * @param data an array of bytes as it appears in local file data.
+     * @return an array of ExtraFields.
+     * @throws ZipException on error.
      */
     public static ZipExtraField[] parse(final byte[] data) throws ZipException {
         return parse(data, true, UnparseableExtraField.THROW);
@@ -284,10 +286,10 @@ public class ExtraFieldUtils {
     /**
      * Parses the array into ExtraFields and populate them with the given data, throwing an exception if the data cannot be parsed.
      *
-     * @param data  an array of bytes
-     * @param local whether data originates from the local file data or the central directory
-     * @return an array of ExtraFields
-     * @throws ZipException on error
+     * @param data  an array of bytes.
+     * @param local whether data originates from the local file data or the central directory.
+     * @return an array of ExtraFields.
+     * @throws ZipException on error.
      */
     public static ZipExtraField[] parse(final byte[] data, final boolean local) throws ZipException {
         return parse(data, local, UnparseableExtraField.THROW);
@@ -296,11 +298,11 @@ public class ExtraFieldUtils {
     /**
      * Parses the array into ExtraFields and populate them with the given data.
      *
-     * @param data            an array of bytes
+     * @param data            an array of bytes.
      * @param parsingBehavior controls parsing of extra fields.
-     * @param local           whether data originates from the local file data or the central directory
-     * @return an array of ExtraFields
-     * @throws ZipException on error
+     * @param local           whether data originates from the local file data or the central directory.
+     * @return an array of ExtraFields.
+     * @throws ZipException on error.
      * @since 1.19
      */
     public static ZipExtraField[] parse(final byte[] data, final boolean local, final ExtraFieldParsingBehavior parsingBehavior) throws ZipException {
@@ -335,11 +337,11 @@ public class ExtraFieldUtils {
     /**
      * Parses the array into ExtraFields and populate them with the given data.
      *
-     * @param data              an array of bytes
-     * @param local             whether data originates from the local file data or the central directory
+     * @param data              an array of bytes.
+     * @param local             whether data originates from the local file data or the central directory.
      * @param onUnparseableData what to do if the extra field data cannot be parsed.
-     * @return an array of ExtraFields
-     * @throws ZipException on error
+     * @return an array of ExtraFields.
+     * @throws ZipException on error.
      * @since 1.1
      */
     public static ZipExtraField[] parse(final byte[] data, final boolean local, final UnparseableExtraField onUnparseableData) throws ZipException {
@@ -388,5 +390,15 @@ public class ExtraFieldUtils {
         } catch (final ReflectiveOperationException e) {
             throw new IllegalArgumentException(clazz.toString(), e);
         }
+    }
+
+    /**
+     * Constructs a new instance.
+     *
+     * @deprecated Will be removed in 2.0.
+     */
+    @Deprecated
+    public ExtraFieldUtils() {
+        // Utility class
     }
 }

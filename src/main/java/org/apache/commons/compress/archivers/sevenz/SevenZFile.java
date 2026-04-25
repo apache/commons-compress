@@ -182,6 +182,13 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         private boolean tryToRecoverBrokenArchives = TRY_TO_RECOVER_BROKEN_ARCHIVES;
 
         /**
+         * Constructs a new instance.
+         */
+        public Builder() {
+            // Default constructor
+        }
+
+        /**
          * Builds a new {@link SevenZFile}.
          *
          * @throws IOException Thrown if an I/O error occurs.
@@ -304,7 +311,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         /**
          * Sets whether {@link SevenZFile} will try to recover broken archives where the CRC of the file's metadata is 0.
          * <p>
-         * This special kind of broken archive is encountered when mutli volume archives are closed prematurely. If you enable this option SevenZFile will trust
+         * This special kind of broken archive is encountered when multi volume archives are closed prematurely. If you enable this option SevenZFile will trust
          * data that looks as if it could contain metadata of an archive and allocate big amounts of memory. It is strongly recommended to not enable this
          * option without setting {@link #setMaxMemoryLimitKb(int)} at the same time.
          * </p>
@@ -373,11 +380,11 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     /**
      * Computes a partial count or sum of 7z objects, throwing ArchiveException if any limit is exceeded.
      *
-     * @param sum         current sum
-     * @param y           second integer
-     * @param description description of the value being added, for error messages
-     * @return the new sum
-     * @throws ArchiveException if the sum overflows an int
+     * @param sum         current sum.
+     * @param y           second integer.
+     * @param description description of the value being added, for error messages.
+     * @return the new sum.
+     * @throws ArchiveException if the sum overflows an int.
      */
     private static int accumulate(final int sum, final int y, final String description) throws ArchiveException {
         try {
@@ -391,11 +398,11 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     /**
      * Computes a partial count or sum of 7z objects, throwing ArchiveException if any limit is exceeded.
      *
-     * @param sum         current sum
-     * @param y           second integer
-     * @param description description of the value being added, for error messages
-     * @return the new sum
-     * @throws ArchiveException if the sum overflows an int
+     * @param sum         current sum.
+     * @param y           second integer.
+     * @param description description of the value being added, for error messages.
+     * @return the new sum.
+     * @throws ArchiveException if the sum overflows an int.
      */
     private static long accumulate(final long sum, final long y, final String description) throws ArchiveException {
         try {
@@ -420,6 +427,14 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         return bytes / 1024;
     }
 
+    private static long crc32(final ByteBuffer header) {
+        final int currentPosition = header.position();
+        final CRC32 crc = new CRC32();
+        crc.update(header);
+        header.position(currentPosition);
+        return crc.getValue();
+    }
+
     /**
      * Checks that there are at least {@code expectRemaining} bytes remaining in the header.
      *
@@ -433,14 +448,6 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
             throw new ArchiveException("7z archive: Corrupted, expecting %,d bytes, remaining header size %,d", expectRemaining, header.remaining());
         }
         return header;
-    }
-
-    private static long crc32(final ByteBuffer header) {
-        final int currentPosition = header.position();
-        final CRC32 crc = new CRC32();
-        crc.update(header);
-        header.position(currentPosition);
-        return crc.getValue();
     }
 
     /**
@@ -648,9 +655,9 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     /**
      * Reads a file as 7z archive
      *
-     * @param file     the file to read
+     * @param file     the file to read.
      * @param password optional password if the archive is encrypted - the byte array is supposed to be the UTF16-LE encoded representation of the password.
-     * @throws IOException if reading the archive fails
+     * @throws IOException if reading the archive fails.
      * @deprecated Use {@link Builder#get()}.
      */
     @SuppressWarnings("resource") // caller closes
@@ -662,9 +669,9 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     /**
      * Reads a file as 7z archive
      *
-     * @param file     the file to read
-     * @param password optional password if the archive is encrypted
-     * @throws IOException if reading the archive fails
+     * @param file     the file to read.
+     * @param password optional password if the archive is encrypted.
+     * @throws IOException if reading the archive fails.
      * @since 1.17
      * @deprecated Use {@link Builder#get()}.
      */
@@ -676,10 +683,10 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     /**
      * Reads a file as 7z archive with additional options.
      *
-     * @param file     the file to read
-     * @param password optional password if the archive is encrypted
-     * @param options  the options to apply
-     * @throws IOException if reading the archive fails or the memory limit (if set) is too small
+     * @param file     the file to read.
+     * @param password optional password if the archive is encrypted.
+     * @param options  the options to apply.
+     * @throws IOException if reading the archive fails or the memory limit (if set) is too small.
      * @since 1.19
      * @deprecated Use {@link Builder#get()}.
      */
@@ -692,9 +699,9 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     /**
      * Reads a file as unencrypted 7z archive
      *
-     * @param file    the file to read
-     * @param options the options to apply
-     * @throws IOException if reading the archive fails or the memory limit (if set) is too small
+     * @param file    the file to read.
+     * @param options the options to apply.
+     * @throws IOException if reading the archive fails or the memory limit (if set) is too small.
      * @since 1.19
      * @deprecated Use {@link Builder#get()}.
      */
@@ -706,11 +713,11 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     /**
      * Reads a SeekableByteChannel as 7z archive
      * <p>
-     * {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} allows you to read from an in-memory archive.
+     * {@link org.apache.commons.io.channels.ByteArraySeekableByteChannel} allows you to read from an in-memory archive.
      * </p>
      *
-     * @param channel the channel to read
-     * @throws IOException if reading the archive fails
+     * @param channel the channel to read.
+     * @throws IOException if reading the archive fails.
      * @since 1.13
      * @deprecated Use {@link Builder#get()}.
      */
@@ -722,12 +729,12 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     /**
      * Reads a SeekableByteChannel as 7z archive
      * <p>
-     * {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} allows you to read from an in-memory archive.
+     * {@link org.apache.commons.io.channels.ByteArraySeekableByteChannel} allows you to read from an in-memory archive.
      * </p>
      *
-     * @param channel  the channel to read
+     * @param channel  the channel to read.
      * @param password optional password if the archive is encrypted - the byte array is supposed to be the UTF16-LE encoded representation of the password.
-     * @throws IOException if reading the archive fails
+     * @throws IOException if reading the archive fails.
      * @since 1.13
      * @deprecated Use {@link Builder#get()}.
      */
@@ -739,12 +746,12 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     /**
      * Reads a SeekableByteChannel as 7z archive
      * <p>
-     * {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} allows you to read from an in-memory archive.
+     * {@link org.apache.commons.io.channels.ByteArraySeekableByteChannel} allows you to read from an in-memory archive.
      * </p>
      *
-     * @param channel  the channel to read
-     * @param password optional password if the archive is encrypted
-     * @throws IOException if reading the archive fails
+     * @param channel  the channel to read.
+     * @param password optional password if the archive is encrypted.
+     * @throws IOException if reading the archive fails.
      * @since 1.17
      * @deprecated Use {@link Builder#get()}.
      */
@@ -756,13 +763,13 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     /**
      * Reads a SeekableByteChannel as 7z archive with additional options.
      * <p>
-     * {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} allows you to read from an in-memory archive.
+     * {@link org.apache.commons.io.channels.ByteArraySeekableByteChannel} allows you to read from an in-memory archive.
      * </p>
      *
-     * @param channel  the channel to read
-     * @param password optional password if the archive is encrypted
-     * @param options  the options to apply
-     * @throws IOException if reading the archive fails or the memory limit (if set) is too small
+     * @param channel  the channel to read.
+     * @param password optional password if the archive is encrypted.
+     * @param options  the options to apply.
+     * @throws IOException if reading the archive fails or the memory limit (if set) is too small.
      * @since 1.19
      * @deprecated Use {@link Builder#get()}.
      */
@@ -774,12 +781,12 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     /**
      * Reads a SeekableByteChannel as 7z archive with additional options.
      * <p>
-     * {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} allows you to read from an in-memory archive.
+     * {@link org.apache.commons.io.channels.ByteArraySeekableByteChannel} allows you to read from an in-memory archive.
      * </p>
      *
-     * @param channel the channel to read
-     * @param options the options to apply
-     * @throws IOException if reading the archive fails or the memory limit (if set) is too small
+     * @param channel the channel to read.
+     * @param options the options to apply.
+     * @throws IOException if reading the archive fails or the memory limit (if set) is too small.
      * @since 1.19
      * @deprecated Use {@link Builder#get()}.
      */
@@ -791,12 +798,12 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     /**
      * Reads a SeekableByteChannel as 7z archive
      * <p>
-     * {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} allows you to read from an in-memory archive.
+     * {@link org.apache.commons.io.channels.ByteArraySeekableByteChannel} allows you to read from an in-memory archive.
      * </p>
      *
-     * @param channel  the channel to read
-     * @param fileName name of the archive - only used for error reporting
-     * @throws IOException if reading the archive fails
+     * @param channel  the channel to read.
+     * @param fileName name of the archive - only used for error reporting.
+     * @throws IOException if reading the archive fails.
      * @since 1.17
      * @deprecated Use {@link Builder#get()}.
      */
@@ -808,13 +815,13 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     /**
      * Reads a SeekableByteChannel as 7z archive
      * <p>
-     * {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} allows you to read from an in-memory archive.
+     * {@link org.apache.commons.io.channels.ByteArraySeekableByteChannel} allows you to read from an in-memory archive.
      * </p>
      *
-     * @param channel  the channel to read
-     * @param fileName name of the archive - only used for error reporting
+     * @param channel  the channel to read.
+     * @param fileName name of the archive - only used for error reporting.
      * @param password optional password if the archive is encrypted - the byte array is supposed to be the UTF16-LE encoded representation of the password.
-     * @throws IOException if reading the archive fails
+     * @throws IOException if reading the archive fails.
      * @since 1.13
      * @deprecated Use {@link Builder#get()}.
      */
@@ -826,13 +833,13 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     /**
      * Reads a SeekableByteChannel as 7z archive
      * <p>
-     * {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} allows you to read from an in-memory archive.
+     * {@link org.apache.commons.io.channels.ByteArraySeekableByteChannel} allows you to read from an in-memory archive.
      * </p>
      *
-     * @param channel  the channel to read
-     * @param fileName name of the archive - only used for error reporting
-     * @param password optional password if the archive is encrypted
-     * @throws IOException if reading the archive fails
+     * @param channel  the channel to read.
+     * @param fileName name of the archive - only used for error reporting.
+     * @param password optional password if the archive is encrypted.
+     * @throws IOException if reading the archive fails.
      * @since 1.17
      * @deprecated Use {@link Builder#get()}.
      */
@@ -844,14 +851,14 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     /**
      * Reads a SeekableByteChannel as 7z archive with additional options.
      * <p>
-     * {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} allows you to read from an in-memory archive.
+     * {@link org.apache.commons.io.channels.ByteArraySeekableByteChannel} allows you to read from an in-memory archive.
      * </p>
      *
-     * @param channel  the channel to read
-     * @param fileName name of the archive - only used for error reporting
-     * @param password optional password if the archive is encrypted
-     * @param options  the options to apply
-     * @throws IOException if reading the archive fails or the memory limit (if set) is too small
+     * @param channel  the channel to read.
+     * @param fileName name of the archive - only used for error reporting.
+     * @param password optional password if the archive is encrypted.
+     * @param options  the options to apply.
+     * @throws IOException if reading the archive fails or the memory limit (if set) is too small.
      * @since 1.19
      * @deprecated Use {@link Builder#get()}.
      */
@@ -863,13 +870,13 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     /**
      * Reads a SeekableByteChannel as 7z archive with additional options.
      * <p>
-     * {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} allows you to read from an in-memory archive.
+     * {@link org.apache.commons.io.channels.ByteArraySeekableByteChannel} allows you to read from an in-memory archive.
      * </p>
      *
-     * @param channel  the channel to read
-     * @param fileName name of the archive - only used for error reporting
-     * @param options  the options to apply
-     * @throws IOException if reading the archive fails or the memory limit (if set) is too small
+     * @param channel  the channel to read.
+     * @param fileName name of the archive - only used for error reporting.
+     * @param options  the options to apply.
+     * @throws IOException if reading the archive fails or the memory limit (if set) is too small.
      * @since 1.19
      * @deprecated Use {@link Builder#get()}.
      */
@@ -941,9 +948,9 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
      * If this method is called from a random access, some entries may need to be skipped(we put them to the deferredBlockStreams and skip them when actually
      * needed to improve the performance)
      *
-     * @param entryIndex     the index of the entry to be read
-     * @param isRandomAccess is this called in a random access
-     * @throws IOException if there are exceptions when reading the file
+     * @param entryIndex     the index of the entry to be read.
+     * @param isRandomAccess is this called in a random access.
+     * @throws IOException if there are exceptions when reading the file.
      */
     private void buildDecodingStream(final int entryIndex, final boolean isRandomAccess) throws IOException {
         if (archive.streamMap == null) {
@@ -1065,7 +1072,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     /**
      * Closes the archive.
      *
-     * @throws IOException if closing the file fails
+     * @throws IOException if closing the file fails.
      */
     @Override
     public void close() throws IOException {
@@ -1155,7 +1162,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
      *
      * @param entry the entry to get the stream for.
      * @return a stream to read the entry from.
-     * @throws IOException if unable to create an input stream from the entry
+     * @throws IOException if unable to create an input stream from the entry.
      * @since 1.20
      */
     @Override
@@ -1179,8 +1186,8 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     /**
      * Gets the next Archive Entry in this archive.
      *
-     * @return the next entry, or {@code null} if there are no more entries
-     * @throws IOException if the next entry could not be read
+     * @return the next entry, or {@code null} if there are no more entries.
+     * @throws IOException if the next entry could not be read.
      */
     public SevenZArchiveEntry getNextEntry() throws IOException {
         if (currentEntryIndex >= archive.files.length - 1) {
@@ -1199,7 +1206,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     /**
      * Gets statistics for bytes read from the current entry.
      *
-     * @return statistics for bytes read from the current entry
+     * @return statistics for bytes read from the current entry.
      * @since 1.17
      */
     public InputStreamStatistics getStatisticsForCurrentEntry() {
@@ -1219,7 +1226,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     /**
      * Tests if any data of current entry has been read or not. This is achieved by comparing the bytes remaining to read and the size of the file.
      *
-     * @return true if any data of current entry has been read
+     * @return true if any data of current entry has been read.
      * @since 1.21
      */
     private boolean hasCurrentEntryBeenRead() {
@@ -1262,9 +1269,9 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     /**
      * Creates an int array while checking memory limits.
      *
-     * @param size the size of the array
-     * @return the int array
-     * @throws MemoryLimitException if memory limit is exceeded
+     * @param size the size of the array.
+     * @return the int array.
+     * @throws MemoryLimitException if memory limit is exceeded.
      */
     private int[] intArray(final int size) throws MemoryLimitException {
         MemoryLimitException.checkKiB(bytesToKiB((long) size * Integer.BYTES), maxMemoryLimitKiB);
@@ -1274,9 +1281,9 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     /**
      * Creates a long array while checking memory limits.
      *
-     * @param size the size of the array
-     * @return the long array
-     * @throws MemoryLimitException if memory limit is exceeded
+     * @param size the size of the array.
+     * @return the long array.
+     * @throws MemoryLimitException if memory limit is exceeded.
      */
     private long[] longArray(final int size) throws MemoryLimitException {
         MemoryLimitException.checkKiB(bytesToKiB((long) size * Long.BYTES), maxMemoryLimitKiB);
@@ -1286,9 +1293,9 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     /**
      * Maps the next header into memory.
      *
-     * @param startHeader the start header
-     * @return the mapped ByteBuffer
-     * @throws IOException if an I/O error occurs
+     * @param startHeader the start header.
+     * @return the mapped ByteBuffer.
+     * @throws IOException if an I/O error occurs.
      */
     private ByteBuffer mapNextHeader(final StartHeader startHeader) throws IOException {
         MemoryLimitException.checkKiB(bytesToKiB(startHeader.nextHeaderSize), Math.min(bytesToKiB(IOUtils.SOFT_MAX_ARRAY_LENGTH), maxMemoryLimitKiB));
@@ -1306,7 +1313,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     /**
      * Reads a byte of data.
      *
-     * @return the byte read, or -1 if end of input is reached
+     * @return the byte read, or -1 if end of input is reached.
      * @throws IOException if an I/O error has occurred.
      */
     public int read() throws IOException {
@@ -1321,8 +1328,8 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     /**
      * Reads data into an array of bytes.
      *
-     * @param b the array to write data to
-     * @return the number of bytes read, or -1 if end of input is reached
+     * @param b the array to write data to.
+     * @return the number of bytes read, or -1 if end of input is reached.
      * @throws IOException if an I/O error has occurred.
      */
     public int read(final byte[] b) throws IOException {
@@ -1332,10 +1339,10 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     /**
      * Reads data into an array of bytes.
      *
-     * @param b   the array to write data to
-     * @param off offset into the buffer to start filling at
-     * @param len of bytes to read
-     * @return the number of bytes read, or -1 if end of input is reached
+     * @param b   the array to write data to.
+     * @param off offset into the buffer to start filling at.
+     * @param len of bytes to read.
+     * @return the number of bytes read, or -1 if end of input is reached.
      * @throws IOException if an I/O error has occurred.
      */
     public int read(final byte[] b, final int off, final int len) throws IOException {
@@ -1909,9 +1916,9 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     /**
      * Discard any queued streams/ folder stream, and reopen the current folder input stream.
      *
-     * @param folderIndex the index of the folder to reopen
-     * @param file        the 7z entry to read
-     * @throws IOException if exceptions occur when reading the 7z file
+     * @param folderIndex the index of the folder to reopen.
+     * @param file        the 7z entry to read.
+     * @throws IOException if exceptions occur when reading the 7z file.
      */
     private void reopenFolderInputStream(final int folderIndex, final SevenZArchiveEntry file) throws IOException {
         deferredBlockStreams.clear();
@@ -2267,11 +2274,11 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
      * then we need to reopen the stream of the folder and skip all the entries before the current entries
      * </p>
      *
-     * @param entryIndex     the entry to be read
-     * @param isInSameFolder are the entry to be read and the current entry in the same folder
-     * @param folderIndex    the index of the folder which contains the entry
-     * @return true if there are entries actually skipped
-     * @throws IOException there are exceptions when skipping entries
+     * @param entryIndex     the entry to be read.
+     * @param isInSameFolder are the entry to be read and the current entry in the same folder.
+     * @param folderIndex    the index of the folder which contains the entry.
+     * @return true if there are entries actually skipped.
+     * @throws IOException there are exceptions when skipping entries.
      * @since 1.21
      */
     private boolean skipEntriesWhenNeeded(final int entryIndex, final boolean isInSameFolder, final int folderIndex) throws IOException {

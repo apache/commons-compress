@@ -30,10 +30,8 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PushbackInputStream;
-import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.function.Function;
 import java.util.zip.CRC32;
 import java.util.zip.DataFormatException;
@@ -266,18 +264,22 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
          * Current ZIP entry.
          */
         private final ZipArchiveEntry entry = new ZipArchiveEntry();
+
         /**
          * Does the entry use a data descriptor?
          */
         private boolean hasDataDescriptor;
+
         /**
          * Does the entry have a ZIP64 extended information extra field.
          */
         private boolean usesZip64;
+
         /**
          * Number of bytes of entry content read by the client if the entry is STORED.
          */
         private long bytesRead;
+
         /**
          * Number of bytes of entry content read from the stream.
          * <p>
@@ -286,10 +288,12 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
          * </p>
          */
         private long bytesReadFromStream;
+
         /**
          * The checksum calculated as the current entry is read.
          */
         private final CRC32 crc = new CRC32();
+
         /**
          * The input stream decompressing the data for shrunk and imploded entries.
          */
@@ -327,8 +331,6 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     private static final byte[] LFH = ZipLong.LFH_SIG.getBytes();
     private static final byte[] CFH = ZipLong.CFH_SIG.getBytes();
     private static final byte[] DD = ZipLong.DD_SIG.getBytes();
-    private static final byte[] APK_SIGNING_BLOCK_MAGIC = { 'A', 'P', 'K', ' ', 'S', 'i', 'g', ' ', 'B', 'l', 'o', 'c', 'k', ' ', '4', '2', };
-    private static final BigInteger LONG_MAX = BigInteger.valueOf(Long.MAX_VALUE);
 
     /**
      * Creates a new builder.
@@ -359,22 +361,30 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
 
     /** The ZIP encoding to use for file names and the file comment. */
     private final ZipEncoding zipEncoding;
+
     /** Whether to look for and use Unicode extra fields. */
     private final boolean useUnicodeExtraFields;
+
     /** Inflater used for all deflated entries. */
     private final Inflater inf = new Inflater(true);
+
     /** Buffer used to read from the wrapped stream. */
     private final ByteBuffer buf = ByteBuffer.allocate(ZipArchiveOutputStream.BUFFER_SIZE);
+
     /** The entry that is currently being read. */
     private CurrentEntry current;
+
     /** Whether the stream has been closed. */
     private boolean closed;
+
     /** Whether the stream has reached the central directory - and thus found all entries. */
     private boolean hitCentralDirectory;
+
     /**
      * When reading a stored entry that uses the data descriptor this stream has to read the full entry and caches it. This is the cache.
      */
     private ByteArrayInputStream lastStoredEntry;
+
     /**
      * Whether the stream will try to read STORED entries that use a data descriptor. Setting it to true means we will not stop reading an entry with the
      * compressed size, instead we will stop reading an entry when a data descriptor is met (by finding the Data Descriptor Signature). This will completely
@@ -385,10 +395,13 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
      * </p>
      */
     private final boolean supportStoredEntryDataDescriptor;
+
     /** Count decompressed bytes for current entry */
     private long uncompressedCount;
+
     /** Whether the stream will try to skip the ZIP split signature(08074B50) at the beginning. **/
     private final boolean skipSplitSignature;
+
     /** Cached buffers - must only be used locally in the class (COMPRESS-172 - reduce garbage collection). */
     private final byte[] lfhBuf = new byte[LFH_LEN];
     private final byte[] skipBuf = new byte[1024];
@@ -396,6 +409,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     private final byte[] wordBuf = new byte[WORD];
     private final byte[] twoDwordBuf = new byte[2 * DWORD];
     private int entriesRead;
+
     /**
      * The factory for extra fields or null.
      */
@@ -838,12 +852,9 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
         }
         final ZipLong sig = new ZipLong(lfhBuf);
         if (!sig.equals(ZipLong.LFH_SIG)) {
-            if (sig.equals(ZipLong.CFH_SIG) || sig.equals(ZipLong.AED_SIG) || isApkSigningBlock(lfhBuf)) {
-                hitCentralDirectory = true;
-                skipRemainderOfArchive();
-                return null;
-            }
-            throw new ZipException(String.format("Unexpected record signature: 0x%x", sig.getValue()));
+            hitCentralDirectory = true;
+            skipRemainderOfArchive();
+            return null;
         }
         // off: go past the signature
         int off = WORD;
@@ -944,52 +955,6 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     @Override
     public long getUncompressedCount() {
         return uncompressedCount;
-    }
-
-    /**
-     * Checks whether this might be an APK Signing Block.
-     * <p>
-     * Unfortunately the APK signing block does not start with some kind of signature, it rather ends with one. It starts with a length, so what we do is parse
-     * the suspect length, skip ahead far enough, look for the signature and if we've found it, return true.
-     * </p>
-     *
-     * @param suspectLocalFileHeader the bytes read from the underlying stream in the expectation that they would hold the local file header of the next entry.
-     * @return true if this looks like an APK signing block.
-     * @see <a href="https://source.android.com/security/apksigning/v2">https://source.android.com/security/apksigning/v2</a>
-     */
-    private boolean isApkSigningBlock(final byte[] suspectLocalFileHeader) throws IOException {
-        // length of block excluding the size field itself
-        final BigInteger len = ZipEightByteInteger.getValue(suspectLocalFileHeader);
-        // LFH has already been read and all but the first eight bytes contain (part of) the APK signing block,
-        // also subtract 16 bytes in order to position us at the magic string
-        BigInteger toSkip = len.add(BigInteger.valueOf(DWORD - suspectLocalFileHeader.length - (long) APK_SIGNING_BLOCK_MAGIC.length));
-        final byte[] magic = new byte[APK_SIGNING_BLOCK_MAGIC.length];
-        try {
-            if (toSkip.signum() < 0) {
-                // suspectLocalFileHeader contains the start of suspect magic string
-                final int off = suspectLocalFileHeader.length + toSkip.intValue();
-                // length was shorter than magic length
-                if (off < DWORD) {
-                    return false;
-                }
-                final int bytesInBuffer = Math.abs(toSkip.intValue());
-                System.arraycopy(suspectLocalFileHeader, off, magic, 0, Math.min(bytesInBuffer, magic.length));
-                if (bytesInBuffer < magic.length) {
-                    readFully(magic, bytesInBuffer);
-                }
-            } else {
-                while (toSkip.compareTo(LONG_MAX) > 0) {
-                    realSkip(Long.MAX_VALUE);
-                    toSkip = toSkip.add(LONG_MAX.negate());
-                }
-                realSkip(toSkip.longValue());
-                readFully(magic);
-            }
-        } catch (final EOFException ex) { // NOSONAR
-            // length was invalid
-            return false;
-        }
-        return Arrays.equals(magic, APK_SIGNING_BLOCK_MAGIC);
     }
 
     private boolean isFirstByteOfEocdSig(final int b) {
@@ -1319,8 +1284,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
      * Caches a stored entry that uses the data descriptor.
      * <ul>
      * <li>Reads a stored entry until the signature of a local file header, central directory header or data descriptor has been found.</li>
-     * <li>Stores all entry data in lastStoredEntry.
-     * </p>
+     * <li>Stores all entry data in lastStoredEntry.</li>
      * <li>Rewinds the stream to position at the data descriptor.</li>
      * <li>reads the data descriptor</li>
      * </ul>

@@ -51,7 +51,9 @@ public class IcBands extends BandSet {
     private Map<String, List<IcTuple>> outerClassToTuples;
 
     /**
-     * @param segment TODO
+     * Constructs a new IcBands instance.
+     *
+     * @param segment the segment.
      */
     public IcBands(final Segment segment) {
         super(segment);
@@ -59,6 +61,11 @@ public class IcBands extends BandSet {
         this.cpUTF8 = segment.getCpBands().getCpUTF8();
     }
 
+    /**
+     * Gets the IC tuples.
+     *
+     * @return the IC tuples.
+     */
     public IcTuple[] getIcTuples() {
         return icAll;
     }

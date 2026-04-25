@@ -35,6 +35,11 @@ public class LocalVariableTypeTableAttribute extends BCIRenumberedAttribute {
 
     private static CPUTF8 attributeName;
 
+    /**
+     * Sets the attribute name.
+     *
+     * @param cpUTF8Value the attribute name.
+     */
     public static void setAttributeName(final CPUTF8 cpUTF8Value) {
         attributeName = cpUTF8Value;
     }
@@ -50,6 +55,16 @@ public class LocalVariableTypeTableAttribute extends BCIRenumberedAttribute {
 
     private int codeLength;
 
+    /**
+     * Constructs a new LocalVariableTypeTableAttribute.
+     *
+     * @param localVariableTypeTableLength the table length.
+     * @param startPcs the start program counters.
+     * @param lengths the lengths.
+     * @param names the variable names.
+     * @param signatures the signatures.
+     * @param indexes the indexes.
+     */
     public LocalVariableTypeTableAttribute(final int localVariableTypeTableLength, final int[] startPcs, final int[] lengths, final CPUTF8[] names,
             final CPUTF8[] signatures, final int[] indexes) {
         super(attributeName);
@@ -149,6 +164,11 @@ public class LocalVariableTypeTableAttribute extends BCIRenumberedAttribute {
         }
     }
 
+    /**
+     * Sets the code length.
+     *
+     * @param length the code length.
+     */
     public void setCodeLength(final int length) {
         codeLength = length;
     }

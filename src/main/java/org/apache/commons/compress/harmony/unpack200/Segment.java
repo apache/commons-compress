@@ -137,6 +137,12 @@ public class Segment {
 
     private InputStream internalBuffer;
 
+    /**
+     * Constructs a new Segment.
+     */
+    public Segment() {
+    }
+
     private ClassFile buildClassFile(final int classNum) {
         final ClassFile classFile = new ClassFile();
         final int[] major = classBands.getClassVersionMajor();
@@ -355,10 +361,20 @@ public class Segment {
         return result;
     }
 
+    /**
+     * Gets the attribute definition bands.
+     *
+     * @return the attribute definition bands.
+     */
     protected AttrDefinitionBands getAttrDefinitionBands() {
         return attrDefinitionBands;
     }
 
+    /**
+     * Gets the class bands.
+     *
+     * @return the class bands.
+     */
     protected ClassBands getClassBands() {
         return classBands;
     }

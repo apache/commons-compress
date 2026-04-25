@@ -83,7 +83,16 @@ public abstract class Codec {
      */
     public static final BHSDCodec UNSIGNED5 = new BHSDCodec(5, 64);
 
+    /**
+     * The length of the last band processed.
+     */
     public int lastBandLength;
+
+    /**
+     * Constructs a new Codec.
+     */
+    public Codec() {
+    }
 
     int check(final int n, final InputStream in) throws Pack200Exception {
         if (in instanceof BoundedInputStream) {

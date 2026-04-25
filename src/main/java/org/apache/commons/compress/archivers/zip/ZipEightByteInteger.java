@@ -125,7 +125,7 @@ public final class ZipEightByteInteger implements Serializable {
     /**
      * Constructs a new instance from a number.
      *
-     * @param value the BigInteger to store as a ZipEightByteInteger
+     * @param value the BigInteger to store as a ZipEightByteInteger.
      */
     public ZipEightByteInteger(final BigInteger value) {
         this.value = value.longValue();

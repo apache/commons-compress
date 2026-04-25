@@ -20,7 +20,7 @@
   <parent>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-parent</artifactId>
-    <version>93</version>
+    <version>98</version>
   </parent>
   <artifactId>commons-compress</artifactId>
   <version>1.29.0-SNAPSHOT</version>
@@ -112,13 +112,13 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <dependency>
       <groupId>io.airlift</groupId>
       <artifactId>aircompressor</artifactId>
-      <version>2.0.2</version>
+      <version>2.0.3</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.github.luben</groupId>
       <artifactId>zstd-jni</artifactId>
-      <version>1.5.7-6</version>
+      <version>1.5.7-7</version>
       <optional>true</optional>
     </dependency>
     <dependency>
@@ -130,7 +130,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <dependency>
       <groupId>org.tukaani</groupId>
       <artifactId>xz</artifactId>
-      <version>1.11</version>
+      <version>1.12</version>
       <optional>true</optional>
     </dependency>
     <dependency>
@@ -139,7 +139,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
            - org.apache.commons.compress.compressors.snappy -->
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>
-      <version>1.20.0</version>
+      <version>1.22.0</version>
     </dependency>
     <!-- Pack200 -->
     <dependency>
@@ -519,6 +519,8 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
         <jdk>1.8</jdk>
       </activation>
       <build>
+        <!-- Don't run javadoc:javadoc on Java 8 due to Java's incompatible expectation of package-list vs element-list on remote links. -->
+        <defaultGoal>clean artifact:check-buildplan verify apache-rat:check checkstyle:check pmd:check japicmp:cmp</defaultGoal>
         <plugins>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>

@@ -32,9 +32,9 @@ public class Sets {
     /**
      * Creates a new HashSet filled with the given elements
      *
-     * @param elements the elements to fill the new set
-     * @param <E>      type of elements contained in new set
-     * @return A new HasSet
+     * @param elements the elements to fill the new set.
+     * @param <E>      type of elements contained in new set.
+     * @return A new HasSet.
      */
     @SafeVarargs
     public static <E> HashSet<E> newHashSet(final E... elements) {

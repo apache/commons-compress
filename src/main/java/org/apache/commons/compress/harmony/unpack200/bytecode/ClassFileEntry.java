@@ -35,6 +35,12 @@ public abstract class ClassFileEntry {
     private boolean resolved;
 
     /**
+     * Constructs a new ClassFileEntry.
+     */
+    public ClassFileEntry() {
+    }
+
+    /**
      * Writes this instance to the output stream.
      *
      * @param dos the output stream.

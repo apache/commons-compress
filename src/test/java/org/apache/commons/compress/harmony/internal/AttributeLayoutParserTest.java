@@ -35,50 +35,50 @@ public class AttributeLayoutParserTest {
     private static class AttributeLayoutFactory implements AttributeLayoutParser.Factory<LayoutElement> {
 
         @Override
-        public LayoutElement createCall(int callableIndex) {
+        public LayoutElement createCall(final int callableIndex) {
             return new LayoutElement(callableIndex);
         }
 
         @Override
-        public LayoutElement createCallable(List<LayoutElement> body) {
+        public LayoutElement createCallable(final List<LayoutElement> body) {
             return new LayoutElement(body);
         }
 
         @Override
-        public LayoutElement createIntegral(String tag) {
+        public LayoutElement createIntegral(final String tag) {
             return new LayoutElement(tag);
         }
 
         @Override
-        public LayoutElement createReference(String tag) {
+        public LayoutElement createReference(final String tag) {
             return new LayoutElement(tag);
         }
 
         @Override
-        public LayoutElement createReplication(String unsignedInt, List<LayoutElement> body) {
+        public LayoutElement createReplication(final String unsignedInt, final List<LayoutElement> body) {
             return new LayoutElement(unsignedInt, body);
         }
 
         @Override
-        public LayoutElement createUnion(String anyInt, List<AttributeLayoutParser.UnionCaseData<LayoutElement>> cases, List<LayoutElement> body) {
+        public LayoutElement createUnion(final String anyInt, final List<AttributeLayoutParser.UnionCaseData<LayoutElement>> cases, final List<LayoutElement> body) {
             return new LayoutElement(anyInt, cases, body);
         }
     }
 
     private static class LayoutElement {
-        private LayoutElement(int callableIndex) {
+        private LayoutElement(final int callableIndex) {
         }
 
-        private LayoutElement(String tag) {
+        private LayoutElement(final List<LayoutElement> body) {
         }
 
-        private LayoutElement(List<LayoutElement> body) {
+        private LayoutElement(final String tag) {
         }
 
-        private LayoutElement(String anyInt, List<AttributeLayoutParser.UnionCaseData<LayoutElement>> cases, List<LayoutElement> body) {
+        private LayoutElement(final String anyInt, final List<AttributeLayoutParser.UnionCaseData<LayoutElement>> cases, final List<LayoutElement> body) {
         }
 
-        private LayoutElement(String unsignedInt, List<LayoutElement> body) {
+        private LayoutElement(final String unsignedInt, final List<LayoutElement> body) {
         }
     }
 
@@ -121,7 +121,7 @@ public class AttributeLayoutParserTest {
             "T", "TA", "TI", "TSA", "TI(A)[]()[]",
             // Invalid call layouts
             "()", "(A)", "(-A)", "(9999999999999999999999)", "(1234"})
-    void testInvalidLayout(String layout) {
+    void testInvalidLayout(final String layout) {
         final AttributeLayoutParser<LayoutElement> parser = new AttributeLayoutParser<>(layout, FACTORY);
         final Pack200Exception ex = assertThrows(Pack200Exception.class, parser::readElement);
         assertTrue(ex.getMessage().contains("Corrupted Pack200 archive"), "Unexpected exception message: " + ex.getMessage());
@@ -129,16 +129,16 @@ public class AttributeLayoutParserTest {
     }
 
     @ParameterizedTest
-    @MethodSource({"validLayouts", "validCallableLayouts"})
-    void testReadElement(String layout) throws Pack200Exception {
-        final List<LayoutElement> result = AttributeLayoutUtils.readAttributeLayout(layout, FACTORY);
+    @MethodSource("validLayouts")
+    void testReadBody(final String layout) throws Pack200Exception {
+        final List<LayoutElement> result = AttributeLayoutUtils.readBody(layout, FACTORY);
         assertFalse(result.isEmpty(), "Expected at least one LayoutElement for layout: " + layout);
     }
 
     @ParameterizedTest
-    @MethodSource("validLayouts")
-    void testReadBody(String layout) throws Pack200Exception {
-        final List<LayoutElement> result = AttributeLayoutUtils.readBody(layout, FACTORY);
+    @MethodSource({"validLayouts", "validCallableLayouts"})
+    void testReadElement(final String layout) throws Pack200Exception {
+        final List<LayoutElement> result = AttributeLayoutUtils.readAttributeLayout(layout, FACTORY);
         assertFalse(result.isEmpty(), "Expected at least one LayoutElement for layout: " + layout);
     }
 }

@@ -21,7 +21,7 @@ package org.apache.commons.compress.harmony.pack200;
 import org.objectweb.asm.ClassReader;
 
 /**
- * Wrapper for ClassReader that enables pack200 to obtain extra class file information
+ * Wrapper for ClassReader that enables pack200 to obtain extra class file information.
  *
  * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
  */
@@ -33,20 +33,37 @@ public class Pack200ClassReader extends ClassReader {
     private String fileName;
 
     /**
-     * @param b the contents of class file in the format of bytes
+     * Constructs a new Pack200ClassReader.
+     *
+     * @param b the contents of class file in the format of bytes.
      */
     public Pack200ClassReader(final byte[] b) {
         super(b);
     }
 
+    /**
+     * Gets the file name.
+     *
+     * @return the file name.
+     */
     public String getFileName() {
         return fileName;
     }
 
+    /**
+     * Tests whether there are synthetic attributes.
+     *
+     * @return true if there are synthetic attributes.
+     */
     public boolean hasSyntheticAttributes() {
         return anySyntheticAttributes;
     }
 
+    /**
+     * Tests whether the last constant had a wide index.
+     *
+     * @return true if the last constant had a wide index.
+     */
     public boolean lastConstantHadWideIndex() {
         return lastConstantHadWideIndex;
     }
@@ -79,6 +96,11 @@ public class Pack200ClassReader extends ClassReader {
         return utf8;
     }
 
+    /**
+     * Sets the file name.
+     *
+     * @param name the file name.
+     */
     public void setFileName(final String name) {
         this.fileName = name;
     }

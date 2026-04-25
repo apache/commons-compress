@@ -30,6 +30,13 @@ public class CPInterfaceMethodRef extends CPRef {
 
     private int cachedHashCode;
 
+    /**
+     * Constructs a new CPInterfaceMethodRef.
+     *
+     * @param className the class name.
+     * @param descriptor the method descriptor.
+     * @param globalIndex the global index.
+     */
     public CPInterfaceMethodRef(final CPClass className, final CPNameAndType descriptor, final int globalIndex) {
         super(CP_InterfaceMethodref, className, descriptor, globalIndex);
     }

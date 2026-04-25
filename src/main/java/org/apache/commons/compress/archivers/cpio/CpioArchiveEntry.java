@@ -521,10 +521,10 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Gets the number of bytes needed to pad the header to the alignment boundary.
      *
+     * @return the number of bytes needed to pad the header (0,1,2,3).
+     * @throws ArchiveException if a computation overflows an {@code int}.
      * @deprecated This method doesn't properly work for multi-byte encodings. And creates corrupt archives. Use {@link #getHeaderPadCount(Charset)} or
      *             {@link #getHeaderPadCount(long)} in any case.
-     * @return the number of bytes needed to pad the header (0,1,2,3)
-     * @throws ArchiveException if a computation overflows an {@code int}.
      */
     @Deprecated
     public int getHeaderPadCount() throws ArchiveException {
@@ -535,7 +535,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * Gets the number of bytes needed to pad the header to the alignment boundary.
      *
      * @param charset The character set used to encode the entry name in the stream.
-     * @return the number of bytes needed to pad the header (0,1,2,3)
+     * @return the number of bytes needed to pad the header (0,1,2,3).
      * @throws ArchiveException if a computation overflows an {@code int}.
      * @since 1.18
      */
@@ -553,7 +553,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * Gets the number of bytes needed to pad the header to the alignment boundary.
      *
      * @param nameSize The length of the name in bytes, as read in the stream. Without the trailing zero byte.
-     * @return the number of bytes needed to pad the header (0,1,2,3)
+     * @return the number of bytes needed to pad the header (0,1,2,3).
      * @throws ArchiveException if a computation overflows an {@code int}.
      * @since 1.18
      */
@@ -911,7 +911,9 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @param size The file size to set.
      */
     public void setSize(final long size) {
-        if (size < 0 || size > 0xFFFFFFFFL) {
+        // When using the OLD_ASCII format, files can be up to 8GiB in size.
+        final long maxSize = this.fileFormat == FORMAT_OLD_ASCII ? 0x1FFFFFFFFL : 0xFFFFFFFFL;
+        if (size < 0 || size > maxSize) {
             throw new IllegalArgumentException("Invalid entry size <" + size + ">");
         }
         this.fileSize = size;

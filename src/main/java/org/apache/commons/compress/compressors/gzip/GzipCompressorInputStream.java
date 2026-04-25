@@ -220,9 +220,9 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
     /**
      * Checks if the signature matches what is expected for a .gz file.
      *
-     * @param signature the bytes to check
-     * @param length    the number of bytes to check
-     * @return true if this is a .gz stream, false otherwise
+     * @param signature the bytes to check.
+     * @param length    the number of bytes to check.
+     * @return true if this is a .gz stream, false otherwise.
      * @since 1.1
      */
     public static boolean matches(final byte[] signature, final int length) {
@@ -297,8 +297,8 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
      * This is equivalent to {@code GzipCompressorInputStream(inputStream, false)} and thus will not decompress concatenated .gz files.
      * </p>
      *
-     * @param inputStream the InputStream from which this object should be created of
-     * @throws IOException if the stream could not be created
+     * @param inputStream the InputStream from which this object should be created of.
+     * @throws IOException if the stream could not be created.
      */
     public GzipCompressorInputStream(final InputStream inputStream) throws IOException {
         this(builder().setInputStream(inputStream));
@@ -312,9 +312,9 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
      * {@code mark} isn't supported, the input position will be undefined.
      * </p>
      *
-     * @param inputStream            the InputStream from which this object should be created of
-     * @param decompressConcatenated if true, decompress until the end of the input; if false, stop after the first .gz member
-     * @throws IOException if the stream could not be created
+     * @param inputStream            the InputStream from which this object should be created of.
+     * @param decompressConcatenated if true, decompress until the end of the input; if false, stop after the first .gz member.
+     * @throws IOException if the stream could not be created.
      * @deprecated Use {@link Builder#get()}.
      */
     @Deprecated
@@ -351,7 +351,7 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
     /**
      * Provides the stream's metadata - may change with each stream when decompressing concatenated streams.
      *
-     * @return the stream's meta data
+     * @return the stream's meta data.
      * @since 1.8
      */
     public GzipParameters getMetaData() {

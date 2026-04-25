@@ -42,12 +42,12 @@ public interface ArchiveStreamProvider {
      *                     {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#CPIO},
      *                     {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#DUMP} or
      *                     {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#SEVEN_Z}
-     * @param inputStream  the input stream
-     * @param encoding     encoding name or null for the default
-     * @return the archive input stream
-     * @throws ArchiveException               if the archiver name is not known
-     * @throws StreamingNotSupportedException if the format cannot be read from a stream
-     * @throws IllegalArgumentException       if the archiver name or stream is null
+     * @param inputStream  the input stream.
+     * @param encoding     encoding name or null for the default.
+     * @return the archive input stream.
+     * @throws ArchiveException               if the archiver name is not known.
+     * @throws StreamingNotSupportedException if the format cannot be read from a stream.
+     * @throws IllegalArgumentException       if the archiver name or stream is null.
      */
     <I extends ArchiveInputStream<? extends ArchiveEntry>> I createArchiveInputStream(String archiverName, InputStream inputStream, String encoding)
             throws ArchiveException;
@@ -61,12 +61,12 @@ public interface ArchiveStreamProvider {
      *                     {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#TAR},
      *                     {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#JAR} or
      *                     {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#CPIO}
-     * @param outputStream the output stream
-     * @param encoding     encoding name or null for the default
-     * @return the archive output stream
-     * @throws ArchiveException               if the archiver name is not known
-     * @throws StreamingNotSupportedException if the format cannot be written to a stream
-     * @throws IllegalArgumentException       if the archiver name or stream is null
+     * @param outputStream the output stream.
+     * @param encoding     encoding name or null for the default.
+     * @return the archive output stream.
+     * @throws ArchiveException               if the archiver name is not known.
+     * @throws StreamingNotSupportedException if the format cannot be written to a stream.
+     * @throws IllegalArgumentException       if the archiver name or stream is null.
      */
     <O extends ArchiveOutputStream<? extends ArchiveEntry>> O createArchiveOutputStream(String archiverName, OutputStream outputStream, String encoding)
             throws ArchiveException;
@@ -74,14 +74,14 @@ public interface ArchiveStreamProvider {
     /**
      * Gets all the input stream archive names for this provider
      *
-     * @return all the input archive names for this provider
+     * @return all the input archive names for this provider.
      */
     Set<String> getInputStreamArchiveNames();
 
     /**
      * Gets all the output stream archive names for this provider
      *
-     * @return all the output archive names for this provider
+     * @return all the output archive names for this provider.
      */
     Set<String> getOutputStreamArchiveNames();
 

@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.io.channels.ByteArraySeekableByteChannel;
 import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -200,7 +201,7 @@ class MultiReadOnlySeekableByteChannelTest {
     }
 
     private SeekableByteChannel makeSingle(final byte[] arr) {
-        return new SeekableInMemoryByteChannel(arr);
+        return ByteArraySeekableByteChannel.wrap(arr);
     }
 
     @Test

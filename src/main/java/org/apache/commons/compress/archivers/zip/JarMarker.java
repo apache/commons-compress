@@ -50,7 +50,7 @@ public final class JarMarker implements ZipExtraField {
     /**
      * The actual data to put central directory - without Header-ID or length specifier.
      *
-     * @return the data
+     * @return the data.
      */
     @Override
     public byte[] getCentralDirectoryData() {
@@ -60,7 +60,7 @@ public final class JarMarker implements ZipExtraField {
     /**
      * Length of the extra field in the central directory - without Header-ID or length specifier.
      *
-     * @return 0
+     * @return 0.
      */
     @Override
     public ZipShort getCentralDirectoryLength() {
@@ -70,7 +70,7 @@ public final class JarMarker implements ZipExtraField {
     /**
      * The Header-ID.
      *
-     * @return the header id
+     * @return the header id.
      */
     @Override
     public ZipShort getHeaderId() {
@@ -80,7 +80,7 @@ public final class JarMarker implements ZipExtraField {
     /**
      * The actual data to put into local file data - without Header-ID or length specifier.
      *
-     * @return the data
+     * @return the data.
      */
     @Override
     public byte[] getLocalFileDataData() {
@@ -90,7 +90,7 @@ public final class JarMarker implements ZipExtraField {
     /**
      * Length of the extra field in the local file data - without Header-ID or length specifier.
      *
-     * @return 0
+     * @return 0.
      */
     @Override
     public ZipShort getLocalFileDataLength() {
@@ -108,10 +108,10 @@ public final class JarMarker implements ZipExtraField {
     /**
      * Populate data from this array as if it was in local file data.
      *
-     * @param data   an array of bytes
-     * @param offset the start offset
-     * @param length the number of bytes in the array from offset
-     * @throws ZipException on error
+     * @param data   an array of bytes.
+     * @param offset the start offset.
+     * @param length the number of bytes in the array from offset.
+     * @throws ZipException on error.
      */
     @Override
     public void parseFromLocalFileData(final byte[] data, final int offset, final int length) throws ZipException {

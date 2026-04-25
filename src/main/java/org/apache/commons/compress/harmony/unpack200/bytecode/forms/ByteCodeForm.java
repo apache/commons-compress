@@ -34,10 +34,19 @@ public abstract class ByteCodeForm {
 
     private static final int BC_MAX = 256;
 
+    /**
+     * Indicates whether this is a widened form.
+     */
     protected static final boolean WIDENED = true;
 
+    /**
+     * Array of all bytecode forms.
+     */
     protected static final ByteCodeForm[] byteCodeArray = new ByteCodeForm[BC_MAX];
 
+    /**
+     * Map of bytecode forms by name.
+     */
     protected static final Map<String, ByteCodeForm> byteCodesByName = new HashMap<>(BC_MAX);
 
     static {
@@ -342,6 +351,9 @@ public abstract class ByteCodeForm {
         calculateOperandPosition();
     }
 
+    /**
+     * Calculates the operand position.
+     */
     protected void calculateOperandPosition() {
         firstOperandIndex = -1;
         operandLength = -1;
@@ -383,6 +395,11 @@ public abstract class ByteCodeForm {
         operandLength = difference + 1;
     }
 
+    /**
+     * Gets the first operand index.
+     *
+     * @return the first operand index.
+     */
     public int firstOperandIndex() {
         return firstOperandIndex;
     }
@@ -459,6 +476,11 @@ public abstract class ByteCodeForm {
         return false;
     }
 
+    /**
+     * Tests whether nested entries must start in the class pool.
+     *
+     * @return true if nested must start in class pool.
+     */
     public boolean nestedMustStartClassPool() {
         return false;
     }
@@ -475,8 +497,8 @@ public abstract class ByteCodeForm {
     /**
      * Sets the rewrite of the byteCode.
      *
-     * @param byteCode       ByteCode to be updated (!)
-     * @param operandManager OperandTable from which to draw info
+     * @param byteCode       ByteCode to be updated (!).
+     * @param operandManager OperandTable from which to draw info.
      * @param codeLength     Length of bytes (excluding this bytecode) from the beginning of the method. Used in calculating padding for some variable-length
      *                       bytecodes (such as lookupswitch, tableswitch).
      * @throws Pack200Exception if a type is not supported or an index not in the range [0, {@link Integer#MAX_VALUE}].

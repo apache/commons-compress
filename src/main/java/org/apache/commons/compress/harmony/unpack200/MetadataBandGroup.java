@@ -53,18 +53,38 @@ public class MetadataBandGroup {
     private static CPUTF8 rvpaUTF8;
     private static CPUTF8 ripaUTF8;
 
+    /**
+     * Sets the RIA attribute name.
+     *
+     * @param cpUTF8Value the attribute name.
+     */
     public static void setRiaAttributeName(final CPUTF8 cpUTF8Value) {
         riaUTF8 = cpUTF8Value;
     }
 
+    /**
+     * Sets the RIPA attribute name.
+     *
+     * @param cpUTF8Value the attribute name.
+     */
     public static void setRipaAttributeName(final CPUTF8 cpUTF8Value) {
         ripaUTF8 = cpUTF8Value;
     }
 
+    /**
+     * Sets the RVA attribute name.
+     *
+     * @param cpUTF8Value the attribute name.
+     */
     public static void setRvaAttributeName(final CPUTF8 cpUTF8Value) {
         rvaUTF8 = cpUTF8Value;
     }
 
+    /**
+     * Sets the RVPA attribute name.
+     *
+     * @param cpUTF8Value the attribute name.
+     */
     public static void setRvpaAttributeName(final CPUTF8 cpUTF8Value) {
         rvpaUTF8 = cpUTF8Value;
     }
@@ -75,25 +95,96 @@ public class MetadataBandGroup {
 
     private List<Attribute> attributes;
 
+    /**
+     * Parameter number of annotations.
+     */
     public int[] param_NB;
 
+    /**
+     * Annotation counts.
+     */
     public int[] anno_N;
+
+    /**
+     * Annotation types.
+     */
     public CPUTF8[][] type_RS;
+
+    /**
+     * Annotation pair counts.
+     */
     public int[][] pair_N;
+
+    /**
+     * Annotation pair names.
+     */
     public CPUTF8[] name_RU;
+
+    /**
+     * Annotation value tags.
+     */
     public int[] T;
+
+    /**
+     * Integer constant values.
+     */
     public CPInteger[] caseI_KI;
+
+    /**
+     * Double constant values.
+     */
     public CPDouble[] caseD_KD;
+
+    /**
+     * Float constant values.
+     */
     public CPFloat[] caseF_KF;
+
+    /**
+     * Long constant values.
+     */
     public CPLong[] caseJ_KJ;
+
+    /**
+     * Class constant values.
+     */
     public CPUTF8[] casec_RS;
+
+    /**
+     * Enum type values.
+     */
     public String[] caseet_RS;
+
+    /**
+     * Enum constant values.
+     */
     public String[] caseec_RU;
+
+    /**
+     * String constant values.
+     */
     public CPUTF8[] cases_RU;
+
+    /**
+     * Array element counts.
+     */
     public int[] casearray_N;
+
+    /**
+     * Nested annotation types.
+     */
     public CPUTF8[] nesttype_RS;
+
+    /**
+     * Nested annotation pair counts.
+     */
     public int[] nestpair_N;
+
+    /**
+     * Nested annotation pair names.
+     */
     public CPUTF8[] nestname_RU;
+
     private int caseI_KI_Index;
 
     private int caseD_KD_Index;
@@ -124,6 +215,12 @@ public class MetadataBandGroup {
 
     private int pair_N_Index;
 
+    /**
+     * Constructs a new MetadataBandGroup.
+     *
+     * @param type the metadata type.
+     * @param cpBands the constant pool bands.
+     */
     public MetadataBandGroup(final String type, final CpBands cpBands) {
         this.type = type;
         this.cpBands = cpBands;
@@ -157,6 +254,12 @@ public class MetadataBandGroup {
         return new RuntimeVisibleorInvisibleAnnotationsAttribute(type.equals("RVA") ? rvaUTF8 : riaUTF8, annotations);
     }
 
+    /**
+     * Gets the attributes.
+     *
+     * @return the attributes.
+     * @throws Pack200Exception if a Pack200 error occurs.
+     */
     public List<Attribute> getAttributes() throws Pack200Exception {
         // TODO: Optimize iterators!
         if (attributes == null) {

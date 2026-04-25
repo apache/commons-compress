@@ -47,6 +47,14 @@ public class JarArchiveInputStream extends ZipArchiveInputStream {
      * @since 1.29.0
      */
     public static class Builder extends ZipArchiveInputStream.AbstractBuilder<JarArchiveInputStream, Builder> {
+
+        /**
+         * Constructs a new instance.
+         */
+        public Builder() {
+            // Default constructor
+        }
+
         @Override
         public JarArchiveInputStream get() throws IOException {
             return new JarArchiveInputStream(this);
@@ -66,9 +74,9 @@ public class JarArchiveInputStream extends ZipArchiveInputStream {
     /**
      * Checks if the signature matches what is expected for a jar file (in this case it is the same as for a ZIP file).
      *
-     * @param signature the bytes to check
-     * @param length    the number of bytes to check
-     * @return true, if this stream is a jar archive stream, false otherwise
+     * @param signature the bytes to check.
+     * @param length    the number of bytes to check.
+     * @return true, if this stream is a jar archive stream, false otherwise.
      */
     public static boolean matches(final byte[] signature, final int length) {
         return ZipArchiveInputStream.matches(signature, length);
@@ -83,7 +91,8 @@ public class JarArchiveInputStream extends ZipArchiveInputStream {
      *
      * <p>Since 1.29.0: throws {@link IOException}.</p>
      *
-     * @param inputStream the input stream to wrap
+     * @param inputStream the input stream to wrap.
+     * @throws IOException If the builder fails to create the underlying {@link InputStream}.
      */
     public JarArchiveInputStream(final InputStream inputStream) throws IOException {
         this(jarInputStreamBuilder().setInputStream(inputStream));
@@ -94,8 +103,9 @@ public class JarArchiveInputStream extends ZipArchiveInputStream {
      *
      * <p>Since 1.29.0: throws {@link IOException}.</p>
      *
-     * @param inputStream the input stream to wrap
-     * @param encoding    the encoding to use
+     * @param inputStream the input stream to wrap.
+     * @param encoding    the encoding to use.
+     * @throws IOException If the builder fails to create the underlying {@link InputStream}.
      * @since 1.10
      * @deprecated Since 1.29.0, use {@link #jarInputStreamBuilder()}.
      */

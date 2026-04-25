@@ -40,7 +40,7 @@ public class ChangeSetResults {
     /**
      * Adds the name of a file to the result list which has been copied from the {@link ChangeSet} to the target stream
      *
-     * @param fileName the name of the file
+     * @param fileName the name of the file.
      */
     void addedFromChangeSet(final String fileName) {
         addedFromChangeSet.add(fileName);
@@ -49,7 +49,7 @@ public class ChangeSetResults {
     /**
      * Adds the name of a file to the result list which has been copied from the source stream to the target stream.
      *
-     * @param fileName the file name which has been added from the original stream
+     * @param fileName the file name which has been added from the original stream.
      */
     void addedFromStream(final String fileName) {
         addedFromStream.add(fileName);
@@ -58,7 +58,7 @@ public class ChangeSetResults {
     /**
      * Adds the file name of a recently deleted file to the result list.
      *
-     * @param fileName the file which has been deleted
+     * @param fileName the file which has been deleted.
      */
     void deleted(final String fileName) {
         deleted.add(fileName);
@@ -67,7 +67,7 @@ public class ChangeSetResults {
     /**
      * Gets a list of file names which has been added from the {@link ChangeSet}
      *
-     * @return the list of file names
+     * @return the list of file names.
      */
     public List<String> getAddedFromChangeSet() {
         return addedFromChangeSet;
@@ -76,7 +76,7 @@ public class ChangeSetResults {
     /**
      * Gets a list of file names which has been added from the original stream
      *
-     * @return the list of file names
+     * @return the list of file names.
      */
     public List<String> getAddedFromStream() {
         return addedFromStream;
@@ -85,7 +85,7 @@ public class ChangeSetResults {
     /**
      * Gets a list of file names which has been deleted
      *
-     * @return the list of file names
+     * @return the list of file names.
      */
     public List<String> getDeleted() {
         return deleted;
@@ -94,8 +94,8 @@ public class ChangeSetResults {
     /**
      * Tests if a file name already has been added to the result list
      *
-     * @param fileName the file name to check
-     * @return true, if this file name already has been added
+     * @param fileName the file name to check.
+     * @return true, if this file name already has been added.
      */
     boolean hasBeenAdded(final String fileName) {
         return addedFromChangeSet.contains(fileName) || addedFromStream.contains(fileName);

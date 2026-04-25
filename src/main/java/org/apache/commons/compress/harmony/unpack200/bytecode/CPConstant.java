@@ -32,8 +32,8 @@ public abstract class CPConstant extends ConstantPoolEntry {
     /**
      * Constructs a new CPConstant.
      *
-     * @param tag         TODO
-     * @param value       TODO
+     * @param tag         the constant pool entry type tag.
+     * @param value       the constant value.
      * @param globalIndex index in CpBands
      * @throws NullPointerException if value is null
      */

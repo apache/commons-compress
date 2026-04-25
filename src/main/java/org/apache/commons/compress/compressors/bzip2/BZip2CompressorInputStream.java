@@ -138,8 +138,8 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     /**
      * read bits from the input stream
      *
-     * @param n the number of bits to read, must not exceed 32?
-     * @return the requested bits combined into an int
+     * @param n the number of bits to read, must not exceed 32?.
+     * @return the requested bits combined into an int.
      * @throws IOException if an I/O error occurs.
      */
     private static int bsR(final BitInputStream bin, final int n) throws IOException {
@@ -256,9 +256,9 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     /**
      * Checks if the signature matches what is expected for a bzip2 file.
      *
-     * @param signature the bytes to check
-     * @param length    the number of bytes to check
-     * @return true, if this stream is a bzip2 compressed stream, false otherwise
+     * @param signature the bytes to check.
+     * @param length    the number of bytes to check.
+     * @return true, if this stream is a bzip2 compressed stream, false otherwise.
      * @since 1.1
      */
     public static boolean matches(final byte[] signature, final int length) {
@@ -364,10 +364,12 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
      * Index of the last char in the block, so the block size == last + 1.
      */
     private int last;
+
     /**
      * Index in zptr[] of original string after sorting.
      */
     private int origPtr;
+
     /**
      * always: in the range 0 .. 9. The current block size is 100000 * this number.
      */
@@ -402,9 +404,9 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
      * Constructs a new BZip2CompressorInputStream which decompresses bytes read from the specified stream. This doesn't support decompressing concatenated .bz2
      * files.
      *
-     * @param in the InputStream from which this object should be created
+     * @param in the InputStream from which this object should be created.
      * @throws IOException          if the stream content is malformed or an I/O error occurs.
-     * @throws NullPointerException if {@code in == null}
+     * @throws NullPointerException if {@code in == null}.
      */
     public BZip2CompressorInputStream(final InputStream in) throws IOException {
         this(in, false);
@@ -413,7 +415,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     /**
      * Constructs a new BZip2CompressorInputStream which decompresses bytes read from the specified stream.
      *
-     * @param in                     the InputStream from which this object should be created
+     * @param in                     the InputStream from which this object should be created.
      * @param decompressConcatenated if true, decompress until the end of the input; if false, stop after the first .bz2 stream and leave the input position to
      *                               point to the next byte after the .bz2 stream
      *

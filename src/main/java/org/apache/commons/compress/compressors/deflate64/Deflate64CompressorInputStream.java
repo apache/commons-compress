@@ -46,7 +46,7 @@ public class Deflate64CompressorInputStream extends CompressorInputStream implem
     /**
      * Constructs a Deflate64CompressorInputStream.
      *
-     * @param in the stream to read from
+     * @param in the stream to read from.
      */
     public Deflate64CompressorInputStream(final InputStream in) {
         this(new HuffmanDecoder(in));

@@ -35,6 +35,14 @@ public class RunCodec extends Codec {
     private final Codec bCodec;
     private int last;
 
+    /**
+     * Constructs a new RunCodec.
+     *
+     * @param k the number of values.
+     * @param aCodec the A codec.
+     * @param bCodec the B codec.
+     * @throws Pack200Exception if k is negative or codecs are null.
+     */
     public RunCodec(final int k, final Codec aCodec, final Codec bCodec) throws Pack200Exception {
         if (k <= 0) {
             throw new Pack200Exception("Cannot have a RunCodec for a negative number of numbers");
@@ -83,14 +91,29 @@ public class RunCodec extends Codec {
         throw new Pack200Exception("Must encode entire band at once with a RunCodec");
     }
 
+    /**
+     * Gets the A codec.
+     *
+     * @return the A codec.
+     */
     public Codec getACodec() {
         return aCodec;
     }
 
+    /**
+     * Gets the B codec.
+     *
+     * @return the B codec.
+     */
     public Codec getBCodec() {
         return bCodec;
     }
 
+    /**
+     * Gets the K value.
+     *
+     * @return the K value.
+     */
     public int getK() {
         return k;
     }

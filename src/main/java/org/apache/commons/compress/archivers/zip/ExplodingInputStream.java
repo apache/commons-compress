@@ -70,9 +70,9 @@ final class ExplodingInputStream extends InputStream implements InputStreamStati
     /**
      * Constructs a new stream decompressing the content of the specified stream using the <em>explode</em> algorithm.
      *
-     * @param dictionarySize the size of the sliding dictionary (4096 or 8192)
-     * @param numberOfTrees  the number of trees (2 or 3)
-     * @param in             the compressed data stream
+     * @param dictionarySize the size of the sliding dictionary (4096 or 8192).
+     * @param numberOfTrees  the number of trees (2 or 3).
+     * @param in             the compressed data stream.
      */
     ExplodingInputStream(final int dictionarySize, final int numberOfTrees, final InputStream in) {
         if (dictionarySize != 4096 && dictionarySize != 8192) {

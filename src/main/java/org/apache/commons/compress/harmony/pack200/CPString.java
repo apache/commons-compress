@@ -18,6 +18,8 @@
  */
 package org.apache.commons.compress.harmony.pack200;
 
+import java.util.Objects;
+
 /**
  * Constant pool entry for a String.
  *
@@ -34,7 +36,7 @@ public class CPString extends CPConstant<CPString> {
      * @param value The value.
      */
     public CPString(final CPUTF8 value) {
-        this.value = value;
+        this.value = Objects.requireNonNull(value);
         this.string = value.getUnderlyingString();
     }
 
@@ -43,8 +45,29 @@ public class CPString extends CPConstant<CPString> {
         return string.compareTo(arg0.string);
     }
 
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof CPString)) {
+            return false;
+        }
+        return compareTo((CPString) obj) == 0;
+    }
+
+    /**
+     * Gets the index in the CP UTF8 pool.
+     *
+     * @return the index.
+     */
     public int getIndexInCpUtf8() {
         return value.getIndex();
+    }
+
+    @Override
+    public int hashCode() {
+        return string.hashCode();
     }
 
     @Override

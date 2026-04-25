@@ -62,6 +62,9 @@ import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.utils.MultiReadOnlySeekableByteChannel;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.channels.ByteArraySeekableByteChannel;
+import org.apache.commons.io.function.IOIterator;
+import org.apache.commons.io.function.IOStream;
 import org.apache.commons.io.input.ChecksumInputStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -338,6 +341,14 @@ class SevenZFileTest extends AbstractArchiveFileTest<SevenZArchiveEntry> {
     @Test
     void test7zMultiVolumeUnarchive() throws Exception {
         try (SevenZFile sevenZFile = SevenZFile.builder()
+                .setChannel(MultiReadOnlySeekableByteChannel.forFiles(getFile("bla-multi.7z.001"), getFile("bla-multi.7z.002"))).get()) {
+            test7zUnarchive(sevenZFile, SevenZMethod.LZMA2);
+        }
+    }
+
+    @Test
+    void test7zMultiVolumeUnarchiveDeprecated() throws Exception {
+        try (SevenZFile sevenZFile = SevenZFile.builder()
                 .setSeekableByteChannel(MultiReadOnlySeekableByteChannel.forFiles(getFile("bla-multi.7z.001"), getFile("bla-multi.7z.002"))).get()) {
             test7zUnarchive(sevenZFile, SevenZMethod.LZMA2);
         }
@@ -538,9 +549,8 @@ class SevenZFileTest extends AbstractArchiveFileTest<SevenZArchiveEntry> {
     }
 
     @Test
-    void testGetEntriesOfUnarchiveInMemoryTest() throws IOException {
-        final byte[] data = readAllBytes("bla.7z");
-        try (SevenZFile sevenZFile = SevenZFile.builder().setSeekableByteChannel(new SeekableInMemoryByteChannel(data)).get()) {
+    void testGetEntriesOfUnarchive() throws IOException {
+        try (SevenZFile sevenZFile = getSevenZFile("bla.7z")) {
             final Iterable<SevenZArchiveEntry> entries = sevenZFile.getEntries();
             final Iterator<SevenZArchiveEntry> iter = entries.iterator();
             SevenZArchiveEntry entry = iter.next();
@@ -552,8 +562,23 @@ class SevenZFileTest extends AbstractArchiveFileTest<SevenZArchiveEntry> {
     }
 
     @Test
-    void testGetEntriesOfUnarchiveTest() throws IOException {
-        try (SevenZFile sevenZFile = getSevenZFile("bla.7z")) {
+    void testGetEntriesOfUnarchiveInMemory() throws IOException {
+        final byte[] data = readAllBytes("bla.7z");
+        try (SevenZFile sevenZFile = SevenZFile.builder().setChannel(ByteArraySeekableByteChannel.wrap(data)).get()) {
+            final IOStream<? extends SevenZArchiveEntry> entries = sevenZFile.stream();
+            final IOIterator<? extends SevenZArchiveEntry> iter = entries.iterator();
+            SevenZArchiveEntry entry = iter.next();
+            assertEquals("test1.xml", entry.getName());
+            entry = iter.next();
+            assertEquals("test2.xml", entry.getName());
+            assertFalse(iter.hasNext());
+        }
+    }
+
+    @Test
+    void testGetEntriesOfUnarchiveInMemoryDeprecacted() throws IOException {
+        final byte[] data = readAllBytes("bla.7z");
+        try (SevenZFile sevenZFile = SevenZFile.builder().setSeekableByteChannel(new SeekableInMemoryByteChannel(data)).get()) {
             final Iterable<SevenZArchiveEntry> entries = sevenZFile.getEntries();
             final Iterator<SevenZArchiveEntry> iter = entries.iterator();
             SevenZArchiveEntry entry = iter.next();
@@ -1018,9 +1043,7 @@ class SevenZFileTest extends AbstractArchiveFileTest<SevenZArchiveEntry> {
             final ByteBuffer buffer = ByteBuffer.allocate(8192).order(ByteOrder.LITTLE_ENDIAN);
             folderWriter.accept(buffer);
             buffer.flip();
-            final ArchiveException e = assertThrows(ArchiveException.class, () -> {
-                file.readFolder(buffer);
-            });
+            final ArchiveException e = assertThrows(ArchiveException.class, () -> file.readFolder(buffer));
             assertTrue(e.getMessage().contains("7z archive: Unsupported"));
         }
     }

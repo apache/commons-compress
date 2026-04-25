@@ -66,7 +66,7 @@ public abstract class AbstractArchiveBuilder<T, B extends AbstractArchiveBuilder
      * <p>The default is {@link Short#MAX_VALUE}, which already exceeds the limits
      * of most operating systems.</p>
      *
-     * @param maxEntryNameLength The maximum entry name length in bytes; must be positive
+     * @param maxEntryNameLength The maximum entry name length in bytes; must be positive.
      * @return {@code this} instance.
      * @throws IllegalArgumentException If {@code maxEntryNameLength} is not positive.
      */

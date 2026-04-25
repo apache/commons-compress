@@ -63,7 +63,7 @@ public class X0015_CertificateIdForFile extends PKWareExtraHeader {
     /**
      * Gets hash algorithm.
      *
-     * @return the hash algorithm
+     * @return the hash algorithm.
      */
     public HashAlgorithm getHashAlgorithm() {
         return hashAlg;
@@ -72,7 +72,7 @@ public class X0015_CertificateIdForFile extends PKWareExtraHeader {
     /**
      * Gets record count.
      *
-     * @return the record count
+     * @return the record count.
      */
     public int getRecordCount() {
         return rcount;

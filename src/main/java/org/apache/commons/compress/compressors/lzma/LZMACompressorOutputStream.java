@@ -103,8 +103,8 @@ public class LZMACompressorOutputStream extends CompressorOutputStream<LZMAOutpu
     /**
      * Creates a LZMA compressor.
      *
-     * @param outputStream the stream to wrap
-     * @throws IOException on error
+     * @param outputStream the stream to wrap.
+     * @throws IOException on error.
      */
     public LZMACompressorOutputStream(final OutputStream outputStream) throws IOException {
         this(builder().setOutputStream(outputStream));
@@ -113,7 +113,7 @@ public class LZMACompressorOutputStream extends CompressorOutputStream<LZMAOutpu
     /**
      * Finishes compression without closing the underlying stream. No more data can be written to this stream after finishing.
      *
-     * @throws IOException on error
+     * @throws IOException on error.
      */
     @Override
     @SuppressWarnings("resource") // instance variable access

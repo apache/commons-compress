@@ -71,9 +71,9 @@ public class Zip64ExtendedInformationExtraField implements ZipExtraField {
     /**
      * Creates an extra field based on the original and compressed size.
      *
-     * @param size           the entry's original size
-     * @param compressedSize the entry's compressed size
-     * @throws IllegalArgumentException if size or compressedSize is null
+     * @param size           the entry's original size.
+     * @param compressedSize the entry's compressed size.
+     * @throws IllegalArgumentException if size or compressedSize is null.
      */
     public Zip64ExtendedInformationExtraField(final ZipEightByteInteger size, final ZipEightByteInteger compressedSize) {
         this(size, compressedSize, null, null);
@@ -82,11 +82,11 @@ public class Zip64ExtendedInformationExtraField implements ZipExtraField {
     /**
      * Creates an extra field based on all four possible values.
      *
-     * @param size                 the entry's original size
-     * @param compressedSize       the entry's compressed size
-     * @param relativeHeaderOffset the entry's offset
-     * @param diskStart            the disk start
-     * @throws IllegalArgumentException if size or compressedSize is null
+     * @param size                 the entry's original size.
+     * @param compressedSize       the entry's compressed size.
+     * @param relativeHeaderOffset the entry's offset.
+     * @param diskStart            the disk start.
+     * @throws IllegalArgumentException if size or compressedSize is null.
      */
     public Zip64ExtendedInformationExtraField(final ZipEightByteInteger size, final ZipEightByteInteger compressedSize,
             final ZipEightByteInteger relativeHeaderOffset, final ZipLong diskStart) {
@@ -248,11 +248,11 @@ public class Zip64ExtendedInformationExtraField implements ZipExtraField {
      * directory contains the correct magic value.
      * </p>
      *
-     * @param hasUncompressedSize     flag to read from central directory
-     * @param hasCompressedSize       flag to read from central directory
-     * @param hasRelativeHeaderOffset flag to read from central directory
-     * @param hasDiskStart            flag to read from central directory
-     * @throws ZipException on error
+     * @param hasUncompressedSize     flag to read from central directory.
+     * @param hasCompressedSize       flag to read from central directory.
+     * @param hasRelativeHeaderOffset flag to read from central directory.
+     * @param hasDiskStart            flag to read from central directory.
+     * @throws ZipException on error.
      */
     public void reparseCentralDirectoryData(final boolean hasUncompressedSize, final boolean hasCompressedSize, final boolean hasRelativeHeaderOffset,
             final boolean hasDiskStart) throws ZipException {

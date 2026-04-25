@@ -98,6 +98,7 @@ public class MemoryLimitException extends CompressException {
 
     /** A long instead of int to account for overflow in corrupt files. */
     private final long memoryRequestKiB;
+
     /** A long instead of int to account for overflow in corrupt files. */
     private final long memoryLimitKiB;
 

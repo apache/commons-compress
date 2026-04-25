@@ -269,6 +269,14 @@ public class SegmentConstantPool {
         return getConstantPoolEntry(cp, realIndex);
     }
 
+    /**
+     * Gets the value at the specified constant pool index.
+     *
+     * @param cp the constant pool index.
+     * @param longIndex the long index.
+     * @return the constant pool entry.
+     * @throws Pack200Exception if a Pack200 error occurs.
+     */
     public ClassFileEntry getValue(final int cp, final long longIndex) throws Pack200Exception {
         final int index = (int) longIndex;
         if (index == -1) {

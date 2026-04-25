@@ -85,7 +85,6 @@ public class GzipParameters {
          */
         CPM(OS_CPM),
 
-        // @formatter:off
         /**
          * 0: FAT filesystem (MS-DOS, OS/2, NT/Win32).
          */
@@ -140,7 +139,6 @@ public class GzipParameters {
          * 8: Z-System.
          */
         Z_SYSTEM(OS_Z_SYSTEM);
-        // @formatter:on
 
         /**
          * Gets the {@link OS} matching the given code.
@@ -302,6 +300,7 @@ public class GzipParameters {
     private String fileName;
     private Charset fileNameCharset = GzipUtils.GZIP_ENCODING;
     private boolean headerCrc;
+
     /**
      * The most recent modification time (MTIME) of the original file being compressed.
      * <p>
@@ -314,6 +313,13 @@ public class GzipParameters {
     private OS operatingSystem = OS.UNKNOWN; // Unknown OS by default
     private long trailerCrc;
     private long trailerISize;
+
+    /**
+     * Constructs a new instance with default values.
+     */
+    public GzipParameters() {
+        // Default constructor
+    }
 
     @Override
     public boolean equals(final Object obj) {
@@ -536,7 +542,7 @@ public class GzipParameters {
     /**
      * Sets the compression level.
      *
-     * @param compressionLevel the compression level (between 0 and 9)
+     * @param compressionLevel the compression level (between 0 and 9).
      * @see Deflater#NO_COMPRESSION
      * @see Deflater#BEST_SPEED
      * @see Deflater#DEFAULT_COMPRESSION
@@ -552,7 +558,7 @@ public class GzipParameters {
     /**
      * Sets the deflater strategy.
      *
-     * @param deflateStrategy the new compression strategy
+     * @param deflateStrategy the new compression strategy.
      * @see Deflater#setStrategy(int)
      * @since 1.23
      */
@@ -578,7 +584,7 @@ public class GzipParameters {
     /**
      * Sets the name of the compressed file.
      *
-     * @param fileName the name of the file without the directory path
+     * @param fileName the name of the file without the directory path.
      * @throws IllegalArgumentException if the encoded bytes would contain a nul byte '\0' reserved for gzip field termination.
      * @deprecated Use {@link #setFileName(String)}.
      */
@@ -590,7 +596,7 @@ public class GzipParameters {
     /**
      * Sets the name of the compressed file.
      *
-     * @param fileName the name of the file without the directory path
+     * @param fileName the name of the file without the directory path.
      * @throws IllegalArgumentException if the encoded bytes would contain a nul byte '\0' reserved for gzip field termination.
      */
     public void setFileName(final String fileName) {
@@ -617,7 +623,7 @@ public class GzipParameters {
     /**
      * Establishes the presence of the header flag FLG.FHCRC and its headers CRC16 value.
      *
-     * @param headerCRC when true, the header CRC16 (actually low 16 buts of a CRC32) is calculated and inserted
+     * @param headerCRC when true, the header CRC16 (actually low 16 buts of a CRC32) is calculated and inserted.
      *         in the gzip header on write; on read it means the field was present.
      * @since 1.28.0
      */
@@ -628,7 +634,7 @@ public class GzipParameters {
     /**
      * Sets the modification time (MTIME) of the compressed file.
      *
-     * @param modificationTime the modification time, in milliseconds
+     * @param modificationTime the modification time, in milliseconds.
      * @since 1.28.0
      */
     public void setModificationInstant(final Instant modificationTime) {
@@ -669,7 +675,7 @@ public class GzipParameters {
      * <li>255: Unknown</li>
      * </ul>
      *
-     * @param operatingSystem the code of the operating system
+     * @param operatingSystem the code of the operating system.
      * @throws CompressException Thrown when the {@code code} is undefined, as opposed to {@code UNKNOWN (255)}.
      */
     public void setOperatingSystem(final int operatingSystem) throws CompressException {

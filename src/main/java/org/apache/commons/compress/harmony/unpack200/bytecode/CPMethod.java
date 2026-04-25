@@ -31,6 +31,14 @@ public class CPMethod extends CPMember {
 
     private int cachedHashCode;
 
+    /**
+     * Constructs a new CPMethod.
+     *
+     * @param name the method name.
+     * @param descriptor the method descriptor.
+     * @param flags the method flags.
+     * @param attributes the method attributes.
+     */
     public CPMethod(final CPUTF8 name, final CPUTF8 descriptor, final long flags, final List<Attribute> attributes) {
         super(name, descriptor, flags, attributes);
     }

@@ -25,6 +25,8 @@ import java.io.OutputStream;
 
 /**
  * Re-implements {@link FilterOutputStream#flush()} to do nothing.
+ *
+ * TODO Deprecate.
  */
 public class FlushShieldFilterOutputStream extends FilterOutputStream {
 

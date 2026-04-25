@@ -212,6 +212,15 @@ class ZipArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
+    void testEmptyCentralDirectory() throws Exception {
+        try (ZipArchiveInputStream inputStream = ZipArchiveInputStream.builder()
+                .setURI(getURI("org/apache/commons/compress/zip/ZipFile-method.zip"))
+                .get()) {
+            inputStream.forEach(IOConsumer.noop());
+        }
+    }
+
+    @Test
     void testGetCompressedCountEmptyZip() throws IOException {
         try (ZipArchiveInputStream zin = ZipArchiveInputStream.builder().setByteArray(ArrayUtils.EMPTY_BYTE_ARRAY).get()) {
             assertEquals(-1, zin.getCompressedCount());

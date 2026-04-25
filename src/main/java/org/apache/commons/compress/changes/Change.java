@@ -75,8 +75,8 @@ final class Change<E extends ArchiveEntry> {
     /**
      * Constructs a change which adds an entry.
      *
-     * @param archiveEntry the entry details
-     * @param inputStream  the InputStream for the entry data
+     * @param archiveEntry the entry details.
+     * @param inputStream  the InputStream for the entry data.
      */
     Change(final E archiveEntry, final InputStream inputStream, final boolean replace) {
         this.entry = Objects.requireNonNull(archiveEntry, "archiveEntry");
@@ -89,7 +89,7 @@ final class Change<E extends ArchiveEntry> {
     /**
      * Constructs a new instance. Takes the file name of the file to be deleted from the stream as argument.
      *
-     * @param fileName the file name of the file to delete
+     * @param fileName the file name of the file to delete.
      */
     Change(final String fileName, final ChangeType type) {
         this.targetFileName = Objects.requireNonNull(fileName, "fileName");

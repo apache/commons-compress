@@ -99,7 +99,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
          * Default value is {@link CpioConstants#BLOCK_SIZE}.
          * </p>
          *
-         * @param blockSize The block size must be bigger than 0
+         * @param blockSize The block size must be bigger than 0.
          * @return {@code this} instance.
          */
         public Builder setBlockSize(final int blockSize) {
@@ -129,9 +129,9 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
      *
      * 070707 - MAGIC_OLD_BINARY (held as a short) = 0x71C7 or 0xC771
      *
-     * @param signature data to match
-     * @param length    length of data
-     * @return whether the buffer seems to contain CPIO data
+     * @param signature data to match.
+     * @param length    length of data.
+     * @return whether the buffer seems to contain CPIO data.
      */
     public static boolean matches(final byte[] signature, final int length) {
         if (length < 6) {
@@ -212,7 +212,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
      *
      * <p>Since 1.29.0: throws {@link IOException}.</p>
      *
-     * @param in The cpio stream
+     * @param in The cpio stream.
      * @throws IOException if an I/O error has occurred.
      */
     public CpioArchiveInputStream(final InputStream in) throws IOException {
@@ -224,7 +224,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
      *
      * <p>Since 1.29.0: throws {@link IOException}.</p>
      *
-     * @param in        The cpio stream
+     * @param in        The cpio stream.
      * @param blockSize The block size of the archive.
      * @throws IOException if an I/O error has occurred.
      * @since 1.5
@@ -240,10 +240,10 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
      *
      * <p>Since 1.29.0: throws {@link IOException}.</p>
      *
-     * @param in        The cpio stream
+     * @param in        The cpio stream.
      * @param blockSize The block size of the archive.
      * @param encoding  The encoding of file names to expect - use null for the platform's default.
-     * @throws IllegalArgumentException if {@code blockSize} is not bigger than 0
+     * @throws IllegalArgumentException if {@code blockSize} is not bigger than 0.
      * @throws IOException if an I/O error has occurred.
      * @since 1.6
      * @deprecated Since 1.29.0, use {@link #builder()}.
@@ -258,7 +258,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
      *
      * <p>Since 1.29.0: throws {@link IOException}.</p>
      *
-     * @param in       The cpio stream
+     * @param in       The cpio stream.
      * @param encoding The encoding of file names to expect - use null for the platform's default.
      * @throws IOException if an I/O error has occurred.
      * @since 1.6
@@ -276,7 +276,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
      * </p>
      *
      * @return 1 before EOF and 0 after EOF has reached for current entry.
-     * @throws IOException if an I/O error has occurred or if a CPIO file error has occurred
+     * @throws IOException if an I/O error has occurred or if a CPIO file error has occurred.
      */
     @Override
     public int available() throws IOException {
@@ -287,7 +287,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
     /**
      * Check to make sure that this stream has not been closed
      *
-     * @throws IOException if the stream is already closed
+     * @throws IOException if the stream is already closed.
      */
     private void checkOpen() throws IOException {
         if (closed) {
@@ -311,8 +311,8 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
     /**
      * Reads the next CPIO file entry and positions stream at the beginning of the entry data.
      *
-     * @return the CpioArchiveEntry just read
-     * @throws IOException if an I/O error has occurred or if a CPIO file error has occurred
+     * @return the CpioArchiveEntry just read.
+     * @throws IOException if an I/O error has occurred or if a CPIO file error has occurred.
      * @deprecated Use {@link #getNextEntry()}.
      */
     @Deprecated
@@ -363,13 +363,13 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
     /**
      * Reads from the current CPIO entry into an array of bytes. Blocks until some input is available.
      *
-     * @param b   the buffer into which the data is read
-     * @param off the start offset of the data
-     * @param len the maximum number of bytes read
-     * @return the actual number of bytes read, or -1 if the end of the entry is reached
-     * @throws NullPointerException      if b is null
+     * @param b   the buffer into which the data is read.
+     * @param off the start offset of the data.
+     * @param len the maximum number of bytes read.
+     * @return the actual number of bytes read, or -1 if the end of the entry is reached.
+     * @throws NullPointerException      if b is null.
      * @throws IndexOutOfBoundsException if {@code off} or {@code len} are negative, or if {@code off + len} is greater than {@code b.length}.
-     * @throws IOException if an I/O error has occurred or if a CPIO file error has occurred
+     * @throws IOException if an I/O error has occurred or if a CPIO file error has occurred.
      */
     @Override
     public int read(final byte[] b, final int off, final int len) throws IOException {
@@ -561,10 +561,10 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
     /**
      * Skips specified number of bytes in the current CPIO entry.
      *
-     * @param n the number of bytes to skip
-     * @return the actual number of bytes skipped
-     * @throws IOException              if an I/O error has occurred
-     * @throws IllegalArgumentException if n &lt; 0
+     * @param n the number of bytes to skip.
+     * @return the actual number of bytes skipped.
+     * @throws IOException              if an I/O error has occurred.
+     * @throws IllegalArgumentException if n &lt; 0.
      */
     @Override
     public long skip(final long n) throws IOException {

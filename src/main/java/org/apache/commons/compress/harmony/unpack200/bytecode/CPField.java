@@ -27,6 +27,14 @@ import java.util.List;
  */
 public class CPField extends CPMember {
 
+    /**
+     * Constructs a new CPField.
+     *
+     * @param name the field name.
+     * @param descriptor the field descriptor.
+     * @param flags the field flags.
+     * @param attributes the field attributes.
+     */
     public CPField(final CPUTF8 name, final CPUTF8 descriptor, final long flags, final List<Attribute> attributes) {
         super(name, descriptor, flags, attributes);
     }

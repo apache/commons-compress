@@ -29,6 +29,8 @@ import org.apache.commons.lang3.IntegerRange;
 
 /**
  * Utility methods for {@code attribute_layout} parsing and validation.
+ *
+ * @since 1.29.0
  */
 public final class AttributeLayoutUtils {
 

@@ -54,7 +54,7 @@ public class BlockLZ4CompressorInputStream extends AbstractLZ77CompressorInputSt
     /**
      * Creates a new LZ4 input stream.
      *
-     * @param is An InputStream to read compressed data from
+     * @param is An InputStream to read compressed data from.
      */
     public BlockLZ4CompressorInputStream(final InputStream is) {
         super(is, WINDOW_SIZE);

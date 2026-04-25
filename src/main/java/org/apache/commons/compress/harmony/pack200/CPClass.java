@@ -18,6 +18,8 @@
  */
 package org.apache.commons.compress.harmony.pack200;
 
+import java.util.Objects;
+
 /**
  * Constant pool entry for a class.
  *
@@ -35,7 +37,7 @@ public class CPClass extends CPConstant<CPClass> {
      * @param value The value.
      */
     public CPClass(final CPUTF8 value) {
-        this.value = value;
+        this.value = Objects.requireNonNull(value);
         this.className = value.getUnderlyingString();
         final char[] chars = className.toCharArray();
         for (final char element : chars) {
@@ -52,10 +54,36 @@ public class CPClass extends CPConstant<CPClass> {
         return className.compareTo(arg0.className);
     }
 
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof CPClass)) {
+            return false;
+        }
+        return compareTo((CPClass) obj) == 0;
+    }
+
+    /**
+     * Gets the index in the CP UTF8 pool.
+     *
+     * @return the index.
+     */
     public int getIndexInCpUtf8() {
         return value.getIndex();
     }
 
+    @Override
+    public int hashCode() {
+        return className.hashCode();
+    }
+
+    /**
+     * Tests whether this is an inner class.
+     *
+     * @return true if this is an inner class.
+     */
     public boolean isInnerClass() {
         return isInnerClass;
     }

@@ -32,37 +32,119 @@ import java.util.List;
  */
 public class MetadataBandGroup extends BandSet {
 
+    /**
+     * Context for class metadata.
+     */
     public static final int CONTEXT_CLASS = 0;
+
+    /**
+     * Context for field metadata.
+     */
     public static final int CONTEXT_FIELD = 1;
+
+    /**
+     * Context for method metadata.
+     */
     public static final int CONTEXT_METHOD = 2;
 
     private final String type;
     private int numBackwardsCalls;
 
-    public IntList param_NB = new IntList(); // TODO: Lazy instantiation?
+    /**
+     * Parameter number of annotations.
+     */
+    public IntList param_NB = new IntList();
+
+    /**
+     * Annotation counts.
+     */
     public IntList anno_N = new IntList();
+
+    /**
+     * Annotation types.
+     */
     public List<CPSignature> type_RS = new ArrayList<>();
+
+    /**
+     * Annotation pair counts.
+     */
     public IntList pair_N = new IntList();
+
+    /**
+     * Annotation pair names.
+     */
     public List<CPUTF8> name_RU = new ArrayList<>();
+
+    /**
+     * Annotation value tags.
+     */
     public List<String> T = new ArrayList<>();
+
+    /**
+     * Integer constant values.
+     */
     public List<CPConstant<?>> caseI_KI = new ArrayList<>();
+
+    /**
+     * Double constant values.
+     */
     public List<CPConstant<?>> caseD_KD = new ArrayList<>();
+
+    /**
+     * Float constant values.
+     */
     public List<CPConstant<?>> caseF_KF = new ArrayList<>();
+
+    /**
+     * Long constant values.
+     */
     public List<CPConstant<?>> caseJ_KJ = new ArrayList<>();
+
+    /**
+     * Class constant values.
+     */
     public List<CPSignature> casec_RS = new ArrayList<>();
+
+    /**
+     * Enum type values.
+     */
     public List<CPSignature> caseet_RS = new ArrayList<>();
+
+    /**
+     * Enum constant values.
+     */
     public List<CPUTF8> caseec_RU = new ArrayList<>();
+
+    /**
+     * String constant values.
+     */
     public List<CPUTF8> cases_RU = new ArrayList<>();
+
+    /**
+     * Array element counts.
+     */
     public IntList casearray_N = new IntList();
+
+    /**
+     * Nested annotation types.
+     */
     public List<CPSignature> nesttype_RS = new ArrayList<>();
+
+    /**
+     * Nested annotation pair counts.
+     */
     public IntList nestpair_N = new IntList();
+
+    /**
+     * Nested annotation pair names.
+     */
     public List<CPUTF8> nestname_RU = new ArrayList<>();
 
     private final CpBands cpBands;
     private final int context;
 
     /**
-     * Constructs a new MetadataBandGroup
+     * Constructs a new MetadataBandGroup.
      *
      * @param type          must be either AD, RVA, RIA, RVPA or RIPA.
      * @param context       {@code CONTEXT_CLASS}, {@code CONTEXT_METHOD} or {@code CONTEXT_FIELD}
@@ -80,14 +162,14 @@ public class MetadataBandGroup extends BandSet {
     /**
      * Add an annotation to this set of bands
      *
-     * @param desc       TODO
-     * @param nameRU     TODO
-     * @param tags       TODO
-     * @param values     TODO
-     * @param caseArrayN TODO
-     * @param nestTypeRS TODO
-     * @param nestNameRU TODO
-     * @param nestPairN  TODO
+     * @param desc       the descriptor.
+     * @param nameRU     the name RU list.
+     * @param tags       the tags list.
+     * @param values     the values list.
+     * @param caseArrayN the case array N list.
+     * @param nestTypeRS the nested type RS list.
+     * @param nestNameRU the nested name RU list.
+     * @param nestPairN  the nested pair N list.
      */
     public void addAnnotation(final String desc, final List<String> nameRU, final List<String> tags, final List<Object> values, final List<Integer> caseArrayN,
             final List<String> nestTypeRS, final List<String> nestNameRU, final List<Integer> nestPairN) {
@@ -151,17 +233,17 @@ public class MetadataBandGroup extends BandSet {
     /**
      * Add an annotation to this set of bands.
      *
-     * @param numParams  TODO
-     * @param annoN      TODO
-     * @param pairN      TODO
-     * @param typeRS     TODO
-     * @param nameRU     TODO
-     * @param tags       TODO
-     * @param values     TODO
-     * @param caseArrayN TODO
-     * @param nestTypeRS TODO
-     * @param nestNameRU TODO
-     * @param nestPairN  TODO
+     * @param numParams  the number of parameters.
+     * @param annoN      the annotation N array.
+     * @param pairN      the pair N list.
+     * @param typeRS     the type RS list.
+     * @param nameRU     the name RU list.
+     * @param tags       the tags list.
+     * @param values     the values list.
+     * @param caseArrayN the case array N list.
+     * @param nestTypeRS the nested type RS list.
+     * @param nestNameRU the nested name RU list.
+     * @param nestPairN  the nested pair N list.
      */
     public void addParameterAnnotation(final int numParams, final int[] annoN, final IntList pairN, final List<String> typeRS, final List<String> nameRU,
             final List<String> tags, final List<Object> values, final List<Integer> caseArrayN, final List<String> nestTypeRS, final List<String> nestNameRU,
@@ -227,7 +309,7 @@ public class MetadataBandGroup extends BandSet {
     }
 
     /**
-     * Returns true if any annotations have been added to this set of bands.
+     * Tests whether any annotations have been added to this set of bands.
      *
      * @return true if any annotations have been added to this set of bands.
      */
@@ -235,10 +317,16 @@ public class MetadataBandGroup extends BandSet {
         return type_RS.size() > 0;
     }
 
+    /**
+     * Increments the last annotation count.
+     */
     public void incrementAnnoN() {
         anno_N.increment(anno_N.size() - 1);
     }
 
+    /**
+     * Adds a new entry to the annotation count list.
+     */
     public void newEntryInAnnoN() {
         anno_N.add(1);
     }
@@ -247,6 +335,11 @@ public class MetadataBandGroup extends BandSet {
         return (String) valuesIterator.next();
     }
 
+    /**
+     * Gets the number of backwards calls.
+     *
+     * @return the number of backwards calls.
+     */
     public int numBackwardsCalls() {
         return numBackwardsCalls;
     }

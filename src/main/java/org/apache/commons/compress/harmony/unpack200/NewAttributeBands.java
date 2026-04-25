@@ -69,8 +69,8 @@ public class NewAttributeBands extends BandSet {
         /**
          * Reads the bands associated with this part of the layout.
          *
-         * @param in    TODO
-         * @param count TODO
+         * @param in    the input stream to read from.
+         * @param count the number of elements to read.
          * @throws Pack200Exception Bad archive.
          * @throws IOException      If an I/O error occurs.
          */
@@ -115,11 +115,19 @@ public class NewAttributeBands extends BandSet {
         }
     }
 
+    /**
+     * Represents a call to a callable layout element.
+     */
     public class Call extends LayoutElement {
 
         private final int callableIndex;
         private Callable callable;
 
+        /**
+         * Constructs a new Call.
+         *
+         * @param callableIndex the callable index.
+         */
         public Call(final int callableIndex) {
             this.callableIndex = callableIndex;
         }
@@ -129,10 +137,20 @@ public class NewAttributeBands extends BandSet {
             callable.addNextToAttribute(attribute);
         }
 
+        /**
+         * Gets the callable.
+         *
+         * @return the callable.
+         */
         public Callable getCallable() {
             return callable;
         }
 
+        /**
+         * Gets the callable index.
+         *
+         * @return the callable index.
+         */
         public int getCallableIndex() {
             return callableIndex;
         }
@@ -148,6 +166,11 @@ public class NewAttributeBands extends BandSet {
             }
         }
 
+        /**
+         * Sets the callable.
+         *
+         * @param callable the callable.
+         */
         public void setCallable(final Callable callable) {
             this.callable = callable;
             if (callableIndex < 1) {
@@ -156,6 +179,9 @@ public class NewAttributeBands extends BandSet {
         }
     }
 
+    /**
+     * Callable layout element that can be referenced and reused.
+     */
     public static class Callable extends LayoutElement {
 
         private final List<LayoutElement> body;
@@ -184,7 +210,7 @@ public class NewAttributeBands extends BandSet {
         /**
          * Adds the count of a call to this callable (ie the number of calls)
          *
-         * @param count TODO
+         * @param count the count to add.
          */
         public void addCount(final int count) {
             this.count += count;
@@ -193,7 +219,7 @@ public class NewAttributeBands extends BandSet {
         /**
          * Used by calls when adding band contents to attributes, so they don't have to keep track of the internal index of the callable.
          *
-         * @param attribute TODO
+         * @param attribute the attribute to add to.
          */
         public void addNextToAttribute(final NewAttribute attribute) {
             for (final LayoutElement element : body) {
@@ -213,10 +239,20 @@ public class NewAttributeBands extends BandSet {
             }
         }
 
+        /**
+         * Gets the body of this callable.
+         *
+         * @return the body elements.
+         */
         public List<LayoutElement> getBody() {
             return body;
         }
 
+        /**
+         * Tests whether this is a backwards callable.
+         *
+         * @return true if backwards callable.
+         */
         public boolean isBackwardsCallable() {
             return isBackwardsCallable;
         }
@@ -234,17 +270,25 @@ public class NewAttributeBands extends BandSet {
         }
 
         /**
-         * Tells this Callable that it is a backwards callable
+         * Tells this Callable that it is a backwards callable.
          */
         public void setBackwardsCallable() {
             this.isBackwardsCallable = true;
         }
 
+        /**
+         * Sets whether this is the first callable.
+         *
+         * @param isFirstCallable true if first callable.
+         */
         public void setFirstCallable(final boolean isFirstCallable) {
             this.isFirstCallable = isFirstCallable;
         }
     }
 
+    /**
+     * Integral layout element for integer values.
+     */
     public class Integral extends LayoutElement {
 
         private final String tag;
@@ -323,10 +367,21 @@ public class NewAttributeBands extends BandSet {
             }
         }
 
+        /**
+         * Gets the tag of this integral.
+         *
+         * @return the tag.
+         */
         public String getTag() {
             return tag;
         }
 
+        /**
+         * Gets the value at the specified index.
+         *
+         * @param index the index.
+         * @return the value.
+         */
         int getValue(final int index) {
             return band[index];
         }
@@ -338,8 +393,17 @@ public class NewAttributeBands extends BandSet {
 
     }
 
+    /**
+     * Abstract class for layout elements.
+     */
     private abstract static class LayoutElement implements AttributeLayoutElement {
 
+        /**
+         * Gets the length for the given unsigned int type.
+         *
+         * @param uintType the unsigned int type character.
+         * @return the length in bytes.
+         */
         protected int getLength(final char uintType) {
             int length = 0;
             switch (uintType) {
@@ -411,6 +475,11 @@ public class NewAttributeBands extends BandSet {
             }
         }
 
+        /**
+         * Gets the tag.
+         *
+         * @return the tag.
+         */
         public String getTag() {
             return tag;
         }
@@ -455,6 +524,14 @@ public class NewAttributeBands extends BandSet {
 
         private final List<LayoutElement> layoutElements;
 
+        private Replication(final String tag, final List<LayoutElement> layoutElements) throws Pack200Exception {
+            this.countElement = new Integral(tag);
+            this.layoutElements = layoutElements;
+            if (layoutElements.isEmpty()) {
+                throw new Pack200Exception("Corrupted Pack200 archive: Replication body is empty");
+            }
+        }
+
         /**
          * Constructs a new Replication layout element.
          *
@@ -465,14 +542,6 @@ public class NewAttributeBands extends BandSet {
          */
         public Replication(final String tag, final String contents) throws Pack200Exception {
             this(tag, AttributeLayoutUtils.readBody(contents, attributeLayoutFactory));
-        }
-
-        private Replication(final String tag, final List<LayoutElement> layoutElements) throws Pack200Exception {
-            this.countElement = new Integral(tag);
-            this.layoutElements = layoutElements;
-            if (layoutElements.isEmpty()) {
-                throw new Pack200Exception("Corrupted Pack200 archive: Replication body is empty");
-            }
         }
 
         @Override
@@ -493,10 +562,20 @@ public class NewAttributeBands extends BandSet {
             }
         }
 
+        /**
+         * Gets the count element.
+         *
+         * @return the count element.
+         */
         public Integral getCountElement() {
             return countElement;
         }
 
+        /**
+         * Gets the layout elements.
+         *
+         * @return the layout elements.
+         */
         public List<LayoutElement> getLayoutElements() {
             return layoutElements;
         }
@@ -579,14 +658,29 @@ public class NewAttributeBands extends BandSet {
             }
         }
 
+        /**
+         * Gets the default case body.
+         *
+         * @return the default case body.
+         */
         public List<LayoutElement> getDefaultCaseBody() {
             return defaultCaseBody;
         }
 
+        /**
+         * Gets the union cases.
+         *
+         * @return the union cases.
+         */
         public List<UnionCase> getUnionCases() {
             return unionCases;
         }
 
+        /**
+         * Gets the union tag.
+         *
+         * @return the union tag.
+         */
         public Integral getUnionTag() {
             return unionTag;
         }
@@ -635,10 +729,21 @@ public class NewAttributeBands extends BandSet {
         private final List<IntegerRange> tagRanges;
         private final List<LayoutElement> body;
 
+        /**
+         * Constructs a new UnionCase with the given tags.
+         *
+         * @param tags the tags.
+         */
         public UnionCase(final List<Integer> tags) {
             this(tags, Collections.emptyList());
         }
 
+        /**
+         * Constructs a new UnionCase.
+         *
+         * @param tags the tags.
+         * @param body the body elements.
+         */
         public UnionCase(final List<Integer> tags, final List<LayoutElement> body) {
             this(AttributeLayoutUtils.toRanges(tags), body, false);
         }
@@ -655,14 +760,31 @@ public class NewAttributeBands extends BandSet {
             }
         }
 
+        /**
+         * Gets the body of this union case.
+         *
+         * @return the body elements.
+         */
         public List<LayoutElement> getBody() {
             return body;
         }
 
+        /**
+         * Tests whether this union case has the given tag.
+         *
+         * @param i the tag value.
+         * @return true if this case matches the tag.
+         */
         public boolean hasTag(final int i) {
             return AttributeLayoutUtils.unionCaseMatches(tagRanges, i);
         }
 
+        /**
+         * Tests whether this union case has the given tag.
+         *
+         * @param l the tag value.
+         * @return true if this case matches the tag.
+         */
         public boolean hasTag(final long l) {
             return hasTag((int) l);
         }
@@ -680,10 +802,23 @@ public class NewAttributeBands extends BandSet {
 
     private int backwardsCallCount;
 
+    /**
+     * The attribute layout elements.
+     */
     protected List<LayoutElement> attributeLayoutElements;
 
+    /**
+     * The attribute layout factory.
+     */
     private final AttributeLayoutFactory attributeLayoutFactory = new AttributeLayoutFactory();
 
+    /**
+     * Constructs new attribute bands for the given segment and layout.
+     *
+     * @param segment the segment.
+     * @param attributeLayout the attribute layout.
+     * @throws IOException if an I/O error occurs.
+     */
     public NewAttributeBands(final Segment segment, final AttributeLayout attributeLayout) throws IOException {
         super(segment);
         this.attributeLayout = attributeLayout;
@@ -691,6 +826,11 @@ public class NewAttributeBands extends BandSet {
         attributeLayout.setBackwardsCallCount(backwardsCallCount);
     }
 
+    /**
+     * Gets the backwards call count.
+     *
+     * @return the backwards call count.
+     */
     public int getBackwardsCallCount() {
         return backwardsCallCount;
     }
@@ -698,7 +838,7 @@ public class NewAttributeBands extends BandSet {
     /**
      * Returns the {@link BHSDCodec} that should be used for the given layout element.
      *
-     * @param layoutElement TODO
+     * @param layoutElement the layout element string.
      * @return the {@link BHSDCodec} that should be used for the given layout element.
      */
     public BHSDCodec getCodec(final String layoutElement) {
@@ -721,8 +861,8 @@ public class NewAttributeBands extends BandSet {
     /**
      * Gets one attribute at the given index from the various bands. The correct bands must have already been read in.
      *
-     * @param index    TODO
-     * @param elements TODO
+     * @param index    the index of the attribute.
+     * @param elements the layout elements.
      * @return attribute at the given index.
      */
     private Attribute getOneAttribute(final int index, final List<LayoutElement> elements) {
@@ -737,7 +877,7 @@ public class NewAttributeBands extends BandSet {
      * Parse the bands relating to this AttributeLayout and return the correct class file attributes as a List of {@link Attribute}.
      *
      * @param in              parse source.
-     * @param occurrenceCount TODO
+     * @param occurrenceCount the number of occurrences.
      * @return Class file attributes as a List of {@link Attribute}.
      * @throws IOException      If an I/O error occurs.
      * @throws Pack200Exception If a Pack200 semantic error occurs.

@@ -73,65 +73,6 @@ class LegacyConstructorsTest extends AbstractTest {
                 Arguments.of(new CpioArchiveInputStream(inputStream, "UTF-8"), inputStream, "UTF-8", 512));
     }
 
-    static Stream<Arguments> testTarConstructors() throws IOException {
-        final InputStream inputStream = mock(InputStream.class);
-        final String defaultEncoding = Charset.defaultCharset().name();
-        final String otherEncoding = "UTF-8".equals(defaultEncoding) ? "US-ASCII" : "UTF-8";
-        return Stream.of(
-                Arguments.of(new TarArchiveInputStream(inputStream, true), inputStream, 10240, 512, defaultEncoding, true),
-                Arguments.of(new TarArchiveInputStream(inputStream, 20480), inputStream, 20480, 512, defaultEncoding, false),
-                Arguments.of(new TarArchiveInputStream(inputStream, 20480, 1024), inputStream, 20480, 1024, defaultEncoding, false),
-                Arguments.of(new TarArchiveInputStream(inputStream, 20480, 1024, otherEncoding), inputStream, 20480, 1024, otherEncoding, false),
-                Arguments.of(new TarArchiveInputStream(inputStream, 20480, 1024, otherEncoding, true), inputStream, 20480, 1024, otherEncoding, true),
-                Arguments.of(new TarArchiveInputStream(inputStream, 20480, otherEncoding), inputStream, 20480, 512, otherEncoding, false),
-                Arguments.of(new TarArchiveInputStream(inputStream, otherEncoding), inputStream, 10240, 512, otherEncoding, false));
-    }
-
-    static Stream<Arguments> testZipConstructors() throws IOException {
-        final InputStream inputStream = mock(InputStream.class);
-        return Stream.of(
-                Arguments.of(new ZipArchiveInputStream(inputStream, "US-ASCII"), inputStream, "US-ASCII", true, false, false),
-                Arguments.of(new ZipArchiveInputStream(inputStream, "US-ASCII", false), inputStream, "US-ASCII", false, false, false),
-                Arguments.of(new ZipArchiveInputStream(inputStream, "US-ASCII", false, true), inputStream, "US-ASCII", false, true, false),
-                Arguments.of(new ZipArchiveInputStream(inputStream, "US-ASCII", false, true, true), inputStream, "US-ASCII", false, true, true));
-    }
-
-    @Test
-    void testArjConstructor() throws Exception {
-        try (InputStream inputStream = Files.newInputStream(getPath("bla.arj"));
-                ArjArchiveInputStream archiveInputStream = new ArjArchiveInputStream(inputStream, "US-ASCII")) {
-            assertEquals(inputStream, getNestedInputStream(archiveInputStream));
-            assertEquals(US_ASCII, archiveInputStream.getCharset());
-        }
-    }
-
-    @ParameterizedTest
-    @MethodSource
-    void testCpioConstructors(final CpioArchiveInputStream archiveStream, final InputStream expectedInput, final String expectedEncoding,
-            final int expectedBlockSize) throws Exception {
-        assertEquals(expectedInput, getNestedInputStream(archiveStream));
-        assertEquals(Charset.forName(expectedEncoding), archiveStream.getCharset());
-        assertEquals(expectedBlockSize, readDeclaredField(archiveStream, "blockSize", true));
-    }
-
-    @Test
-    void testDumpConstructor() throws Exception {
-        final String otherEncoding = "UTF-8".equals(Charset.defaultCharset().name()) ? "US-ASCII" : "UTF-8";
-        try (InputStream inputStream = Files.newInputStream(getPath("bla.dump"));
-                DumpArchiveInputStream archiveStream = new DumpArchiveInputStream(inputStream, otherEncoding)) {
-            assertEquals(inputStream, getNestedInputStream(archiveStream));
-            assertEquals(Charset.forName(otherEncoding), archiveStream.getCharset());
-        }
-    }
-
-    @Test
-    void testJarConstructor() throws Exception {
-        final InputStream inputStream = mock(InputStream.class);
-        try (JarArchiveInputStream archiveInputStream = new JarArchiveInputStream(inputStream, "US-ASCII")) {
-            assertEquals(US_ASCII, archiveInputStream.getCharset());
-        }
-    }
-
     static Stream<Arguments> testSevenZFileContructors() throws IOException {
         final Path path = getPath("bla.7z");
         final String defaultName = "unknown archive";
@@ -177,6 +118,108 @@ class LegacyConstructorsTest extends AbstractTest {
                         true, null));
     }
 
+    static Stream<Arguments> testTarConstructors() throws IOException {
+        final InputStream inputStream = mock(InputStream.class);
+        final String defaultEncoding = Charset.defaultCharset().name();
+        final String otherEncoding = "UTF-8".equals(defaultEncoding) ? "US-ASCII" : "UTF-8";
+        return Stream.of(
+                Arguments.of(new TarArchiveInputStream(inputStream, true), inputStream, 10240, 512, defaultEncoding, true),
+                Arguments.of(new TarArchiveInputStream(inputStream, 20480), inputStream, 20480, 512, defaultEncoding, false),
+                Arguments.of(new TarArchiveInputStream(inputStream, 20480, 1024), inputStream, 20480, 1024, defaultEncoding, false),
+                Arguments.of(new TarArchiveInputStream(inputStream, 20480, 1024, otherEncoding), inputStream, 20480, 1024, otherEncoding, false),
+                Arguments.of(new TarArchiveInputStream(inputStream, 20480, 1024, otherEncoding, true), inputStream, 20480, 1024, otherEncoding, true),
+                Arguments.of(new TarArchiveInputStream(inputStream, 20480, otherEncoding), inputStream, 20480, 512, otherEncoding, false),
+                Arguments.of(new TarArchiveInputStream(inputStream, otherEncoding), inputStream, 10240, 512, otherEncoding, false));
+    }
+
+    static Stream<Arguments> testTarFileConstructors() throws IOException {
+        final Path path = getPath("bla.tar");
+        final File file = getFile("bla.tar");
+        final SeekableByteChannel channel = mock(SeekableByteChannel.class);
+        final String defaultEncoding = Charset.defaultCharset().name();
+        final String otherEncoding = "UTF-8".equals(defaultEncoding) ? "US-ASCII" : "UTF-8";
+        return Stream.of(
+                Arguments.of(new TarFile(IOUtils.EMPTY_BYTE_ARRAY), defaultEncoding, false),
+                Arguments.of(new TarFile(IOUtils.EMPTY_BYTE_ARRAY, true), defaultEncoding, true),
+                Arguments.of(new TarFile(IOUtils.EMPTY_BYTE_ARRAY, otherEncoding), otherEncoding, false),
+                Arguments.of(new TarFile(file), defaultEncoding, false),
+                Arguments.of(new TarFile(file, true), defaultEncoding, true),
+                Arguments.of(new TarFile(file, otherEncoding), otherEncoding, false),
+                Arguments.of(new TarFile(path), defaultEncoding, false),
+                Arguments.of(new TarFile(path, true), defaultEncoding, true),
+                Arguments.of(new TarFile(path, otherEncoding), otherEncoding, false),
+                Arguments.of(new TarFile(channel), defaultEncoding, false),
+                Arguments.of(new TarFile(channel, 1024, 1024, otherEncoding, true), otherEncoding, true));
+    }
+
+    static Stream<Arguments> testZipConstructors() throws IOException {
+        final InputStream inputStream = mock(InputStream.class);
+        return Stream.of(
+                Arguments.of(new ZipArchiveInputStream(inputStream, "US-ASCII"), inputStream, "US-ASCII", true, false, false),
+                Arguments.of(new ZipArchiveInputStream(inputStream, "US-ASCII", false), inputStream, "US-ASCII", false, false, false),
+                Arguments.of(new ZipArchiveInputStream(inputStream, "US-ASCII", false, true), inputStream, "US-ASCII", false, true, false),
+                Arguments.of(new ZipArchiveInputStream(inputStream, "US-ASCII", false, true, true), inputStream, "US-ASCII", false, true, true));
+    }
+
+    static Stream<Arguments> testZipFileConstructors() throws IOException {
+        final Path path = getPath("bla.zip");
+        final String defaultEncoding = StandardCharsets.UTF_8.name();
+        final String otherEncoding = "UTF-8".equals(defaultEncoding) ? "US-ASCII" : "UTF-8";
+        return Stream.of(
+                Arguments.of(new ZipFile(path.toFile()), defaultEncoding, true),
+                Arguments.of(new ZipFile(path.toFile(), otherEncoding), otherEncoding, true),
+                Arguments.of(new ZipFile(path.toFile(), otherEncoding, false), otherEncoding, false),
+                Arguments.of(new ZipFile(path.toFile(), otherEncoding, false, true), otherEncoding, false),
+                Arguments.of(new ZipFile(path), defaultEncoding, true),
+                Arguments.of(new ZipFile(path, otherEncoding), otherEncoding, true),
+                Arguments.of(new ZipFile(path, otherEncoding, false), otherEncoding, false),
+                Arguments.of(new ZipFile(path, otherEncoding, false, true), otherEncoding, false),
+                Arguments.of(new ZipFile(Files.newByteChannel(path, StandardOpenOption.READ)), defaultEncoding, true),
+                Arguments.of(new ZipFile(Files.newByteChannel(path, StandardOpenOption.READ), otherEncoding), otherEncoding, true),
+                Arguments.of(new ZipFile(Files.newByteChannel(path, StandardOpenOption.READ), null, otherEncoding, false),
+                        otherEncoding, false),
+                Arguments.of(new ZipFile(Files.newByteChannel(path, StandardOpenOption.READ), null, otherEncoding, false, true),
+                        otherEncoding, false),
+                Arguments.of(new ZipFile(path.toAbsolutePath().toString()), defaultEncoding, true),
+                Arguments.of(new ZipFile(path.toAbsolutePath().toString(), otherEncoding), otherEncoding, true));
+    }
+
+    @Test
+    void testArjConstructor() throws Exception {
+        try (InputStream inputStream = Files.newInputStream(getPath("bla.arj"));
+                ArjArchiveInputStream archiveInputStream = new ArjArchiveInputStream(inputStream, "US-ASCII")) {
+            assertEquals(inputStream, getNestedInputStream(archiveInputStream));
+            assertEquals(US_ASCII, archiveInputStream.getCharset());
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void testCpioConstructors(final CpioArchiveInputStream archiveStream, final InputStream expectedInput, final String expectedEncoding,
+            final int expectedBlockSize) throws Exception {
+        assertEquals(expectedInput, getNestedInputStream(archiveStream));
+        assertEquals(Charset.forName(expectedEncoding), archiveStream.getCharset());
+        assertEquals(expectedBlockSize, readDeclaredField(archiveStream, "blockSize", true));
+    }
+
+    @Test
+    void testDumpConstructor() throws Exception {
+        final String otherEncoding = "UTF-8".equals(Charset.defaultCharset().name()) ? "US-ASCII" : "UTF-8";
+        try (InputStream inputStream = Files.newInputStream(getPath("bla.dump"));
+                DumpArchiveInputStream archiveStream = new DumpArchiveInputStream(inputStream, otherEncoding)) {
+            assertEquals(inputStream, getNestedInputStream(archiveStream));
+            assertEquals(Charset.forName(otherEncoding), archiveStream.getCharset());
+        }
+    }
+
+    @Test
+    void testJarConstructor() throws Exception {
+        final InputStream inputStream = mock(InputStream.class);
+        try (JarArchiveInputStream archiveInputStream = new JarArchiveInputStream(inputStream, "US-ASCII")) {
+            assertEquals(US_ASCII, archiveInputStream.getCharset());
+        }
+    }
+
     @ParameterizedTest
     @MethodSource
     void testSevenZFileContructors(final SevenZFile archiveFile, final String expectedName, final int expectedMemoryLimit,
@@ -201,26 +244,6 @@ class LegacyConstructorsTest extends AbstractTest {
         assertEquals(expectedLenient, readField(archiveStream, "lenient", true));
     }
 
-    static Stream<Arguments> testTarFileConstructors() throws IOException {
-        final Path path = getPath("bla.tar");
-        final File file = getFile("bla.tar");
-        final SeekableByteChannel channel = mock(SeekableByteChannel.class);
-        final String defaultEncoding = Charset.defaultCharset().name();
-        final String otherEncoding = "UTF-8".equals(defaultEncoding) ? "US-ASCII" : "UTF-8";
-        return Stream.of(
-                Arguments.of(new TarFile(IOUtils.EMPTY_BYTE_ARRAY), defaultEncoding, false),
-                Arguments.of(new TarFile(IOUtils.EMPTY_BYTE_ARRAY, true), defaultEncoding, true),
-                Arguments.of(new TarFile(IOUtils.EMPTY_BYTE_ARRAY, otherEncoding), otherEncoding, false),
-                Arguments.of(new TarFile(file), defaultEncoding, false),
-                Arguments.of(new TarFile(file, true), defaultEncoding, true),
-                Arguments.of(new TarFile(file, otherEncoding), otherEncoding, false),
-                Arguments.of(new TarFile(path), defaultEncoding, false),
-                Arguments.of(new TarFile(path, true), defaultEncoding, true),
-                Arguments.of(new TarFile(path, otherEncoding), otherEncoding, false),
-                Arguments.of(new TarFile(channel), defaultEncoding, false),
-                Arguments.of(new TarFile(channel, 1024, 1024, otherEncoding, true), otherEncoding, true));
-    }
-
     @ParameterizedTest
     @MethodSource
     void testTarFileConstructors(final TarFile tarFile, final String expectedEncoding, final boolean expectedLenient) throws Exception {
@@ -241,29 +264,6 @@ class LegacyConstructorsTest extends AbstractTest {
         assertEquals(expectedUseUnicodeExtraFields, readDeclaredField(archiveStream, "useUnicodeExtraFields", true));
         assertEquals(expectedSupportStoredEntryDataDescriptor, readDeclaredField(archiveStream, "supportStoredEntryDataDescriptor", true));
         assertEquals(expectedSkipSplitSignature, readDeclaredField(archiveStream, "skipSplitSignature", true));
-    }
-
-    static Stream<Arguments> testZipFileConstructors() throws IOException {
-        final Path path = getPath("bla.zip");
-        final String defaultEncoding = StandardCharsets.UTF_8.name();
-        final String otherEncoding = "UTF-8".equals(defaultEncoding) ? "US-ASCII" : "UTF-8";
-        return Stream.of(
-                Arguments.of(new ZipFile(path.toFile()), defaultEncoding, true),
-                Arguments.of(new ZipFile(path.toFile(), otherEncoding), otherEncoding, true),
-                Arguments.of(new ZipFile(path.toFile(), otherEncoding, false), otherEncoding, false),
-                Arguments.of(new ZipFile(path.toFile(), otherEncoding, false, true), otherEncoding, false),
-                Arguments.of(new ZipFile(path), defaultEncoding, true),
-                Arguments.of(new ZipFile(path, otherEncoding), otherEncoding, true),
-                Arguments.of(new ZipFile(path, otherEncoding, false), otherEncoding, false),
-                Arguments.of(new ZipFile(path, otherEncoding, false, true), otherEncoding, false),
-                Arguments.of(new ZipFile(Files.newByteChannel(path, StandardOpenOption.READ)), defaultEncoding, true),
-                Arguments.of(new ZipFile(Files.newByteChannel(path, StandardOpenOption.READ), otherEncoding), otherEncoding, true),
-                Arguments.of(new ZipFile(Files.newByteChannel(path, StandardOpenOption.READ), null, otherEncoding, false),
-                        otherEncoding, false),
-                Arguments.of(new ZipFile(Files.newByteChannel(path, StandardOpenOption.READ), null, otherEncoding, false, true),
-                        otherEncoding, false),
-                Arguments.of(new ZipFile(path.toAbsolutePath().toString()), defaultEncoding, true),
-                Arguments.of(new ZipFile(path.toAbsolutePath().toString(), otherEncoding), otherEncoding, true));
     }
 
     @ParameterizedTest

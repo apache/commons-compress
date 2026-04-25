@@ -52,9 +52,9 @@ public interface ScatterGatherBackingStore extends Closeable {
     /**
      * Writes a piece of payload.
      *
-     * @param data   the data to write
-     * @param offset offset inside data to start writing from
-     * @param length the amount of data to write
+     * @param data   the data to write.
+     * @param offset offset inside data to start writing from.
+     * @param length the amount of data to write.
      * @throws IOException if an I/O error occurs.
      */
     void writeOut(byte[] data, int offset, int length) throws IOException;

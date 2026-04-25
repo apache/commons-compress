@@ -113,14 +113,24 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
         return trimmedArray;
     }
 
-    private int version = 1; // always '1' according to current info-zip spec.
-    // BigInteger helps us with little-endian / big-endian conversions.
-    // (thanks to BigInteger.toByteArray() and a reverse() method we created).
-    // Also, the spec theoretically allows UID/GID up to 255 bytes long!
-    //
-    // NOTE: equals() and hashCode() currently assume these can never be null.
+    /**
+     * The version number, always {@code 1}, according to current info-zip spec.
+     */
+    private int version = 1;
+
+
+    /**
+     * The user ID.
+     * <p>
+     * BigInteger helps us with little-endian / big-endian conversions. (thanks to BigInteger.toByteArray() and a reverse() method we created). Also, the spec
+     * theoretically allows UID/GID up to 255 bytes long! NOTE: equals() and hashCode() currently assume these can never be null.
+     * </p>
+     */
     private BigInteger uid;
 
+    /**
+     * The group ID.
+     */
     private BigInteger gid;
 
     /**
@@ -148,7 +158,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
     /**
      * The actual data to put into central directory data - without Header-ID or length specifier.
      *
-     * @return get the data
+     * @return get the data.
      */
     @Override
     public byte[] getCentralDirectoryData() {
@@ -158,7 +168,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
     /**
      * Length of the extra field in the central directory data - without Header-ID or length specifier.
      *
-     * @return a {@code ZipShort} for the length of the data of this extra field
+     * @return a {@code ZipShort} for the length of the data of this extra field.
      */
     @Override
     public ZipShort getCentralDirectoryLength() {
@@ -178,7 +188,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
     /**
      * The Header-ID.
      *
-     * @return the value for the header id for this extrafield
+     * @return the value for the header id for this extrafield.
      */
     @Override
     public ZipShort getHeaderId() {
@@ -188,7 +198,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
     /**
      * The actual data to put into local file data - without Header-ID or length specifier.
      *
-     * @return get the data
+     * @return get the data.
      */
     @Override
     public byte[] getLocalFileDataData() {
@@ -231,7 +241,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
     /**
      * Length of the extra field in the local file data - without Header-ID or length specifier.
      *
-     * @return a {@code ZipShort} for the length of the data of this extra field
+     * @return a {@code ZipShort} for the length of the data of this extra field.
      */
     @Override
     public ZipShort getLocalFileDataLength() {
@@ -274,10 +284,10 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
     /**
      * Populate data from this array as if it was in local file data.
      *
-     * @param data   an array of bytes
-     * @param offset the start offset
-     * @param length the number of bytes in the array from offset
-     * @throws java.util.zip.ZipException on error
+     * @param data   an array of bytes.
+     * @param offset the start offset.
+     * @param length the number of bytes in the array from offset.
+     * @throws java.util.zip.ZipException on error.
      */
     @Override
     public void parseFromLocalFileData(final byte[] data, int offset, final int length) throws ZipException {

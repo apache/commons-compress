@@ -120,6 +120,32 @@ class BZip2CompressorInputStreamTest extends AbstractTest {
     }
 
     @Test
+    void testFinishClose() throws Exception {
+        // Create a big random piece of data
+        final byte[] rawData = new byte[1048576];
+        for (int i = 0; i < rawData.length; ++i) {
+            rawData[i] = (byte) Math.floor(Math.random() * 256);
+        }
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try (BZip2CompressorOutputStream bzipOut = new BZip2CompressorOutputStream(baos)) {
+            bzipOut.write(rawData);
+            bzipOut.flush();
+            bzipOut.finish();
+            bzipOut.close();
+            assertTrue(bzipOut.isClosed());
+            baos.flush();
+        }
+        baos.reset();
+        try (BZip2CompressorOutputStream bzipOut = new BZip2CompressorOutputStream(baos)) {
+            bzipOut.write(rawData);
+            bzipOut.finish();
+            bzipOut.close();
+            assertTrue(bzipOut.isClosed());
+            baos.flush();
+        }
+    }
+
+    @Test
     void testHbCreateDecodeTables() throws IOException {
         assertThrows(CompressorException.class, () -> new BZip2CompressorInputStream(
                 Files.newInputStream(Paths.get("src/test/resources/org/apache/commons/compress/bzip2/hbCreateDecodeTables.bin"))));

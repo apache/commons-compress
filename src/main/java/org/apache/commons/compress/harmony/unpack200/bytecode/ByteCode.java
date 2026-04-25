@@ -34,6 +34,12 @@ public class ByteCode extends ClassFileEntry {
 
     private static ByteCode[] noArgByteCodes = new ByteCode[255];
 
+    /**
+     * Gets the ByteCode for the given opcode.
+     *
+     * @param opcode the opcode.
+     * @return the ByteCode instance.
+     */
     public static ByteCode getByteCode(final int opcode) {
         final int byteOpcode = 0xFF & opcode;
         if (ByteCodeForm.get(byteOpcode).hasNoOperand()) {
@@ -54,10 +60,21 @@ public class ByteCode extends ClassFileEntry {
     private int byteCodeOffset = -1;
     private int[] byteCodeTargets;
 
+    /**
+     * Constructs a new ByteCode with the given opcode.
+     *
+     * @param opcode the opcode.
+     */
     protected ByteCode(final int opcode) {
         this(opcode, NONE);
     }
 
+    /**
+     * Constructs a new ByteCode with the given opcode and nested entries.
+     *
+     * @param opcode the opcode.
+     * @param nested the nested class file entries.
+     */
     protected ByteCode(final int opcode, final ClassFileEntry[] nested) {
         this.byteCodeForm = ByteCodeForm.get(opcode);
         this.rewrite = byteCodeForm.getRewriteCopy();
@@ -86,6 +103,14 @@ public class ByteCode extends ClassFileEntry {
         return this == obj;
     }
 
+    /**
+     * Extracts operands from the operand manager.
+     *
+     * @param operandManager the operand manager.
+     * @param segment the segment.
+     * @param codeLength the code length.
+     * @throws Pack200Exception if an error occurs.
+     */
     public void extractOperands(final OperandManager operandManager, final Segment segment, final int codeLength) throws Pack200Exception {
         // Given an OperandTable, figure out which operands
         // the receiver needs and stuff them in operands.
@@ -94,22 +119,47 @@ public class ByteCode extends ClassFileEntry {
         getByteCodeForm().setByteCodeOperands(this, operandManager, codeLength);
     }
 
+    /**
+     * Gets the bytecode form.
+     *
+     * @return the bytecode form.
+     */
     protected ByteCodeForm getByteCodeForm() {
         return byteCodeForm;
     }
 
+    /**
+     * Gets the bytecode index.
+     *
+     * @return the bytecode index.
+     */
     public int getByteCodeIndex() {
         return byteCodeOffset;
     }
 
+    /**
+     * Gets the bytecode targets array.
+     *
+     * @return the bytecode targets array.
+     */
     public int[] getByteCodeTargets() {
         return byteCodeTargets;
     }
 
+    /**
+     * Gets the length of this bytecode.
+     *
+     * @return the length.
+     */
     public int getLength() {
         return rewrite.length;
     }
 
+    /**
+     * Gets the name of this bytecode.
+     *
+     * @return the bytecode name.
+     */
     public String getName() {
         return getByteCodeForm().getName();
     }
@@ -119,14 +169,30 @@ public class ByteCode extends ClassFileEntry {
         return nested;
     }
 
+    /**
+     * Gets the nested position array for the given index.
+     *
+     * @param index the index.
+     * @return the nested position array.
+     */
     public int[] getNestedPosition(final int index) {
         return getNestedPositions()[index];
     }
 
+    /**
+     * Gets all nested positions array.
+     *
+     * @return the nested positions array.
+     */
     public int[][] getNestedPositions() {
         return nestedPositions;
     }
 
+    /**
+     * Gets the opcode.
+     *
+     * @return the opcode value.
+     */
     public int getOpcode() {
         return getByteCodeForm().getOpcode();
     }
@@ -157,6 +223,11 @@ public class ByteCode extends ClassFileEntry {
         return getByteCodeForm().hasMultipleByteCodes();
     }
 
+    /**
+     * Tests whether nested entries must start in the class pool.
+     *
+     * @return true if nested must start in class pool.
+     */
     public boolean nestedMustStartClassPool() {
         return byteCodeForm.nestedMustStartClassPool();
     }
@@ -211,6 +282,11 @@ public class ByteCode extends ClassFileEntry {
         this.byteCodeTargets = byteCodeTargets;
     }
 
+    /**
+     * Sets the nested class file entries.
+     *
+     * @param nested the nested entries.
+     */
     public void setNested(final ClassFileEntry[] nested) {
         this.nested = nested;
     }

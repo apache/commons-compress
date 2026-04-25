@@ -40,6 +40,13 @@ public class SevenZFileOptions {
         private boolean tryToRecoverBrokenArchives = SevenZFile.Builder.TRY_TO_RECOVER_BROKEN_ARCHIVES;
 
         /**
+         * Constructs a new instance.
+         */
+        public Builder() {
+            // Default constructor
+        }
+
+        /**
          * Builds the {@link SevenZFileOptions}.
          *
          * @return configured {@link SevenZFileOptions}.
@@ -55,7 +62,7 @@ public class SevenZFileOptions {
          * </p>
          *
          * @param maxMemoryLimitKiB limit of the maximum amount of memory to use in kibibytes.
-         * @return the reconfigured builder
+         * @return the reconfigured builder.
          */
         public Builder withMaxMemoryLimitInKb(final int maxMemoryLimitKiB) {
             this.maxMemoryLimitKb = maxMemoryLimitKiB;
@@ -65,13 +72,13 @@ public class SevenZFileOptions {
         /**
          * Sets whether {@link SevenZFile} will try to recover broken archives where the CRC of the file's metadata is 0.
          * <p>
-         * This special kind of broken archive is encountered when mutli volume archives are closed prematurely. If you enable this option SevenZFile will trust
+         * This special kind of broken archive is encountered when multi volume archives are closed prematurely. If you enable this option SevenZFile will trust
          * data that looks as if it could contain metadata of an archive and allocate big amounts of memory. It is strongly recommended to not enable this
          * option without setting {@link #withMaxMemoryLimitInKb} at the same time.
          * </p>
          *
-         * @param tryToRecoverBrokenArchives if true SevenZFile will try to recover archives that are broken in the specific way
-         * @return the reconfigured builder
+         * @param tryToRecoverBrokenArchives if true SevenZFile will try to recover archives that are broken in the specific way.
+         * @return the reconfigured builder.
          * @since 1.21
          */
         public Builder withTryToRecoverBrokenArchives(final boolean tryToRecoverBrokenArchives) {
@@ -82,8 +89,8 @@ public class SevenZFileOptions {
         /**
          * Sets whether entries without a name should get their names set to the archive's default file name.
          *
-         * @param useDefaultNameForUnnamedEntries if true the name of unnamed entries will be set to the archive's default name
-         * @return the reconfigured builder
+         * @param useDefaultNameForUnnamedEntries if true the name of unnamed entries will be set to the archive's default name.
+         * @return the reconfigured builder.
          */
         public Builder withUseDefaultNameForUnnamedEntries(final boolean useDefaultNameForUnnamedEntries) {
             this.useDefaultNameForUnnamedEntries = useDefaultNameForUnnamedEntries;
@@ -145,7 +152,7 @@ public class SevenZFileOptions {
     /**
      * Gets whether entries without a name should get their names set to the archive's default file name.
      *
-     * @return whether entries without a name should get their names set to the archive's default file name
+     * @return whether entries without a name should get their names set to the archive's default file name.
      */
     public boolean getUseDefaultNameForUnnamedEntries() {
         return useDefaultNameForUnnamedEntries;

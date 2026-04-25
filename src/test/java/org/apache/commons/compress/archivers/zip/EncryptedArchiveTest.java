@@ -34,9 +34,7 @@ class EncryptedArchiveTest {
 
     @Test
     void testReadPasswordEncryptedEntryViaStream() throws IOException {
-        try (ZipArchiveInputStream zin = ZipArchiveInputStream.builder()
-                .setURI(getURI("password-encrypted.zip"))
-                .get()) {
+        try (ZipArchiveInputStream zin = ZipArchiveInputStream.builder().setURI(getURI("password-encrypted.zip")).get()) {
             final ZipArchiveEntry zae = zin.getNextZipEntry();
             assertEquals("LICENSE.txt", zae.getName());
             assertTrue(zae.getGeneralPurposeBit().usesEncryption());
@@ -47,6 +45,7 @@ class EncryptedArchiveTest {
                 zin.read(buf, 0, buf.length);
             }, "expected an exception");
             assertSame(UnsupportedZipFeatureException.Feature.ENCRYPTION, ex.getFeature());
+            assertTrue(ex.getFeature().toString().contains("encryption"));
         }
     }
 
@@ -59,6 +58,7 @@ class EncryptedArchiveTest {
             assertFalse(zf.canReadEntryData(zae));
             final UnsupportedZipFeatureException ex = assertThrows(UnsupportedZipFeatureException.class, () -> zf.getInputStream(zae), "expected an exception");
             assertSame(UnsupportedZipFeatureException.Feature.ENCRYPTION, ex.getFeature());
+            assertTrue(ex.getFeature().toString().contains("encryption"));
         }
     }
 }

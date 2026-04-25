@@ -30,6 +30,12 @@ public class CPMethodOrField extends ConstantPoolEntry implements Comparable {
     private int indexInClass = -1;
     private int indexInClassForConstructor = -1;
 
+    /**
+     * Constructs a new instance.
+     *
+     * @param className the class name.
+     * @param nameAndType the name and type.
+     */
     public CPMethodOrField(final CPClass className, final CPNameAndType nameAndType) {
         this.className = className;
         this.nameAndType = nameAndType;
@@ -48,34 +54,74 @@ public class CPMethodOrField extends ConstantPoolEntry implements Comparable {
         return 0;
     }
 
+    /**
+     * Gets the class index.
+     *
+     * @return the class index.
+     */
     public int getClassIndex() {
         return className.getIndex();
     }
 
+    /**
+     * Gets the class name.
+     *
+     * @return the class name.
+     */
     public CPClass getClassName() {
         return className;
     }
 
+    /**
+     * Gets the descriptor (name and type).
+     *
+     * @return the descriptor.
+     */
     public CPNameAndType getDesc() {
         return nameAndType;
     }
 
+    /**
+     * Gets the descriptor index.
+     *
+     * @return the descriptor index.
+     */
     public int getDescIndex() {
         return nameAndType.getIndex();
     }
 
+    /**
+     * Gets the index in class.
+     *
+     * @return the index in class.
+     */
     public int getIndexInClass() {
         return indexInClass;
     }
 
+    /**
+     * Gets the index in class for constructor.
+     *
+     * @return the index in class for constructor.
+     */
     public int getIndexInClassForConstructor() {
         return indexInClassForConstructor;
     }
 
+    /**
+     * Sets the index in class.
+     *
+     * @param index the index.
+     */
     public void setIndexInClass(final int index) {
         indexInClass = index;
     }
 
+    /**
+     * Sets the index in class for constructor.
+     *
+     * @param index the index.
+     */
     public void setIndexInClassForConstructor(final int index) {
         indexInClassForConstructor = index;
     }

@@ -125,7 +125,9 @@ public class ClassBands extends BandSet {
     private boolean[] codeHasAttributes;
 
     /**
-     * @param segment TODO
+     * Constructs a new ClassBands instance.
+     *
+     * @param segment the segment.
      */
     public ClassBands(final Segment segment) {
         super(segment);
@@ -159,14 +161,29 @@ public class ClassBands extends BandSet {
         return callCount;
     }
 
+    /**
+     * Gets the class attributes array.
+     *
+     * @return the class attributes array.
+     */
     public ArrayList<Attribute>[] getClassAttributes() {
         return classAttributes;
     }
 
+    /**
+     * Gets the class field counts array.
+     *
+     * @return the class field count array.
+     */
     public int[] getClassFieldCount() {
         return classFieldCount;
     }
 
+    /**
+     * Gets the class flags array.
+     *
+     * @return the class flags array.
+     */
     public long[] getClassFlags() {
         if (classAccessFlags == null) {
             long mask = 0x7FFF;
@@ -184,18 +201,38 @@ public class ClassBands extends BandSet {
         return classAccessFlags;
     }
 
+    /**
+     * Gets the class interfaces array.
+     *
+     * @return the class interfaces array.
+     */
     public int[][] getClassInterfacesInts() {
         return classInterfacesInts;
     }
 
+    /**
+     * Gets the class method counts array.
+     *
+     * @return the class method count array.
+     */
     public int[] getClassMethodCount() {
         return classMethodCount;
     }
 
+    /**
+     * Gets the class super class array.
+     *
+     * @return the class super array.
+     */
     public int[] getClassSuperInts() {
         return classSuperInts;
     }
 
+    /**
+     * Gets the class this array.
+     *
+     * @return the class this array.
+     */
     public int[] getClassThisInts() {
         return classThisInts;
     }
@@ -220,46 +257,101 @@ public class ClassBands extends BandSet {
         return classVersionMinor;
     }
 
+    /**
+     * Gets the code handler catch program offsets.
+     *
+     * @return the catch PO array.
+     */
     public int[][] getCodeHandlerCatchPO() {
         return codeHandlerCatchPO;
     }
 
+    /**
+     * Gets the code handler class reference numbers.
+     *
+     * @return the class RCN array.
+     */
     public int[][] getCodeHandlerClassRCN() {
         return codeHandlerClassRCN;
     }
 
+    /**
+     * Gets the code handler counts.
+     *
+     * @return the handler count array.
+     */
     public int[] getCodeHandlerCount() {
         return codeHandlerCount;
     }
 
+    /**
+     * Gets the code handler end program offsets.
+     *
+     * @return the end PO array.
+     */
     public int[][] getCodeHandlerEndPO() {
         return codeHandlerEndPO;
     }
 
+    /**
+     * Gets the code handler start program offsets.
+     *
+     * @return the start P array.
+     */
     public int[][] getCodeHandlerStartP() {
         return codeHandlerStartP;
     }
 
+    /**
+     * Gets array indicating which code has attributes.
+     *
+     * @return the code has attributes array.
+     */
     public boolean[] getCodeHasAttributes() {
         return codeHasAttributes;
     }
 
+    /**
+     * Gets the code maximum NA locals.
+     *
+     * @return the max NA locals array.
+     */
     public int[] getCodeMaxNALocals() {
         return codeMaxNALocals;
     }
 
+    /**
+     * Gets the code maximum stack sizes.
+     *
+     * @return the max stack array.
+     */
     public int[] getCodeMaxStack() {
         return codeMaxStack;
     }
 
+    /**
+     * Gets the field attributes.
+     *
+     * @return the field attributes array.
+     */
     public ArrayList<Attribute>[][] getFieldAttributes() {
         return fieldAttributes;
     }
 
+    /**
+     * Gets the field descriptor indices.
+     *
+     * @return the field descriptor indices array.
+     */
     public int[][] getFieldDescrInts() {
         return fieldDescrInts;
     }
 
+    /**
+     * Gets the field flags (access flags).
+     *
+     * @return the field flags array.
+     */
     public long[][] getFieldFlags() {
         if (fieldAccessFlags == null) {
             long mask = 0x7FFF;
@@ -280,22 +372,47 @@ public class ClassBands extends BandSet {
         return fieldAccessFlags;
     }
 
+    /**
+     * Gets the IC local tuples.
+     *
+     * @return the IC local array.
+     */
     public IcTuple[][] getIcLocal() {
         return icLocal;
     }
 
+    /**
+     * Gets the method attributes.
+     *
+     * @return the method attributes array.
+     */
     public ArrayList<Attribute>[][] getMethodAttributes() {
         return methodAttributes;
     }
 
+    /**
+     * Gets the method descriptors as strings.
+     *
+     * @return the method descriptor string array.
+     */
     public String[][] getMethodDescr() {
         return methodDescr;
     }
 
+    /**
+     * Gets the method descriptor indices.
+     *
+     * @return the method descriptor indices array.
+     */
     public int[][] getMethodDescrInts() {
         return methodDescrInts;
     }
 
+    /**
+     * Gets the method flags (access flags).
+     *
+     * @return the method flags array.
+     */
     public long[][] getMethodFlags() {
         if (methodAccessFlags == null) {
             long mask = 0x7FFF;
@@ -327,6 +444,11 @@ public class ClassBands extends BandSet {
         return Stream.of(codeAttributes).map(ArrayList::new).collect(Collectors.toCollection(ArrayList::new));
     }
 
+    /**
+     * Gets the raw class flags before masking.
+     *
+     * @return the raw class flags array.
+     */
     public long[] getRawClassFlags() {
         return classFlags;
     }
@@ -533,8 +655,8 @@ public class ClassBands extends BandSet {
     /**
      * Parse the class metadata bands and return the number of backwards callables.
      *
-     * @param in             TODO
-     * @param classAttrCalls TODO
+     * @param in             the input stream to read from.
+     * @param classAttrCalls the class attribute calls array.
      * @return the number of backwards callables.
      * @throws Pack200Exception If a Pack200 semantic error occurs.
      * @throws IOException      If an I/O error occurs.

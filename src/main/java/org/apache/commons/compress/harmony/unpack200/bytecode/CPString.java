@@ -70,7 +70,7 @@ public class CPString extends CPConstant {
     /**
      * Allows the constant pool entries to resolve their nested entries
      *
-     * @param pool TODO
+     * @param pool the constant pool.
      */
     @Override
     protected void resolve(final ClassConstantPool pool) {

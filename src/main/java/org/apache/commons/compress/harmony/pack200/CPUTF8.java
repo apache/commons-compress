@@ -27,6 +27,11 @@ public class CPUTF8 extends ConstantPoolEntry implements Comparable {
 
     private final String string;
 
+    /**
+     * Constructs a new CPUTF8.
+     *
+     * @param string the UTF-8 string.
+     */
     public CPUTF8(final String string) {
         this.string = string;
     }
@@ -36,9 +41,31 @@ public class CPUTF8 extends ConstantPoolEntry implements Comparable {
         return string.compareTo(((CPUTF8) arg0).string);
     }
 
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof CPUTF8)) {
+            return false;
+        }
+        return compareTo(obj) == 0;
+    }
+
+    /**
+     * Gets the underlying string.
+     *
+     * @return the underlying string.
+     */
     public String getUnderlyingString() {
         return string;
     }
+
+    @Override
+    public int hashCode() {
+        return string.hashCode();
+    }
+
 
     @Override
     public String toString() {

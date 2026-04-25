@@ -46,12 +46,12 @@ import java.util.zip.ZipException;
  * </pre>
  *
  * <ul>
- * <li>0x0007 - reserved for future use
- * <li>0x000F - reserved for future use
+ * <li>0x0007 - reserved for future use</li>
+ * <li>0x000F - reserved for future use</li>
  * <li>0x0100 - Indicates non-OAEP key wrapping was used. If this field is set, the version needed to extract must be at least 61. This means OAEP key
- * wrapping is not used when generating a Master Session Key using ErdData.
- * <li>0x4000 - ErdData must be decrypted using 3DES-168, otherwise use the same algorithm used for encrypting the file contents.
- * <li>0x8000 - reserved for future use
+ * wrapping is not used when generating a Master Session Key using ErdData.</li>
+ * <li>0x4000 - ErdData must be decrypted using 3DES-168, otherwise use the same algorithm used for encrypting the file contents.</li>
+ * <li>0x8000 - reserved for future use</li>
  * </ul>
  *
  * <pre>
@@ -239,12 +239,12 @@ import java.util.zip.ZipException;
  * <li>0x0001 - Password is required to decrypt</li>
  * <li>0x0002 - Certificates only</li>
  * <li>0x0003 - Password or certificate required to decrypt</li>
- * <li>0x0007 - reserved for future use
- * <li>0x000F - reserved for future use
+ * <li>0x0007 - reserved for future use</li>
+ * <li>0x000F - reserved for future use</li>
  * <li>0x0100 - indicates non-OAEP key wrapping was used. If this field is set the version needed to extract must be at least 61. This means OAEP key wrapping
- * is not used when generating a Master Session Key using ErdData.
- * <li>0x4000 - ErdData must be decrypted using 3DES-168, otherwise use the same algorithm used for encrypting the file contents.
- * <li>0x8000 - reserved for future use.
+ * is not used when generating a Master Session Key using ErdData.</li>
+ * <li>0x4000 - ErdData must be decrypted using 3DES-168, otherwise use the same algorithm used for encrypting the file contents.</li>
+ * <li>0x8000 - reserved for future use.</li>
  * </ul>
  *
  * <p>
@@ -300,7 +300,7 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
     /**
      * Gets encryption algorithm.
      *
-     * @return the encryption algorithm
+     * @return the encryption algorithm.
      */
     public EncryptionAlgorithm getEncryptionAlgorithm() {
         return algId;
@@ -309,7 +309,7 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
     /**
      * Gets hash algorithm.
      *
-     * @return the hash algorithm
+     * @return the hash algorithm.
      */
     public HashAlgorithm getHashAlgorithm() {
         return hashAlg;
@@ -318,7 +318,7 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
     /**
      * Gets record count.
      *
-     * @return the record count
+     * @return the record count.
      */
     public long getRecordCount() {
         return rcount;
@@ -327,10 +327,10 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
     /**
      * Parse central directory format.
      *
-     * @param data   the buffer to read data from
-     * @param offset offset into buffer to read data
-     * @param length the length of data
-     * @throws ZipException if an error occurs
+     * @param data   the buffer to read data from.
+     * @param offset offset into buffer to read data.
+     * @param length the length of data.
+     * @throws ZipException if an error occurs.
      */
     public void parseCentralDirectoryFormat(final byte[] data, final int offset, final int length) throws ZipException {
         assertMinimalLength(12, length);
@@ -355,10 +355,10 @@ public class X0017_StrongEncryptionHeader extends PKWareExtraHeader {
      * (Password only?)
      * </p>
      *
-     * @param data   the buffer to read data from
-     * @param offset offset into buffer to read data
-     * @param length the length of data
-     * @throws ZipException if an error occurs
+     * @param data   the buffer to read data from.
+     * @param offset offset into buffer to read data.
+     * @param length the length of data.
+     * @throws ZipException if an error occurs.
      */
     public void parseFileFormat(final byte[] data, final int offset, final int length) throws ZipException {
         assertMinimalLength(4, length);

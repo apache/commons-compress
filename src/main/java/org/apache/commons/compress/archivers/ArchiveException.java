@@ -69,10 +69,10 @@ public class ArchiveException extends CompressException {
      * Checks that the specified object reference is not {@code null} and throws a customized {@link ArchiveException} if it is. *
      *
      * @param obj             the object reference to check for nullity.
-     * @param messageSupplier supplier of the detail message to be used in the event that a {@code ArchiveException} is thrown
+     * @param messageSupplier supplier of the detail message to be used in the event that a {@code ArchiveException} is thrown.
      * @param <T>             the type of the reference.
-     * @return {@code obj} if not {@code null}
-     * @throws ArchiveException if {@code obj} is {@code null}
+     * @return {@code obj} if not {@code null}.
+     * @throws ArchiveException if {@code obj} is {@code null}.
      * @since 1.28.0
      */
     public static <T> T requireNonNull(final T obj, final Supplier<String> messageSupplier) throws ArchiveException {

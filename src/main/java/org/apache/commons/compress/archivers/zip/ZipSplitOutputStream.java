@@ -71,10 +71,10 @@ final class ZipSplitOutputStream extends RandomAccessOutputStream {
      * Creates a split ZIP. If the ZIP file is smaller than the split size, then there will only be one split ZIP, and its suffix is .zip, otherwise the split
      * segments should be like .z01, .z02, ... .z(N-1), .zip
      *
-     * @param zipFile   the ZIP file to write to
-     * @param splitSize the split size
+     * @param zipFile   the ZIP file to write to.
+     * @param splitSize the split size.
      * @throws IllegalArgumentException if arguments are illegal: Zip split segment size should between 64K and 4,294,967,295.
-     * @throws IOException              if an I/O error occurs
+     * @throws IOException              if an I/O error occurs.
      */
     ZipSplitOutputStream(final File zipFile, final long splitSize) throws IllegalArgumentException, IOException {
         this(zipFile.toPath(), splitSize);
@@ -132,8 +132,8 @@ final class ZipSplitOutputStream extends RandomAccessOutputStream {
      * NOTE: The ZIP split segment begin from 1,2,3,... , and we're creating a new segment, so the new segment suffix should be (currentSplitSegmentIndex + 2)
      * </p>
      *
-     * @param zipSplitSegmentSuffixIndex
-     * @return
+     * @param zipSplitSegmentSuffixIndex.
+     * @return a new Path.
      * @throws IOException if an I/O error occurs.
      */
     private Path createNewSplitSegmentFile(final Integer zipSplitSegmentSuffixIndex) throws IOException {
@@ -250,10 +250,10 @@ final class ZipSplitOutputStream extends RandomAccessOutputStream {
     /**
      * Writes the data to ZIP split segments, if the remaining space of current split segment is not enough, then a new split segment should be created
      *
-     * @param b   data to write
-     * @param off offset of the start of data in param b
-     * @param len the length of data to write
-     * @throws NullPointerException      if {@code b} is null
+     * @param b   data to write.
+     * @param off offset of the start of data in param b.
+     * @param len the length of data to write.
+     * @throws NullPointerException      if {@code b} is null.
      * @throws IndexOutOfBoundsException if {@code off} or {@code len} are negative,
      *                                   or if {@code off + len} is greater than {@code b.length}.
      * @throws IOException if an I/O error occurs.

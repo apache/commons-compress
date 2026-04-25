@@ -35,9 +35,9 @@ public class BoundedSeekableByteChannelInputStream extends BoundedArchiveInputSt
     /**
      * Constructs a bounded stream on the underlying {@link SeekableByteChannel}
      *
-     * @param start     Position in the stream from where the reading of this bounded stream starts
-     * @param remaining Amount of bytes which are allowed to read from the bounded stream
-     * @param channel   Channel which the reads will be delegated to
+     * @param start     Position in the stream from where the reading of this bounded stream starts.
+     * @param remaining Amount of bytes which are allowed to read from the bounded stream.
+     * @param channel   Channel which the reads will be delegated to.
      */
     public BoundedSeekableByteChannelInputStream(final long start, final long remaining, final SeekableByteChannel channel) {
         super(start, remaining);

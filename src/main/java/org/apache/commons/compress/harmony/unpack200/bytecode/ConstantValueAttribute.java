@@ -31,6 +31,11 @@ public class ConstantValueAttribute extends Attribute {
 
     private static CPUTF8 attributeName;
 
+    /**
+     * Sets the attribute name.
+     *
+     * @param cpUTF8Value the attribute name.
+     */
     public static void setAttributeName(final CPUTF8 cpUTF8Value) {
         attributeName = cpUTF8Value;
     }

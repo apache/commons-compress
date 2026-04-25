@@ -30,14 +30,26 @@ public class LineNumberTableAttribute extends BCIRenumberedAttribute {
 
     private static CPUTF8 attributeName;
 
+    /**
+     * Sets the attribute name.
+     *
+     * @param cpUTF8Value the attribute name.
+     */
     public static void setAttributeName(final CPUTF8 cpUTF8Value) {
         attributeName = cpUTF8Value;
     }
 
-    private final int lineNumberTableLength;
+    private int lineNumberTableLength;
     private final int[] startPcs;
     private final int[] lineNumbers;
 
+    /**
+     * Constructs a new LineNumberTableAttribute.
+     *
+     * @param lineNumberTableLength the table length.
+     * @param startPcs the start program counters.
+     * @param lineNumbers the line numbers.
+     */
     public LineNumberTableAttribute(final int lineNumberTableLength, final int[] startPcs, final int[] lineNumbers) {
         super(attributeName);
         this.lineNumberTableLength = lineNumberTableLength;

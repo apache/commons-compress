@@ -218,7 +218,7 @@ public final class IOUtils {
     }
 
     /**
-     * Gets part of the contents of an {@code InputStream} as a {@code byte[]}.
+     * Reads part of the contents of an {@code InputStream} as a {@code byte[]}.
      *
      * @param input the {@code InputStream} to read from.
      * @param length   maximum amount of bytes to copy.
@@ -234,7 +234,7 @@ public final class IOUtils {
     }
 
     /**
-     * Gets part of the contents of an {@code ReadableByteChannel} as a {@code byte[]}.
+     * Reads part of the contents of an {@code ReadableByteChannel} as a {@code byte[]}.
      *
      * @param input the {@code ReadableByteChannel} to read from.
      * @param length   maximum amount of bytes to copy.
@@ -287,7 +287,7 @@ public final class IOUtils {
      * @param input the {@code InputStream} to read from.
      * @return the requested byte array.
      * @throws NullPointerException Thrown if the input is null.
-     * @throws IOException          Thrown if an I/O error occurs or reads more than {@link Integer#MAX_VALUE} occurs
+     * @throws IOException          Thrown if an I/O error occurs or reads more than {@link Integer#MAX_VALUE} occurs.
      * @since 1.5
      * @deprecated Use {@link org.apache.commons.io.IOUtils#toByteArray(InputStream)}.
      */
@@ -296,7 +296,7 @@ public final class IOUtils {
         return org.apache.commons.io.IOUtils.toByteArray(input);
     }
 
-    /** Private constructor to prevent instantiation of this utility class. */
+    /** Constructs a new instance. */
     private IOUtils() {
     }
 

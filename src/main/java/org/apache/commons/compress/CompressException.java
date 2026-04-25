@@ -63,7 +63,7 @@ public class CompressException extends IOException {
      * @param <E>             The type of the exception.
      * @param cls             The exception class.
      * @param obj             The object reference to check for nullity.
-     * @param messageSupplier supplier of the detail message to be used in the event that a {@code ArchiveException} is thrown
+     * @param messageSupplier supplier of the detail message to be used in the event that a {@code ArchiveException} is thrown.
      * @return {@code obj} if not {@code null}.
      * @throws E if {@code obj} is {@code null}.
      */

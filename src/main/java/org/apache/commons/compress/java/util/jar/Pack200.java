@@ -142,7 +142,7 @@ public abstract class Pack200 {
         /**
          * Adds a listener for PropertyChange events
          *
-         * @param listener the listener to listen if PropertyChange events occurs
+         * @param listener the listener to listen if PropertyChange events occurs.
          */
         void addPropertyChangeListener(PropertyChangeListener listener);
 
@@ -174,7 +174,7 @@ public abstract class Pack200 {
         /**
          * Removes a listener
          *
-         * @param listener listener to remove
+         * @param listener listener to remove.
          */
         void removePropertyChangeListener(PropertyChangeListener listener);
     }
@@ -283,7 +283,7 @@ public abstract class Pack200 {
      * instance of the specified class is returned, otherwise the system's default implementation is returned.
      * </p>
      *
-     * @return an instance of {@code Packer}
+     * @return an instance of {@code Packer}.
      */
     public static Pack200.Packer newPacker() {
         return (Packer) newInstance(SYSTEM_PROPERTY_PACKER, "org.apache.commons.compress.harmony.pack200.Pack200PackerAdapter"); //$NON-NLS-1$

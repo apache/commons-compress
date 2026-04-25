@@ -210,4 +210,13 @@ public class Messages {
         }
         return null;
     }
+
+    /**
+     * Constructs a new instance.
+     *
+     * @deprecated Will be removed in 2.0.
+     */
+    @Deprecated
+    public Messages() {
+    }
 }

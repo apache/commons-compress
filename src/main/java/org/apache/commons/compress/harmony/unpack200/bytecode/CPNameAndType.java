@@ -46,8 +46,8 @@ public class CPNameAndType extends ConstantPoolEntry {
     /**
      * Constructs a new CPNameAndType.
      *
-     * @param name        TODO
-     * @param descriptor  TODO
+     * @param name        the name as a UTF8 constant pool entry.
+     * @param descriptor  the descriptor as a UTF8 constant pool entry.
      * @param globalIndex index in CpBands
      * @throws NullPointerException if name or descriptor is null
      */

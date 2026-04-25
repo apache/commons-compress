@@ -31,6 +31,9 @@ public class CPClass extends ConstantPoolEntry {
 
     private int index;
 
+    /**
+     * The class name.
+     */
     public String name;
 
     private final CPUTF8 utf8;
@@ -42,7 +45,7 @@ public class CPClass extends ConstantPoolEntry {
     /**
      * Creates a new CPClass
      *
-     * @param name        TODO
+     * @param name        the class name as a UTF8 constant pool entry.
      * @param globalIndex index in CpBands
      * @throws NullPointerException if name is null
      */
@@ -69,6 +72,11 @@ public class CPClass extends ConstantPoolEntry {
         cachedHashCode = utf8.hashCode();
     }
 
+    /**
+     * Gets the class name.
+     *
+     * @return the class name.
+     */
     public String getName() {
         return name;
     }

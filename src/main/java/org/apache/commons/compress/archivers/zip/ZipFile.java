@@ -117,7 +117,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
      * The channel will be opened for reading, assuming the specified encoding for file names.
      * </p>
      * <p>
-     * See {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} to read from an in-memory archive.
+     * See {@link org.apache.commons.io.channels.ByteArraySeekableByteChannel} to read from an in-memory archive.
      * </p>
      * <p>
      * By default, the central directory record and all local file headers of the archive will be read immediately which may take a considerable amount of time
@@ -497,7 +497,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
     /**
      * Closes a ZIP file quietly; throwing no IOException, does nothing on null input.
      *
-     * @param zipFile file to close, can be null
+     * @param zipFile file to close, can be null.
      */
     public static void closeQuietly(final ZipFile zipFile) {
         IOUtils.closeQuietly(zipFile);
@@ -559,7 +559,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
     /**
      * Searches for the end positions the stream at the start of the &quot;End of central dir record&quot;.
      *
-     * @return true if it's Zip64 end of central directory or false if it's Zip32
+     * @return true if it's Zip64 end of central directory or false if it's Zip32.
      */
     private static boolean positionAtEndOfCentralDirectoryRecord(final SeekableByteChannel channel) throws IOException {
         final boolean found = tryToLocateSignature(channel, MIN_EOCD_SIZE, MAX_EOCD_SIZE, ZipArchiveOutputStream.EOCD_SIG);
@@ -612,7 +612,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
      * <li>20 thru 255 - unused</li>
      * </ul>
      *
-     * @param versionMadeBy version/
+     * @param versionMadeBy version/.
      * @return a platform code.
      */
     static int toPlatform(final int versionMadeBy) {
@@ -777,7 +777,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
      * Opens the given file for reading, assuming the specified encoding for file names and scanning for Unicode extra fields.
      *
      * @param file     the archive.
-     * @param encoding the encoding to use for file names, use null for the platform's default encoding
+     * @param encoding the encoding to use for file names, use null for the platform's default encoding.
      * @throws IOException if an error occurs while reading the file.
      * @deprecated Use {@link Builder#get()}.
      */
@@ -790,7 +790,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
      * Opens the given file for reading, assuming the specified encoding for file names.
      *
      * @param file                  the archive.
-     * @param encoding              the encoding to use for file names, use null for the platform's default encoding
+     * @param encoding              the encoding to use for file names, use null for the platform's default encoding.
      * @param useUnicodeExtraFields whether to use InfoZIP Unicode Extra Fields (if present) to set the file names.
      * @throws IOException if an error occurs while reading the file.
      * @deprecated Use {@link Builder#get()}.
@@ -811,9 +811,9 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
      * </p>
      *
      * @param file                  the archive.
-     * @param encoding              the encoding to use for file names, use null for the platform's default encoding
+     * @param encoding              the encoding to use for file names, use null for the platform's default encoding.
      * @param useUnicodeExtraFields whether to use InfoZIP Unicode Extra Fields (if present) to set the file names.
-     * @param ignoreLocalFileHeader whether to ignore information stored inside the local file header (see the notes in this method's Javadoc)
+     * @param ignoreLocalFileHeader whether to ignore information stored inside the local file header (see the notes in this method's Javadoc).
      * @throws IOException if an error occurs while reading the file.
      * @since 1.19
      * @deprecated Use {@link Builder#get()}.
@@ -840,7 +840,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
      * Opens the given path for reading, assuming the specified encoding for file names and scanning for Unicode extra fields.
      *
      * @param path     path to the archive.
-     * @param encoding the encoding to use for file names, use null for the platform's default encoding
+     * @param encoding the encoding to use for file names, use null for the platform's default encoding.
      * @throws IOException if an error occurs while reading the file.
      * @since 1.22
      * @deprecated Use {@link Builder#get()}.
@@ -854,7 +854,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
      * Opens the given path for reading, assuming the specified encoding for file names.
      *
      * @param path                  path to the archive.
-     * @param encoding              the encoding to use for file names, use null for the platform's default encoding
+     * @param encoding              the encoding to use for file names, use null for the platform's default encoding.
      * @param useUnicodeExtraFields whether to use InfoZIP Unicode Extra Fields (if present) to set the file names.
      * @throws IOException if an error occurs while reading the file.
      * @since 1.22
@@ -876,9 +876,9 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
      * </p>
      *
      * @param path                  path to the archive.
-     * @param encoding              the encoding to use for file names, use null for the platform's default encoding
+     * @param encoding              the encoding to use for file names, use null for the platform's default encoding.
      * @param useUnicodeExtraFields whether to use InfoZIP Unicode Extra Fields (if present) to set the file names.
-     * @param ignoreLocalFileHeader whether to ignore information stored inside the local file header (see the notes in this method's Javadoc)
+     * @param ignoreLocalFileHeader whether to ignore information stored inside the local file header (see the notes in this method's Javadoc).
      * @throws IOException if an error occurs while reading the file.
      * @since 1.22
      * @deprecated Use {@link Builder#get()}.
@@ -892,7 +892,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
     /**
      * Opens the given channel for reading, assuming "UTF-8" for file names.
      * <p>
-     * {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} allows you to read from an in-memory archive.
+     * {@link org.apache.commons.io.channels.ByteArraySeekableByteChannel} allows you to read from an in-memory archive.
      * </p>
      *
      * @param channel the archive.
@@ -908,11 +908,11 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
     /**
      * Opens the given channel for reading, assuming the specified encoding for file names.
      * <p>
-     * {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} allows you to read from an in-memory archive.
+     * {@link org.apache.commons.io.channels.ByteArraySeekableByteChannel} allows you to read from an in-memory archive.
      * </p>
      *
      * @param channel  the archive.
-     * @param encoding the encoding to use for file names, use null for the platform's default encoding
+     * @param encoding the encoding to use for file names, use null for the platform's default encoding.
      * @throws IOException if an error occurs while reading the file.
      * @since 1.13
      * @deprecated Use {@link Builder#get()}.
@@ -925,12 +925,12 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
     /**
      * Opens the given channel for reading, assuming the specified encoding for file names.
      * <p>
-     * {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} allows you to read from an in-memory archive.
+     * {@link org.apache.commons.io.channels.ByteArraySeekableByteChannel} allows you to read from an in-memory archive.
      * </p>
      *
      * @param channel               the archive.
      * @param channelDescription    description of the archive, used for error messages only.
-     * @param encoding              the encoding to use for file names, use null for the platform's default encoding
+     * @param encoding              the encoding to use for file names, use null for the platform's default encoding.
      * @param useUnicodeExtraFields whether to use InfoZIP Unicode Extra Fields (if present) to set the file names.
      * @throws IOException if an error occurs while reading the file.
      * @since 1.13
@@ -945,7 +945,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
     /**
      * Opens the given channel for reading, assuming the specified encoding for file names.
      * <p>
-     * {@link org.apache.commons.compress.utils.SeekableInMemoryByteChannel} allows you to read from an in-memory archive.
+     * {@link org.apache.commons.io.channels.ByteArraySeekableByteChannel} allows you to read from an in-memory archive.
      * </p>
      * <p>
      * By default, the central directory record and all local file headers of the archive will be read immediately which may take a considerable amount of time
@@ -957,9 +957,9 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
      *
      * @param channel               the archive.
      * @param channelDescription    description of the archive, used for error messages only.
-     * @param encoding              the encoding to use for file names, use null for the platform's default encoding
+     * @param encoding              the encoding to use for file names, use null for the platform's default encoding.
      * @param useUnicodeExtraFields whether to use InfoZIP Unicode Extra Fields (if present) to set the file names.
-     * @param ignoreLocalFileHeader whether to ignore information stored inside the local file header (see the notes in this method's Javadoc)
+     * @param ignoreLocalFileHeader whether to ignore information stored inside the local file header (see the notes in this method's Javadoc).
      * @throws IOException if an error occurs while reading the file.
      * @since 1.19
      * @deprecated Use {@link Builder#get()}.
@@ -987,7 +987,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
      * Opens the given file for reading, assuming the specified encoding for file names, scanning unicode extra fields.
      *
      * @param name     name of the archive.
-     * @param encoding the encoding to use for file names, use null for the platform's default encoding
+     * @param encoding the encoding to use for file names, use null for the platform's default encoding.
      * @throws IOException if an error occurs while reading the file.
      * @deprecated Use {@link Builder#get()}.
      */
@@ -1002,7 +1002,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
      * May return false if it is set up to use encryption or a compression method that hasn't been implemented yet.
      * </p>
      *
-     * @param entry the entry
+     * @param entry the entry.
      * @return whether this class is able to read the given entry.
      * @since 1.1
      */
@@ -1030,9 +1030,9 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
      * This method transfers entries based on the central directory of the ZIP file.
      * </p>
      *
-     * @param target    The zipArchiveOutputStream to write the entries to
-     * @param predicate A predicate that selects which entries to write
-     * @throws IOException on error
+     * @param target    The zipArchiveOutputStream to write the entries to.
+     * @param predicate A predicate that selects which entries to write.
+     * @throws IOException on error.
      */
     public void copyRawEntries(final ZipArchiveOutputStream target, final ZipArchiveEntryPredicate predicate) throws IOException {
         final Enumeration<ZipArchiveEntry> src = getEntriesInPhysicalOrder();
@@ -1711,7 +1711,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
     /**
      * Sorts entries in place by offset.
      *
-     * @param allEntries entries to sort
+     * @param allEntries entries to sort.
      * @return the given entries, sorted.
      */
     private ZipArchiveEntry[] sortByOffset(final ZipArchiveEntry[] allEntries) {

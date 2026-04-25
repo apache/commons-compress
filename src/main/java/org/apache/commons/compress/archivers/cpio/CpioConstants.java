@@ -31,6 +31,7 @@ package org.apache.commons.compress.archivers.cpio;
  * </p>
  */
 public interface CpioConstants {
+
     /** Magic number of a cpio entry in the new format */
     String MAGIC_NEW = "070701";
 

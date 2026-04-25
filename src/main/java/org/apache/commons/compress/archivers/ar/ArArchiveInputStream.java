@@ -179,7 +179,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
      *
      * <p>Since 1.29.0: throws {@link IOException}.</p>
      *
-     * @param inputStream the ar input stream
+     * @param inputStream the ar input stream.
      * @throws IOException if an I/O error has occurred.
      */
     public ArArchiveInputStream(final InputStream inputStream) throws IOException {
@@ -204,6 +204,10 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
 
     private long asLong(final byte[] byteArray, final int offset, final int len) throws IOException {
         return ParsingUtils.parseLongValue(ArchiveUtils.toAsciiString(byteArray, offset, len).trim());
+    }
+
+    private int checkEntryNameLength(final int nameLength) throws ArchiveException, MemoryLimitException {
+        return ArchiveUtils.checkEntryNameLength(nameLength, getMaxEntryNameLength(), "AR");
     }
 
     /**
@@ -260,9 +264,9 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
     /**
      * Gets an extended name from the GNU extended name buffer.
      *
-     * @param offset pointer to entry within the buffer
+     * @param offset pointer to entry within the buffer.
      * @return the extended file name; without trailing "/" if present.
-     * @throws IOException if name not found or buffer not set up
+     * @throws IOException if name not found or buffer not set up.
      */
     private String getExtendedName(final int offset) throws IOException {
         if (namebuffer == null) {
@@ -287,15 +291,11 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
         throw new ArchiveException("Failed to read GNU long file name at offset " + offset);
     }
 
-    private int checkEntryNameLength(final int nameLength) throws ArchiveException, MemoryLimitException {
-        return ArchiveUtils.checkEntryNameLength(nameLength, getMaxEntryNameLength(), "AR");
-    }
-
     /**
      * Returns the next AR entry in this stream.
      *
      * @return the next AR entry.
-     * @throws IOException if the entry could not be read
+     * @throws IOException if the entry could not be read.
      * @deprecated Use {@link #getNextEntry()}.
      */
     @Deprecated
@@ -308,6 +308,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
      * <p>
      *    The method skips special AR file entries, such as those used by GNU.
      * </p>
+     *
      * @return The next AR file entry.
      * @throws IOException if the entry could not be read or is malformed.
      */

@@ -42,8 +42,16 @@ import org.apache.commons.compress.harmony.pack200.Archive.PackingFile;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.function.IOConsumer;
 
+/**
+ * Pack200 packing operations.
+ *
+ * @see <a href="https://docs.oracle.com/en/java/javase/13/docs/specs/pack-spec.html">Pack200: A Packed Class Deployment Format For Java Applications</a>
+ */
 public class PackingUtils {
 
+    /**
+     * Logger for packing operations.
+     */
     private static final class PackingLogger extends Logger {
 
         private boolean verbose;
@@ -72,6 +80,12 @@ public class PackingUtils {
         LogManager.getLogManager().addLogger(packingLogger);
     }
 
+    /**
+     * Configures packing options.
+     *
+     * @param options the packing options.
+     * @throws IOException if an I/O error occurs.
+     */
     public static void config(final PackingOptions options) throws IOException {
         final String logFileName = options != null ? options.getLogFile() : null;
         if (fileHandler != null) {
@@ -135,6 +149,14 @@ public class PackingUtils {
         }
     }
 
+    /**
+     * Gets the packing file list from a JAR file.
+     *
+     * @param jarFile the JAR file.
+     * @param keepFileOrder whether to keep file order.
+     * @return the packing file list.
+     * @throws IOException if an I/O error occurs.
+     */
     public static List<PackingFile> getPackingFileListFromJar(final JarFile jarFile, final boolean keepFileOrder) throws IOException {
         final List<PackingFile> packingFileList = new ArrayList<>();
         IOConsumer.forEach(jarFile.stream(), jarEntry -> {
@@ -150,6 +172,14 @@ public class PackingUtils {
         return packingFileList;
     }
 
+    /**
+     * Gets the packing file list from a JAR input stream.
+     *
+     * @param jarInputStream the JAR input stream.
+     * @param keepFileOrder whether to keep file order.
+     * @return the packing file list.
+     * @throws IOException if an I/O error occurs.
+     */
     public static List<PackingFile> getPackingFileListFromJar(final JarInputStream jarInputStream, final boolean keepFileOrder) throws IOException {
         final List<PackingFile> packingFileList = new ArrayList<>();
 
@@ -174,6 +204,11 @@ public class PackingUtils {
         return packingFileList;
     }
 
+    /**
+     * Logs a message.
+     *
+     * @param message the message to log.
+     */
     public static void log(final String message) {
         packingLogger.log(Level.INFO, message);
     }
@@ -182,7 +217,7 @@ public class PackingUtils {
         final long size = jarEntry.getSize();
         if (size > Integer.MAX_VALUE) {
             // TODO: Should probably allow this
-            throw new IllegalArgumentException("Large Class!");
+            throw new IllegalArgumentException("Large Class.");
         }
         // Negative size means unknown size
         return size < 0 ? IOUtils.toByteArray(inputStream) : IOUtils.toByteArray(inputStream, (int) size, IOUtils.DEFAULT_BUFFER_SIZE);
@@ -214,6 +249,15 @@ public class PackingUtils {
             }
             return fileName0.compareTo(fileName1);
         });
+    }
+
+    /**
+     * Constructs new instance of PackingUtils.
+     *
+     * @deprecated Will be private in 2.0.
+     */
+    @Deprecated
+    public PackingUtils() {
     }
 
 }

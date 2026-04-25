@@ -33,8 +33,8 @@ public class BoundedInputStream extends org.apache.commons.io.input.BoundedInput
     /**
      * Creates the stream that will at most read the given amount of bytes from the given stream.
      *
-     * @param in   the stream to read from
-     * @param size the maximum amount of bytes to read
+     * @param in   the stream to read from.
+     * @param size the maximum amount of bytes to read.
      */
     public BoundedInputStream(final InputStream in, final long size) {
         super(in, size);

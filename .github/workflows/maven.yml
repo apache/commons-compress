@@ -30,6 +30,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     continue-on-error: ${{ matrix.experimental }}
     strategy:
+      max-parallel: 20
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
@@ -42,20 +43,19 @@ jobs:
              experimental: true
         
     steps:
-    - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       with:
         persist-credentials: false
-    - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+    - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae  #v5.0.5
       with:
         path: ~/.m2/repository
         key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
         restore-keys: |
           ${{ runner.os }}-maven-
     - name: Set up JDK ${{ matrix.java }}
-      uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e # v5.1.0
+      uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
       with:
         distribution: ${{ runner.os == 'macOS' && matrix.java == '8' && 'zulu' || 'temurin' }}
         java-version: ${{ matrix.java }}
     - name: Build with Maven
-      # TEMP -Ddoclint=none -Darguments=-Xdoclint:none
-      run: mvn --errors --show-version --batch-mode --no-transfer-progress -Ddoclint=none -Darguments=-Xdoclint:none
+      run: mvn --errors --show-version --batch-mode --no-transfer-progress

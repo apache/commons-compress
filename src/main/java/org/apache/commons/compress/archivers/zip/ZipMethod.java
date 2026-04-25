@@ -198,7 +198,7 @@ public enum ZipMethod {
     /**
      * Gets the {@link ZipMethod} for the given code or null if the method is not known.
      *
-     * @param code the code
+     * @param code the code.
      * @return the {@link ZipMethod} for the given code or null if the method is not known.
      */
     public static ZipMethod getMethodByCode(final int code) {
@@ -232,7 +232,7 @@ public enum ZipMethod {
      * Gets the code of the compression method.
      *
      * @see ZipArchiveEntry#getMethod()
-     * @return an integer code for the method
+     * @return an integer code for the method.
      */
     public int getCode() {
         return code;

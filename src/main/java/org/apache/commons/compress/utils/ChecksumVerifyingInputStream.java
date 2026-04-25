@@ -39,9 +39,9 @@ public class ChecksumVerifyingInputStream extends CheckedInputStream {
      * Constructs a new instance.
      *
      * @param checksum         Checksum implementation.
-     * @param in               the stream to wrap
-     * @param size             the of the stream's content
-     * @param expectedChecksum the expected checksum
+     * @param in               the stream to wrap.
+     * @param size             the of the stream's content.
+     * @param expectedChecksum the expected checksum.
      */
     public ChecksumVerifyingInputStream(final Checksum checksum, final InputStream in, final long size, final long expectedChecksum) {
         super(in, checksum);
@@ -62,7 +62,7 @@ public class ChecksumVerifyingInputStream extends CheckedInputStream {
     /**
      * Reads a single byte from the stream
      *
-     * @throws IOException if the underlying stream throws or the stream is exhausted and the Checksum doesn't match the expected value
+     * @throws IOException if the underlying stream throws or the stream is exhausted and the Checksum doesn't match the expected value.
      */
     @Override
     public int read() throws IOException {
@@ -80,7 +80,7 @@ public class ChecksumVerifyingInputStream extends CheckedInputStream {
     /**
      * Reads from the stream into a byte array.
      *
-     * @throws IOException if the underlying stream throws or the stream is exhausted and the Checksum doesn't match the expected value
+     * @throws IOException if the underlying stream throws or the stream is exhausted and the Checksum doesn't match the expected value.
      */
     @Override
     public int read(final byte[] b, final int off, final int len) throws IOException {

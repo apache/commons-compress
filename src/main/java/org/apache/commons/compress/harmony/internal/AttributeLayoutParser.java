@@ -32,13 +32,17 @@ import org.apache.commons.lang3.IntegerRange;
  * {@link org.apache.commons.compress.harmony.unpack200.NewAttributeBands}.</p>
  *
  * @param <T> a common type shared by {@code attribute_layout} and {@code callable}.
+ * @since 1.29.0
  */
 public final class AttributeLayoutParser<T> {
 
     /**
      * Factory interface for creating attribute layout elements.
+     *
+     * @param <T> The list body element type.
      */
     public interface Factory<T> {
+
         /**
          * Creates a {@code call} layout element.
          *
@@ -96,8 +100,11 @@ public final class AttributeLayoutParser<T> {
 
     /**
      * Data class representing a union case in an attribute layout definition.
+     *
+     * @param <T> The list body element type.
      */
     public static final class UnionCaseData<T> {
+
         /**
          * Body of the union case.
          */
@@ -121,6 +128,12 @@ public final class AttributeLayoutParser<T> {
     private int p;
     private int depth;
 
+    /**
+     * Constructs a new instance.
+     *
+     * @param definition the attribute layout definition.
+     * @param factory the factory for creating layout elements.
+     */
     public AttributeLayoutParser(final CharSequence definition, final Factory<T> factory) {
         this.definition = definition;
         this.factory = factory;

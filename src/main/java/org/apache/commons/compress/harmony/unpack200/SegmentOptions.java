@@ -75,50 +75,110 @@ public class SegmentOptions {
         this.options = options;
     }
 
+    /**
+     * Tests whether all code flags are present.
+     *
+     * @return true if all code flags are present.
+     */
     public boolean hasAllCodeFlags() {
         return (options & HAVE_ALL_CODE_FLAGS) != 0;
     }
 
+    /**
+     * Tests whether archive file counts are present.
+     *
+     * @return true if archive file counts are present.
+     */
     public boolean hasArchiveFileCounts() {
         return (options & HAVE_FILE_HEADERS) != 0;
     }
 
+    /**
+     * Tests whether class flags hi are present.
+     *
+     * @return true if class flags hi are present.
+     */
     public boolean hasClassFlagsHi() {
         return (options & HAVE_CLASS_FLAGS_HI) != 0;
     }
 
+    /**
+     * Tests whether code flags hi are present.
+     *
+     * @return true if code flags hi are present.
+     */
     public boolean hasCodeFlagsHi() {
         return (options & HAVE_CODE_FLAGS_HI) != 0;
     }
 
+    /**
+     * Tests whether CP number counts are present.
+     *
+     * @return true if CP number counts are present.
+     */
     public boolean hasCPNumberCounts() {
         return (options & HAVE_CP_NUMBERS) != 0;
     }
 
+    /**
+     * Tests whether field flags hi are present.
+     *
+     * @return true if field flags hi are present.
+     */
     public boolean hasFieldFlagsHi() {
         return (options & HAVE_FIELD_FLAGS_HI) != 0;
     }
 
+    /**
+     * Tests whether file modtime is present.
+     *
+     * @return true if file modtime is present.
+     */
     public boolean hasFileModtime() {
         return (options & HAVE_FILE_MODTIME) != 0;
     }
 
+    /**
+     * Tests whether file options are present.
+     *
+     * @return true if file options are present.
+     */
     public boolean hasFileOptions() {
         return (options & HAVE_FILE_OPTIONS) != 0;
     }
 
+    /**
+     * Tests whether file size hi is present.
+     *
+     * @return true if file size hi is present.
+     */
     public boolean hasFileSizeHi() {
         return (options & HAVE_FILE_SIZE_HI) != 0;
     }
 
+    /**
+     * Tests whether method flags hi are present.
+     *
+     * @return true if method flags hi are present.
+     */
     public boolean hasMethodFlagsHi() {
         return (options & HAVE_METHOD_FLAGS_HI) != 0;
     }
 
+    /**
+     * Tests whether special formats are present.
+     *
+     * @return true if special formats are present.
+     */
     public boolean hasSpecialFormats() {
         return (options & HAVE_SPECIAL_FORMATS) != 0;
     }
 
+    /**
+     * Tests whether deflate should be used.
+     *
+     * @return true if deflate should be used.
+     */
     public boolean shouldDeflate() {
         return (options & DEFLATE_HINT) != 0;
     }

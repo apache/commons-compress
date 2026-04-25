@@ -33,7 +33,7 @@ import org.apache.commons.io.IOUtils;
  * <p>
  * When this channel is used for writing, an internal buffer grows to accommodate incoming data. The natural size limit is the value of
  * {@link Integer#MAX_VALUE} and it is not possible to {@link #position(long) set the position} or {@link #truncate truncate} to a value bigger than that. The
- * raw internal buffer is accessed via {@link SeekableInMemoryByteChannel#array()}.
+ * raw internal buffer is accessed via {@link org.apache.commons.io.channels.ByteArraySeekableByteChannel#array()}.
  * </p>
  * <p>
  * This class never throws {@link ClosedChannelException} because a byte array is not a resource you open or close.
@@ -41,7 +41,9 @@ import org.apache.commons.io.IOUtils;
  *
  * @since 1.13
  * @NotThreadSafe
+ * @deprecated Use {@link org.apache.commons.io.channels.ByteArraySeekableByteChannel}.
  */
+@Deprecated
 public class SeekableInMemoryByteChannel implements SeekableByteChannel {
 
     private static final int NAIVE_RESIZE_LIMIT = Integer.MAX_VALUE >> 1;

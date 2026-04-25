@@ -104,6 +104,11 @@ class TarUtilsTest extends AbstractTest {
         return Arrays.copyOf(bytes, ((bytes.length + blockSize - 1) / blockSize) * blockSize);
     }
 
+    private static Map<String, String> parsePaxHeaders(final byte[] data, final List<TarArchiveStructSparse> sparseHeaders,
+            final Map<String, String> globalPaxHeaders) throws IOException {
+        return TarUtils.parsePaxHeaders(new ByteArrayInputStream(data), globalPaxHeaders, data.length, Short.MAX_VALUE, sparseHeaders);
+    }
+
     static Stream<Arguments> testReadLongNameHandlesLimits() {
         final String empty = "";
         final String ntfsLongName = createNtfsLongNameByUtf16Units(32767);
@@ -115,6 +120,27 @@ class TarUtilsTest extends AbstractTest {
                 Arguments.of("NTFS (padded)", ntfsLongName, paddedUtf8Bytes(ntfsLongName)),
                 Arguments.of("POSIX", posixLongName, utf8Bytes(posixLongName)),
                 Arguments.of("POSIX (padded)", posixLongName, paddedUtf8Bytes(posixLongName)));
+    }
+
+    static Stream<Arguments> testReadPaxHeaderInvalidCases() {
+        return Stream.of(
+                Arguments.of(
+                        "Negative numbytes in PAX 00 sparse header",
+                        "23 GNU.sparse.offset=0\n26 GNU.sparse.numbytes=-1\n"),
+                Arguments.of(
+                        "Negative offset in PAX 00 sparse header",
+                        "24 GNU.sparse.offset=-1\n26 GNU.sparse.numbytes=10\n"),
+                Arguments.of(
+                        "Non-numeric numbytes in PAX 00 sparse header",
+                        "23 GNU.sparse.offset=0\n26 GNU.sparse.numbytes=1a\n"),
+                Arguments.of(
+                        "Non-numeric offset in PAX 00 sparse header",
+                        "23 GNU.sparse.offset=a\n26 GNU.sparse.numbytes=10\n"),
+                Arguments.of(
+                        "Numbytes in PAX 00 sparse header without offset",
+                        "26 GNU.sparse.numbytes=10\n"
+                ),
+                Arguments.of("Missing trailing newline in PAX header", "30 atime=1321711775.9720594634"));
     }
 
     private static byte[] utf8Bytes(final String s) {
@@ -147,11 +173,6 @@ class TarUtilsTest extends AbstractTest {
         TarUtils.formatLongOctalOrBinaryBytes(value, buffer, 0, buffer.length);
         final long parseValue = TarUtils.parseOctalOrBinary(buffer, 0, buffer.length);
         assertEquals(value, parseValue);
-    }
-
-    private static Map<String, String> parsePaxHeaders(final byte[] data, final List<TarArchiveStructSparse> sparseHeaders,
-            final Map<String, String> globalPaxHeaders) throws IOException {
-        return TarUtils.parsePaxHeaders(new ByteArrayInputStream(data), globalPaxHeaders, data.length, Short.MAX_VALUE, sparseHeaders);
     }
 
     @Test
@@ -481,27 +502,6 @@ class TarUtilsTest extends AbstractTest {
         assertEquals(0, sparseHeaders.get(0).getNumbytes());
         assertEquals(10, sparseHeaders.get(1).getOffset());
         assertEquals(0, sparseHeaders.get(1).getNumbytes());
-    }
-
-    static Stream<Arguments> testReadPaxHeaderInvalidCases() {
-        return Stream.of(
-                Arguments.of(
-                        "Negative numbytes in PAX 00 sparse header",
-                        "23 GNU.sparse.offset=0\n26 GNU.sparse.numbytes=-1\n"),
-                Arguments.of(
-                        "Negative offset in PAX 00 sparse header",
-                        "24 GNU.sparse.offset=-1\n26 GNU.sparse.numbytes=10\n"),
-                Arguments.of(
-                        "Non-numeric numbytes in PAX 00 sparse header",
-                        "23 GNU.sparse.offset=0\n26 GNU.sparse.numbytes=1a\n"),
-                Arguments.of(
-                        "Non-numeric offset in PAX 00 sparse header",
-                        "23 GNU.sparse.offset=a\n26 GNU.sparse.numbytes=10\n"),
-                Arguments.of(
-                        "Numbytes in PAX 00 sparse header without offset",
-                        "26 GNU.sparse.numbytes=10\n"
-                ),
-                Arguments.of("Missing trailing newline in PAX header", "30 atime=1321711775.9720594634"));
     }
 
     @ParameterizedTest(name = "{0}")

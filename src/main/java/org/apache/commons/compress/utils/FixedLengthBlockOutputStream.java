@@ -32,20 +32,17 @@ import org.apache.commons.io.IOUtils;
 /**
  * This class supports writing to an OutputStream or WritableByteChannel in fixed length blocks.
  * <p>
- * It can be used to support output to devices such as tape drives that require output in this format. If the final block does not have enough content to
- * fill an entire block, the output will be padded to a full block size.
+ * It can be used to support output to devices such as tape drives that require output in this format. If the final block does not have enough content to fill
+ * an entire block, the output will be padded to a full block size.
  * </p>
- *
  * <p>
- * This class can be used to support TAR,PAX, and CPIO blocked output to character special devices. It is not recommended that this class be used unless writing
- * to such devices, as the padding serves no useful purpose in such cases.
+ * This class can be used to support TAR, PAX, and CPIO blocked output to character special devices. It is not recommended that this class be used unless
+ * writing to such devices, as the padding serves no useful purpose in such cases.
  * </p>
- *
  * <p>
  * This class should normally wrap a FileOutputStream or associated WritableByteChannel directly. If there is an intervening filter that modified the output,
  * such as a CompressorOutputStream, or performs its own buffering, such as BufferedOutputStream, output to the device may no longer be of the specified size.
  * </p>
- *
  * <p>
  * Any content written to this stream should be self-delimiting and should tolerate any padding added to fill the last block.
  * </p>
@@ -153,7 +150,7 @@ public class FixedLengthBlockOutputStream extends OutputStream implements Writab
     /**
      * Potentially pads and then writes the current block to the underlying stream.
      *
-     * @throws IOException if writing fails
+     * @throws IOException if writing fails.
      */
     public void flushBlock() throws IOException {
         if (buffer.position() != 0) {

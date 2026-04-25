@@ -55,8 +55,8 @@ final class CircularBuffer {
     /**
      * Copies a previous interval in the buffer to the current position.
      *
-     * @param distance the distance from the current write position
-     * @param length   the number of bytes to copy
+     * @param distance the distance from the current write position.
+     * @param length   the number of bytes to copy.
      */
     public void copy(final int distance, final int length) {
         final int pos1 = writeIndex - distance;

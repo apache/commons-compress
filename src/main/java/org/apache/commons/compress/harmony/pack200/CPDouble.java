@@ -41,7 +41,29 @@ public class CPDouble extends CPConstant<CPDouble> {
         return Double.compare(value, obj.value);
     }
 
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof CPDouble)) {
+            return false;
+        }
+        return compareTo((CPDouble) obj) == 0;
+    }
+
+    /**
+     * Gets the double value.
+     *
+     * @return the double value.
+     */
     public double getDouble() {
         return value;
     }
+
+    @Override
+    public int hashCode() {
+        return Double.hashCode(value);
+    }
+
 }

@@ -85,6 +85,13 @@ public class BcBands extends BandSet {
     private int renumberedOffset;
     private final IntList bcLabelRelativeOffsets = new IntList();
 
+    /**
+     * Constructs a new instance.
+     *
+     * @param cpBands the constant pool bands
+     * @param segment the segment
+     * @param effort the packing effort
+     */
     public BcBands(final CpBands cpBands, final Segment segment, final int effort) {
         super(effort, segment.getSegmentHeader());
         this.cpBands = cpBands;
@@ -206,6 +213,12 @@ public class BcBands extends BandSet {
         // out.write(encodeBandInt(integerListToArray(bcEscByte), Codec.BYTE1));
     }
 
+    /**
+     * Sets the current class and super class.
+     *
+     * @param name the class name.
+     * @param superName the super class name.
+     */
     public void setCurrentClass(final String name, final String superName) {
         currentClass = name;
         superClass = superName;
@@ -222,6 +235,9 @@ public class BcBands extends BandSet {
         bciRenumbering.add(renumberedOffset);
     }
 
+    /**
+     * Visits the end of a method's bytecode.
+     */
     public void visitEnd() {
         for (int i = 0; i < bciRenumbering.size(); i++) {
             if (bciRenumbering.get(i) == -1) {
@@ -254,6 +270,14 @@ public class BcBands extends BandSet {
         }
     }
 
+    /**
+     * Visits a field instruction.
+     *
+     * @param opcode the opcode.
+     * @param owner the field owner class.
+     * @param name the field name.
+     * @param desc the field descriptor.
+     */
     public void visitFieldInsn(int opcode, final String owner, final String name, final String desc) {
         byteCodeOffset += 3;
         updateRenumbering();
@@ -285,6 +309,12 @@ public class BcBands extends BandSet {
         bcCodes.add(opcode);
     }
 
+    /**
+     * Visits an IINC instruction.
+     *
+     * @param var the local variable index.
+     * @param increment the increment amount.
+     */
     public void visitIincInsn(final int var, final int increment) {
         if (var > 255 || increment > 255) {
             byteCodeOffset += 6;
@@ -301,6 +331,11 @@ public class BcBands extends BandSet {
         updateRenumbering();
     }
 
+    /**
+     * Visits a simple instruction (no operands).
+     *
+     * @param opcode the opcode.
+     */
     public void visitInsn(final int opcode) {
         if (opcode >= 202) {
             throw new IllegalArgumentException("Non-standard bytecode instructions not supported");
@@ -310,6 +345,12 @@ public class BcBands extends BandSet {
         updateRenumbering();
     }
 
+    /**
+     * Visits an instruction with a single int operand.
+     *
+     * @param opcode the opcode.
+     * @param operand the operand.
+     */
     public void visitIntInsn(final int opcode, final int operand) {
         switch (opcode) {
         case 17: // sipush
@@ -326,6 +367,12 @@ public class BcBands extends BandSet {
         updateRenumbering();
     }
 
+    /**
+     * Visits a jump instruction.
+     *
+     * @param opcode the opcode.
+     * @param label the target label.
+     */
     public void visitJumpInsn(final int opcode, final Label label) {
         bcCodes.add(opcode);
         bcLabel.add(label);
@@ -334,10 +381,20 @@ public class BcBands extends BandSet {
         updateRenumbering();
     }
 
+    /**
+     * Visits a label.
+     *
+     * @param label the label.
+     */
     public void visitLabel(final Label label) {
         labelsToOffsets.put(label, Integer.valueOf(byteCodeOffset));
     }
 
+    /**
+     * Visits an LDC instruction.
+     *
+     * @param cst the constant to load.
+     */
     public void visitLdcInsn(final Object cst) {
         final CPConstant<?> constant = cpBands.getConstant(cst);
         if (segment.lastConstantHadWideIndex() || constant instanceof CPLong || constant instanceof CPDouble) {
@@ -382,6 +439,13 @@ public class BcBands extends BandSet {
         updateRenumbering();
     }
 
+    /**
+     * Visits a LOOKUPSWITCH instruction.
+     *
+     * @param dflt the default label.
+     * @param keys the case keys.
+     * @param labels the case labels.
+     */
     public void visitLookupSwitchInsn(final Label dflt, final int[] keys, final Label[] labels) {
         bcCodes.add(LOOKUPSWITCH);
         bcLabel.add(dflt);
@@ -397,6 +461,14 @@ public class BcBands extends BandSet {
         updateRenumbering();
     }
 
+    /**
+     * Visits a method invocation instruction.
+     *
+     * @param opcode the opcode.
+     * @param owner the method owner class.
+     * @param name the method name.
+     * @param desc the method descriptor.
+     */
     public void visitMethodInsn(int opcode, final String owner, final String name, final String desc) {
         byteCodeOffset += 3;
         switch (opcode) {
@@ -455,6 +527,12 @@ public class BcBands extends BandSet {
         updateRenumbering();
     }
 
+    /**
+     * Visits a MULTIANEWARRAY instruction.
+     *
+     * @param desc the array type descriptor.
+     * @param dimensions the number of dimensions.
+     */
     public void visitMultiANewArrayInsn(final String desc, final int dimensions) {
         byteCodeOffset += 4;
         updateRenumbering();
@@ -463,6 +541,14 @@ public class BcBands extends BandSet {
         bcByte.add(dimensions & 0xFF);
     }
 
+    /**
+     * Visits a TABLESWITCH instruction.
+     *
+     * @param min the minimum key value.
+     * @param max the maximum key value.
+     * @param dflt the default label.
+     * @param labels the case labels.
+     */
     public void visitTableSwitchInsn(final int min, final int max, final Label dflt, final Label... labels) {
         bcCodes.add(TABLESWITCH);
         bcLabel.add(dflt);
@@ -479,6 +565,12 @@ public class BcBands extends BandSet {
         updateRenumbering();
     }
 
+    /**
+     * Visits a type instruction.
+     *
+     * @param opcode the opcode (NEW, ANEWARRAY, CHECKCAST, or INSTANCEOF).
+     * @param type the type descriptor.
+     */
     public void visitTypeInsn(final int opcode, final String type) {
         // NEW, ANEWARRAY, CHECKCAST or INSTANCEOF
         byteCodeOffset += 3;
@@ -490,6 +582,12 @@ public class BcBands extends BandSet {
         }
     }
 
+    /**
+     * Visits a local variable instruction.
+     *
+     * @param opcode the opcode.
+     * @param var the local variable index.
+     */
     public void visitVarInsn(final int opcode, final int var) {
         // ILOAD, LLOAD, FLOAD, DLOAD, ALOAD, ISTORE, LSTORE, FSTORE, DSTORE, ASTORE or RET
         if (var > 255) {

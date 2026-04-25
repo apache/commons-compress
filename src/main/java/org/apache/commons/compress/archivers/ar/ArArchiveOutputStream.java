@@ -153,7 +153,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
      * Sets the long file mode. This can be LONGFILE_ERROR(0) or LONGFILE_BSD(1). This specifies the treatment of long file names (names &gt;= 16). Default is
      * LONGFILE_ERROR.
      *
-     * @param longFileMode the mode to use
+     * @param longFileMode the mode to use.
      * @since 1.3
      */
     public void setLongFileMode(final int longFileMode) {

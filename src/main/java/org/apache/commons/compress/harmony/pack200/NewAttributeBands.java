@@ -49,10 +49,29 @@ public class NewAttributeBands extends BandSet {
      */
     public interface AttributeLayoutElement {
 
+        /**
+         * Adds an attribute to the band.
+         *
+         * @param attribute the attribute.
+         * @param inputStream the input stream.
+         */
         void addAttributeToBand(NewAttribute attribute, InputStream inputStream);
 
+        /**
+         * Packs the band to the output stream.
+         *
+         * @param ouputStream the output stream.
+         * @throws IOException if an I/O error occurs.
+         * @throws Pack200Exception if a Pack200 error occurs.
+         */
         void pack(OutputStream ouputStream) throws IOException, Pack200Exception;
 
+        /**
+         * Renumbers bytecode indexes.
+         *
+         * @param bciRenumbering the bytecode index renumbering.
+         * @param labelsToOffsets the labels to offsets map.
+         */
         void renumberBci(IntList bciRenumbering, Map<Label, Integer> labelsToOffsets);
 
     }
@@ -65,17 +84,17 @@ public class NewAttributeBands extends BandSet {
         private Integral lastPIntegral;
 
         @Override
-        public LayoutElement createCall(int callableIndex) {
+        public LayoutElement createCall(final int callableIndex) {
             return new Call(callableIndex);
         }
 
         @Override
-        public LayoutElement createCallable(List<LayoutElement> body) throws Pack200Exception {
+        public LayoutElement createCallable(final List<LayoutElement> body) throws Pack200Exception {
             return new Callable(body);
         }
 
         @Override
-        public LayoutElement createIntegral(String tag) {
+        public LayoutElement createIntegral(final String tag) {
             final Integral integral;
             if (tag.startsWith("O") || tag.startsWith("PO")) {
                 integral = new Integral(tag, lastPIntegral);
@@ -89,17 +108,18 @@ public class NewAttributeBands extends BandSet {
         }
 
         @Override
-        public LayoutElement createReference(String tag) {
+        public LayoutElement createReference(final String tag) {
             return new Reference(tag);
         }
 
         @Override
-        public LayoutElement createReplication(String unsignedInt, List<LayoutElement> body) throws Pack200Exception {
+        public LayoutElement createReplication(final String unsignedInt, final List<LayoutElement> body) throws Pack200Exception {
             return new Replication(unsignedInt, body);
         }
 
         @Override
-        public LayoutElement createUnion(String anyInt, List<UnionCaseData<LayoutElement>> cases, List<LayoutElement> body) throws Pack200Exception {
+        public LayoutElement createUnion(final String anyInt, final List<UnionCaseData<LayoutElement>> cases, final List<LayoutElement> body)
+                throws Pack200Exception {
             final List<UnionCase> unionCases = new ArrayList<>();
             for (final UnionCaseData<LayoutElement> unionCaseData : cases) {
                 unionCases.add(new UnionCase(unionCaseData.tagRanges, unionCaseData.body, false));
@@ -108,11 +128,19 @@ public class NewAttributeBands extends BandSet {
         }
     }
 
+    /**
+     * Represents a call to a callable layout element.
+     */
     public class Call extends LayoutElement {
 
         private final int callableIndex;
         private Callable callable;
 
+        /**
+         * Constructs a new Call.
+         *
+         * @param callableIndex the callable index.
+         */
         public Call(final int callableIndex) {
             this.callableIndex = callableIndex;
         }
@@ -125,10 +153,20 @@ public class NewAttributeBands extends BandSet {
             }
         }
 
+        /**
+         * Gets the callable.
+         *
+         * @return the callable.
+         */
         public Callable getCallable() {
             return callable;
         }
 
+        /**
+         * Gets the callable index.
+         *
+         * @return the callable index.
+         */
         public int getCallableIndex() {
             return callableIndex;
         }
@@ -143,6 +181,11 @@ public class NewAttributeBands extends BandSet {
             // do nothing here as renumberBci will be called on the callable at another time
         }
 
+        /**
+         * Sets the callable.
+         *
+         * @param callable the callable.
+         */
         public void setCallable(final Callable callable) {
             this.callable = callable;
             if (callableIndex < 1) {
@@ -151,6 +194,9 @@ public class NewAttributeBands extends BandSet {
         }
     }
 
+    /**
+     * Callable layout element that can be referenced and reused.
+     */
     public class Callable extends LayoutElement {
 
         private final List<LayoutElement> body;
@@ -179,14 +225,27 @@ public class NewAttributeBands extends BandSet {
             }
         }
 
+        /**
+         * Adds a backwards call count.
+         */
         public void addBackwardsCall() {
             backwardsCallCounts[backwardsCallableIndex]++;
         }
 
+        /**
+         * Gets the body of this callable.
+         *
+         * @return the body elements.
+         */
         public List<LayoutElement> getBody() {
             return body;
         }
 
+        /**
+         * Tests whether this is a backwards callable.
+         *
+         * @return true if backwards callable.
+         */
         public boolean isBackwardsCallable() {
             return isBackwardsCallable;
         }
@@ -212,11 +271,19 @@ public class NewAttributeBands extends BandSet {
             this.isBackwardsCallable = true;
         }
 
+        /**
+         * Sets the backwards callable index.
+         *
+         * @param backwardsCallableIndex the index.
+         */
         public void setBackwardsCallableIndex(final int backwardsCallableIndex) {
             this.backwardsCallableIndex = backwardsCallableIndex;
         }
     }
 
+    /**
+     * Integral layout element for integer values.
+     */
     public class Integral extends LayoutElement {
 
         private final String tag;
@@ -310,10 +377,20 @@ public class NewAttributeBands extends BandSet {
             band.add(val);
         }
 
+        /**
+         * Gets the tag of this integral.
+         *
+         * @return the tag.
+         */
         public String getTag() {
             return tag;
         }
 
+        /**
+         * Gets the latest value added to the band.
+         *
+         * @return the latest value.
+         */
         public int latestValue() {
             return ((Integer) band.get(band.size() - 1)).intValue();
         }
@@ -362,8 +439,23 @@ public class NewAttributeBands extends BandSet {
 
     }
 
+    /**
+     * Abstract class for layout elements.
+     */
     public abstract class LayoutElement implements AttributeLayoutElement {
 
+        /**
+         * Constructs a new LayoutElement.
+         */
+        public LayoutElement() {
+        }
+
+        /**
+         * Gets the length for the given unsigned type.
+         *
+         * @param uint_type the unsigned type character.
+         * @return the length in bytes.
+         */
         protected int getLength(final char uint_type) {
             int length = 0;
             switch (uint_type) {
@@ -421,6 +513,11 @@ public class NewAttributeBands extends BandSet {
             // TODO method and field references
         }
 
+        /**
+         * Gets the tag of this reference.
+         *
+         * @return the tag.
+         */
         public String getTag() {
             return tag;
         }
@@ -454,6 +551,14 @@ public class NewAttributeBands extends BandSet {
 
         private final List<LayoutElement> layoutElements;
 
+        private Replication(final String tag, final List<LayoutElement> contents) throws Pack200Exception {
+            this.countElement = new Integral(tag);
+            this.layoutElements = contents;
+            if (layoutElements.isEmpty()) {
+                throw new Pack200Exception("Corrupted Pack200 archive: Replication body is empty");
+            }
+        }
+
         /**
          * Constructs a new Replication layout element.
          *
@@ -464,14 +569,6 @@ public class NewAttributeBands extends BandSet {
          */
         public Replication(final String tag, final String contents) throws Pack200Exception {
             this(tag, AttributeLayoutUtils.readBody(contents, attributeLayoutFactory));
-        }
-
-        private Replication(final String tag, final List<LayoutElement> contents) throws Pack200Exception {
-            this.countElement = new Integral(tag);
-            this.layoutElements = contents;
-            if (layoutElements.isEmpty()) {
-                throw new Pack200Exception("Corrupted Pack200 archive: Replication body is empty");
-            }
         }
 
         @Override
@@ -485,10 +582,20 @@ public class NewAttributeBands extends BandSet {
             }
         }
 
+        /**
+         * Gets the count element.
+         *
+         * @return the count element.
+         */
         public Integral getCountElement() {
             return countElement;
         }
 
+        /**
+         * Gets the layout elements.
+         *
+         * @return the layout elements.
+         */
         public List<LayoutElement> getLayoutElements() {
             return layoutElements;
         }
@@ -550,14 +657,29 @@ public class NewAttributeBands extends BandSet {
             }
         }
 
+        /**
+         * Gets the default case body.
+         *
+         * @return the default case body.
+         */
         public List<LayoutElement> getDefaultCaseBody() {
             return defaultCaseBody;
         }
 
+        /**
+         * Gets the union cases.
+         *
+         * @return the union cases.
+         */
         public List<UnionCase> getUnionCases() {
             return unionCases;
         }
 
+        /**
+         * Gets the union tag.
+         *
+         * @return the union tag.
+         */
         public Integral getUnionTag() {
             return unionTag;
         }
@@ -592,10 +714,21 @@ public class NewAttributeBands extends BandSet {
         private final List<IntegerRange> tagRanges;
         private final List<LayoutElement> body;
 
+        /**
+         * Constructs a new UnionCase.
+         *
+         * @param tags the tags.
+         */
         public UnionCase(final List<Integer> tags) {
             this(tags, Collections.emptyList());
         }
 
+        /**
+         * Constructs a new UnionCase.
+         *
+         * @param tags the tags.
+         * @param body the body elements.
+         */
         public UnionCase(final List<Integer> tags, final List<LayoutElement> body) {
             this(AttributeLayoutUtils.toRanges(tags), body, false);
         }
@@ -612,10 +745,21 @@ public class NewAttributeBands extends BandSet {
             }
         }
 
+        /**
+         * Gets the body of this union case.
+         *
+         * @return the body elements.
+         */
         public List<LayoutElement> getBody() {
             return body;
         }
 
+        /**
+         * Tests whether this union case has the given tag.
+         *
+         * @param l the tag value.
+         * @return true if this case matches the tag.
+         */
         public boolean hasTag(final long l) {
             return AttributeLayoutUtils.unionCaseMatches(tagRanges, (int) l);
         }
@@ -635,6 +779,9 @@ public class NewAttributeBands extends BandSet {
         }
     }
 
+    /**
+     * The attribute layout elements.
+     */
     protected List<LayoutElement> attributeLayoutElements;
 
     private int[] backwardsCallCounts;
@@ -647,6 +794,15 @@ public class NewAttributeBands extends BandSet {
 
     private final AttributeLayoutFactory attributeLayoutFactory = new AttributeLayoutFactory();
 
+    /**
+     * Constructs a new NewAttributeBands.
+     *
+     * @param effort the effort level.
+     * @param cpBands the constant pool bands.
+     * @param header the segment header.
+     * @param def the attribute definition.
+     * @throws IOException if an I/O error occurs.
+     */
     public NewAttributeBands(final int effort, final CpBands cpBands, final SegmentHeader header, final AttributeDefinition def) throws IOException {
         super(effort, header);
         this.def = def;
@@ -654,6 +810,11 @@ public class NewAttributeBands extends BandSet {
         parseLayout();
     }
 
+    /**
+     * Adds an attribute to the bands.
+     *
+     * @param attribute the attribute to add.
+     */
     public void addAttribute(final NewAttribute attribute) {
         usedAtLeastOnce = true;
         final InputStream stream = new ByteArrayInputStream(attribute.getBytes());
@@ -662,6 +823,11 @@ public class NewAttributeBands extends BandSet {
         }
     }
 
+    /**
+     * Gets the attribute name.
+     *
+     * @return the attribute name.
+     */
     public String getAttributeName() {
         return def.name.getUnderlyingString();
     }
@@ -688,14 +854,29 @@ public class NewAttributeBands extends BandSet {
         return Codec.UNSIGNED5;
     }
 
+    /**
+     * Gets the flag index.
+     *
+     * @return the flag index.
+     */
     public int getFlagIndex() {
         return def.index;
     }
 
+    /**
+     * Tests whether this attribute was used at least once.
+     *
+     * @return true if used at least once.
+     */
     public boolean isUsedAtLeastOnce() {
         return usedAtLeastOnce;
     }
 
+    /**
+     * Gets the number of backwards calls.
+     *
+     * @return the backwards call counts.
+     */
     public int[] numBackwardsCalls() {
         return backwardsCallCounts;
     }
@@ -737,8 +918,8 @@ public class NewAttributeBands extends BandSet {
     /**
      * Renumber any bytecode indexes or offsets as described in section 5.5.2 of the pack200 specification
      *
-     * @param bciRenumbering  TODO
-     * @param labelsToOffsets TODO
+     * @param bciRenumbering  the BCI renumbering list.
+     * @param labelsToOffsets the map of labels to offsets.
      */
     public void renumberBci(final IntList bciRenumbering, final Map<Label, Integer> labelsToOffsets) {
         for (final AttributeLayoutElement attributeLayoutElement : attributeLayoutElements) {
