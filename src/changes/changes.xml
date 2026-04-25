@@ -168,7 +168,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="update" dev="ggregory" due-to="Gary Gregory, Dependabot">Bump com.github.luben:zstd-jni from 1.5.7-4 to 1.5.7-6 #717, #740.</action>
       <action type="update" dev="ggregory" due-to="Gary Gregory, Dependabot">Bump com.github.luben:zstd-jni from 1.5.7-6 to 1.5.7-7 #768 https://github.com/luben/zstd-jni/compare/v1.5.7-6...v1.5.7-7.</action>
       <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump com.github.marschall:memoryfilesystem from 2.8.1 to 2.8.2 #727.</action>
-      <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump commons-codec:commons-codec from 1.19.0 to 1.21.0 #745.</action>
+      <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump commons-codec:commons-codec from 1.19.0 to 1.22.0 #745.</action>
       <action type="update" dev="ggregory" due-to="Gary Gregory">Bump org.tukaani:xz from 1.10 to 1.11, https://github.com/tukaani-project/xz-java/compare/v1.10..v1.11</action>
       <action type="update" dev="ggregory" due-to="Gary Gregory">Bump org.tukaani:xz from 1.11 to 1.12, #767, https://github.com/tukaani-project/xz-java/compare/v1.11...v1.12</action>
       <action type="update" dev="ggregory" due-to="Gary Gregory">Bump Bump io.airlift:aircompressor from 2.0.2 to 2.0.3 #760.</action>
