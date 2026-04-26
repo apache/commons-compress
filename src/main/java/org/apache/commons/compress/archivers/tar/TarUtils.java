@@ -354,6 +354,7 @@ public final class TarUtils {
      * @param input the input stream from which to read the special tar entry content.
      * @param encoding the encoding to use for reading names.
      * @param maxEntryNameLength the maximum allowed length for entry names.
+     * @param maxPaxHeaderSize the maximum allowed size in bytes for a PAX extended header block.
      * @param entry the tar entry to handle.
      * @param paxHeaders the map to update with PAX headers.
      * @param sparseHeaders the list to update with sparse headers.
@@ -361,9 +362,9 @@ public final class TarUtils {
      * @param globalSparseHeaders the list to update with global sparse headers.
      * @throws IOException if an I/O error occurs while reading the entry.
      */
-    static void handleSpecialTarRecord(final InputStream input, final ZipEncoding encoding, final int maxEntryNameLength, final TarArchiveEntry entry,
-            final Map<String, String> paxHeaders, final List<TarArchiveStructSparse> sparseHeaders, final Map<String, String> globalPaxHeaders,
-            final List<TarArchiveStructSparse> globalSparseHeaders) throws IOException {
+    static void handleSpecialTarRecord(final InputStream input, final ZipEncoding encoding, final int maxEntryNameLength, final long maxPaxHeaderSize,
+            final TarArchiveEntry entry, final Map<String, String> paxHeaders, final List<TarArchiveStructSparse> sparseHeaders,
+            final Map<String, String> globalPaxHeaders, final List<TarArchiveStructSparse> globalSparseHeaders) throws IOException {
         if (entry.isGNULongLinkEntry()) {
             // GNU long link entry: read and store the link path
             final String longLinkName = readLongName(input, encoding, maxEntryNameLength, entry);
@@ -376,12 +377,12 @@ public final class TarUtils {
             // Global PAX header: clear and update global PAX and sparse headers
             globalSparseHeaders.clear();
             globalPaxHeaders.clear();
-            globalPaxHeaders.putAll(parsePaxHeaders(input, globalPaxHeaders, entry.getSize(), maxEntryNameLength, globalSparseHeaders));
+            globalPaxHeaders.putAll(parsePaxHeaders(input, globalPaxHeaders, entry.getSize(), maxPaxHeaderSize, maxEntryNameLength, globalSparseHeaders));
         } else if (entry.isPaxHeader()) {
             // PAX header: clear and update local PAX and sparse headers, parse GNU sparse headers if present
             sparseHeaders.clear();
             paxHeaders.clear();
-            paxHeaders.putAll(parsePaxHeaders(input, globalPaxHeaders, entry.getSize(), maxEntryNameLength, sparseHeaders));
+            paxHeaders.putAll(parsePaxHeaders(input, globalPaxHeaders, entry.getSize(), maxPaxHeaderSize, maxEntryNameLength, sparseHeaders));
             if (paxHeaders.containsKey(TarGnuSparseKeys.MAP)) {
                 sparseHeaders.addAll(parseFromPAX01SparseHeaders(paxHeaders.get(TarGnuSparseKeys.MAP)));
             }
@@ -674,6 +675,7 @@ public final class TarUtils {
      * @param inputStream        The input stream providing PAX header data.
      * @param globalPaxHeaders   The global PAX headers of the tar archive.
      * @param headerSize         The total size of the PAX header block; always non-negative.
+     * @param maxPaxHeaderSize   The maximum allowed size in bytes for a PAX extended header block.
      * @param maxEntryPathLength The maximum permitted length for entry paths.
      * @param sparseHeaders      Output list to collect any GNU sparse 0.0 headers found.
      * @return A map of PAX headers merged with the supplied global headers.
@@ -683,10 +685,10 @@ public final class TarUtils {
      * @throws IOException           If an I/O error occurs while reading.
      */
     static Map<String, String> parsePaxHeaders(final InputStream inputStream, final Map<String, String> globalPaxHeaders, final long headerSize,
-            final int maxEntryPathLength, final List<? super TarArchiveStructSparse> sparseHeaders) throws IOException {
+            final long maxPaxHeaderSize, final int maxEntryPathLength, final List<? super TarArchiveStructSparse> sparseHeaders) throws IOException {
         assert headerSize >= 0 : "headerSize must be non-negative";
         // Check if there is enough memory to store the headers
-        MemoryLimitException.checkBytes(headerSize, Long.MAX_VALUE);
+        MemoryLimitException.checkBytes(headerSize, maxPaxHeaderSize);
         final Map<String, String> headers = new HashMap<>(globalPaxHeaders);
         Long offset = null;
         // Format is "length keyword=value\n";
