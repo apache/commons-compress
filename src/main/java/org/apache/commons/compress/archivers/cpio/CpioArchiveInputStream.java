@@ -463,7 +463,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         newEntry.setRemoteDeviceMaj(readAsciiLong(8, 16));
         newEntry.setRemoteDeviceMin(readAsciiLong(8, 16));
         final long namesize = readAsciiLong(8, 16);
-        if (namesize < 0) {
+        if (namesize <= 0) {
             throw new ArchiveException("Found illegal entry with negative name length");
         }
         newEntry.setChksum(readAsciiLong(8, 16));
