@@ -494,7 +494,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         ret.setRemoteDevice(readAsciiLong(6, 8));
         ret.setTime(readAsciiLong(11, 8));
         final long nameSize = readAsciiLong(6, 8);
-        if (nameSize < 0) {
+        if (nameSize <= 0) {
             throw new ArchiveException("Found illegal entry with negative name length");
         }
         ret.setSize(readAsciiLong(11, 8));
@@ -524,7 +524,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         oldEntry.setRemoteDevice(readBinaryLong(2, swapHalfWord));
         oldEntry.setTime(readBinaryLong(4, swapHalfWord));
         final long nameSize = readBinaryLong(2, swapHalfWord);
-        if (nameSize < 0) {
+        if (nameSize <= 0) {
             throw new ArchiveException("Found illegal entry with negative name length");
         }
         oldEntry.setSize(readBinaryLong(4, swapHalfWord));
