@@ -78,6 +78,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="YuWeiBoy, Gary Gregory" issue="COMPRESS-708">ZstdCompressorInputStream closes the InputStream held by ZipArchiveInputStream garbage collection.</action>
       <action type="fix" dev="pkarwasz" due-to="Gary Gregory, Piotr P. Karwasz" issue="COMPRESS-713">Unchecked pre-decremental notation in for-loop as array index causes ArrayOutOfBounds access #755.</action>
       <action type="fix" dev="pkarwasz" due-to="Gary Gregory, Piotr P. Karwasz, Soheila Esmaeili" issue="COMPRESS-715">ZipArchiveInputStream fails with "Unexpected record signature: 0x0" #753.</action>
+      <action type="fix" dev="pkarwasz" due-to="Gary Gregory, Piotr P. Karwasz" issue="COMPRESS-714">Internal IllegalArgumentException in ZipFile and TarFile creation is not caught #754.</action>
       <!-- FIX tar -->
       <action type="fix" dev="pkarwasz" due-to="Tyler Nighswander, Piotr P. Karwasz, Gary Gregory">>Uniform handling of special tar records in TarFile and TarArchiveInputStream.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory, Stanislav Fort">TarArchiveOutputStream now throws a IllegalArgumentException instead of an OutOfMemoryError.</action>
