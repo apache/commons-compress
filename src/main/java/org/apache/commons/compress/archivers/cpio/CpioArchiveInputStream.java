@@ -462,18 +462,18 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         newEntry.setDeviceMin(readAsciiLong(8, 16));
         newEntry.setRemoteDeviceMaj(readAsciiLong(8, 16));
         newEntry.setRemoteDeviceMin(readAsciiLong(8, 16));
-        final long namesize = readAsciiLong(8, 16);
-        if (namesize <= 0) {
+        final long nameSize = readAsciiLong(8, 16);
+        if (nameSize <= 0) {
             throw new ArchiveException("Found illegal entry with negative name length");
         }
         newEntry.setChksum(readAsciiLong(8, 16));
-        final String name = readEntryName(ArchiveException.toIntExact(namesize));
+        final String name = readEntryName(ArchiveException.toIntExact(nameSize));
         newEntry.setName(name);
         if (CpioUtil.fileType(mode) == 0 && !name.equals(CPIO_TRAILER)) {
             throw new ArchiveException(
                     "Mode 0 only allowed in the trailer. Found entry name: " + ArchiveUtils.sanitize(name) + " Occurred at byte: " + getBytesRead());
         }
-        final int headerPadCount = newEntry.getHeaderPadCount(namesize - 1);
+        final int headerPadCount = newEntry.getHeaderPadCount(nameSize - 1);
         if (skip(headerPadCount) != headerPadCount) {
             throw new ArchiveException("Header pad count mismatch.");
         }
