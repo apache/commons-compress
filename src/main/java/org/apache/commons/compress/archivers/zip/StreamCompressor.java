@@ -274,6 +274,30 @@ public abstract class StreamCompressor implements Closeable {
     }
 
     /**
+     * Updates the CRC checksum without writing data.
+     *
+     * @param b      the byte array
+     * @param offset start offset
+     * @param length number of bytes
+     *
+     * @since 1.29.0
+     */
+    void updateCrc(final byte[] b, final int offset, final int length) {
+        crc.update(b, offset, length);
+    }
+
+    /**
+     * Updates the source payload length counter.
+     *
+     * @param length number of uncompressed bytes
+     *
+     * @since 1.29.0
+     */
+    void updateSourcePayloadLength(final int length) {
+        sourcePayloadLength += length;
+    }
+
+    /**
      * Writes bytes to ZIP entry.
      *
      * @param b      the byte array to write.
