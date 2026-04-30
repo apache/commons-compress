@@ -177,6 +177,8 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
 
     private final int maxEntryNameLength;
 
+    private final long maxPaxHeaderSize;
+
     private TarFile(final Builder builder) throws IOException {
         this.archive = builder.getChannel(SeekableByteChannel.class);
         try {
@@ -186,6 +188,7 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
             this.blockSize = builder.getBlockSize();
             this.lenient = builder.isLenient();
             this.maxEntryNameLength = builder.getMaxEntryNameLength();
+            this.maxPaxHeaderSize = builder.getMaxPaxHeaderSize();
             // Populate `entries` explicitly here instead of using `forEach`/`stream`,
             // because both rely on `entries` internally.
             // Using them would cause a self-referential loop and leave `entries` empty.
@@ -473,8 +476,8 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
             lastWasSpecial = TarUtils.isSpecialTarRecord(currEntry);
             if (lastWasSpecial) {
                 // Handle PAX, GNU long name, or other special records
-                TarUtils.handleSpecialTarRecord(currentStream, zipEncoding, maxEntryNameLength, currEntry, paxHeaders, sparseHeaders, globalPaxHeaders,
-                        globalSparseHeaders);
+                TarUtils.handleSpecialTarRecord(currentStream, zipEncoding, maxEntryNameLength, maxPaxHeaderSize, currEntry, paxHeaders, sparseHeaders,
+                        globalPaxHeaders, globalSparseHeaders);
             }
         } while (lastWasSpecial);
         // Apply global and local PAX headers

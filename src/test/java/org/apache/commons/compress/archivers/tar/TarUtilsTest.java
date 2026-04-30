@@ -106,7 +106,7 @@ class TarUtilsTest extends AbstractTest {
 
     private static Map<String, String> parsePaxHeaders(final byte[] data, final List<TarArchiveStructSparse> sparseHeaders,
             final Map<String, String> globalPaxHeaders) throws IOException {
-        return TarUtils.parsePaxHeaders(new ByteArrayInputStream(data), globalPaxHeaders, data.length, Short.MAX_VALUE, sparseHeaders);
+        return TarUtils.parsePaxHeaders(new ByteArrayInputStream(data), globalPaxHeaders, data.length, Long.MAX_VALUE, Short.MAX_VALUE, sparseHeaders);
     }
 
     static Stream<Arguments> testReadLongNameHandlesLimits() {
