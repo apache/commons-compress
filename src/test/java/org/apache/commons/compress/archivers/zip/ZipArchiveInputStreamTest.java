@@ -778,8 +778,8 @@ class ZipArchiveInputStreamTest extends AbstractTest {
             final byte[] buf = IOUtils.toByteArray(in);
             final String text = new String(buf);
 
-	    assertEquals("LICENSE.txt", ze.getName());
-	    assertEquals(11357, text.length());
+            assertEquals("LICENSE.txt", ze.getName());
+            assertEquals(11357, text.length());
             assertTrue(text.startsWith("                                 Apache License"), text);
             assertTrue(text.endsWith("   limitations under the License.\n"), text);
             assertEquals(11357, text.length());

@@ -930,9 +930,9 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
                 case ENHANCED_DEFLATED:
                     current.inputStream = new Deflate64CompressorInputStream(bis);
                     break;
-		case XZ:
-		    current.inputStream = new XZCompressorInputStream(bis);
-		    break;
+                case XZ:
+                    current.inputStream = new XZCompressorInputStream(bis);
+                    break;
                 case ZSTD:
                 case ZSTD_DEPRECATED:
                     current.inputStream = createZstdInputStream(bis);
