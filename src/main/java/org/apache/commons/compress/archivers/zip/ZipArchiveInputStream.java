@@ -46,6 +46,7 @@ import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.deflate64.Deflate64CompressorInputStream;
+import org.apache.commons.compress.compressors.xz.XZCompressorInputStream;
 import org.apache.commons.compress.compressors.zstandard.ZstdCompressorInputStream;
 import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
@@ -929,6 +930,9 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
                 case ENHANCED_DEFLATED:
                     current.inputStream = new Deflate64CompressorInputStream(bis);
                     break;
+		case XZ:
+		    current.inputStream = new XZCompressorInputStream(bis);
+		    break;
                 case ZSTD:
                 case ZSTD_DEPRECATED:
                     current.inputStream = createZstdInputStream(bis);

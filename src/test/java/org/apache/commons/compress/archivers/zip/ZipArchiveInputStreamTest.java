@@ -771,6 +771,21 @@ class ZipArchiveInputStreamTest extends AbstractTest {
         }
     }
 
+    @Test
+    void testUnzipXZCompressedEntry() throws Exception {
+        try (ZipArchiveInputStream in = ZipArchiveInputStream.builder().setURI(getURI("org/apache/commons/compress/zip/test-method-xz.zip")).get()) {
+            final ZipArchiveEntry ze = in.getNextZipEntry();
+            final byte[] buf = IOUtils.toByteArray(in);
+            final String text = new String(buf);
+
+	    assertEquals("LICENSE.txt", ze.getName());
+	    assertEquals(11357, text.length());
+            assertTrue(text.startsWith("                                 Apache License"), text);
+            assertTrue(text.endsWith("   limitations under the License.\n"), text);
+            assertEquals(11357, text.length());
+        }
+    }
+
     /**
      * @see "https://issues.apache.org/jira/browse/COMPRESS-176"
      */
