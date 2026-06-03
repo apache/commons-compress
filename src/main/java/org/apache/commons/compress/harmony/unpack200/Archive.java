@@ -20,7 +20,6 @@ package org.apache.commons.compress.harmony.unpack200;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -80,11 +79,9 @@ public class Archive {
     public Archive(final InputStream inputStream, final JarOutputStream outputStream) throws IOException {
         this.inputStream = Pack200UnpackerAdapter.newBoundedInputStream(inputStream);
         this.outputStream = outputStream;
-        if (inputStream instanceof FileInputStream) {
-            inputPath = Paths.get(Pack200UnpackerAdapter.readPathString((FileInputStream) inputStream));
-        } else {
-            inputPath = null;
-        }
+        // The input path is unknown when constructed from a stream: we cannot recover it from an arbitrary InputStream without reflecting into java.io, which is
+        // forbidden under JPMS on Java 17+. It is only used for verbose logging here, and removePackFile has no effect for the stream constructor anyway.
+        this.inputPath = null;
         this.outputFileName = null;
         this.inputSize = -1;
         this.closeStreams = false;
