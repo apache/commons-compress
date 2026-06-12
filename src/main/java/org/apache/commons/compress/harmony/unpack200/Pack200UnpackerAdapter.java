@@ -20,8 +20,6 @@ package org.apache.commons.compress.harmony.unpack200;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
@@ -35,8 +33,6 @@ import org.apache.commons.compress.harmony.pack200.Pack200Adapter;
 import org.apache.commons.compress.harmony.pack200.Pack200Exception;
 import org.apache.commons.compress.java.util.jar.Pack200.Unpacker;
 import org.apache.commons.io.input.BoundedInputStream;
-import org.apache.commons.io.input.CloseShieldInputStream;
-import org.apache.commons.lang3.reflect.FieldUtils;
 
 /**
  * This class provides the binding between the standard Pack200 interface and the internal interface for (un)packing.
@@ -59,28 +55,28 @@ public class Pack200UnpackerAdapter extends Pack200Adapter implements Unpacker {
         return newBoundedInputStream(file.toPath());
     }
 
-    private static BoundedInputStream newBoundedInputStream(final FileInputStream fileInputStream) throws IOException {
-        return newBoundedInputStream(readPathString(fileInputStream));
-    }
-
+    /**
+     * Wraps the given InputStream in a {@link BoundedInputStream}, unless it already is one.
+     * <p>
+     * The stream is bounded only by its own end of file. We deliberately do not try to recover the size of an underlying file to set an explicit bound: doing so
+     * would require reflecting into the internal fields of {@code java.io.FileInputStream} / {@code java.io.FilterInputStream}, which is not permitted under the
+     * Java Platform Module System and throws {@code InaccessibleObjectException} on Java 17 and later (unless the caller adds
+     * {@code --add-opens java.base/java.io=ALL-UNNAMED}). Bounding a {@code FileInputStream} to its file size is equivalent to reading it to its natural end of
+     * file anyway, so nothing is lost.
+     * </p>
+     *
+     * @param inputStream the InputStream to wrap.
+     * @return a BoundedInputStream.
+     * @throws IOException if an I/O error occurs.
+     */
     @SuppressWarnings("resource") // Caller closes.
     static BoundedInputStream newBoundedInputStream(final InputStream inputStream) throws IOException {
         if (inputStream instanceof BoundedInputStream) {
             // Already bound.
             return (BoundedInputStream) inputStream;
         }
-        if (inputStream instanceof CloseShieldInputStream) {
-            // Don't unwrap to keep close shield.
-            return newBoundedInputStream(BoundedInputStream.builder().setInputStream(inputStream).get());
-        }
-        if (inputStream instanceof FilterInputStream) {
-            return newBoundedInputStream(unwrap((FilterInputStream) inputStream));
-        }
-        if (inputStream instanceof FileInputStream) {
-            return newBoundedInputStream((FileInputStream) inputStream);
-        }
-        // No limit
-        return newBoundedInputStream(BoundedInputStream.builder().setInputStream(inputStream).get());
+        // No explicit limit: the BoundedInputStream is bounded by the underlying stream's end of file.
+        return BoundedInputStream.builder().setInputStream(inputStream).get();
     }
 
     /**
@@ -132,29 +128,6 @@ public class Pack200UnpackerAdapter extends Pack200Adapter implements Unpacker {
      */
     static BoundedInputStream newBoundedInputStream(final URL url) throws IOException, URISyntaxException {
         return newBoundedInputStream(Paths.get(url.toURI()));
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <T> T readField(final Object object, final String fieldName) {
-        try {
-            return (T) FieldUtils.readField(object, fieldName, true);
-        } catch (final IllegalAccessException e) {
-            return null;
-        }
-    }
-
-    static String readPathString(final FileInputStream fis) {
-        return readField(fis, "path");
-    }
-
-    /**
-     * Unwraps the given FilterInputStream to return its wrapped InputStream.
-     *
-     * @param filterInputStream The FilterInputStream to unwrap.
-     * @return The wrapped InputStream
-     */
-    static InputStream unwrap(final FilterInputStream filterInputStream) {
-        return readField(filterInputStream, "in");
     }
 
     /**
