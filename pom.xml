@@ -406,6 +406,15 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <testExcludes>
+            <testExclude>org/apache/commons/compress/fuzz/**</testExclude>
+          </testExcludes>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
   <reporting>
@@ -598,6 +607,30 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
               <argLine>
                 ${argLine} --add-opens java.base/java.io=ALL-UNNAMED
               </argLine>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>fuzz</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+              <testExcludes>
+                <testExclude>none</testExclude>
+              </testExcludes>
+            </configuration>
+          </plugin>
+          <plugin>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <includes>
+                <include>**/*Fuzzer.java</include>
+              </includes>
             </configuration>
           </plugin>
         </plugins>
