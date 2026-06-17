@@ -652,7 +652,7 @@ public final class TarUtils {
             sparseHeaders.add(new TarArchiveStructSparse(sparseOffset, sparseNumbytes));
         }
         // skip the rest of this record data
-        final long bytesToSkip = recordSize - bytesRead % recordSize;
+        final long bytesToSkip = (recordSize - bytesRead % recordSize) % recordSize;
         IOUtils.skip(inputStream, bytesToSkip);
         return sparseHeaders;
     }
