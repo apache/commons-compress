@@ -109,6 +109,16 @@ class TarUtilsTest extends AbstractTest {
         return TarUtils.parsePaxHeaders(new ByteArrayInputStream(data), globalPaxHeaders, data.length, Short.MAX_VALUE, sparseHeaders);
     }
 
+    private static byte[] pax1xSparseHeaderAlignedToSingleRecord() {
+        final StringBuilder header = new StringBuilder("100\n");
+        for (int i = 0; i < 200; i++) {
+            header.append(i < 108 ? "00\n" : "0\n");
+        }
+        final byte[] bytes = header.toString().getBytes(UTF_8);
+        assertEquals(512, bytes.length);
+        return bytes;
+    }
+
     static Stream<Arguments> testReadLongNameHandlesLimits() {
         final String empty = "";
         final String ntfsLongName = createNtfsLongNameByUtf16Units(32767);
@@ -325,6 +335,19 @@ class TarUtilsTest extends AbstractTest {
             assertEquals(0, sparse.get(0).getOffset());
             assertEquals(20, sparse.get(0).getNumbytes());
             assertEquals(-1, in.read());
+        }
+    }
+
+    @Test
+    void testParsePAX1XSparseHeadersDoesNotSkipAlignedDataRecord() throws Exception {
+        final byte[] fileData = new byte[513];
+        Arrays.fill(fileData, 0, 512, (byte) 'A');
+        fileData[512] = 'B';
+        final byte[] input = ArrayUtils.addAll(pax1xSparseHeaderAlignedToSingleRecord(), fileData);
+        try (ByteArrayInputStream in = new ByteArrayInputStream(input)) {
+            final List<TarArchiveStructSparse> sparse = TarUtils.parsePAX1XSparseHeaders(in, 512);
+            assertEquals(100, sparse.size());
+            assertEquals('A', in.read());
         }
     }
 
