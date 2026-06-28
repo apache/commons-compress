@@ -51,7 +51,7 @@ class ExtractorSymlinkPolicyTest {
         Fixtures.extractTar(extractor, data);
         final Path link = target.resolve("link");
         assertTrue(Files.isSymbolicLink(link));
-        assertEquals("/etc", Files.readSymbolicLink(link).toString());
+        assertEquals(link.getFileSystem().getPath("/etc"), Files.readSymbolicLink(link));
     }
 
     @Test
@@ -61,7 +61,7 @@ class ExtractorSymlinkPolicyTest {
         Fixtures.extractTar(extractor, data);
         final Path link = target.resolve("a/link");
         assertTrue(Files.isSymbolicLink(link));
-        assertEquals("../b", Files.readSymbolicLink(link).toString());
+        assertEquals(link.getFileSystem().getPath("../b"), Files.readSymbolicLink(link));
     }
 
     @Test
@@ -114,6 +114,6 @@ class ExtractorSymlinkPolicyTest {
         }
         final Path link = target.resolve("a/link");
         assertTrue(Files.isSymbolicLink(link));
-        assertEquals("../b", Files.readSymbolicLink(link).toString());
+        assertEquals(link.getFileSystem().getPath("../b"), Files.readSymbolicLink(link));
     }
 }

@@ -224,6 +224,6 @@ class ExtractorResilienceTest {
         Fixtures.extractTar(e, data);
         final Path link = target.resolve("escape-link");
         assertTrue(Files.isSymbolicLink(link));
-        assertEquals("../../../../etc/passwd", Files.readSymbolicLink(link).toString());
+        assertEquals(link.getFileSystem().getPath("../../../../etc/passwd"), Files.readSymbolicLink(link));
     }
 }
