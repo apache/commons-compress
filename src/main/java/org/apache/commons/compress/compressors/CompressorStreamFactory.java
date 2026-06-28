@@ -502,6 +502,12 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
 
     private final int memoryLimitInKb;
 
+    private long maxDecompressedSize = -1;
+
+    private double maxCompressionRatio = -1;
+
+    private long compressionRatioGraceBytes;
+
     /**
      * Constructs an instance with the decompress Concatenated option set to false.
      */
@@ -587,6 +593,11 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
     @Override
     public CompressorInputStream createCompressorInputStream(final String name, final InputStream in, final boolean actualDecompressConcatenated)
             throws CompressorException {
+        return applyDecompressionLimits(doCreateCompressorInputStream(name, in, actualDecompressConcatenated));
+    }
+
+    private CompressorInputStream doCreateCompressorInputStream(final String name, final InputStream in, final boolean actualDecompressConcatenated)
+            throws CompressorException {
         if (name == null || in == null) {
             throw new IllegalArgumentException("Compressor name and stream must not be null.");
         }
@@ -665,6 +676,58 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
             return compressorStreamProvider.createCompressorInputStream(name, in, actualDecompressConcatenated);
         }
         throw new CompressorException("Compressor: '%s' not found.", name);
+    }
+
+    /**
+     * Wraps a freshly created stream in a {@link BombGuardCompressorInputStream} when this factory has a decompression-bomb limit
+     * configured. Off by default, so the concrete stream is returned unchanged unless a limit was set on the factory.
+     */
+    private CompressorInputStream applyDecompressionLimits(final CompressorInputStream in) {
+        if (maxDecompressedSize < 0 && maxCompressionRatio <= 0) {
+            return in;
+        }
+        return new BombGuardCompressorInputStream(in, maxDecompressedSize, maxCompressionRatio, compressionRatioGraceBytes);
+    }
+
+    /**
+     * Sets the grace size, in decompressed bytes, below which the {@link #setMaxCompressionRatio(double) compression-ratio guard}
+     * is not enforced on streams this factory creates. Defaults to {@code 0}.
+     *
+     * @param compressionRatioGraceBytes the grace size in decompressed bytes.
+     * @return {@code this} instance.
+     * @since 1.29.0
+     */
+    public CompressorStreamFactory setCompressionRatioGraceBytes(final long compressionRatioGraceBytes) {
+        this.compressionRatioGraceBytes = compressionRatioGraceBytes;
+        return this;
+    }
+
+    /**
+     * Sets the maximum mean compression ratio (decompressed / compressed) tolerated by streams this factory creates, before they
+     * throw a {@link DecompressionBombException}. Defaults to {@code -1} (no limit); protection is opt-in. See
+     * {@link BombGuardCompressorInputStream}.
+     *
+     * @param maxCompressionRatio the maximum decompressed/compressed ratio, or a non-positive value for no limit.
+     * @return {@code this} instance.
+     * @since 1.29.0
+     */
+    public CompressorStreamFactory setMaxCompressionRatio(final double maxCompressionRatio) {
+        this.maxCompressionRatio = maxCompressionRatio;
+        return this;
+    }
+
+    /**
+     * Sets the maximum number of decompressed bytes produced by streams this factory creates, before they throw a
+     * {@link DecompressionBombException}. Defaults to {@code -1} (no limit); protection is opt-in. See
+     * {@link BombGuardCompressorInputStream}.
+     *
+     * @param maxDecompressedSize the maximum decompressed size in bytes, or {@code -1} for no limit.
+     * @return {@code this} instance.
+     * @since 1.29.0
+     */
+    public CompressorStreamFactory setMaxDecompressedSize(final long maxDecompressedSize) {
+        this.maxDecompressedSize = maxDecompressedSize;
+        return this;
     }
 
     /**
