@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -267,7 +268,7 @@ public class Compress712Test {
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
         try (DumpArchiveInputStream is = new DumpArchiveInputStream(new ByteArrayInputStream(data))) {
-            assertThrows(IndexOutOfBoundsException.class, () -> {
+            assertThrows(ArchiveException.class, () -> {
                 while (is.getNextEntry() != null) {
                     is.read(new byte[1024]);
                 }

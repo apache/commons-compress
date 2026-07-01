@@ -526,6 +526,11 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
                 pending.put(entry.getIno(), entry);
             }
 
+            // A tape segment header describes at most CDATA_LEN records, so a larger (or negative) count is
+            // corrupt. Without this the following product overflows int and yields a bogus datalen.
+            if (entry.getHeaderCount() < 0 || entry.getHeaderCount() >= DumpArchiveEntry.TapeSegmentHeader.CDATA_LEN) {
+                throw new ArchiveException("Header count");
+            }
             final int datalen = DumpArchiveConstants.TP_SIZE * entry.getHeaderCount();
 
             if (blockBuffer.length < datalen) {
