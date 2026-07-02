@@ -217,11 +217,27 @@ public class Extractor {
     }
 
     /**
-     * Resolves {@code name} against the extraction root and rejects any result that escapes it (the lexical zip-slip guard).
+     * Tests whether {@code path} is contained within the canonical extraction root, comparing component by component so a
+     * sibling that merely shares a name prefix (for example {@code root-old} beside {@code root}) is not treated as contained.
+     */
+    private boolean isWithinRoot(final Path path) {
+        return path.startsWith(rootDirectory);
+    }
+
+    /**
+     * Resolves {@code name} against the extraction root and applies the lexical zip-slip guard.
+     *
+     * @return the resolved path within the root, or {@code null} if {@code name} resolves to the root itself (for example
+     *         {@code a/..}), which carries nothing to materialize; the caller skips such entries rather than writing at or
+     *         replacing the root.
+     * @throws ArchiveException if the resolved path escapes the extraction root.
      */
     private Path resolveWithinRoot(final String name) throws ArchiveException {
         final Path resolved = rootDirectory.resolve(name).normalize();
-        if (!resolved.startsWith(rootDirectory)) {
+        if (resolved.equals(rootDirectory)) {
+            return null;
+        }
+        if (!isWithinRoot(resolved)) {
             throw new ArchiveException("Entry '%s' would escape the extraction root", name);
         }
         return resolved;
@@ -281,6 +297,11 @@ public class Extractor {
             }
         }
         final Path leaf = resolveWithinRoot(name);
+        if (leaf == null) {
+            // The entry resolves to the extraction root itself; there is nothing to materialize and writing here would
+            // target or replace the root, so skip it.
+            return;
+        }
         ensureDirectory(leaf.getParent());
         switch (type) {
         case DIRECTORY:
@@ -355,17 +376,20 @@ public class Extractor {
 
     /**
      * Creates a hard link at {@code leaf} to {@code linkTarget}, which is resolved against the extraction root and rejected if
-     * it escapes.
+     * it escapes. The target is re-resolved with {@link Path#toRealPath} and re-checked before {@link Files#createLink}, which
+     * closes the hard-link-through-symlink escape. A residual time-of-check-to-time-of-use window remains between that re-check
+     * and the link creation, the same non-atomic residual as symbolic-link creation, as {@code java.nio} exposes no
+     * descriptor-relative {@code linkat} for the secure implementation to use.
      */
     void writeHardLink(final Path leaf, final String linkTarget) throws IOException {
         final Path resolved = rootDirectory.resolve(linkTarget).normalize();
-        if (!resolved.startsWith(rootDirectory)) {
+        if (!isWithinRoot(resolved)) {
             throw new ArchiveException("Hard link target escapes the extraction root: %s -> %s", leaf, linkTarget);
         }
         // The lexical check is not enough: a target routed through a symbolic link (planted or from an earlier entry) would
         // be followed by createLink and escape the root. Re-resolve on disk and re-check containment, then link the real file.
         final Path real = resolved.toRealPath();
-        if (!real.startsWith(rootDirectory)) {
+        if (!isWithinRoot(real)) {
             throw new ArchiveException("Hard link target resolves outside the extraction root: %s -> %s", leaf, linkTarget);
         }
         Files.createLink(leaf, real);
@@ -379,7 +403,7 @@ public class Extractor {
         if (symlinkPolicy == SymlinkPolicy.ALLOW_WITHIN_ROOT) {
             final Path parent = leaf.getParent();
             final Path resolved = (parent != null ? parent : rootDirectory).resolve(linkTarget).normalize();
-            if (!resolved.startsWith(rootDirectory)) {
+            if (!isWithinRoot(resolved)) {
                 throw new ArchiveException("Symbolic link target escapes the extraction root: %s -> %s", leaf, linkTarget);
             }
         }

@@ -34,6 +34,8 @@ import java.nio.file.Path;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 /**
  * Symbolic-link policy behavior. The archive itself is trusted; these prove that the extractor controls link creation and
@@ -115,5 +117,85 @@ class ExtractorSymlinkPolicyTest {
         final Path link = target.resolve("a/link");
         assertTrue(Files.isSymbolicLink(link));
         assertEquals(link.getFileSystem().getPath("../b"), Files.readSymbolicLink(link));
+    }
+
+    private static final int POC_DEPTH = 20;
+
+    private static String repeat(final String component, final int times) {
+        final StringBuilder sb = new StringBuilder(component);
+        for (int i = 1; i < times; i++) {
+            sb.append('/').append(component);
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Builds the indirect (chained) symbolic-link escape from COMPRESS-727: {@code malicious-entry} is written first with a
+     * target that is lexically inside the root, while the deeper link it passes through only escapes once the operating system
+     * resolves the chain. Each link is individually within-root, which is exactly what {@link SymlinkPolicy#ALLOW_WITHIN_ROOT}
+     * cannot see through.
+     */
+    private static byte[] indirectEscapeZip() throws IOException {
+        final String nested = repeat("a", POC_DEPTH);
+        final String maliciousTarget = nested + "/" + repeat("..", POC_DEPTH) + "/etc/passwd";
+        final String nestedTarget = repeat("..", POC_DEPTH - 1);
+        return Fixtures.zip(symlink("malicious-entry", maliciousTarget), symlink(nested, nestedTarget));
+    }
+
+    @Test
+    void indirectSymlinkEscapeRejectedByDefault() throws Exception {
+        final Extractor extractor = Extractor.newExtractor(target);
+        try (ZipFile zip = Fixtures.openZip(indirectEscapeZip())) {
+            assertThrows(IOException.class, () -> extractor.extract(zip));
+        }
+        assertFalse(Files.exists(target.resolve("malicious-entry"), LinkOption.NOFOLLOW_LINKS));
+    }
+
+    @Test
+    void indirectSymlinkEscapeSkipped() throws Exception {
+        final Extractor extractor = Extractor.newExtractor(target).setSymlinkPolicy(SymlinkPolicy.SKIP);
+        try (ZipFile zip = Fixtures.openZip(indirectEscapeZip())) {
+            extractor.extract(zip);
+        }
+        assertFalse(Files.exists(target.resolve("malicious-entry"), LinkOption.NOFOLLOW_LINKS));
+    }
+
+    @ParameterizedTest
+    @EnumSource(names = { "ALLOW_WITHIN_ROOT", "ALLOW_ALL" })
+    void indirectSymlinkEscapeCreatesInRootLinksButWritesNothingOutside(final SymlinkPolicy policy) throws Exception {
+        final String nested = repeat("a", POC_DEPTH);
+        final String maliciousTarget = nested + "/" + repeat("..", POC_DEPTH) + "/etc/passwd";
+        final String nestedTarget = repeat("..", POC_DEPTH - 1);
+        final byte[] data = Fixtures.zip(symlink("malicious-entry", maliciousTarget), symlink(nested, nestedTarget));
+        final Extractor extractor = Extractor.newExtractor(target).setSymlinkPolicy(policy);
+        try (ZipFile zip = Fixtures.openZip(data)) {
+            extractor.extract(zip);
+        }
+        final Path malicious = target.resolve("malicious-entry");
+        final Path deep = target.resolve(nested);
+        // Each link passes the per-link lexical containment check, so both are created inside the root. This is the
+        // documented best-effort limitation: the escape only occurs if a later consumer follows the chain, never during
+        // extraction, which resolves no links.
+        assertTrue(Files.isSymbolicLink(malicious));
+        assertTrue(Files.isSymbolicLink(deep));
+        // The crafted targets are stored verbatim (the fixture is not silently neutered) and only links, no file content, were
+        // written, so extraction produced nothing outside the root.
+        assertEquals(malicious.getFileSystem().getPath(maliciousTarget), Files.readSymbolicLink(malicious));
+        assertEquals(deep.getFileSystem().getPath(nestedTarget), Files.readSymbolicLink(deep));
+    }
+
+    @Test
+    void legitSymlinkChainWithinRootIsCreated() throws Exception {
+        // Positive control for the chain the escape test attacks: when every hop stays inside the root the whole chain is
+        // created, so ALLOW_WITHIN_ROOT is not over-rejecting legitimate links.
+        final byte[] data = Fixtures.zip(dir("b"), symlink("a", "b"), symlink("c", "a"));
+        final Extractor extractor = Extractor.newExtractor(target).setSymlinkPolicy(SymlinkPolicy.ALLOW_WITHIN_ROOT);
+        try (ZipFile zip = Fixtures.openZip(data)) {
+            extractor.extract(zip);
+        }
+        assertTrue(Files.isSymbolicLink(target.resolve("a")));
+        assertTrue(Files.isSymbolicLink(target.resolve("c")));
+        assertEquals(target.getFileSystem().getPath("b"), Files.readSymbolicLink(target.resolve("a")));
+        assertEquals(target.getFileSystem().getPath("a"), Files.readSymbolicLink(target.resolve("c")));
     }
 }

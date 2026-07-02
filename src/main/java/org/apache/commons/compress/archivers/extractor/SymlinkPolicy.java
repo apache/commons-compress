@@ -19,7 +19,9 @@
 package org.apache.commons.compress.archivers.extractor;
 
 /**
- * Controls how symbolic-link entries in an archive are handled during extraction.
+ * Controls how symbolic-link entries in an archive are handled during extraction. For untrusted archives, {@link #REJECT}
+ * (the default) and {@link #SKIP} are the safe choices; {@link #ALLOW_WITHIN_ROOT} enforces only a best-effort lexical
+ * containment check, as described on that constant.
  *
  * @since 1.29.0
  */
@@ -37,8 +39,13 @@ public enum SymlinkPolicy {
     SKIP,
 
     /**
-     * Create a symbolic link only if its target resolves to a location inside the extraction root; reject a link whose
-     * target escapes the root. A link created this way is never followed when later entries are written.
+     * Create a symbolic link only when its target lexically resolves inside the extraction root, and reject a link whose
+     * target escapes. This containment check is best-effort: it is evaluated lexically against the archive-declared target at
+     * creation time, so it does not prevent a target reached through another symbolic link, nor a chain of individually
+     * in-root links that escapes only once the operating system resolves them together. Extraction itself never follows these
+     * links (every path component is resolved with {@link java.nio.file.LinkOption#NOFOLLOW_LINKS}), so nothing is written
+     * outside the root while extracting; the residual risk is a created link that a later consumer follows. For untrusted
+     * archives prefer {@link #REJECT} (the default) or {@link #SKIP}.
      */
     ALLOW_WITHIN_ROOT,
 
