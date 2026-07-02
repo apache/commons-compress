@@ -29,7 +29,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 /**
  * This class represents an entry in a Dump archive. It consists of the entry's header, the entry's File and any extended attributes.
  * <p>
- * DumpEntries that are created from the header bytes read from an archive are instantiated with the DumpArchiveEntry( byte[] ) constructor. These entries will
+ * DumpEntries that are created from the header bytes read from an archive are instantiated with {@link DumpArchiveEntry#parse(byte[])}. These entries will
  * be used when extracting from or listing the contents of an archive. These entries have their header filled in using the header bytes. They also set the File
  * to null, since they reference an archive entry not a file.
  * </p>
