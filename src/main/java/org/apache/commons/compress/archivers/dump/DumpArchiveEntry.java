@@ -306,9 +306,6 @@ public class DumpArchiveEntry implements ArchiveEntry {
             return volume;
         }
 
-        void setIno(final int ino) {
-            this.ino = ino;
-        }
     }
 
     /**
