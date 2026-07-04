@@ -471,8 +471,8 @@ public abstract class BandSet {
 //        int[] secondBand = new int[band.length - index];
 //        System.arraycopy(band, 0, firstBand, 0, index);
 //        System.arraycopy(band, index, secondBand, 0, secondBand.length);
-//        BandAnalysisResults firstResults = analyseBand(name + "A", firstBand, defaultCodec);
-//        BandAnalysisResults secondResults = analyseBand(name + "B", secondBand, defaultCodec);
+//        BandAnalysisResults firstResults = analyzeBand(name + "A", firstBand, defaultCodec);
+//        BandAnalysisResults secondResults = analyzeBand(name + "B", secondBand, defaultCodec);
 //        int specifier = 117;
 //        byte[] specifierEncoded = defaultCodec.encode(new int[] {specifier});
 //        int totalLength = firstResults.encodedBand.length + secondResults.encodedBand.length + specifierEncoded.length + 4; // TODO actual
