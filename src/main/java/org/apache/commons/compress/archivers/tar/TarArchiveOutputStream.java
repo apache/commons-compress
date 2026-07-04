@@ -46,7 +46,7 @@ import org.apache.commons.lang3.ArrayFill;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * The TarOutputStream writes a Unix tar archive as an OutputStream. Methods are provided to put entries, and then write their contents by writing to this
+ * The TarOutputStream writes a Unix TAR archive as an OutputStream. Methods are provided to put entries, and then write their contents by writing to this
  * stream using write().
  *
  * <p>

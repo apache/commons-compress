@@ -47,7 +47,7 @@ import org.apache.commons.io.function.IOStream;
 import org.apache.commons.io.input.BoundedInputStream;
 
 /**
- * Provides random access to Unix archives.
+ * Provides random access to Unix TAR files.
  *
  * @since 1.21
  */
