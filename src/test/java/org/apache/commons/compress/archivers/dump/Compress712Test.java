@@ -267,7 +267,7 @@ public class Compress712Test {
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
         try (DumpArchiveInputStream is = new DumpArchiveInputStream(new ByteArrayInputStream(data))) {
-            assertThrows(IndexOutOfBoundsException.class, () -> {
+            assertThrows(DumpArchiveException.class, () -> {
                 while (is.getNextEntry() != null) {
                     is.read(new byte[1024]);
                 }
