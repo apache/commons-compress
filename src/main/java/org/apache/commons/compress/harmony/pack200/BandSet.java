@@ -216,7 +216,7 @@ public abstract class BandSet {
         this.segmentHeader = header;
     }
 
-    private BandAnalysisResults analyseBand(final String name, final int[] band, final BHSDCodec defaultCodec) throws Pack200Exception {
+    private BandAnalysisResults analyzeBand(final String name, final int[] band, final BHSDCodec defaultCodec) throws Pack200Exception {
 
         final BandAnalysisResults results = new BandAnalysisResults();
 
@@ -367,7 +367,7 @@ public abstract class BandSet {
 //            System.out.println("encoding " + name + " " + ints.length);
 //        }
         if (effort > 1 && ints.length >= effortThresholds[effort]) {
-            final BandAnalysisResults results = analyseBand(name, ints, defaultCodec);
+            final BandAnalysisResults results = analyzeBand(name, ints, defaultCodec);
             final Codec betterCodec = results.betterCodec;
             encodedBand = results.encodedBand;
             if (betterCodec != null) {
@@ -567,8 +567,8 @@ public abstract class BandSet {
         final int[] unfavouredBand = unfavoured.toArray();
 
         // Analyse the three bands to get the best codec
-        final BandAnalysisResults favouredResults = analyseBand("POPULATION", favouredBand, defaultCodec);
-        final BandAnalysisResults unfavouredResults = analyseBand("POPULATION", unfavouredBand, defaultCodec);
+        final BandAnalysisResults favouredResults = analyzeBand("POPULATION", favouredBand, defaultCodec);
+        final BandAnalysisResults unfavouredResults = analyzeBand("POPULATION", unfavouredBand, defaultCodec);
 
         int tdefL = 0;
         int l = 0;
@@ -579,7 +579,7 @@ public abstract class BandSet {
             tdefL = 1;
             tokensEncoded = Codec.BYTE1.encode(tokens);
         } else {
-            final BandAnalysisResults tokenResults = analyseBand("POPULATION", tokens, defaultCodec);
+            final BandAnalysisResults tokenResults = analyzeBand("POPULATION", tokens, defaultCodec);
             tokenCodec = tokenResults.betterCodec;
             tokensEncoded = tokenResults.encodedBand;
             if (tokenCodec == null) {
