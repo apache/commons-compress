@@ -138,7 +138,7 @@ public class OperandManager {
      * @return the current class.
      */
     public String getCurrentClass() {
-        if (null == currentClass) {
+        if (currentClass == null) {
             throw new IllegalStateException("Current class not set yet");
         }
         return currentClass;
@@ -150,7 +150,7 @@ public class OperandManager {
      * @return the new class.
      */
     public String getNewClass() {
-        if (null == newClass) {
+        if (newClass == null) {
             throw new IllegalStateException("New class not set yet");
         }
         return newClass;
@@ -162,7 +162,7 @@ public class OperandManager {
      * @return the super class.
      */
     public String getSuperClass() {
-        if (null == superClass) {
+        if (superClass == null) {
             throw new IllegalStateException("SuperClass not set yet");
         }
         return superClass;
