@@ -115,11 +115,11 @@ public abstract class BandSet {
         // }
         if (codecUsed instanceof PopulationCodec) {
             final PopulationCodec popCodec = (PopulationCodec) codecUsed;
-            final int[] favoured = popCodec.getFavoured().clone();
-            Arrays.sort(favoured);
+            final int[] favored = popCodec.getFavoured().clone();
+            Arrays.sort(favored);
             for (int i = 0; i < band.length; i++) {
-                final boolean favouredValue = Arrays.binarySearch(favoured, band[i]) > -1;
-                final Codec theCodec = favouredValue ? popCodec.getFavouredCodec() : popCodec.getUnfavouredCodec();
+                final boolean favoredValue = Arrays.binarySearch(favored, band[i]) > -1;
+                final Codec theCodec = favoredValue ? popCodec.getFavouredCodec() : popCodec.getUnfavouredCodec();
                 if (theCodec instanceof BHSDCodec && ((BHSDCodec) theCodec).isDelta()) {
                     final BHSDCodec bhsd = (BHSDCodec) theCodec;
                     final long cardinality = bhsd.cardinality();
