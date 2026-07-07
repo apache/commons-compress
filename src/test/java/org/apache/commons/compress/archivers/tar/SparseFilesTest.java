@@ -53,6 +53,9 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 class SparseFilesTest extends AbstractTest {
 
+    // numbytes claimed by the crafted sparse map, deliberately larger than the entry's stored size
+    private static final long SPARSE_MAP_NUMBYTES = 1024 * 1024;
+
     @TempDir
     private static Path tempDir;
 
@@ -539,9 +542,9 @@ class SparseFilesTest extends AbstractTest {
 
     private static void appendPadded(final ByteArrayOutputStream out, final byte[] data) {
         out.write(data, 0, data.length);
-        final int rem = data.length % 512;
+        final int rem = data.length % TarConstants.DEFAULT_RCDSIZE;
         if (rem != 0) {
-            out.write(new byte[512 - rem], 0, 512 - rem);
+            out.write(new byte[TarConstants.DEFAULT_RCDSIZE - rem], 0, TarConstants.DEFAULT_RCDSIZE - rem);
         }
     }
 
@@ -564,7 +567,7 @@ class SparseFilesTest extends AbstractTest {
     }
 
     private static byte[] ustarHeader(final String name, final long size, final char typeFlag) {
-        final byte[] header = new byte[512];
+        final byte[] header = new byte[TarConstants.DEFAULT_RCDSIZE];
         putField(header, 0, 100, name);
         putOctal(header, 100, 8, 0644);
         putOctal(header, 108, 8, 0);
@@ -591,7 +594,7 @@ class SparseFilesTest extends AbstractTest {
     // A second entry follows, whose bytes must not be reachable through the sparse entry.
     private byte[] sparseArchiveWithNumbytesLargerThanSize() {
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        final String pax = paxRecord("GNU.sparse.size", "1048576") + paxRecord("GNU.sparse.map", "0,1048576");
+        final String pax = paxRecord("GNU.sparse.size", String.valueOf(SPARSE_MAP_NUMBYTES)) + paxRecord("GNU.sparse.map", "0," + SPARSE_MAP_NUMBYTES);
         final byte[] paxData = pax.getBytes(java.nio.charset.StandardCharsets.US_ASCII);
         appendPadded(bos, ustarHeader("PaxHeaders/sparse.bin", paxData.length, 'x'));
         appendPadded(bos, paxData);
@@ -600,7 +603,8 @@ class SparseFilesTest extends AbstractTest {
         final byte[] payload = "the following entry".getBytes(java.nio.charset.StandardCharsets.US_ASCII);
         appendPadded(bos, ustarHeader("next.bin", payload.length, '0'));
         appendPadded(bos, payload);
-        bos.write(new byte[1024], 0, 1024); // two zero EOF records
+        final int eofLength = 2 * TarConstants.DEFAULT_RCDSIZE; // two zero EOF records
+        bos.write(new byte[eofLength], 0, eofLength);
         return bos.toByteArray();
     }
 
