@@ -358,6 +358,8 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
         // logical offset into the extracted entry
         long offset = 0;
         long numberOfZeroBytesInSparseEntry = 0;
+        // physical bytes backing this entry
+        long dataBytes = 0;
         for (final TarArchiveStructSparse sparseHeader : sparseHeaders) {
             final long zeroBlockSize = sparseHeader.getOffset() - offset;
             if (zeroBlockSize < 0) {
@@ -371,6 +373,12 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
             }
             // only store the input streams with non-zero size
             if (sparseHeader.getNumbytes() > 0) {
+                dataBytes = ArchiveException.addExact(dataBytes, sparseHeader.getNumbytes());
+                // the non-hole blocks map onto real bytes of the archive, so their total size must not
+                // exceed the entry's stored size, otherwise this entry would reach into following entries
+                if (dataBytes > currEntry.getSize()) {
+                    throw new ArchiveException("Corrupted TAR archive. Sparse blocks for '%s' are larger than the entry size.", currEntry.getName());
+                }
                 final long start = currEntry.getDataOffset() + sparseHeader.getOffset() - numberOfZeroBytesInSparseEntry;
                 if (start + sparseHeader.getNumbytes() < start) {
                     // possible integer overflow
