@@ -373,7 +373,7 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
             }
             // only store the input streams with non-zero size
             if (sparseHeader.getNumbytes() > 0) {
-                dataBytes += sparseHeader.getNumbytes();
+                dataBytes = ArchiveException.addExact(dataBytes, sparseHeader.getNumbytes());
                 // the non-hole blocks map onto real bytes of the archive, so their total size must not
                 // exceed the entry's stored size, otherwise this entry would reach into following entries
                 if (dataBytes > currEntry.getSize()) {
