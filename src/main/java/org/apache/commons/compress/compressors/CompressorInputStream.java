@@ -20,10 +20,18 @@ package org.apache.commons.compress.compressors;
 
 import java.io.InputStream;
 
+import org.apache.commons.compress.utils.InputStreamStatistics;
+
 /**
  * Abstracts services for all compressor input streams.
+ * <p>
+ * As of 1.29.0 this type implements {@link InputStreamStatistics}, so both the decompressed and the compressed byte counts are
+ * available on the base type for every format. The base {@link #getCompressedCount()} returns {@code -1} ("unknown"); concrete
+ * formats override it with a live count. Opt-in decompression-bomb protection that consumes these counts is provided by
+ * {@link BombGuardCompressorInputStream} and by the limit setters on {@link CompressorStreamFactory}.
+ * </p>
  */
-public abstract class CompressorInputStream extends InputStream {
+public abstract class CompressorInputStream extends InputStream implements InputStreamStatistics {
 
     private long bytesRead;
 
@@ -66,6 +74,21 @@ public abstract class CompressorInputStream extends InputStream {
     }
 
     /**
+     * Gets the amount of raw or compressed bytes consumed by the stream so far.
+     * <p>
+     * This base implementation returns {@code -1} ("unknown"). Every concrete compressor format except
+     * {@link org.apache.commons.compress.compressors.pack200.Pack200CompressorInputStream} overrides it with a live count.
+     * </p>
+     *
+     * @return the amount of raw or compressed bytes consumed, or {@code -1} if unknown.
+     * @since 1.29.0
+     */
+    @Override
+    public long getCompressedCount() {
+        return -1;
+    }
+
+    /**
      * Gets the current number of bytes read from this stream.
      *
      * @return the number of read bytes.
@@ -81,10 +104,6 @@ public abstract class CompressorInputStream extends InputStream {
      *
      * <p>
      * This implementation invokes {@link #getBytesRead}.
-     * </p>
-     *
-     * <p>
-     * Provides half of {@link org.apache.commons.compress.utils.InputStreamStatistics} without forcing subclasses to implement the other half.
      * </p>
      *
      * @return the amount of decompressed bytes returned by the stream.
