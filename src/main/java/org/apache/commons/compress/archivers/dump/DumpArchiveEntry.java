@@ -29,7 +29,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 /**
  * This class represents an entry in a Dump archive. It consists of the entry's header, the entry's File and any extended attributes.
  * <p>
- * DumpEntries that are created from the header bytes read from an archive are instantiated with the DumpArchiveEntry( byte[] ) constructor. These entries will
+ * DumpEntries that are created from the header bytes read from an archive are instantiated with {@link DumpArchiveEntry#parse(byte[])}. These entries will
  * be used when extracting from or listing the contents of an archive. These entries have their header filled in using the header bytes. They also set the File
  * to null, since they reference an archive entry not a file.
  * </p>
@@ -306,9 +306,6 @@ public class DumpArchiveEntry implements ArchiveEntry {
             return volume;
         }
 
-        void setIno(final int ino) {
-            this.ino = ino;
-        }
     }
 
     /**
@@ -389,7 +386,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
      *
      * @param buffer buffer to read content from.
      */
-    static DumpArchiveEntry parse(final byte[] buffer) {
+    static DumpArchiveEntry parse(final byte[] buffer) throws DumpArchiveException {
         final DumpArchiveEntry entry = new DumpArchiveEntry();
         final TapeSegmentHeader header = entry.header;
         header.type = DumpArchiveConstants.SEGMENT_TYPE.find(DumpArchiveUtil.convert32(buffer, 0));
@@ -423,7 +420,13 @@ public class DumpArchiveEntry implements ArchiveEntry {
         entry.setUserId(DumpArchiveUtil.convert32(buffer, 144));
         entry.setGroupId(DumpArchiveUtil.convert32(buffer, 148));
         // two 32-bit spare values.
-        header.count = DumpArchiveUtil.convert32(buffer, 160);
+        final int headerCount = DumpArchiveUtil.convert32(buffer, 160);
+        // A tape segment header describes at most CDATA_LEN records, so a larger (or negative) count is
+        // corrupt. Without this the following product overflows int and yields a bogus datalen.
+        if (headerCount < 0 || headerCount >= DumpArchiveEntry.TapeSegmentHeader.CDATA_LEN) {
+            throw new DumpArchiveException("Invalid header count: " + headerCount + " (expected 0.." + (DumpArchiveEntry.TapeSegmentHeader.CDATA_LEN - 1) + ")");
+        }
+        header.count = headerCount;
         header.holes = 0;
         for (int i = 0; i < 512 && i < header.count; i++) {
             if (buffer[164 + i] == 0) {

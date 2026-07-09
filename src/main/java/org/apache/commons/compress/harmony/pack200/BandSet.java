@@ -216,7 +216,7 @@ public abstract class BandSet {
         this.segmentHeader = header;
     }
 
-    private BandAnalysisResults analyseBand(final String name, final int[] band, final BHSDCodec defaultCodec) throws Pack200Exception {
+    private BandAnalysisResults analyzeBand(final String name, final int[] band, final BHSDCodec defaultCodec) throws Pack200Exception {
 
         final BandAnalysisResults results = new BandAnalysisResults();
 
@@ -367,7 +367,7 @@ public abstract class BandSet {
 //            System.out.println("encoding " + name + " " + ints.length);
 //        }
         if (effort > 1 && ints.length >= effortThresholds[effort]) {
-            final BandAnalysisResults results = analyseBand(name, ints, defaultCodec);
+            final BandAnalysisResults results = analyzeBand(name, ints, defaultCodec);
             final Codec betterCodec = results.betterCodec;
             encodedBand = results.encodedBand;
             if (betterCodec != null) {
@@ -471,8 +471,8 @@ public abstract class BandSet {
 //        int[] secondBand = new int[band.length - index];
 //        System.arraycopy(band, 0, firstBand, 0, index);
 //        System.arraycopy(band, index, secondBand, 0, secondBand.length);
-//        BandAnalysisResults firstResults = analyseBand(name + "A", firstBand, defaultCodec);
-//        BandAnalysisResults secondResults = analyseBand(name + "B", secondBand, defaultCodec);
+//        BandAnalysisResults firstResults = analyzeBand(name + "A", firstBand, defaultCodec);
+//        BandAnalysisResults secondResults = analyzeBand(name + "B", secondBand, defaultCodec);
 //        int specifier = 117;
 //        byte[] specifierEncoded = defaultCodec.encode(new int[] {specifier});
 //        int totalLength = firstResults.encodedBand.length + secondResults.encodedBand.length + specifierEncoded.length + 4; // TODO actual
@@ -551,24 +551,24 @@ public abstract class BandSet {
             favoredToIndex.put(favored.get(i), Integer.valueOf(i));
         }
 
-        final IntList unfavoured = new IntList();
+        final IntList unfavored = new IntList();
         final int[] tokens = new int[band.length];
         for (int i = 0; i < band.length; i++) {
-            final Integer favouredIndex = favoredToIndex.get(Integer.valueOf(band[i]));
-            if (favouredIndex == null) {
+            final Integer favoredIndex = favoredToIndex.get(Integer.valueOf(band[i]));
+            if (favoredIndex == null) {
                 tokens[i] = 0;
-                unfavoured.add(band[i]);
+                unfavored.add(band[i]);
             } else {
-                tokens[i] = favouredIndex.intValue() + 1;
+                tokens[i] = favoredIndex.intValue() + 1;
             }
         }
         favored.add(favored.get(favored.size() - 1)); // repeat last value
-        final int[] favouredBand = integerListToArray(favored);
-        final int[] unfavouredBand = unfavoured.toArray();
+        final int[] favoredBand = integerListToArray(favored);
+        final int[] unfavoredBand = unfavored.toArray();
 
         // Analyse the three bands to get the best codec
-        final BandAnalysisResults favouredResults = analyseBand("POPULATION", favouredBand, defaultCodec);
-        final BandAnalysisResults unfavouredResults = analyseBand("POPULATION", unfavouredBand, defaultCodec);
+        final BandAnalysisResults favoredResults = analyzeBand("POPULATION", favoredBand, defaultCodec);
+        final BandAnalysisResults unfavoredResults = analyzeBand("POPULATION", unfavoredBand, defaultCodec);
 
         int tdefL = 0;
         int l = 0;
@@ -579,7 +579,7 @@ public abstract class BandSet {
             tdefL = 1;
             tokensEncoded = Codec.BYTE1.encode(tokens);
         } else {
-            final BandAnalysisResults tokenResults = analyseBand("POPULATION", tokens, defaultCodec);
+            final BandAnalysisResults tokenResults = analyzeBand("POPULATION", tokens, defaultCodec);
             tokenCodec = tokenResults.betterCodec;
             tokensEncoded = tokenResults.encodedBand;
             if (tokenCodec == null) {
@@ -638,21 +638,21 @@ public abstract class BandSet {
             }
         }
 
-        final byte[] favouredEncoded = favouredResults.encodedBand;
-        final byte[] unfavouredEncoded = unfavouredResults.encodedBand;
-        final Codec favouredCodec = favouredResults.betterCodec;
-        final Codec unfavouredCodec = unfavouredResults.betterCodec;
+        final byte[] favoredEncoded = favoredResults.encodedBand;
+        final byte[] unfavoredEncoded = unfavoredResults.encodedBand;
+        final Codec favoredCodec = favoredResults.betterCodec;
+        final Codec unfavoredCodec = unfavoredResults.betterCodec;
 
-        int specifier = 141 + (favouredCodec == null ? 1 : 0) + 4 * tdefL + (unfavouredCodec == null ? 2 : 0);
+        int specifier = 141 + (favoredCodec == null ? 1 : 0) + 4 * tdefL + (unfavoredCodec == null ? 2 : 0);
         final IntList extraBandMetadata = new IntList(3);
-        if (favouredCodec != null) {
-            IntStream.of(CodecEncoding.getSpecifier(favouredCodec, null)).forEach(extraBandMetadata::add);
+        if (favoredCodec != null) {
+            IntStream.of(CodecEncoding.getSpecifier(favoredCodec, null)).forEach(extraBandMetadata::add);
         }
         if (tdefL == 0) {
             IntStream.of(CodecEncoding.getSpecifier(tokenCodec, null)).forEach(extraBandMetadata::add);
         }
-        if (unfavouredCodec != null) {
-            IntStream.of(CodecEncoding.getSpecifier(unfavouredCodec, null)).forEach(extraBandMetadata::add);
+        if (unfavoredCodec != null) {
+            IntStream.of(CodecEncoding.getSpecifier(unfavoredCodec, null)).forEach(extraBandMetadata::add);
         }
         final int[] extraMetadata = extraBandMetadata.toArray();
         final byte[] extraMetadataEncoded = Codec.UNSIGNED5.encode(extraMetadata);
@@ -662,22 +662,22 @@ public abstract class BandSet {
             specifier += defaultCodec.getL();
         }
         final byte[] firstValueEncoded = defaultCodec.encode(new int[] { specifier });
-        final int totalBandLength = firstValueEncoded.length + favouredEncoded.length + tokensEncoded.length + unfavouredEncoded.length;
+        final int totalBandLength = firstValueEncoded.length + favoredEncoded.length + tokensEncoded.length + unfavoredEncoded.length;
 
         if (totalBandLength + extraMetadataEncoded.length < results.encodedBand.length) {
             results.saved += results.encodedBand.length - (totalBandLength + extraMetadataEncoded.length);
             final byte[] encodedBand = new byte[totalBandLength];
             System.arraycopy(firstValueEncoded, 0, encodedBand, 0, firstValueEncoded.length);
-            System.arraycopy(favouredEncoded, 0, encodedBand, firstValueEncoded.length, favouredEncoded.length);
-            System.arraycopy(tokensEncoded, 0, encodedBand, firstValueEncoded.length + favouredEncoded.length, tokensEncoded.length);
-            System.arraycopy(unfavouredEncoded, 0, encodedBand, firstValueEncoded.length + favouredEncoded.length + tokensEncoded.length,
-                    unfavouredEncoded.length);
+            System.arraycopy(favoredEncoded, 0, encodedBand, firstValueEncoded.length, favoredEncoded.length);
+            System.arraycopy(tokensEncoded, 0, encodedBand, firstValueEncoded.length + favoredEncoded.length, tokensEncoded.length);
+            System.arraycopy(unfavoredEncoded, 0, encodedBand, firstValueEncoded.length + favoredEncoded.length + tokensEncoded.length,
+                    unfavoredEncoded.length);
             results.encodedBand = encodedBand;
             results.extraMetadata = extraMetadata;
             if (l != 0) {
-                results.betterCodec = new PopulationCodec(favouredCodec, l, unfavouredCodec);
+                results.betterCodec = new PopulationCodec(favoredCodec, l, unfavoredCodec);
             } else {
-                results.betterCodec = new PopulationCodec(favouredCodec, tokenCodec, unfavouredCodec);
+                results.betterCodec = new PopulationCodec(favoredCodec, tokenCodec, unfavoredCodec);
             }
         }
     }

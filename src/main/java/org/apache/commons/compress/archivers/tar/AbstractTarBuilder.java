@@ -24,8 +24,8 @@ import org.apache.commons.compress.archivers.AbstractArchiveBuilder;
 /**
  * Abstracts TAR builder operations.
  *
- * @param <T> the type of instances to build.
- * @param <B> the type of builder subclass.
+ * @param <T> The type of instances to build.
+ * @param <B> The type of builder subclass.
  * @since 1.29.0
  */
 public abstract class AbstractTarBuilder<T, B extends AbstractTarBuilder<T, B>> extends AbstractArchiveBuilder<T, B> {

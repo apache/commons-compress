@@ -109,10 +109,10 @@ public class IcTuple {
         this.c2Index = c2Index;
         this.nIndex = nIndex;
         this.tIndex = tIndex;
-        if (null == N) {
+        if (N == null) {
             predictSimple = true;
         }
-        if (null == C2) {
+        if (C2 == null) {
             predictOuter = true;
         }
         initializeClassStrings();
@@ -303,7 +303,7 @@ public class IcTuple {
 
     private boolean isAllDigits(final String nameString) {
         // Answer true if the receiver is all digits; otherwise answer false.
-        if (null == nameString) {
+        if (nameString == null) {
             return false;
         }
         for (int index = 0; index < nameString.length(); index++) {
@@ -349,8 +349,8 @@ public class IcTuple {
      * @return true if the strings are equal or both null.
      */
     public boolean nullSafeEquals(final String stringOne, final String stringTwo) {
-        if (null == stringOne) {
-            return null == stringTwo;
+        if (stringOne == null) {
+            return stringTwo == null;
         }
         return stringOne.equals(stringTwo);
     }

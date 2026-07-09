@@ -41,7 +41,7 @@ import org.apache.commons.io.function.IOStream;
  * Implementations are {@link Closeable} and should be closed once they are no longer needed in order to release any underlying system resources.
  * </p>
  *
- * @param <T> the type of {@link ArchiveEntry} produced by this archive.
+ * @param <T> The type of {@link ArchiveEntry} produced by this archive.
  * @since 1.29.0
  */
 public interface ArchiveFile<T extends ArchiveEntry> extends Closeable, IOIterable<T> {

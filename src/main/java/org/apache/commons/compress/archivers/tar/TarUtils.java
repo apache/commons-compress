@@ -44,7 +44,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 
 /**
- * This class provides static utility methods to work with byte streams.
+ * This class provides static utility methods to work with TAR byte streams.
  *
  * @Immutable
  */

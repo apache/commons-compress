@@ -2015,8 +2015,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Update the entry using a map of pax headers.
      *
-     * @param headers.
-     * @since 1.15
+     * @param headers PAX headers.
      */
     void updateEntryFromPaxHeaders(final Map<String, String> headers) throws IOException {
         for (final Map.Entry<String, String> ent : headers.entrySet()) {

@@ -43,7 +43,7 @@ public class ByteCode extends ClassFileEntry {
     public static ByteCode getByteCode(final int opcode) {
         final int byteOpcode = 0xFF & opcode;
         if (ByteCodeForm.get(byteOpcode).hasNoOperand()) {
-            if (null == noArgByteCodes[byteOpcode]) {
+            if (noArgByteCodes[byteOpcode] == null) {
                 noArgByteCodes[byteOpcode] = new ByteCode(byteOpcode);
             }
             return noArgByteCodes[byteOpcode];

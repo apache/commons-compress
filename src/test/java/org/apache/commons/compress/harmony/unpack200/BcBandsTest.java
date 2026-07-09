@@ -243,7 +243,7 @@ class BcBandsTest extends AbstractBandsTest {
 
         @Override
         protected CpBands getCpBands() {
-            if (null == cpBands) {
+            if (cpBands == null) {
                 cpBands = new MockCpBands(this);
             }
             return cpBands;

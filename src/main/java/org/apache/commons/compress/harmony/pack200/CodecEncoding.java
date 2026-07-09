@@ -254,13 +254,13 @@ public class CodecEncoding {
         if (codec instanceof PopulationCodec) {
             final PopulationCodec populationCodec = (PopulationCodec) codec;
             final Codec tokenCodec = populationCodec.getTokenCodec();
-            final Codec favouredCodec = populationCodec.getFavouredCodec();
-            final Codec unfavouredCodec = populationCodec.getUnfavouredCodec();
-            final int fDef = favouredCodec.equals(defaultForBand) ? 1 : 0;
-            final int uDef = unfavouredCodec.equals(defaultForBand) ? 1 : 0;
+            final Codec favoredCodec = populationCodec.getFavouredCodec();
+            final Codec unfavoredCodec = populationCodec.getUnfavouredCodec();
+            final int fDef = favoredCodec.equals(defaultForBand) ? 1 : 0;
+            final int uDef = unfavoredCodec.equals(defaultForBand) ? 1 : 0;
             int tDefL = 0;
-            final int[] favoured = populationCodec.getFavoured();
-            if (favoured != null) {
+            final int[] favored = populationCodec.getFavoured();
+            if (favored != null) {
                 if (tokenCodec == Codec.BYTE1) {
                     tDefL = 1;
                 } else if (tokenCodec instanceof BHSDCodec) {
@@ -277,13 +277,13 @@ public class CodecEncoding {
                 }
             }
             final int first = 141 + fDef + 2 * uDef + 4 * tDefL;
-            final int[] favouredSpecifier = fDef == 1 ? EMPTY_INT_ARRAY : getSpecifier(favouredCodec, defaultForBand);
+            final int[] favoredSpecifier = fDef == 1 ? EMPTY_INT_ARRAY : getSpecifier(favoredCodec, defaultForBand);
             final int[] tokenSpecifier = tDefL != 0 ? EMPTY_INT_ARRAY : getSpecifier(tokenCodec, defaultForBand);
-            final int[] unfavouredSpecifier = uDef == 1 ? EMPTY_INT_ARRAY : getSpecifier(unfavouredCodec, defaultForBand);
-            final int[] specifier = new int[1 + favouredSpecifier.length + unfavouredSpecifier.length + tokenSpecifier.length];
+            final int[] unfavoredSpecifier = uDef == 1 ? EMPTY_INT_ARRAY : getSpecifier(unfavoredCodec, defaultForBand);
+            final int[] specifier = new int[1 + favoredSpecifier.length + unfavoredSpecifier.length + tokenSpecifier.length];
             specifier[0] = first;
             int index = 1;
-            for (final int element : favouredSpecifier) {
+            for (final int element : favoredSpecifier) {
                 specifier[index] = element;
                 index++;
             }
@@ -291,7 +291,7 @@ public class CodecEncoding {
                 specifier[index] = element;
                 index++;
             }
-            for (final int element : unfavouredSpecifier) {
+            for (final int element : unfavoredSpecifier) {
                 specifier[index] = element;
                 index++;
             }

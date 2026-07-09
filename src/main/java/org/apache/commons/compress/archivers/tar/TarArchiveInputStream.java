@@ -47,7 +47,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
 
 /**
- * The TarInputStream reads a Unix tar archive as an InputStream. methods are provided to position at each successive entry in the archive, and the read each
+ * The TarInputStream reads a Unix TAR archive as an InputStream. Methods are provided to position at each successive entry in the archive, and the read each
  * entry as a normal input stream using read().
  *
  * @NotThreadSafe
@@ -363,6 +363,8 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
         final InputStream zeroInputStream = new TarArchiveSparseZeroInputStream(); // NOSONAR
         // logical offset into the extracted entry
         long offset = 0;
+        // physical bytes read from the archive for this entry
+        long dataBytes = 0;
         for (final TarArchiveStructSparse sparseHeader : sparseHeaders) {
             final long zeroBlockSize = sparseHeader.getOffset() - offset;
             if (zeroBlockSize < 0) {
@@ -380,6 +382,13 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
             }
             // only store the input streams with non-zero size
             if (sparseHeader.getNumbytes() > 0) {
+                dataBytes += sparseHeader.getNumbytes();
+                // the non-hole blocks are read from the underlying stream, so their total size must not
+                // exceed the entry's stored size, otherwise reading this entry would consume bytes that
+                // belong to following entries
+                if (dataBytes > currEntry.getSize()) {
+                    throw new ArchiveException("Corrupted TAR archive. Sparse blocks for '%s' are larger than the entry size.", currEntry.getName());
+                }
                 // @formatter:off
                 sparseInputStreams.add(BoundedInputStream.builder()
                         .setInputStream(in)
