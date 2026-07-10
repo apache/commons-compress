@@ -156,6 +156,9 @@ public abstract class BandSet {
         final int[] twoDResult = decodeBandInt(name, in, defaultCodec, totalCount);
         int index = 0;
         for (int i = 0; i < result.length; i++) {
+            if (counts[i] < 0) {
+                throw new Pack200Exception("count < 0");
+            }
             if (counts[i] > twoDResult.length) {
                 throw new Pack200Exception("Counts value exceeds length of twoDResult");
             }
