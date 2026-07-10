@@ -47,6 +47,8 @@ import org.apache.commons.lang3.ArrayUtils;
  */
 public abstract class BandSet {
 
+    private static final String[][] EMPTY_STRINGS = new String[][] { {} };
+
     static int sumPositive(final int[] counts) throws Pack200Exception {
         int totalCount = 0;
         for (final int count : counts) {
@@ -630,7 +632,7 @@ public abstract class BandSet {
             throws IOException, Pack200Exception {
         final int count = counts.length;
         if (count == 0) {
-            return new String[][] { {} };
+            return EMPTY_STRINGS;
         }
         final int sum = sumPositive(counts);
         // TODO Merge the decode and parsing of a multiple structure into one
