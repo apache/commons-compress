@@ -47,6 +47,17 @@ import org.apache.commons.lang3.ArrayUtils;
  */
 public abstract class BandSet {
 
+    static int sumPositive(final int[] counts) throws Pack200Exception {
+        int totalCount = 0;
+        for (final int count : counts) {
+            if (count < 0) {
+                throw new Pack200Exception("count < 0");
+            }
+            totalCount += count;
+        }
+        return totalCount;
+    }
+
     /**
      * Segment.
      */
@@ -149,13 +160,7 @@ public abstract class BandSet {
     public int[][] decodeBandInt(final String name, final InputStream in, final BHSDCodec defaultCodec, final int[] counts)
             throws IOException, Pack200Exception {
         final int[][] result = new int[counts.length][];
-        int totalCount = 0;
-        for (final int count : counts) {
-            if (count < 0) {
-                throw new Pack200Exception("count < 0");
-            }
-            totalCount += count;
-        }
+        final int totalCount = sumPositive(counts);
         final int[] twoDResult = decodeBandInt(name, in, defaultCodec, totalCount);
         int index = 0;
         for (int i = 0; i < result.length; i++) {
@@ -549,13 +554,7 @@ public abstract class BandSet {
         if (count == 0) {
             return new long[][] { {} };
         }
-        int sum = 0;
-        for (int i = 0; i < count; i++) {
-            if (counts[i] < 0) {
-                throw new Pack200Exception("count < 0");
-            }
-            sum += counts[i];
-        }
+        final int sum = sumPositive(counts);
         int[] hi = null;
         final int[] lo;
         if (hiCodec != null) {
@@ -633,13 +632,7 @@ public abstract class BandSet {
         if (count == 0) {
             return new String[][] { {} };
         }
-        int sum = 0;
-        for (int i = 0; i < count; i++) {
-            if (counts[i] < 0) {
-                throw new Pack200Exception("count < 0");
-            }
-            sum += counts[i];
-        }
+        final int sum = sumPositive(counts);
         // TODO Merge the decode and parsing of a multiple structure into one
         final int[] indices = decodeBandInt(name, in, codec, sum);
         final String[] result1 = new String[sum];
