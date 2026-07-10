@@ -152,13 +152,11 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
-      <version>${commons.mockito.version}</version>
       <scope>test</scope>
     </dependency>
 	<dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-junit-jupiter</artifactId>
-      <version>${commons.mockito.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
