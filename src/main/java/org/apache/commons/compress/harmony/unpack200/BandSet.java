@@ -550,7 +550,6 @@ public abstract class BandSet {
             return new long[][] { {} };
         }
         int sum = 0;
-        final long[][] result = new long[count][];
         for (int i = 0; i < count; i++) {
             if (counts[i] < 0) {
                 throw new Pack200Exception("count < 0");
@@ -563,8 +562,8 @@ public abstract class BandSet {
             hi = decodeBandInt(name, in, hiCodec, sum);
         }
         lo = decodeBandInt(name, in, loCodec, sum);
-
         int index = 0;
+        final long[][] result = new long[count][];
         for (int i = 0; i < count; i++) {
             result[i] = new long[counts[i]];
             for (int j = 0; j < result[i].length; j++) {
