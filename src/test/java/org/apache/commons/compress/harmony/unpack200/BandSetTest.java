@@ -19,6 +19,7 @@
 package org.apache.commons.compress.harmony.unpack200;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -61,6 +62,20 @@ class BandSetTest {
         for (int i = 0; i < ints.length; i++) {
             assertEquals(ints[i], bytes[i], "Wrong value in position " + i);
         }
+    }
+
+    @Test
+    void testDecodeBandIntRejectsNegativeCount() {
+        final BHSDCodec codec = Codec.BYTE1;
+        // A per-element count decoded from a signed band can be negative. It must be rejected the
+        // same way the scalar decodeBandInt(..., int) overload rejects count < 0, instead of
+        // reaching new int[]/new long[]/new String[] and surfacing a NegativeArraySizeException.
+        assertThrows(Pack200Exception.class,
+                () -> bandSet.decodeBandInt("Test", new ByteArrayInputStream(new byte[0]), codec, new int[] { -1, 1 }));
+        assertThrows(Pack200Exception.class,
+                () -> bandSet.parseFlags("Test", new ByteArrayInputStream(new byte[0]), new int[] { -1, 1 }, codec, false));
+        assertThrows(Pack200Exception.class,
+                () -> bandSet.parseReferences("Test", new ByteArrayInputStream(new byte[0]), codec, new int[] { -1, 1 }, new String[] { "a" }));
     }
 
     @Test

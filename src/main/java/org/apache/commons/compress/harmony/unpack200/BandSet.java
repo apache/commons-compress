@@ -151,6 +151,9 @@ public abstract class BandSet {
         final int[][] result = new int[counts.length][];
         int totalCount = 0;
         for (final int count : counts) {
+            if (count < 0) {
+                throw new Pack200Exception("count < 0");
+            }
             totalCount += count;
         }
         final int[] twoDResult = decodeBandInt(name, in, defaultCodec, totalCount);
@@ -549,6 +552,9 @@ public abstract class BandSet {
         int sum = 0;
         final long[][] result = new long[count][];
         for (int i = 0; i < count; i++) {
+            if (counts[i] < 0) {
+                throw new Pack200Exception("count < 0");
+            }
             sum += counts[i];
         }
         int[] hi = null;
@@ -630,6 +636,9 @@ public abstract class BandSet {
         }
         int sum = 0;
         for (int i = 0; i < count; i++) {
+            if (counts[i] < 0) {
+                throw new Pack200Exception("count < 0");
+            }
             sum += counts[i];
         }
         // TODO Merge the decode and parsing of a multiple structure into one
