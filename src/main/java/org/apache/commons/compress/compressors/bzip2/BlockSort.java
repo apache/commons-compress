@@ -416,7 +416,7 @@ final class BlockSort {
 
     /**
      * @param fmap   points to the index of the starting point of a permutation inside the block of data in the current partially sorted order.
-     * @param block  the original data.
+     * @param block  The original data.
      * @param nblock size of the block.
      */
     void fallbackSort(final int[] fmap, final byte[] block, final int nblock) {

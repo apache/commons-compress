@@ -75,8 +75,8 @@ public class ArchiveUtils {
     /**
      * Tests whether two byte buffer contents are equal.
      *
-     * @param buffer1 the first buffer.
-     * @param buffer2 the second buffer.
+     * @param buffer1 The first buffer.
+     * @param buffer2 The second buffer.
      * @return {@code true} if buffer1 and buffer2 have same contents.
      * @deprecated Use {@link Arrays#equals(byte[], byte[])}.
      */
@@ -88,8 +88,8 @@ public class ArchiveUtils {
     /**
      * CTests whether two byte buffer contents are equal, optionally ignoring trailing nulls.
      *
-     * @param buffer1             the first buffer.
-     * @param buffer2             the second buffer.
+     * @param buffer1             The first buffer.
+     * @param buffer2             The second buffer.
      * @param ignoreTrailingNulls whether to ignore trailing nulls.
      * @return {@code true} if buffer1 and buffer2 have same contents.
      */
@@ -100,12 +100,12 @@ public class ArchiveUtils {
     /**
      * Tests whether two byte buffer contents are equal.
      *
-     * @param buffer1 the first buffer.
-     * @param offset1 the first offset.
-     * @param length1 the first length.
-     * @param buffer2 the second buffer.
-     * @param offset2 the second offset.
-     * @param length2 the second length.
+     * @param buffer1 The first buffer.
+     * @param offset1 The first offset.
+     * @param length1 The first length.
+     * @param buffer2 The second buffer.
+     * @param offset2 The second offset.
+     * @param length2 The second length.
      * @return {@code true} if buffer1 and buffer2 have same contents.
      */
     public static boolean isEqual(final byte[] buffer1, final int offset1, final int length1, final byte[] buffer2, final int offset2, final int length2) {
@@ -157,12 +157,12 @@ public class ArchiveUtils {
     /**
      * Tests whether two byte buffer contents are equal, ignoring trailing nulls.
      *
-     * @param buffer1 the first buffer.
-     * @param offset1 the first offset.
-     * @param length1 the first length.
-     * @param buffer2 the second buffer.
-     * @param offset2 the second offset.
-     * @param length2 the second length.
+     * @param buffer1 The first buffer.
+     * @param offset1 The first offset.
+     * @param length1 The first length.
+     * @param buffer2 The second buffer.
+     * @param offset2 The second offset.
+     * @param length2 The second length.
      * @return {@code true} if buffer1 and buffer2 have same contents, having regard to trailing nulls.
      */
     public static boolean isEqualWithNull(final byte[] buffer1, final int offset1, final int length1, final byte[] buffer2, final int offset2,
@@ -173,8 +173,8 @@ public class ArchiveUtils {
     /**
      * Tests whether buffer contents matches ASCII String.
      *
-     * @param expected the expected string.
-     * @param buffer   the buffer.
+     * @param expected The expected string.
+     * @param buffer   The buffer.
      * @return {@code true} if buffer is the same as the expected string.
      */
     public static boolean matchAsciiBuffer(final String expected, final byte[] buffer) {
@@ -185,7 +185,7 @@ public class ArchiveUtils {
      * Tests whether buffer contents matches ASCII String.
      *
      * @param expected expected string.
-     * @param buffer   the buffer.
+     * @param buffer   The buffer.
      * @param offset   offset to read from.
      * @param length   length of the buffer.
      * @return {@code true} if buffer is the same as the expected string.
@@ -204,7 +204,7 @@ public class ArchiveUtils {
      * been read from a corrupted input.
      * </p>
      *
-     * @param s the string to sanitize.
+     * @param s The string to sanitize.
      * @return A sanitized version of the argument.
      * @since 1.12
      */
@@ -270,7 +270,7 @@ public class ArchiveUtils {
      * d     100 testfiles
      * </pre>
      *
-     * @param entry the entry.
+     * @param entry The entry.
      * @return The representation of the entry.
      */
     public static String toString(final ArchiveEntry entry) {

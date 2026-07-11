@@ -63,10 +63,10 @@ public class AttributeDefinitionBands extends BandSet {
         /**
          * Constructs a new AttributeDefinition.
          *
-         * @param index the index of the attribute.
-         * @param contextType the context type.
-         * @param name the attribute name.
-         * @param layout the attribute layout.
+         * @param index The index of the attribute.
+         * @param contextType The context type.
+         * @param name The attribute name.
+         * @param layout The attribute layout.
          */
         public AttributeDefinition(final int index, final int contextType, final CPUTF8 name, final CPUTF8 layout) {
             this.index = index;
@@ -111,9 +111,9 @@ public class AttributeDefinitionBands extends BandSet {
     /**
      * Constructs a new instance.
      *
-     * @param segment the segment.
-     * @param effort the effort level.
-     * @param attributePrototypes the attribute prototypes.
+     * @param segment The segment.
+     * @param effort The effort level.
+     * @param attributePrototypes The attribute prototypes.
      */
     public AttributeDefinitionBands(final Segment segment, final int effort, final Attribute[] attributePrototypes) {
         super(effort, segment.getSegmentHeader());

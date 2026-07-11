@@ -90,7 +90,7 @@ public class InnerClassesAttribute extends Attribute {
     /**
      * Sets the attribute name.
      *
-     * @param cpUTF8Value the attribute name.
+     * @param cpUTF8Value The attribute name.
      */
     public static void setAttributeName(final CPUTF8 cpUTF8Value) {
         attributeName = cpUTF8Value;
@@ -102,7 +102,7 @@ public class InnerClassesAttribute extends Attribute {
     /**
      * Constructs a new InnerClassesAttribute.
      *
-     * @param name the attribute name.
+     * @param name The attribute name.
      */
     public InnerClassesAttribute(final String name) {
         super(attributeName);
@@ -112,10 +112,10 @@ public class InnerClassesAttribute extends Attribute {
     /**
      * Adds an inner classes entry.
      *
-     * @param innerClass the inner class.
-     * @param outerClass the outer class.
-     * @param innerName the inner name.
-     * @param flags the flags.
+     * @param innerClass The inner class.
+     * @param outerClass The outer class.
+     * @param innerName The inner name.
+     * @param flags The flags.
      */
     public void addInnerClassesEntry(final CPClass innerClass, final CPClass outerClass, final CPUTF8 innerName, final int flags) {
         if (innerClass != null) {

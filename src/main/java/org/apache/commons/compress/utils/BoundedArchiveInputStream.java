@@ -94,8 +94,8 @@ public abstract class BoundedArchiveInputStream extends InputStream {
      * <p>The caller is responsible for ensuring that the requested range
      * {@code [pos, pos + buf.remaining())} lies within the valid bounds of the stream.</p>
      *
-     * @param pos the position within the stream at which to begin reading.
-     * @param buf the buffer into which bytes are read; bytes are written starting at the buffer’s current position.
+     * @param pos The position within the stream at which to begin reading.
+     * @param buf The buffer into which bytes are read; bytes are written starting at the buffer’s current position.
      * @return The number of bytes read into the buffer.
      * @throws IOException if an I/O error occurs while reading.
      */

@@ -86,7 +86,7 @@ public class RuntimeVisibleorInvisibleParameterAnnotationsAttribute extends Anno
         /**
          * Writes this body to the given output stream.
          *
-         * @param dos the output stream.
+         * @param dos The output stream.
          * @throws IOException if an I/O error occurs.
          */
         public void writeBody(final DataOutputStream dos) throws IOException {
@@ -103,7 +103,7 @@ public class RuntimeVisibleorInvisibleParameterAnnotationsAttribute extends Anno
     /**
      * Constructs a new instance for an attribute name.
      *
-     * @param name an attribute name.
+     * @param name An attribute name.
      * @param parameterAnnotations Annotations.
      */
     public RuntimeVisibleorInvisibleParameterAnnotationsAttribute(final CPUTF8 name, final ParameterAnnotation[] parameterAnnotations) {

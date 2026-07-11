@@ -39,7 +39,7 @@ public abstract class Attribute extends ClassFileEntry {
     /**
      * Constructs a new instance for an attribute name.
      *
-     * @param attributeName an attribute name.
+     * @param attributeName An attribute name.
      */
     public Attribute(final CPUTF8 attributeName) {
         this.attributeName = attributeName;
@@ -127,7 +127,7 @@ public abstract class Attribute extends ClassFileEntry {
     /**
      * Writes this body to the given output stream.
      *
-     * @param out the output stream.
+     * @param out The output stream.
      * @throws IOException if an I/O error occurs.
      */
     protected abstract void writeBody(DataOutputStream out) throws IOException;

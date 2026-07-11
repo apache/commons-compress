@@ -31,8 +31,8 @@ public class CPNameAndType extends ConstantPoolEntry implements Comparable {
     /**
      * Constructs a new CPNameAndType.
      *
-     * @param name the name.
-     * @param signature the signature.
+     * @param name The name.
+     * @param signature The signature.
      */
     public CPNameAndType(final CPUTF8 name, final CPSignature signature) {
         this.name = name;

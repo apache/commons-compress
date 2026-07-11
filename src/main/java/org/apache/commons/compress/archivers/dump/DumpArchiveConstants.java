@@ -53,7 +53,7 @@ public final class DumpArchiveConstants {
         /**
          * Finds the matching enumeration value for the given code.
          *
-         * @param code a code.
+         * @param code A code.
          * @return A value, never null.
          */
         public static COMPRESSION_TYPE find(final int code) {
@@ -110,7 +110,7 @@ public final class DumpArchiveConstants {
         /**
          * Finds the matching enumeration value for the given code.
          *
-         * @param code a code.
+         * @param code A code.
          * @return A value, or null if not found.
          */
         public static SEGMENT_TYPE find(final int code) {

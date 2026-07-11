@@ -85,8 +85,8 @@ public class NewAttribute extends BCIRenumberedAttribute {
     /**
      * Constructs a new NewAttribute.
      *
-     * @param attributeName the attribute name.
-     * @param layoutIndex the layout index.
+     * @param attributeName The attribute name.
+     * @param layoutIndex The layout index.
      */
     public NewAttribute(final CPUTF8 attributeName, final int layoutIndex) {
         super(attributeName);
@@ -96,8 +96,8 @@ public class NewAttribute extends BCIRenumberedAttribute {
     /**
      * Adds a bytecode index.
      *
-     * @param length the length.
-     * @param value the value.
+     * @param length The length.
+     * @param value The value.
      */
     public void addBCIndex(final int length, final int value) {
         lengths.add(Integer.valueOf(length));
@@ -107,8 +107,8 @@ public class NewAttribute extends BCIRenumberedAttribute {
     /**
      * Adds a bytecode length.
      *
-     * @param length the length.
-     * @param value the value.
+     * @param length The length.
+     * @param value The value.
      */
     public void addBCLength(final int length, final int value) {
         lengths.add(Integer.valueOf(length));
@@ -118,8 +118,8 @@ public class NewAttribute extends BCIRenumberedAttribute {
     /**
      * Adds a bytecode offset.
      *
-     * @param length the length.
-     * @param value the value.
+     * @param length The length.
+     * @param value The value.
      */
     public void addBCOffset(final int length, final int value) {
         lengths.add(Integer.valueOf(length));
@@ -129,8 +129,8 @@ public class NewAttribute extends BCIRenumberedAttribute {
     /**
      * Adds an integer value.
      *
-     * @param length the length.
-     * @param value the value.
+     * @param length The length.
+     * @param value The value.
      */
     public void addInteger(final int length, final long value) {
         lengths.add(Integer.valueOf(length));
@@ -140,8 +140,8 @@ public class NewAttribute extends BCIRenumberedAttribute {
     /**
      * Adds a value to the body.
      *
-     * @param length the length.
-     * @param value the value.
+     * @param length The length.
+     * @param value The value.
      */
     public void addToBody(final int length, final Object value) {
         lengths.add(Integer.valueOf(length));

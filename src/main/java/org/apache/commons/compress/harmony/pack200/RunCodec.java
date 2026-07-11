@@ -38,9 +38,9 @@ public class RunCodec extends Codec {
     /**
      * Constructs a new RunCodec.
      *
-     * @param k the number of values.
-     * @param aCodec the A codec.
-     * @param bCodec the B codec.
+     * @param k The number of values.
+     * @param aCodec The A codec.
+     * @param bCodec The B codec.
      * @throws Pack200Exception if k is negative or codecs are null.
      */
     public RunCodec(final int k, final Codec aCodec, final Codec bCodec) throws Pack200Exception {

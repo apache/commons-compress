@@ -75,7 +75,7 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
      * Constructs a new instance.
      *
      * @param inputStream The underlying input stream.
-     * @param byteOrder the input byte order.
+     * @param byteOrder The input byte order.
      */
     protected LZWInputStream(final InputStream inputStream, final ByteOrder byteOrder) {
         this.in = new BitInputStream(inputStream, byteOrder);
@@ -84,8 +84,8 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
     /**
      * Add a new entry to the dictionary.
      *
-     * @param previousCode the previous code.
-     * @param character    the next character to append.
+     * @param previousCode The previous code.
+     * @param character    The next character to append.
      * @return The new code.
      * @throws IOException on error.
      */
@@ -94,9 +94,9 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
     /**
      * Adds a new entry if the maximum table size hasn't been exceeded and returns the new index.
      *
-     * @param previousCode the previous code.
-     * @param character    the character to append.
-     * @param maxTableSize the maximum table size.
+     * @param previousCode The previous code.
+     * @param character    The character to append.
+     * @param maxTableSize The maximum table size.
      * @return The new code or -1 if maxTableSize has been reached already.
      */
     protected int addEntry(final int previousCode, final byte character, final int maxTableSize) {
@@ -138,7 +138,7 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
     /**
      * Expands the entry with index code to the output stack and may create a new entry.
      *
-     * @param code                 the code.
+     * @param code                 The code.
      * @param addedUnfinishedEntry whether unfinished entries have been added.
      * @return The new location of the output stack, or the input code if negative indicating an end-of-file condition.
      * @throws IOException if an I/O error occurs.
@@ -347,7 +347,7 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
     /**
      * Sets the code size in bits.
      *
-     * @param codeSize the code size in bits.
+     * @param codeSize The code size in bits.
      */
     protected void setCodeSize(final int codeSize) {
         this.codeSize = codeSize;
@@ -356,8 +356,8 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
     /**
      * Sets the prefix at the given offset.
      *
-     * @param offset the target offset.
-     * @param value the new value.
+     * @param offset The target offset.
+     * @param value The new value.
      */
     protected void setPrefix(final int offset, final int value) {
         prefixes[offset] = value;
@@ -366,7 +366,7 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
     /**
      * Sets the table size.
      *
-     * @param tableSize the new table size.
+     * @param tableSize The new table size.
      */
     protected void setTableSize(final int tableSize) {
         this.tableSize = tableSize;

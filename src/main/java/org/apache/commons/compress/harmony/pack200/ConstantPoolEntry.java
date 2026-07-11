@@ -46,7 +46,7 @@ public abstract class ConstantPoolEntry {
     /**
      * Sets the index.
      *
-     * @param index the index.
+     * @param index The index.
      */
     public void setIndex(final int index) {
         this.index = index;

@@ -143,7 +143,7 @@ public class GzipParameters {
         /**
          * Gets the {@link OS} matching the given code.
          *
-         * @param code an OS or {@link #UNKNOWN} for no match.
+         * @param code An OS or {@link #UNKNOWN} for no match.
          * @return A {@link OS}.
          * @throws CompressException Thrown when the {@code code} is undefined, as opposed to {@code UNKNOWN}.
          */
@@ -196,7 +196,7 @@ public class GzipParameters {
         /**
          * Constructs a new instance.
          *
-         * @param type the OS type.
+         * @param type The OS type.
          */
         OS(final int type) {
             this.type = type;
@@ -519,7 +519,7 @@ public class GzipParameters {
     /**
      * Sets size of the buffer used to retrieve compressed data from {@link Deflater} and write to underlying {@link OutputStream}.
      *
-     * @param bufferSize the bufferSize to set. Must be a positive type.
+     * @param bufferSize The bufferSize to set. Must be a positive type.
      * @since 1.21
      */
     public void setBufferSize(final int bufferSize) {
@@ -532,7 +532,7 @@ public class GzipParameters {
     /**
      * Sets an arbitrary user-defined comment.
      *
-     * @param comment a user-defined comment.
+     * @param comment A user-defined comment.
      * @throws IllegalArgumentException if the encoded bytes would contain a nul byte '\0' reserved for gzip field termination.
      */
     public void setComment(final String comment) {
@@ -542,7 +542,7 @@ public class GzipParameters {
     /**
      * Sets the compression level.
      *
-     * @param compressionLevel the compression level (between 0 and 9).
+     * @param compressionLevel The compression level (between 0 and 9).
      * @see Deflater#NO_COMPRESSION
      * @see Deflater#BEST_SPEED
      * @see Deflater#DEFAULT_COMPRESSION
@@ -558,7 +558,7 @@ public class GzipParameters {
     /**
      * Sets the deflater strategy.
      *
-     * @param deflateStrategy the new compression strategy.
+     * @param deflateStrategy The new compression strategy.
      * @see Deflater#setStrategy(int)
      * @since 1.23
      */
@@ -570,7 +570,7 @@ public class GzipParameters {
      * Sets the extra subfields. Note that a non-null extra will appear in the gzip header regardless of the presence of subfields, while a null extra will not
      * appear at all.
      *
-     * @param extra the series of extra subfields.
+     * @param extra The series of extra subfields.
      * @since 1.28.0
      */
     public void setExtraField(final ExtraField extra) {
@@ -584,7 +584,7 @@ public class GzipParameters {
     /**
      * Sets the name of the compressed file.
      *
-     * @param fileName the name of the file without the directory path.
+     * @param fileName The name of the file without the directory path.
      * @throws IllegalArgumentException if the encoded bytes would contain a nul byte '\0' reserved for gzip field termination.
      * @deprecated Use {@link #setFileName(String)}.
      */
@@ -596,7 +596,7 @@ public class GzipParameters {
     /**
      * Sets the name of the compressed file.
      *
-     * @param fileName the name of the file without the directory path.
+     * @param fileName The name of the file without the directory path.
      * @throws IllegalArgumentException if the encoded bytes would contain a nul byte '\0' reserved for gzip field termination.
      */
     public void setFileName(final String fileName) {
@@ -613,7 +613,7 @@ public class GzipParameters {
      * The default value is {@link GzipUtils#GZIP_ENCODING}.
      * </p>
      *
-     * @param charset the Charset to use for writing file names and comments, null maps to {@link GzipUtils#GZIP_ENCODING}.
+     * @param charset The Charset to use for writing file names and comments, null maps to {@link GzipUtils#GZIP_ENCODING}.
      * @since 1.28.0
      */
     public void setFileNameCharset(final Charset charset) {
@@ -634,7 +634,7 @@ public class GzipParameters {
     /**
      * Sets the modification time (MTIME) of the compressed file.
      *
-     * @param modificationTime the modification time, in milliseconds.
+     * @param modificationTime The modification time, in milliseconds.
      * @since 1.28.0
      */
     public void setModificationInstant(final Instant modificationTime) {
@@ -649,7 +649,7 @@ public class GzipParameters {
      * means no time stamp is available.
      * </p>
      *
-     * @param modificationTimeSeconds the modification time, in seconds.
+     * @param modificationTimeSeconds The modification time, in seconds.
      */
     public void setModificationTime(final long modificationTimeSeconds) {
         this.modificationInstant = Instant.ofEpochSecond(modificationTimeSeconds);
@@ -675,7 +675,7 @@ public class GzipParameters {
      * <li>255: Unknown</li>
      * </ul>
      *
-     * @param operatingSystem the code of the operating system.
+     * @param operatingSystem The code of the operating system.
      * @throws CompressException Thrown when the {@code code} is undefined, as opposed to {@code UNKNOWN (255)}.
      */
     public void setOperatingSystem(final int operatingSystem) throws CompressException {

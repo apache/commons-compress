@@ -37,7 +37,7 @@ public class ByteCode extends ClassFileEntry {
     /**
      * Gets the ByteCode for the given opcode.
      *
-     * @param opcode the opcode.
+     * @param opcode The opcode.
      * @return The ByteCode instance.
      */
     public static ByteCode getByteCode(final int opcode) {
@@ -63,7 +63,7 @@ public class ByteCode extends ClassFileEntry {
     /**
      * Constructs a new ByteCode with the given opcode.
      *
-     * @param opcode the opcode.
+     * @param opcode The opcode.
      */
     protected ByteCode(final int opcode) {
         this(opcode, NONE);
@@ -72,8 +72,8 @@ public class ByteCode extends ClassFileEntry {
     /**
      * Constructs a new ByteCode with the given opcode and nested entries.
      *
-     * @param opcode the opcode.
-     * @param nested the nested class file entries.
+     * @param opcode The opcode.
+     * @param nested The nested class file entries.
      */
     protected ByteCode(final int opcode, final ClassFileEntry[] nested) {
         this.byteCodeForm = ByteCodeForm.get(opcode);
@@ -85,7 +85,7 @@ public class ByteCode extends ClassFileEntry {
      * Some ByteCodes (in particular, those with labels need to be fixed up after all the bytecodes in the CodeAttribute have been added. (This can't be done
      * beforehand because the CodeAttribute needs to be complete before targets can be assigned.)
      *
-     * @param codeAttribute the code attribute
+     * @param codeAttribute The code attribute
      */
     public void applyByteCodeTargetFixup(final CodeAttribute codeAttribute) {
         getByteCodeForm().fixUpByteCodeTargets(this, codeAttribute);
@@ -106,9 +106,9 @@ public class ByteCode extends ClassFileEntry {
     /**
      * Extracts operands from the operand manager.
      *
-     * @param operandManager the operand manager.
-     * @param segment the segment.
-     * @param codeLength the code length.
+     * @param operandManager The operand manager.
+     * @param segment The segment.
+     * @param codeLength The code length.
      * @throws Pack200Exception if an error occurs.
      */
     public void extractOperands(final OperandManager operandManager, final Segment segment, final int codeLength) throws Pack200Exception {
@@ -172,7 +172,7 @@ public class ByteCode extends ClassFileEntry {
     /**
      * Gets the nested position array for the given index.
      *
-     * @param index the index.
+     * @param index The index.
      * @return The nested position array.
      */
     public int[] getNestedPosition(final int index) {
@@ -285,7 +285,7 @@ public class ByteCode extends ClassFileEntry {
     /**
      * Sets the nested class file entries.
      *
-     * @param nested the nested entries.
+     * @param nested The nested entries.
      */
     public void setNested(final ClassFileEntry[] nested) {
         this.nested = nested;

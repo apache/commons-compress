@@ -50,7 +50,7 @@ public class FileBands extends BandSet {
     /**
      * Constructs a new FileBands instance.
      *
-     * @param segment the segment.
+     * @param segment The segment.
      */
     public FileBands(final Segment segment) {
         super(segment);

@@ -142,7 +142,7 @@ public abstract class ConstantPoolEntry extends ClassFileEntry {
     /**
      * Writes this instance to the given output stream.
      *
-     * @param dos the output stream.
+     * @param dos The output stream.
      * @throws IOException if an I/O error occurs.
      */
     protected abstract void writeBody(DataOutputStream dos) throws IOException;

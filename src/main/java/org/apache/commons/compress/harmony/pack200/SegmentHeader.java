@@ -121,7 +121,7 @@ public class SegmentHeader extends BandSet {
     /**
      * Adds a major version.
      *
-     * @param major the major version.
+     * @param major The major version.
      */
     public void addMajorVersion(final int major) {
         majverCounter.add(major);
@@ -130,7 +130,7 @@ public class SegmentHeader extends BandSet {
     /**
      * Appends a band coding specifier.
      *
-     * @param specifier the specifier.
+     * @param specifier The specifier.
      */
     public void appendBandCodingSpecifier(final int specifier) {
         band_headers.add(specifier);
@@ -268,7 +268,7 @@ public class SegmentHeader extends BandSet {
     /**
      * Encode and write the SegmentHeader bands to the OutputStream.
      *
-     * @param out the output stream.
+     * @param out The output stream.
      * @throws IOException if an I/O error occurs.
      * @throws Pack200Exception if a Pack200 error occurs.
      */
@@ -291,7 +291,7 @@ public class SegmentHeader extends BandSet {
     /**
      * Sets the attribute definition count.
      *
-     * @param attribute_definition_count the count.
+     * @param attribute_definition_count The count.
      */
     public void setAttribute_definition_count(final int attribute_definition_count) {
         this.attribute_definition_count = attribute_definition_count;
@@ -300,7 +300,7 @@ public class SegmentHeader extends BandSet {
     /**
      * Sets the class count.
      *
-     * @param class_count the count.
+     * @param class_count The count.
      */
     public void setClass_count(final int class_count) {
         this.class_count = class_count;
@@ -309,7 +309,7 @@ public class SegmentHeader extends BandSet {
     /**
      * Sets the CP Class count.
      *
-     * @param count the count.
+     * @param count The count.
      */
     public void setCp_Class_count(final int count) {
         cp_Class_count = count;
@@ -318,7 +318,7 @@ public class SegmentHeader extends BandSet {
     /**
      * Sets the CP Descr count.
      *
-     * @param count the count.
+     * @param count The count.
      */
     public void setCp_Descr_count(final int count) {
         cp_Descr_count = count;
@@ -327,7 +327,7 @@ public class SegmentHeader extends BandSet {
     /**
      * Sets the CP Double count.
      *
-     * @param count the count.
+     * @param count The count.
      */
     public void setCp_Double_count(final int count) {
         cp_Double_count = count;
@@ -336,7 +336,7 @@ public class SegmentHeader extends BandSet {
     /**
      * Sets the CP Field count.
      *
-     * @param count the count.
+     * @param count The count.
      */
     public void setCp_Field_count(final int count) {
         cp_Field_count = count;
@@ -345,7 +345,7 @@ public class SegmentHeader extends BandSet {
     /**
      * Sets the CP Float count.
      *
-     * @param count the count.
+     * @param count The count.
      */
     public void setCp_Float_count(final int count) {
         cp_Float_count = count;
@@ -354,7 +354,7 @@ public class SegmentHeader extends BandSet {
     /**
      * Sets the CP Imethod count.
      *
-     * @param count the count.
+     * @param count The count.
      */
     public void setCp_Imethod_count(final int count) {
         cp_Imethod_count = count;
@@ -363,7 +363,7 @@ public class SegmentHeader extends BandSet {
     /**
      * Sets the CP Int count.
      *
-     * @param count the count.
+     * @param count The count.
      */
     public void setCp_Int_count(final int count) {
         cp_Int_count = count;
@@ -372,7 +372,7 @@ public class SegmentHeader extends BandSet {
     /**
      * Sets the CP Long count.
      *
-     * @param count the count.
+     * @param count The count.
      */
     public void setCp_Long_count(final int count) {
         cp_Long_count = count;
@@ -381,7 +381,7 @@ public class SegmentHeader extends BandSet {
     /**
      * Sets the CP Method count.
      *
-     * @param count the count.
+     * @param count The count.
      */
     public void setCp_Method_count(final int count) {
         cp_Method_count = count;
@@ -390,7 +390,7 @@ public class SegmentHeader extends BandSet {
     /**
      * Sets the CP Signature count.
      *
-     * @param count the count.
+     * @param count The count.
      */
     public void setCp_Signature_count(final int count) {
         cp_Signature_count = count;
@@ -399,7 +399,7 @@ public class SegmentHeader extends BandSet {
     /**
      * Sets the CP String count.
      *
-     * @param count the count.
+     * @param count The count.
      */
     public void setCp_String_count(final int count) {
         cp_String_count = count;
@@ -408,7 +408,7 @@ public class SegmentHeader extends BandSet {
     /**
      * Sets the CP UTF8 count.
      *
-     * @param count the count.
+     * @param count The count.
      */
     public void setCp_Utf8_count(final int count) {
         cp_Utf8_count = count;
@@ -417,7 +417,7 @@ public class SegmentHeader extends BandSet {
     /**
      * Sets the deflate hint.
      *
-     * @param deflate_hint the deflate hint.
+     * @param deflate_hint The deflate hint.
      */
     public void setDeflate_hint(final boolean deflate_hint) {
         this.deflate_hint = deflate_hint;
@@ -426,7 +426,7 @@ public class SegmentHeader extends BandSet {
     /**
      * Sets the file count.
      *
-     * @param file_count the count.
+     * @param file_count The count.
      */
     public void setFile_count(final int file_count) {
         this.file_count = file_count;
@@ -480,7 +480,7 @@ public class SegmentHeader extends BandSet {
     /**
      * Sets the IC count.
      *
-     * @param ic_count the count.
+     * @param ic_count The count.
      */
     public void setIc_count(final int ic_count) {
         this.ic_count = ic_count;

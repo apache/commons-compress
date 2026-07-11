@@ -56,7 +56,7 @@ public class MetadataBandGroup {
     /**
      * Sets the RIA attribute name.
      *
-     * @param cpUTF8Value the attribute name.
+     * @param cpUTF8Value The attribute name.
      */
     public static void setRiaAttributeName(final CPUTF8 cpUTF8Value) {
         riaUTF8 = cpUTF8Value;
@@ -65,7 +65,7 @@ public class MetadataBandGroup {
     /**
      * Sets the RIPA attribute name.
      *
-     * @param cpUTF8Value the attribute name.
+     * @param cpUTF8Value The attribute name.
      */
     public static void setRipaAttributeName(final CPUTF8 cpUTF8Value) {
         ripaUTF8 = cpUTF8Value;
@@ -74,7 +74,7 @@ public class MetadataBandGroup {
     /**
      * Sets the RVA attribute name.
      *
-     * @param cpUTF8Value the attribute name.
+     * @param cpUTF8Value The attribute name.
      */
     public static void setRvaAttributeName(final CPUTF8 cpUTF8Value) {
         rvaUTF8 = cpUTF8Value;
@@ -83,7 +83,7 @@ public class MetadataBandGroup {
     /**
      * Sets the RVPA attribute name.
      *
-     * @param cpUTF8Value the attribute name.
+     * @param cpUTF8Value The attribute name.
      */
     public static void setRvpaAttributeName(final CPUTF8 cpUTF8Value) {
         rvpaUTF8 = cpUTF8Value;
@@ -218,8 +218,8 @@ public class MetadataBandGroup {
     /**
      * Constructs a new MetadataBandGroup.
      *
-     * @param type the metadata type.
-     * @param cpBands the constant pool bands.
+     * @param type The metadata type.
+     * @param cpBands The constant pool bands.
      */
     public MetadataBandGroup(final String type, final CpBands cpBands) {
         this.type = type;

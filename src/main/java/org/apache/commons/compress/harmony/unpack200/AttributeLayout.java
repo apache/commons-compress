@@ -368,7 +368,7 @@ public class AttributeLayout implements IMatcher {
      * Gets the ClassFileEntry for the given input.
      *
      * @param longIndex An index into the segment constant pool.
-     * @param pool the segment constant pool.
+     * @param pool The segment constant pool.
      * @return The matching ClassFileEntry.
      * @throws Pack200Exception if the input is invalid.
      */
@@ -380,8 +380,8 @@ public class AttributeLayout implements IMatcher {
      * Gets the ClassFileEntry for the given input.
      *
      * @param longIndex An index into the segment constant pool.
-     * @param type the Java type signature.
-     * @param pool the segment constant pool.
+     * @param type The Java type signature.
+     * @param pool The segment constant pool.
      * @return The matching ClassFileEntry.
      * @throws Pack200Exception if the input is invalid.
      */
@@ -448,7 +448,7 @@ public class AttributeLayout implements IMatcher {
     /**
      * Sets the backward call count.
      *
-     * @param backwardsCallCount the backward call count.
+     * @param backwardsCallCount The backward call count.
      */
     public void setBackwardsCallCount(final int backwardsCallCount) {
         this.backwardsCallCount = backwardsCallCount;

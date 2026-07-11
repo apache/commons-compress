@@ -71,8 +71,8 @@ public class Zip64ExtendedInformationExtraField implements ZipExtraField {
     /**
      * Creates an extra field based on the original and compressed size.
      *
-     * @param size           the entry's original size.
-     * @param compressedSize the entry's compressed size.
+     * @param size           The entry's original size.
+     * @param compressedSize The entry's compressed size.
      * @throws IllegalArgumentException if size or compressedSize is null.
      */
     public Zip64ExtendedInformationExtraField(final ZipEightByteInteger size, final ZipEightByteInteger compressedSize) {
@@ -82,10 +82,10 @@ public class Zip64ExtendedInformationExtraField implements ZipExtraField {
     /**
      * Creates an extra field based on all four possible values.
      *
-     * @param size                 the entry's original size.
-     * @param compressedSize       the entry's compressed size.
-     * @param relativeHeaderOffset the entry's offset.
-     * @param diskStart            the disk start.
+     * @param size                 The entry's original size.
+     * @param compressedSize       The entry's compressed size.
+     * @param relativeHeaderOffset The entry's offset.
+     * @param diskStart            The disk start.
      * @throws IllegalArgumentException if size or compressedSize is null.
      */
     public Zip64ExtendedInformationExtraField(final ZipEightByteInteger size, final ZipEightByteInteger compressedSize,

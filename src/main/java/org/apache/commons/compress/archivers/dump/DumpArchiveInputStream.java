@@ -201,7 +201,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
      * <p>Since 1.29.0: throws {@link IOException}.</p>
      *
      * @param is       stream to read from.
-     * @param encoding the encoding to use for file names, use null for the platform's default encoding.
+     * @param encoding The encoding to use for file names, use null for the platform's default encoding.
      * @throws IOException on error.
      * @since 1.6
      * @deprecated Since 1.29.0, use {@link #builder()}.

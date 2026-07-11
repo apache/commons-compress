@@ -456,9 +456,9 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
     /**
      * Populate data from this array as if it was in local file data.
      *
-     * @param data   an array of bytes.
-     * @param offset the start offset.
-     * @param length the number of bytes in the array from offset.
+     * @param data   An array of bytes.
+     * @param offset The start offset.
+     * @param length The number of bytes in the array from offset.
      * @throws java.util.zip.ZipException on error.
      */
     @Override

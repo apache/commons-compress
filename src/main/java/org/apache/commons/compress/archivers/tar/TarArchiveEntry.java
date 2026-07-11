@@ -452,7 +452,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Constructs an entry from an archive's header bytes for random access tar. File is set to null.
      *
-     * @param headerBuf  the header bytes from a tar archive entry.
+     * @param headerBuf  The header bytes from a tar archive entry.
      * @param encoding   encoding to use for file names.
      * @param lenient    when set to true illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
      *                   {@link #UNKNOWN}. When set to false such illegal fields cause an exception instead.
@@ -496,7 +496,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * </p>
      *
      * @param file     The file that the entry represents.
-     * @param fileName the name to be used for the entry.
+     * @param fileName The name to be used for the entry.
      */
     public TarArchiveEntry(final File file, final String fileName) {
         final String normalizedName = normalizeFileName(fileName, false);
@@ -525,7 +525,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Constructs an entry from an archive's header bytes. File is set to null.
      *
-     * @param globalPaxHeaders the parsed global PAX headers, or null if this is the first one.
+     * @param globalPaxHeaders The parsed global PAX headers, or null if this is the first one.
      * @param headerBuf        The header bytes from a tar archive entry.
      * @param encoding         encoding to use for file names.
      * @param lenient          when set to true illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
@@ -543,8 +543,8 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Constructs an entry from an archive's header bytes for random access tar. File is set to null.
      *
-     * @param globalPaxHeaders the parsed global PAX headers, or null if this is the first one.
-     * @param headerBuf        the header bytes from a tar archive entry.
+     * @param globalPaxHeaders The parsed global PAX headers, or null if this is the first one.
+     * @param headerBuf        The header bytes from a tar archive entry.
      * @param encoding         encoding to use for file names.
      * @param lenient          when set to true illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
      *                         {@link #UNKNOWN}. When set to false such illegal fields cause an exception instead.
@@ -583,7 +583,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * </p>
      *
      * @param file        The file that the entry represents.
-     * @param fileName    the name to be used for the entry.
+     * @param fileName    The name to be used for the entry.
      * @param linkOptions options indicating how symbolic links are handled.
      * @throws IOException if an I/O error occurs.
      * @since 1.21
@@ -605,7 +605,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * Windows drive letters stripped.
      * </p>
      *
-     * @param name the entry name.
+     * @param name The entry name.
      */
     public TarArchiveEntry(final String name) {
         this(name, false);
@@ -618,7 +618,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * letters are stripped if {@code preserveAbsolutePath} is {@code false}.
      * </p>
      *
-     * @param name                 the entry name.
+     * @param name                 The entry name.
      * @param preserveAbsolutePath whether to allow leading slashes or drive letters in the name.
      * @since 1.1
      */
@@ -640,8 +640,8 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * Windows drive letters stripped.
      * </p>
      *
-     * @param name     the entry name.
-     * @param linkFlag the entry link flag.
+     * @param name     The entry name.
+     * @param linkFlag The entry link flag.
      */
     public TarArchiveEntry(final String name, final byte linkFlag) {
         this(name, linkFlag, false);
@@ -654,8 +654,8 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * letters are stripped if {@code preserveAbsolutePath} is {@code false}.
      * </p>
      *
-     * @param name                 the entry name.
-     * @param linkFlag             the entry link flag.
+     * @param name                 The entry name.
+     * @param linkFlag             The entry link flag.
      * @param preserveAbsolutePath whether to allow leading slashes or drive letters in the name.
      * @since 1.5
      */
@@ -1613,8 +1613,8 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Processes one pax header, using the entries extraPaxHeaders map as source for extra headers used when handling entries for sparse files.
      *
-     * @param key     the header name.
-     * @param val     the header value.
+     * @param key     The header name.
+     * @param val     The header value.
      * @since 1.15
      */
     private void processPaxHeader(final String key, final String val) throws IOException {
@@ -1624,8 +1624,8 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Processes one pax header, using the supplied map as source for extra headers to be used when handling entries for sparse files
      *
-     * @param key     the header name.
-     * @param val     the header value.
+     * @param key     The header name.
+     * @param val     The header value.
      * @param headers map of headers used for dealing with sparse file.
      * @throws NumberFormatException if encountered errors when parsing the numbers.
      * @since 1.15
@@ -1774,7 +1774,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Sets the offset of the data for the tar entry.
      *
-     * @param dataOffset the position of the data in the tar.
+     * @param dataOffset The position of the data in the tar.
      * @since 1.21
      */
     public void setDataOffset(final long dataOffset) {
@@ -1874,7 +1874,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Sets this entry's link name.
      *
-     * @param link the link name to use.
+     * @param link The link name to use.
      * @since 1.1
      */
     public void setLinkName(final String link) {
@@ -1884,7 +1884,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Sets the mode for this entry.
      *
-     * @param mode the mode for this entry.
+     * @param mode The mode for this entry.
      */
     public void setMode(final int mode) {
         this.mode = mode;

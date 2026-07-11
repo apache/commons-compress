@@ -75,10 +75,10 @@ public class Segment extends ClassVisitor {
         /**
          * Constructs a new ArrayVisitor.
          *
-         * @param caseArrayN the case array.
-         * @param tags the tags.
-         * @param nameRU the name RU.
-         * @param values the values.
+         * @param caseArrayN The case array.
+         * @param tags The tags.
+         * @param nameRU The name RU.
+         * @param values The values.
          */
         public ArrayVisitor(final List<Integer> caseArrayN, final List<String> tags, final List<String> nameRU, final List<Object> values) {
             super(ASM_API);
@@ -168,7 +168,7 @@ public class Segment extends ClassVisitor {
         /**
          * Constructs a new SegmentAnnotationVisitor.
          *
-         * @param context the context.
+         * @param context The context.
          */
         public SegmentAnnotationVisitor(final int context) {
             super(ASM_API);
@@ -178,9 +178,9 @@ public class Segment extends ClassVisitor {
         /**
          * Constructs a new SegmentAnnotationVisitor.
          *
-         * @param context the context.
-         * @param parameter the parameter.
-         * @param desc the descriptor.
+         * @param context The context.
+         * @param parameter The parameter.
+         * @param desc The descriptor.
          * @param visible whether the annotation is visible.
          */
         public SegmentAnnotationVisitor(final int context, final int parameter, final String desc, final boolean visible) {
@@ -194,8 +194,8 @@ public class Segment extends ClassVisitor {
         /**
          * Constructs a new SegmentAnnotationVisitor.
          *
-         * @param context the context.
-         * @param desc the descriptor.
+         * @param context The context.
+         * @param desc The descriptor.
          * @param visible whether the annotation is visible.
          */
         public SegmentAnnotationVisitor(final int context, final String desc, final boolean visible) {
@@ -644,8 +644,8 @@ public class Segment extends ClassVisitor {
     /**
      * The main method on Segment. Reads in all the class files, packs them and then writes the packed segment out to the given OutputStream.
      *
-     * @param segmentUnit the segment unit containing files and classes to pack.
-     * @param out         the OutputStream to write the packed Segment to.
+     * @param segmentUnit The segment unit containing files and classes to pack.
+     * @param out         The OutputStream to write the packed Segment to.
      * @param options     packing options.
      * @throws IOException      If an I/O error occurs.
      * @throws Pack200Exception If a Pack200 semantic error occurs.

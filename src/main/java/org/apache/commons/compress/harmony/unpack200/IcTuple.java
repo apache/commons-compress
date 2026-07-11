@@ -95,10 +95,10 @@ public class IcTuple {
      * @param F       flags.
      * @param C2      outer class name.
      * @param N       simple class name.
-     * @param cIndex  the index of C in cpClass.
-     * @param c2Index the index of C2 in cpClass, or -1 if C2 is null.
-     * @param nIndex  the index of N in cpUTF8, or -1 if N is null.
-     * @param tIndex  the tuple index.
+     * @param cIndex  The index of C in cpClass.
+     * @param c2Index The index of C2 in cpClass, or -1 if C2 is null.
+     * @param nIndex  The index of N in cpUTF8, or -1 if N is null.
+     * @param tIndex  The tuple index.
      */
     public IcTuple(final String C, final int F, final String C2, final String N, final int cIndex, final int c2Index, final int nIndex, final int tIndex) {
         this.C = C;
@@ -280,7 +280,7 @@ public class IcTuple {
     /**
      * Break the receiver into components at $ boundaries.
      *
-     * @param className the class name to break.
+     * @param className The class name to break.
      * @return array of class name components.
      */
     public String[] innerBreakAtDollar(final String className) {
@@ -344,8 +344,8 @@ public class IcTuple {
     /**
      * Tests whether the two strings are equal, treating null values as equal to each other.
      *
-     * @param stringOne the first string.
-     * @param stringTwo the second string.
+     * @param stringOne The first string.
+     * @param stringTwo The second string.
      * @return true if the strings are equal or both null.
      */
     public boolean nullSafeEquals(final String stringOne, final String stringTwo) {

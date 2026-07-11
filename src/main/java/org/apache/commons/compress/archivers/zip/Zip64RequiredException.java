@@ -53,7 +53,7 @@ public class Zip64RequiredException extends ZipException {
     /**
      * Constructs a {@link Zip64RequiredException} with the specified detail message.
      *
-     * @param message the detail message.
+     * @param message The detail message.
      */
     public Zip64RequiredException(final String message) {
         super(message);

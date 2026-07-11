@@ -127,7 +127,7 @@ public class ClassBands extends BandSet {
     /**
      * Constructs a new ClassBands instance.
      *
-     * @param segment the segment.
+     * @param segment The segment.
      */
     public ClassBands(final Segment segment) {
         super(segment);
@@ -655,8 +655,8 @@ public class ClassBands extends BandSet {
     /**
      * Parse the class metadata bands and return the number of backwards callables.
      *
-     * @param in             the input stream to read from.
-     * @param classAttrCalls the class attribute calls array.
+     * @param in             The input stream to read from.
+     * @param classAttrCalls The class attribute calls array.
      * @return The number of backwards callables.
      * @throws Pack200Exception If a Pack200 semantic error occurs.
      * @throws IOException      If an I/O error occurs.

@@ -106,7 +106,7 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream<ZstdOutpu
          * still useful when using "dfast" strategy, in which case it defines a secondary probe table.
          * </p>
          *
-         * @param chainLog the size of the multi-probe search table, as a power of 2.
+         * @param chainLog The size of the multi-probe search table, as a power of 2.
          * @return {@code this} instance.
          * @see ZstdConstants#ZSTD_CHAINLOG_MIN
          * @see ZstdConstants#ZSTD_CHAINLOG_MAX
@@ -307,7 +307,7 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream<ZstdOutpu
          * macro {@code ZSTD_MULTITHREAD}).
          * </p>
          *
-         * @param overlapLog the overlap size, as a fraction of window size.
+         * @param overlapLog The overlap size, as a fraction of window size.
          * @return {@code this} instance.
          * @see <a href="https://facebook.github.io/zstd/zstd_manual.html#Chapter5">Zstd manual Chapter5</a>
          * @see <a href="https://github.com/facebook/zstd/blob/dev/lib/zstd.h">zstd.h</a>
@@ -358,7 +358,7 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream<ZstdOutpu
          * <li>{@code ZSTD_btultra2 = 9}</li>
          * </ul>
          *
-         * @param strategy the {@code ZSTD_strategy} from the C enum definition.
+         * @param strategy The {@code ZSTD_strategy} from the C enum definition.
          * @return {@code this} instance.
          * @see <a href="https://facebook.github.io/zstd/zstd_manual.html#Chapter5">Zstd manual Chapter5</a>
          * @see <a href="https://github.com/facebook/zstd/blob/dev/lib/zstd.h">zstd.h</a>
@@ -388,7 +388,7 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream<ZstdOutpu
          * The value {@code 0} means use the default targetLength.
          * </p>
          *
-         * @param targetLength a value that depends on the strategy, see {@code ZSTD_c_targetLength}.
+         * @param targetLength A value that depends on the strategy, see {@code ZSTD_c_targetLength}.
          * @return {@code this} instance.
          * @see <a href="https://facebook.github.io/zstd/zstd_manual.html#Chapter5">Zstd manual Chapter5</a>
          * @see <a href="https://github.com/facebook/zstd/blob/dev/lib/zstd.h">zstd.h</a>
@@ -494,7 +494,7 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream<ZstdOutpu
     /**
      * Constructs a new instance using default Zstd parameter values.
      *
-     * @param outStream the output stream.
+     * @param outStream The output stream.
      * @throws IOException if an I/O error occurs.
      */
     public ZstdCompressorOutputStream(final OutputStream outStream) throws IOException {
@@ -504,7 +504,7 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream<ZstdOutpu
     /**
      * Constructs a new instance using default Zstd parameter values plus a compression level.
      *
-     * @param outStream the output stream.
+     * @param outStream The output stream.
      * @param level     The compression level, from 0 to 9, where the default is {@link ZstdConstants#ZSTD_CLEVEL_DEFAULT}.
      * @throws IOException if an I/O error occurs.
      * @since 1.18
@@ -518,7 +518,7 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream<ZstdOutpu
     /**
      * Constructs a new instance using default Zstd parameter values plus a compression level and checksum setting.
      *
-     * @param outStream         the output stream.
+     * @param outStream         The output stream.
      * @param level             The compression level, from 0 to 9, where the default is {@link ZstdConstants#ZSTD_CLEVEL_DEFAULT}.
      * @param closeFrameOnFlush whether to close the frame on flush.
      * @throws IOException if an I/O error occurs.
@@ -533,7 +533,7 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream<ZstdOutpu
     /**
      * Constructs a new instance using default Zstd parameter values plus a compression level, closeFrameOnFlush and checksum settings.
      *
-     * @param outStream         the output stream.
+     * @param outStream         The output stream.
      * @param level             The compression level, from 0 to 9, where the default is {@link ZstdConstants#ZSTD_CLEVEL_DEFAULT}.
      * @param closeFrameOnFlush whether to close the frame on flush.
      * @param checksum          Whether a 32-bits checksum of content is written at end of frame.

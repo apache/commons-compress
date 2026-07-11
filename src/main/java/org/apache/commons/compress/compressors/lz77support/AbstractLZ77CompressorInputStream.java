@@ -174,7 +174,7 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
      * LZ4 frame format using block dependency.
      * </p>
      *
-     * @param data the data to fill the window with.
+     * @param data The data to fill the window with.
      * @throws IllegalStateException if the stream has already started to read data.
      */
     public void prefill(final byte[] data) {
@@ -269,8 +269,8 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
     /**
      * Used by subclasses to signal the next block contains a back-reference with the given coordinates.
      *
-     * @param offset the offset of the back-reference.
-     * @param length the length of the back-reference.
+     * @param offset The offset of the back-reference.
+     * @param length The length of the back-reference.
      * @throws IllegalArgumentException if offset not bigger than 0 or bigger than the number of bytes available for back-references or if length is negative.
      */
     protected final void startBackReference(final int offset, final long length) {
@@ -287,7 +287,7 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
     /**
      * Used by subclasses to signal the next block contains the given amount of literal data.
      *
-     * @param length the length of the block.
+     * @param length The length of the block.
      * @throws IllegalArgumentException if length is negative.
      */
     protected final void startLiteral(final long length) {

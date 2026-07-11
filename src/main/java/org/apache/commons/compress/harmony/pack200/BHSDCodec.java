@@ -104,8 +104,8 @@ public final class BHSDCodec extends Codec {
     /**
      * Constructs an unsigned, non-delta Codec with the given B and H values.
      *
-     * @param b the maximum number of bytes that a value can be encoded as [1..5]
-     * @param h the radix of the encoding [1..256]
+     * @param b The maximum number of bytes that a value can be encoded as [1..5]
+     * @param h The radix of the encoding [1..256]
      */
     public BHSDCodec(final int b, final int h) {
         this(b, h, 0, 0);
@@ -114,8 +114,8 @@ public final class BHSDCodec extends Codec {
     /**
      * Constructs a non-delta Codec with the given B, H and S values.
      *
-     * @param b the maximum number of bytes that a value can be encoded as [1..5]
-     * @param h the radix of the encoding [1..256]
+     * @param b The maximum number of bytes that a value can be encoded as [1..5]
+     * @param h The radix of the encoding [1..256]
      * @param s whether the encoding represents signed numbers (s=0 is unsigned; s=1 is signed with 1s complement; s=2 is signed with ?)
      */
     public BHSDCodec(final int b, final int h, final int s) {
@@ -125,8 +125,8 @@ public final class BHSDCodec extends Codec {
     /**
      * Constructs a Codec with the given B, H, S and D values.
      *
-     * @param b the maximum number of bytes that a value can be encoded as [1..5]
-     * @param h the radix of the encoding [1..256]
+     * @param b The maximum number of bytes that a value can be encoded as [1..5]
+     * @param h The radix of the encoding [1..256]
      * @param s whether the encoding represents signed numbers (s=0 is unsigned; s=1 is signed with 1s complement; s=2 is signed with ?)
      * @param d whether this is a delta encoding (d=0 is non-delta; d=1 is delta)
      */
@@ -367,7 +367,7 @@ public final class BHSDCodec extends Codec {
     /**
      * True if this encoding can code the given value
      *
-     * @param value the value to check
+     * @param value The value to check
      * @return {@code true} if the encoding can encode this value
      */
     public boolean encodes(final long value) {

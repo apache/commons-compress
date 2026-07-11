@@ -44,8 +44,8 @@ public class DeflateCompressorInputStream extends CompressorInputStream implemen
     /**
      * Checks if the signature matches what is expected for a zlib / deflated file with the zlib header.
      *
-     * @param signature the bytes to check.
-     * @param length    the number of bytes to check.
+     * @param signature The bytes to check.
+     * @param length    The number of bytes to check.
      * @return true, if this stream is zlib / deflate compressed with a header stream, false otherwise.
      * @since 1.10
      */

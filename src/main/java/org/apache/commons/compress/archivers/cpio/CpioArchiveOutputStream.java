@@ -236,7 +236,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
     /**
      * Encodes the given string using the configured encoding.
      *
-     * @param str the String to write.
+     * @param str The String to write.
      * @throws IOException if the string couldn't be written.
      * @return result of encoding the string.
      */
@@ -282,7 +282,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
      * Begins writing a new CPIO file entry and positions the stream to the start of the entry data. Closes the current entry if still active. The current time
      * will be used if the entry has no set modification time and the default header format will be used if no other format is specified in the entry.
      *
-     * @param entry the CPIO cpioEntry to be written.
+     * @param entry The CPIO cpioEntry to be written.
      * @throws IOException        if an I/O error has occurred or if a CPIO file error has occurred.
      * @throws ClassCastException if entry is not an instance of CpioArchiveEntry.
      */
@@ -311,9 +311,9 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
     /**
      * Writes an array of bytes to the current CPIO entry data. This method will block until all the bytes are written.
      *
-     * @param b   the data to be written.
-     * @param off the start offset in the data.
-     * @param len the number of bytes that are written.
+     * @param b   The data to be written.
+     * @param off The start offset in the data.
+     * @param len The number of bytes that are written.
      * @throws NullPointerException      if b is null.
      * @throws IndexOutOfBoundsException if {@code off} or {@code len} are negative, or if {@code off + len} is greater than {@code b.length}.
      * @throws IOException if an I/O error has occurred or if a CPIO file error has occurred.
@@ -374,7 +374,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
     /**
      * Writes an encoded string to the stream followed by \0
      *
-     * @param str the String to write.
+     * @param str The String to write.
      * @throws IOException if the string couldn't be written.
      */
     private void writeCString(final byte[] str) throws IOException {

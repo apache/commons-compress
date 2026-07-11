@@ -110,7 +110,7 @@ public class Pack200UnpackerAdapter extends Pack200Adapter implements Unpacker {
      * The new BoundedInputStream wraps a new {@link BufferedInputStream}.
      * </p>
      *
-     * @param first the path string or initial part of the path string.
+     * @param first The path string or initial part of the path string.
      * @param more  additional strings to be joined to form the path string.
      * @return A new BoundedInputStream
      * @throws IOException if an I/O error occurs

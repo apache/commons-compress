@@ -103,7 +103,7 @@ public class LZMACompressorOutputStream extends CompressorOutputStream<LZMAOutpu
     /**
      * Creates a LZMA compressor.
      *
-     * @param outputStream the stream to wrap.
+     * @param outputStream The stream to wrap.
      * @throws IOException on error.
      */
     public LZMACompressorOutputStream(final OutputStream outputStream) throws IOException {

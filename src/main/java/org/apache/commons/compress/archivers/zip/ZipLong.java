@@ -80,7 +80,7 @@ public final class ZipLong implements Cloneable, Serializable {
     /**
      * Converts a long value to four bytes in big-endian byte order.
      *
-     * @param value the value to convert.
+     * @param value The value to convert.
      * @return value as four bytes in big-endian byte order.
      */
     public static byte[] getBytes(final long value) {
@@ -92,7 +92,7 @@ public final class ZipLong implements Cloneable, Serializable {
     /**
      * Converts a four-byte array to a Java long,
      *
-     * @param bytes the array of bytes.
+     * @param bytes The array of bytes.
      * @return The corresponding Java long value.
      */
     public static long getValue(final byte[] bytes) {
@@ -102,8 +102,8 @@ public final class ZipLong implements Cloneable, Serializable {
     /**
      * Converts a four-byte array to a Java long at a given array offset.
      *
-     * @param bytes  the array of bytes.
-     * @param offset the offset to start.
+     * @param bytes  The array of bytes.
+     * @param offset The offset to start.
      * @return The corresponding Java long value.
      */
     public static long getValue(final byte[] bytes, final int offset) {
@@ -113,8 +113,8 @@ public final class ZipLong implements Cloneable, Serializable {
     /**
      * Puts a long value in a buffer as four bytes in little-endian byte order.
      *
-     * @param value  the Java long to convert to bytes.
-     * @param buf    the output buffer.
+     * @param value  The Java long to convert to bytes.
+     * @param buf    The output buffer.
      * @param offset The offset within the output buffer of the first byte to be written. must be non-negative and no larger than {@code buf.length - 4}.
      */
     public static void putLong(final long value, final byte[] buf, final int offset) {
@@ -129,7 +129,7 @@ public final class ZipLong implements Cloneable, Serializable {
     /**
      * Constructs a new instance from bytes.
      *
-     * @param bytes the bytes to store as a ZipLong.
+     * @param bytes The bytes to store as a ZipLong.
      */
     public ZipLong(final byte[] bytes) {
         this(bytes, 0);
@@ -138,8 +138,8 @@ public final class ZipLong implements Cloneable, Serializable {
     /**
      * Creates instance from the four bytes starting at offset.
      *
-     * @param bytes  the bytes to store as a ZipLong.
-     * @param offset the offset to start.
+     * @param bytes  The bytes to store as a ZipLong.
+     * @param offset The offset to start.
      */
     public ZipLong(final byte[] bytes, final int offset) {
         value = getValue(bytes, offset);
@@ -148,7 +148,7 @@ public final class ZipLong implements Cloneable, Serializable {
     /**
      * create instance from a Java int.
      *
-     * @param value the int to store as a ZipLong.
+     * @param value The int to store as a ZipLong.
      * @since 1.15
      */
     public ZipLong(final int value) {
@@ -158,7 +158,7 @@ public final class ZipLong implements Cloneable, Serializable {
     /**
      * Creates instance from a number.
      *
-     * @param value the long to store as a ZipLong.
+     * @param value The long to store as a ZipLong.
      */
     public ZipLong(final long value) {
         this.value = value;
@@ -177,7 +177,7 @@ public final class ZipLong implements Cloneable, Serializable {
     /**
      * Override to make two instances with same value equal.
      *
-     * @param o an object to compare.
+     * @param o An object to compare.
      * @return true if the objects are equal.
      */
     @Override
@@ -229,7 +229,7 @@ public final class ZipLong implements Cloneable, Serializable {
     /**
      * Puts this long value in a buffer as four bytes in little-endian byte order.
      *
-     * @param buf    the output buffer.
+     * @param buf    The output buffer.
      * @param offset The offset within the output buffer of the first byte to be written. must be non-negative and no larger than {@code buf.length - 4}.
      */
     public void putLong(final byte[] buf, final int offset) {

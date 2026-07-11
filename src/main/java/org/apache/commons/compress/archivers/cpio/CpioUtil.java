@@ -72,7 +72,7 @@ final class CpioUtil {
     /**
      * Converts a long number to a byte array Halfwords can be swapped by setting swapHalfWord=true.
      *
-     * @param number       the input long number to be converted.
+     * @param number       The input long number to be converted.
      * @param length       The length of the returned array.
      * @param swapHalfWord Swap halfwords ([0][1][2][3]->[1][0][3][2]).
      * @return The long value.

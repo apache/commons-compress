@@ -40,7 +40,7 @@ public abstract class BCIRenumberedAttribute extends Attribute {
     /**
      * Constructs a new instance for an attribute name.
      *
-     * @param attributeName an attribute name.
+     * @param attributeName An attribute name.
      */
     public BCIRenumberedAttribute(final CPUTF8 attributeName) {
         super(attributeName);

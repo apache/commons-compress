@@ -223,7 +223,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
     /**
      * Gets the file mode for given permissions with the correct file type.
      *
-     * @param mode the mode.
+     * @param mode The mode.
      * @return The type with the mode.
      */
     protected int getMode(final int mode) {
@@ -274,9 +274,9 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
     /**
      * Parses data from an array as if it was in local file data.
      *
-     * @param data   an array of bytes.
-     * @param offset the start offset.
-     * @param length the number of bytes in the array from offset.
+     * @param data   An array of bytes.
+     * @param offset The start offset.
+     * @param length The number of bytes in the array from offset.
      * @throws ZipException on error.
      */
     @Override
@@ -327,7 +327,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
     /**
      * Sets the group id.
      *
-     * @param gid the group id.
+     * @param gid The group id.
      */
     public void setGroupId(final int gid) {
         this.gid = gid;
@@ -346,7 +346,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
     /**
      * Sets the file mode of this file.
      *
-     * @param mode the file mode.
+     * @param mode The file mode.
      */
     public void setMode(final int mode) {
         this.mode = getMode(mode);
@@ -355,7 +355,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
     /**
      * Sets the user id.
      *
-     * @param uid the user id.
+     * @param uid The user id.
      */
     public void setUserId(final int uid) {
         this.uid = uid;

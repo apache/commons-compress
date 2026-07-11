@@ -39,8 +39,8 @@ public abstract class CompressFilterOutputStream<T extends OutputStream> extends
     /**
      * Writes and filters the bytes from the specified String to this output stream using the given Charset.
      *
-     * @param os      the target output stream.
-     * @param data    the data.
+     * @param os      The target output stream.
+     * @param data    The data.
      * @param charset The {@link Charset} to be used to encode the {@code String}.
      * @return The ASCII bytes.
      * @exception IOException if an I/O error occurs.
@@ -78,7 +78,7 @@ public abstract class CompressFilterOutputStream<T extends OutputStream> extends
     /**
      * Creates an output stream filter built on top of the specified underlying {@link OutputStream}.
      *
-     * @param out the underlying output stream to be assigned to the field {@code this.out} for later use, or {@code null} if this instance is to be created
+     * @param out The underlying output stream to be assigned to the field {@code this.out} for later use, or {@code null} if this instance is to be created
      *            without an underlying stream.
      */
     public CompressFilterOutputStream(final T out) {
@@ -146,7 +146,7 @@ public abstract class CompressFilterOutputStream<T extends OutputStream> extends
     /**
      * Writes all bytes from a file this output stream.
      *
-     * @param file the path to the source file.
+     * @param file The path to the source file.
      * @return The number of bytes read or written.
      * @throws IOException if an I/O error occurs when reading or writing.
      */
@@ -157,7 +157,7 @@ public abstract class CompressFilterOutputStream<T extends OutputStream> extends
     /**
      * Writes all bytes from a file to this output stream.
      *
-     * @param path the path to the source file.
+     * @param path The path to the source file.
      * @return The number of bytes read or written.
      * @throws IOException if an I/O error occurs when reading or writing.
      */
@@ -168,7 +168,7 @@ public abstract class CompressFilterOutputStream<T extends OutputStream> extends
     /**
      * Writes and filters the ASCII bytes from the specified String to this output stream.
      *
-     * @param data the data.
+     * @param data The data.
      * @return The ASCII bytes.
      * @throws IOException if an I/O error occurs.
      * @see OutputStream#write(byte[])
@@ -180,7 +180,7 @@ public abstract class CompressFilterOutputStream<T extends OutputStream> extends
     /**
      * Writes the raw ASCII bytes from the specified String to this output stream.
      *
-     * @param data the data.
+     * @param data The data.
      * @return The ASCII bytes.
      * @throws IOException if an I/O error occurs.
      * @see OutputStream#write(byte[])
@@ -192,7 +192,7 @@ public abstract class CompressFilterOutputStream<T extends OutputStream> extends
     /**
      * Writes and filters the UTF-8 bytes from the specified String to this output stream.
      *
-     * @param data the data.
+     * @param data The data.
      * @return The ASCII bytes.
      * @throws IOException if an I/O error occurs.
      * @see OutputStream#write(byte[])

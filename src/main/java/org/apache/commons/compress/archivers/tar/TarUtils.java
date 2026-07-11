@@ -90,7 +90,7 @@ public final class TarUtils {
     /**
      * Applies the PAX headers and sparse headers to the given tar entry.
      *
-     * @param entry               the tar entry to handle.
+     * @param entry               The tar entry to handle.
      * @param paxHeaders          per file PAX headers.
      * @param sparseHeaders       per file sparse headers.
      * @param globalPaxHeaders    global PAX headers.
@@ -351,14 +351,14 @@ public final class TarUtils {
      *     GNU long file and link names are translated to their equivalent PAX headers.
      * </p>
      *
-     * @param input the input stream from which to read the special tar entry content.
-     * @param encoding the encoding to use for reading names.
-     * @param maxEntryNameLength the maximum allowed length for entry names.
-     * @param entry the tar entry to handle.
-     * @param paxHeaders the map to update with PAX headers.
-     * @param sparseHeaders the list to update with sparse headers.
-     * @param globalPaxHeaders the map to update with global PAX headers.
-     * @param globalSparseHeaders the list to update with global sparse headers.
+     * @param input The input stream from which to read the special tar entry content.
+     * @param encoding The encoding to use for reading names.
+     * @param maxEntryNameLength The maximum allowed length for entry names.
+     * @param entry The tar entry to handle.
+     * @param paxHeaders The map to update with PAX headers.
+     * @param sparseHeaders The list to update with sparse headers.
+     * @param globalPaxHeaders The map to update with global PAX headers.
+     * @param globalSparseHeaders The list to update with global sparse headers.
      * @throws IOException if an I/O error occurs while reading the entry.
      */
     static void handleSpecialTarRecord(final InputStream input, final ZipEncoding encoding, final int maxEntryNameLength, final TarArchiveEntry entry,
@@ -403,7 +403,7 @@ public final class TarUtils {
      *     that apply to the entire archive or to the next file entry.
      * </p>
      *
-     * @param entry the tar record to check.
+     * @param entry The tar record to check.
      * @return {@code true} if the entry is a special tar record, {@code false} otherwise.
      */
     static boolean isSpecialTarRecord(final TarArchiveEntry entry) {
@@ -456,7 +456,7 @@ public final class TarUtils {
      * For PAX Format 0.1, the sparse headers are stored in a single variable : GNU.sparse.map GNU.sparse.map Map of non-null data chunks. It is a string
      * consisting of comma-separated values "offset,size[,offset-1,size-1...]"
      *
-     * @param sparseMap the sparse map string consisting of comma-separated values "offset,size[,offset-1,size-1...]".
+     * @param sparseMap The sparse map string consisting of comma-separated values "offset,size[,offset-1,size-1...]".
      * @return unmodifiable list of sparse headers parsed from sparse map.
      * @throws IOException Corrupted TAR archive.
      * @since 1.21
@@ -812,7 +812,7 @@ public final class TarUtils {
      * For 1.x PAX Format, the sparse headers are stored in the file data block, preceding the actual file data. It consists of a series of decimal numbers
      * delimited by newlines.
      *
-     * @param inputStream the input stream of the tar file.
+     * @param inputStream The input stream of the tar file.
      * @return The decimal number delimited by '\n', and the bytes read from input stream.
      * @throws IOException if an I/O error occurs.
      */
@@ -837,9 +837,9 @@ public final class TarUtils {
     /**
      * Reads a long name (file or link name) from the input stream for a special tar record.
      *
-     * @param input the input stream from which to read the long name.
-     * @param encoding the encoding to use for reading the name.
-     * @param entry the tar entry containing the long name.
+     * @param input The input stream from which to read the long name.
+     * @param encoding The encoding to use for reading the name.
+     * @param entry The tar entry containing the long name.
      * @return The decoded long name, with trailing NULs removed.
      * @throws IOException if an I/O error occurs or the entry is truncated.
      * @throws ArchiveException if the entry size is invalid.

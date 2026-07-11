@@ -46,7 +46,7 @@ public class ExceptionsAttribute extends Attribute {
     /**
      * Sets the attribute name.
      *
-     * @param cpUTF8Value the attribute name.
+     * @param cpUTF8Value The attribute name.
      */
     public static void setAttributeName(final CPUTF8 cpUTF8Value) {
         attributeName = cpUTF8Value;
@@ -59,7 +59,7 @@ public class ExceptionsAttribute extends Attribute {
     /**
      * Constructs a new ExceptionsAttribute.
      *
-     * @param exceptions the exception classes.
+     * @param exceptions The exception classes.
      */
     public ExceptionsAttribute(final CPClass[] exceptions) {
         super(attributeName);

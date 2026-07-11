@@ -75,7 +75,7 @@ public class CodecEncoding {
     /**
      * Gets the canonical codec for the given index.
      *
-     * @param i the index.
+     * @param i The index.
      * @return The canonical codec.
      */
     public static BHSDCodec getCanonicalCodec(final int i) {
@@ -87,9 +87,9 @@ public class CodecEncoding {
      * input stream, which is taken to be the contents of the band_headers byte array. Since the values from this are consumed and not repeated, the input
      * stream should be reused for subsequent encodings. This does not therefore close the input stream.
      *
-     * @param value        the canonical encoding value
-     * @param in           the input stream to read additional byte headers from
-     * @param defaultCodec the default codec to use.
+     * @param value        The canonical encoding value
+     * @param in           The input stream to read additional byte headers from
+     * @param defaultCodec The default codec to use.
      * @return The corresponding codec, or {@code null} if the default should be used
      * @throws IOException      if there is a problem reading from the input stream (which in reality, is never, since the band_headers are likely stored in a
      *                          byte array and accessed via a ByteArrayInputStream. However, an EOFException could occur if things go wrong)
@@ -188,8 +188,8 @@ public class CodecEncoding {
     /**
      * Gets the specifier for the given codec and default for band.
      *
-     * @param codec the codec.
-     * @param defaultForBand the default for band.
+     * @param codec The codec.
+     * @param defaultForBand The default for band.
      * @return The specifier array.
      */
     public static int[] getSpecifier(final Codec codec, final Codec defaultForBand) {
@@ -304,7 +304,7 @@ public class CodecEncoding {
     /**
      * Gets the specifier for the default codec.
      *
-     * @param defaultCodec the default codec.
+     * @param defaultCodec The default codec.
      * @return The specifier.
      */
     public static int getSpecifierForDefaultCodec(final BHSDCodec defaultCodec) {

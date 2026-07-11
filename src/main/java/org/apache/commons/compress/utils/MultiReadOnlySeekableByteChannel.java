@@ -52,7 +52,7 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
     /**
      * Concatenates the given files.
      *
-     * @param files the files to concatenate.
+     * @param files The files to concatenate.
      * @throws NullPointerException if files is null.
      * @throws IOException          if opening a channel for one of the files fails.
      * @return SeekableByteChannel that concatenates all provided files.
@@ -68,7 +68,7 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
     /**
      * Concatenates the given file paths.
      *
-     * @param paths the file paths to concatenate, note that the LAST FILE of files should be the LAST SEGMENT(.zip) and these files should be added in correct
+     * @param paths The file paths to concatenate, note that the LAST FILE of files should be the LAST SEGMENT(.zip) and these files should be added in correct
      *              order (for example: .z01, .z02... .z99, .zip)
      * @return SeekableByteChannel that concatenates all provided files.
      * @throws NullPointerException if files is null.
@@ -90,7 +90,7 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
     /**
      * Concatenates the given channels.
      *
-     * @param channels the channels to concatenate.
+     * @param channels The channels to concatenate.
      * @throws NullPointerException if channels is null.
      * @return SeekableByteChannel that concatenates all provided channels.
      */
@@ -110,7 +110,7 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
     /**
      * Concatenates the given channels.
      *
-     * @param channels the channels to concatenate.
+     * @param channels The channels to concatenate.
      * @throws NullPointerException if channels is null.
      */
     public MultiReadOnlySeekableByteChannel(final List<SeekableByteChannel> channels) {
@@ -191,8 +191,8 @@ public class MultiReadOnlySeekableByteChannel implements SeekableByteChannel {
     /**
      * Sets the position based on the given channel number and relative offset
      *
-     * @param channelNumber  the channel number.
-     * @param relativeOffset the relative offset in the corresponding channel.
+     * @param channelNumber  The channel number.
+     * @param relativeOffset The relative offset in the corresponding channel.
      * @return global position of all channels as if they are a single channel.
      * @throws IOException if positioning fails.
      */

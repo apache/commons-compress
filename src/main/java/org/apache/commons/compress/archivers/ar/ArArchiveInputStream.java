@@ -142,7 +142,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
     /**
      * Checks if the signature matches ASCII "!&lt;arch&gt;" followed by a single LF control character
      *
-     * @param buffer  the bytes to check.
+     * @param buffer  The bytes to check.
      * @param ignored ignored.
      * @return true, if this stream is an Ar archive stream, false otherwise.
      */
@@ -179,7 +179,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
      *
      * <p>Since 1.29.0: throws {@link IOException}.</p>
      *
-     * @param inputStream the ar input stream.
+     * @param inputStream The ar input stream.
      * @throws IOException if an I/O error has occurred.
      */
     public ArArchiveInputStream(final InputStream inputStream) throws IOException {
@@ -415,7 +415,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
     /**
      * Parses the entry metadata from the provided raw record.
      *
-     * @param headerBuf the buffer containing the entry metadata.
+     * @param headerBuf The buffer containing the entry metadata.
      * @return An {@link ArArchiveEntry} object containing the parsed metadata.
      * @throws IOException if the metadata cannot be parsed correctly.
      */

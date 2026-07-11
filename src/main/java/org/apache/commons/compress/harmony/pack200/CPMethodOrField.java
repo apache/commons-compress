@@ -33,8 +33,8 @@ public class CPMethodOrField extends ConstantPoolEntry implements Comparable {
     /**
      * Constructs a new instance.
      *
-     * @param className the class name.
-     * @param nameAndType the name and type.
+     * @param className The class name.
+     * @param nameAndType The name and type.
      */
     public CPMethodOrField(final CPClass className, final CPNameAndType nameAndType) {
         this.className = className;
@@ -111,7 +111,7 @@ public class CPMethodOrField extends ConstantPoolEntry implements Comparable {
     /**
      * Sets the index in class.
      *
-     * @param index the index.
+     * @param index The index.
      */
     public void setIndexInClass(final int index) {
         indexInClass = index;
@@ -120,7 +120,7 @@ public class CPMethodOrField extends ConstantPoolEntry implements Comparable {
     /**
      * Sets the index in class for constructor.
      *
-     * @param index the index.
+     * @param index The index.
      */
     public void setIndexInClassForConstructor(final int index) {
         indexInClassForConstructor = index;

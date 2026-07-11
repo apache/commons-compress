@@ -403,7 +403,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream<OutputSt
     /**
      * Constructs a new {@code BZip2CompressorOutputStream} with a blocksize of 900k.
      *
-     * @param out the destination stream.
+     * @param out The destination stream.
      * @throws IOException          if an I/O error occurs in the specified stream.
      * @throws NullPointerException if {@code out == null}.
      */
@@ -414,8 +414,8 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream<OutputSt
     /**
      * Constructs a new {@code BZip2CompressorOutputStream} with specified blocksize.
      *
-     * @param out       the destination stream.
-     * @param blockSize the blockSize as 100k units.
+     * @param out       The destination stream.
+     * @param blockSize The blockSize as 100k units.
      * @throws IOException              if an I/O error occurs in the specified stream.
      * @throws IllegalArgumentException if {@code (blockSize &lt; 1) || (blockSize &gt; 9)}.
      * @throws NullPointerException     if {@code out == null}.

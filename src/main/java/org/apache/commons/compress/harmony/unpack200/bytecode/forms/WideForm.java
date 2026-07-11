@@ -59,8 +59,8 @@ public class WideForm extends VariableInstructionForm {
      * This method sets the rewrite array for the bytecode using Format 1 of the JVM spec: an opcode and two index bytes. This is used for ?load/?store/ret
      *
      * @param instruction    should be 132
-     * @param byteCode       the byte code whose rewrite array should be updated
-     * @param operandManager the source of the operands
+     * @param byteCode       The byte code whose rewrite array should be updated
+     * @param operandManager The source of the operands
      * @param codeLength     ignored
      */
     protected void setByteCodeOperandsFormat1(final int instruction, final ByteCode byteCode, final OperandManager operandManager, final int codeLength) {

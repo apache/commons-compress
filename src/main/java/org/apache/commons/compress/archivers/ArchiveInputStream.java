@@ -126,7 +126,7 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
     /**
      * Constructs a new instance.
      *
-     * @param inputStream the underlying input stream, or {@code null} if this instance is to be created without an underlying stream.
+     * @param inputStream The underlying input stream, or {@code null} if this instance is to be created without an underlying stream.
      * @param charsetName charset name.
      * @since 1.26.0
      * @deprecated Since 1.29.0, use {@link #ArchiveInputStream(AbstractArchiveBuilder)} instead.
@@ -144,7 +144,7 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
      * Some archive formats support variants or details that are not supported (yet).
      * </p>
      *
-     * @param archiveEntry the entry to test.
+     * @param archiveEntry The entry to test.
      * @return This implementation always returns true.
      * @since 1.1
      */
@@ -155,7 +155,7 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
     /**
      * Increments the counter of already read bytes. Doesn't increment if the EOF has been hit (read == -1).
      *
-     * @param read the number of bytes read.
+     * @param read The number of bytes read.
      */
     protected void count(final int read) {
         count((long) read);
@@ -164,7 +164,7 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
     /**
      * Increments the counter of already read bytes. Doesn't increment if the EOF has been hit (read == -1).
      *
-     * @param read the number of bytes read.
+     * @param read The number of bytes read.
      * @since 1.1
      */
     protected void count(final long read) {
@@ -277,7 +277,7 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
     /**
      * Decrements the counter of already read bytes.
      *
-     * @param pushedBack the number of bytes pushed back.
+     * @param pushedBack The number of bytes pushed back.
      * @since 1.1
      */
     protected void pushedBackBytes(final long pushedBack) {

@@ -47,7 +47,7 @@ public abstract class ReferenceForm extends ByteCodeForm {
     /**
      * Gets the offset from the operand manager.
      *
-     * @param operandManager the operand manager.
+     * @param operandManager The operand manager.
      * @return The offset.
      */
     protected abstract int getOffset(OperandManager operandManager);

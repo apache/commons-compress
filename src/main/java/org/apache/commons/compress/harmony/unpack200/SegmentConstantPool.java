@@ -272,8 +272,8 @@ public class SegmentConstantPool {
     /**
      * Gets the value at the specified constant pool index.
      *
-     * @param cp the constant pool index.
-     * @param longIndex the long index.
+     * @param cp The constant pool index.
+     * @param longIndex The long index.
      * @return The constant pool entry.
      * @throws Pack200Exception if a Pack200 error occurs.
      */

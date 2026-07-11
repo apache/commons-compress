@@ -543,7 +543,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
      * Creates a compressor input stream from an input stream, auto-detecting the compressor type from the first few bytes of the stream. The InputStream must
      * support marks, like BufferedInputStream.
      *
-     * @param in the input stream.
+     * @param in The input stream.
      * @return The compressor input stream.
      * @throws CompressorException      if the compressor name is not known.
      * @throws IllegalArgumentException if the stream is null or does not support mark.
@@ -557,7 +557,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
      * Creates a compressor input stream from an input stream, auto-detecting the compressor type from the first few bytes of the stream while limiting the
      * detected type to the provided set of compressor names. The InputStream must support marks, like BufferedInputStream.
      *
-     * @param in              the input stream.
+     * @param in              The input stream.
      * @param compressorNames compressor names to limit autodetection.
      * @return The compressor input stream.
      * @throws CompressorException      if the autodetected compressor is not in the provided set of compressor names.
@@ -574,7 +574,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
      * @param name of the compressor, i.e. {@value #GZIP}, {@value #BZIP2}, {@value #XZ}, {@value #LZMA}, {@value #PACK200}, {@value #SNAPPY_RAW},
      *             {@value #SNAPPY_FRAMED}, {@value #Z}, {@value #LZ4_BLOCK}, {@value #LZ4_FRAMED}, {@value #ZSTANDARD}, {@value #DEFLATE64} or
      *             {@value #DEFLATE}
-     * @param in   the input stream.
+     * @param in   The input stream.
      * @return compressor input stream.
      * @throws CompressorException      if the compressor name is not known or not available, or if there's an IOException or MemoryLimitException thrown during
      *                                  initialization.
@@ -670,9 +670,9 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
     /**
      * Creates a compressor output stream from a compressor name and an output stream.
      *
-     * @param name the compressor name, i.e. {@value #GZIP}, {@value #BZIP2}, {@value #XZ}, {@value #PACK200}, {@value #SNAPPY_FRAMED}, {@value #LZ4_BLOCK},
+     * @param name The compressor name, i.e. {@value #GZIP}, {@value #BZIP2}, {@value #XZ}, {@value #PACK200}, {@value #SNAPPY_FRAMED}, {@value #LZ4_BLOCK},
      *             {@value #LZ4_FRAMED}, {@value #ZSTANDARD} or {@value #DEFLATE}.
-     * @param out  the output stream.
+     * @param out  The output stream.
      * @return The compressor output stream.
      * @throws CompressorException      if the archiver name is not known.
      * @throws IllegalArgumentException if the archiver name or stream is null.

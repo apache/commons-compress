@@ -47,8 +47,8 @@ public final class ChangeSet<E extends ArchiveEntry> {
     /**
      * Adds a new archive entry to the archive.
      *
-     * @param entry the entry to add.
-     * @param input the data stream to add.
+     * @param entry The entry to add.
+     * @param input The data stream to add.
      */
     public void add(final E entry, final InputStream input) {
         this.add(entry, input, true);
@@ -58,8 +58,8 @@ public final class ChangeSet<E extends ArchiveEntry> {
      * Adds a new archive entry to the archive. If replace is set to true, this change will replace all other additions done in this ChangeSet and all existing
      * entries in the original stream.
      *
-     * @param entry   the entry to add.
-     * @param input   the data stream to add.
+     * @param entry   The entry to add.
+     * @param input   The data stream to add.
      * @param replace indicates this change should replace existing entries.
      */
     public void add(final E entry, final InputStream input, final boolean replace) {
@@ -69,7 +69,7 @@ public final class ChangeSet<E extends ArchiveEntry> {
     /**
      * Adds an addition change.
      *
-     * @param addChange the change which should result in an addition.
+     * @param addChange The change which should result in an addition.
      */
     @SuppressWarnings("resource") // InputStream is NOT allocated
     private void addAddition(final Change<E> addChange) {
@@ -100,7 +100,7 @@ public final class ChangeSet<E extends ArchiveEntry> {
     /**
      * Adds an delete change.
      *
-     * @param deleteChange the change which should result in a deletion.
+     * @param deleteChange The change which should result in a deletion.
      */
     private void addDeletion(final Change<E> deleteChange) {
         if (ChangeType.DELETE != deleteChange.getType() && ChangeType.DELETE_DIR != deleteChange.getType() || deleteChange.getTargetFileName() == null) {
@@ -129,7 +129,7 @@ public final class ChangeSet<E extends ArchiveEntry> {
     /**
      * Deletes the file with the file name from the archive.
      *
-     * @param fileName the file name of the file to delete.
+     * @param fileName The file name of the file to delete.
      */
     public void delete(final String fileName) {
         addDeletion(new Change<>(fileName, ChangeType.DELETE));
@@ -138,7 +138,7 @@ public final class ChangeSet<E extends ArchiveEntry> {
     /**
      * Deletes the directory tree from the archive.
      *
-     * @param dirName the name of the directory tree to delete.
+     * @param dirName The name of the directory tree to delete.
      */
     public void deleteDir(final String dirName) {
         addDeletion(new Change<>(dirName, ChangeType.DELETE_DIR));

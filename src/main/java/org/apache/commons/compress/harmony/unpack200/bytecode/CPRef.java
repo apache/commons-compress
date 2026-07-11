@@ -49,9 +49,9 @@ public abstract class CPRef extends ConstantPoolEntry {
     /**
      * Constructs a new CPRef.
      *
-     * @param type        the constant pool entry type.
-     * @param className   the class name.
-     * @param descriptor  the name and type descriptor.
+     * @param type        The constant pool entry type.
+     * @param className   The class name.
+     * @param descriptor  The name and type descriptor.
      * @param globalIndex index in CpBands
      * @throws NullPointerException if descriptor or className is null
      */

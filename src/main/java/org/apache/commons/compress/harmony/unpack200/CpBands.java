@@ -108,7 +108,7 @@ public class CpBands extends BandSet {
     /**
      * Constructs a new instance.
      *
-     * @param segment the segment.
+     * @param segment The segment.
      */
     public CpBands(final Segment segment) {
         super(segment);
@@ -117,7 +117,7 @@ public class CpBands extends BandSet {
     /**
      * Gets the CPClass value at the specified index.
      *
-     * @param index the index.
+     * @param index The index.
      * @return The CPClass value.
      */
     public CPClass cpClassValue(final int index) {
@@ -130,7 +130,7 @@ public class CpBands extends BandSet {
     /**
      * Gets the CPClass value for the specified string.
      *
-     * @param string the string.
+     * @param string The string.
      * @return The CPClass value.
      */
     public CPClass cpClassValue(final String string) {
@@ -149,7 +149,7 @@ public class CpBands extends BandSet {
     /**
      * Gets the CPDouble value at the specified index.
      *
-     * @param index the index.
+     * @param index The index.
      * @return The CPDouble value.
      */
     public CPDouble cpDoubleValue(final int index) {
@@ -159,7 +159,7 @@ public class CpBands extends BandSet {
     /**
      * Gets the CPFieldRef value at the specified index.
      *
-     * @param index the index.
+     * @param index The index.
      * @return The CPFieldRef value.
      */
     public CPFieldRef cpFieldValue(final int index) {
@@ -169,7 +169,7 @@ public class CpBands extends BandSet {
     /**
      * Gets the CPFloat value at the specified index.
      *
-     * @param index the index.
+     * @param index The index.
      * @return The CPFloat value.
      */
     public CPFloat cpFloatValue(final int index) {
@@ -179,7 +179,7 @@ public class CpBands extends BandSet {
     /**
      * Gets the CPInterfaceMethodRef value at the specified index.
      *
-     * @param index the index.
+     * @param index The index.
      * @return The CPInterfaceMethodRef value.
      */
     public CPInterfaceMethodRef cpIMethodValue(final int index) {
@@ -189,7 +189,7 @@ public class CpBands extends BandSet {
     /**
      * Gets the CPInteger value at the specified index.
      *
-     * @param index the index.
+     * @param index The index.
      * @return The CPInteger value.
      */
     public CPInteger cpIntegerValue(final int index) {
@@ -199,7 +199,7 @@ public class CpBands extends BandSet {
     /**
      * Gets the CPLong value at the specified index.
      *
-     * @param index the index.
+     * @param index The index.
      * @return The CPLong value.
      */
     public CPLong cpLongValue(final int index) {
@@ -209,7 +209,7 @@ public class CpBands extends BandSet {
     /**
      * Gets the CPMethodRef value at the specified index.
      *
-     * @param index the index.
+     * @param index The index.
      * @return The CPMethodRef value.
      */
     public CPMethodRef cpMethodValue(final int index) {
@@ -219,7 +219,7 @@ public class CpBands extends BandSet {
     /**
      * Gets the CPNameAndType value at the specified index.
      *
-     * @param index the index.
+     * @param index The index.
      * @return The CPNameAndType value.
      */
     public CPNameAndType cpNameAndTypeValue(final int index) {
@@ -236,7 +236,7 @@ public class CpBands extends BandSet {
     /**
      * Gets the CPNameAndType value for the specified descriptor.
      *
-     * @param descriptor the descriptor.
+     * @param descriptor The descriptor.
      * @return The CPNameAndType value.
      */
     public CPNameAndType cpNameAndTypeValue(final String descriptor) {
@@ -261,7 +261,7 @@ public class CpBands extends BandSet {
     /**
      * Gets the CPUTF8 signature value at the specified index.
      *
-     * @param index the index.
+     * @param index The index.
      * @return The CPUTF8 signature value.
      */
     public CPUTF8 cpSignatureValue(final int index) {
@@ -277,7 +277,7 @@ public class CpBands extends BandSet {
     /**
      * Gets the CPString value at the specified index.
      *
-     * @param index the index.
+     * @param index The index.
      * @return The CPString value.
      */
     public CPString cpStringValue(final int index) {
@@ -290,7 +290,7 @@ public class CpBands extends BandSet {
     /**
      * Gets the CPUTF8 value at the specified index.
      *
-     * @param index the index.
+     * @param index The index.
      * @return The CPUTF8 value.
      */
     public CPUTF8 cpUTF8Value(final int index) {
@@ -308,7 +308,7 @@ public class CpBands extends BandSet {
     /**
      * Gets the CPUTF8 value for the specified string.
      *
-     * @param string the string.
+     * @param string The string.
      * @return The CPUTF8 value.
      */
     public CPUTF8 cpUTF8Value(final String string) {
@@ -318,7 +318,7 @@ public class CpBands extends BandSet {
     /**
      * Gets the CPUTF8 value for the specified string, optionally searching for index.
      *
-     * @param string the string.
+     * @param string The string.
      * @param searchForIndex whether to search for index.
      * @return The CPUTF8 value.
      */
@@ -464,7 +464,7 @@ public class CpBands extends BandSet {
     /**
      * Parses the constant pool class names, using {@link #cpClassCount} to populate {@link #cpClass} from {@link #cpUTF8}.
      *
-     * @param in the input stream to read from
+     * @param in The input stream to read from
      * @throws IOException      if a problem occurs during reading from the underlying stream
      * @throws Pack200Exception if a problem occurs with an unexpected value or unsupported codec
      */
@@ -484,7 +484,7 @@ public class CpBands extends BandSet {
      * stored as a string of the form <em>name:type</em>, largely to make it easier for representing field and method descriptors (for example
      * {@code out:java.lang.PrintStream}) in a way that is compatible with passing String arrays.
      *
-     * @param in the input stream to read from
+     * @param in The input stream to read from
      * @throws IOException      if a problem occurs during reading from the underlying stream
      * @throws Pack200Exception if a problem occurs with an unexpected value or unsupported codec
      */
@@ -512,7 +512,7 @@ public class CpBands extends BandSet {
     /**
      * Parses the constant pool field definitions, using {@link #cpFieldCount} to populate {@link #cpFieldClass} and {@link #cpFieldDescriptor}.
      *
-     * @param in the input stream to read from
+     * @param in The input stream to read from
      * @throws IOException      if a problem occurs during reading from the underlying stream
      * @throws Pack200Exception if a problem occurs with an unexpected value or unsupported codec
      */
@@ -541,7 +541,7 @@ public class CpBands extends BandSet {
      * Parses the constant pool interface method definitions, using {@link #cpIMethodCount} to populate {@link #cpIMethodClass} and
      * {@link #cpIMethodDescriptor}.
      *
-     * @param in the input stream to read from
+     * @param in The input stream to read from
      * @throws IOException      if a problem occurs during reading from the underlying stream
      * @throws Pack200Exception if a problem occurs with an unexpected value or unsupported codec
      */
@@ -570,7 +570,7 @@ public class CpBands extends BandSet {
     /**
      * Parses the constant pool method definitions, using {@link #cpMethodCount} to populate {@link #cpMethodClass} and {@link #cpMethodDescriptor}.
      *
-     * @param in the input stream to read from
+     * @param in The input stream to read from
      * @throws IOException      if a problem occurs during reading from the underlying stream
      * @throws Pack200Exception if a problem occurs with an unexpected value or unsupported codec
      */
@@ -593,7 +593,7 @@ public class CpBands extends BandSet {
      * {@code [L(V)} and a classes array of {@code [java.lang.String]}. The {@link #cpSignature} is a string representation identical to the bytecode equivalent
      * {@code [Ljava/lang/String;(V)} TODO Check that the form is as above and update other types for example J
      *
-     * @param in the input stream to read from
+     * @param in The input stream to read from
      * @throws IOException      if a problem occurs during reading from the underlying stream
      * @throws Pack200Exception if a problem occurs with an unexpected value or unsupported codec
      */
@@ -642,7 +642,7 @@ public class CpBands extends BandSet {
     /**
      * Parses the constant pool strings, using {@link #cpStringCount} to populate {@link #cpString} from indexes into {@link #cpUTF8}.
      *
-     * @param in the input stream to read from
+     * @param in The input stream to read from
      * @throws IOException      if a problem occurs during reading from the underlying stream
      * @throws Pack200Exception if a problem occurs with an unexpected value or unsupported codec
      */

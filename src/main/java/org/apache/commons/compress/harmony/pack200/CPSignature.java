@@ -35,9 +35,9 @@ public class CPSignature extends ConstantPoolEntry implements Comparable {
     /**
      * Constructs a new CPSignature.
      *
-     * @param signature the signature string.
-     * @param signatureForm the signature form.
-     * @param classes the list of classes.
+     * @param signature The signature string.
+     * @param signatureForm The signature form.
+     * @param classes The list of classes.
      */
     public CPSignature(final String signature, final CPUTF8 signatureForm, final List<CPClass> classes) {
         this.signature = signature;

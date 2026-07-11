@@ -33,7 +33,7 @@ public class FlushShieldFilterOutputStream extends FilterOutputStream {
     /**
      * Creates a {@code FlushShieldFilterOutputStream} filter built on top of the specified underlying output stream.
      *
-     * @param out the underlying output stream to be assigned to the field {@code this.out} for later use, or {@code null} if this instance is to be created
+     * @param out The underlying output stream to be assigned to the field {@code this.out} for later use, or {@code null} if this instance is to be created
      *            without an underlying stream.
      */
     public FlushShieldFilterOutputStream(final OutputStream out) {

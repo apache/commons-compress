@@ -142,7 +142,7 @@ public abstract class Pack200 {
         /**
          * Adds a listener for PropertyChange events
          *
-         * @param listener the listener to listen if PropertyChange events occurs.
+         * @param listener The listener to listen if PropertyChange events occurs.
          */
         void addPropertyChangeListener(PropertyChangeListener listener);
 
@@ -212,7 +212,7 @@ public abstract class Pack200 {
         /**
          * Adds a listener for {@code PropertyChange} events.
          *
-         * @param listener the listener to listen if {@code PropertyChange} events occurs.
+         * @param listener The listener to listen if {@code PropertyChange} events occurs.
          */
         void addPropertyChangeListener(PropertyChangeListener listener);
 

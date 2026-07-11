@@ -46,10 +46,10 @@ public class CPMember extends ClassFileEntry {
     /**
      * Constructs a new CPMember.
      *
-     * @param name the member name.
-     * @param descriptor the member descriptor.
-     * @param flags the member flags.
-     * @param attributes the member attributes.
+     * @param name The member name.
+     * @param descriptor The member descriptor.
+     * @param flags The member flags.
+     * @param attributes The member attributes.
      * @throws NullPointerException if name or descriptor is null
      */
     public CPMember(final CPUTF8 name, final CPUTF8 descriptor, final long flags, final List<Attribute> attributes) {

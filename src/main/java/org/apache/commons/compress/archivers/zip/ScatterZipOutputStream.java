@@ -90,7 +90,7 @@ public class ScatterZipOutputStream implements Closeable {
         /**
          * Constructs a new instance.
          *
-         * @param out a ScatterZipOutputStream.
+         * @param out A ScatterZipOutputStream.
          * @throws IOException if an I/O error occurs.
          */
         public ZipEntryWriter(final ScatterZipOutputStream out) throws IOException {
@@ -188,7 +188,7 @@ public class ScatterZipOutputStream implements Closeable {
     /**
      * Constructs a new instance.
      *
-     * @param backingStore the backing store.
+     * @param backingStore The backing store.
      * @param streamCompressor Deflates ZIP entries.
      */
     public ScatterZipOutputStream(final ScatterGatherBackingStore backingStore, final StreamCompressor streamCompressor) {

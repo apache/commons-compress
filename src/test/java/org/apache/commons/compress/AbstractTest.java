@@ -56,7 +56,7 @@ public abstract class AbstractTest extends AbstractTempDirTest {
     /**
      * Deletes a file or directory. For a directory, delete it and all subdirectories.
      *
-     * @param file a file or directory.
+     * @param file A file or directory.
      * @return whether deletion was successful
      */
     public static boolean forceDelete(final File file) {
@@ -75,7 +75,7 @@ public abstract class AbstractTest extends AbstractTempDirTest {
     /**
      * Deletes a file or directory. For a directory, delete it and all subdirectories.
      *
-     * @param path a file or directory
+     * @param path A file or directory
      * @return whether deletion was successful
      */
     public static boolean forceDelete(final Path path) {
@@ -199,8 +199,8 @@ public abstract class AbstractTest extends AbstractTempDirTest {
     /**
      * Checks if an archive contains all expected files.
      *
-     * @param archive  the archive to check
-     * @param expected a list with expected string file names
+     * @param archive  The archive to check
+     * @param expected A list with expected string file names
      * @throws Exception
      */
     protected void checkArchiveContent(final File archive, final List<String> expected) throws Exception {
@@ -210,8 +210,8 @@ public abstract class AbstractTest extends AbstractTempDirTest {
     /**
      * Checks if an archive contains all expected files.
      *
-     * @param archive  the archive to check
-     * @param expected a list with expected string file names
+     * @param archive  The archive to check
+     * @param expected A list with expected string file names
      * @throws Exception
      */
     protected void checkArchiveContent(final Path archive, final List<String> expected) throws Exception {
@@ -252,7 +252,7 @@ public abstract class AbstractTest extends AbstractTempDirTest {
      * <li>test with spaces.txt</li>
      * </ul>
      *
-     * @param archiveName the identifier of this archive
+     * @param archiveName The identifier of this archive
      * @return The newly created file
      * @throws Exception in case something goes wrong
      */

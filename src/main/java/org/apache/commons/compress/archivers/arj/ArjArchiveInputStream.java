@@ -128,8 +128,8 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
     /**
      * Checks if the signature matches what is expected for an arj file.
      *
-     * @param signature the bytes to check.
-     * @param length    the number of bytes to check.
+     * @param signature The bytes to check.
+     * @param length    The number of bytes to check.
      * @return true, if this stream is an arj archive stream, false otherwise.
      */
     public static boolean matches(final byte[] signature, final int length) {
@@ -164,7 +164,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
      *
      * <p>Since 1.29.0: Throws {@link IOException}.</p>
      *
-     * @param inputStream the underlying stream, whose ownership is taken.
+     * @param inputStream The underlying stream, whose ownership is taken.
      * @throws IOException if an exception occurs while reading.
      */
     public ArjArchiveInputStream(final InputStream inputStream) throws IOException {
@@ -176,8 +176,8 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
      *
      * <p>Since 1.29.0: Throws {@link IOException}.</p>
      *
-     * @param inputStream the underlying stream, whose ownership is taken.
-     * @param charsetName the charset used for file names and comments in the archive. May be {@code null} to use the platform default.
+     * @param inputStream The underlying stream, whose ownership is taken.
+     * @param charsetName The charset used for file names and comments in the archive. May be {@code null} to use the platform default.
      * @throws IOException if an exception occurs while reading.
      * @deprecated Since 1.29.0, use {@link #builder()}.
      */

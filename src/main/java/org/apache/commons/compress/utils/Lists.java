@@ -42,7 +42,7 @@ public class Lists {
     /**
      * Creates a new {@link ArrayList} filled with the contents of the given {@code iterator}.
      *
-     * @param iterator the source iterator.
+     * @param iterator The source iterator.
      * @param <E>      type of elements contained in new list.
      * @return A new {@link ArrayList}.
      */

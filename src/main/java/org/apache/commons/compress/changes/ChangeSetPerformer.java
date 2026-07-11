@@ -119,7 +119,7 @@ public class ChangeSetPerformer<I extends ArchiveInputStream<E>, O extends Archi
     /**
      * Constructs a ChangeSetPerformer with the changes from this ChangeSet
      *
-     * @param changeSet the ChangeSet which operations are used for performing.
+     * @param changeSet The ChangeSet which operations are used for performing.
      */
     public ChangeSetPerformer(final ChangeSet<E> changeSet) {
         this.changes = changeSet.getChanges();
@@ -128,9 +128,9 @@ public class ChangeSetPerformer<I extends ArchiveInputStream<E>, O extends Archi
     /**
      * Copies the ArchiveEntry to the Output stream
      *
-     * @param inputStream  the stream to read the data from.
-     * @param outputStream the stream to write the data to.
-     * @param archiveEntry the entry to write.
+     * @param inputStream  The stream to read the data from.
+     * @param outputStream The stream to write the data to.
+     * @param archiveEntry The entry to write.
      * @throws IOException if data cannot be read or written.
      */
     private void copyStream(final InputStream inputStream, final O outputStream, final E archiveEntry) throws IOException {
@@ -143,7 +143,7 @@ public class ChangeSetPerformer<I extends ArchiveInputStream<E>, O extends Archi
      * Checks if an ArchiveEntry is deleted later in the ChangeSet. This is necessary if a file is added with this ChangeSet, but later became deleted in the
      * same set.
      *
-     * @param entry the entry to check.
+     * @param entry The entry to check.
      * @return true, if this entry has a deletion change later, false otherwise.
      */
     private boolean isDeletedLater(final Set<Change<E>> workingSet, final E entry) {
@@ -166,8 +166,8 @@ public class ChangeSetPerformer<I extends ArchiveInputStream<E>, O extends Archi
      *
      * This method finishes the stream, no other entries should be added after that.
      *
-     * @param entryIterator the entries to perform the changes on.
-     * @param outputStream  the resulting OutputStream with all modifications.
+     * @param entryIterator The entries to perform the changes on.
+     * @param outputStream  The resulting OutputStream with all modifications.
      * @throws IOException if a read/write error occurs.
      * @return The results of this operation.
      */
@@ -241,8 +241,8 @@ public class ChangeSetPerformer<I extends ArchiveInputStream<E>, O extends Archi
      *
      * This method finishes the stream, no other entries should be added after that.
      *
-     * @param inputStream  the InputStream to perform the changes on.
-     * @param outputStream the resulting OutputStream with all modifications.
+     * @param inputStream  The InputStream to perform the changes on.
+     * @param outputStream The resulting OutputStream with all modifications.
      * @throws IOException if a read/write error occurs.
      * @return The results of this operation.
      */
@@ -255,8 +255,8 @@ public class ChangeSetPerformer<I extends ArchiveInputStream<E>, O extends Archi
      *
      * This method finishes the stream, no other entries should be added after that.
      *
-     * @param zipFile      the ZipFile to perform the changes on.
-     * @param outputStream the resulting OutputStream with all modifications.
+     * @param zipFile      The ZipFile to perform the changes on.
+     * @param outputStream The resulting OutputStream with all modifications.
      * @throws IOException if a read/write error occurs.
      * @return The results of this operation.
      * @since 1.5

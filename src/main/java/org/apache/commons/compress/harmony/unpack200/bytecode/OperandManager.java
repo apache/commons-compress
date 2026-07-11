@@ -83,27 +83,27 @@ public class OperandManager {
     /**
      * Constructs a new OperandManager.
      *
-     * @param bcCaseCount the case counts.
-     * @param bcCaseValue the case values.
-     * @param bcByte the byte values.
-     * @param bcShort the short values.
-     * @param bcLocal the local values.
-     * @param bcLabel the label values.
-     * @param bcIntRef the integer references.
-     * @param bcFloatRef the float references.
-     * @param bcLongRef the long references.
-     * @param bcDoubleRef the double references.
-     * @param bcStringRef the string references.
-     * @param bcClassRef the class references.
-     * @param bcFieldRef the field references.
-     * @param bcMethodRef the method references.
-     * @param bcIMethodRef the interface method references.
-     * @param bcThisField the this field references.
-     * @param bcSuperField the super field references.
-     * @param bcThisMethod the this method references.
-     * @param bcSuperMethod the super method references.
-     * @param bcInitRef the init references.
-     * @param wideByteCodes the wide bytecodes.
+     * @param bcCaseCount The case counts.
+     * @param bcCaseValue The case values.
+     * @param bcByte The byte values.
+     * @param bcShort The short values.
+     * @param bcLocal The local values.
+     * @param bcLabel The label values.
+     * @param bcIntRef The integer references.
+     * @param bcFloatRef The float references.
+     * @param bcLongRef The long references.
+     * @param bcDoubleRef The double references.
+     * @param bcStringRef The string references.
+     * @param bcClassRef The class references.
+     * @param bcFieldRef The field references.
+     * @param bcMethodRef The method references.
+     * @param bcIMethodRef The interface method references.
+     * @param bcThisField The this field references.
+     * @param bcSuperField The super field references.
+     * @param bcThisMethod The this method references.
+     * @param bcSuperMethod The super method references.
+     * @param bcInitRef The init references.
+     * @param wideByteCodes The wide bytecodes.
      */
     public OperandManager(final int[] bcCaseCount, final int[] bcCaseValue, final int[] bcByte, final int[] bcShort, final int[] bcLocal, final int[] bcLabel,
             final int[] bcIntRef, final int[] bcFloatRef, final int[] bcLongRef, final int[] bcDoubleRef, final int[] bcStringRef, final int[] bcClassRef,
@@ -369,7 +369,7 @@ public class OperandManager {
     /**
      * Sets the current class.
      *
-     * @param string the current class name.
+     * @param string The current class name.
      */
     public void setCurrentClass(final String string) {
         currentClass = string;
@@ -378,7 +378,7 @@ public class OperandManager {
     /**
      * Sets the new class.
      *
-     * @param newClass the new class name.
+     * @param newClass The new class name.
      */
     public void setNewClass(final String newClass) {
         this.newClass = newClass;
@@ -387,7 +387,7 @@ public class OperandManager {
     /**
      * Sets the segment.
      *
-     * @param segment the segment.
+     * @param segment The segment.
      */
     public void setSegment(final Segment segment) {
         this.segment = segment;
@@ -396,7 +396,7 @@ public class OperandManager {
     /**
      * Sets the super class.
      *
-     * @param superClass the super class name.
+     * @param superClass The super class name.
      */
     public void setSuperClass(final String superClass) {
         this.superClass = superClass;

@@ -70,7 +70,7 @@ public class ExceptionTableEntry {
     /**
      * Renumbers the program counter values.
      *
-     * @param byteCodeOffsets the byte code offsets.
+     * @param byteCodeOffsets The byte code offsets.
      */
     public void renumber(final List<Integer> byteCodeOffsets) {
         startPcRenumbered = byteCodeOffsets.get(startPC).intValue();
@@ -83,7 +83,7 @@ public class ExceptionTableEntry {
     /**
      * Resolves the catch type in the constant pool.
      *
-     * @param pool the constant pool.
+     * @param pool The constant pool.
      */
     public void resolve(final ClassConstantPool pool) {
         if (catchType == null) {
@@ -99,7 +99,7 @@ public class ExceptionTableEntry {
     /**
      * Writes this exception table entry to the output stream.
      *
-     * @param dos the data output stream.
+     * @param dos The data output stream.
      * @throws IOException if an I/O error occurs.
      */
     public void write(final DataOutputStream dos) throws IOException {

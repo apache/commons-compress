@@ -86,8 +86,8 @@ public class ZstdUtils {
     /**
      * Checks if the signature matches what is expected for a Zstandard file.
      *
-     * @param signature the bytes to check.
-     * @param length    the number of bytes to check.
+     * @param signature The bytes to check.
+     * @param length    The number of bytes to check.
      * @return true if signature matches the Ztstandard or skippable frame magic bytes, false otherwise.
      */
     public static boolean matches(final byte[] signature, final int length) {

@@ -75,9 +75,9 @@ public interface ZipExtraField {
     /**
      * Populate data from this array as if it was in central directory data.
      *
-     * @param buffer the buffer to read data from.
+     * @param buffer The buffer to read data from.
      * @param offset offset into buffer to read data.
-     * @param length the length of data.
+     * @param length The length of data.
      * @throws ZipException on error.
      */
     void parseFromCentralDirectoryData(byte[] buffer, int offset, int length) throws ZipException;
@@ -85,9 +85,9 @@ public interface ZipExtraField {
     /**
      * Populate data from this array as if it was in local file data.
      *
-     * @param buffer the buffer to read data from.
+     * @param buffer The buffer to read data from.
      * @param offset offset into buffer to read data.
-     * @param length the length of data.
+     * @param length The length of data.
      * @throws ZipException on error.
      */
     void parseFromLocalFileData(byte[] buffer, int offset, int length) throws ZipException;

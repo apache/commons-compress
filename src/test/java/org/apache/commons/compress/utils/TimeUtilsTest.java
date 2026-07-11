@@ -91,7 +91,7 @@ public class TimeUtilsTest {
     /**
      * Truncates a FileTime to 100-nanosecond precision.
      *
-     * @param fileTime the FileTime to be truncated.
+     * @param fileTime The FileTime to be truncated.
      * @return The truncated FileTime.
      */
     public static FileTime truncateToHundredNanos(final FileTime fileTime) {

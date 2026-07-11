@@ -33,7 +33,7 @@ public class EnclosingMethodAttribute extends Attribute {
     /**
      * Sets the attribute name.
      *
-     * @param cpUTF8Value the attribute name.
+     * @param cpUTF8Value The attribute name.
      */
     public static void setAttributeName(final CPUTF8 cpUTF8Value) {
         attributeName = cpUTF8Value;
@@ -48,8 +48,8 @@ public class EnclosingMethodAttribute extends Attribute {
     /**
      * Constructs a new instance.
      *
-     * @param cpClass a constant pool class.
-     * @param method a constant pool name and type.
+     * @param cpClass A constant pool class.
+     * @param method A constant pool name and type.
      */
     public EnclosingMethodAttribute(final CPClass cpClass, final CPNameAndType method) {
         super(attributeName);

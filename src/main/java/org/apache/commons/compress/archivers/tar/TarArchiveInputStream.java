@@ -109,8 +109,8 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
     /**
      * Checks if the signature matches what is expected for a tar file.
      *
-     * @param signature the bytes to check.
-     * @param length    the number of bytes to check.
+     * @param signature The bytes to check.
+     * @param length    The number of bytes to check.
      * @return true, if this stream is a tar archive stream, false otherwise.
      */
     public static boolean matches(final byte[] signature, final int length) {
@@ -184,7 +184,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      *
      * <p>Since 1.29.0: throws {@link IOException}.</p>
      *
-     * @param inputStream the input stream to use.
+     * @param inputStream The input stream to use.
      * @throws IOException If the builder fails to create the underlying {@link InputStream}.
      */
     public TarArchiveInputStream(final InputStream inputStream) throws IOException {
@@ -196,7 +196,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      *
      * <p>Since 1.29.0: throws {@link IOException}.</p>
      *
-     * @param inputStream the input stream to use.
+     * @param inputStream The input stream to use.
      * @param lenient     when set to true illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
      *                    {@link TarArchiveEntry#UNKNOWN}. When set to false such illegal fields cause an exception instead.
      * @throws IOException if an I/O error occurs.
@@ -213,8 +213,8 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      *
      * <p>Since 1.29.0: throws {@link IOException}.</p>
      *
-     * @param inputStream the input stream to use.
-     * @param blockSize   the block size to use.
+     * @param inputStream The input stream to use.
+     * @param blockSize   The block size to use.
      * @throws IOException if an I/O error occurs.
      * @deprecated Since 1.29.0, use {@link #builder()}.
      */
@@ -228,9 +228,9 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      *
      * <p>Since 1.29.0: throws {@link IOException}.</p>
      *
-     * @param inputStream the input stream to use.
-     * @param blockSize   the block size to use.
-     * @param recordSize  the record size to use.
+     * @param inputStream The input stream to use.
+     * @param blockSize   The block size to use.
+     * @param recordSize  The record size to use.
      * @throws IOException if an I/O error occurs.
      * @deprecated Since 1.29.0, use {@link #builder()}.
      */
@@ -244,9 +244,9 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      *
      * <p>Since 1.29.0: throws {@link IOException}.</p>
      *
-     * @param inputStream the input stream to use.
-     * @param blockSize   the block size to use.
-     * @param recordSize  the record size to use.
+     * @param inputStream The input stream to use.
+     * @param blockSize   The block size to use.
+     * @param recordSize  The record size to use.
      * @param encoding    name of the encoding to use for file names.
      * @throws IOException if an I/O error occurs.
      * @since 1.4
@@ -262,9 +262,9 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      *
      * <p>Since 1.29.0: throws {@link IOException}.</p>
      *
-     * @param inputStream the input stream to use.
-     * @param blockSize   the block size to use.
-     * @param recordSize  the record size to use.
+     * @param inputStream The input stream to use.
+     * @param blockSize   The block size to use.
+     * @param recordSize  The record size to use.
      * @param encoding    name of the encoding to use for file names.
      * @param lenient     when set to true illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
      *                    {@link TarArchiveEntry#UNKNOWN}. When set to false such illegal fields cause an exception instead.
@@ -290,8 +290,8 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      *
      * <p>Since 1.29.0: throws {@link IOException}.</p>
      *
-     * @param inputStream the input stream to use.
-     * @param blockSize   the block size to use.
+     * @param inputStream The input stream to use.
+     * @param blockSize   The block size to use.
      * @param encoding    name of the encoding to use for file names.
      * @throws IOException if an I/O error occurs.
      * @since 1.4
@@ -307,7 +307,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      *
      * <p>Since 1.29.0: throws {@link IOException}.</p>
      *
-     * @param inputStream the input stream to use.
+     * @param inputStream The input stream to use.
      * @param encoding    name of the encoding to use for file names.
      * @throws IOException if an I/O error occurs.
      * @since 1.4
@@ -728,7 +728,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
     /**
      * Sets the current entry.
      *
-     * @param currEntry the current entry.
+     * @param currEntry The current entry.
      */
     protected final void setCurrentEntry(final TarArchiveEntry currEntry) {
         this.currEntry = currEntry;
@@ -739,7 +739,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      * smaller number of bytes, possibly {@code 0}. This may result from any of a number of conditions; reaching end of file or end of entry before {@code n}
      * bytes have been skipped; are only two possibilities. The actual number of bytes skipped is returned. If {@code n} is negative, no bytes are skipped.
      *
-     * @param n the number of bytes to be skipped.
+     * @param n The number of bytes to be skipped.
      * @return The actual number of bytes skipped.
      * @throws IOException if a truncated tar archive is detected or some other I/O error occurs.
      */

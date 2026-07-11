@@ -56,7 +56,7 @@ public class AttrDefinitionBands extends BandSet {
     /**
      * Constructs a new instance.
      *
-     * @param segment the segment.
+     * @param segment The segment.
      */
     public AttrDefinitionBands(final Segment segment) {
         super(segment);

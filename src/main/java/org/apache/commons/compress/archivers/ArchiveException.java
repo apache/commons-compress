@@ -36,8 +36,8 @@ public class ArchiveException extends CompressException {
     /**
      * Delegates to {@link Math#addExact(int, int)} wrapping its {@link ArithmeticException} in our {@link ArchiveException}.
      *
-     * @param x the first value.
-     * @param y the second value.
+     * @param x The first value.
+     * @param y The second value.
      * @return The result.
      * @throws ArchiveException if the result or input overflows an {@code int}.
      * @see Math#addExact(int, int)
@@ -50,8 +50,8 @@ public class ArchiveException extends CompressException {
     /**
      * Delegates to {@link Math#addExact(long, long)} wrapping its {@link ArithmeticException} in our {@link ArchiveException}.
      *
-     * @param x the first value.
-     * @param y the second value.
+     * @param x The first value.
+     * @param y The second value.
      * @return The result.
      * @throws ArchiveException if the result overflows a {@code long}.
      * @see Math#addExact(long, long)
@@ -68,7 +68,7 @@ public class ArchiveException extends CompressException {
     /**
      * Checks that the specified object reference is not {@code null} and throws a customized {@link ArchiveException} if it is. *
      *
-     * @param obj             the object reference to check for nullity.
+     * @param obj             The object reference to check for nullity.
      * @param messageSupplier supplier of the detail message to be used in the event that a {@code ArchiveException} is thrown.
      * @param <T>             the type of the reference.
      * @return {@code obj} if not {@code null}.
@@ -82,7 +82,7 @@ public class ArchiveException extends CompressException {
     /**
      * Delegates to {@link Math#toIntExact(long)} wrapping its {@link ArithmeticException} in our {@link ArchiveException}.
      *
-     * @param value the long value.
+     * @param value The long value.
      * @return The argument as an int.
      * @throws ArchiveException if the {@code argument} overflows an int.
      * @since 1.29.0
@@ -133,7 +133,7 @@ public class ArchiveException extends CompressException {
      * </p>
      *
      * @param message The message format (which is saved for later retrieval by the {@link #getMessage()} method).
-     * @param args    the format arguments to use.
+     * @param args    The format arguments to use.
      * @since 1.29.0
      * @see String#format(String, Object...)
      */

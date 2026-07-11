@@ -39,9 +39,9 @@ public class PopulationCodec extends Codec {
     /**
      * Constructs a new PopulationCodec.
      *
-     * @param favoredCodec the favored codec.
-     * @param tokenCodec the token codec.
-     * @param unvaforedCodec the unfavored codec.
+     * @param favoredCodec The favored codec.
+     * @param tokenCodec The token codec.
+     * @param unvaforedCodec The unfavored codec.
      */
     public PopulationCodec(final Codec favoredCodec, final Codec tokenCodec, final Codec unvaforedCodec) {
         this.favoredCodec = favoredCodec;
@@ -52,9 +52,9 @@ public class PopulationCodec extends Codec {
     /**
      * Constructs a new PopulationCodec.
      *
-     * @param favoredCodec the favored codec.
-     * @param l the L value.
-     * @param unfavoredCodec the unfavored codec.
+     * @param favoredCodec The favored codec.
+     * @param l The L value.
+     * @param unfavoredCodec The unfavored codec.
      */
     public PopulationCodec(final Codec favoredCodec, final int l, final Codec unfavoredCodec) {
         if (l >= 256 || l <= 0) {
@@ -153,9 +153,9 @@ public class PopulationCodec extends Codec {
     /**
      * Encodes the values.
      *
-     * @param favored the favored values.
-     * @param tokens the tokens.
-     * @param unfavored the unfavored values.
+     * @param favored The favored values.
+     * @param tokens The tokens.
+     * @param unfavored The unfavored values.
      * @return The encoded bytes.
      * @throws Pack200Exception if an error occurs.
      */

@@ -53,7 +53,7 @@ public class IcBands extends BandSet {
     /**
      * Constructs a new IcBands instance.
      *
-     * @param segment the segment.
+     * @param segment The segment.
      */
     public IcBands(final Segment segment) {
         super(segment);

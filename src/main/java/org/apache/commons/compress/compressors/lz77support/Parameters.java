@@ -123,7 +123,7 @@ public final class Parameters {
          * value.
          * </p>
          *
-         * @param threshold the threshold for lazy matching.
+         * @param threshold The threshold for lazy matching.
          * @return The builder.
          */
         public Builder withLazyThreshold(final int threshold) {
@@ -204,7 +204,7 @@ public final class Parameters {
          * {@link org.apache.commons.compress.compressors.snappy.SnappyCompressorOutputStream#createParameterBuilder}.
          * </p>
          *
-         * @param minBackReferenceLength the minimal length of a back-reference found. A true minimum of 3 is hard-coded inside of this implementation but
+         * @param minBackReferenceLength The minimal length of a back-reference found. A true minimum of 3 is hard-coded inside of this implementation but
          *                               bigger lengths can be configured.
          * @throws IllegalArgumentException if {@code windowSize} is smaller than {@code minBackReferenceLength}.
          * @return The builder.
@@ -229,7 +229,7 @@ public final class Parameters {
          * This settings can be used to tune the tradeoff between compression speed and compression ratio.
          * </p>
          *
-         * @param niceLen the "nice length" of a back-reference.
+         * @param niceLen The "nice length" of a back-reference.
          * @return The builder.
          */
         public Builder withNiceBackReferenceLength(final int niceLen) {
@@ -251,7 +251,7 @@ public final class Parameters {
      * {@link org.apache.commons.compress.compressors.snappy.SnappyCompressorOutputStream#createParameterBuilder}.
      * </p>
      *
-     * @param windowSize the size of the sliding window - this determines the maximum offset a back-reference can take. Must be a power of two.
+     * @param windowSize The size of the sliding window - this determines the maximum offset a back-reference can take. Must be a power of two.
      * @throws IllegalArgumentException if windowSize is not a power of two.
      * @return A builder configured for the given window size.
      */

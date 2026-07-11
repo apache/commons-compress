@@ -418,8 +418,8 @@ public class Segment {
     /**
      * Logs a message.
      *
-     * @param messageLevel the message level.
-     * @param message the message.
+     * @param messageLevel The message level.
+     * @param message The message.
      */
     public void log(final int messageLevel, final String message) {
         if (logLevel >= messageLevel && logPrintWriter != null) {
@@ -430,7 +430,7 @@ public class Segment {
     /**
      * Overrides the archive's deflate hint with the given boolean
      *
-     * @param deflateHint the deflate hint to use
+     * @param deflateHint The deflate hint to use
      */
     public void overrideDeflateHint(final boolean deflateHint) {
         this.overrideDeflateHint = true;
@@ -500,7 +500,7 @@ public class Segment {
     /**
      * This performs reading the data from the stream into non-static instance of Segment. After the completion of this method stream can be freed.
      *
-     * @param in the input stream to read from
+     * @param in The input stream to read from
      * @throws IOException      if a problem occurs during reading from the underlying stream
      * @throws Pack200Exception if a problem occurs with an unexpected value or unsupported codec
      */
@@ -524,7 +524,7 @@ public class Segment {
     /**
      * Sets the log level.
      *
-     * @param logLevel the log level.
+     * @param logLevel The log level.
      */
     public void setLogLevel(final int logLevel) {
         this.logLevel = logLevel;
@@ -551,7 +551,7 @@ public class Segment {
     /**
      * Unpacks a packed stream (either .pack. or .pack.gz) into a corresponding JarOuputStream.
      *
-     * @param inputStream  a packed input stream, preferably a {@link BoundedInputStream}.
+     * @param inputStream  A packed input stream, preferably a {@link BoundedInputStream}.
      * @param out output stream.
      * @throws Pack200Exception if there is a problem unpacking
      * @throws IOException      if there is a problem with I/O during unpacking
@@ -597,7 +597,7 @@ public class Segment {
      * file bits may not be loaded and thus just copied from one stream to another. Doesn't close the output stream when finished, in case there are more
      * entries (for example further segments) to be written.
      *
-     * @param out the JarOutputStream to write data to
+     * @param out The JarOutputStream to write data to
      * @throws IOException if an error occurs while reading or writing to the streams
      */
     public void writeJar(final JarOutputStream out) throws IOException {

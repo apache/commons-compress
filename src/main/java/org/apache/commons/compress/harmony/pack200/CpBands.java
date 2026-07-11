@@ -71,8 +71,8 @@ public class CpBands extends BandSet {
     /**
      * Constructs a new instance.
      *
-     * @param segment the segment.
-     * @param effort the effort level.
+     * @param segment The segment.
+     * @param effort The effort level.
      */
     public CpBands(final Segment segment, final int effort) {
         super(effort, segment.getSegmentHeader());
@@ -104,7 +104,7 @@ public class CpBands extends BandSet {
     /**
      * Adds a constant pool class entry for the given class name.
      *
-     * @param className the class name.
+     * @param className The class name.
      */
     public void addCPClass(final String className) {
         getCPClass(className);
@@ -113,7 +113,7 @@ public class CpBands extends BandSet {
     /**
      * Adds a constant pool UTF-8 entry for the given string.
      *
-     * @param utf8 the UTF-8 string.
+     * @param utf8 The UTF-8 string.
      */
     void addCPUtf8(final String utf8) {
         getCPUtf8(utf8);
@@ -145,7 +145,7 @@ public class CpBands extends BandSet {
     /**
      * Tests whether a constant pool class entry exists for the given class name.
      *
-     * @param className the class name.
+     * @param className The class name.
      * @return true if the class exists in the constant pool.
      */
     public boolean existsCpClass(final String className) {
@@ -177,7 +177,7 @@ public class CpBands extends BandSet {
     /**
      * Gets a constant pool constant for the given value.
      *
-     * @param value the value.
+     * @param value The value.
      * @return The constant pool constant.
      */
     public CPConstant<?> getConstant(final Object value) {
@@ -217,7 +217,7 @@ public class CpBands extends BandSet {
     /**
      * Gets a constant pool class for the given class name.
      *
-     * @param className a fully-qualified class name.
+     * @param className A fully-qualified class name.
      * @return A constant pool class.
      */
     public CPClass getCPClass(String className) {
@@ -241,9 +241,9 @@ public class CpBands extends BandSet {
     /**
      * Gets a constant pool field reference.
      *
-     * @param cpClass the constant pool class.
-     * @param name the field name.
-     * @param desc the field descriptor.
+     * @param cpClass The constant pool class.
+     * @param name The field name.
+     * @param desc The field descriptor.
      * @return The constant pool field reference.
      */
     public CPMethodOrField getCPField(final CPClass cpClass, final String name, final String desc) {
@@ -261,9 +261,9 @@ public class CpBands extends BandSet {
     /**
      * Gets a constant pool field reference.
      *
-     * @param owner the owner class name.
-     * @param name the field name.
-     * @param desc the field descriptor.
+     * @param owner The owner class name.
+     * @param name The field name.
+     * @param desc The field descriptor.
      * @return The constant pool field reference.
      */
     public CPMethodOrField getCPField(final String owner, final String name, final String desc) {
@@ -273,9 +273,9 @@ public class CpBands extends BandSet {
     /**
      * Gets a constant pool interface method reference.
      *
-     * @param cpClass the constant pool class.
-     * @param name the method name.
-     * @param desc the method descriptor.
+     * @param cpClass The constant pool class.
+     * @param name The method name.
+     * @param desc The method descriptor.
      * @return The constant pool interface method reference.
      */
     public CPMethodOrField getCPIMethod(final CPClass cpClass, final String name, final String desc) {
@@ -293,9 +293,9 @@ public class CpBands extends BandSet {
     /**
      * Gets a constant pool interface method reference.
      *
-     * @param owner the owner class name.
-     * @param name the method name.
-     * @param desc the method descriptor.
+     * @param owner The owner class name.
+     * @param name The method name.
+     * @param desc The method descriptor.
      * @return The constant pool interface method reference.
      */
     public CPMethodOrField getCPIMethod(final String owner, final String name, final String desc) {
@@ -305,9 +305,9 @@ public class CpBands extends BandSet {
     /**
      * Gets a constant pool method reference.
      *
-     * @param cpClass the constant pool class.
-     * @param name the method name.
-     * @param desc the method descriptor.
+     * @param cpClass The constant pool class.
+     * @param name The method name.
+     * @param desc The method descriptor.
      * @return The constant pool method reference.
      */
     public CPMethodOrField getCPMethod(final CPClass cpClass, final String name, final String desc) {
@@ -325,9 +325,9 @@ public class CpBands extends BandSet {
     /**
      * Gets a constant pool method reference.
      *
-     * @param owner the owner class name.
-     * @param name the method name.
-     * @param desc the method descriptor.
+     * @param owner The owner class name.
+     * @param name The method name.
+     * @param desc The method descriptor.
      * @return The constant pool method reference.
      */
     public CPMethodOrField getCPMethod(final String owner, final String name, final String desc) {
@@ -337,8 +337,8 @@ public class CpBands extends BandSet {
     /**
      * Gets a constant pool name and type entry.
      *
-     * @param name the name.
-     * @param signature the signature.
+     * @param name The name.
+     * @param signature The signature.
      * @return The constant pool name and type entry.
      */
     public CPNameAndType getCPNameAndType(final String name, final String signature) {
@@ -355,7 +355,7 @@ public class CpBands extends BandSet {
     /**
      * Gets a constant pool signature.
      *
-     * @param signature the signature string.
+     * @param signature The signature string.
      * @return A constant pool signature.
      */
     public CPSignature getCPSignature(final String signature) {
@@ -415,7 +415,7 @@ public class CpBands extends BandSet {
     /**
      * Gets a constant pool UTF-8 entry.
      *
-     * @param utf8 the UTF-8 string.
+     * @param utf8 The UTF-8 string.
      * @return The constant pool UTF-8 entry.
      */
     public CPUTF8 getCPUtf8(final String utf8) {

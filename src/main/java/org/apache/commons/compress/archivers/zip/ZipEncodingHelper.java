@@ -85,7 +85,7 @@ public abstract class ZipEncodingHelper {
     /**
      * Tests whether the given non-null charset name is a UTF-8 alias.
      *
-     * @param name a non-null charset name.
+     * @param name A non-null charset name.
      * @return whether the given non-null charset name is a UTF-8 alias.
      */
     private static boolean isUTF8Alias(final String name) {

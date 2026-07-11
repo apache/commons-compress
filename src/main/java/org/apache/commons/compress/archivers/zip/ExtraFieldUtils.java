@@ -142,7 +142,7 @@ public class ExtraFieldUtils {
     /**
      * Creates an instance of the appropriate ExtraField, falls back to {@link UnrecognizedExtraField UnrecognizedExtraField}.
      *
-     * @param headerId the header identifier.
+     * @param headerId The header identifier.
      * @return An instance of the appropriate ExtraField.
      */
     public static ZipExtraField createExtraField(final ZipShort headerId) {
@@ -158,7 +158,7 @@ public class ExtraFieldUtils {
     /**
      * Creates an instance of the appropriate {@link ZipExtraField}.
      *
-     * @param headerId the header identifier.
+     * @param headerId The header identifier.
      * @return An instance of the appropriate {@link ZipExtraField} or null if the id is not supported.
      * @since 1.19
      */
@@ -175,10 +175,10 @@ public class ExtraFieldUtils {
      * {@link ArrayIndexOutOfBoundsException} thrown into a {@link ZipException}.
      * </p>
      *
-     * @param ze    the extra field instance to fill.
-     * @param data  the array of extra field data.
+     * @param ze    The extra field instance to fill.
+     * @param data  The array of extra field data.
      * @param off   offset into data where this field's data starts.
-     * @param len   the length of this field's data.
+     * @param len   The length of this field's data.
      * @param local whether the extra field data stems from the local file header. If this is false then the data is part if the central directory header extra
      *              data.
      * @return The filled field, will never be {@code null}.
@@ -202,7 +202,7 @@ public class ExtraFieldUtils {
     /**
      * Merges the central directory fields of the given ZipExtraFields.
      *
-     * @param data an array of ExtraFields.
+     * @param data An array of ExtraFields.
      * @return An array of bytes.
      */
     public static byte[] mergeCentralDirectoryData(final ZipExtraField[] data) {
@@ -238,7 +238,7 @@ public class ExtraFieldUtils {
     /**
      * Merges the local file data fields of the given ZipExtraFields.
      *
-     * @param data an array of ExtraFiles.
+     * @param data An array of ExtraFiles.
      * @return An array of bytes.
      */
     public static byte[] mergeLocalFileDataData(final ZipExtraField[] data) {
@@ -275,7 +275,7 @@ public class ExtraFieldUtils {
     /**
      * Parses the array into ExtraFields and populate them with the given data as local file data, throwing an exception if the data cannot be parsed.
      *
-     * @param data an array of bytes as it appears in local file data.
+     * @param data An array of bytes as it appears in local file data.
      * @return An array of ExtraFields.
      * @throws ZipException on error.
      */
@@ -286,7 +286,7 @@ public class ExtraFieldUtils {
     /**
      * Parses the array into ExtraFields and populate them with the given data, throwing an exception if the data cannot be parsed.
      *
-     * @param data  an array of bytes.
+     * @param data  An array of bytes.
      * @param local whether data originates from the local file data or the central directory.
      * @return An array of ExtraFields.
      * @throws ZipException on error.
@@ -298,7 +298,7 @@ public class ExtraFieldUtils {
     /**
      * Parses the array into ExtraFields and populate them with the given data.
      *
-     * @param data            an array of bytes.
+     * @param data            An array of bytes.
      * @param parsingBehavior controls parsing of extra fields.
      * @param local           whether data originates from the local file data or the central directory.
      * @return An array of ExtraFields.
@@ -337,7 +337,7 @@ public class ExtraFieldUtils {
     /**
      * Parses the array into ExtraFields and populate them with the given data.
      *
-     * @param data              an array of bytes.
+     * @param data              An array of bytes.
      * @param local             whether data originates from the local file data or the central directory.
      * @param onUnparseableData what to do if the extra field data cannot be parsed.
      * @return An array of ExtraFields.
@@ -371,7 +371,7 @@ public class ExtraFieldUtils {
      * The given class must have a no-arg constructor and implement the {@link ZipExtraField ZipExtraField interface}.
      * </p>
      *
-     * @param clazz the class to register.
+     * @param clazz The class to register.
      * @deprecated Use {@link ZipArchiveInputStream#setExtraFieldSupport} instead
      *             to not leak instances between archives and applications.
      */

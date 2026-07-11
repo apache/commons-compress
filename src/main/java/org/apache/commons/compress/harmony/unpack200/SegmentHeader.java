@@ -99,7 +99,7 @@ public class SegmentHeader {
     /**
      * Constructs a new SegmentHeader.
      *
-     * @param segment the segment.
+     * @param segment The segment.
      */
     public SegmentHeader(final Segment segment) {
         this.segment = segment;
@@ -108,9 +108,9 @@ public class SegmentHeader {
     /**
      * Decode a scalar from the band file. A scalar is like a band, but does not perform any band code switching.
      *
-     * @param name  the name of the scalar (primarily for logging/debugging purposes)
-     * @param in    the input stream to read from
-     * @param codec the codec for this scalar
+     * @param name  The name of the scalar (primarily for logging/debugging purposes)
+     * @param in    The input stream to read from
+     * @param codec The codec for this scalar
      * @return The decoded value
      * @throws IOException      if there is a problem reading from the underlying input stream
      * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid
@@ -124,9 +124,9 @@ public class SegmentHeader {
     /**
      * Decode a number of scalars from the band file. A scalar is like a band, but does not perform any band code switching.
      *
-     * @param name  the name of the scalar (primarily for logging/debugging purposes)
-     * @param in    the input stream to read from
-     * @param codec the codec for this scalar
+     * @param name  The name of the scalar (primarily for logging/debugging purposes)
+     * @param in    The input stream to read from
+     * @param codec The codec for this scalar
      * @return An array of decoded {@code long[]} values
      * @throws IOException      if there is a problem reading from the underlying input stream
      * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid
@@ -413,7 +413,7 @@ public class SegmentHeader {
     /**
      * Reads the segment header from the input stream.
      *
-     * @param in the input stream.
+     * @param in The input stream.
      * @throws IOException if an I/O error occurs.
      * @throws Error if an error occurs.
      * @throws Pack200Exception if a Pack200 error occurs.
@@ -441,7 +441,7 @@ public class SegmentHeader {
     /**
      * Sets the major version of this archive.
      *
-     * @param version the minor version of the archive
+     * @param version The minor version of the archive
      * @throws Pack200Exception if the major version is not 150
      */
     private void setArchiveMajorVersion(final int version) throws Pack200Exception {
@@ -454,7 +454,7 @@ public class SegmentHeader {
     /**
      * Sets the minor version of this archive
      *
-     * @param version the minor version of the archive
+     * @param version The minor version of the archive
      * @throws Pack200Exception if the minor version is not 7
      */
     private void setArchiveMinorVersion(final int version) throws Pack200Exception {
@@ -467,7 +467,7 @@ public class SegmentHeader {
     /**
      * Sets the archive modification time.
      *
-     * @param archiveModtime the archive modification time.
+     * @param archiveModtime The archive modification time.
      */
     public void setArchiveModtime(final long archiveModtime) {
         this.archiveModtime = archiveModtime;
@@ -476,7 +476,7 @@ public class SegmentHeader {
     /**
      * Sets the archive size.
      *
-     * @param archiveSize the archive size.
+     * @param archiveSize The archive size.
      */
     public void setArchiveSize(final long archiveSize) {
         this.archiveSize = archiveSize;
@@ -485,7 +485,7 @@ public class SegmentHeader {
     /**
      * Sets the attribute definition count.
      *
-     * @param valuie the attribute definition count.
+     * @param valuie The attribute definition count.
      */
     private void setAttributeDefinitionCount(final long valuie) {
         this.attributeDefinitionCount = (int) valuie;
@@ -494,7 +494,7 @@ public class SegmentHeader {
     /**
      * Sets the band headers data.
      *
-     * @param bandHeaders the band headers data.
+     * @param bandHeaders The band headers data.
      */
     private void setBandHeadersData(final byte[] bandHeaders) {
         this.bandHeadersInputStream = new ByteArrayInputStream(bandHeaders);
@@ -503,7 +503,7 @@ public class SegmentHeader {
     /**
      * Sets the number of segments remaining.
      *
-     * @param value the number of segments remaining.
+     * @param value The number of segments remaining.
      */
     public void setSegmentsRemaining(final long value) {
         segmentsRemaining = (int) value;

@@ -83,8 +83,8 @@ public class ArArchiveEntry implements ArchiveEntry {
     /**
      * Creates a new instance using the attributes of the given file
      *
-     * @param inputFile the file to create an entry from.
-     * @param entryName the name of the entry.
+     * @param inputFile The file to create an entry from.
+     * @param entryName The name of the entry.
      */
     public ArArchiveEntry(final File inputFile, final String entryName) {
         // TODO sort out mode
@@ -94,8 +94,8 @@ public class ArArchiveEntry implements ArchiveEntry {
     /**
      * Creates a new instance using the attributes of the given file
      *
-     * @param inputPath the file to create an entry from.
-     * @param entryName the name of the entry.
+     * @param inputPath The file to create an entry from.
+     * @param entryName The name of the entry.
      * @param options   options indicating how symbolic links are handled.
      * @throws IOException if an I/O error occurs.
      * @since 1.21

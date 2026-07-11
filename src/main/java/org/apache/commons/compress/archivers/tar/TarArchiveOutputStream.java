@@ -139,7 +139,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
      * Uses a block size of 512 bytes.
      * </p>
      *
-     * @param os the output stream to use.
+     * @param os The output stream to use.
      */
     public TarArchiveOutputStream(final OutputStream os) {
         this(os, BLOCK_SIZE_UNSPECIFIED);
@@ -148,8 +148,8 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
     /**
      * Constructs a new instance.
      *
-     * @param os        the output stream to use.
-     * @param blockSize the block size to use. Must be a multiple of 512 bytes.
+     * @param os        The output stream to use.
+     * @param blockSize The block size to use. Must be a multiple of 512 bytes.
      */
     public TarArchiveOutputStream(final OutputStream os, final int blockSize) {
         this(os, blockSize, null);
@@ -158,9 +158,9 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
     /**
      * Constructs a new instance.
      *
-     * @param os         the output stream to use.
-     * @param blockSize  the block size to use.
-     * @param recordSize the record size to use. Must be 512 bytes.
+     * @param os         The output stream to use.
+     * @param blockSize  The block size to use.
+     * @param recordSize The record size to use. Must be 512 bytes.
      * @deprecated recordSize must always be 512 bytes. An IllegalArgumentException will be thrown if any other value is used
      */
     @Deprecated
@@ -171,9 +171,9 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
     /**
      * Constructs a new instance.
      *
-     * @param os         the output stream to use.
-     * @param blockSize  the block size to use . Must be a multiple of 512 bytes.
-     * @param recordSize the record size to use. Must be 512 bytes.
+     * @param os         The output stream to use.
+     * @param blockSize  The block size to use . Must be a multiple of 512 bytes.
+     * @param recordSize The record size to use. Must be 512 bytes.
      * @param encoding   name of the encoding to use for file names.
      * @since 1.4
      * @deprecated recordSize must always be 512 bytes. An IllegalArgumentException will be thrown if any other value is used.
@@ -190,8 +190,8 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
     /**
      * Constructs a new instance.
      *
-     * @param os        the output stream to use.
-     * @param blockSize the block size to use. Must be a multiple of 512 bytes.
+     * @param os        The output stream to use.
+     * @param blockSize The block size to use. Must be a multiple of 512 bytes.
      * @param charset  name of the encoding to use for file names.
      * @since 1.4
      */
@@ -220,7 +220,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
      * Uses a block size of 512 bytes.
      * </p>
      *
-     * @param os       the output stream to use.
+     * @param os       The output stream to use.
      * @param charset name of the encoding to use for file names.
      * @since 1.4
      */
@@ -445,11 +445,11 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
      * </p>
      *
      * @param entry         entry the name belongs to.
-     * @param name          the name to write.
+     * @param name          The name to write.
      * @param paxHeaders    current map of pax headers.
      * @param paxHeaderName name of the pax header to write.
      * @param linkType      type of the GNU entry to write.
-     * @param fieldName     the name of the field.
+     * @param fieldName     The name of the field.
      * @throws IllegalArgumentException if the {@link TarArchiveOutputStream#longFileMode} equals {@link TarArchiveOutputStream#LONGFILE_ERROR} and the file
      *                                  name is too long.
      * @return whether a pax header has been written.
@@ -571,7 +571,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
      * Sets the big number mode. This can be BIGNUMBER_ERROR(0), BIGNUMBER_STAR(1) or BIGNUMBER_POSIX(2). This specifies the treatment of big files (sizes &gt;
      * TarConstants.MAXSIZE) and other numeric values too big to fit into a traditional tar header. Default is BIGNUMBER_ERROR.
      *
-     * @param bigNumberMode the mode to use.
+     * @param bigNumberMode The mode to use.
      * @since 1.4
      */
     public void setBigNumberMode(final int bigNumberMode) {
@@ -582,7 +582,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
      * Sets the long file mode. This can be LONGFILE_ERROR(0), LONGFILE_TRUNCATE(1), LONGFILE_GNU(2) or LONGFILE_POSIX(3). This specifies the treatment of long
      * file names (names &gt;= TarConstants.NAMELEN). Default is LONGFILE_ERROR.
      *
-     * @param longFileMode the mode to use.
+     * @param longFileMode The mode to use.
      */
     public void setLongFileMode(final int longFileMode) {
         this.longFileMode = longFileMode;

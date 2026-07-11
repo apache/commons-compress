@@ -69,7 +69,7 @@ public class ClassConstantPool {
     /**
      * Adds a class file entry to the constant pool.
      *
-     * @param entry the entry to add.
+     * @param entry The entry to add.
      * @return The added entry, or null if it's a ByteCode.
      */
     public ClassFileEntry add(final ClassFileEntry entry) {
@@ -141,7 +141,7 @@ public class ClassConstantPool {
     /**
      * Adds an entry along with all its nested entries recursively.
      *
-     * @param entry the entry to add.
+     * @param entry The entry to add.
      * @return The added entry.
      */
     public ClassFileEntry addWithNestedEntries(final ClassFileEntry entry) {
@@ -164,7 +164,7 @@ public class ClassConstantPool {
     /**
      * Gets the entry at the specified index (1-based).
      *
-     * @param i the index (1-based).
+     * @param i The index (1-based).
      * @return The entry at the index.
      * @throws IllegalStateException if pool is not resolved.
      */
@@ -178,7 +178,7 @@ public class ClassConstantPool {
     /**
      * Gets the index of the given entry in the constant pool (1-based).
      *
-     * @param entry the entry to find.
+     * @param entry The entry to find.
      * @return The 1-based index, or -1 if not found.
      * @throws IllegalStateException if pool is not resolved.
      */
@@ -224,7 +224,7 @@ public class ClassConstantPool {
     /**
      * Resolves all entries in the constant pool.
      *
-     * @param segment the segment.
+     * @param segment The segment.
      */
     public void resolve(final Segment segment) {
         initialSort();

@@ -358,7 +358,7 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream<Outpu
     /**
      * Adds some initial data to fill the window with.
      *
-     * @param data the data to fill the window with.
+     * @param data The data to fill the window with.
      * @param off  offset of real data into the array.
      * @param len  amount of data.
      * @throws IllegalStateException if the stream has already started to write data.

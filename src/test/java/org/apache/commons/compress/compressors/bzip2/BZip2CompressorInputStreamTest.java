@@ -74,7 +74,7 @@ class BZip2CompressorInputStreamTest extends AbstractTest {
      * <p>
      *     <strong>Note:</strong> The values are chosen to keep everything byte-aligned.
      * </p>
-     * @param codeLength the code length to use for each symbol in each group; must be in [0, 31]
+     * @param codeLength The code length to use for each symbol in each group; must be in [0, 31]
      */
     private BitInputStream prepareDecodingTables(final int codeLength) {
         assertTrue(0 <= codeLength && codeLength <= 31, "codeLength must be between 0 and 31");

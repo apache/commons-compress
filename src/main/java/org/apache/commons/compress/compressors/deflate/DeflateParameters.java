@@ -54,7 +54,7 @@ public class DeflateParameters {
     /**
      * Sets the compression level.
      *
-     * @param compressionLevel the compression level (between 0 and 9).
+     * @param compressionLevel The compression level (between 0 and 9).
      * @see Deflater#NO_COMPRESSION
      * @see Deflater#BEST_SPEED
      * @see Deflater#DEFAULT_COMPRESSION

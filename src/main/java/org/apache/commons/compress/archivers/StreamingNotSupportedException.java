@@ -35,7 +35,7 @@ public class StreamingNotSupportedException extends ArchiveException {
     /**
      * Creates a new StreamingNotSupportedException.
      *
-     * @param format the format that has been requested/detected.
+     * @param format The format that has been requested/detected.
      */
     public StreamingNotSupportedException(final String format) {
         super("The %s doesn't support streaming.", format);

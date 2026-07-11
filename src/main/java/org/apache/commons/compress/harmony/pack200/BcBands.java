@@ -88,9 +88,9 @@ public class BcBands extends BandSet {
     /**
      * Constructs a new instance.
      *
-     * @param cpBands the constant pool bands
-     * @param segment the segment
-     * @param effort the packing effort
+     * @param cpBands The constant pool bands
+     * @param segment The segment
+     * @param effort The packing effort
      */
     public BcBands(final CpBands cpBands, final Segment segment, final int effort) {
         super(effort, segment.getSegmentHeader());
@@ -216,8 +216,8 @@ public class BcBands extends BandSet {
     /**
      * Sets the current class and super class.
      *
-     * @param name the class name.
-     * @param superName the super class name.
+     * @param name The class name.
+     * @param superName The super class name.
      */
     public void setCurrentClass(final String name, final String superName) {
         currentClass = name;
@@ -273,10 +273,10 @@ public class BcBands extends BandSet {
     /**
      * Visits a field instruction.
      *
-     * @param opcode the opcode.
-     * @param owner the field owner class.
-     * @param name the field name.
-     * @param desc the field descriptor.
+     * @param opcode The opcode.
+     * @param owner The field owner class.
+     * @param name The field name.
+     * @param desc The field descriptor.
      */
     public void visitFieldInsn(int opcode, final String owner, final String name, final String desc) {
         byteCodeOffset += 3;
@@ -312,8 +312,8 @@ public class BcBands extends BandSet {
     /**
      * Visits an IINC instruction.
      *
-     * @param var the local variable index.
-     * @param increment the increment amount.
+     * @param var The local variable index.
+     * @param increment The increment amount.
      */
     public void visitIincInsn(final int var, final int increment) {
         if (var > 255 || increment > 255) {
@@ -334,7 +334,7 @@ public class BcBands extends BandSet {
     /**
      * Visits a simple instruction (no operands).
      *
-     * @param opcode the opcode.
+     * @param opcode The opcode.
      */
     public void visitInsn(final int opcode) {
         if (opcode >= 202) {
@@ -348,8 +348,8 @@ public class BcBands extends BandSet {
     /**
      * Visits an instruction with a single int operand.
      *
-     * @param opcode the opcode.
-     * @param operand the operand.
+     * @param opcode The opcode.
+     * @param operand The operand.
      */
     public void visitIntInsn(final int opcode, final int operand) {
         switch (opcode) {
@@ -370,8 +370,8 @@ public class BcBands extends BandSet {
     /**
      * Visits a jump instruction.
      *
-     * @param opcode the opcode.
-     * @param label the target label.
+     * @param opcode The opcode.
+     * @param label The target label.
      */
     public void visitJumpInsn(final int opcode, final Label label) {
         bcCodes.add(opcode);
@@ -384,7 +384,7 @@ public class BcBands extends BandSet {
     /**
      * Visits a label.
      *
-     * @param label the label.
+     * @param label The label.
      */
     public void visitLabel(final Label label) {
         labelsToOffsets.put(label, Integer.valueOf(byteCodeOffset));
@@ -393,7 +393,7 @@ public class BcBands extends BandSet {
     /**
      * Visits an LDC instruction.
      *
-     * @param cst the constant to load.
+     * @param cst The constant to load.
      */
     public void visitLdcInsn(final Object cst) {
         final CPConstant<?> constant = cpBands.getConstant(cst);
@@ -442,9 +442,9 @@ public class BcBands extends BandSet {
     /**
      * Visits a LOOKUPSWITCH instruction.
      *
-     * @param dflt the default label.
-     * @param keys the case keys.
-     * @param labels the case labels.
+     * @param dflt The default label.
+     * @param keys The case keys.
+     * @param labels The case labels.
      */
     public void visitLookupSwitchInsn(final Label dflt, final int[] keys, final Label[] labels) {
         bcCodes.add(LOOKUPSWITCH);
@@ -464,10 +464,10 @@ public class BcBands extends BandSet {
     /**
      * Visits a method invocation instruction.
      *
-     * @param opcode the opcode.
-     * @param owner the method owner class.
-     * @param name the method name.
-     * @param desc the method descriptor.
+     * @param opcode The opcode.
+     * @param owner The method owner class.
+     * @param name The method name.
+     * @param desc The method descriptor.
      */
     public void visitMethodInsn(int opcode, final String owner, final String name, final String desc) {
         byteCodeOffset += 3;
@@ -530,8 +530,8 @@ public class BcBands extends BandSet {
     /**
      * Visits a MULTIANEWARRAY instruction.
      *
-     * @param desc the array type descriptor.
-     * @param dimensions the number of dimensions.
+     * @param desc The array type descriptor.
+     * @param dimensions The number of dimensions.
      */
     public void visitMultiANewArrayInsn(final String desc, final int dimensions) {
         byteCodeOffset += 4;
@@ -544,10 +544,10 @@ public class BcBands extends BandSet {
     /**
      * Visits a TABLESWITCH instruction.
      *
-     * @param min the minimum key value.
-     * @param max the maximum key value.
-     * @param dflt the default label.
-     * @param labels the case labels.
+     * @param min The minimum key value.
+     * @param max The maximum key value.
+     * @param dflt The default label.
+     * @param labels The case labels.
      */
     public void visitTableSwitchInsn(final int min, final int max, final Label dflt, final Label... labels) {
         bcCodes.add(TABLESWITCH);
@@ -568,8 +568,8 @@ public class BcBands extends BandSet {
     /**
      * Visits a type instruction.
      *
-     * @param opcode the opcode (NEW, ANEWARRAY, CHECKCAST, or INSTANCEOF).
-     * @param type the type descriptor.
+     * @param opcode The opcode (NEW, ANEWARRAY, CHECKCAST, or INSTANCEOF).
+     * @param type The type descriptor.
      */
     public void visitTypeInsn(final int opcode, final String type) {
         // NEW, ANEWARRAY, CHECKCAST or INSTANCEOF
@@ -585,8 +585,8 @@ public class BcBands extends BandSet {
     /**
      * Visits a local variable instruction.
      *
-     * @param opcode the opcode.
-     * @param var the local variable index.
+     * @param opcode The opcode.
+     * @param var The local variable index.
      */
     public void visitVarInsn(final int opcode, final int var) {
         // ILOAD, LLOAD, FLOAD, DLOAD, ALOAD, ISTORE, LSTORE, FSTORE, DSTORE, ASTORE or RET

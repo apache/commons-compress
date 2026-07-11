@@ -30,9 +30,9 @@ public interface UnparseableExtraFieldBehavior {
     /**
      * Decides what to do with extra field data that doesn't follow the recommended pattern.
      *
-     * @param data          the array of extra field data.
+     * @param data          The array of extra field data.
      * @param off           offset into data where the unparseable data starts.
-     * @param len           the length of unparseable data.
+     * @param len           The length of unparseable data.
      * @param local         whether the extra field data stems from the local file header. If this is false then the data is part if the central directory
      *                      header extra data.
      * @param claimedLength length of the extra field claimed by the third and forth byte if it did follow the recommended pattern.

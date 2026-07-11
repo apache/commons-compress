@@ -47,8 +47,8 @@ public class BitInputStream implements Closeable {
     /**
      * Constructor taking an InputStream and its bit arrangement.
      *
-     * @param in        the InputStream.
-     * @param byteOrder the bit arrangement across byte boundaries, either BIG_ENDIAN (aaaaabbb bb000000) or LITTLE_ENDIAN (bbbaaaaa 000000bb).
+     * @param in        The InputStream.
+     * @param byteOrder The bit arrangement across byte boundaries, either BIG_ENDIAN (aaaaabbb bb000000) or LITTLE_ENDIAN (bbbaaaaa 000000bb).
      */
     public BitInputStream(final InputStream in, final ByteOrder byteOrder) {
         this.in = org.apache.commons.io.input.BoundedInputStream.builder().setInputStream(in).asSupplier().get();
@@ -180,7 +180,7 @@ public class BitInputStream implements Closeable {
     /**
      * Reads and returns at most 63 bits read from the underlying stream.
      *
-     * @param count the number of bits to read, must be a positive number not bigger than 63.
+     * @param count The number of bits to read, must be a positive number not bigger than 63.
      * @return The bits concatenated as a long using the stream's byte order. -1 if the end of the underlying stream has been reached before reading the
      *         requested number of bits.
      * @throws IOException if an I/O error occurs.

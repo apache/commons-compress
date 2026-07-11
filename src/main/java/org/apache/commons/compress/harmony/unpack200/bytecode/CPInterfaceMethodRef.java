@@ -33,9 +33,9 @@ public class CPInterfaceMethodRef extends CPRef {
     /**
      * Constructs a new CPInterfaceMethodRef.
      *
-     * @param className the class name.
-     * @param descriptor the method descriptor.
-     * @param globalIndex the global index.
+     * @param className The class name.
+     * @param descriptor The method descriptor.
+     * @param globalIndex The global index.
      */
     public CPInterfaceMethodRef(final CPClass className, final CPNameAndType descriptor, final int globalIndex) {
         super(CP_InterfaceMethodref, className, descriptor, globalIndex);

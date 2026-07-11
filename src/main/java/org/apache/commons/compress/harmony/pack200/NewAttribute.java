@@ -39,8 +39,8 @@ public class NewAttribute extends Attribute {
         /**
          * Constructs a new ErrorAttribute.
          *
-         * @param type the attribute type.
-         * @param context the context.
+         * @param type The attribute type.
+         * @param context The context.
          */
         public ErrorAttribute(final String type, final int context) {
             super(type, "", context);
@@ -61,8 +61,8 @@ public class NewAttribute extends Attribute {
         /**
          * Constructs a new PassAttribute.
          *
-         * @param type the attribute type.
-         * @param context the context.
+         * @param type The attribute type.
+         * @param context The context.
          */
         public PassAttribute(final String type, final int context) {
             super(type, "", context);
@@ -83,8 +83,8 @@ public class NewAttribute extends Attribute {
         /**
          * Constructs a new StripAttribute.
          *
-         * @param type the attribute type.
-         * @param context the context.
+         * @param type The attribute type.
+         * @param context The context.
          */
         public StripAttribute(final String type, final int context) {
             super(type, "", context);
@@ -111,13 +111,13 @@ public class NewAttribute extends Attribute {
     /**
      * Constructs a new NewAttribute with class reader and full details.
      *
-     * @param classReader the class reader.
-     * @param type the attribute type.
-     * @param layout the attribute layout.
-     * @param contents the attribute contents.
-     * @param buf the character buffer.
-     * @param codeOff the code offset.
-     * @param labels the labels.
+     * @param classReader The class reader.
+     * @param type The attribute type.
+     * @param layout The attribute layout.
+     * @param contents The attribute contents.
+     * @param buf The character buffer.
+     * @param codeOff The code offset.
+     * @param labels The labels.
      */
     public NewAttribute(final ClassReader classReader, final String type, final String layout, final byte[] contents, final char[] buf, final int codeOff,
             final Label[] labels) {
@@ -133,9 +133,9 @@ public class NewAttribute extends Attribute {
     /**
      * Constructs a new NewAttribute.
      *
-     * @param type the attribute type.
-     * @param layout the attribute layout.
-     * @param context the context.
+     * @param type The attribute type.
+     * @param layout The attribute layout.
+     * @param context The context.
      */
     public NewAttribute(final String type, final String layout, final int context) {
         super(type);
@@ -146,7 +146,7 @@ public class NewAttribute extends Attribute {
     /**
      * Adds a context to this attribute.
      *
-     * @param context the context to add.
+     * @param context The context to add.
      */
     public void addContext(final int context) {
         switch (context) {
@@ -177,7 +177,7 @@ public class NewAttribute extends Attribute {
     /**
      * Gets the label at the specified index.
      *
-     * @param index the index.
+     * @param index The index.
      * @return The label.
      */
     public Label getLabel(final int index) {
@@ -242,7 +242,7 @@ public class NewAttribute extends Attribute {
     /**
      * Tests whether this attribute is unknown for the given context.
      *
-     * @param context the context.
+     * @param context The context.
      * @return true if unknown for this context.
      */
     public boolean isUnknown(final int context) {
@@ -269,7 +269,7 @@ public class NewAttribute extends Attribute {
     /**
      * Reads a class name at the specified index.
      *
-     * @param index the index.
+     * @param index The index.
      * @return The class name.
      */
     public String readClass(final int index) {
@@ -279,7 +279,7 @@ public class NewAttribute extends Attribute {
     /**
      * Reads a constant at the specified index.
      *
-     * @param index the index.
+     * @param index The index.
      * @return The constant.
      */
     public Object readConst(final int index) {
@@ -289,7 +289,7 @@ public class NewAttribute extends Attribute {
     /**
      * Reads a UTF-8 string at the specified index.
      *
-     * @param index the index.
+     * @param index The index.
      * @return The UTF-8 string.
      */
     public String readUTF8(final int index) {

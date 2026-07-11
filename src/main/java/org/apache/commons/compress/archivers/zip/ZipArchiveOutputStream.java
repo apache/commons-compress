@@ -386,7 +386,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     /**
      * Creates a new ZIP OutputStream writing to a File. Will use random access if possible.
      *
-     * @param file the file to ZIP to.
+     * @param file The file to ZIP to.
      * @throws IOException on error.
      */
     public ZipArchiveOutputStream(final File file) throws IOException {
@@ -406,7 +406,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * known before the actual entry data is written.
      * </p>
      *
-     * @param file         the file that will become the last part of the split archive.
+     * @param file         The file that will become the last part of the split archive.
      * @param zipSplitSize maximum size of a single part of the split archive created by this stream. Must be between 64kB and about 4GB.
      * @throws IOException              on error.
      * @throws IllegalArgumentException if zipSplitSize is not in the required range.
@@ -419,7 +419,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     /**
      * Creates a new ZIP OutputStream filtering the underlying stream.
      *
-     * @param out the output stream to zip.
+     * @param out The output stream to zip.
      */
     public ZipArchiveOutputStream(final OutputStream out) {
         this.out = out;
@@ -439,7 +439,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * known before the actual entry data is written.
      * </p>
      *
-     * @param path         the path to the file that will become the last part of the split archive.
+     * @param path         The path to the file that will become the last part of the split archive.
      * @param zipSplitSize maximum size of a single part of the split archive created by this stream. Must be between 64kB and about 4GB.
      * @throws IOException              on error.
      * @throws IllegalArgumentException if zipSplitSize is not in the required range.
@@ -455,7 +455,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     /**
      * Creates a new ZIP OutputStream writing to a Path. Will use random access if possible.
      *
-     * @param file    the file to ZIP to.
+     * @param file    The file to ZIP to.
      * @param options options specifying how the file is opened.
      * @throws IOException on error.
      * @since 1.21
@@ -474,7 +474,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * {@link org.apache.commons.io.channels.ByteArraySeekableByteChannel} allows you to write to an in-memory archive using random access.
      * </p>
      *
-     * @param channel the channel to ZIP to.
+     * @param channel The channel to ZIP to.
      * @since 1.13
      */
     public ZipArchiveOutputStream(final SeekableByteChannel channel) {
@@ -706,7 +706,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     /**
      * Writes the central file header entry.
      *
-     * @param ze            the entry to write.
+     * @param ze            The entry to write.
      * @param name          The encoded name.
      * @param entryMetaData meta data for this file.
      * @throws IOException on error.
@@ -1297,7 +1297,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     /**
      * Sets the file comment.
      *
-     * @param comment the comment.
+     * @param comment The comment.
      */
     public void setComment(final String comment) {
         this.comment = comment;
@@ -1343,7 +1343,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * Defaults to UTF-8.
      * </p>
      *
-     * @param encoding the encoding to use for file names, use null for the platform's default encoding.
+     * @param encoding The encoding to use for file names, use null for the platform's default encoding.
      */
     public void setEncoding(final String encoding) {
         setEncoding(Charsets.toCharset(encoding));
@@ -1367,7 +1367,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * Default is {@code Deflater.DEFAULT_COMPRESSION}.
      * </p>
      *
-     * @param level the compression level.
+     * @param level The compression level.
      * @throws IllegalArgumentException if an invalid compression level is specified.
      */
     public void setLevel(final int level) {
@@ -1387,7 +1387,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * Default is DEFLATED.
      * </p>
      *
-     * @param method an {@code int} from java.util.zip.ZipEntry.
+     * @param method An {@code int} from java.util.zip.ZipEntry.
      */
     public void setMethod(final int method) {
         this.method = method;
@@ -1567,9 +1567,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     /**
      * Writes bytes to ZIP entry.
      *
-     * @param b      the byte array to write.
-     * @param offset the start position to write from.
-     * @param length the number of bytes to write.
+     * @param b      The byte array to write.
+     * @param offset The start position to write from.
+     * @param length The number of bytes to write.
      * @throws NullPointerException      if {@code b} is null.
      * @throws IndexOutOfBoundsException if {@code offset} or {@code length} are negative,.
      *                                   or if {@code offset + length} is greater than {@code b.length}.
@@ -1653,7 +1653,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     /**
      * Writes the central file header entry.
      *
-     * @param ze the entry to write.
+     * @param ze The entry to write.
      * @throws IOException            on error.
      * @throws Zip64RequiredException if the archive's size exceeds 4 GByte and {@link #setUseZip64(Zip64Mode)} is {@link Zip64Mode#Never}.
      */
@@ -1665,7 +1665,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     /**
      * Writes bytes to output or random access file.
      *
-     * @param data the byte array to write.
+     * @param data The byte array to write.
      * @throws IOException on error.
      */
     private void writeCounted(final byte[] data) throws IOException {
@@ -1675,7 +1675,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     /**
      * Writes the data descriptor entry.
      *
-     * @param ze the entry to write.
+     * @param ze The entry to write.
      * @throws IOException on error.
      */
     protected void writeDataDescriptor(final ZipArchiveEntry ze) throws IOException {
@@ -1696,7 +1696,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     /**
      * Writes the local file header entry.
      *
-     * @param ze the entry to write.
+     * @param ze The entry to write.
      * @throws IOException on error.
      */
     protected void writeLocalFileHeader(final ZipArchiveEntry ze) throws IOException {
@@ -1730,7 +1730,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     /**
      * Writes bytes to output or random access file.
      *
-     * @param data the byte array to write.
+     * @param data The byte array to write.
      * @throws IOException on error.
      */
     protected final void writeOut(final byte[] data) throws IOException {
@@ -1740,9 +1740,9 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     /**
      * Writes bytes to output or random access file.
      *
-     * @param data   the byte array to write.
-     * @param offset the start position to write from.
-     * @param length the number of bytes to write.
+     * @param data   The byte array to write.
+     * @param offset The start position to write from.
+     * @param length The number of bytes to write.
      * @throws IOException on error.
      */
     protected final void writeOut(final byte[] data, final int offset, final int length) throws IOException {
@@ -1764,8 +1764,8 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
      * Writes preamble data. For most of the time, this is used to make self-extracting zips.
      *
      * @param preamble data to write.
-     * @param offset   the start offset in the data.
-     * @param length   the number of bytes to write.
+     * @param offset   The start offset in the data.
+     * @param length   The number of bytes to write.
      * @throws IOException if an entry already exists.
      * @since 1.21
      */

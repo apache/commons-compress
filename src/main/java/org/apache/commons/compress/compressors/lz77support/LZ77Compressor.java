@@ -93,8 +93,8 @@ public class LZ77Compressor {
          * Constructs a new instance.
          *
          * @param blockType The block type.
-         * @param offset the offset of the reference.
-         * @param length the offset of the reference.
+         * @param offset The offset of the reference.
+         * @param length The offset of the reference.
          */
         public AbstractReference(final BlockType blockType, final int offset, final int length) {
             super(blockType);
@@ -134,8 +134,8 @@ public class LZ77Compressor {
         /**
          * Constructs a new instance.
          *
-         * @param offset the offset of the back-reference.
-         * @param length the offset of the back-reference.
+         * @param offset The offset of the back-reference.
+         * @param length The offset of the back-reference.
          */
         public BackReference(final int offset, final int length) {
             super(BlockType.BACK_REFERENCE, offset, length);
@@ -189,7 +189,7 @@ public class LZ77Compressor {
         /**
          * Constructs a new instance.
          *
-         * @param type the block type, may not be {@code null}.
+         * @param type The block type, may not be {@code null}.
          */
         protected Block(final BlockType type) {
             this.type = Objects.requireNonNull(type);
@@ -223,7 +223,7 @@ public class LZ77Compressor {
         /**
          * Consumes a block.
          *
-         * @param b the block to consume.
+         * @param b The block to consume.
          * @throws IOException in case of an error.
          */
         void accept(Block b) throws IOException;
@@ -261,9 +261,9 @@ public class LZ77Compressor {
         /**
          * Constructs a new instance.
          *
-         * @param data the literal data.
-         * @param offset the length of literal block.
-         * @param length the length of literal block.
+         * @param data The literal data.
+         * @param offset The length of literal block.
+         * @param length The length of literal block.
          */
         public LiteralBlock(final byte[] data, final int offset, final int length) {
             super(BlockType.LITERAL, offset, length);
@@ -334,8 +334,8 @@ public class LZ77Compressor {
     /**
      * Initializes a compressor with parameters and a callback.
      *
-     * @param params   the parameters.
-     * @param callback the callback.
+     * @param params   The parameters.
+     * @param callback The callback.
      * @throws NullPointerException if either parameter is {@code null}.
      */
     public LZ77Compressor(final Parameters params, final Callback callback) {
@@ -402,7 +402,7 @@ public class LZ77Compressor {
     /**
      * Feeds bytes into the compressor which in turn may emit zero or more blocks to the callback during the execution of this method.
      *
-     * @param data the data to compress - must not be null.
+     * @param data The data to compress - must not be null.
      * @throws IOException if the callback throws an exception.
      */
     public void compress(final byte[] data) throws IOException {
@@ -412,9 +412,9 @@ public class LZ77Compressor {
     /**
      * Feeds bytes into the compressor which in turn may emit zero or more blocks to the callback during the execution of this method.
      *
-     * @param data the data to compress - must not be null.
-     * @param off  the start offset of the data.
-     * @param len  the number of bytes to compress.
+     * @param data The data to compress - must not be null.
+     * @param off  The start offset of the data.
+     * @param len  The number of bytes to compress.
      * @throws NullPointerException if data is {@code null}.
      * @throws IndexOutOfBoundsException if {@code off} or {@code len} are negative, or if {@code off + len} is bigger than {@code data.length}.
      * @throws IOException if the callback throws an exception.
@@ -587,7 +587,7 @@ public class LZ77Compressor {
      * LZ4 frame format using block dependency.
      * </p>
      *
-     * @param data the data to fill the window with.
+     * @param data The data to fill the window with.
      * @throws IllegalStateException if the compressor has already started to accept data.
      */
     public void prefill(final byte[] data) {

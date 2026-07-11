@@ -247,7 +247,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
         /**
          * Finds a matching set of enumeration values for the given code.
          *
-         * @param code a code.
+         * @param code A code.
          * @return A Set of values, never null.
          */
         public static Set<PERMISSION> find(final int code) {
@@ -361,7 +361,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
         /**
          * Finds a matching enumeration value for the given code.
          *
-         * @param code a code.
+         * @param code A code.
          * @return A value, never null.
          */
         public static TYPE find(final int code) {
@@ -498,10 +498,10 @@ public class DumpArchiveEntry implements ArchiveEntry {
     /**
      * Constructs a new instance with name, inode and type.
      *
-     * @param name       the name.
-     * @param simpleName the simple name.
-     * @param ino        the ino.
-     * @param type       the type.
+     * @param name       The name.
+     * @param simpleName The simple name.
+     * @param ino        The ino.
+     * @param type       The type.
      */
     protected DumpArchiveEntry(final String name, final String simpleName, final int ino, final TYPE type) {
         setType(type);
@@ -808,7 +808,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     /**
      * Sets the time the file was last accessed.
      *
-     * @param atime the access time.
+     * @param atime The access time.
      */
     public void setAccessTime(final Date atime) {
         this.atime = atime.getTime();
@@ -817,7 +817,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     /**
      * Sets the file creation time.
      *
-     * @param ctime the creation time.
+     * @param ctime The creation time.
      */
     public void setCreationTime(final Date ctime) {
         this.ctime = ctime.getTime();
@@ -835,7 +835,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     /**
      * Sets the generation of the file.
      *
-     * @param generation the generation.
+     * @param generation The generation.
      */
     public void setGeneration(final int generation) {
         this.generation = generation;
@@ -844,7 +844,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     /**
      * Sets the group id.
      *
-     * @param gid the group id.
+     * @param gid The group id.
      */
     public void setGroupId(final int gid) {
         this.gid = gid;
@@ -853,7 +853,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     /**
      * Sets the time the file was last modified.
      *
-     * @param mtime the last modified time.
+     * @param mtime The last modified time.
      */
     public void setLastModifiedDate(final Date mtime) {
         this.mtime = mtime.getTime();
@@ -862,7 +862,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     /**
      * Sets the access permissions on the entry.
      *
-     * @param mode the access permissions.
+     * @param mode The access permissions.
      */
     public void setMode(final int mode) {
         this.mode = mode & 07777;
@@ -872,7 +872,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     /**
      * Sets the name of the entry.
      *
-     * @param name the name.
+     * @param name The name.
      */
     public final void setName(String name) {
         this.originalName = name;
@@ -890,7 +890,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     /**
      * Sets the number of hard links.
      *
-     * @param nlink the number of hard links.
+     * @param nlink The number of hard links.
      */
     public void setNlink(final int nlink) {
         this.nlink = nlink;
@@ -899,7 +899,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     /**
      * Sets the offset within the archive.
      *
-     * @param offset the offset.
+     * @param offset The offset.
      */
     public void setOffset(final long offset) {
         this.offset = offset;
@@ -908,7 +908,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     /**
      * Sets the path of the entry.
      *
-     * @param simpleName the simple name.
+     * @param simpleName The simple name.
      */
     protected void setSimpleName(final String simpleName) {
         this.simpleName = simpleName;
@@ -917,7 +917,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     /**
      * Sets the size of the entry.
      *
-     * @param size the size.
+     * @param size The size.
      */
     public void setSize(final long size) {
         this.size = size;
@@ -926,7 +926,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     /**
      * Sets the type of the entry.
      *
-     * @param type the type.
+     * @param type The type.
      */
     public void setType(final TYPE type) {
         this.type = type;
@@ -935,7 +935,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     /**
      * Sets the user id.
      *
-     * @param uid the user id.
+     * @param uid The user id.
      */
     public void setUserId(final int uid) {
         this.uid = uid;
@@ -944,7 +944,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     /**
      * Sets the tape volume.
      *
-     * @param volume the volume.
+     * @param volume The volume.
      */
     public void setVolume(final int volume) {
         this.volume = volume;

@@ -73,8 +73,8 @@ public class Archive {
      * Creates an Archive with streams for the input and output files. Note: If you use this method then calling {@link #setRemovePackFile(boolean)} will have
      * no effect.
      *
-     * @param inputStream  the input stream, preferably a {@link BoundedInputStream}. The bound can the file size.
-     * @param outputStream the JAR output stream.
+     * @param inputStream  The input stream, preferably a {@link BoundedInputStream}. The bound can the file size.
+     * @param outputStream The JAR output stream.
      * @throws IOException if an I/O error occurs
      */
     public Archive(final InputStream inputStream, final JarOutputStream outputStream) throws IOException {
@@ -93,8 +93,8 @@ public class Archive {
     /**
      * Creates an Archive with the given input and output file names.
      *
-     * @param inputFileName  the input file name.
-     * @param outputFileName the output file name
+     * @param inputFileName  The input file name.
+     * @param outputFileName The output file name
      * @throws FileNotFoundException if the input file does not exist
      * @throws IOException           if an I/O error occurs
      */
@@ -118,7 +118,7 @@ public class Archive {
     /**
      * Sets the default hint.
      *
-     * @param deflateHint the hint value.
+     * @param deflateHint The hint value.
      */
     public void setDeflateHint(final boolean deflateHint) {
         overrideDeflateHint = true;
@@ -128,7 +128,7 @@ public class Archive {
     /**
      * Sets the lgg file.
      *
-     * @param logFileName the log file name.
+     * @param logFileName The log file name.
      * @throws FileNotFoundException if the file exists but is a directory rather than a regular file, does not exist but cannot be created, or cannot be opened
      *                               for any other reason
      */
@@ -139,7 +139,7 @@ public class Archive {
     /**
      * Sets the lgg file.
      *
-     * @param logFileName the log file name.
+     * @param logFileName The log file name.
      * @param append      if {@code true}, then bytes will be written to the end of the file rather than the beginning
      * @throws FileNotFoundException if the file exists but is a directory rather than a regular file, does not exist but cannot be created, or cannot be opened
      *                               for any other reason

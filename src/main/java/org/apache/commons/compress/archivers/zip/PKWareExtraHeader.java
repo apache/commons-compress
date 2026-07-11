@@ -136,7 +136,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
         /**
          * Returns the EncryptionAlgorithm for the given code or null if the method is not known.
          *
-         * @param code the code of the algorithm.
+         * @param code The code of the algorithm.
          * @return The EncryptionAlgorithm for the given code or null if the method is not known.
          */
         public static EncryptionAlgorithm getAlgorithmByCode(final int code) {
@@ -222,7 +222,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
         /**
          * Returns the HashAlgorithm for the given code or null if the method is not known.
          *
-         * @param code the code of the algorithm.
+         * @param code The code of the algorithm.
          * @return The HashAlgorithm for the given code or null if the method is not known.
          */
         public static HashAlgorithm getAlgorithmByCode(final int code) {
@@ -272,8 +272,8 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
     /**
      * Asserts the given length is greater or equal to the given minimum.
      *
-     * @param minimum the minimum.
-     * @param length the length.
+     * @param minimum The minimum.
+     * @param length The length.
      * @throws ZipException Thrown if the length is less than the minimum.
      */
     protected final void assertMinimalLength(final int minimum, final int length) throws ZipException {
@@ -339,9 +339,9 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
     }
 
     /**
-     * @param data   the array of bytes.
-     * @param offset the source location in the data array.
-     * @param length the number of bytes to use in the data array.
+     * @param data   The array of bytes.
+     * @param offset The source location in the data array.
+     * @param length The number of bytes to use in the data array.
      * @see ZipExtraField#parseFromCentralDirectoryData(byte[], int, int)
      */
     @Override
@@ -354,9 +354,9 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
     }
 
     /**
-     * @param data   the array of bytes.
-     * @param offset the source location in the data array.
-     * @param length the number of bytes to use in the data array.
+     * @param data   The array of bytes.
+     * @param offset The source location in the data array.
+     * @param length The number of bytes to use in the data array.
      * @see ZipExtraField#parseFromLocalFileData(byte[], int, int)
      */
     @Override
@@ -367,7 +367,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
     /**
      * Sets the extra field data in central directory.
      *
-     * @param data the data to use.
+     * @param data The data to use.
      */
     public void setCentralDirectoryData(final byte[] data) {
         centralData = ZipUtil.copy(data);
@@ -376,7 +376,7 @@ public abstract class PKWareExtraHeader implements ZipExtraField {
     /**
      * Sets the extra field data in the local file data - without Header-ID or length specifier.
      *
-     * @param data the field data to use.
+     * @param data The field data to use.
      */
     public void setLocalFileDataData(final byte[] data) {
         localData = ZipUtil.copy(data);

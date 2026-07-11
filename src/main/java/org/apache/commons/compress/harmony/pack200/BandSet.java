@@ -88,7 +88,7 @@ public abstract class BandSet {
         /**
          * Constructs a new instance of BandData. The band is then analyzed.
          *
-         * @param band the band of integers
+         * @param band The band of integers
          */
         public BandData(final int[] band) {
             this.band = band;
@@ -208,8 +208,8 @@ public abstract class BandSet {
     /**
      * Constructs a new BandSet.
      *
-     * @param effort the packing effort to be used (must be 1-9)
-     * @param header the segment header
+     * @param effort The packing effort to be used (must be 1-9)
+     * @param header The segment header
      */
     public BandSet(final int effort, final SegmentHeader header) {
         this.effort = effort;
@@ -355,8 +355,8 @@ public abstract class BandSet {
      * Encode a band of integers. The default codec may be used, but other Codecs are considered if effort is greater than 1.
      *
      * @param name         name of the band (used for debugging)
-     * @param ints         the band
-     * @param defaultCodec the default Codec
+     * @param ints         The band
+     * @param defaultCodec The default Codec
      * @return The encoded band
      * @throws Pack200Exception If a Pack200 semantic error occurs.
      */
@@ -433,7 +433,7 @@ public abstract class BandSet {
      * Encode a band of longs (values are split into their high and low 32 bits and then encoded as two separate bands
      *
      * @param name        name of the band (for debugging purposes)
-     * @param flags       the band
+     * @param flags       The band
      * @param loCodec     Codec for the low 32-bits band
      * @param hiCodec     Codec for the high 32-bits band
      * @param haveHiFlags ignores the high band if true as all values would be zero
@@ -492,10 +492,10 @@ public abstract class BandSet {
     /**
      * Encodes flags using the given codecs.
      *
-     * @param name the name of the band.
-     * @param flags the flags to encode.
-     * @param loCodec the low codec.
-     * @param hiCodec the high codec.
+     * @param name The name of the band.
+     * @param flags The flags to encode.
+     * @param loCodec The low codec.
+     * @param hiCodec The high codec.
      * @param haveHiFlags whether high flags are present.
      * @return The encoded flags.
      * @throws Pack200Exception if an error occurs.
@@ -508,7 +508,7 @@ public abstract class BandSet {
     /**
      * Encodes a single value with the given Codec.
      *
-     * @param value the value to encode.
+     * @param value The value to encode.
      * @param codec Codec to use.
      * @return The encoded value.
      * @throws Pack200Exception If a Pack200 semantic error occurs.
@@ -520,8 +520,8 @@ public abstract class BandSet {
     /**
      * Encode a band without considering other Codecs.
      *
-     * @param band  the band.
-     * @param codec the Codec to use.
+     * @param band  The band.
+     * @param codec The Codec to use.
      * @return The encoded band.
      * @throws Pack200Exception If a Pack200 semantic error occurs.
      */
@@ -724,7 +724,7 @@ public abstract class BandSet {
     /**
      * Writes the packed set of bands to the given output stream.
      *
-     * @param out the output stream to write to.
+     * @param out The output stream to write to.
      * @throws IOException      If an I/O error occurs.
      * @throws Pack200Exception If a Pack200 semantic error occurs.
      */

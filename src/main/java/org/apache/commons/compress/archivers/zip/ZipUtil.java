@@ -105,7 +105,7 @@ public abstract class ZipUtil {
     /**
      * Assumes a negative integer really is a positive integer that has wrapped around and re-creates the original value.
      *
-     * @param i the value to treat as unsigned int.
+     * @param i The value to treat as unsigned int.
      * @return The unsigned int as a long.
      */
     public static long adjustToLong(final int i) {
@@ -266,7 +266,7 @@ public abstract class ZipUtil {
     /**
      * Constructs a new ZipException.
      *
-     * @param message the detail message.
+     * @param message The detail message.
      * @param cause   throwable The cause of this Throwable.
      * @return A new ZipException.
      */
@@ -354,7 +354,7 @@ public abstract class ZipUtil {
     /**
      * Converts a Date object to a DOS date/time field.
      *
-     * @param time the {@code Date} to convert.
+     * @param time The {@code Date} to convert.
      * @return The date as a {@code ZipLong}.
      */
     public static ZipLong toDosTime(final Date time) {
@@ -385,7 +385,7 @@ public abstract class ZipUtil {
      * </p>
      *
      * @param t      number of milliseconds since the epoch.
-     * @param buf    the output buffer.
+     * @param buf    The output buffer.
      * @param offset The offset within the output buffer of the first byte to be written. must be non-negative and no larger than {@code buf.length-4}.
      */
     public static void toDosTime(final long t, final byte[] buf, final int offset) {

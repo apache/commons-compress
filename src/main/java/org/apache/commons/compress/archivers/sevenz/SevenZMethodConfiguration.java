@@ -71,7 +71,7 @@ public class SevenZMethodConfiguration {
     /**
      * Doesn't configure any additional options.
      *
-     * @param method the method to use.
+     * @param method The method to use.
      */
     public SevenZMethodConfiguration(final SevenZMethod method) {
         this(method, null);
@@ -80,8 +80,8 @@ public class SevenZMethodConfiguration {
     /**
      * Specifies and method plus configuration options.
      *
-     * @param method  the method to use.
-     * @param options the options to use.
+     * @param method  The method to use.
+     * @param options The options to use.
      * @throws IllegalArgumentException if the method doesn't understand the options specified.
      */
     public SevenZMethodConfiguration(final SevenZMethod method, final Object options) {

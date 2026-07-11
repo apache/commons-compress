@@ -105,8 +105,8 @@ public class Archiver {
     /**
      * Creates an archive {@code target} by recursively including all files and directories in {@code directory}.
      *
-     * @param target    the stream to write the new archive to.
-     * @param directory the directory that contains the files to archive.
+     * @param target    The stream to write the new archive to.
+     * @param directory The directory that contains the files to archive.
      * @throws IOException if an I/O error occurs.
      */
     public void create(final ArchiveOutputStream<?> target, final File directory) throws IOException {
@@ -116,8 +116,8 @@ public class Archiver {
     /**
      * Creates an archive {@code target} by recursively including all files and directories in {@code directory}.
      *
-     * @param target    the stream to write the new archive to.
-     * @param directory the directory that contains the files to archive.
+     * @param target    The stream to write the new archive to.
+     * @param directory The directory that contains the files to archive.
      * @throws IOException if an I/O error occurs or the archive cannot be created for other reasons.
      * @since 1.21
      */
@@ -128,8 +128,8 @@ public class Archiver {
     /**
      * Creates an archive {@code target} by recursively including all files and directories in {@code directory}.
      *
-     * @param target           the stream to write the new archive to.
-     * @param directory        the directory that contains the files to archive.
+     * @param target           The stream to write the new archive to.
+     * @param directory        The directory that contains the files to archive.
      * @param fileVisitOptions linkOptions to configure the traversal of the source {@code directory}.
      * @param linkOptions      indicating how symbolic links are handled.
      * @throws IOException if an I/O error occurs or the archive cannot be created for other reasons.
@@ -144,8 +144,8 @@ public class Archiver {
     /**
      * Creates an archive {@code target} by recursively including all files and directories in {@code directory}.
      *
-     * @param target    the file to write the new archive to.
-     * @param directory the directory that contains the files to archive.
+     * @param target    The file to write the new archive to.
+     * @param directory The directory that contains the files to archive.
      * @throws IOException if an I/O error occurs.
      */
     public void create(final SevenZOutputFile target, final File directory) throws IOException {
@@ -155,8 +155,8 @@ public class Archiver {
     /**
      * Creates an archive {@code target} by recursively including all files and directories in {@code directory}.
      *
-     * @param target    the file to write the new archive to.
-     * @param directory the directory that contains the files to archive.
+     * @param target    The file to write the new archive to.
+     * @param directory The directory that contains the files to archive.
      * @throws IOException if an I/O error occurs.
      * @since 1.21
      */
@@ -189,9 +189,9 @@ public class Archiver {
      * Creates an archive {@code target} using the format {@code
      * format} by recursively including all files and directories in {@code directory}.
      *
-     * @param format    the archive format. This uses the same format as accepted by {@link ArchiveStreamFactory}.
-     * @param target    the file to write the new archive to.
-     * @param directory the directory that contains the files to archive.
+     * @param format    The archive format. This uses the same format as accepted by {@link ArchiveStreamFactory}.
+     * @param target    The file to write the new archive to.
+     * @param directory The directory that contains the files to archive.
      * @throws IOException      if an I/O error occurs.
      * @throws ArchiveException if the archive cannot be created for other reasons.
      */
@@ -208,9 +208,9 @@ public class Archiver {
      * {@link #create(String,OutputStream,File,CloseableConsumer)} instead.
      * </p>
      *
-     * @param format    the archive format. This uses the same format as accepted by {@link ArchiveStreamFactory}.
-     * @param target    the stream to write the new archive to.
-     * @param directory the directory that contains the files to archive.
+     * @param format    The archive format. This uses the same format as accepted by {@link ArchiveStreamFactory}.
+     * @param target    The stream to write the new archive to.
+     * @param directory The directory that contains the files to archive.
      * @throws IOException      if an I/O error occurs.
      * @throws ArchiveException if the archive cannot be created for other reasons.
      * @deprecated this method leaks resources
@@ -230,9 +230,9 @@ public class Archiver {
      * closeableConsumer} callback as soon as it is no longer needed by this class.
      * </p>
      *
-     * @param format            the archive format. This uses the same format as accepted by {@link ArchiveStreamFactory}.
-     * @param target            the stream to write the new archive to.
-     * @param directory         the directory that contains the files to archive.
+     * @param format            The archive format. This uses the same format as accepted by {@link ArchiveStreamFactory}.
+     * @param target            The stream to write the new archive to.
+     * @param directory         The directory that contains the files to archive.
      * @param closeableConsumer is informed about the stream wrapped around the passed in stream.
      * @throws IOException      if an I/O error occurs.
      * @throws ArchiveException if the archive cannot be created for other reasons.
@@ -250,9 +250,9 @@ public class Archiver {
      * Creates an archive {@code target} using the format {@code
      * format} by recursively including all files and directories in {@code directory}.
      *
-     * @param format    the archive format. This uses the same format as accepted by {@link ArchiveStreamFactory}.
-     * @param target    the file to write the new archive to.
-     * @param directory the directory that contains the files to archive.
+     * @param format    The archive format. This uses the same format as accepted by {@link ArchiveStreamFactory}.
+     * @param target    The file to write the new archive to.
+     * @param directory The directory that contains the files to archive.
      * @throws IOException      if an I/O error occurs.
      * @throws ArchiveException if the archive cannot be created for other reasons.
      * @since 1.21
@@ -280,9 +280,9 @@ public class Archiver {
      * {@link #create(String,SeekableByteChannel,File,CloseableConsumer)} instead.
      * </p>
      *
-     * @param format    the archive format. This uses the same format as accepted by {@link ArchiveStreamFactory}.
-     * @param target    the channel to write the new archive to.
-     * @param directory the directory that contains the files to archive.
+     * @param format    The archive format. This uses the same format as accepted by {@link ArchiveStreamFactory}.
+     * @param target    The channel to write the new archive to.
+     * @param directory The directory that contains the files to archive.
      * @throws IOException      if an I/O error occurs.
      * @throws ArchiveException if the archive cannot be created for other reasons.
      * @deprecated this method leaks resources
@@ -302,9 +302,9 @@ public class Archiver {
      * closeableConsumer} callback as soon as it is no longer needed by this class.
      * </p>
      *
-     * @param format            the archive format. This uses the same format as accepted by {@link ArchiveStreamFactory}.
-     * @param target            the channel to write the new archive to.
-     * @param directory         the directory that contains the files to archive.
+     * @param format            The archive format. This uses the same format as accepted by {@link ArchiveStreamFactory}.
+     * @param target            The channel to write the new archive to.
+     * @param directory         The directory that contains the files to archive.
      * @param closeableConsumer is informed about the stream wrapped around the passed in stream.
      * @throws IOException      if an I/O error occurs.
      * @throws ArchiveException if the archive cannot be created for other reasons.
@@ -330,9 +330,9 @@ public class Archiver {
      * Creates an archive {@code target} using the format {@code
      * format} by recursively including all files and directories in {@code directory}.
      *
-     * @param format    the archive format. This uses the same format as accepted by {@link ArchiveStreamFactory}.
-     * @param target    the channel to write the new archive to.
-     * @param directory the directory that contains the files to archive.
+     * @param format    The archive format. This uses the same format as accepted by {@link ArchiveStreamFactory}.
+     * @param target    The channel to write the new archive to.
+     * @param directory The directory that contains the files to archive.
      * @throws IOException           if an I/O error occurs.
      * @throws IllegalStateException if the format does not support {@code SeekableByteChannel}.
      */

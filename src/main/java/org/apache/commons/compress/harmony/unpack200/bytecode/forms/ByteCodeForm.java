@@ -407,8 +407,8 @@ public abstract class ByteCodeForm {
     /**
      * The ByteCodeForm knows how to fix up a bytecode if it needs to be fixed up because it holds a Label bytecode.
      *
-     * @param byteCode      a ByteCode to be fixed up
-     * @param codeAttribute a CodeAttribute used to determine how the ByteCode should be fixed up.
+     * @param byteCode      A ByteCode to be fixed up
+     * @param codeAttribute A CodeAttribute used to determine how the ByteCode should be fixed up.
      */
     public void fixUpByteCodeTargets(final ByteCode byteCode, final CodeAttribute codeAttribute) {
         // Most ByteCodeForms don't have any fixing up to do.

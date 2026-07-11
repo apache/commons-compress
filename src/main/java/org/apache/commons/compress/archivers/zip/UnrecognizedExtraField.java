@@ -110,9 +110,9 @@ public class UnrecognizedExtraField implements ZipExtraField {
     }
 
     /**
-     * @param data   the array of bytes.
-     * @param offset the source location in the data array.
-     * @param length the number of bytes to use in the data array.
+     * @param data   The array of bytes.
+     * @param offset The source location in the data array.
+     * @param length The number of bytes to use in the data array.
      * @see ZipExtraField#parseFromCentralDirectoryData(byte[], int, int)
      */
     @Override
@@ -125,9 +125,9 @@ public class UnrecognizedExtraField implements ZipExtraField {
     }
 
     /**
-     * @param data   the array of bytes.
-     * @param offset the source location in the data array.
-     * @param length the number of bytes to use in the data array.
+     * @param data   The array of bytes.
+     * @param offset The source location in the data array.
+     * @param length The number of bytes to use in the data array.
      * @see ZipExtraField#parseFromLocalFileData(byte[], int, int)
      */
     @Override
@@ -138,7 +138,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
     /**
      * Sets the extra field data in central directory.
      *
-     * @param data the data to use.
+     * @param data The data to use.
      */
     public void setCentralDirectoryData(final byte[] data) {
         centralData = ZipUtil.copy(data);
@@ -147,7 +147,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
     /**
      * Sets the header id.
      *
-     * @param headerId the header id to use.
+     * @param headerId The header id to use.
      */
     public void setHeaderId(final ZipShort headerId) {
         this.headerId = headerId;
@@ -156,7 +156,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
     /**
      * Sets the extra field data in the local file data - without Header-ID or length specifier.
      *
-     * @param data the field data to use.
+     * @param data The field data to use.
      */
     public void setLocalFileDataData(final byte[] data) {
         localData = ZipUtil.copy(data);

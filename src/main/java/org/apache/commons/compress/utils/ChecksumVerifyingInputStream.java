@@ -39,9 +39,9 @@ public class ChecksumVerifyingInputStream extends CheckedInputStream {
      * Constructs a new instance.
      *
      * @param checksum         Checksum implementation.
-     * @param in               the stream to wrap.
-     * @param size             the of the stream's content.
-     * @param expectedChecksum the expected checksum.
+     * @param in               The stream to wrap.
+     * @param size             The of the stream's content.
+     * @param expectedChecksum The expected checksum.
      */
     public ChecksumVerifyingInputStream(final Checksum checksum, final InputStream in, final long size, final long expectedChecksum) {
         super(in, checksum);

@@ -93,7 +93,7 @@ public abstract class AnnotationsAttribute extends Attribute {
         /**
          * Resolves this instance against a given pool.
          *
-         * @param pool a class constant pool.
+         * @param pool A class constant pool.
          */
         public void resolve(final ClassConstantPool pool) {
             type.resolve(pool);
@@ -109,7 +109,7 @@ public abstract class AnnotationsAttribute extends Attribute {
         /**
          * Writes this instance to the given output stream.
          *
-         * @param dos the output stream.
+         * @param dos The output stream.
          * @throws IOException if an I/O error occurs.
          */
         public void writeBody(final DataOutputStream dos) throws IOException {
@@ -136,8 +136,8 @@ public abstract class AnnotationsAttribute extends Attribute {
         /**
          * Constructs a new instance.
          *
-         * @param tag a tag.
-         * @param value a value.
+         * @param tag A tag.
+         * @param value A value.
          */
         public ElementValue(final int tag, final Object value) {
             this.tag = tag;
@@ -205,7 +205,7 @@ public abstract class AnnotationsAttribute extends Attribute {
         /**
          * Resolves this instance against a given pool.
          *
-         * @param pool a class constant pool.
+         * @param pool A class constant pool.
          */
         public void resolve(final ClassConstantPool pool) {
             if (value instanceof CPConstant) {
@@ -232,7 +232,7 @@ public abstract class AnnotationsAttribute extends Attribute {
         /**
          * Writes this instance to the given output stream.
          *
-         * @param dos the output stream.
+         * @param dos The output stream.
          * @throws IOException if an I/O error occurs.
          */
         public void writeBody(final DataOutputStream dos) throws IOException {
@@ -258,7 +258,7 @@ public abstract class AnnotationsAttribute extends Attribute {
     /**
      * Constructs a new instance for an attribute name.
      *
-     * @param attributeName an attribute name.
+     * @param attributeName An attribute name.
      */
     public AnnotationsAttribute(final CPUTF8 attributeName) {
         super(attributeName);

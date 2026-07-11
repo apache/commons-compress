@@ -138,7 +138,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     /**
      * read bits from the input stream
      *
-     * @param n the number of bits to read, must not exceed 32?.
+     * @param n The number of bits to read, must not exceed 32?.
      * @return The requested bits combined into an int.
      * @throws IOException if an I/O error occurs.
      */
@@ -162,10 +162,10 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     /**
      * Builds the Huffman decoding tables for use by {@code recvDecodingTables()}.
      *
-     * @param alphaSize the alphabet size, guaranteed by the caller to be in the range [2, 258]
+     * @param alphaSize The alphabet size, guaranteed by the caller to be in the range [2, 258]
      *                  (RUNA, RUNB, 255 byte values, and EOB).
-     * @param nGroups   the number of Huffman coding groups, guaranteed by the caller to be in the range [0, 6].
-     * @param dataShadow the data structure into which the tables are built; requires
+     * @param nGroups   The number of Huffman coding groups, guaranteed by the caller to be in the range [0, 6].
+     * @param dataShadow The data structure into which the tables are built; requires
      *                   {@code temp_charArray2d} to be initialized.
      */
     static void createHuffmanDecodingTables(final int alphaSize, final int nGroups, final Data dataShadow) {
@@ -256,8 +256,8 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     /**
      * Checks if the signature matches what is expected for a bzip2 file.
      *
-     * @param signature the bytes to check.
-     * @param length    the number of bytes to check.
+     * @param signature The bytes to check.
+     * @param length    The number of bytes to check.
      * @return true, if this stream is a bzip2 compressed stream, false otherwise.
      * @since 1.1
      */
@@ -404,7 +404,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
      * Constructs a new BZip2CompressorInputStream which decompresses bytes read from the specified stream. This doesn't support decompressing concatenated .bz2
      * files.
      *
-     * @param in the InputStream from which this object should be created.
+     * @param in The InputStream from which this object should be created.
      * @throws IOException          if the stream content is malformed or an I/O error occurs.
      * @throws NullPointerException if {@code in == null}.
      */
@@ -415,7 +415,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     /**
      * Constructs a new BZip2CompressorInputStream which decompresses bytes read from the specified stream.
      *
-     * @param in                     the InputStream from which this object should be created.
+     * @param in                     The InputStream from which this object should be created.
      * @param decompressConcatenated if true, decompress until the end of the input; if false, stop after the first .bz2 stream and leave the input position to
      *                               point to the next byte after the .bz2 stream
      *

@@ -29,7 +29,7 @@ public interface ZipArchiveEntryPredicate {
     /**
      * Indicate if the given entry should be included in the operation
      *
-     * @param zipArchiveEntry the entry to test.
+     * @param zipArchiveEntry The entry to test.
      * @return true if the entry should be included.
      */
     boolean test(ZipArchiveEntry zipArchiveEntry);

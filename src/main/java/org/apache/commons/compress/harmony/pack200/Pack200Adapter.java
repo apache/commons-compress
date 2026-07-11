@@ -49,7 +49,7 @@ public abstract class Pack200Adapter {
     /**
      * Adds a property change listener.
      *
-     * @param listener the listener to add.
+     * @param listener The listener to add.
      */
     public void addPropertyChangeListener(final PropertyChangeListener listener) {
         support.addPropertyChangeListener(listener);
@@ -89,7 +89,7 @@ public abstract class Pack200Adapter {
     /**
      * Removes a property change listener.
      *
-     * @param listener the listener to remove.
+     * @param listener The listener to remove.
      */
     public void removePropertyChangeListener(final PropertyChangeListener listener) {
         support.removePropertyChangeListener(listener);
