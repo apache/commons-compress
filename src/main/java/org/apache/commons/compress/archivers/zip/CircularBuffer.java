@@ -70,7 +70,7 @@ final class CircularBuffer {
     /**
      * Reads a byte from the buffer.
      *
-     * @return a byte from the buffer.
+     * @return A byte from the buffer.
      */
     public int get() {
         if (available()) {

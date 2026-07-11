@@ -144,7 +144,7 @@ public class GzipParameters {
          * Gets the {@link OS} matching the given code.
          *
          * @param code an OS or {@link #UNKNOWN} for no match.
-         * @return a {@link OS}.
+         * @return A {@link OS}.
          * @throws CompressException Thrown when the {@code code} is undefined, as opposed to {@code UNKNOWN}.
          */
         public static OS from(final int code) throws CompressException {
@@ -351,7 +351,7 @@ public class GzipParameters {
     /**
      * Gets an arbitrary user-defined comment.
      *
-     * @return a user-defined comment.
+     * @return A user-defined comment.
      */
     public String getComment() {
         return comment;

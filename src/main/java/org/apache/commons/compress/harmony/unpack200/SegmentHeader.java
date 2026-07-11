@@ -127,7 +127,7 @@ public class SegmentHeader {
      * @param name  the name of the scalar (primarily for logging/debugging purposes)
      * @param in    the input stream to read from
      * @param codec the codec for this scalar
-     * @return an array of decoded {@code long[]} values
+     * @return An array of decoded {@code long[]} values
      * @throws IOException      if there is a problem reading from the underlying input stream
      * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid
      */

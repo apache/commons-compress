@@ -178,7 +178,7 @@ public final class ExtraField implements Iterable<SubField> {
      * </pre>
      *
      * @param bytes without the {@code XLEN} field.
-     * @return a new instance.
+     * @return A new instance.
      * @throws CompressorException Thrown for a formatting problem.
      */
     static ExtraField fromBytes(final byte[] bytes) throws CompressorException {
@@ -320,7 +320,7 @@ public final class ExtraField implements Iterable<SubField> {
     /**
      * Returns an unmodifiable iterator over the elements in the SubField list in proper sequence.
      *
-     * @return an unmodifiable naturally ordered iterator over the SubField elements.
+     * @return An unmodifiable naturally ordered iterator over the SubField elements.
      */
     @Override
     public Iterator<SubField> iterator() {

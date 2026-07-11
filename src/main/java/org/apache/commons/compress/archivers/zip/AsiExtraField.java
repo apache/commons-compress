@@ -196,7 +196,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
     /**
      * Gets the length of the extra field in the local file data - without Header-ID or length specifier.
      *
-     * @return a {@code ZipShort} for the length of the data of this extra field.
+     * @return A {@code ZipShort} for the length of the data of this extra field.
      */
     @Override
     public ZipShort getLocalFileDataLength() {

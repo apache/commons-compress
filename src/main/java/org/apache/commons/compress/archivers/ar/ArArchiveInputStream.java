@@ -416,7 +416,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
      * Parses the entry metadata from the provided raw record.
      *
      * @param headerBuf the buffer containing the entry metadata.
-     * @return an {@link ArArchiveEntry} object containing the parsed metadata.
+     * @return An {@link ArArchiveEntry} object containing the parsed metadata.
      * @throws IOException if the metadata cannot be parsed correctly.
      */
     private ArArchiveEntry parseEntry(final byte[] headerBuf) throws IOException {

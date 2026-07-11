@@ -67,7 +67,7 @@ public final class UnparseableExtraFieldData implements ZipExtraField {
     /**
      * The Header-ID.
      *
-     * @return a completely arbitrary value that should be ignored.
+     * @return A completely arbitrary value that should be ignored.
      */
     @Override
     public ZipShort getHeaderId() {

@@ -799,7 +799,7 @@ public final class TarUtils {
      *
      * @param buffer The buffer from which to parse.
      * @param offset The offset into the buffer from which to parse.
-     * @return a parsed sparse struct.
+     * @return A parsed sparse struct.
      * @since 1.20
      */
     public static TarArchiveStructSparse parseSparse(final byte[] buffer, final int offset) {

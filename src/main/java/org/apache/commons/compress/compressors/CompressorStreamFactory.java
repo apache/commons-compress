@@ -727,7 +727,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
     /**
      * Gets a sorted map of compression input stream providers.
      *
-     * @return a sorted map of compression input stream providers.
+     * @return A sorted map of compression input stream providers.
      */
     public SortedMap<String, CompressorStreamProvider> getCompressorInputStreamProviders() {
         if (compressorInputStreamProviders == null) {
@@ -739,7 +739,7 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
     /**
      * Gets a sorted map of compression output stream providers.
      *
-     * @return a sorted map of compression output stream providers.
+     * @return A sorted map of compression output stream providers.
      */
     public SortedMap<String, CompressorStreamProvider> getCompressorOutputStreamProviders() {
         if (compressorOutputStreamProviders == null) {

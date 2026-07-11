@@ -111,7 +111,7 @@ public class SevenZFileOptions {
     /**
      * Obtains a builder for SevenZFileOptions.
      *
-     * @return a builder for SevenZFileOptions.
+     * @return A builder for SevenZFileOptions.
      */
     public static Builder builder() {
         return new Builder();

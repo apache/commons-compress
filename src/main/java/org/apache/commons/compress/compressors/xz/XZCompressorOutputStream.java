@@ -105,7 +105,7 @@ public class XZCompressorOutputStream extends CompressorOutputStream<XZOutputStr
     /**
      * Constructs a new builder of {@link XZCompressorOutputStream}.
      *
-     * @return a new builder of {@link XZCompressorOutputStream}.
+     * @return A new builder of {@link XZCompressorOutputStream}.
      * @since 1.28.0
      */
     public static Builder builder() {

@@ -444,7 +444,7 @@ public abstract class ByteCodeForm {
     /**
      * Gets a copy of the rewrite array.
      *
-     * @return a copy of the rewrite array.
+     * @return A copy of the rewrite array.
      */
     public int[] getRewriteCopy() {
         return Arrays.copyOf(rewrite, rewrite.length);

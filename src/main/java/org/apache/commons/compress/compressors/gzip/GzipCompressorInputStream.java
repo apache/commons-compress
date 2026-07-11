@@ -117,7 +117,7 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
          * You must set input that supports {@link InputStream}, otherwise, this method throws an exception.
          * </p>
          *
-         * @return a new instance.
+         * @return A new instance.
          * @throws IllegalStateException         if the {@code origin} is {@code null}.
          * @throws UnsupportedOperationException if the origin cannot be converted to an {@link InputStream}.
          * @see AbstractOrigin#getInputStream(java.nio.file.OpenOption...)
@@ -210,7 +210,7 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
     /**
      * Constructs a new builder of {@link GzipCompressorInputStream}.
      *
-     * @return a new builder of {@link GzipCompressorInputStream}.
+     * @return A new builder of {@link GzipCompressorInputStream}.
      * @since 1.28.0
      */
     public static Builder builder() {

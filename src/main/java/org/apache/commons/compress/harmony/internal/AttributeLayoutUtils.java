@@ -224,7 +224,7 @@ public final class AttributeLayoutUtils {
      * Converts a list of integers to a list of ranges where each range represents a single integer.
      *
      * @param tags the list of integer tags
-     * @return a list of ranges representing the tags
+     * @return A list of ranges representing the tags
      */
     public static List<IntegerRange> toRanges(final List<Integer> tags) {
         return tags.stream().map(n -> IntegerRange.of(n, n)).collect(Collectors.toList());

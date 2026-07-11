@@ -453,7 +453,7 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream<ZstdOutpu
     /**
      * Constructs a new builder of {@link ZstdCompressorOutputStream}.
      *
-     * @return a new builder of {@link ZstdCompressorOutputStream}.
+     * @return A new builder of {@link ZstdCompressorOutputStream}.
      * @since 1.28.0
      */
     public static Builder builder() {

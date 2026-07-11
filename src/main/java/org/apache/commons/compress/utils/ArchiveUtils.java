@@ -205,7 +205,7 @@ public class ArchiveUtils {
      * </p>
      *
      * @param s the string to sanitize.
-     * @return a sanitized version of the argument.
+     * @return A sanitized version of the argument.
      * @since 1.12
      */
     public static String sanitize(final String s) {

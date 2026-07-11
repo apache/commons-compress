@@ -283,7 +283,7 @@ public abstract class Pack200 {
      * instance of the specified class is returned, otherwise the system's default implementation is returned.
      * </p>
      *
-     * @return an instance of {@code Packer}.
+     * @return An instance of {@code Packer}.
      */
     public static Pack200.Packer newPacker() {
         return (Packer) newInstance(SYSTEM_PROPERTY_PACKER, "org.apache.commons.compress.harmony.pack200.Pack200PackerAdapter"); //$NON-NLS-1$
@@ -296,7 +296,7 @@ public abstract class Pack200 {
      * the specified class is returned, otherwise the system's default implementation is returned.
      * </p>
      *
-     * @return an instance of {@link Pack200.Unpacker}.
+     * @return An instance of {@link Pack200.Unpacker}.
      */
     public static Pack200.Unpacker newUnpacker() {
         return (Unpacker) newInstance(SYSTEM_PROPERTY_UNPACKER, "org.apache.commons.compress.harmony.unpack200.Pack200UnpackerAdapter"); //$NON-NLS-1$

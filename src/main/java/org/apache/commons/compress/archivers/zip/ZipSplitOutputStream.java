@@ -133,7 +133,7 @@ final class ZipSplitOutputStream extends RandomAccessOutputStream {
      * </p>
      *
      * @param zipSplitSegmentSuffixIndex.
-     * @return a new Path.
+     * @return A new Path.
      * @throws IOException if an I/O error occurs.
      */
     private Path createNewSplitSegmentFile(final Integer zipSplitSegmentSuffixIndex) throws IOException {

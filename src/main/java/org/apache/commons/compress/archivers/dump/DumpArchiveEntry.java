@@ -248,7 +248,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
          * Finds a matching set of enumeration values for the given code.
          *
          * @param code a code.
-         * @return a Set of values, never null.
+         * @return A Set of values, never null.
          */
         public static Set<PERMISSION> find(final int code) {
             final Set<PERMISSION> set = new HashSet<>();
@@ -362,7 +362,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
          * Finds a matching enumeration value for the given code.
          *
          * @param code a code.
-         * @return a value, never null.
+         * @return A value, never null.
          */
         public static TYPE find(final int code) {
             TYPE type = UNKNOWN;

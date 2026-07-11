@@ -275,7 +275,7 @@ public class IntList {
     /**
      * Converts this list to an array.
      *
-     * @return an array containing all integers in this list.
+     * @return An array containing all integers in this list.
      */
     public int[] toArray() {
         final int size = lastIndex - firstIndex;

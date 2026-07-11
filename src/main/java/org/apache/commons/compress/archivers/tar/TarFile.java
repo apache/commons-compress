@@ -132,7 +132,7 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
     /**
      * Creates a new builder.
      *
-     * @return a new builder.
+     * @return A new builder.
      * @since 1.29.0
      */
     public static Builder builder() {

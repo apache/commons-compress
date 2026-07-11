@@ -218,7 +218,7 @@ public class CpBands extends BandSet {
      * Gets a constant pool class for the given class name.
      *
      * @param className a fully-qualified class name.
-     * @return a constant pool class.
+     * @return A constant pool class.
      */
     public CPClass getCPClass(String className) {
         if (className == null) {
@@ -356,7 +356,7 @@ public class CpBands extends BandSet {
      * Gets a constant pool signature.
      *
      * @param signature the signature string.
-     * @return a constant pool signature.
+     * @return A constant pool signature.
      */
     public CPSignature getCPSignature(final String signature) {
         if (signature == null) {

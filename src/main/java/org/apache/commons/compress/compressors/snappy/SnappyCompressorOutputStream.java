@@ -88,7 +88,7 @@ public class SnappyCompressorOutputStream extends CompressorOutputStream<OutputS
      * Returns a builder correctly configured for the Snappy algorithm using the given block size.
      *
      * @param blockSize the block size.
-     * @return a builder correctly configured for the Snappy algorithm using the given block size.
+     * @return A builder correctly configured for the Snappy algorithm using the given block size.
      */
     public static Parameters.Builder createParameterBuilder(final int blockSize) {
         // the max offset and max literal length defined by the format

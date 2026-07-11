@@ -241,7 +241,7 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
     /**
      * Returns an iterator over the SubField elements in this extra field in proper sequence.
      *
-     * @return an iterator over the SubField elements in this extra field in proper sequence.
+     * @return An iterator over the SubField elements in this extra field in proper sequence.
      * @since 1.27.0
      */
     public IOIterator<E> iterator() {

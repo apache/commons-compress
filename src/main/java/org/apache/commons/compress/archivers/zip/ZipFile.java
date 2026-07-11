@@ -487,7 +487,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
     /**
      * Creates a new Builder.
      *
-     * @return a new Builder.
+     * @return A new Builder.
      * @since 1.26.0
      */
     public static Builder builder() {
@@ -613,7 +613,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
      * </ul>
      *
      * @param versionMadeBy version/.
-     * @return a platform code.
+     * @return A platform code.
      */
     static int toPlatform(final int versionMadeBy) {
         return versionMadeBy >> BYTE_SHIFT & NIBLET_MASK;
@@ -1205,7 +1205,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
      * Gets an InputStream for reading the contents of the given entry.
      *
      * @param entry the entry to get the stream for.
-     * @return a stream to read the entry from. The returned stream implements {@link InputStreamStatistics}.
+     * @return A stream to read the entry from. The returned stream implements {@link InputStreamStatistics}.
      * @throws IOException if unable to create an input stream from the zipEntry.
      */
     @Override
@@ -1328,7 +1328,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
      * additional data to be read.
      * </p>
      *
-     * @return a map of zip entries that didn't have the language encoding flag set when read.
+     * @return A map of zip entries that didn't have the language encoding flag set when read.
      */
     private Map<ZipArchiveEntry, NameAndComment> populateFromCentralDirectory() throws IOException {
         final HashMap<ZipArchiveEntry, NameAndComment> noUTF8Flag = new HashMap<>();
@@ -1735,7 +1735,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
      * Entries appear in the {@code Stream} in the order they appear in the central directory of the ZIP file.
      * </p>
      *
-     * @return an ordered {@code Stream} of entries in this ZIP file.
+     * @return An ordered {@code Stream} of entries in this ZIP file.
      * @throws IllegalStateException if the ZIP file has been closed.
      * @since 1.28.0
      */

@@ -34,7 +34,7 @@ public interface ExtraFieldParsingBehavior extends UnparseableExtraFieldBehavior
      * </p>
      *
      * @param headerId the id for the extra field.
-     * @return an instance of ZipExtraField, must not be {@code null}.
+     * @return An instance of ZipExtraField, must not be {@code null}.
      * @throws ZipException           if an error occurs.
      * @throws InstantiationException if unable to instantiate the class, not thrown by Commons Compress.
      * @throws IllegalAccessException if not allowed to instantiate the class, not thrown by Commons Compress.

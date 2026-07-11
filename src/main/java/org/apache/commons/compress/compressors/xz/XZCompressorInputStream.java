@@ -120,7 +120,7 @@ public class XZCompressorInputStream extends CompressorInputStream implements In
     /**
      * Constructs a new builder of {@link LZMACompressorOutputStream}.
      *
-     * @return a new builder of {@link LZMACompressorOutputStream}.
+     * @return A new builder of {@link LZMACompressorOutputStream}.
      * @since 1.28.0
      */
     public static Builder builder() {

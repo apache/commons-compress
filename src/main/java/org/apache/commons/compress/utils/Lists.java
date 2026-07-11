@@ -33,7 +33,7 @@ public class Lists {
      * Creates a new {@link ArrayList}.
      *
      * @param <E> type of elements contained in new list.
-     * @return a new {@link ArrayList}.
+     * @return A new {@link ArrayList}.
      */
     public static <E> ArrayList<E> newArrayList() {
         return new ArrayList<>();
@@ -44,7 +44,7 @@ public class Lists {
      *
      * @param iterator the source iterator.
      * @param <E>      type of elements contained in new list.
-     * @return a new {@link ArrayList}.
+     * @return A new {@link ArrayList}.
      */
     public static <E> ArrayList<E> newArrayList(final Iterator<? extends E> iterator) {
         final ArrayList<E> list = newArrayList();

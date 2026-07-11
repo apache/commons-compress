@@ -68,7 +68,7 @@ public interface ArchiveEntry {
      * Resolves this entry in the given parent Path.
      *
      * @param parentPath the {@link Path#resolve(Path)} receiver.
-     * @return a resolved and normalized Path.
+     * @return A resolved and normalized Path.
      * @throws IOException if this method detects a Zip slip.
      * @since 1.26.0
      */

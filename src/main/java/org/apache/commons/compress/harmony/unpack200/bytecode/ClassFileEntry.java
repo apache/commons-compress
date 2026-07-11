@@ -54,7 +54,7 @@ public abstract class ClassFileEntry {
     /**
      * Returns an empty array.
      *
-     * @return an empty array.
+     * @return An empty array.
      */
     protected ClassFileEntry[] getNestedClassFileEntries() {
         return NONE;

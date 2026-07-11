@@ -110,7 +110,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         /**
          * Gets a size estimate in bytes.
          *
-         * @return a size estimate in bytes.
+         * @return A size estimate in bytes.
          */
         private long coderSize() {
             return 2 /* methodId is between 1 and four bytes currently, COPY and LZMA2 are the most common with 1 */
@@ -121,7 +121,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         /**
          * Gets a size estimate in bytes.
          *
-         * @return a size estimate in bytes.
+         * @return A size estimate in bytes.
          */
         private long entrySize() {
             return 100; /* real size depends on name length, everything without name is about 70 bytes */
@@ -130,7 +130,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         /**
          * Gets a size estimate in bytes.
          *
-         * @return a size estimate in bytes.
+         * @return A size estimate in bytes.
          */
         long estimateSizeBytes() {
             final long lowerBound = 16L * numberOfPackedStreams /* packSizes, packCrcs in Archive */
@@ -416,7 +416,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     /**
      * Creates a new Builder.
      *
-     * @return a new Builder.
+     * @return A new Builder.
      * @since 1.26.0
      */
     public static Builder builder() {
@@ -494,7 +494,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
      * Reads the size of a header field and validates that it is not larger than the remaining bytes in the header buffer.
      *
      * @param header the buffer containing the 7z header.
-     * @return a non-negative int.
+     * @return A non-negative int.
      * @throws ArchiveException if the value is truncated, too large, or exceeds the remaining bytes in the header buffer.
      */
     static int readFieldSize(final ByteBuffer header) throws ArchiveException {
@@ -508,7 +508,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
      * Reads a 7z REAL_UINT64 from the header.
      *
      * @param header the buffer containing the 7z header.
-     * @return a non-negative long.
+     * @return A non-negative long.
      * @throws ArchiveException if the value is truncated or too large.
      */
     static long readRealUint64(final ByteBuffer header) throws IOException {
@@ -524,7 +524,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
      * Reads a 7z UINT32 from the header.
      *
      * @param header the buffer containing the 7z header.
-     * @return a non-negative long.
+     * @return A non-negative long.
      * @throws ArchiveException if the value is truncated.
      */
     static long readUint32(final ByteBuffer header) throws ArchiveException {
@@ -535,7 +535,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
      * Reads a 7z UINT64 from the header.
      *
      * @param header the buffer containing the 7z header.
-     * @return a non-negative long.
+     * @return A non-negative long.
      * @throws ArchiveException if the value is truncated or too large.
      */
     static long readUint64(final ByteBuffer header) throws ArchiveException {
@@ -565,7 +565,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
      * bytes in the header.</p>
      *
      * @param header the buffer containing the 7z header.
-     * @return a non-negative int.
+     * @return A non-negative int.
      * @throws ArchiveException if the value is truncated or too large.
      * @see #readFieldSize(ByteBuffer)
      */
@@ -1145,7 +1145,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
      * The content methods are only available for entries that have already been reached via {@link #getNextEntry}.
      * </p>
      *
-     * @return a copy of meta-data of all archive entries.
+     * @return A copy of meta-data of all archive entries.
      * @since 1.11
      * @deprecated Since 1.29.0, use {@link #entries()} or {@link #stream()}.
      */
@@ -1161,7 +1161,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
      * </p>
      *
      * @param entry the entry to get the stream for.
-     * @return a stream to read the entry from.
+     * @return A stream to read the entry from.
      * @throws IOException if unable to create an input stream from the entry.
      * @since 1.20
      */

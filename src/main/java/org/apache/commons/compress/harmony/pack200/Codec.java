@@ -148,7 +148,7 @@ public abstract class Codec {
      *
      * @param n  the number of values to decode
      * @param in the input stream to read from
-     * @return an array of {@code int} values corresponding to values decoded
+     * @return An array of {@code int} values corresponding to values decoded
      * @throws IOException      if there is a problem reading from the underlying input stream
      * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid
      */
@@ -168,7 +168,7 @@ public abstract class Codec {
      * @param n          the number of values to decode
      * @param in         the input stream to read from
      * @param firstValue the first value in the band if it has already been read
-     * @return an array of {@code int} values corresponding to values decoded, with firstValue as the first value in the array.
+     * @return An array of {@code int} values corresponding to values decoded, with firstValue as the first value in the array.
      * @throws IOException      if there is a problem reading from the underlying input stream
      * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid
      */

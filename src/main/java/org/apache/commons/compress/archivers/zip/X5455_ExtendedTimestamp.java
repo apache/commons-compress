@@ -253,7 +253,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      * For X5455 the central length is often smaller than the local length, because central cannot contain access or create timestamps.
      * </p>
      *
-     * @return a {@code ZipShort} for the length of the data of this extra field.
+     * @return A {@code ZipShort} for the length of the data of this extra field.
      */
     @Override
     public ZipShort getCentralDirectoryLength() {
@@ -359,7 +359,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
     /**
      * Gets the length of the extra field in the local file data - without Header-ID or length specifier.
      *
-     * @return a {@code ZipShort} for the length of the data of this extra field.
+     * @return A {@code ZipShort} for the length of the data of this extra field.
      */
     @Override
     public ZipShort getLocalFileDataLength() {

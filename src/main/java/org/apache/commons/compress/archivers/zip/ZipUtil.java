@@ -182,7 +182,7 @@ public abstract class ZipUtil {
      * Converts a DOS date/time field to a Date object.
      *
      * @param zipDosTime contains the stored DOS time.
-     * @return a Date instance corresponding to the given time.
+     * @return A Date instance corresponding to the given time.
      */
     public static Date fromDosTime(final ZipLong zipDosTime) {
         final long dosTime = zipDosTime.getValue();
@@ -268,7 +268,7 @@ public abstract class ZipUtil {
      *
      * @param message the detail message.
      * @param cause   throwable The cause of this Throwable.
-     * @return a new ZipException.
+     * @return A new ZipException.
      */
     static ZipException newZipException(final String message, final Throwable cause) {
         return (ZipException) new ZipException(message).initCause(cause);

@@ -64,7 +64,7 @@ public abstract class AnnotationsAttribute extends Attribute {
         /**
          * Gets a list of class file entries.
          *
-         * @return a list of class file entries.
+         * @return A list of class file entries.
          */
         public List<Object> getClassFileEntries() {
             final List<Object> entries = new ArrayList<>();
@@ -147,7 +147,7 @@ public abstract class AnnotationsAttribute extends Attribute {
         /**
          * Gets a list of class file entries.
          *
-         * @return a list of class file entries.
+         * @return A list of class file entries.
          */
         public List<Object> getClassFileEntries() {
             final List<Object> entries = new ArrayList<>(1);

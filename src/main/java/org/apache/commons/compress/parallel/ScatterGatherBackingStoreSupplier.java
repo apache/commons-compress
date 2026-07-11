@@ -30,7 +30,7 @@ public interface ScatterGatherBackingStoreSupplier {
     /**
      * Constructs a ScatterGatherBackingStore.
      *
-     * @return a ScatterGatherBackingStore, not null.
+     * @return A ScatterGatherBackingStore, not null.
      * @throws IOException when something fails.
      */
     ScatterGatherBackingStore get() throws IOException;

@@ -34,7 +34,7 @@ class ListerTest {
     /**
      * Creates a stream of paths of test fixtures with file names that don't end with {@code "-fail"} or {@code "-lenient"} for specific file extensions.
      *
-     * @return a stream of paths.
+     * @return A stream of paths.
      * @throws IOException if an I/O error is thrown.
      */
     public static Stream<Path> getFixtures() throws IOException {

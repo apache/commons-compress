@@ -566,7 +566,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     /**
      * Overwrite clone.
      *
-     * @return a cloned copy of this ZipArchiveEntry.
+     * @return A cloned copy of this ZipArchiveEntry.
      */
     @Override
     public Object clone() {
@@ -722,7 +722,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
      * directory to store additional information.
      * </p>
      *
-     * @return an array of the extra fields.
+     * @return An array of the extra fields.
      */
     public ZipExtraField[] getExtraFields() {
         return getParseableExtraFields();
@@ -732,7 +732,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
      * Gets extra fields.
      *
      * @param includeUnparseable whether to also return unparseable extra fields as {@link UnparseableExtraFieldData} if such data exists.
-     * @return an array of the extra fields.
+     * @return An array of the extra fields.
      * @since 1.1
      */
     public ZipExtraField[] getExtraFields(final boolean includeUnparseable) {
@@ -743,7 +743,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
      * Gets extra fields.
      *
      * @param parsingBehavior controls parsing of extra fields.
-     * @return an array of the extra fields.
+     * @return An array of the extra fields.
      * @throws ZipException if parsing fails, cannot happen if {@code
      * parsingBehavior}  is {@link ExtraFieldParsingMode#BEST_EFFORT}.
      * @since 1.19
@@ -1011,7 +1011,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     /**
      * Gets the hash code of the entry. This uses the name as the hash code.
      *
-     * @return a hash code.
+     * @return A hash code.
      */
     @Override
     public int hashCode() {

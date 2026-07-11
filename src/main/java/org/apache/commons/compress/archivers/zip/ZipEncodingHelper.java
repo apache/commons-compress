@@ -96,7 +96,7 @@ public abstract class ZipEncodingHelper {
      * Returns a Charset for the named charset. If the name cannot find a charset, return {@link Charset#defaultCharset()}.
      *
      * @param name The name of the requested charset, may be null.
-     * @return a Charset for the named charset.
+     * @return A Charset for the named charset.
      * @see Charset#defaultCharset()
      */
     private static Charset toSafeCharset(final String name) {

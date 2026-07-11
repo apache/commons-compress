@@ -232,7 +232,7 @@ public enum ZipMethod {
      * Gets the code of the compression method.
      *
      * @see ZipArchiveEntry#getMethod()
-     * @return an integer code for the method.
+     * @return An integer code for the method.
      */
     public int getCode() {
         return code;

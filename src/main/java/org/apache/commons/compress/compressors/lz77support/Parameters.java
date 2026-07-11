@@ -253,7 +253,7 @@ public final class Parameters {
      *
      * @param windowSize the size of the sliding window - this determines the maximum offset a back-reference can take. Must be a power of two.
      * @throws IllegalArgumentException if windowSize is not a power of two.
-     * @return a builder configured for the given window size.
+     * @return A builder configured for the given window size.
      */
     public static Builder builder(final int windowSize) {
         return new Builder(windowSize);

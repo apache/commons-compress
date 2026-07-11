@@ -448,7 +448,7 @@ public final class AttributeLayoutParser<T> {
     /**
      * Reads an {@code unsigned_int} layout definition from the stream.
      *
-     * @return an {@code unsigned_int} layout definition from the stream.
+     * @return An {@code unsigned_int} layout definition from the stream.
      * @throws Pack200Exception If the definition is invalid.
      */
     private String readUnsignedInt() throws Pack200Exception {

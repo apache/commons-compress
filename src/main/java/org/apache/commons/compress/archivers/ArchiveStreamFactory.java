@@ -558,7 +558,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
     /**
      * Gets an unmodifiable sorted map from input stream provider names to provider objects.
      *
-     * @return an unmodifiable sorted map of from input stream provider names to provider objects.
+     * @return An unmodifiable sorted map of from input stream provider names to provider objects.
      * @see #findAvailableArchiveInputStreamProviders()
      */
     public SortedMap<String, ArchiveStreamProvider> getArchiveInputStreamProviders() {
@@ -571,7 +571,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
     /**
      * Gets an unmodifiable sorted map from output stream provider names to provider objects.
      *
-     * @return an unmodifiable sorted map of from input stream provider names to provider objects.
+     * @return An unmodifiable sorted map of from input stream provider names to provider objects.
      * @see #findAvailableArchiveInputStreamProviders()
      */
     public SortedMap<String, ArchiveStreamProvider> getArchiveOutputStreamProviders() {
