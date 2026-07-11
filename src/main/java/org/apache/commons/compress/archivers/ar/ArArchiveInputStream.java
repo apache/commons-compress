@@ -265,7 +265,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
      * Gets an extended name from the GNU extended name buffer.
      *
      * @param offset pointer to entry within the buffer.
-     * @return the extended file name; without trailing "/" if present.
+     * @return The extended file name; without trailing "/" if present.
      * @throws IOException if name not found or buffer not set up.
      */
     private String getExtendedName(final int offset) throws IOException {
@@ -294,7 +294,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
     /**
      * Returns the next AR entry in this stream.
      *
-     * @return the next AR entry.
+     * @return The next AR entry.
      * @throws IOException if the entry could not be read.
      * @deprecated Use {@link #getNextEntry()}.
      */
@@ -386,7 +386,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
      *   The record is expected to be of a fixed size defined by the AR format.
      * </p>
      *
-     * @return the byte array containing the record data, or null if the end of the stream is reached.
+     * @return The byte array containing the record data, or null if the end of the stream is reached.
      * @throws IOException if an I/O error occurs while reading the stream or if the record is malformed.
      */
     private byte[] getRecord() throws IOException {

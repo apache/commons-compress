@@ -652,7 +652,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     /**
      * Gets the extra data for the central directory.
      *
-     * @return the central directory extra data.
+     * @return The central directory extra data.
      */
     public byte[] getCentralDirectoryExtra() {
         return ExtraFieldUtils.mergeCentralDirectoryData(getAllExtraFieldsNoCopy());
@@ -676,7 +676,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     /**
      * Gets the number of the split segment this entry starts at.
      *
-     * @return the number of the split segment this entry starts at.
+     * @return The number of the split segment this entry starts at.
      * @since 1.20
      */
     public long getDiskNumberStart() {
@@ -691,7 +691,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
      * {@link ZipArchiveInputStream}; use {@link ZipFile} instead.
      * </p>
      *
-     * @return the external file attributes.
+     * @return The external file attributes.
      */
     public long getExternalAttributes() {
         return externalAttributes;
@@ -783,7 +783,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     /**
      * The "general purpose bit" field.
      *
-     * @return the general purpose bit.
+     * @return The general purpose bit.
      * @since 1.1
      */
     public GeneralPurposeBit getGeneralPurposeBit() {
@@ -798,7 +798,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
      * attribute.
      * </p>
      *
-     * @return the internal file attributes.
+     * @return The internal file attributes.
      */
     public int getInternalAttributes() {
         return internalAttributes;
@@ -820,7 +820,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     /**
      * Gets the extra data for the local file data.
      *
-     * @return the extra data for local file.
+     * @return The extra data for local file.
      */
     public byte[] getLocalFileDataExtra() {
         final byte[] extra = getExtra();
@@ -830,7 +830,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     /**
      * Gets the local header offset.
      *
-     * @return the local header offset.
+     * @return The local header offset.
      * @since 1.24.0
      */
     public long getLocalHeaderOffset() {
@@ -861,7 +861,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
      * This method returns the raw name as it is stored inside of the archive.
      * </p>
      *
-     * @return the entry name.
+     * @return The entry name.
      */
     @Override
     public String getName() {
@@ -916,7 +916,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
      * This method will return null if this instance has not been read from an archive.
      * </p>
      *
-     * @return the raw name bytes.
+     * @return The raw name bytes.
      * @since 1.2
      */
     public byte[] getRawName() {
@@ -934,7 +934,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
      * read completely.
      * </p>
      *
-     * @return the entry size.
+     * @return The entry size.
      */
     @Override
     public long getSize() {
@@ -968,7 +968,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
      * {@link ZipArchiveInputStream}; use {@link ZipFile} instead.
      * </p>
      *
-     * @return the Unix permissions, or 0 if the platform is not {@link #PLATFORM_UNIX}.
+     * @return The Unix permissions, or 0 if the platform is not {@link #PLATFORM_UNIX}.
      */
     public int getUnixMode() {
         return platform != PLATFORM_UNIX ? 0 : (int) (getExternalAttributes() >> SHORT_SHIFT & SHORT_MASK);

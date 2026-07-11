@@ -681,7 +681,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
      * Creates the appropriate InputStream for the Zstd compression method.
      *
      * @param in the input stream which should be used for compression.
-     * @return the {@link InputStream} for handling the Zstd compression.
+     * @return The {@link InputStream} for handling the Zstd compression.
      * @throws IOException if an I/O error occurs.
      * @since 1.28.0
      */
@@ -818,7 +818,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     /**
      * Gets the next entry.
      *
-     * @return the next entry.
+     * @return The next entry.
      * @throws IOException if an I/O error occurs.
      * @deprecated Use {@link #getNextEntry()}.
      */
@@ -1358,7 +1358,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
      * Sets the custom extra fields factory.
      *
      * @param extraFieldSupport the lookup function based on extra field header id.
-     * @return the archive.
+     * @return The archive.
      */
     public ZipArchiveInputStream setExtraFieldSupport(final Function<ZipShort, ZipExtraField> extraFieldSupport) {
         // this.extraFieldSupport = extraFieldSupport;
@@ -1375,7 +1375,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
      * </p>
      *
      * @param value the number of bytes to be skipped.
-     * @return the actual number of bytes skipped.
+     * @return The actual number of bytes skipped.
      * @throws IOException              - if an I/O error occurs.
      * @throws IllegalArgumentException - if value is negative.
      */

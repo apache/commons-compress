@@ -237,7 +237,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
     /**
      * Gets the actual data to put into central directory data - without Header-ID or length specifier.
      *
-     * @return the central directory data.
+     * @return The central directory data.
      */
     @Override
     public byte[] getCentralDirectoryData() {
@@ -322,7 +322,7 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
     /**
      * Gets the Header-ID.
      *
-     * @return the value for the header id for this extrafield.
+     * @return The value for the header id for this extrafield.
      */
     @Override
     public ZipShort getHeaderId() {

@@ -243,7 +243,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
     /**
      * Gets the archive's comment.
      *
-     * @return the archive's comment.
+     * @return The archive's comment.
      */
     public String getArchiveComment() {
         return mainHeader.comment;
@@ -252,7 +252,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
     /**
      * Gets the archive's recorded name.
      *
-     * @return the archive's name.
+     * @return The archive's name.
      */
     public String getArchiveName() {
         return mainHeader.name;

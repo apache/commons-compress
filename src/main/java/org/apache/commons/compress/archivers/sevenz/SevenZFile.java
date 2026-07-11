@@ -383,7 +383,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
      * @param sum         current sum.
      * @param y           second integer.
      * @param description description of the value being added, for error messages.
-     * @return the new sum.
+     * @return The new sum.
      * @throws ArchiveException if the sum overflows an int.
      */
     private static int accumulate(final int sum, final int y, final String description) throws ArchiveException {
@@ -401,7 +401,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
      * @param sum         current sum.
      * @param y           second integer.
      * @param description description of the value being added, for error messages.
-     * @return the new sum.
+     * @return The new sum.
      * @throws ArchiveException if the sum overflows an int.
      */
     private static long accumulate(final long sum, final long y, final String description) throws ArchiveException {
@@ -1186,7 +1186,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     /**
      * Gets the next Archive Entry in this archive.
      *
-     * @return the next entry, or {@code null} if there are no more entries.
+     * @return The next entry, or {@code null} if there are no more entries.
      * @throws IOException if the next entry could not be read.
      */
     public SevenZArchiveEntry getNextEntry() throws IOException {
@@ -1270,7 +1270,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
      * Creates an int array while checking memory limits.
      *
      * @param size the size of the array.
-     * @return the int array.
+     * @return The int array.
      * @throws MemoryLimitException if memory limit is exceeded.
      */
     private int[] intArray(final int size) throws MemoryLimitException {
@@ -1282,7 +1282,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
      * Creates a long array while checking memory limits.
      *
      * @param size the size of the array.
-     * @return the long array.
+     * @return The long array.
      * @throws MemoryLimitException if memory limit is exceeded.
      */
     private long[] longArray(final int size) throws MemoryLimitException {
@@ -1294,7 +1294,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
      * Maps the next header into memory.
      *
      * @param startHeader the start header.
-     * @return the mapped ByteBuffer.
+     * @return The mapped ByteBuffer.
      * @throws IOException if an I/O error occurs.
      */
     private ByteBuffer mapNextHeader(final StartHeader startHeader) throws IOException {
@@ -1313,7 +1313,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     /**
      * Reads a byte of data.
      *
-     * @return the byte read, or -1 if end of input is reached.
+     * @return The byte read, or -1 if end of input is reached.
      * @throws IOException if an I/O error has occurred.
      */
     public int read() throws IOException {
@@ -1329,7 +1329,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
      * Reads data into an array of bytes.
      *
      * @param b the array to write data to.
-     * @return the number of bytes read, or -1 if end of input is reached.
+     * @return The number of bytes read, or -1 if end of input is reached.
      * @throws IOException if an I/O error has occurred.
      */
     public int read(final byte[] b) throws IOException {
@@ -1342,7 +1342,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
      * @param b   the array to write data to.
      * @param off offset into the buffer to start filling at.
      * @param len of bytes to read.
-     * @return the number of bytes read, or -1 if end of input is reached.
+     * @return The number of bytes read, or -1 if end of input is reached.
      * @throws IOException if an I/O error has occurred.
      */
     public int read(final byte[] b, final int off, final int len) throws IOException {

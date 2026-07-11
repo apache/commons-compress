@@ -534,7 +534,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     /**
      * Returns the time the file was last accessed.
      *
-     * @return the access time.
+     * @return The access time.
      */
     public Date getAccessTime() {
         return new Date(atime);
@@ -543,7 +543,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     /**
      * Gets file creation time.
      *
-     * @return the creation time.
+     * @return The creation time.
      */
     public Date getCreationTime() {
         return new Date(ctime);
@@ -559,7 +559,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     /**
      * Gets the generation of the file.
      *
-     * @return the generation.
+     * @return The generation.
      */
     public int getGeneration() {
         return generation;
@@ -568,7 +568,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     /**
      * Gets the group id
      *
-     * @return the group id.
+     * @return The group id.
      */
     public int getGroupId() {
         return gid;
@@ -577,7 +577,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     /**
      * Gets the number of records in this segment.
      *
-     * @return the number of records.
+     * @return The number of records.
      */
     public int getHeaderCount() {
         return header.getCount();
@@ -586,7 +586,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     /**
      * Gets the number of sparse records in this segment.
      *
-     * @return the number of sparse records.
+     * @return The number of sparse records.
      */
     public int getHeaderHoles() {
         return header.getHoles();
@@ -595,7 +595,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     /**
      * Gets the type of the tape segment header.
      *
-     * @return the segment header.
+     * @return The segment header.
      */
     public DumpArchiveConstants.SEGMENT_TYPE getHeaderType() {
         return header.getType();
@@ -604,7 +604,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     /**
      * Returns the ino of the entry.
      *
-     * @return the ino.
+     * @return The ino.
      */
     public int getIno() {
         return header.getIno();
@@ -613,7 +613,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     /**
      * The last modified date.
      *
-     * @return the last modified date.
+     * @return The last modified date.
      */
     @Override
     public Date getLastModifiedDate() {
@@ -623,7 +623,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     /**
      * Gets the access permissions on the entry.
      *
-     * @return the access permissions.
+     * @return The access permissions.
      */
     public int getMode() {
         return mode;
@@ -636,7 +636,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
      * This method returns the raw name as it is stored inside of the archive.
      * </p>
      *
-     * @return the name of the entry.
+     * @return The name of the entry.
      */
     @Override
     public String getName() {
@@ -646,7 +646,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     /**
      * Gets the number of hard links to the entry.
      *
-     * @return the number of hard links.
+     * @return The number of hard links.
      */
     public int getNlink() {
         return nlink;
@@ -655,7 +655,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     /**
      * Gets the offset within the archive
      *
-     * @return the offset.
+     * @return The offset.
      */
     public long getOffset() {
         return offset;
@@ -664,7 +664,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     /**
      * Returns the unmodified name of the entry.
      *
-     * @return the name of the entry.
+     * @return The name of the entry.
      */
     String getOriginalName() {
         return originalName;
@@ -673,7 +673,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     /**
      * Returns the permissions on the entry.
      *
-     * @return the permissions.
+     * @return The permissions.
      */
     public Set<PERMISSION> getPermissions() {
         return permissions;
@@ -682,7 +682,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     /**
      * Returns the path of the entry.
      *
-     * @return the path of the entry.
+     * @return The path of the entry.
      */
     public String getSimpleName() {
         return simpleName;
@@ -691,7 +691,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     /**
      * Returns the size of the entry.
      *
-     * @return the size.
+     * @return The size.
      */
     @Override
     public long getSize() {
@@ -701,7 +701,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     /**
      * Gets the type of the entry.
      *
-     * @return the type.
+     * @return The type.
      */
     public TYPE getType() {
         return type;
@@ -710,7 +710,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     /**
      * Gets the user id.
      *
-     * @return the user id.
+     * @return The user id.
      */
     public int getUserId() {
         return uid;
@@ -719,7 +719,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     /**
      * Gets the tape volume where this file is located.
      *
-     * @return the volume.
+     * @return The volume.
      */
     public int getVolume() {
         return volume;

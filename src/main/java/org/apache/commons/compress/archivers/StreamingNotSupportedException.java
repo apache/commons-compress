@@ -45,7 +45,7 @@ public class StreamingNotSupportedException extends ArchiveException {
     /**
      * Gets the format that has been requested/detected.
      *
-     * @return the format that has been requested/detected.
+     * @return The format that has been requested/detected.
      */
     public String getFormat() {
         return format;

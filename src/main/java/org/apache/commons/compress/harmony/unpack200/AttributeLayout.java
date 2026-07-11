@@ -309,7 +309,7 @@ public class AttributeLayout implements IMatcher {
     /**
      * Gets the Codec based on the layout.
      *
-     * @return the Codec.
+     * @return The Codec.
      */
     public Codec getCodec() {
         if (layout.indexOf('O') >= 0) {
@@ -331,7 +331,7 @@ public class AttributeLayout implements IMatcher {
     /**
      * Gets the context.
      *
-     * @return the context.
+     * @return The context.
      */
     public int getContext() {
         return context;
@@ -340,7 +340,7 @@ public class AttributeLayout implements IMatcher {
     /**
      * Gets the index.
      *
-     * @return the index.
+     * @return The index.
      */
     public int getIndex() {
         return index;
@@ -349,7 +349,7 @@ public class AttributeLayout implements IMatcher {
     /**
      * Gets the layout.
      *
-     * @return the layout.
+     * @return The layout.
      */
     public String getLayout() {
         return layout;
@@ -358,7 +358,7 @@ public class AttributeLayout implements IMatcher {
     /**
      * Gets the name.
      *
-     * @return the name.
+     * @return The name.
      */
     public String getName() {
         return name;
@@ -369,7 +369,7 @@ public class AttributeLayout implements IMatcher {
      *
      * @param longIndex An index into the segment constant pool.
      * @param pool the segment constant pool.
-     * @return the matching ClassFileEntry.
+     * @return The matching ClassFileEntry.
      * @throws Pack200Exception if the input is invalid.
      */
     public ClassFileEntry getValue(final long longIndex, final SegmentConstantPool pool) throws Pack200Exception {
@@ -382,7 +382,7 @@ public class AttributeLayout implements IMatcher {
      * @param longIndex An index into the segment constant pool.
      * @param type the Java type signature.
      * @param pool the segment constant pool.
-     * @return the matching ClassFileEntry.
+     * @return The matching ClassFileEntry.
      * @throws Pack200Exception if the input is invalid.
      */
     public ClassFileEntry getValue(final long longIndex, final String type, final SegmentConstantPool pool) throws Pack200Exception {
@@ -436,7 +436,7 @@ public class AttributeLayout implements IMatcher {
     /**
      * Gets the backward call count.
      *
-     * @return the backward call count.
+     * @return The backward call count.
      */
     public int numBackwardsCallables() {
         if ("*".equals(layout)) {

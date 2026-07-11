@@ -118,7 +118,7 @@ public class CpBands extends BandSet {
      * Gets the CPClass value at the specified index.
      *
      * @param index the index.
-     * @return the CPClass value.
+     * @return The CPClass value.
      */
     public CPClass cpClassValue(final int index) {
         final String string = cpClass[index];
@@ -131,7 +131,7 @@ public class CpBands extends BandSet {
      * Gets the CPClass value for the specified string.
      *
      * @param string the string.
-     * @return the CPClass value.
+     * @return The CPClass value.
      */
     public CPClass cpClassValue(final String string) {
         CPClass cpString = stringsToCPClass.get(string);
@@ -150,7 +150,7 @@ public class CpBands extends BandSet {
      * Gets the CPDouble value at the specified index.
      *
      * @param index the index.
-     * @return the CPDouble value.
+     * @return The CPDouble value.
      */
     public CPDouble cpDoubleValue(final int index) {
         return doublesToCPDoubles.computeIfAbsent(Double.valueOf(cpDouble[index]), k -> new CPDouble(k, index + doubleOffset));
@@ -160,7 +160,7 @@ public class CpBands extends BandSet {
      * Gets the CPFieldRef value at the specified index.
      *
      * @param index the index.
-     * @return the CPFieldRef value.
+     * @return The CPFieldRef value.
      */
     public CPFieldRef cpFieldValue(final int index) {
         return new CPFieldRef(cpClassValue(cpFieldClassInts[index]), cpNameAndTypeValue(cpFieldDescriptorInts[index]), index + fieldOffset);
@@ -170,7 +170,7 @@ public class CpBands extends BandSet {
      * Gets the CPFloat value at the specified index.
      *
      * @param index the index.
-     * @return the CPFloat value.
+     * @return The CPFloat value.
      */
     public CPFloat cpFloatValue(final int index) {
         return floatsToCPFloats.computeIfAbsent(Float.valueOf(cpFloat[index]), k -> new CPFloat(Float.valueOf(cpFloat[index]), index + floatOffset));
@@ -180,7 +180,7 @@ public class CpBands extends BandSet {
      * Gets the CPInterfaceMethodRef value at the specified index.
      *
      * @param index the index.
-     * @return the CPInterfaceMethodRef value.
+     * @return The CPInterfaceMethodRef value.
      */
     public CPInterfaceMethodRef cpIMethodValue(final int index) {
         return new CPInterfaceMethodRef(cpClassValue(cpIMethodClassInts[index]), cpNameAndTypeValue(cpIMethodDescriptorInts[index]), index + imethodOffset);
@@ -190,7 +190,7 @@ public class CpBands extends BandSet {
      * Gets the CPInteger value at the specified index.
      *
      * @param index the index.
-     * @return the CPInteger value.
+     * @return The CPInteger value.
      */
     public CPInteger cpIntegerValue(final int index) {
         return integersToCPIntegers.computeIfAbsent(Integer.valueOf(cpInt[index]), k -> new CPInteger(k, index + intOffset));
@@ -200,7 +200,7 @@ public class CpBands extends BandSet {
      * Gets the CPLong value at the specified index.
      *
      * @param index the index.
-     * @return the CPLong value.
+     * @return The CPLong value.
      */
     public CPLong cpLongValue(final int index) {
         return longsToCPLongs.computeIfAbsent(Long.valueOf(cpLong[index]), k -> new CPLong(k, index + longOffset));
@@ -210,7 +210,7 @@ public class CpBands extends BandSet {
      * Gets the CPMethodRef value at the specified index.
      *
      * @param index the index.
-     * @return the CPMethodRef value.
+     * @return The CPMethodRef value.
      */
     public CPMethodRef cpMethodValue(final int index) {
         return new CPMethodRef(cpClassValue(cpMethodClassInts[index]), cpNameAndTypeValue(cpMethodDescriptorInts[index]), index + methodOffset);
@@ -220,7 +220,7 @@ public class CpBands extends BandSet {
      * Gets the CPNameAndType value at the specified index.
      *
      * @param index the index.
-     * @return the CPNameAndType value.
+     * @return The CPNameAndType value.
      */
     public CPNameAndType cpNameAndTypeValue(final int index) {
         final String descriptor = cpDescriptor[index];
@@ -237,7 +237,7 @@ public class CpBands extends BandSet {
      * Gets the CPNameAndType value for the specified descriptor.
      *
      * @param descriptor the descriptor.
-     * @return the CPNameAndType value.
+     * @return The CPNameAndType value.
      */
     public CPNameAndType cpNameAndTypeValue(final String descriptor) {
         CPNameAndType cpNameAndType = descriptorsToCPNameAndTypes.get(descriptor);
@@ -262,7 +262,7 @@ public class CpBands extends BandSet {
      * Gets the CPUTF8 signature value at the specified index.
      *
      * @param index the index.
-     * @return the CPUTF8 signature value.
+     * @return The CPUTF8 signature value.
      */
     public CPUTF8 cpSignatureValue(final int index) {
         final int globalIndex;
@@ -278,7 +278,7 @@ public class CpBands extends BandSet {
      * Gets the CPString value at the specified index.
      *
      * @param index the index.
-     * @return the CPString value.
+     * @return The CPString value.
      */
     public CPString cpStringValue(final int index) {
         final String string = cpString[index];
@@ -291,7 +291,7 @@ public class CpBands extends BandSet {
      * Gets the CPUTF8 value at the specified index.
      *
      * @param index the index.
-     * @return the CPUTF8 value.
+     * @return The CPUTF8 value.
      */
     public CPUTF8 cpUTF8Value(final int index) {
         final String string = cpUTF8[index];
@@ -309,7 +309,7 @@ public class CpBands extends BandSet {
      * Gets the CPUTF8 value for the specified string.
      *
      * @param string the string.
-     * @return the CPUTF8 value.
+     * @return The CPUTF8 value.
      */
     public CPUTF8 cpUTF8Value(final String string) {
         return cpUTF8Value(string, true);
@@ -320,7 +320,7 @@ public class CpBands extends BandSet {
      *
      * @param string the string.
      * @param searchForIndex whether to search for index.
-     * @return the CPUTF8 value.
+     * @return The CPUTF8 value.
      */
     public CPUTF8 cpUTF8Value(final String string, final boolean searchForIndex) {
         CPUTF8 cputf8 = stringsToCPUTF8.get(string);
@@ -347,7 +347,7 @@ public class CpBands extends BandSet {
     /**
      * Gets the constant pool.
      *
-     * @return the constant pool.
+     * @return The constant pool.
      */
     public SegmentConstantPool getConstantPool() {
         return pool;
@@ -356,7 +356,7 @@ public class CpBands extends BandSet {
     /**
      * Gets the cpClass array.
      *
-     * @return the cpClass array.
+     * @return The cpClass array.
      */
     public String[] getCpClass() {
         return cpClass;
@@ -365,7 +365,7 @@ public class CpBands extends BandSet {
     /**
      * Gets the cpDescriptor array.
      *
-     * @return the cpDescriptor array.
+     * @return The cpDescriptor array.
      */
     public String[] getCpDescriptor() {
         return cpDescriptor;
@@ -374,7 +374,7 @@ public class CpBands extends BandSet {
     /**
      * Gets the cpDescriptorNameInts array.
      *
-     * @return the cpDescriptorNameInts array.
+     * @return The cpDescriptorNameInts array.
      */
     public int[] getCpDescriptorNameInts() {
         return cpDescriptorNameInts;
@@ -383,7 +383,7 @@ public class CpBands extends BandSet {
     /**
      * Gets the cpDescriptorTypeInts array.
      *
-     * @return the cpDescriptorTypeInts array.
+     * @return The cpDescriptorTypeInts array.
      */
     public int[] getCpDescriptorTypeInts() {
         return cpDescriptorTypeInts;
@@ -392,7 +392,7 @@ public class CpBands extends BandSet {
     /**
      * Gets the cpFieldClass array.
      *
-     * @return the cpFieldClass array.
+     * @return The cpFieldClass array.
      */
     public String[] getCpFieldClass() {
         return cpFieldClass;
@@ -401,7 +401,7 @@ public class CpBands extends BandSet {
     /**
      * Gets the cpIMethodClass array.
      *
-     * @return the cpIMethodClass array.
+     * @return The cpIMethodClass array.
      */
     public String[] getCpIMethodClass() {
         return cpIMethodClass;
@@ -410,7 +410,7 @@ public class CpBands extends BandSet {
     /**
      * Gets the cpInt array.
      *
-     * @return the cpInt array.
+     * @return The cpInt array.
      */
     public int[] getCpInt() {
         return cpInt;
@@ -419,7 +419,7 @@ public class CpBands extends BandSet {
     /**
      * Gets the cpLong array.
      *
-     * @return the cpLong array.
+     * @return The cpLong array.
      */
     public long[] getCpLong() {
         return cpLong;
@@ -428,7 +428,7 @@ public class CpBands extends BandSet {
     /**
      * Gets the cpMethodClass array.
      *
-     * @return the cpMethodClass array.
+     * @return The cpMethodClass array.
      */
     public String[] getCpMethodClass() {
         return cpMethodClass;
@@ -437,7 +437,7 @@ public class CpBands extends BandSet {
     /**
      * Gets the cpMethodDescriptor array.
      *
-     * @return the cpMethodDescriptor array.
+     * @return The cpMethodDescriptor array.
      */
     public String[] getCpMethodDescriptor() {
         return cpMethodDescriptor;
@@ -446,7 +446,7 @@ public class CpBands extends BandSet {
     /**
      * Gets the cpSignature array.
      *
-     * @return the cpSignature array.
+     * @return The cpSignature array.
      */
     public String[] getCpSignature() {
         return cpSignature;
@@ -455,7 +455,7 @@ public class CpBands extends BandSet {
     /**
      * Gets the cpUTF8 array.
      *
-     * @return the cpUTF8 array.
+     * @return The cpUTF8 array.
      */
     public String[] getCpUTF8() {
         return cpUTF8;

@@ -121,7 +121,7 @@ public abstract class ConstantPoolEntry extends ClassFileEntry {
     /**
      * Gets the global index.
      *
-     * @return the global index.
+     * @return The global index.
      */
     public int getGlobalIndex() {
         return globalIndex;
@@ -130,7 +130,7 @@ public abstract class ConstantPoolEntry extends ClassFileEntry {
     /**
      * Gets the tag.
 
-     * @return the tag.
+     * @return The tag.
      */
     public byte getTag() {
         return tag;

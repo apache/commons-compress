@@ -1061,7 +1061,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
      * Creates an InputStream for the Zstd compression method.
      *
      * @param in the input stream which should be used for compression.
-     * @return the {@link InputStream} for handling the Zstd compression.
+     * @return The {@link InputStream} for handling the Zstd compression.
      * @throws IOException if an I/O error occurs.
      */
     @SuppressWarnings("resource")
@@ -1144,7 +1144,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
      * Gets all named entries in the same order they appear within the archive's central directory.
      *
      * @param name name of the entry.
-     * @return the Iterable&lt;ZipArchiveEntry&gt; corresponding to the given name.
+     * @return The Iterable&lt;ZipArchiveEntry&gt; corresponding to the given name.
      * @since 1.6
      */
     public Iterable<ZipArchiveEntry> getEntries(final String name) {
@@ -1169,7 +1169,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
      * Gets all named entries in the same order their contents appear within the archive.
      *
      * @param name name of the entry.
-     * @return the Iterable&lt;ZipArchiveEntry&gt; corresponding to the given name.
+     * @return The Iterable&lt;ZipArchiveEntry&gt; corresponding to the given name.
      * @since 1.6
      */
     public Iterable<ZipArchiveEntry> getEntriesInPhysicalOrder(final String name) {
@@ -1184,7 +1184,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
      * </p>
      *
      * @param name name of the entry.
-     * @return the ZipArchiveEntry corresponding to the given name - or {@code null} if not present.
+     * @return The ZipArchiveEntry corresponding to the given name - or {@code null} if not present.
      */
     public ZipArchiveEntry getEntry(final String name) {
         final LinkedList<ZipArchiveEntry> entries = nameMap.get(name);
@@ -1194,7 +1194,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
     /**
      * Gets the offset of the first local file header in the file.
      *
-     * @return the length of the content before the first local file header.
+     * @return The length of the content before the first local file header.
      * @since 1.23
      */
     public long getFirstLocalFileHeaderOffset() {
@@ -1712,7 +1712,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
      * Sorts entries in place by offset.
      *
      * @param allEntries entries to sort.
-     * @return the given entries, sorted.
+     * @return The given entries, sorted.
      */
     private ZipArchiveEntry[] sortByOffset(final ZipArchiveEntry[] allEntries) {
         Arrays.sort(allEntries, offsetComparator);

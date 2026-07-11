@@ -188,7 +188,7 @@ public class AttributeLayoutMap {
      * Gets the attribute bands for the given layout.
      *
      * @param layout the attribute layout.
-     * @return the attribute bands.
+     * @return The attribute bands.
      */
     public NewAttributeBands getAttributeBands(final AttributeLayout layout) {
         return layoutsToBands.get(layout);
@@ -199,7 +199,7 @@ public class AttributeLayoutMap {
      *
      * @param index the index.
      * @param context the context.
-     * @return the attribute layout.
+     * @return The attribute layout.
      */
     public AttributeLayout getAttributeLayout(final int index, final int context) {
         final Map<Integer, AttributeLayout> map = getLayout(context);
@@ -211,7 +211,7 @@ public class AttributeLayoutMap {
      *
      * @param name the attribute name.
      * @param context the context.
-     * @return the attribute layout, or null if not found.
+     * @return The attribute layout, or null if not found.
      */
     public AttributeLayout getAttributeLayout(final String name, final int context) {
         final Map<Integer, AttributeLayout> map = getLayout(context);

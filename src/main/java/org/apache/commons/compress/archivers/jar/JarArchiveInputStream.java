@@ -122,7 +122,7 @@ public class JarArchiveInputStream extends ZipArchiveInputStream {
     /**
      * Gets the next entry.
      *
-     * @return the next entry.
+     * @return The next entry.
      * @throws IOException if an I/O error occurs.
      * @deprecated Use {@link #getNextEntry()}.
      */

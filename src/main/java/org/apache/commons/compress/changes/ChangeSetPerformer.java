@@ -169,7 +169,7 @@ public class ChangeSetPerformer<I extends ArchiveInputStream<E>, O extends Archi
      * @param entryIterator the entries to perform the changes on.
      * @param outputStream  the resulting OutputStream with all modifications.
      * @throws IOException if a read/write error occurs.
-     * @return the results of this operation.
+     * @return The results of this operation.
      */
     private ChangeSetResults perform(final ArchiveEntryIterator<E> entryIterator, final O outputStream) throws IOException {
         final ChangeSetResults results = new ChangeSetResults();
@@ -244,7 +244,7 @@ public class ChangeSetPerformer<I extends ArchiveInputStream<E>, O extends Archi
      * @param inputStream  the InputStream to perform the changes on.
      * @param outputStream the resulting OutputStream with all modifications.
      * @throws IOException if a read/write error occurs.
-     * @return the results of this operation.
+     * @return The results of this operation.
      */
     public ChangeSetResults perform(final I inputStream, final O outputStream) throws IOException {
         return perform(new ArchiveInputStreamIterator<>(inputStream), outputStream);
@@ -258,7 +258,7 @@ public class ChangeSetPerformer<I extends ArchiveInputStream<E>, O extends Archi
      * @param zipFile      the ZipFile to perform the changes on.
      * @param outputStream the resulting OutputStream with all modifications.
      * @throws IOException if a read/write error occurs.
-     * @return the results of this operation.
+     * @return The results of this operation.
      * @since 1.5
      */
     public ChangeSetResults perform(final ZipFile zipFile, final O outputStream) throws IOException {

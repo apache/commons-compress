@@ -155,7 +155,7 @@ public class IcBands extends BandSet {
      * Gets the IC tuple for the given inner class.
      *
      * @param inner the inner class.
-     * @return the IC tuple, or null if not found.
+     * @return The IC tuple, or null if not found.
      */
     public IcTuple getIcTuple(final CPClass inner) {
         for (final IcTuple icTuple : innerClasses) {
@@ -170,7 +170,7 @@ public class IcBands extends BandSet {
      * Gets the inner classes for the given outer class.
      *
      * @param outerClassName the outer class name.
-     * @return the list of inner classes.
+     * @return The list of inner classes.
      */
     public List<IcTuple> getInnerClassesForOuter(final String outerClassName) {
         return outerToInner.get(outerClassName);

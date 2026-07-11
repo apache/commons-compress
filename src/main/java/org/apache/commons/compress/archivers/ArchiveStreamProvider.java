@@ -44,7 +44,7 @@ public interface ArchiveStreamProvider {
      *                     {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#SEVEN_Z}
      * @param inputStream  the input stream.
      * @param encoding     encoding name or null for the default.
-     * @return the archive input stream.
+     * @return The archive input stream.
      * @throws ArchiveException               if the archiver name is not known.
      * @throws StreamingNotSupportedException if the format cannot be read from a stream.
      * @throws IllegalArgumentException       if the archiver name or stream is null.
@@ -63,7 +63,7 @@ public interface ArchiveStreamProvider {
      *                     {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#CPIO}
      * @param outputStream the output stream.
      * @param encoding     encoding name or null for the default.
-     * @return the archive output stream.
+     * @return The archive output stream.
      * @throws ArchiveException               if the archiver name is not known.
      * @throws StreamingNotSupportedException if the format cannot be written to a stream.
      * @throws IllegalArgumentException       if the archiver name or stream is null.

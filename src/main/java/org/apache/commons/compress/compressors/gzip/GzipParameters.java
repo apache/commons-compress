@@ -205,7 +205,7 @@ public class GzipParameters {
         /**
          * Gets the OS type.
          *
-         * @return the OS type.
+         * @return The OS type.
          */
         public int type() {
             return type;
@@ -360,7 +360,7 @@ public class GzipParameters {
     /**
      * Gets the compression level.
      *
-     * @return the compression level.
+     * @return The compression level.
      * @see Deflater#NO_COMPRESSION
      * @see Deflater#BEST_SPEED
      * @see Deflater#DEFAULT_COMPRESSION
@@ -373,7 +373,7 @@ public class GzipParameters {
     /**
      * Gets the deflater strategy.
      *
-     * @return the deflater strategy, {@link Deflater#DEFAULT_STRATEGY} by default.
+     * @return The deflater strategy, {@link Deflater#DEFAULT_STRATEGY} by default.
      * @see #setDeflateStrategy(int)
      * @see Deflater#setStrategy(int)
      * @since 1.23
@@ -385,7 +385,7 @@ public class GzipParameters {
     /**
      * Gets the Extra subfields from the header.
      *
-     * @return the extra subfields from the header.
+     * @return The extra subfields from the header.
      * @since 1.28.0
      */
     public ExtraField getExtraField() {
@@ -399,7 +399,7 @@ public class GzipParameters {
     /**
      * Gets the file name.
      *
-     * @return the file name.
+     * @return The file name.
      * @deprecated Use {@link #getFileName()}.
      */
     @Deprecated
@@ -410,7 +410,7 @@ public class GzipParameters {
     /**
      * Gets the file name.
      *
-     * @return the file name.
+     * @return The file name.
      * @since 1.25.0
      */
     public String getFileName() {
@@ -423,7 +423,7 @@ public class GzipParameters {
      * The default value is {@link GzipUtils#GZIP_ENCODING}.
      * </p>
      *
-     * @return the Charset to use for writing file names and comments.
+     * @return The Charset to use for writing file names and comments.
      * @since 1.28.0
      */
     public Charset getFileNameCharset() {
@@ -443,7 +443,7 @@ public class GzipParameters {
     /**
      * Gets the most recent modification time (MTIME) of the original file being compressed.
      *
-     * @return the most recent modification time.
+     * @return The most recent modification time.
      * @since 1.28.0
      */
     public Instant getModificationInstant() {
@@ -458,7 +458,7 @@ public class GzipParameters {
      * means no time stamp is available.
      * </p>
      *
-     * @return the most recent modification time in seconds since 00:00:00 GMT, Jan. 1, 1970.
+     * @return The most recent modification time in seconds since 00:00:00 GMT, Jan. 1, 1970.
      */
     public long getModificationTime() {
         return modificationInstant.getEpochSecond();
@@ -467,7 +467,7 @@ public class GzipParameters {
     /**
      * Gets the OS code type.
      *
-     * @return the OS code type.
+     * @return The OS code type.
      */
     public int getOperatingSystem() {
         return operatingSystem.type;
@@ -476,7 +476,7 @@ public class GzipParameters {
     /**
      * Gets the OS type.
      *
-     * @return the OS type.
+     * @return The OS type.
      * @since 1.28.0
      */
     public OS getOS() {
@@ -486,7 +486,7 @@ public class GzipParameters {
     /**
      * Gets the trailer CRC value.
      *
-     * @return the trailer CRC value.
+     * @return The trailer CRC value.
      * @since 1.28.0
      */
     public long getTrailerCrc() {
@@ -496,7 +496,7 @@ public class GzipParameters {
     /**
      * Gets the trailer ISIZE value.
      *
-     * @return the trailer ISIZE value.
+     * @return The trailer ISIZE value.
      * @since 1.28.0
      */
     public long getTrailerISize() {

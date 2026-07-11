@@ -62,7 +62,7 @@ public class RuntimeVisibleorInvisibleParameterAnnotationsAttribute extends Anno
         /**
          * Gets the cumulative length of all annotations.
          *
-         * @return the cumulative length of all annotations.
+         * @return The cumulative length of all annotations.
          */
         public int getLength() {
             int length = 2;

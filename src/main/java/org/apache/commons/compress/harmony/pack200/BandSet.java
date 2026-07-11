@@ -168,7 +168,7 @@ public abstract class BandSet {
         /**
          * Returns the total number of distinct values found in the band.
          *
-         * @return the total number of distinct values found in the band.
+         * @return The total number of distinct values found in the band.
          */
         public int numDistinctValues() {
             if (distinctValues == null) {
@@ -357,7 +357,7 @@ public abstract class BandSet {
      * @param name         name of the band (used for debugging)
      * @param ints         the band
      * @param defaultCodec the default Codec
-     * @return the encoded band
+     * @return The encoded band
      * @throws Pack200Exception If a Pack200 semantic error occurs.
      */
     public byte[] encodeBandInt(final String name, final int[] ints, final BHSDCodec defaultCodec) throws Pack200Exception {
@@ -437,7 +437,7 @@ public abstract class BandSet {
      * @param loCodec     Codec for the low 32-bits band
      * @param hiCodec     Codec for the high 32-bits band
      * @param haveHiFlags ignores the high band if true as all values would be zero
-     * @return the encoded band
+     * @return The encoded band
      * @throws Pack200Exception If a Pack200 semantic error occurs.
      */
     protected byte[] encodeFlags(final String name, final long[] flags, final BHSDCodec loCodec, final BHSDCodec hiCodec, final boolean haveHiFlags)
@@ -497,7 +497,7 @@ public abstract class BandSet {
      * @param loCodec the low codec.
      * @param hiCodec the high codec.
      * @param haveHiFlags whether high flags are present.
-     * @return the encoded flags.
+     * @return The encoded flags.
      * @throws Pack200Exception if an error occurs.
      */
     protected byte[] encodeFlags(final String name, final long[][] flags, final BHSDCodec loCodec, final BHSDCodec hiCodec, final boolean haveHiFlags)
@@ -510,7 +510,7 @@ public abstract class BandSet {
      *
      * @param value the value to encode.
      * @param codec Codec to use.
-     * @return the encoded value.
+     * @return The encoded value.
      * @throws Pack200Exception If a Pack200 semantic error occurs.
      */
     public byte[] encodeScalar(final int value, final BHSDCodec codec) throws Pack200Exception {
@@ -522,7 +522,7 @@ public abstract class BandSet {
      *
      * @param band  the band.
      * @param codec the Codec to use.
-     * @return the encoded band.
+     * @return The encoded band.
      * @throws Pack200Exception If a Pack200 semantic error occurs.
      */
     public byte[] encodeScalar(final int[] band, final BHSDCodec codec) throws Pack200Exception {

@@ -79,7 +79,7 @@ public final class IOUtils {
      *
      * @param input  the InputStream to copy.
      * @param output the target.
-     * @return the number of bytes copied, or -1 if greater than {@link Integer#MAX_VALUE}.
+     * @return The number of bytes copied, or -1 if greater than {@link Integer#MAX_VALUE}.
      * @throws IOException Thrown if an I/O error occurs.
      * @throws NullPointerException if the {@code input} or the {@code output} is {@code null}.
      * @deprecated Use {@link org.apache.commons.io.IOUtils#copy(InputStream, OutputStream)}.
@@ -95,7 +95,7 @@ public final class IOUtils {
      * @param input      the InputStream to copy.
      * @param output     the target.
      * @param bufferSize the buffer size to use, must be bigger than 0.
-     * @return the number of bytes copied.
+     * @return The number of bytes copied.
      * @throws IOException Thrown if an I/O error occurs.
      * @throws NullPointerException if the {@code input} or the {@code output} is {@code null}.
      * @deprecated Use {@link org.apache.commons.io.IOUtils#copy(InputStream, OutputStream, int)}.
@@ -111,7 +111,7 @@ public final class IOUtils {
      * @param input  the InputStream to copy.
      * @param output the target Stream.
      * @param length    maximum amount of bytes to copy.
-     * @return the number of bytes copied.
+     * @return The number of bytes copied.
      * @throws IOException Thrown if an I/O error occurs.
      * @since 1.21
      * @deprecated Use {@link org.apache.commons.io.IOUtils#copyLarge(InputStream, OutputStream, long, long)}.
@@ -128,7 +128,7 @@ public final class IOUtils {
      * @param length        maximum amount of bytes to copy.
      * @param output     the target, may be null to simulate output to dev/null on Linux and NUL on Windows.
      * @param bufferSize the buffer size to use, must be bigger than 0.
-     * @return the number of bytes copied.
+     * @return The number of bytes copied.
      * @throws IOException Thrown if an I/O error occurs.
      * @throws IllegalArgumentException if bufferSize is smaller than or equal to 0.
      * @since 1.21
@@ -151,7 +151,7 @@ public final class IOUtils {
      *
      * @param file  file to read.
      * @param array buffer to fill.
-     * @return the number of bytes actually read.
+     * @return The number of bytes actually read.
      * @throws IOException Thrown if an I/O error occurs.
      * @since 1.20
      * @deprecated Use {@link Files#readAllBytes(java.nio.file.Path)}.
@@ -171,7 +171,7 @@ public final class IOUtils {
      *
      * @param input stream to read from.
      * @param array buffer to fill.
-     * @return the number of bytes actually read.
+     * @return The number of bytes actually read.
      * @throws IOException Thrown if an I/O error occurs.
      * @deprecated Since 1.29.0, use {@link org.apache.commons.io.IOUtils#read(InputStream, byte[])} instead.
      */
@@ -190,7 +190,7 @@ public final class IOUtils {
      * @param array  buffer to fill.
      * @param offset offset into the buffer to start filling at.
      * @param length    of bytes to read.
-     * @return the number of bytes actually read.
+     * @return The number of bytes actually read.
      * @throws IOException Thrown if an I/O error occurs.
      * @deprecated Since 1.29.0, use {@link org.apache.commons.io.IOUtils#read(InputStream, byte[], int, int)} instead.
      */
@@ -222,7 +222,7 @@ public final class IOUtils {
      *
      * @param input the {@code InputStream} to read from.
      * @param length   maximum amount of bytes to copy.
-     * @return the requested byte array.
+     * @return The requested byte array.
      * @throws NullPointerException if the input is null.
      * @throws IOException Thrown if an I/O error occurs.
      * @since 1.21
@@ -238,7 +238,7 @@ public final class IOUtils {
      *
      * @param input the {@code ReadableByteChannel} to read from.
      * @param length   maximum amount of bytes to copy.
-     * @return the requested byte array.
+     * @return The requested byte array.
      * @throws NullPointerException if the input is null.
      * @throws IOException Thrown if an I/O error occurs.
      * @since 1.21
@@ -269,7 +269,7 @@ public final class IOUtils {
      *
      * @param input     stream to skip bytes in.
      * @param toSkip the number of bytes to skip.
-     * @return the number of bytes actually skipped.
+     * @return The number of bytes actually skipped.
      * @throws IOException Thrown if an I/O error occurs.
      * @deprecated Since 1.29.0, use {@link org.apache.commons.io.IOUtils#skip(InputStream, long)} instead.
      */
@@ -285,7 +285,7 @@ public final class IOUtils {
      * </p>
      *
      * @param input the {@code InputStream} to read from.
-     * @return the requested byte array.
+     * @return The requested byte array.
      * @throws NullPointerException Thrown if the input is null.
      * @throws IOException          Thrown if an I/O error occurs or reads more than {@link Integer#MAX_VALUE} occurs.
      * @since 1.5

@@ -257,7 +257,7 @@ public class MetadataBandGroup {
     /**
      * Gets the attributes.
      *
-     * @return the attributes.
+     * @return The attributes.
      * @throws Pack200Exception if a Pack200 error occurs.
      */
     public List<Attribute> getAttributes() throws Pack200Exception {

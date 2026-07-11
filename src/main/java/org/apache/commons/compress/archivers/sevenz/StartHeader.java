@@ -37,7 +37,7 @@ final class StartHeader {
     /**
      * Gets the position of the next header in the file.
      *
-     * @return the position of the next header.
+     * @return The position of the next header.
      */
     long position() {
         return SevenZFile.SIGNATURE_HEADER_SIZE + nextHeaderOffset;

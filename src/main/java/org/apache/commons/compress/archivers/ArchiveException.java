@@ -38,7 +38,7 @@ public class ArchiveException extends CompressException {
      *
      * @param x the first value.
      * @param y the second value.
-     * @return the result.
+     * @return The result.
      * @throws ArchiveException if the result or input overflows an {@code int}.
      * @see Math#addExact(int, int)
      * @since 1.29.0
@@ -52,7 +52,7 @@ public class ArchiveException extends CompressException {
      *
      * @param x the first value.
      * @param y the second value.
-     * @return the result.
+     * @return The result.
      * @throws ArchiveException if the result overflows a {@code long}.
      * @see Math#addExact(long, long)
      * @since 1.29.0
@@ -83,7 +83,7 @@ public class ArchiveException extends CompressException {
      * Delegates to {@link Math#toIntExact(long)} wrapping its {@link ArithmeticException} in our {@link ArchiveException}.
      *
      * @param value the long value.
-     * @return the argument as an int.
+     * @return The argument as an int.
      * @throws ArchiveException if the {@code argument} overflows an int.
      * @since 1.29.0
      */

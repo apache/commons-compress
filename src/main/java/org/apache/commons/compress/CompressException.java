@@ -43,7 +43,7 @@ public class CompressException extends IOException {
      * @param x the first value.
      * @param y the second value.
      * @param eFunction How to create an exception.
-     * @return the result.
+     * @return The result.
      * @throws E if the result or input overflows an {@code int}.
      * @see Math#addExact(int, int)
      * @since 1.29.0

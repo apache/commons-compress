@@ -52,7 +52,7 @@ public abstract class BCIRenumberedAttribute extends Attribute {
     /**
      * Gets the array of indices for the start of line numbers.
      *
-     * @return the array of indices for the start of line numbers.
+     * @return The array of indices for the start of line numbers.
      */
     protected abstract int[] getStartPCs();
 

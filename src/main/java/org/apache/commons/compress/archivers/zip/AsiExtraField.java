@@ -117,7 +117,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
     /**
      * Gets the delegate to local file data.
      *
-     * @return the local file data.
+     * @return The local file data.
      */
     @Override
     public byte[] getCentralDirectoryData() {
@@ -127,7 +127,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
     /**
      * Gets the delegate to local file data.
      *
-     * @return the centralDirectory length.
+     * @return The centralDirectory length.
      */
     @Override
     public ZipShort getCentralDirectoryLength() {
@@ -137,7 +137,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
     /**
      * Gets the group id.
      *
-     * @return the group id.
+     * @return The group id.
      */
     public int getGroupId() {
         return gid;
@@ -146,7 +146,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
     /**
      * Gets the Header-ID.
      *
-     * @return the value for the header id for this extra field.
+     * @return The value for the header id for this extra field.
      */
     @Override
     public ZipShort getHeaderId() {
@@ -214,7 +214,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
     /**
      * Gets the file mode of this file.
      *
-     * @return the file mode.
+     * @return The file mode.
      */
     public int getMode() {
         return mode;
@@ -224,7 +224,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
      * Gets the file mode for given permissions with the correct file type.
      *
      * @param mode the mode.
-     * @return the type with the mode.
+     * @return The type with the mode.
      */
     protected int getMode(final int mode) {
         int type = FILE_FLAG;
@@ -239,7 +239,7 @@ public class AsiExtraField implements ZipExtraField, UnixStat, Cloneable {
     /**
      * Gets the user id.
      *
-     * @return the user id.
+     * @return The user id.
      */
     public int getUserId() {
         return uid;

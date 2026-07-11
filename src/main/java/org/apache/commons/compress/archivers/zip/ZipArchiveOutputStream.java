@@ -994,7 +994,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
     /**
      * Returns the total number of bytes written to this stream.
      *
-     * @return the number of written bytes.
+     * @return The number of written bytes.
      * @since 1.22
      */
     @Override

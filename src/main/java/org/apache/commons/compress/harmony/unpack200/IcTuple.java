@@ -159,7 +159,7 @@ public class IcTuple {
     /**
      * Gets the this class name (C).
      *
-     * @return the this class name.
+     * @return The this class name.
      */
     public String getC() {
         return C;
@@ -168,7 +168,7 @@ public class IcTuple {
     /**
      * Gets the outer class name (C2).
      *
-     * @return the outer class name.
+     * @return The outer class name.
      */
     public String getC2() {
         return C2;
@@ -177,7 +177,7 @@ public class IcTuple {
     /**
      * Gets the flags (F).
      *
-     * @return the flags.
+     * @return The flags.
      */
     public int getF() {
         return F;
@@ -186,7 +186,7 @@ public class IcTuple {
     /**
      * Gets the simple class name (N).
      *
-     * @return the simple class name.
+     * @return The simple class name.
      */
     public String getN() {
         return N;
@@ -195,7 +195,7 @@ public class IcTuple {
     /**
      * Gets the tuple index.
      *
-     * @return the tuple index.
+     * @return The tuple index.
      */
     public int getTupleIndex() {
         return tIndex;
@@ -358,7 +358,7 @@ public class IcTuple {
     /**
      * Gets the outer class index.
      *
-     * @return the outer class index.
+     * @return The outer class index.
      */
     public int outerClassIndex() {
         return cachedOuterClassIndex;
@@ -403,7 +403,7 @@ public class IcTuple {
     /**
      * Gets the simple class name index.
      *
-     * @return the simple class name index.
+     * @return The simple class name index.
      */
     public int simpleClassNameIndex() {
         return cachedSimpleClassNameIndex;
@@ -412,7 +412,7 @@ public class IcTuple {
     /**
      * Gets the this class index.
      *
-     * @return the this class index, or -1 if not predicted.
+     * @return The this class index, or -1 if not predicted.
      */
     public int thisClassIndex() {
         if (predicted()) {

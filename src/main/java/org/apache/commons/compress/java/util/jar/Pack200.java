@@ -167,7 +167,7 @@ public abstract class Pack200 {
         /**
          * Gets a sorted map of the properties of this packer.
          *
-         * @return the properties of the packer.
+         * @return The properties of the packer.
          */
         SortedMap<String, String> properties();
 
@@ -219,7 +219,7 @@ public abstract class Pack200 {
         /**
          * Gets a sorted map of the properties of this unpacker.
          *
-         * @return the properties of unpacker.
+         * @return The properties of unpacker.
          */
         SortedMap<String, String> properties();
 

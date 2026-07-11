@@ -45,7 +45,7 @@ public class DeflateParameters {
      * The compression level.
      *
      * @see #setCompressionLevel
-     * @return the compression level.
+     * @return The compression level.
      */
     public int getCompressionLevel() {
         return compressionLevel;

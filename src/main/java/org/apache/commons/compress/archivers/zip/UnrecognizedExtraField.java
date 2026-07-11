@@ -56,7 +56,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
     /**
      * Gets the central data.
      *
-     * @return the central data if present, else return the local file data.
+     * @return The central data if present, else return the local file data.
      */
     @Override
     public byte[] getCentralDirectoryData() {
@@ -69,7 +69,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
     /**
      * Gets the central data length. If there is no central data, get the local file data length.
      *
-     * @return the central data length.
+     * @return The central data length.
      */
     @Override
     public ZipShort getCentralDirectoryLength() {
@@ -82,7 +82,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
     /**
      * Gets the header id.
      *
-     * @return the header id.
+     * @return The header id.
      */
     @Override
     public ZipShort getHeaderId() {
@@ -92,7 +92,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
     /**
      * Gets the local data.
      *
-     * @return the local data.
+     * @return The local data.
      */
     @Override
     public byte[] getLocalFileDataData() {
@@ -102,7 +102,7 @@ public class UnrecognizedExtraField implements ZipExtraField {
     /**
      * Gets the length of the local data.
      *
-     * @return the length of the local data.
+     * @return The length of the local data.
      */
     @Override
     public ZipShort getLocalFileDataLength() {

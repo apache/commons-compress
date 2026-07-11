@@ -36,7 +36,7 @@ public final class JarMarker implements ZipExtraField {
     /**
      * Since JarMarker is stateless we can always use the same instance.
      *
-     * @return the DEFAULT jarmaker.
+     * @return The DEFAULT jarmaker.
      */
     public static JarMarker getInstance() {
         return DEFAULT;
@@ -50,7 +50,7 @@ public final class JarMarker implements ZipExtraField {
     /**
      * The actual data to put central directory - without Header-ID or length specifier.
      *
-     * @return the data.
+     * @return The data.
      */
     @Override
     public byte[] getCentralDirectoryData() {
@@ -70,7 +70,7 @@ public final class JarMarker implements ZipExtraField {
     /**
      * The Header-ID.
      *
-     * @return the header id.
+     * @return The header id.
      */
     @Override
     public ZipShort getHeaderId() {
@@ -80,7 +80,7 @@ public final class JarMarker implements ZipExtraField {
     /**
      * The actual data to put into local file data - without Header-ID or length specifier.
      *
-     * @return the data.
+     * @return The data.
      */
     @Override
     public byte[] getLocalFileDataData() {

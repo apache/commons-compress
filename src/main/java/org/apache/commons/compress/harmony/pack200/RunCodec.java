@@ -94,7 +94,7 @@ public class RunCodec extends Codec {
     /**
      * Gets the A codec.
      *
-     * @return the A codec.
+     * @return The A codec.
      */
     public Codec getACodec() {
         return aCodec;
@@ -103,7 +103,7 @@ public class RunCodec extends Codec {
     /**
      * Gets the B codec.
      *
-     * @return the B codec.
+     * @return The B codec.
      */
     public Codec getBCodec() {
         return bCodec;
@@ -112,7 +112,7 @@ public class RunCodec extends Codec {
     /**
      * Gets the K value.
      *
-     * @return the K value.
+     * @return The K value.
      */
     public int getK() {
         return k;

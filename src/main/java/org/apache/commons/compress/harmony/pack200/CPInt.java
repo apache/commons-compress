@@ -55,7 +55,7 @@ public class CPInt extends CPConstant<CPInt> {
     /**
      * Gets the int value.
      *
-     * @return the int value.
+     * @return The int value.
      */
     public int getInt() {
         return value;

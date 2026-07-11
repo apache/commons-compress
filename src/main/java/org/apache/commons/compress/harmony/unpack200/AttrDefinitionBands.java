@@ -66,7 +66,7 @@ public class AttrDefinitionBands extends BandSet {
     /**
      * Gets the attribute layout map.
      *
-     * @return the attribute layout map.
+     * @return The attribute layout map.
      */
     public AttributeLayoutMap getAttributeDefinitionMap() {
         return attributeDefinitionMap;

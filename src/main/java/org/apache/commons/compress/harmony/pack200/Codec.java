@@ -115,7 +115,7 @@ public abstract class Codec {
      * encodings.
      *
      * @param in the input stream to read from
-     * @return the value as a long
+     * @return The value as a long
      * @throws IOException      if there is a problem reading from the underlying input stream
      * @throws Pack200Exception if the encoding is a delta encoding
      */
@@ -136,7 +136,7 @@ public abstract class Codec {
      *
      * @param in   the input stream to read from
      * @param last the previous value read, which must be supplied if the codec is a delta encoding
-     * @return the value as a long
+     * @return The value as a long
      * @throws IOException      if there is a problem reading from the underlying input stream
      * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid
      */
@@ -186,7 +186,7 @@ public abstract class Codec {
      * Encodes a single value into a sequence of bytes. Note that this method can only be used for non-delta encodings.
      *
      * @param value the value to encode.
-     * @return the encoded bytes.
+     * @return The encoded bytes.
      * @throws Pack200Exception If a Pack200 semantic error occurs.
      */
     public abstract byte[] encode(int value) throws Pack200Exception;
@@ -196,7 +196,7 @@ public abstract class Codec {
      *
      * @param value the value to encode.
      * @param last  the previous value encoded (for delta encodings).
-     * @return the encoded bytes.
+     * @return The encoded bytes.
      * @throws Pack200Exception If a Pack200 semantic error occurs.
      */
     public abstract byte[] encode(int value, int last) throws Pack200Exception;

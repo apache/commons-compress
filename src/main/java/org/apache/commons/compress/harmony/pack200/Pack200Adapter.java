@@ -80,7 +80,7 @@ public abstract class Pack200Adapter {
     /**
      * Gets the properties map.
      *
-     * @return the properties.
+     * @return The properties.
      */
     public SortedMap<String, String> properties() {
         return properties;

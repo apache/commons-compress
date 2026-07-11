@@ -364,7 +364,7 @@ public class Segment {
     /**
      * Gets the attribute definition bands.
      *
-     * @return the attribute definition bands.
+     * @return The attribute definition bands.
      */
     protected AttrDefinitionBands getAttrDefinitionBands() {
         return attrDefinitionBands;
@@ -373,7 +373,7 @@ public class Segment {
     /**
      * Gets the class bands.
      *
-     * @return the class bands.
+     * @return The class bands.
      */
     protected ClassBands getClassBands() {
         return classBands;
@@ -382,7 +382,7 @@ public class Segment {
     /**
      * Gets the constant pool.
      *
-     * @return the constant pool.
+     * @return The constant pool.
      */
     public SegmentConstantPool getConstantPool() {
         return cpBands.getConstantPool();
@@ -391,7 +391,7 @@ public class Segment {
     /**
      * Gets the constant pool bands.
      *
-     * @return the constant pool bands.
+     * @return The constant pool bands.
      */
     protected CpBands getCpBands() {
         return cpBands;
@@ -400,7 +400,7 @@ public class Segment {
     /**
      * Gets the inner class bands.
      *
-     * @return the inner class bands.
+     * @return The inner class bands.
      */
     protected IcBands getIcBands() {
         return icBands;
@@ -409,7 +409,7 @@ public class Segment {
     /**
      * Gets the segment header.
      *
-     * @return the segment header.
+     * @return The segment header.
      */
     public SegmentHeader getSegmentHeader() {
         return header;

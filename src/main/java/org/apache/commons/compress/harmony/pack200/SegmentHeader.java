@@ -178,7 +178,7 @@ public class SegmentHeader extends BandSet {
     /**
      * Gets the archive modification time.
      *
-     * @return the archive modification time.
+     * @return The archive modification time.
      */
     public int getArchive_modtime() {
         return archive_modtime;
@@ -187,7 +187,7 @@ public class SegmentHeader extends BandSet {
     /**
      * Gets the default major version.
      *
-     * @return the default major version.
+     * @return The default major version.
      */
     public int getDefaultMajorVersion() {
         return majverCounter.getMostCommon();

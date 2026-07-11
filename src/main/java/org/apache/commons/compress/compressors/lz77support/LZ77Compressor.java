@@ -105,7 +105,7 @@ public class LZ77Compressor {
         /**
          * Gets the length of the reference.
          *
-         * @return the length of the reference.
+         * @return The length of the reference.
          */
         public int getLength() {
             return length;
@@ -114,7 +114,7 @@ public class LZ77Compressor {
         /**
          * Gets the offset of the reference.
          *
-         * @return the offset of the reference.
+         * @return The offset of the reference.
          */
         public int getOffset() {
             return offset;
@@ -198,7 +198,7 @@ public class LZ77Compressor {
         /**
          * Gets the block type.
          *
-         * @return the block type.
+         * @return The block type.
          */
         public BlockType getType() {
             return type;
@@ -277,7 +277,7 @@ public class LZ77Compressor {
          * This returns a live view of the actual data in order to avoid copying, modify the array at your own risk.
          * </p>
          *
-         * @return the data.
+         * @return The data.
          */
         public byte[] getData() {
             return data;

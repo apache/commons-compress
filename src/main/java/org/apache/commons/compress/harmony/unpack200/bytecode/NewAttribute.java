@@ -151,7 +151,7 @@ public class NewAttribute extends BCIRenumberedAttribute {
     /**
      * Gets the layout index.
      *
-     * @return the layout index.
+     * @return The layout index.
      */
     public int getLayoutIndex() {
         return layoutIndex;

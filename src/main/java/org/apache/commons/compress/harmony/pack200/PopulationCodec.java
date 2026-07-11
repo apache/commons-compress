@@ -156,7 +156,7 @@ public class PopulationCodec extends Codec {
      * @param favored the favored values.
      * @param tokens the tokens.
      * @param unfavored the unfavored values.
-     * @return the encoded bytes.
+     * @return The encoded bytes.
      * @throws Pack200Exception if an error occurs.
      */
     public byte[] encode(final int[] favored, final int[] tokens, final int[] unfavored) throws Pack200Exception {
@@ -175,7 +175,7 @@ public class PopulationCodec extends Codec {
     /**
      * Gets the favored values.
      *
-     * @return the favored values.
+     * @return The favored values.
      */
     public int[] getFavoured() {
         return favored;
@@ -184,7 +184,7 @@ public class PopulationCodec extends Codec {
     /**
      * Gets the favored codec.
      *
-     * @return the favored codec.
+     * @return The favored codec.
      */
     public Codec getFavouredCodec() {
         return favoredCodec;
@@ -193,7 +193,7 @@ public class PopulationCodec extends Codec {
     /**
      * Gets the token codec.
      *
-     * @return the token codec.
+     * @return The token codec.
      */
     public Codec getTokenCodec() {
         return tokenCodec;
@@ -202,7 +202,7 @@ public class PopulationCodec extends Codec {
     /**
      * Gets the unfavored codec.
      *
-     * @return the unfavored codec.
+     * @return The unfavored codec.
      */
     public Codec getUnfavouredCodec() {
         return unfavoredCodec;

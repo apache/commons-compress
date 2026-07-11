@@ -338,7 +338,7 @@ public class MetadataBandGroup extends BandSet {
     /**
      * Gets the number of backwards calls.
      *
-     * @return the number of backwards calls.
+     * @return The number of backwards calls.
      */
     public int numBackwardsCalls() {
         return numBackwardsCalls;

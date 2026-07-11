@@ -76,7 +76,7 @@ public class CPSignature extends ConstantPoolEntry implements Comparable {
     /**
      * Gets the list of classes.
      *
-     * @return the classes.
+     * @return The classes.
      */
     public List<CPClass> getClasses() {
         return classes;
@@ -85,7 +85,7 @@ public class CPSignature extends ConstantPoolEntry implements Comparable {
     /**
      * Gets the index in the CP UTF8 pool.
      *
-     * @return the index.
+     * @return The index.
      */
     public int getIndexInCpUtf8() {
         return signatureForm.getIndex();
@@ -94,7 +94,7 @@ public class CPSignature extends ConstantPoolEntry implements Comparable {
     /**
      * Gets the signature form.
      *
-     * @return the signature form.
+     * @return The signature form.
      */
     public CPUTF8 getSignatureForm() {
         return signatureForm;
@@ -103,7 +103,7 @@ public class CPSignature extends ConstantPoolEntry implements Comparable {
     /**
      * Gets the underlying signature string.
      *
-     * @return the signature string.
+     * @return The signature string.
      */
     public String getUnderlyingString() {
         return signature;

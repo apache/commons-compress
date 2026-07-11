@@ -82,7 +82,7 @@ public class ExtraFieldUtils {
         /**
          * Key of the action to take.
          *
-         * @return the key.
+         * @return The key.
          */
         public int getKey() {
             return key;
@@ -181,7 +181,7 @@ public class ExtraFieldUtils {
      * @param len   the length of this field's data.
      * @param local whether the extra field data stems from the local file header. If this is false then the data is part if the central directory header extra
      *              data.
-     * @return the filled field, will never be {@code null}.
+     * @return The filled field, will never be {@code null}.
      * @throws ZipException if an error occurs.
      * @since 1.19
      */

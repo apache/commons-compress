@@ -141,7 +141,7 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Compre
      *
      * @param inputFile the file to create the entry from.
      * @param entryName name to use for the entry.
-     * @return the ArchiveEntry set up with details from the file.
+     * @return The ArchiveEntry set up with details from the file.
      * @throws IOException if an I/O error occurs.
      */
     public abstract E createArchiveEntry(File inputFile, String entryName) throws IOException;
@@ -162,7 +162,7 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Compre
      * @param inputPath the file to create the entry from.
      * @param entryName name to use for the entry.
      * @param options   options indicating how symbolic links are handled.
-     * @return the ArchiveEntry set up with details from the file.
+     * @return The ArchiveEntry set up with details from the file.
      * @throws IOException if an I/O error occurs.
      * @since 1.21
      */
@@ -173,7 +173,7 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Compre
     /**
      * Gets the current number of bytes written to this stream.
      *
-     * @return the number of written bytes.
+     * @return The number of written bytes.
      * @since 1.1
      */
     public long getBytesWritten() {
@@ -183,7 +183,7 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Compre
     /**
      * Gets the current number of bytes written to this stream.
      *
-     * @return the number of written bytes.
+     * @return The number of written bytes.
      * @deprecated this method may yield wrong results for large archives, use #getBytesWritten instead
      */
     @Deprecated

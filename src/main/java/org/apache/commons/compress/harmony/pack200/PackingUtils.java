@@ -154,7 +154,7 @@ public class PackingUtils {
      *
      * @param jarFile the JAR file.
      * @param keepFileOrder whether to keep file order.
-     * @return the packing file list.
+     * @return The packing file list.
      * @throws IOException if an I/O error occurs.
      */
     public static List<PackingFile> getPackingFileListFromJar(final JarFile jarFile, final boolean keepFileOrder) throws IOException {
@@ -177,7 +177,7 @@ public class PackingUtils {
      *
      * @param jarInputStream the JAR input stream.
      * @param keepFileOrder whether to keep file order.
-     * @return the packing file list.
+     * @return The packing file list.
      * @throws IOException if an I/O error occurs.
      */
     public static List<PackingFile> getPackingFileListFromJar(final JarInputStream jarInputStream, final boolean keepFileOrder) throws IOException {

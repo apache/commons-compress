@@ -83,7 +83,7 @@ public class ClassBands extends BandSet {
      * Counts arguments in a descriptor.
      *
      * @param descriptor the descriptor to parse.
-     * @return the argument count.
+     * @return The argument count.
      */
     protected static int countArgs(final String descriptor) {
         final int bra = descriptor.indexOf('(');
@@ -1060,7 +1060,7 @@ public class ClassBands extends BandSet {
     /**
      * Gets the number of classes processed.
      *
-     * @return the number of classes processed.
+     * @return The number of classes processed.
      */
     public int numClassesProcessed() {
         return index;

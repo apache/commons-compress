@@ -41,7 +41,7 @@ public class Pack200Exception extends CompressException {
      *
      * @param x the first value.
      * @param y the second value.
-     * @return the result.
+     * @return The result.
      * @throws Pack200Exception if the result or input overflows an {@code int}.
      * @see Math#addExact(int, int)
      * @since 1.29.0

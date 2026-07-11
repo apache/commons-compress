@@ -132,7 +132,7 @@ public class BitInputStream implements Closeable {
      * This includes the bytes read to fill the current cache and not read as bits so far.
      * </p>
      *
-     * @return the number of bytes read from the underlying stream.
+     * @return The number of bytes read from the underlying stream.
      * @since 1.17
      */
     public long getBytesRead() {
@@ -169,7 +169,7 @@ public class BitInputStream implements Closeable {
     /**
      * Reads and returns the next bit read from the underlying stream.
      *
-     * @return the next bit (0 or 1) or -1 if the end of the stream has been reached.
+     * @return The next bit (0 or 1) or -1 if the end of the stream has been reached.
      * @throws IOException if an I/O error occurs.
      * @since 1.28
      */
@@ -181,7 +181,7 @@ public class BitInputStream implements Closeable {
      * Reads and returns at most 63 bits read from the underlying stream.
      *
      * @param count the number of bits to read, must be a positive number not bigger than 63.
-     * @return the bits concatenated as a long using the stream's byte order. -1 if the end of the underlying stream has been reached before reading the
+     * @return The bits concatenated as a long using the stream's byte order. -1 if the end of the underlying stream has been reached before reading the
      *         requested number of bits.
      * @throws IOException if an I/O error occurs.
      */

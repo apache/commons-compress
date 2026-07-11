@@ -118,7 +118,7 @@ public final class AttributeLayoutUtils {
      * Validates that the given tag matches the {@code any_int} layout definition production rule.
      *
      * @param tag the layout tag to validate
-     * @return the validated tag
+     * @return The validated tag
      * @throws IllegalArgumentException if the tag is invalid
      */
     static String checkAnyIntTag(final String tag) {
@@ -132,7 +132,7 @@ public final class AttributeLayoutUtils {
      * Validates that the given tag matches the {@code integral} layout definition production rule.
      *
      * @param tag the layout tag to validate
-     * @return the validated tag
+     * @return The validated tag
      * @throws IllegalArgumentException if the tag is invalid
      */
     public static String checkIntegralTag(final String tag) {
@@ -146,7 +146,7 @@ public final class AttributeLayoutUtils {
      * Validates that the given tag matches the {@code reference} layout definition production rule.
      *
      * @param tag the layout tag to validate
-     * @return the validated tag
+     * @return The validated tag
      * @throws IllegalArgumentException if the tag is invalid
      */
     public static String checkReferenceTag(final String tag) {
@@ -165,7 +165,7 @@ public final class AttributeLayoutUtils {
      * Validates that the given tag matches the {@code unsigned_int} layout definition production rule.
      *
      * @param tag the layout tag to validate
-     * @return the validated tag
+     * @return The validated tag
      * @throws IllegalArgumentException if the tag is invalid
      */
     static String checkUnsignedIntTag(final String tag) {

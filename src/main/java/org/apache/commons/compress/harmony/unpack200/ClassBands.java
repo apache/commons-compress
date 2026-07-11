@@ -164,7 +164,7 @@ public class ClassBands extends BandSet {
     /**
      * Gets the class attributes array.
      *
-     * @return the class attributes array.
+     * @return The class attributes array.
      */
     public ArrayList<Attribute>[] getClassAttributes() {
         return classAttributes;
@@ -173,7 +173,7 @@ public class ClassBands extends BandSet {
     /**
      * Gets the class field counts array.
      *
-     * @return the class field count array.
+     * @return The class field count array.
      */
     public int[] getClassFieldCount() {
         return classFieldCount;
@@ -182,7 +182,7 @@ public class ClassBands extends BandSet {
     /**
      * Gets the class flags array.
      *
-     * @return the class flags array.
+     * @return The class flags array.
      */
     public long[] getClassFlags() {
         if (classAccessFlags == null) {
@@ -204,7 +204,7 @@ public class ClassBands extends BandSet {
     /**
      * Gets the class interfaces array.
      *
-     * @return the class interfaces array.
+     * @return The class interfaces array.
      */
     public int[][] getClassInterfacesInts() {
         return classInterfacesInts;
@@ -213,7 +213,7 @@ public class ClassBands extends BandSet {
     /**
      * Gets the class method counts array.
      *
-     * @return the class method count array.
+     * @return The class method count array.
      */
     public int[] getClassMethodCount() {
         return classMethodCount;
@@ -222,7 +222,7 @@ public class ClassBands extends BandSet {
     /**
      * Gets the class super class array.
      *
-     * @return the class super array.
+     * @return The class super array.
      */
     public int[] getClassSuperInts() {
         return classSuperInts;
@@ -231,7 +231,7 @@ public class ClassBands extends BandSet {
     /**
      * Gets the class this array.
      *
-     * @return the class this array.
+     * @return The class this array.
      */
     public int[] getClassThisInts() {
         return classThisInts;
@@ -260,7 +260,7 @@ public class ClassBands extends BandSet {
     /**
      * Gets the code handler catch program offsets.
      *
-     * @return the catch PO array.
+     * @return The catch PO array.
      */
     public int[][] getCodeHandlerCatchPO() {
         return codeHandlerCatchPO;
@@ -269,7 +269,7 @@ public class ClassBands extends BandSet {
     /**
      * Gets the code handler class reference numbers.
      *
-     * @return the class RCN array.
+     * @return The class RCN array.
      */
     public int[][] getCodeHandlerClassRCN() {
         return codeHandlerClassRCN;
@@ -278,7 +278,7 @@ public class ClassBands extends BandSet {
     /**
      * Gets the code handler counts.
      *
-     * @return the handler count array.
+     * @return The handler count array.
      */
     public int[] getCodeHandlerCount() {
         return codeHandlerCount;
@@ -287,7 +287,7 @@ public class ClassBands extends BandSet {
     /**
      * Gets the code handler end program offsets.
      *
-     * @return the end PO array.
+     * @return The end PO array.
      */
     public int[][] getCodeHandlerEndPO() {
         return codeHandlerEndPO;
@@ -296,7 +296,7 @@ public class ClassBands extends BandSet {
     /**
      * Gets the code handler start program offsets.
      *
-     * @return the start P array.
+     * @return The start P array.
      */
     public int[][] getCodeHandlerStartP() {
         return codeHandlerStartP;
@@ -305,7 +305,7 @@ public class ClassBands extends BandSet {
     /**
      * Gets array indicating which code has attributes.
      *
-     * @return the code has attributes array.
+     * @return The code has attributes array.
      */
     public boolean[] getCodeHasAttributes() {
         return codeHasAttributes;
@@ -314,7 +314,7 @@ public class ClassBands extends BandSet {
     /**
      * Gets the code maximum NA locals.
      *
-     * @return the max NA locals array.
+     * @return The max NA locals array.
      */
     public int[] getCodeMaxNALocals() {
         return codeMaxNALocals;
@@ -323,7 +323,7 @@ public class ClassBands extends BandSet {
     /**
      * Gets the code maximum stack sizes.
      *
-     * @return the max stack array.
+     * @return The max stack array.
      */
     public int[] getCodeMaxStack() {
         return codeMaxStack;
@@ -332,7 +332,7 @@ public class ClassBands extends BandSet {
     /**
      * Gets the field attributes.
      *
-     * @return the field attributes array.
+     * @return The field attributes array.
      */
     public ArrayList<Attribute>[][] getFieldAttributes() {
         return fieldAttributes;
@@ -341,7 +341,7 @@ public class ClassBands extends BandSet {
     /**
      * Gets the field descriptor indices.
      *
-     * @return the field descriptor indices array.
+     * @return The field descriptor indices array.
      */
     public int[][] getFieldDescrInts() {
         return fieldDescrInts;
@@ -350,7 +350,7 @@ public class ClassBands extends BandSet {
     /**
      * Gets the field flags (access flags).
      *
-     * @return the field flags array.
+     * @return The field flags array.
      */
     public long[][] getFieldFlags() {
         if (fieldAccessFlags == null) {
@@ -375,7 +375,7 @@ public class ClassBands extends BandSet {
     /**
      * Gets the IC local tuples.
      *
-     * @return the IC local array.
+     * @return The IC local array.
      */
     public IcTuple[][] getIcLocal() {
         return icLocal;
@@ -384,7 +384,7 @@ public class ClassBands extends BandSet {
     /**
      * Gets the method attributes.
      *
-     * @return the method attributes array.
+     * @return The method attributes array.
      */
     public ArrayList<Attribute>[][] getMethodAttributes() {
         return methodAttributes;
@@ -393,7 +393,7 @@ public class ClassBands extends BandSet {
     /**
      * Gets the method descriptors as strings.
      *
-     * @return the method descriptor string array.
+     * @return The method descriptor string array.
      */
     public String[][] getMethodDescr() {
         return methodDescr;
@@ -402,7 +402,7 @@ public class ClassBands extends BandSet {
     /**
      * Gets the method descriptor indices.
      *
-     * @return the method descriptor indices array.
+     * @return The method descriptor indices array.
      */
     public int[][] getMethodDescrInts() {
         return methodDescrInts;
@@ -411,7 +411,7 @@ public class ClassBands extends BandSet {
     /**
      * Gets the method flags (access flags).
      *
-     * @return the method flags array.
+     * @return The method flags array.
      */
     public long[][] getMethodFlags() {
         if (methodAccessFlags == null) {
@@ -447,7 +447,7 @@ public class ClassBands extends BandSet {
     /**
      * Gets the raw class flags before masking.
      *
-     * @return the raw class flags array.
+     * @return The raw class flags array.
      */
     public long[] getRawClassFlags() {
         return classFlags;
@@ -657,7 +657,7 @@ public class ClassBands extends BandSet {
      *
      * @param in             the input stream to read from.
      * @param classAttrCalls the class attribute calls array.
-     * @return the number of backwards callables.
+     * @return The number of backwards callables.
      * @throws Pack200Exception If a Pack200 semantic error occurs.
      * @throws IOException      If an I/O error occurs.
      */

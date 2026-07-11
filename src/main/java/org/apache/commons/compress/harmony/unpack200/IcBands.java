@@ -64,7 +64,7 @@ public class IcBands extends BandSet {
     /**
      * Gets the IC tuples.
      *
-     * @return the IC tuples.
+     * @return The IC tuples.
      */
     public IcTuple[] getIcTuples() {
         return icAll;

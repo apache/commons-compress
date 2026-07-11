@@ -86,7 +86,7 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
      *
      * @param previousCode the previous code.
      * @param character    the next character to append.
-     * @return the new code.
+     * @return The new code.
      * @throws IOException on error.
      */
     protected abstract int addEntry(int previousCode, byte character) throws IOException;
@@ -97,7 +97,7 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
      * @param previousCode the previous code.
      * @param character    the character to append.
      * @param maxTableSize the maximum table size.
-     * @return the new code or -1 if maxTableSize has been reached already.
+     * @return The new code or -1 if maxTableSize has been reached already.
      */
     protected int addEntry(final int previousCode, final byte character, final int maxTableSize) {
         if (tableSize < maxTableSize) {
@@ -130,7 +130,7 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
     /**
      * Reads the next code and expand it.
      *
-     * @return the expanded next code, negative at end-of-file.
+     * @return The expanded next code, negative at end-of-file.
      * @throws IOException on error.
      */
     protected abstract int decompressNextSymbol() throws IOException;
@@ -140,7 +140,7 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
      *
      * @param code                 the code.
      * @param addedUnfinishedEntry whether unfinished entries have been added.
-     * @return the new location of the output stack, or the input code if negative indicating an end-of-file condition.
+     * @return The new location of the output stack, or the input code if negative indicating an end-of-file condition.
      * @throws IOException if an I/O error occurs.
      */
     protected int expandCodeToOutputStack(final int code, final boolean addedUnfinishedEntry) throws IOException {
@@ -161,7 +161,7 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
     /**
      * Gets the clear code.
      *
-     * @return the clear code.
+     * @return The clear code.
      */
     protected int getClearCode() {
         return clearCode;
@@ -170,7 +170,7 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
     /**
      * Gets the code size in bits.
      *
-     * @return the code size in bits.
+     * @return The code size in bits.
      */
     protected int getCodeSize() {
         return codeSize;
@@ -188,7 +188,7 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
      * Gets the prefix at the given offset.
      *
      * @param offset offset to query.
-     * @return the prefix at the given offset.
+     * @return The prefix at the given offset.
      */
     protected int getPrefix(final int offset) {
         return prefixes[offset];
@@ -197,7 +197,7 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
     /**
      * Gets the prefixes' length.
      *
-     * @return the prefixes' length.
+     * @return The prefixes' length.
      */
     protected int getPrefixesLength() {
         return prefixes.length;
@@ -206,7 +206,7 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
     /**
      * Gets the table size.
      *
-     * @return the table size.
+     * @return The table size.
      */
     protected int getTableSize() {
         return tableSize;
@@ -311,7 +311,7 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
     /**
      * Reads the next code from the stream.
      *
-     * @return the next code or -1 at end-of-file.
+     * @return The next code or -1 at end-of-file.
      * @throws IOException on error.
      */
     protected int readNextCode() throws IOException {

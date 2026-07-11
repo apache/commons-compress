@@ -67,7 +67,7 @@ public abstract class Attribute extends ClassFileEntry {
     /**
      * Gets the attribute name.
      *
-     * @return the attribute name.
+     * @return The attribute name.
      */
     protected CPUTF8 getAttributeName() {
         return attributeName;
@@ -76,7 +76,7 @@ public abstract class Attribute extends ClassFileEntry {
     /**
      * Gets the length.
      *
-     * @return the length.
+     * @return The length.
      */
     protected abstract int getLength();
 

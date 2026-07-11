@@ -168,7 +168,7 @@ public class NewAttribute extends Attribute {
     /**
      * Gets the attribute bytes.
      *
-     * @return the bytes.
+     * @return The bytes.
      */
     public byte[] getBytes() {
         return contents;
@@ -178,7 +178,7 @@ public class NewAttribute extends Attribute {
      * Gets the label at the specified index.
      *
      * @param index the index.
-     * @return the label.
+     * @return The label.
      */
     public Label getLabel(final int index) {
         return labels[index];
@@ -187,7 +187,7 @@ public class NewAttribute extends Attribute {
     /**
      * Gets the layout.
      *
-     * @return the layout string.
+     * @return The layout string.
      */
     public String getLayout() {
         return layout;
@@ -270,7 +270,7 @@ public class NewAttribute extends Attribute {
      * Reads a class name at the specified index.
      *
      * @param index the index.
-     * @return the class name.
+     * @return The class name.
      */
     public String readClass(final int index) {
         return classReader.readClass(index, buf);
@@ -280,7 +280,7 @@ public class NewAttribute extends Attribute {
      * Reads a constant at the specified index.
      *
      * @param index the index.
-     * @return the constant.
+     * @return The constant.
      */
     public Object readConst(final int index) {
         return classReader.readConst(index, buf);
@@ -290,7 +290,7 @@ public class NewAttribute extends Attribute {
      * Reads a UTF-8 string at the specified index.
      *
      * @param index the index.
-     * @return the UTF-8 string.
+     * @return The UTF-8 string.
      */
     public String readUTF8(final int index) {
         return classReader.readUTF8(index, buf);

@@ -35,7 +35,7 @@ public interface ArchiveEntry {
     /**
      * Gets the last modified date of this entry.
      *
-     * @return the last modified date of this entry.
+     * @return The last modified date of this entry.
      * @since 1.1
      */
     Date getLastModifiedDate();
@@ -53,7 +53,7 @@ public interface ArchiveEntry {
     /**
      * Gets the uncompressed size of this entry. May be -1 (SIZE_UNKNOWN) if the size is unknown
      *
-     * @return the uncompressed size of this entry.
+     * @return The uncompressed size of this entry.
      */
     long getSize();
 

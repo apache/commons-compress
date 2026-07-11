@@ -489,7 +489,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      *     Handles special records (PAX, GNU long name, sparse, etc.) and applies PAX headers as needed.
      * </p>
      *
-     * @return the next file entry, or {@code null} if there are no more entries.
+     * @return The next file entry, or {@code null} if there are no more entries.
      * @throws IOException if the next entry could not be read or the archive is malformed.
      */
     @Override
@@ -740,7 +740,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      * bytes have been skipped; are only two possibilities. The actual number of bytes skipped is returned. If {@code n} is negative, no bytes are skipped.
      *
      * @param n the number of bytes to be skipped.
-     * @return the actual number of bytes skipped.
+     * @return The actual number of bytes skipped.
      * @throws IOException if a truncated tar archive is detected or some other I/O error occurs.
      */
     @Override

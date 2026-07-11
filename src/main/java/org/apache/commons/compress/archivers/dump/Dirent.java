@@ -45,7 +45,7 @@ final class Dirent {
     /**
      * Gets ino.
      *
-     * @return the i-node.
+     * @return The i-node.
      */
     int getIno() {
         return ino;
@@ -58,7 +58,7 @@ final class Dirent {
      * This method returns the raw name as it is stored inside of the archive.
      * </p>
      *
-     * @return the directory name.
+     * @return The directory name.
      */
     String getName() {
         return name;
@@ -67,7 +67,7 @@ final class Dirent {
     /**
      * Gets ino of parent directory.
      *
-     * @return the parent i-node.
+     * @return The parent i-node.
      */
     int getParentIno() {
         return parentIno;
@@ -76,7 +76,7 @@ final class Dirent {
     /**
      * Gets entry type.
      *
-     * @return the entry type.
+     * @return The entry type.
      */
     int getType() {
         return type;

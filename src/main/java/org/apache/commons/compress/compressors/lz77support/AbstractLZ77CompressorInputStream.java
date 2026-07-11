@@ -151,7 +151,7 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
     /**
      * Gets the uncompressed size of the stream.
      *
-     * @return the uncompressed size.
+     * @return The uncompressed size.
      */
     public int getSize() {
         return size;
@@ -248,7 +248,7 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
     /**
      * Reads a single byte from the real input stream and ensures the data is accounted for.
      *
-     * @return the byte read as value between 0 and 255 or -1 if EOF has been reached.
+     * @return The byte read as value between 0 and 255 or -1 if EOF has been reached.
      * @throws IOException if the underlying stream throws.
      */
     protected final int readOneByte() throws IOException {

@@ -286,7 +286,7 @@ public final class ExtraField implements Iterable<SubField> {
      * Gets the size in bytes of the encoded extra field. This does not include its own 16 bits size when embeded in the gzip header. For N sub fields,
      * the total is all subfields payloads bytes + 4N.
      *
-     * @return the bytes count of this extra payload when encoded.
+     * @return The bytes count of this extra payload when encoded.
      */
     public int getEncodedSize() {
         return totalSize;
@@ -296,7 +296,7 @@ public final class ExtraField implements Iterable<SubField> {
      * Gets the subfield at the given index.
      *
      * @param index index of the element to return.
-     * @return the subfield at the specified position in this list.
+     * @return The subfield at the specified position in this list.
      * @throws IndexOutOfBoundsException if the index is out of range ({@code index &lt; 0 || index &gt;= size()}).
      */
     public SubField getSubField(final int index) {
@@ -330,7 +330,7 @@ public final class ExtraField implements Iterable<SubField> {
     /**
      * Gets the count of subfields currently in in this extra field.
      *
-     * @return the count of subfields contained in this instance.
+     * @return The count of subfields contained in this instance.
      */
     public int size() {
         return subFields.size();

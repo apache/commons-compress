@@ -156,7 +156,7 @@ public class ArArchiveEntry implements ArchiveEntry {
     /**
      * Gets the group ID.
      *
-     * @return the group ID.
+     * @return The group ID.
      */
     public int getGroupId() {
         return groupId;
@@ -165,7 +165,7 @@ public class ArArchiveEntry implements ArchiveEntry {
     /**
      * Gets the last modified time in seconds since the epoch.
      *
-     * @return the last modified date.
+     * @return The last modified date.
      */
     public long getLastModified() {
         return lastModified;
@@ -179,7 +179,7 @@ public class ArArchiveEntry implements ArchiveEntry {
     /**
      * Gets the length.
      *
-     * @return the length.
+     * @return The length.
      */
     public long getLength() {
         return length;
@@ -188,7 +188,7 @@ public class ArArchiveEntry implements ArchiveEntry {
     /**
      * Gets the mode.
      *
-     * @return the mode.
+     * @return The mode.
      */
     public int getMode() {
         return mode;
@@ -207,7 +207,7 @@ public class ArArchiveEntry implements ArchiveEntry {
     /**
      * Gets the user ID.
      *
-     * @return the user ID.
+     * @return The user ID.
      */
     public int getUserId() {
         return userId;

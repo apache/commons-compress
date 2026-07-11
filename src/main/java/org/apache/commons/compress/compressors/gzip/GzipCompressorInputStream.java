@@ -351,7 +351,7 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
     /**
      * Provides the stream's metadata - may change with each stream when decompressing concatenated streams.
      *
-     * @return the stream's meta data.
+     * @return The stream's meta data.
      * @since 1.8
      */
     public GzipParameters getMetaData() {

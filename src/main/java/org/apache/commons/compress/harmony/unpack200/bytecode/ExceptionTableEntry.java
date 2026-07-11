@@ -61,7 +61,7 @@ public class ExceptionTableEntry {
     /**
      * Gets the catch type.
      *
-     * @return the catch type.
+     * @return The catch type.
      */
     public CPClass getCatchType() {
         return catchType;

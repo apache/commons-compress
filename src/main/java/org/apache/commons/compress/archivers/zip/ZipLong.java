@@ -93,7 +93,7 @@ public final class ZipLong implements Cloneable, Serializable {
      * Converts a four-byte array to a Java long,
      *
      * @param bytes the array of bytes.
-     * @return the corresponding Java long value.
+     * @return The corresponding Java long value.
      */
     public static long getValue(final byte[] bytes) {
         return getValue(bytes, 0);
@@ -104,7 +104,7 @@ public final class ZipLong implements Cloneable, Serializable {
      *
      * @param bytes  the array of bytes.
      * @param offset the offset to start.
-     * @return the corresponding Java long value.
+     * @return The corresponding Java long value.
      */
     public static long getValue(final byte[] bytes, final int offset) {
         return ByteUtils.fromLittleEndian(bytes, offset, 4);
@@ -219,7 +219,7 @@ public final class ZipLong implements Cloneable, Serializable {
     /**
      * Override to make two instances with same value equal.
      *
-     * @return the value stored in the ZipLong.
+     * @return The value stored in the ZipLong.
      */
     @Override
     public int hashCode() {

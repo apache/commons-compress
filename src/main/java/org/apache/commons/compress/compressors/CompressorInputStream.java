@@ -58,7 +58,7 @@ public abstract class CompressorInputStream extends InputStream {
     /**
      * Gets the current number of bytes read from this stream.
      *
-     * @return the number of read bytes.
+     * @return The number of read bytes.
      * @since 1.1
      */
     public long getBytesRead() {
@@ -68,7 +68,7 @@ public abstract class CompressorInputStream extends InputStream {
     /**
      * Gets the current number of bytes read from this stream.
      *
-     * @return the number of read bytes.
+     * @return The number of read bytes.
      * @deprecated this method may yield wrong results for large archives, use {@link #getBytesRead()} instead.
      */
     @Deprecated
@@ -87,7 +87,7 @@ public abstract class CompressorInputStream extends InputStream {
      * Provides half of {@link org.apache.commons.compress.utils.InputStreamStatistics} without forcing subclasses to implement the other half.
      * </p>
      *
-     * @return the amount of decompressed bytes returned by the stream.
+     * @return The amount of decompressed bytes returned by the stream.
      * @since 1.17
      */
     public long getUncompressedCount() {

@@ -127,7 +127,7 @@ public class BcBands extends BandSet {
     /**
      * Gets the bcByte array.
      *
-     * @return the bcByte array.
+     * @return The bcByte array.
      */
     public int[] getBcByte() {
         return bcByte;
@@ -136,7 +136,7 @@ public class BcBands extends BandSet {
     /**
      * Gets the bcCaseCount array.
      *
-     * @return the bcCaseCount array.
+     * @return The bcCaseCount array.
      */
     public int[] getBcCaseCount() {
         return bcCaseCount;
@@ -145,7 +145,7 @@ public class BcBands extends BandSet {
     /**
      * Gets the bcCaseValue array.
      *
-     * @return the bcCaseValue array.
+     * @return The bcCaseValue array.
      */
     public int[] getBcCaseValue() {
         return bcCaseValue;
@@ -154,7 +154,7 @@ public class BcBands extends BandSet {
     /**
      * Gets the bcClassRef array.
      *
-     * @return the bcClassRef array.
+     * @return The bcClassRef array.
      */
     public int[] getBcClassRef() {
         return bcClassRef;
@@ -163,7 +163,7 @@ public class BcBands extends BandSet {
     /**
      * Gets the bcDoubleRef array.
      *
-     * @return the bcDoubleRef array.
+     * @return The bcDoubleRef array.
      */
     public int[] getBcDoubleRef() {
         return bcDoubleRef;
@@ -172,7 +172,7 @@ public class BcBands extends BandSet {
     /**
      * Gets the bcFieldRef array.
      *
-     * @return the bcFieldRef array.
+     * @return The bcFieldRef array.
      */
     public int[] getBcFieldRef() {
         return bcFieldRef;
@@ -181,7 +181,7 @@ public class BcBands extends BandSet {
     /**
      * Gets the bcFloatRef array.
      *
-     * @return the bcFloatRef array.
+     * @return The bcFloatRef array.
      */
     public int[] getBcFloatRef() {
         return bcFloatRef;
@@ -190,7 +190,7 @@ public class BcBands extends BandSet {
     /**
      * Gets the bcIMethodRef array.
      *
-     * @return the bcIMethodRef array.
+     * @return The bcIMethodRef array.
      */
     public int[] getBcIMethodRef() {
         return bcIMethodRef;
@@ -199,7 +199,7 @@ public class BcBands extends BandSet {
     /**
      * Gets the bcInitRef array.
      *
-     * @return the bcInitRef array.
+     * @return The bcInitRef array.
      */
     public int[] getBcInitRef() {
         return bcInitRef;
@@ -208,7 +208,7 @@ public class BcBands extends BandSet {
     /**
      * Gets the bcIntRef array.
      *
-     * @return the bcIntRef array.
+     * @return The bcIntRef array.
      */
     public int[] getBcIntRef() {
         return bcIntRef;
@@ -217,7 +217,7 @@ public class BcBands extends BandSet {
     /**
      * Gets the bcLabel array.
      *
-     * @return the bcLabel array.
+     * @return The bcLabel array.
      */
     public int[] getBcLabel() {
         return bcLabel;
@@ -226,7 +226,7 @@ public class BcBands extends BandSet {
     /**
      * Gets the bcLocal array.
      *
-     * @return the bcLocal array.
+     * @return The bcLocal array.
      */
     public int[] getBcLocal() {
         return bcLocal;
@@ -235,7 +235,7 @@ public class BcBands extends BandSet {
     /**
      * Gets the bcLongRef array.
      *
-     * @return the bcLongRef array.
+     * @return The bcLongRef array.
      */
     public int[] getBcLongRef() {
         return bcLongRef;
@@ -244,7 +244,7 @@ public class BcBands extends BandSet {
     /**
      * Gets the bcMethodRef array.
      *
-     * @return the bcMethodRef array.
+     * @return The bcMethodRef array.
      */
     public int[] getBcMethodRef() {
         return bcMethodRef;
@@ -253,7 +253,7 @@ public class BcBands extends BandSet {
     /**
      * Gets the bcShort array.
      *
-     * @return the bcShort array.
+     * @return The bcShort array.
      */
     public int[] getBcShort() {
         return bcShort;
@@ -262,7 +262,7 @@ public class BcBands extends BandSet {
     /**
      * Gets the bcStringRef array.
      *
-     * @return the bcStringRef array.
+     * @return The bcStringRef array.
      */
     public int[] getBcStringRef() {
         return bcStringRef;
@@ -271,7 +271,7 @@ public class BcBands extends BandSet {
     /**
      * Gets the bcSuperField array.
      *
-     * @return the bcSuperField array.
+     * @return The bcSuperField array.
      */
     public int[] getBcSuperField() {
         return bcSuperField;
@@ -280,7 +280,7 @@ public class BcBands extends BandSet {
     /**
      * Gets the bcSuperMethod array.
      *
-     * @return the bcSuperMethod array.
+     * @return The bcSuperMethod array.
      */
     public int[] getBcSuperMethod() {
         return bcSuperMethod;
@@ -289,7 +289,7 @@ public class BcBands extends BandSet {
     /**
      * Gets the bcThisField array.
      *
-     * @return the bcThisField array.
+     * @return The bcThisField array.
      */
     public int[] getBcThisField() {
         return bcThisField;
@@ -298,7 +298,7 @@ public class BcBands extends BandSet {
     /**
      * Gets the bcThisMethod array.
      *
-     * @return the bcThisMethod array.
+     * @return The bcThisMethod array.
      */
     public int[] getBcThisMethod() {
         return bcThisMethod;
@@ -307,7 +307,7 @@ public class BcBands extends BandSet {
     /**
      * Gets the method bytecode packed data.
      *
-     * @return the method bytecode packed data.
+     * @return The method bytecode packed data.
      */
     public byte[][][] getMethodByteCodePacked() {
         return methodByteCodePacked;

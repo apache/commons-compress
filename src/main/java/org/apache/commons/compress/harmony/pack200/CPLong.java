@@ -55,7 +55,7 @@ public class CPLong extends CPConstant<CPLong> {
     /**
      * Gets the long value.
      *
-     * @return the long value.
+     * @return The long value.
      */
     public long getLong() {
         return value;

@@ -205,7 +205,7 @@ public final class BHSDCodec extends Codec {
     /**
      * Returns the cardinality of this codec; that is, the number of distinct values that it can contain.
      *
-     * @return the cardinality of this codec
+     * @return The cardinality of this codec
      */
     public long cardinality() {
         return cardinality;
@@ -386,7 +386,7 @@ public final class BHSDCodec extends Codec {
     /**
      * Gets the B.
      *
-     * @return the b
+     * @return The b
      */
     public int getB() {
         return b;
@@ -395,7 +395,7 @@ public final class BHSDCodec extends Codec {
     /**
      * Gets the H.
      *
-     * @return the h
+     * @return The h
      */
     public int getH() {
         return h;
@@ -404,7 +404,7 @@ public final class BHSDCodec extends Codec {
     /**
      * Gets the L.
      *
-     * @return the l
+     * @return The l
      */
     public int getL() {
         return l;
@@ -413,7 +413,7 @@ public final class BHSDCodec extends Codec {
     /**
      * Gets the S.
      *
-     * @return the s
+     * @return The s
      */
     public int getS() {
         return s;
@@ -445,7 +445,7 @@ public final class BHSDCodec extends Codec {
     /**
      * Returns the largest value that this codec can represent.
      *
-     * @return the largest value that this codec can represent.
+     * @return The largest value that this codec can represent.
      */
     public long largest() {
         return largest;
@@ -454,7 +454,7 @@ public final class BHSDCodec extends Codec {
     /**
      * Returns the smallest value that this codec can represent.
      *
-     * @return the smallest value that this codec can represent.
+     * @return The smallest value that this codec can represent.
      */
     public long smallest() {
         return smallest;

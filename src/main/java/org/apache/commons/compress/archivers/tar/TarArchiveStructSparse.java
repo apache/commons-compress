@@ -70,7 +70,7 @@ public final class TarArchiveStructSparse {
     /**
      * Gets the byte count.
      *
-     * @return the byte count.
+     * @return The byte count.
      */
     public long getNumbytes() {
         return numbytes;
@@ -79,7 +79,7 @@ public final class TarArchiveStructSparse {
     /**
      * Gets the offset.
      *
-     * @return the offset.
+     * @return The offset.
      */
     public long getOffset() {
         return offset;

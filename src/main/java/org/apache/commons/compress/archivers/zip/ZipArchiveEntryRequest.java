@@ -77,7 +77,7 @@ public class ZipArchiveEntryRequest {
     /**
      * Gets the underlying entry. Do not use this method from threads that did not create the instance itself !
      *
-     * @return the zipArchiveEntry that is basis for this request.
+     * @return The zipArchiveEntry that is basis for this request.
      */
     ZipArchiveEntry getZipArchiveEntry() {
         return zipArchiveEntry;

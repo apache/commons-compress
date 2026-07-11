@@ -392,7 +392,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
      *
      * @param <I> The {@link ArchiveInputStream} type.
      * @param in  the input stream.
-     * @return the archive input stream.
+     * @return The archive input stream.
      * @throws ArchiveException               if the archiver name is not known.
      * @throws StreamingNotSupportedException if the format cannot be read from a stream.
      * @throws IllegalArgumentException       if the stream is null or does not support mark.
@@ -408,7 +408,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
      * @param archiverName the archive name, i.e. {@value #AR}, {@value #ARJ}, {@value #ZIP}, {@value #TAR}, {@value #JAR}, {@value #CPIO}, {@value #DUMP} or
      *                     {@value #SEVEN_Z}.
      * @param in           the input stream.
-     * @return the archive input stream.
+     * @return The archive input stream.
      * @throws ArchiveException               if the archiver name is not known.
      * @throws StreamingNotSupportedException if the format cannot be read from a stream.
      * @throws IllegalArgumentException       if the archiver name or stream is null.
@@ -497,7 +497,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
      * @param <O>          The {@link ArchiveOutputStream} type.
      * @param archiverName the archive name, i.e. {@value #AR}, {@value #ZIP}, {@value #TAR}, {@value #JAR} or {@value #CPIO}.
      * @param out          the output stream.
-     * @return the archive output stream.
+     * @return The archive output stream.
      * @throws ArchiveException               if the archiver name is not known.
      * @throws StreamingNotSupportedException if the format cannot be written to a stream.
      * @throws IllegalArgumentException       if the archiver name or stream is null.

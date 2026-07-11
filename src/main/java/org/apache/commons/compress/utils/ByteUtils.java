@@ -60,7 +60,7 @@ public final class ByteUtils {
         /**
          * The contract is similar to {@link InputStream#read()}, return the byte as an unsigned int, -1 if there are no more bytes.
          *
-         * @return the supplied byte or -1 if there are no more bytes.
+         * @return The supplied byte or -1 if there are no more bytes.
          * @throws IOException if supplying fails.
          */
         int getAsByte() throws IOException;
@@ -133,7 +133,7 @@ public final class ByteUtils {
      * Reads the given byte array as a little-endian long.
      *
      * @param bytes the byte array to convert.
-     * @return the number read.
+     * @return The number read.
      */
     public static long fromLittleEndian(final byte[] bytes) {
         return fromLittleEndian(bytes, 0, bytes.length);
@@ -145,7 +145,7 @@ public final class ByteUtils {
      * @param bytes  the byte array to convert.
      * @param off    the offset into the array that starts the value.
      * @param length the number of bytes representing the value.
-     * @return the number read.
+     * @return The number read.
      * @throws IllegalArgumentException if len is bigger than eight.
      */
     public static long fromLittleEndian(final byte[] bytes, final int off, final int length) {
@@ -166,7 +166,7 @@ public final class ByteUtils {
      *
      * @param supplier the supplier for bytes.
      * @param length   the number of bytes representing the value.
-     * @return the number read.
+     * @return The number read.
      * @throws IllegalArgumentException if len is bigger than eight.
      * @throws IOException              if the supplier fails or doesn't supply the given number of bytes anymore.
      */
@@ -188,7 +188,7 @@ public final class ByteUtils {
      *
      * @param in     the input to read from.
      * @param length the number of bytes representing the value.
-     * @return the number read.
+     * @return The number read.
      * @throws IllegalArgumentException if len is bigger than eight.
      * @throws IOException              if reading fails or the stream doesn't contain the given number of bytes anymore.
      */
@@ -208,7 +208,7 @@ public final class ByteUtils {
      *
      * @param in     the stream to read from.
      * @param length the number of bytes representing the value.
-     * @return the number read.
+     * @return The number read.
      * @throws IllegalArgumentException if len is bigger than eight.
      * @throws IOException              if reading fails or the stream doesn't contain the given number of bytes anymore.
      * @deprecated Unused.

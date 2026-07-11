@@ -87,7 +87,7 @@ public class DumpArchiveSummary {
     /**
      * Gets the date of this dump.
      *
-     * @return the date of this dump.
+     * @return The date of this dump.
      */
     public Date getDumpDate() {
         return new Date(dumpDate);
@@ -155,7 +155,7 @@ public class DumpArchiveSummary {
      *     This is typically either 10 (for standard density tapes) or 32 (for high density tapes).
      * </p>
      *
-     * @return the number of records per tape block.
+     * @return The number of records per tape block.
      */
     public int getNTRec() {
         return ntrec;

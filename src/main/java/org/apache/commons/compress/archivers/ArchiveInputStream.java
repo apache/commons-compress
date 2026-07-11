@@ -193,7 +193,7 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
     /**
      * Gets the current number of bytes read from this stream.
      *
-     * @return the number of read bytes.
+     * @return The number of read bytes.
      * @since 1.1
      */
     public long getBytesRead() {
@@ -203,7 +203,7 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
     /**
      * Gets the Charset.
      *
-     * @return the Charset.
+     * @return The Charset.
      */
     public Charset getCharset() {
         return charset;
@@ -212,7 +212,7 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
     /**
      * Gets the current number of bytes read from this stream.
      *
-     * @return the number of read.
+     * @return The number of read.
      * @deprecated this method may yield wrong results for large archives, use {@link #getBytesRead()} instead.
      */
     @Deprecated
@@ -233,7 +233,7 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
     /**
      * Gets the next Archive Entry in this Stream.
      *
-     * @return the next entry, or {@code null} if there are no more entries.
+     * @return The next entry, or {@code null} if there are no more entries.
      * @throws IOException if the next entry could not be read.
      */
     public abstract E getNextEntry() throws IOException;
@@ -293,7 +293,7 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
      * MUST be overridden if the {@link #read(byte[], int, int)} method is not overridden; may be overridden otherwise.
      * </p>
      *
-     * @return the byte read, or -1 if end of input is reached.
+     * @return The byte read, or -1 if end of input is reached.
      * @throws IOException if an I/O error has occurred.
      */
     @Override

@@ -140,7 +140,7 @@ public class NewAttributeBands extends BandSet {
         /**
          * Gets the callable.
          *
-         * @return the callable.
+         * @return The callable.
          */
         public Callable getCallable() {
             return callable;
@@ -149,7 +149,7 @@ public class NewAttributeBands extends BandSet {
         /**
          * Gets the callable index.
          *
-         * @return the callable index.
+         * @return The callable index.
          */
         public int getCallableIndex() {
             return callableIndex;
@@ -242,7 +242,7 @@ public class NewAttributeBands extends BandSet {
         /**
          * Gets the body of this callable.
          *
-         * @return the body elements.
+         * @return The body elements.
          */
         public List<LayoutElement> getBody() {
             return body;
@@ -370,7 +370,7 @@ public class NewAttributeBands extends BandSet {
         /**
          * Gets the tag of this integral.
          *
-         * @return the tag.
+         * @return The tag.
          */
         public String getTag() {
             return tag;
@@ -380,7 +380,7 @@ public class NewAttributeBands extends BandSet {
          * Gets the value at the specified index.
          *
          * @param index the index.
-         * @return the value.
+         * @return The value.
          */
         int getValue(final int index) {
             return band[index];
@@ -402,7 +402,7 @@ public class NewAttributeBands extends BandSet {
          * Gets the length for the given unsigned int type.
          *
          * @param uintType the unsigned int type character.
-         * @return the length in bytes.
+         * @return The length in bytes.
          */
         protected int getLength(final char uintType) {
             int length = 0;
@@ -478,7 +478,7 @@ public class NewAttributeBands extends BandSet {
         /**
          * Gets the tag.
          *
-         * @return the tag.
+         * @return The tag.
          */
         public String getTag() {
             return tag;
@@ -565,7 +565,7 @@ public class NewAttributeBands extends BandSet {
         /**
          * Gets the count element.
          *
-         * @return the count element.
+         * @return The count element.
          */
         public Integral getCountElement() {
             return countElement;
@@ -574,7 +574,7 @@ public class NewAttributeBands extends BandSet {
         /**
          * Gets the layout elements.
          *
-         * @return the layout elements.
+         * @return The layout elements.
          */
         public List<LayoutElement> getLayoutElements() {
             return layoutElements;
@@ -661,7 +661,7 @@ public class NewAttributeBands extends BandSet {
         /**
          * Gets the default case body.
          *
-         * @return the default case body.
+         * @return The default case body.
          */
         public List<LayoutElement> getDefaultCaseBody() {
             return defaultCaseBody;
@@ -670,7 +670,7 @@ public class NewAttributeBands extends BandSet {
         /**
          * Gets the union cases.
          *
-         * @return the union cases.
+         * @return The union cases.
          */
         public List<UnionCase> getUnionCases() {
             return unionCases;
@@ -679,7 +679,7 @@ public class NewAttributeBands extends BandSet {
         /**
          * Gets the union tag.
          *
-         * @return the union tag.
+         * @return The union tag.
          */
         public Integral getUnionTag() {
             return unionTag;
@@ -763,7 +763,7 @@ public class NewAttributeBands extends BandSet {
         /**
          * Gets the body of this union case.
          *
-         * @return the body elements.
+         * @return The body elements.
          */
         public List<LayoutElement> getBody() {
             return body;
@@ -829,7 +829,7 @@ public class NewAttributeBands extends BandSet {
     /**
      * Gets the backwards call count.
      *
-     * @return the backwards call count.
+     * @return The backwards call count.
      */
     public int getBackwardsCallCount() {
         return backwardsCallCount;
@@ -839,7 +839,7 @@ public class NewAttributeBands extends BandSet {
      * Returns the {@link BHSDCodec} that should be used for the given layout element.
      *
      * @param layoutElement the layout element string.
-     * @return the {@link BHSDCodec} that should be used for the given layout element.
+     * @return The {@link BHSDCodec} that should be used for the given layout element.
      */
     public BHSDCodec getCodec(final String layoutElement) {
         if (layoutElement.indexOf('O') >= 0) {

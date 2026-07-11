@@ -274,7 +274,7 @@ public class SegmentConstantPool {
      *
      * @param cp the constant pool index.
      * @param longIndex the long index.
-     * @return the constant pool entry.
+     * @return The constant pool entry.
      * @throws Pack200Exception if a Pack200 error occurs.
      */
     public ClassFileEntry getValue(final int cp, final long longIndex) throws Pack200Exception {

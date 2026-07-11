@@ -60,7 +60,7 @@ public class FileBands extends BandSet {
     /**
      * Gets the file bits.
      *
-     * @return the file bits.
+     * @return The file bits.
      */
     public byte[][] getFileBits() {
         return fileBits;
@@ -69,7 +69,7 @@ public class FileBands extends BandSet {
     /**
      * Gets the file modification times.
      *
-     * @return the file modification times.
+     * @return The file modification times.
      */
     public int[] getFileModtime() {
         return fileModtime;
@@ -78,7 +78,7 @@ public class FileBands extends BandSet {
     /**
      * Gets the file names.
      *
-     * @return the file names.
+     * @return The file names.
      */
     public String[] getFileName() {
         return fileName;
@@ -87,7 +87,7 @@ public class FileBands extends BandSet {
     /**
      * Gets the file options.
      *
-     * @return the file options.
+     * @return The file options.
      */
     public int[] getFileOptions() {
         return fileOptions;
@@ -96,7 +96,7 @@ public class FileBands extends BandSet {
     /**
      * Gets the file sizes.
      *
-     * @return the file sizes.
+     * @return The file sizes.
      */
     public long[] getFileSize() {
         return fileSize;

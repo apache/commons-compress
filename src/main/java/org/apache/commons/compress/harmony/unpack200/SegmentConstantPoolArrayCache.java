@@ -159,7 +159,7 @@ public class SegmentConstantPoolArrayCache {
      *
      * @param array the array.
      * @param key the key.
-     * @return the list of indexes.
+     * @return The list of indexes.
      */
     public List<Integer> indexesForArrayKey(final String[] array, final String key) {
         if (!arrayIsCached(array)) {

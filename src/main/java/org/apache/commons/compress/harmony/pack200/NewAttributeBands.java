@@ -156,7 +156,7 @@ public class NewAttributeBands extends BandSet {
         /**
          * Gets the callable.
          *
-         * @return the callable.
+         * @return The callable.
          */
         public Callable getCallable() {
             return callable;
@@ -165,7 +165,7 @@ public class NewAttributeBands extends BandSet {
         /**
          * Gets the callable index.
          *
-         * @return the callable index.
+         * @return The callable index.
          */
         public int getCallableIndex() {
             return callableIndex;
@@ -235,7 +235,7 @@ public class NewAttributeBands extends BandSet {
         /**
          * Gets the body of this callable.
          *
-         * @return the body elements.
+         * @return The body elements.
          */
         public List<LayoutElement> getBody() {
             return body;
@@ -380,7 +380,7 @@ public class NewAttributeBands extends BandSet {
         /**
          * Gets the tag of this integral.
          *
-         * @return the tag.
+         * @return The tag.
          */
         public String getTag() {
             return tag;
@@ -389,7 +389,7 @@ public class NewAttributeBands extends BandSet {
         /**
          * Gets the latest value added to the band.
          *
-         * @return the latest value.
+         * @return The latest value.
          */
         public int latestValue() {
             return ((Integer) band.get(band.size() - 1)).intValue();
@@ -454,7 +454,7 @@ public class NewAttributeBands extends BandSet {
          * Gets the length for the given unsigned type.
          *
          * @param uint_type the unsigned type character.
-         * @return the length in bytes.
+         * @return The length in bytes.
          */
         protected int getLength(final char uint_type) {
             int length = 0;
@@ -516,7 +516,7 @@ public class NewAttributeBands extends BandSet {
         /**
          * Gets the tag of this reference.
          *
-         * @return the tag.
+         * @return The tag.
          */
         public String getTag() {
             return tag;
@@ -585,7 +585,7 @@ public class NewAttributeBands extends BandSet {
         /**
          * Gets the count element.
          *
-         * @return the count element.
+         * @return The count element.
          */
         public Integral getCountElement() {
             return countElement;
@@ -594,7 +594,7 @@ public class NewAttributeBands extends BandSet {
         /**
          * Gets the layout elements.
          *
-         * @return the layout elements.
+         * @return The layout elements.
          */
         public List<LayoutElement> getLayoutElements() {
             return layoutElements;
@@ -660,7 +660,7 @@ public class NewAttributeBands extends BandSet {
         /**
          * Gets the default case body.
          *
-         * @return the default case body.
+         * @return The default case body.
          */
         public List<LayoutElement> getDefaultCaseBody() {
             return defaultCaseBody;
@@ -669,7 +669,7 @@ public class NewAttributeBands extends BandSet {
         /**
          * Gets the union cases.
          *
-         * @return the union cases.
+         * @return The union cases.
          */
         public List<UnionCase> getUnionCases() {
             return unionCases;
@@ -678,7 +678,7 @@ public class NewAttributeBands extends BandSet {
         /**
          * Gets the union tag.
          *
-         * @return the union tag.
+         * @return The union tag.
          */
         public Integral getUnionTag() {
             return unionTag;
@@ -748,7 +748,7 @@ public class NewAttributeBands extends BandSet {
         /**
          * Gets the body of this union case.
          *
-         * @return the body elements.
+         * @return The body elements.
          */
         public List<LayoutElement> getBody() {
             return body;
@@ -826,7 +826,7 @@ public class NewAttributeBands extends BandSet {
     /**
      * Gets the attribute name.
      *
-     * @return the attribute name.
+     * @return The attribute name.
      */
     public String getAttributeName() {
         return def.name.getUnderlyingString();
@@ -857,7 +857,7 @@ public class NewAttributeBands extends BandSet {
     /**
      * Gets the flag index.
      *
-     * @return the flag index.
+     * @return The flag index.
      */
     public int getFlagIndex() {
         return def.index;
@@ -875,7 +875,7 @@ public class NewAttributeBands extends BandSet {
     /**
      * Gets the number of backwards calls.
      *
-     * @return the backwards call counts.
+     * @return The backwards call counts.
      */
     public int[] numBackwardsCalls() {
         return backwardsCallCounts;

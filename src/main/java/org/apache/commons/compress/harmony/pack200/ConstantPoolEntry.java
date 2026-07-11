@@ -37,7 +37,7 @@ public abstract class ConstantPoolEntry {
     /**
      * Gets the index.
      *
-     * @return the index.
+     * @return The index.
      */
     public int getIndex() {
         return index;

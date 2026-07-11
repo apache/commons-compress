@@ -241,7 +241,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
     /**
      * Reads the next entry.
      *
-     * @return the next entry.
+     * @return The next entry.
      * @throws IOException on error.
      * @deprecated Use {@link #getNextEntry()}.
      */
@@ -389,7 +389,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
     /**
      * Gets the archive summary information.
      *
-     * @return the summary.
+     * @return The summary.
      */
     public DumpArchiveSummary getSummary() {
         return summary;

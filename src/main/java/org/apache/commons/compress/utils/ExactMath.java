@@ -31,7 +31,7 @@ public class ExactMath {
      *
      * @param x the first value, an int.
      * @param y the second value, a long,.
-     * @return the addition of both values.
+     * @return The addition of both values.
      * @throws IllegalArgumentException when y or the result overflows an int.
      */
     public static int add(final int x, final long y) {

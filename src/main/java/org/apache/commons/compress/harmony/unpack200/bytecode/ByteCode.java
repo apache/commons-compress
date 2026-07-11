@@ -38,7 +38,7 @@ public class ByteCode extends ClassFileEntry {
      * Gets the ByteCode for the given opcode.
      *
      * @param opcode the opcode.
-     * @return the ByteCode instance.
+     * @return The ByteCode instance.
      */
     public static ByteCode getByteCode(final int opcode) {
         final int byteOpcode = 0xFF & opcode;
@@ -122,7 +122,7 @@ public class ByteCode extends ClassFileEntry {
     /**
      * Gets the bytecode form.
      *
-     * @return the bytecode form.
+     * @return The bytecode form.
      */
     protected ByteCodeForm getByteCodeForm() {
         return byteCodeForm;
@@ -131,7 +131,7 @@ public class ByteCode extends ClassFileEntry {
     /**
      * Gets the bytecode index.
      *
-     * @return the bytecode index.
+     * @return The bytecode index.
      */
     public int getByteCodeIndex() {
         return byteCodeOffset;
@@ -140,7 +140,7 @@ public class ByteCode extends ClassFileEntry {
     /**
      * Gets the bytecode targets array.
      *
-     * @return the bytecode targets array.
+     * @return The bytecode targets array.
      */
     public int[] getByteCodeTargets() {
         return byteCodeTargets;
@@ -149,7 +149,7 @@ public class ByteCode extends ClassFileEntry {
     /**
      * Gets the length of this bytecode.
      *
-     * @return the length.
+     * @return The length.
      */
     public int getLength() {
         return rewrite.length;
@@ -158,7 +158,7 @@ public class ByteCode extends ClassFileEntry {
     /**
      * Gets the name of this bytecode.
      *
-     * @return the bytecode name.
+     * @return The bytecode name.
      */
     public String getName() {
         return getByteCodeForm().getName();
@@ -173,7 +173,7 @@ public class ByteCode extends ClassFileEntry {
      * Gets the nested position array for the given index.
      *
      * @param index the index.
-     * @return the nested position array.
+     * @return The nested position array.
      */
     public int[] getNestedPosition(final int index) {
         return getNestedPositions()[index];
@@ -182,7 +182,7 @@ public class ByteCode extends ClassFileEntry {
     /**
      * Gets all nested positions array.
      *
-     * @return the nested positions array.
+     * @return The nested positions array.
      */
     public int[][] getNestedPositions() {
         return nestedPositions;
@@ -191,7 +191,7 @@ public class ByteCode extends ClassFileEntry {
     /**
      * Gets the opcode.
      *
-     * @return the opcode value.
+     * @return The opcode value.
      */
     public int getOpcode() {
         return getByteCodeForm().getOpcode();

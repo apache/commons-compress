@@ -61,7 +61,7 @@ public interface CompressorStreamProvider {
      *             {@value org.apache.commons.compress.compressors.CompressorStreamFactory#PACK200} or
      *             {@value org.apache.commons.compress.compressors.CompressorStreamFactory#DEFLATE}
      * @param out  the output stream.
-     * @return the compressor output stream.
+     * @return The compressor output stream.
      * @throws CompressorException      if the archiver name is not known.
      * @throws IllegalArgumentException if the archiver name or stream is null.
      */

@@ -581,7 +581,7 @@ public class Segment extends ClassVisitor {
     /**
      * Gets the attribute bands.
      *
-     * @return the attribute definition bands.
+     * @return The attribute definition bands.
      */
     public AttributeDefinitionBands getAttrBands() {
         return attributeDefinitionBands;
@@ -590,7 +590,7 @@ public class Segment extends ClassVisitor {
     /**
      * Gets the class bands.
      *
-     * @return the class bands.
+     * @return The class bands.
      */
     public ClassBands getClassBands() {
         return classBands;
@@ -599,7 +599,7 @@ public class Segment extends ClassVisitor {
     /**
      * Gets the constant pool bands.
      *
-     * @return the CP bands.
+     * @return The CP bands.
      */
     public CpBands getCpBands() {
         return cpBands;
@@ -608,7 +608,7 @@ public class Segment extends ClassVisitor {
     /**
      * Gets the current class reader.
      *
-     * @return the current class reader.
+     * @return The current class reader.
      */
     public Pack200ClassReader getCurrentClassReader() {
         return currentClassReader;
@@ -617,7 +617,7 @@ public class Segment extends ClassVisitor {
     /**
      * Gets the inner class bands.
      *
-     * @return the IC bands.
+     * @return The IC bands.
      */
     public IcBands getIcBands() {
         return icBands;
@@ -626,7 +626,7 @@ public class Segment extends ClassVisitor {
     /**
      * Gets the segment header.
      *
-     * @return the segment header.
+     * @return The segment header.
      */
     public SegmentHeader getSegmentHeader() {
         return segmentHeader;

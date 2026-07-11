@@ -55,7 +55,7 @@ public class CPUTF8 extends ConstantPoolEntry implements Comparable {
     /**
      * Gets the underlying string.
      *
-     * @return the underlying string.
+     * @return The underlying string.
      */
     public String getUnderlyingString() {
         return string;

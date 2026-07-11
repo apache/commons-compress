@@ -44,7 +44,7 @@ public class Pack200ClassReader extends ClassReader {
     /**
      * Gets the file name.
      *
-     * @return the file name.
+     * @return The file name.
      */
     public String getFileName() {
         return fileName;

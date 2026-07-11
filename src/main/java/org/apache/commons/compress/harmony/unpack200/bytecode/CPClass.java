@@ -75,7 +75,7 @@ public class CPClass extends ConstantPoolEntry {
     /**
      * Gets the class name.
      *
-     * @return the class name.
+     * @return The class name.
      */
     public String getName() {
         return name;

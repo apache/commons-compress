@@ -57,7 +57,7 @@ public abstract class CPConstant extends ConstantPoolEntry {
     /**
      * Gets the value.
      *
-     * @return the value.
+     * @return The value.
      */
     protected Object getValue() {
         return value;

@@ -181,7 +181,7 @@ public class PackingOptions {
     /**
      * Gets the deflate hint.
      *
-     * @return the deflate hint.
+     * @return The deflate hint.
      */
     public String getDeflateHint() {
         return deflateHint;
@@ -190,7 +190,7 @@ public class PackingOptions {
     /**
      * Gets the effort level.
      *
-     * @return the effort level.
+     * @return The effort level.
      */
     public int getEffort() {
         return effort;
@@ -199,7 +199,7 @@ public class PackingOptions {
     /**
      * Gets the log file.
      *
-     * @return the log file.
+     * @return The log file.
      */
     public String getLogFile() {
         return logFile;
@@ -208,7 +208,7 @@ public class PackingOptions {
     /**
      * Gets the modification time.
      *
-     * @return the modification time.
+     * @return The modification time.
      */
     public String getModificationTime() {
         return modificationTime;
@@ -221,7 +221,7 @@ public class PackingOptions {
     /**
      * Gets the segment limit.
      *
-     * @return the segment limit.
+     * @return The segment limit.
      */
     public long getSegmentLimit() {
         return segmentLimit;
@@ -230,7 +230,7 @@ public class PackingOptions {
     /**
      * Gets the unknown attribute action.
      *
-     * @return the unknown attribute action.
+     * @return The unknown attribute action.
      */
     public String getUnknownAttributeAction() {
         return unknownAttributeAction;
@@ -239,7 +239,7 @@ public class PackingOptions {
     /**
      * Gets the unknown attribute prototypes.
      *
-     * @return the attribute prototypes.
+     * @return The attribute prototypes.
      */
     public Attribute[] getUnknownAttributePrototypes() {
         if (unknownAttributeTypes == null) {
@@ -257,7 +257,7 @@ public class PackingOptions {
      * Gets the unknown class attribute action.
      *
      * @param type the attribute type.
-     * @return the action.
+     * @return The action.
      */
     public String getUnknownClassAttributeAction(final String type) {
         return getOrDefault(classAttributeActions, type, unknownAttributeAction);
@@ -267,7 +267,7 @@ public class PackingOptions {
      * Gets the unknown code attribute action.
      *
      * @param type the attribute type.
-     * @return the action.
+     * @return The action.
      */
     public String getUnknownCodeAttributeAction(final String type) {
         return getOrDefault(codeAttributeActions, type, unknownAttributeAction);
@@ -277,7 +277,7 @@ public class PackingOptions {
      * Gets the unknown field attribute action.
      *
      * @param type the attribute type.
-     * @return the action.
+     * @return The action.
      */
     public String getUnknownFieldAttributeAction(final String type) {
         return getOrDefault(fieldAttributeActions, type, unknownAttributeAction);
@@ -287,7 +287,7 @@ public class PackingOptions {
      * Gets the unknown method attribute action.
      *
      * @param type the attribute type.
-     * @return the action.
+     * @return The action.
      */
     public String getUnknownMethodAttributeAction(final String type) {
         return getOrDefault(methodAttributeActions, type, unknownAttributeAction);

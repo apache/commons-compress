@@ -314,7 +314,7 @@ public abstract class ByteCodeForm {
      * Gets a ByteCodeForm.
      *
      * @param opcode opcode index.
-     * @return the matching ByteCodeForm at the given opcode.
+     * @return The matching ByteCodeForm at the given opcode.
      */
     public static ByteCodeForm get(final int opcode) {
         return byteCodeArray[opcode];
@@ -398,7 +398,7 @@ public abstract class ByteCodeForm {
     /**
      * Gets the first operand index.
      *
-     * @return the first operand index.
+     * @return The first operand index.
      */
     public int firstOperandIndex() {
         return firstOperandIndex;
@@ -417,7 +417,7 @@ public abstract class ByteCodeForm {
     /**
      * Gets the name.
      *
-     * @return the name.
+     * @return The name.
      */
     public String getName() {
         return name;
@@ -426,7 +426,7 @@ public abstract class ByteCodeForm {
     /**
      * Gets the opcode.
      *
-     * @return the opcode.
+     * @return The opcode.
      */
     public int getOpcode() {
         return opcode;
@@ -435,7 +435,7 @@ public abstract class ByteCodeForm {
     /**
      * Gets the rewrite array.
      *
-     * @return the rewrite array.
+     * @return The rewrite array.
      */
     public int[] getRewrite() {
         return rewrite;
@@ -488,7 +488,7 @@ public abstract class ByteCodeForm {
     /**
      * Gets the operand length.
      *
-     * @return the operand length.
+     * @return The operand length.
      */
     public int operandLength() {
         return operandLength;

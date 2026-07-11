@@ -69,7 +69,7 @@ public final class ZipEightByteInteger implements Serializable {
      * Gets the value as a Java long from an eight-byte array.
      *
      * @param bytes the array of bytes.
-     * @return the corresponding Java long value.
+     * @return The corresponding Java long value.
      */
     public static long getLongValue(final byte[] bytes) {
         return getLongValue(bytes, 0);
@@ -80,7 +80,7 @@ public final class ZipEightByteInteger implements Serializable {
      *
      * @param bytes  the array of bytes.
      * @param offset the offset to start.
-     * @return the corresponding Java long value.
+     * @return The corresponding Java long value.
      */
     public static long getLongValue(final byte[] bytes, final int offset) {
         return ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).getLong(offset);
@@ -90,7 +90,7 @@ public final class ZipEightByteInteger implements Serializable {
      * Gets the value as a Java long from an eight-byte array.
      *
      * @param bytes the array of bytes.
-     * @return the corresponding Java BigInteger value.
+     * @return The corresponding Java BigInteger value.
      */
     public static BigInteger getValue(final byte[] bytes) {
         return getValue(bytes, 0);
@@ -101,7 +101,7 @@ public final class ZipEightByteInteger implements Serializable {
      *
      * @param bytes  the array of bytes.
      * @param offset the offset to start.
-     * @return the corresponding Java BigInteger value.
+     * @return The corresponding Java BigInteger value.
      */
     public static BigInteger getValue(final byte[] bytes, final int offset) {
         return toUnsignedBigInteger(getLongValue(bytes, offset));
@@ -203,7 +203,7 @@ public final class ZipEightByteInteger implements Serializable {
     /**
      * Override to make two instances with same value equal.
      *
-     * @return the hash code of the value stored in the ZipEightByteInteger.
+     * @return The hash code of the value stored in the ZipEightByteInteger.
      */
     @Override
     public int hashCode() {

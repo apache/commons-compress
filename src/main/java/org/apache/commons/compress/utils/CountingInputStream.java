@@ -56,7 +56,7 @@ public class CountingInputStream extends FilterInputStream {
     /**
      * Returns the current number of bytes read from this stream.
      *
-     * @return the number of read bytes.
+     * @return The number of read bytes.
      */
     public long getBytesRead() {
         return bytesRead;

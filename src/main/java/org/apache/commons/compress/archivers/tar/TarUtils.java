@@ -813,7 +813,7 @@ public final class TarUtils {
      * delimited by newlines.
      *
      * @param inputStream the input stream of the tar file.
-     * @return the decimal number delimited by '\n', and the bytes read from input stream.
+     * @return The decimal number delimited by '\n', and the bytes read from input stream.
      * @throws IOException if an I/O error occurs.
      */
     private static long[] readLineOfNumberForPax1x(final InputStream inputStream) throws IOException {
@@ -840,7 +840,7 @@ public final class TarUtils {
      * @param input the input stream from which to read the long name.
      * @param encoding the encoding to use for reading the name.
      * @param entry the tar entry containing the long name.
-     * @return the decoded long name, with trailing NULs removed.
+     * @return The decoded long name, with trailing NULs removed.
      * @throws IOException if an I/O error occurs or the entry is truncated.
      * @throws ArchiveException if the entry size is invalid.
      */

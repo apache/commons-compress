@@ -239,7 +239,7 @@ public class AttributeDefinitionBands extends BandSet {
     /**
      * Gets the class attribute layouts.
      *
-     * @return the class attribute layouts.
+     * @return The class attribute layouts.
      */
     public List<AttributeDefinition> getClassAttributeLayouts() {
         return classAttributeLayouts;
@@ -248,7 +248,7 @@ public class AttributeDefinitionBands extends BandSet {
     /**
      * Gets the code attribute layouts.
      *
-     * @return the code attribute layouts.
+     * @return The code attribute layouts.
      */
     public List<AttributeDefinition> getCodeAttributeLayouts() {
         return codeAttributeLayouts;
@@ -257,7 +257,7 @@ public class AttributeDefinitionBands extends BandSet {
     /**
      * Gets the field attribute layouts.
      *
-     * @return the field attribute layouts.
+     * @return The field attribute layouts.
      */
     public List<AttributeDefinition> getFieldAttributeLayouts() {
         return fieldAttributeLayouts;
@@ -266,7 +266,7 @@ public class AttributeDefinitionBands extends BandSet {
     /**
      * Gets the method attribute layouts.
      *
-     * @return the method attribute layouts.
+     * @return The method attribute layouts.
      */
     public List<AttributeDefinition> getMethodAttributeLayouts() {
         return methodAttributeLayouts;

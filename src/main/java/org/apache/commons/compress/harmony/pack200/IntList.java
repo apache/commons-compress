@@ -137,7 +137,7 @@ public class IntList {
      * Gets the integer at the specified location.
      *
      * @param location the location.
-     * @return the integer at the location.
+     * @return The integer at the location.
      */
     public int get(final int location) {
         if (0 <= location && location < lastIndex - firstIndex) {
@@ -230,7 +230,7 @@ public class IntList {
      * Removes and returns the integer at the specified location.
      *
      * @param location the location.
-     * @return the integer that was removed.
+     * @return The integer that was removed.
      */
     public int remove(final int location) {
         final int result;
@@ -266,7 +266,7 @@ public class IntList {
     /**
      * Gets the number of integers in this list.
      *
-     * @return the size of the list.
+     * @return The size of the list.
      */
     public int size() {
         return lastIndex - firstIndex;

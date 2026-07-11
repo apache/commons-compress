@@ -79,7 +79,7 @@ public abstract class AnnotationsAttribute extends Attribute {
         /**
          * Gets the cumulative length of all element values.
          *
-         * @return the cumulative length of all element values.
+         * @return The cumulative length of all element values.
          */
         public int getLength() {
             int length = 4;
@@ -172,7 +172,7 @@ public abstract class AnnotationsAttribute extends Attribute {
         /**
          * Gets the length.
          *
-         * @return the length.
+         * @return The length.
          */
         public int getLength() {
             switch (tag) {

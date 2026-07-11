@@ -232,7 +232,7 @@ public class ArchiveUtils {
      * Converts a string to ASCII bytes. Used for comparing "magic" strings which need to be independent of the default Locale.
      *
      * @param inputString string to convert.
-     * @return the bytes.
+     * @return The bytes.
      */
     public static byte[] toAsciiBytes(final String inputString) {
         return inputString.getBytes(StandardCharsets.US_ASCII);
@@ -242,7 +242,7 @@ public class ArchiveUtils {
      * Converts an input byte array to a String using the ASCII character set.
      *
      * @param inputBytes bytes to convert.
-     * @return the bytes, interpreted as an ASCII string.
+     * @return The bytes, interpreted as an ASCII string.
      */
     public static String toAsciiString(final byte[] inputBytes) {
         return new String(inputBytes, StandardCharsets.US_ASCII);
@@ -254,7 +254,7 @@ public class ArchiveUtils {
      * @param inputBytes input byte array.
      * @param offset     offset within array.
      * @param length     length of array.
-     * @return the bytes, interpreted as an ASCII string.
+     * @return The bytes, interpreted as an ASCII string.
      */
     public static String toAsciiString(final byte[] inputBytes, final int offset, final int length) {
         return new String(inputBytes, offset, length, StandardCharsets.US_ASCII);
@@ -271,7 +271,7 @@ public class ArchiveUtils {
      * </pre>
      *
      * @param entry the entry.
-     * @return the representation of the entry.
+     * @return The representation of the entry.
      */
     public static String toString(final ArchiveEntry entry) {
         final StringBuilder sb = new StringBuilder();

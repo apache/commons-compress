@@ -51,7 +51,7 @@ public class InvalidFormatException extends DumpArchiveException {
     /**
      * Gets the offset where the problem was detected.
      *
-     * @return the offset where the problem was detected.
+     * @return The offset where the problem was detected.
      */
     public long getOffset() {
         return offset;

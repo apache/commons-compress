@@ -76,7 +76,7 @@ public class CodecEncoding {
      * Gets the canonical codec for the given index.
      *
      * @param i the index.
-     * @return the canonical codec.
+     * @return The canonical codec.
      */
     public static BHSDCodec getCanonicalCodec(final int i) {
         return canonicalCodec[i];
@@ -90,7 +90,7 @@ public class CodecEncoding {
      * @param value        the canonical encoding value
      * @param in           the input stream to read additional byte headers from
      * @param defaultCodec the default codec to use.
-     * @return the corresponding codec, or {@code null} if the default should be used
+     * @return The corresponding codec, or {@code null} if the default should be used
      * @throws IOException      if there is a problem reading from the input stream (which in reality, is never, since the band_headers are likely stored in a
      *                          byte array and accessed via a ByteArrayInputStream. However, an EOFException could occur if things go wrong)
      * @throws Pack200Exception if a Pack200 error occurs.
@@ -190,7 +190,7 @@ public class CodecEncoding {
      *
      * @param codec the codec.
      * @param defaultForBand the default for band.
-     * @return the specifier array.
+     * @return The specifier array.
      */
     public static int[] getSpecifier(final Codec codec, final Codec defaultForBand) {
         if (canonicalCodecsToSpecifiers.containsKey(codec)) {
@@ -305,7 +305,7 @@ public class CodecEncoding {
      * Gets the specifier for the default codec.
      *
      * @param defaultCodec the default codec.
-     * @return the specifier.
+     * @return The specifier.
      */
     public static int getSpecifierForDefaultCodec(final BHSDCodec defaultCodec) {
         return getSpecifier(defaultCodec, null)[0];
