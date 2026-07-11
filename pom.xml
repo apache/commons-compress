@@ -217,6 +217,18 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
       <artifactId>junit-pioneer</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.openjdk.jmh</groupId>
+      <artifactId>jmh-core</artifactId>
+      <version>${commons.jmh.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.openjdk.jmh</groupId>
+      <artifactId>jmh-generator-annprocess</artifactId>
+      <version>${commons.jmh.version}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <scm>
     <connection>scm:git:https://gitbox.apache.org/repos/asf/commons-compress.git</connection>
