@@ -53,6 +53,9 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 class TarUtilsTest extends AbstractTest {
 
+    /** Number of sparse entries whose PAX 1.X map encodes to exactly one record; see {@link #pax1xSparseHeaderAlignedToSingleRecord()}. */
+    private static final int PAX1X_ALIGNED_SPARSE_ENTRIES = 100;
+
     /**
      * Builds an NTFS-style path (\\?\C:\...) up to a target total UTF-16 length, respecting 255-unit segments.
      */
@@ -109,13 +112,27 @@ class TarUtilsTest extends AbstractTest {
         return TarUtils.parsePaxHeaders(new ByteArrayInputStream(data), globalPaxHeaders, data.length, Short.MAX_VALUE, sparseHeaders);
     }
 
+    /**
+     * Builds a PAX 1.X sparse map whose encoded length is exactly one record, so that
+     * {@link TarUtils#parsePAX1XSparseHeaders(InputStream, int)} finishes reading on a record boundary. That is the case
+     * COMPRESS-724 mishandled by skipping an extra record.
+     * <p>
+     * The map is a count line followed by an offset line and a numbytes line for each of the {@value #PAX1X_ALIGNED_SPARSE_ENTRIES}
+     * entries. The final value is padded with leading zeros (which do not change the parsed value) so the whole block fills exactly
+     * one {@link TarConstants#DEFAULT_RCDSIZE}-byte record.
+     * </p>
+     */
     private static byte[] pax1xSparseHeaderAlignedToSingleRecord() {
-        final StringBuilder header = new StringBuilder("100\n");
-        for (int i = 0; i < 200; i++) {
-            header.append(i < 108 ? "00\n" : "0\n");
+        final StringBuilder header = new StringBuilder();
+        header.append(PAX1X_ALIGNED_SPARSE_ENTRIES).append('\n');
+        for (int i = 0; i < PAX1X_ALIGNED_SPARSE_ENTRIES * 2; i++) {
+            header.append("0\n");
         }
+        // Pad the last value with leading zeros so the block is exactly one record long and therefore already record-aligned.
+        final int padding = TarConstants.DEFAULT_RCDSIZE - header.length();
+        header.insert(header.length() - 2, StringUtils.repeat('0', padding));
         final byte[] bytes = header.toString().getBytes(UTF_8);
-        assertEquals(512, bytes.length);
+        assertEquals(TarConstants.DEFAULT_RCDSIZE, bytes.length);
         return bytes;
     }
 
@@ -340,13 +357,16 @@ class TarUtilsTest extends AbstractTest {
 
     @Test
     void testParsePAX1XSparseHeadersDoesNotSkipAlignedDataRecord() throws Exception {
-        final byte[] fileData = new byte[513];
-        Arrays.fill(fileData, 0, 512, (byte) 'A');
-        fileData[512] = 'B';
+        // A full record of 'A' data plus one trailing 'B'. If the parser wrongly skips an extra record after the already
+        // record-aligned sparse header, the stream lands on 'B' instead of the first data byte 'A'.
+        final byte[] fileData = new byte[TarConstants.DEFAULT_RCDSIZE + 1];
+        Arrays.fill(fileData, 0, TarConstants.DEFAULT_RCDSIZE, (byte) 'A');
+        fileData[TarConstants.DEFAULT_RCDSIZE] = 'B';
         final byte[] input = ArrayUtils.addAll(pax1xSparseHeaderAlignedToSingleRecord(), fileData);
         try (ByteArrayInputStream in = new ByteArrayInputStream(input)) {
-            final List<TarArchiveStructSparse> sparse = TarUtils.parsePAX1XSparseHeaders(in, 512);
-            assertEquals(100, sparse.size());
+            final List<TarArchiveStructSparse> sparse = TarUtils.parsePAX1XSparseHeaders(in, TarConstants.DEFAULT_RCDSIZE);
+            assertEquals(PAX1X_ALIGNED_SPARSE_ENTRIES, sparse.size());
+            // The stream must still be positioned at the first data byte.
             assertEquals('A', in.read());
         }
     }
