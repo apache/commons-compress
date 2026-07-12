@@ -172,14 +172,6 @@ class ArchiveStreamFactoryTest extends AbstractTest {
         return inputStream.getCharset().name();
     }
 
-    private static String getCharsetName(final ArchiveInputStream.AbstractBuilder<?, ?> builder) {
-        try {
-            return builder.get().getCharset().name();
-        } catch (final IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     @SuppressWarnings("deprecation") // test of deprecated method
     static ArchiveStreamFactory getFactory(final String entryEncoding) {
         final ArchiveStreamFactory fac = new ArchiveStreamFactory();

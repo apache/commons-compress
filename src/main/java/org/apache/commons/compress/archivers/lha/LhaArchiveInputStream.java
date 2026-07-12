@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.compress.archivers.AbstractArchiveBuilder;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
@@ -66,7 +67,7 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
      *   .get();
      * }</pre>
      */
-    public static class Builder extends AbstractBuilder<LhaArchiveInputStream, Builder> {
+    public static class Builder extends AbstractArchiveBuilder<LhaArchiveInputStream, Builder> {
 
         /**
          * The file separator char, defaults to {@link File#separatorChar}.
@@ -196,7 +197,7 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
     }
 
     private LhaArchiveInputStream(final Builder builder) throws IOException {
-        super(builder.getInputStream(), builder.getCharset());
+        super(builder);
         this.fileSeparatorChar = builder.fileSeparatorChar;
     }
 

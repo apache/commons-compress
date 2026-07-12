@@ -269,7 +269,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
         final byte[] lhasig = new byte[LHA_SIGNATURE_SIZE];
         in.mark(lhasig.length);
         try {
-            signatureLength = IOUtils.readFully(in, lhasig);
+            signatureLength = IOUtils.read(in, lhasig);
             in.reset();
         } catch (final IOException e) {
             throw new ArchiveException("IOException while reading LHA signature", (Throwable) e);
