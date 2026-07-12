@@ -40,6 +40,11 @@ public final class CircularBuffer {
 
     private int bytesAvailable;
 
+    /**
+     * Creates a new circular buffer with the given size.
+     *
+     * @param size the size of the buffer
+     */
     public CircularBuffer(final int size) {
         this.size = size;
         buffer = new byte[size];

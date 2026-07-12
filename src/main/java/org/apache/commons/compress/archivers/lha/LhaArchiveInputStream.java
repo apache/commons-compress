@@ -49,9 +49,6 @@ import org.apache.commons.io.input.ChecksumInputStream;
 /**
  * Implements the LHA archive format as an InputStream.
  *
- * This implementation is based on the documentation that can be found at
- * http://dangan.g.dgdg.jp/en/Content/Program/Java/jLHA/Notes/Notes.html
- *
  * @NotThreadSafe
  * @since 1.29.0
  */
@@ -87,6 +84,7 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
          * Gets a new LhaArchiveInputStream.
          *
          * @return a new LhaArchiveInputStream.
+         * @throws IOException if an I/O error occurs.
          */
         @Override
         public LhaArchiveInputStream get() throws IOException {

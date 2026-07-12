@@ -28,6 +28,12 @@ import java.io.InputStream;
  * @since 1.29.0
  */
 public class Lh4CompressorInputStream extends AbstractLhStaticHuffmanCompressorInputStream {
+    /**
+     * Constructs a new Lh4CompressorInputStream which decompresses bytes read from the specified stream.
+     *
+     * @param in the InputStream from which to read compressed data
+     * @throws IOException if an I/O error occurs
+     */
     public Lh4CompressorInputStream(final InputStream in) throws IOException {
         super(in);
     }
