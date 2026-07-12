@@ -30,7 +30,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.zip.Checksum;
 
+import org.apache.commons.codec.digest.Crc16;
 import org.apache.commons.compress.archivers.AbstractArchiveBuilder;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
@@ -721,7 +723,7 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
      * @return CRC16 checksum
      */
     private long calculateCRC16(final ByteBuffer... buffers) {
-        final CRC16 crc = new CRC16();
+        final Checksum crc = Crc16.arc();
         for (ByteBuffer buffer : buffers) {
             crc.update(buffer.array(), 0, buffer.limit());
         }
@@ -742,31 +744,31 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
         } else if (COMPRESSION_METHOD_LH0.equals(entry.getCompressionMethod()) || COMPRESSION_METHOD_LZ4.equals(entry.getCompressionMethod())) {
             // No compression
             this.currentDecompressedStream = ChecksumInputStream.builder()
-                    .setChecksum(new CRC16())
+                    .setChecksum(Crc16.arc())
                     .setExpectedChecksumValue(entry.getCrcValue())
                     .setInputStream(this.currentCompressedStream)
                     .get();
         } else if (COMPRESSION_METHOD_LH4.equals(entry.getCompressionMethod())) {
             this.currentDecompressedStream = ChecksumInputStream.builder()
-                    .setChecksum(new CRC16())
+                    .setChecksum(Crc16.arc())
                     .setExpectedChecksumValue(entry.getCrcValue())
                     .setInputStream(new Lh4CompressorInputStream(this.currentCompressedStream))
                     .get();
         } else if (COMPRESSION_METHOD_LH5.equals(entry.getCompressionMethod())) {
             this.currentDecompressedStream = ChecksumInputStream.builder()
-                    .setChecksum(new CRC16())
+                    .setChecksum(Crc16.arc())
                     .setExpectedChecksumValue(entry.getCrcValue())
                     .setInputStream(new Lh5CompressorInputStream(this.currentCompressedStream))
                     .get();
         } else if (COMPRESSION_METHOD_LH6.equals(entry.getCompressionMethod())) {
             this.currentDecompressedStream = ChecksumInputStream.builder()
-                    .setChecksum(new CRC16())
+                    .setChecksum(Crc16.arc())
                     .setExpectedChecksumValue(entry.getCrcValue())
                     .setInputStream(new Lh6CompressorInputStream(this.currentCompressedStream))
                     .get();
         } else if (COMPRESSION_METHOD_LH7.equals(entry.getCompressionMethod())) {
             this.currentDecompressedStream = ChecksumInputStream.builder()
-                    .setChecksum(new CRC16())
+                    .setChecksum(Crc16.arc())
                     .setExpectedChecksumValue(entry.getCrcValue())
                     .setInputStream(new Lh7CompressorInputStream(this.currentCompressedStream))
                     .get();
