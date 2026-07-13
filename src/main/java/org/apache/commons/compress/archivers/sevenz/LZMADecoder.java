@@ -32,6 +32,10 @@ import org.tukaani.xz.LZMAOutputStream;
 
 final class LZMADecoder extends AbstractCoder {
 
+    private static final int LZMA_DICT_IDX = 1;
+    private static final int LZMA_DICT_LEN = 4;
+    private static final int LZMA_PROP_LEN = LZMA_DICT_IDX + LZMA_DICT_LEN;
+
     LZMADecoder() {
         super(LZMA2Options.class, Number.class);
     }
@@ -61,10 +65,10 @@ final class LZMADecoder extends AbstractCoder {
     }
 
     private int getDictionarySize(final Coder coder) throws ArchiveException {
-        if (coder.properties.length < 5) {
-            throw new ArchiveException("LZMA properties too short (expected 5 bytes)");
+        if (coder.properties.length < LZMA_DICT_LEN + LZMA_DICT_IDX) {
+            throw new ArchiveException("LZMA properties too short (expected " + LZMA_PROP_LEN + " bytes)");
         }
-        final long dictionarySize = ByteUtils.fromLittleEndian(coder.properties, 1, 4);
+        final long dictionarySize = ByteUtils.fromLittleEndian(coder.properties, LZMA_DICT_IDX, LZMA_DICT_LEN);
         if (dictionarySize > LZMAInputStream.DICT_SIZE_MAX) {
             throw new ArchiveException("Dictionary larger than 4 GiB maximum size");
         }
