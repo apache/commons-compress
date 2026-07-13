@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
 
+import org.apache.commons.compress.compressors.CompressorException;
 import org.junit.jupiter.api.Test;
 
 class HuffmanDecoderTest {
@@ -205,6 +206,26 @@ class HuffmanDecoderTest {
                 fail("Should have failed but returned " + len + " entries: " + Arrays.toString(Arrays.copyOf(result, len)));
             });
             assertEquals("Illegal LEN / NLEN values", e.getMessage());
+        }
+    }
+
+    @Test
+    void testDecodeFixedHuffmanBlockRejectsReservedLiteralLengthCode() throws Exception {
+        // final block + fixed huffman, followed by the 8-bit fixed code 0b11000110 for
+        // literal/length symbol 286. That symbol is a decodable leaf of the fixed tree
+        // but is reserved by RFC 1951, so it has no entry in RUN_LENGTH_TABLE.
+        final byte[] data = {
+                // |--- binary filling ---|76543210
+                0b00000000000000000000000000011011, // final block + fixed huffman + low 5 bits of code 286
+                0b00000000000000000000000000000011 // high 3 bits of code 286
+        };
+        try (HuffmanDecoder decoder = new HuffmanDecoder(new ByteArrayInputStream(data))) {
+            final byte[] result = new byte[100];
+            final CompressorException e = assertThrows(CompressorException.class, () -> {
+                final int len = decoder.decode(result);
+                fail("Should have failed but returned " + len + " entries: " + Arrays.toString(Arrays.copyOf(result, len)));
+            });
+            assertEquals("Invalid Deflate64 literal/length code 286", e.getMessage());
         }
     }
 }
