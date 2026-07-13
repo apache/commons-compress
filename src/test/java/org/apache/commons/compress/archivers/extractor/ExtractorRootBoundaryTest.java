@@ -80,6 +80,20 @@ class ExtractorRootBoundaryTest {
         assertFalse(Files.exists(target.resolve("escape")));
     }
 
+    @Test
+    void canonicalizesTargetWithParentComponentAndStaysContained() throws Exception {
+        // A ".."-spelled target must behave like the "." and trailing-separator cases. A bare relative Path.of("..") is
+        // avoided on purpose: it would resolve to the parent of the process working directory and extract outside the
+        // @TempDir, so the ".." is anchored to a real in-root subdirectory that resolves back to the canonical target.
+        final Path sub = Files.createDirectory(target.resolve("sub"));
+        final Path viaParent = Paths.get(sub.toString(), "..");
+        Fixtures.extractTar(Extractor.newExtractor(viaParent), Fixtures.tar(file("a.txt", "hi")));
+        assertArrayEquals("hi".getBytes(StandardCharsets.UTF_8), Files.readAllBytes(target.resolve("a.txt")));
+        final Extractor extractor = Extractor.newExtractor(viaParent);
+        assertThrows(IOException.class, () -> Fixtures.extractTar(extractor, Fixtures.tar(file("../escape", "x"))));
+        assertFalse(Files.exists(target.getParent().resolve("escape")));
+    }
+
     @ParameterizedTest
     @ValueSource(strings = { "sub/..", "a/b/../..", "a/b/c/../../.." })
     void fileResolvingToRootIsSkipped(final String name) throws Exception {

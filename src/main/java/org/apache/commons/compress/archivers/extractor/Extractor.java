@@ -237,6 +237,9 @@ public class Extractor {
         if (resolved.equals(rootDirectory)) {
             return null;
         }
+        // A component of only dots or spaces (for example "...") is stripped by Windows and can alias the root, which this
+        // lexical equality does not catch. The entry still stays within the root and its no-follow CREATE_NEW write fails
+        // closed rather than replacing the root, so this is a known corner case rather than a boundary escape.
         if (!isWithinRoot(resolved)) {
             throw new ArchiveException("Entry '%s' would escape the extraction root", name);
         }
@@ -258,9 +261,14 @@ public class Extractor {
             final BasicFileAttributes attrs;
             try {
                 attrs = Files.readAttributes(current, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
-            } catch (final NoSuchFileException e) {
-                Files.createDirectory(current);
-                continue;
+            } catch (final IOException e) {
+                // readAttributes documents only IOException, and NoSuchFileException is an optional specific exception, so
+                // confirm the component is genuinely missing before creating it and rethrow any other I/O error.
+                if (e instanceof NoSuchFileException || Files.notExists(current, LinkOption.NOFOLLOW_LINKS)) {
+                    Files.createDirectory(current);
+                    continue;
+                }
+                throw e;
             }
             if (attrs.isSymbolicLink()) {
                 throw new ArchiveException("Refusing to traverse symbolic link: %s", current);
