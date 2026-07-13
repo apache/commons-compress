@@ -62,7 +62,7 @@ final class LZMADecoder extends AbstractCoder {
 
     private int getDictionarySize(final Coder coder) throws ArchiveException {
         if (coder.properties.length < 5) {
-            throw new ArchiveException("LZMA properties too short");
+            throw new ArchiveException("LZMA properties too short (expected 5 bytes)");
         }
         final long dictionarySize = ByteUtils.fromLittleEndian(coder.properties, 1, 4);
         if (dictionarySize > LZMAInputStream.DICT_SIZE_MAX) {
