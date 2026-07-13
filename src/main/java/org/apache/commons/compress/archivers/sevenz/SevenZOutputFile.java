@@ -134,7 +134,7 @@ public class SevenZOutputFile implements Closeable {
     /**
      * Opens file to write a 7z archive to.
      *
-     * @param fileName the file to write to.
+     * @param fileName The file to write to.
      * @throws IOException if opening the file fails.
      */
     public SevenZOutputFile(final File fileName) throws IOException {
@@ -144,7 +144,7 @@ public class SevenZOutputFile implements Closeable {
     /**
      * Opens file to write a 7z archive to.
      *
-     * @param fileName the file to write to.
+     * @param fileName The file to write to.
      * @param password optional password if the archive has to be encrypted.
      * @throws IOException if opening the file fails.
      * @since 1.23
@@ -161,7 +161,7 @@ public class SevenZOutputFile implements Closeable {
      * {@link org.apache.commons.io.channels.ByteArraySeekableByteChannel} allows you to write to an in-memory archive.
      * </p>
      *
-     * @param channel the channel to write to.
+     * @param channel The channel to write to.
      * @throws IOException if the channel cannot be positioned properly.
      * @since 1.13
      */
@@ -176,7 +176,7 @@ public class SevenZOutputFile implements Closeable {
      * {@link org.apache.commons.io.channels.ByteArraySeekableByteChannel} allows you to write to an in-memory archive.
      * </p>
      *
-     * @param channel  the channel to write to.
+     * @param channel  The channel to write to.
      * @param password optional password if the archive has to be encrypted.
      * @throws IOException if the channel cannot be positioned properly.
      * @since 1.23
@@ -247,8 +247,8 @@ public class SevenZOutputFile implements Closeable {
      * Creates an archive entry using the inputFile and entryName provided.
      *
      * @param inputFile file to create an entry from.
-     * @param entryName the name to use.
-     * @return the ArchiveEntry set up with details from the file.
+     * @param entryName The name to use.
+     * @return The ArchiveEntry set up with details from the file.
      */
     public SevenZArchiveEntry createArchiveEntry(final File inputFile, final String entryName) {
         final SevenZArchiveEntry entry = new SevenZArchiveEntry();
@@ -266,9 +266,9 @@ public class SevenZOutputFile implements Closeable {
      * Creates an archive entry using the inputPath and entryName provided.
      *
      * @param inputPath path to create an entry from.
-     * @param entryName the name to use.
+     * @param entryName The name to use.
      * @param options   options indicating how symbolic links are handled.
-     * @return the ArchiveEntry set up with details from the file.
+     * @return The ArchiveEntry set up with details from the file.
      * @throws IOException on error.
      * @since 1.21
      */
@@ -394,7 +394,7 @@ public class SevenZOutputFile implements Closeable {
      * This is a short form for passing a single-element iterable to {@link #setContentMethods}.
      * </p>
      *
-     * @param method the default compression method.
+     * @param method The default compression method.
      */
     public void setContentCompression(final SevenZMethod method) {
         setContentMethods(Collections.singletonList(new SevenZMethodConfiguration(method)));
@@ -411,7 +411,7 @@ public class SevenZOutputFile implements Closeable {
      * The methods will be consulted in iteration order to create the final output.
      * </p>
      *
-     * @param methods the default (compression) methods.
+     * @param methods The default (compression) methods.
      * @since 1.8
      */
     public void setContentMethods(final Iterable<? extends SevenZMethodConfiguration> methods) {
@@ -487,7 +487,7 @@ public class SevenZOutputFile implements Closeable {
     /**
      * Writes all of the given input stream to the current archive entry.
      *
-     * @param inputStream the data source.
+     * @param inputStream The data source.
      * @throws IOException if an I/O error occurs.
      * @since 1.21
      */
@@ -512,7 +512,7 @@ public class SevenZOutputFile implements Closeable {
     /**
      * Writes all of the given input stream to the current archive entry.
      *
-     * @param path    the data source.
+     * @param path    The data source.
      * @param options options specifying how the file is opened.
      * @throws IOException if an I/O error occurs.
      * @since 1.21

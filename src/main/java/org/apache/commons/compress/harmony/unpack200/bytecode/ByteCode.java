@@ -37,13 +37,13 @@ public class ByteCode extends ClassFileEntry {
     /**
      * Gets the ByteCode for the given opcode.
      *
-     * @param opcode the opcode.
-     * @return the ByteCode instance.
+     * @param opcode The opcode.
+     * @return The ByteCode instance.
      */
     public static ByteCode getByteCode(final int opcode) {
         final int byteOpcode = 0xFF & opcode;
         if (ByteCodeForm.get(byteOpcode).hasNoOperand()) {
-            if (null == noArgByteCodes[byteOpcode]) {
+            if (noArgByteCodes[byteOpcode] == null) {
                 noArgByteCodes[byteOpcode] = new ByteCode(byteOpcode);
             }
             return noArgByteCodes[byteOpcode];
@@ -63,7 +63,7 @@ public class ByteCode extends ClassFileEntry {
     /**
      * Constructs a new ByteCode with the given opcode.
      *
-     * @param opcode the opcode.
+     * @param opcode The opcode.
      */
     protected ByteCode(final int opcode) {
         this(opcode, NONE);
@@ -72,8 +72,8 @@ public class ByteCode extends ClassFileEntry {
     /**
      * Constructs a new ByteCode with the given opcode and nested entries.
      *
-     * @param opcode the opcode.
-     * @param nested the nested class file entries.
+     * @param opcode The opcode.
+     * @param nested The nested class file entries.
      */
     protected ByteCode(final int opcode, final ClassFileEntry[] nested) {
         this.byteCodeForm = ByteCodeForm.get(opcode);
@@ -85,7 +85,7 @@ public class ByteCode extends ClassFileEntry {
      * Some ByteCodes (in particular, those with labels need to be fixed up after all the bytecodes in the CodeAttribute have been added. (This can't be done
      * beforehand because the CodeAttribute needs to be complete before targets can be assigned.)
      *
-     * @param codeAttribute the code attribute
+     * @param codeAttribute The code attribute
      */
     public void applyByteCodeTargetFixup(final CodeAttribute codeAttribute) {
         getByteCodeForm().fixUpByteCodeTargets(this, codeAttribute);
@@ -106,9 +106,9 @@ public class ByteCode extends ClassFileEntry {
     /**
      * Extracts operands from the operand manager.
      *
-     * @param operandManager the operand manager.
-     * @param segment the segment.
-     * @param codeLength the code length.
+     * @param operandManager The operand manager.
+     * @param segment The segment.
+     * @param codeLength The code length.
      * @throws Pack200Exception if an error occurs.
      */
     public void extractOperands(final OperandManager operandManager, final Segment segment, final int codeLength) throws Pack200Exception {
@@ -122,7 +122,7 @@ public class ByteCode extends ClassFileEntry {
     /**
      * Gets the bytecode form.
      *
-     * @return the bytecode form.
+     * @return The bytecode form.
      */
     protected ByteCodeForm getByteCodeForm() {
         return byteCodeForm;
@@ -131,7 +131,7 @@ public class ByteCode extends ClassFileEntry {
     /**
      * Gets the bytecode index.
      *
-     * @return the bytecode index.
+     * @return The bytecode index.
      */
     public int getByteCodeIndex() {
         return byteCodeOffset;
@@ -140,7 +140,7 @@ public class ByteCode extends ClassFileEntry {
     /**
      * Gets the bytecode targets array.
      *
-     * @return the bytecode targets array.
+     * @return The bytecode targets array.
      */
     public int[] getByteCodeTargets() {
         return byteCodeTargets;
@@ -149,7 +149,7 @@ public class ByteCode extends ClassFileEntry {
     /**
      * Gets the length of this bytecode.
      *
-     * @return the length.
+     * @return The length.
      */
     public int getLength() {
         return rewrite.length;
@@ -158,7 +158,7 @@ public class ByteCode extends ClassFileEntry {
     /**
      * Gets the name of this bytecode.
      *
-     * @return the bytecode name.
+     * @return The bytecode name.
      */
     public String getName() {
         return getByteCodeForm().getName();
@@ -172,8 +172,8 @@ public class ByteCode extends ClassFileEntry {
     /**
      * Gets the nested position array for the given index.
      *
-     * @param index the index.
-     * @return the nested position array.
+     * @param index The index.
+     * @return The nested position array.
      */
     public int[] getNestedPosition(final int index) {
         return getNestedPositions()[index];
@@ -182,7 +182,7 @@ public class ByteCode extends ClassFileEntry {
     /**
      * Gets all nested positions array.
      *
-     * @return the nested positions array.
+     * @return The nested positions array.
      */
     public int[][] getNestedPositions() {
         return nestedPositions;
@@ -191,7 +191,7 @@ public class ByteCode extends ClassFileEntry {
     /**
      * Gets the opcode.
      *
-     * @return the opcode value.
+     * @return The opcode value.
      */
     public int getOpcode() {
         return getByteCodeForm().getOpcode();
@@ -285,7 +285,7 @@ public class ByteCode extends ClassFileEntry {
     /**
      * Sets the nested class file entries.
      *
-     * @param nested the nested entries.
+     * @param nested The nested entries.
      */
     public void setNested(final ClassFileEntry[] nested) {
         this.nested = nested;

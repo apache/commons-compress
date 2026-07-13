@@ -142,7 +142,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
     /**
      * Checks if the signature matches ASCII "!&lt;arch&gt;" followed by a single LF control character
      *
-     * @param buffer  the bytes to check.
+     * @param buffer  The bytes to check.
      * @param ignored ignored.
      * @return true, if this stream is an Ar archive stream, false otherwise.
      */
@@ -179,7 +179,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
      *
      * <p>Since 1.29.0: throws {@link IOException}.</p>
      *
-     * @param inputStream the ar input stream.
+     * @param inputStream The ar input stream.
      * @throws IOException if an I/O error has occurred.
      */
     public ArArchiveInputStream(final InputStream inputStream) throws IOException {
@@ -265,7 +265,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
      * Gets an extended name from the GNU extended name buffer.
      *
      * @param offset pointer to entry within the buffer.
-     * @return the extended file name; without trailing "/" if present.
+     * @return The extended file name; without trailing "/" if present.
      * @throws IOException if name not found or buffer not set up.
      */
     private String getExtendedName(final int offset) throws IOException {
@@ -294,7 +294,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
     /**
      * Returns the next AR entry in this stream.
      *
-     * @return the next AR entry.
+     * @return The next AR entry.
      * @throws IOException if the entry could not be read.
      * @deprecated Use {@link #getNextEntry()}.
      */
@@ -386,7 +386,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
      *   The record is expected to be of a fixed size defined by the AR format.
      * </p>
      *
-     * @return the byte array containing the record data, or null if the end of the stream is reached.
+     * @return The byte array containing the record data, or null if the end of the stream is reached.
      * @throws IOException if an I/O error occurs while reading the stream or if the record is malformed.
      */
     private byte[] getRecord() throws IOException {
@@ -415,8 +415,8 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
     /**
      * Parses the entry metadata from the provided raw record.
      *
-     * @param headerBuf the buffer containing the entry metadata.
-     * @return an {@link ArArchiveEntry} object containing the parsed metadata.
+     * @param headerBuf The buffer containing the entry metadata.
+     * @return An {@link ArArchiveEntry} object containing the parsed metadata.
      * @throws IOException if the metadata cannot be parsed correctly.
      */
     private ArArchiveEntry parseEntry(final byte[] headerBuf) throws IOException {

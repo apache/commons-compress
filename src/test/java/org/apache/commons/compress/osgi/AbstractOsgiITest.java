@@ -43,7 +43,7 @@ abstract class AbstractOsgiITest {
     /**
      * Gets the OSGi configuration to use for the test.
      *
-     * @return the OSGi configuration to use for the test.
+     * @return The OSGi configuration to use for the test.
      * @implNote Concrete implementation needs the @Configuration annotation.
      */
     public abstract Option[] config();

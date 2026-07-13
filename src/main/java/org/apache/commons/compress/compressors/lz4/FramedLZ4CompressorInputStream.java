@@ -75,8 +75,8 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream implem
      * .lz4 files start with a four byte signature.
      * </p>
      *
-     * @param signature the bytes to check.
-     * @param length    the number of bytes to check.
+     * @param signature The bytes to check.
+     * @param length    The number of bytes to check.
      * @return true if this is a .sz stream, false otherwise.
      */
     public static boolean matches(final byte[] signature, final int length) {
@@ -121,7 +121,7 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream implem
     /**
      * Creates a new input stream that decompresses streams compressed using the LZ4 frame format and stops after decompressing the first frame.
      *
-     * @param in the InputStream from which to read the compressed data.
+     * @param in The InputStream from which to read the compressed data.
      * @throws IOException if reading fails.
      */
     public FramedLZ4CompressorInputStream(final InputStream in) throws IOException {
@@ -131,7 +131,7 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream implem
     /**
      * Creates a new input stream that decompresses streams compressed using the LZ4 frame format.
      *
-     * @param in                     the InputStream from which to read the compressed data.
+     * @param in                     The InputStream from which to read the compressed data.
      * @param decompressConcatenated if true, decompress until the end of the input; if false, stop after the first LZ4 frame and leave the input position to
      *                               point to the next byte after the frame stream.
      * @throws IOException if reading fails.

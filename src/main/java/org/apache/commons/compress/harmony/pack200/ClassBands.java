@@ -82,8 +82,8 @@ public class ClassBands extends BandSet {
     /**
      * Counts arguments in a descriptor.
      *
-     * @param descriptor the descriptor to parse.
-     * @return the argument count.
+     * @param descriptor The descriptor to parse.
+     * @return The argument count.
      */
     protected static int countArgs(final String descriptor) {
         final int bra = descriptor.indexOf('(');
@@ -223,9 +223,9 @@ public class ClassBands extends BandSet {
     /**
      * Constructs a new ClassBands.
      *
-     * @param segment the segment.
-     * @param numClasses the number of classes.
-     * @param effort the packing effort.
+     * @param segment The segment.
+     * @param numClasses The number of classes.
+     * @param effort The packing effort.
      * @param stripDebug whether to strip debug information.
      * @throws IOException if an I/O error occurs.
      */
@@ -269,16 +269,16 @@ public class ClassBands extends BandSet {
     /**
      * Adds an annotation to a class, field, or method.
      *
-     * @param context the context (class, field, or method).
-     * @param desc the annotation descriptor.
+     * @param context The context (class, field, or method).
+     * @param desc The annotation descriptor.
      * @param visible whether the annotation is visible at runtime.
-     * @param nameRU the name list.
-     * @param tags the tag list.
-     * @param values the value list.
-     * @param caseArrayN the case array.
-     * @param nestTypeRS the nested type list.
-     * @param nestNameRU the nested name list.
-     * @param nestPairN the nested pair list.
+     * @param nameRU The name list.
+     * @param tags The tag list.
+     * @param values The value list.
+     * @param caseArrayN The case array.
+     * @param nestTypeRS The nested type list.
+     * @param nestNameRU The nested name list.
+     * @param nestPairN The nested pair list.
      */
     public void addAnnotation(final int context, final String desc, final boolean visible, final List<String> nameRU, final List<String> tags,
             final List<Object> values, final List<Integer> caseArrayN, final List<String> nestTypeRS, final List<String> nestNameRU,
@@ -351,13 +351,13 @@ public class ClassBands extends BandSet {
     /**
      * Adds an annotation default value.
      *
-     * @param nameRU the name list.
-     * @param tags the tag list.
-     * @param values the value list.
-     * @param caseArrayN the case array.
-     * @param nestTypeRS the nested type list.
-     * @param nestNameRU the nested name list.
-     * @param nestPairN the nested pair list.
+     * @param nameRU The name list.
+     * @param tags The tag list.
+     * @param values The value list.
+     * @param caseArrayN The case array.
+     * @param nestTypeRS The nested type list.
+     * @param nestNameRU The nested name list.
+     * @param nestPairN The nested pair list.
      */
     public void addAnnotationDefault(final List<String> nameRU, final List<String> tags, final List<Object> values, final List<Integer> caseArrayN,
             final List<String> nestTypeRS, final List<String> nestNameRU, final List<Integer> nestPairN) {
@@ -369,12 +369,12 @@ public class ClassBands extends BandSet {
     /**
      * Adds a class.
      *
-     * @param major the major version.
-     * @param flags the class flags.
-     * @param className the class name.
-     * @param signature the signature.
-     * @param superName the super class name.
-     * @param interfaces the implemented interfaces.
+     * @param major The major version.
+     * @param flags The class flags.
+     * @param className The class name.
+     * @param signature The signature.
+     * @param superName The super class name.
+     * @param interfaces The implemented interfaces.
      */
     public void addClass(final int major, final int flags, final String className, final String signature, final String superName, final String[] interfaces) {
         class_this[index] = cpBands.getCPClass(className);
@@ -401,7 +401,7 @@ public class ClassBands extends BandSet {
     /**
      * Adds a new class attribute.
      *
-     * @param attribute the new class attribute.
+     * @param attribute The new class attribute.
      */
     public void addClassAttribute(final NewAttribute attribute) {
         // TODO: backwards calls
@@ -431,7 +431,7 @@ public class ClassBands extends BandSet {
     /**
      * Adds a new code attribute.
      *
-     * @param attribute the new code attribute.
+     * @param attribute The new code attribute.
      */
     public void addCodeAttribute(final NewAttribute attribute) {
         final String attributeName = attribute.type;
@@ -450,9 +450,9 @@ public class ClassBands extends BandSet {
     /**
      * Adds an enclosing method.
      *
-     * @param ownerClassName a fully-qualifed class name.
-     * @param name a method name.
-     * @param signature a signature in the constant pool.
+     * @param ownerClassName A fully-qualifed class name.
+     * @param name A method name.
+     * @param signature A signature in the constant pool.
      */
     public void addEnclosingMethod(final String ownerClassName, final String name, final String signature) {
         class_flags[index] |= 1 << 18;
@@ -463,11 +463,11 @@ public class ClassBands extends BandSet {
     /**
      * Adds a field.
      *
-     * @param flags the field flags.
-     * @param name the field name.
-     * @param desc the field descriptor.
-     * @param signature the field signature.
-     * @param value the constant value.
+     * @param flags The field flags.
+     * @param name The field name.
+     * @param desc The field descriptor.
+     * @param signature The field signature.
+     * @param value The constant value.
      */
     public void addField(int flags, final String name, final String desc, final String signature, final Object value) {
         flags &= 0xFFFF;
@@ -494,7 +494,7 @@ public class ClassBands extends BandSet {
     /**
      * Adds a new field attribute.
      *
-     * @param attribute the new field attribute.
+     * @param attribute The new field attribute.
      */
     public void addFieldAttribute(final NewAttribute attribute) {
         final String attributeName = attribute.type;
@@ -513,10 +513,10 @@ public class ClassBands extends BandSet {
     /**
      * Adds an exception handler.
      *
-     * @param start the start label.
-     * @param end the end label.
-     * @param handler the handler label.
-     * @param type the exception type.
+     * @param start The start label.
+     * @param end The end label.
+     * @param handler The handler label.
+     * @param type The exception type.
      */
     public void addHandler(final Label start, final Label end, final Label handler, final String type) {
         final int handlers = codeHandlerCount.remove(codeHandlerCount.size() - 1);
@@ -530,8 +530,8 @@ public class ClassBands extends BandSet {
     /**
      * Adds a line number entry.
      *
-     * @param line the line number.
-     * @param start the start label.
+     * @param line The line number.
+     * @param start The start label.
      */
     public void addLineNumber(final int line, final Label start) {
         final Long latestCodeFlag = codeFlags.get(codeFlags.size() - 1);
@@ -549,12 +549,12 @@ public class ClassBands extends BandSet {
     /**
      * Adds a local variable.
      *
-     * @param name the variable name.
-     * @param desc the variable descriptor.
-     * @param signature the variable signature.
-     * @param start the start label.
-     * @param end the end label.
-     * @param indx the variable index.
+     * @param name The variable name.
+     * @param desc The variable descriptor.
+     * @param signature The variable signature.
+     * @param start The start label.
+     * @param end The end label.
+     * @param indx The variable index.
      */
     public void addLocalVariable(final String name, final String desc, final String signature, final Label start, final Label end, final int indx) {
         if (signature != null) { // LocalVariableTypeTable attribute
@@ -584,8 +584,8 @@ public class ClassBands extends BandSet {
     /**
      * Adds maximum stack and locals information.
      *
-     * @param maxStack the maximum stack size.
-     * @param maxLocals the maximum number of local variables.
+     * @param maxStack The maximum stack size.
+     * @param maxLocals The maximum number of local variables.
      */
     public void addMaxStack(final int maxStack, int maxLocals) {
         final Long latestFlag = tempMethodFlags.remove(tempMethodFlags.size() - 1);
@@ -602,11 +602,11 @@ public class ClassBands extends BandSet {
     /**
      * Adds a method.
      *
-     * @param flags the method flags.
-     * @param name the method name.
-     * @param desc the method descriptor.
-     * @param signature the method signature.
-     * @param exceptions the thrown exceptions.
+     * @param flags The method flags.
+     * @param name The method name.
+     * @param desc The method descriptor.
+     * @param signature The method signature.
+     * @param exceptions The thrown exceptions.
      */
     public void addMethod(int flags, final String name, final String desc, final String signature, final String[] exceptions) {
         final CPNameAndType nt = cpBands.getCPNameAndType(name, desc);
@@ -637,7 +637,7 @@ public class ClassBands extends BandSet {
     /**
      * Adds a new method attribute.
      *
-     * @param attribute the new method attribute.
+     * @param attribute The new method attribute.
      */
     public void addMethodAttribute(final NewAttribute attribute) {
         final String attributeName = attribute.type;
@@ -656,16 +656,16 @@ public class ClassBands extends BandSet {
     /**
      * Adds a parameter annotation.
      *
-     * @param parameter the parameter index.
-     * @param desc the annotation descriptor.
+     * @param parameter The parameter index.
+     * @param desc The annotation descriptor.
      * @param visible whether the annotation is visible at runtime.
-     * @param nameRU the name list.
-     * @param tags the tag list.
-     * @param values the value list.
-     * @param caseArrayN the case array.
-     * @param nestTypeRS the nested type list.
-     * @param nestNameRU the nested name list.
-     * @param nestPairN the nested pair list.
+     * @param nameRU The name list.
+     * @param tags The tag list.
+     * @param values The value list.
+     * @param caseArrayN The case array.
+     * @param nestTypeRS The nested type list.
+     * @param nestNameRU The nested name list.
+     * @param nestPairN The nested pair list.
      */
     public void addParameterAnnotation(final int parameter, final String desc, final boolean visible, final List<String> nameRU, final List<String> tags,
             final List<Object> values, final List<Integer> caseArrayN, final List<String> nestTypeRS, final List<String> nestNameRU,
@@ -690,7 +690,7 @@ public class ClassBands extends BandSet {
     /**
      * Adds a source file path.
      *
-     * @param source a source file path.
+     * @param source A source file path.
      */
     public void addSourceFile(final String source) {
         String implicitSourceFileName = class_this[index].toString();
@@ -724,7 +724,7 @@ public class ClassBands extends BandSet {
     /**
      * Records that the current class references an inner class.
      *
-     * @param inner the inner class.
+     * @param inner The inner class.
      */
     public void currentClassReferencesInnerClass(final CPClass inner) {
         if (!(index >= class_this.length)) {
@@ -738,8 +738,8 @@ public class ClassBands extends BandSet {
     /**
      * Renumbers bytecode indices.
      *
-     * @param bciRenumbering the renumbering map.
-     * @param labelsToOffsets the label to offset map.
+     * @param bciRenumbering The renumbering map.
+     * @param labelsToOffsets The label to offset map.
      */
     public void doBciRenumbering(final IntList bciRenumbering, final Map<Label, Integer> labelsToOffsets) {
         renumberBci(codeLineNumberTableBciP, bciRenumbering, labelsToOffsets);
@@ -1060,7 +1060,7 @@ public class ClassBands extends BandSet {
     /**
      * Gets the number of classes processed.
      *
-     * @return the number of classes processed.
+     * @return The number of classes processed.
      */
     public int numClassesProcessed() {
         return index;

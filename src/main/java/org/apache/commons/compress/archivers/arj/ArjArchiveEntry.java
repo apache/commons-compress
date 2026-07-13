@@ -140,7 +140,7 @@ public class ArjArchiveEntry implements ArchiveEntry {
      * The operating system the archive has been created on.
      *
      * @see HostOs
-     * @return the host OS code.
+     * @return The host OS code.
      */
     public int getHostOs() {
         return localFileHeader.hostOS;
@@ -156,7 +156,7 @@ public class ArjArchiveEntry implements ArchiveEntry {
      * the current time zone into account if the archive has been created on Unix.
      * </p>
      *
-     * @return the last modified date.
+     * @return The last modified date.
      */
     @Override
     public Date getLastModifiedDate() {
@@ -175,7 +175,7 @@ public class ArjArchiveEntry implements ArchiveEntry {
      * The format depends on the host operating system that created the entry.
      * </p>
      *
-     * @return the file mode.
+     * @return The file mode.
      */
     public int getMode() {
         return localFileHeader.fileAccessMode;
@@ -215,7 +215,7 @@ public class ArjArchiveEntry implements ArchiveEntry {
      * Will only be non-zero of the host operating system was Unix.
      * </p>
      *
-     * @return the Unix mode.
+     * @return The Unix mode.
      */
     public int getUnixMode() {
         return isHostOsUnix() ? getMode() : 0;

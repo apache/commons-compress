@@ -36,7 +36,7 @@ public class CodeAttribute extends BCIRenumberedAttribute {
     /**
      * Sets the attribute name.
      *
-     * @param attributeName the attribute name.
+     * @param attributeName The attribute name.
      */
     public static void setAttributeName(final CPUTF8 attributeName) {
         CodeAttribute.attributeName = attributeName;
@@ -80,12 +80,12 @@ public class CodeAttribute extends BCIRenumberedAttribute {
     /**
      * Constructs a new instance.
      *
-     * @param maxStack the maximum stack size.
-     * @param maxLocals the maximum number of local variables.
-     * @param codePacked the packed code bytes.
-     * @param segment the segment.
-     * @param operandManager the operand manager.
-     * @param exceptionTable the exception table.
+     * @param maxStack The maximum stack size.
+     * @param maxLocals The maximum number of local variables.
+     * @param codePacked The packed code bytes.
+     * @param segment The segment.
+     * @param operandManager The operand manager.
+     * @param exceptionTable The exception table.
      * @throws Pack200Exception if an error occurs.
      */
     public CodeAttribute(final int maxStack, final int maxLocals, final byte[] codePacked, final Segment segment, final OperandManager operandManager,
@@ -139,7 +139,7 @@ public class CodeAttribute extends BCIRenumberedAttribute {
     /**
      * Adds an attribute to this code attribute.
      *
-     * @param attribute the attribute to add.
+     * @param attribute The attribute to add.
      */
     public void addAttribute(final Attribute attribute) {
         attributes.add(attribute);

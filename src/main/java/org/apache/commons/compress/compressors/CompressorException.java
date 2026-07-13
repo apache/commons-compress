@@ -44,7 +44,7 @@ public class CompressorException extends CompressException {
      * </p>
      *
      * @param message The message format (which is saved for later retrieval by the {@link #getMessage()} method).
-     * @param args    the format arguments to use.
+     * @param args    The format arguments to use.
      * @since 1.29.0
      * @see String#format(String, Object...)
      */

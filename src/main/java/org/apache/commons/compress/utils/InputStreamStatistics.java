@@ -32,7 +32,7 @@ public interface InputStreamStatistics {
     /**
      * Gets the amount of raw or compressed bytes read by the stream.
      *
-     * @return the amount of raw or compressed bytes read by the stream.
+     * @return The amount of raw or compressed bytes read by the stream.
      * @throws IOException if a formatting error occurs.
      */
     long getCompressedCount() throws IOException;
@@ -40,7 +40,7 @@ public interface InputStreamStatistics {
     /**
      * Gets the amount of decompressed bytes returned by the stream.
      *
-     * @return the amount of decompressed bytes returned by the stream.
+     * @return The amount of decompressed bytes returned by the stream.
      */
     long getUncompressedCount();
 }

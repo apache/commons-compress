@@ -40,8 +40,8 @@ public class FileNameUtils {
      * Will return the file name itself if it doesn't contain any dots. All leading directories of the {@code file name} parameter are skipped.
      * </p>
      *
-     * @return the base name of file name.
-     * @param path the path of the file to obtain the base name of.
+     * @return The base name of file name.
+     * @param path The path of the file to obtain the base name of.
      * @since 1.22
      * @deprecated Use {@link PathUtils#getBaseName(Path)}.
      */
@@ -56,8 +56,8 @@ public class FileNameUtils {
      * Will return the file name itself if it doesn't contain any dots. All leading directories of the {@code file name} parameter are skipped.
      * </p>
      *
-     * @return the base name of file name.
-     * @param fileName the name of the file to obtain the base name of.
+     * @return The base name of file name.
+     * @param fileName The name of the file to obtain the base name of.
      * @deprecated Use {@link FilenameUtils#removeExtension(String)}.
      */
     @Deprecated
@@ -75,8 +75,8 @@ public class FileNameUtils {
      * directories of the {@code file name} parameter are skipped.
      * </p>
      *
-     * @return the extension of file name.
-     * @param path the path of the file to obtain the extension of.
+     * @return The extension of file name.
+     * @param path The path of the file to obtain the extension of.
      * @since 1.22
      * @deprecated Use {@link PathUtils#getExtension(Path)}.
      */
@@ -92,8 +92,8 @@ public class FileNameUtils {
      * directories of the {@code fileName} parameter are skipped.
      * </p>
      *
-     * @return the extension of file name.
-     * @param fileName the name of the file to obtain the extension of.
+     * @return The extension of file name.
+     * @param fileName The name of the file to obtain the extension of.
      * @deprecated Use {@link FilenameUtils#getExtension(String)}.
      */
     @Deprecated

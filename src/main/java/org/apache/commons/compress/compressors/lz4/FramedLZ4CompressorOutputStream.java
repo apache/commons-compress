@@ -97,7 +97,7 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream<Outp
          * Sets up custom a custom block size for the LZ4 stream but otherwise uses the defaults of enabled content checksum, disabled block checksums and
          * independent blocks.
          *
-         * @param blockSize the size of a single block.
+         * @param blockSize The size of a single block.
          */
         public Parameters(final BlockSize blockSize) {
             this(blockSize, true, false, false);
@@ -106,7 +106,7 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream<Outp
         /**
          * Sets up custom parameters for the LZ4 stream.
          *
-         * @param blockSize           the size of a single block.
+         * @param blockSize           The size of a single block.
          * @param withContentChecksum whether to write a content checksum.
          * @param withBlockChecksum   whether to write a block checksum. Note that block checksums are not supported by the lz4 command line utility.
          * @param withBlockDependency whether a block may depend on the content of a previous block. Enabling this may improve compression ratio but makes it
@@ -119,7 +119,7 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream<Outp
         /**
          * Sets up custom parameters for the LZ4 stream.
          *
-         * @param blockSize           the size of a single block.
+         * @param blockSize           The size of a single block.
          * @param withContentChecksum whether to write a content checksum.
          * @param withBlockChecksum   whether to write a block checksum. Note that block checksums are not supported by the lz4 command line utility.
          * @param withBlockDependency whether a block may depend on the content of a previous block. Enabling this may improve compression ratio but makes it
@@ -139,7 +139,7 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream<Outp
          * Sets up custom a custom block size for the LZ4 stream but otherwise uses the defaults of enabled content checksum, disabled block checksums and
          * independent blocks.
          *
-         * @param blockSize  the size of a single block.
+         * @param blockSize  The size of a single block.
          * @param lz77params parameters used to fine-tune compression, in particular to balance compression ratio vs compression speed.
          */
         public Parameters(final BlockSize blockSize, final org.apache.commons.compress.compressors.lz77support.Parameters lz77params) {
@@ -173,7 +173,7 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream<Outp
     /**
      * Constructs a new output stream that compresses data using the LZ4 frame format using the default block size of 4MB.
      *
-     * @param out the OutputStream to which to write the compressed data.
+     * @param out The OutputStream to which to write the compressed data.
      * @throws IOException if writing the signature fails.
      */
     public FramedLZ4CompressorOutputStream(final OutputStream out) throws IOException {
@@ -183,8 +183,8 @@ public class FramedLZ4CompressorOutputStream extends CompressorOutputStream<Outp
     /**
      * Constructs a new output stream that compresses data using the LZ4 frame format using the given block size.
      *
-     * @param out    the OutputStream to which to write the compressed data.
-     * @param params the parameters to use.
+     * @param out    The OutputStream to which to write the compressed data.
+     * @param params The parameters to use.
      * @throws IOException if writing the signature fails.
      */
     public FramedLZ4CompressorOutputStream(final OutputStream out, final Parameters params) throws IOException {

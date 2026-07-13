@@ -80,7 +80,7 @@ final class UnshrinkingInputStream extends LZWInputStream {
      *  symbol symbol symbol symbol
      * }</pre>
      *
-     * @return the next symbol or -1 at end-of-file.
+     * @return The next symbol or -1 at end-of-file.
      */
     @Override
     protected int decompressNextSymbol() throws IOException {

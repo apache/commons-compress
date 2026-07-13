@@ -49,7 +49,7 @@ final class DumpArchiveUtil {
      *
      * @param buffer The source buffer.
      * @param offset Where to start reading.
-     * @return the 2-byte entry as an int.
+     * @return The 2-byte entry as an int.
      */
     public static int convert16(final byte[] buffer, final int offset) {
         return (int) ByteUtils.fromLittleEndian(buffer, offset, 2);
@@ -60,7 +60,7 @@ final class DumpArchiveUtil {
      *
      * @param buffer The source buffer.
      * @param offset Where to start reading.
-     * @return the 4-byte entry as an int.
+     * @return The 4-byte entry as an int.
      */
     public static int convert32(final byte[] buffer, final int offset) {
         return (int) ByteUtils.fromLittleEndian(buffer, offset, 4);
@@ -71,7 +71,7 @@ final class DumpArchiveUtil {
      *
      * @param buffer The source buffer.
      * @param offset Where to start reading.
-     * @return the 8-byte entry as a long.
+     * @return The 8-byte entry as a long.
      */
     public static long convert64(final byte[] buffer, final int offset) {
         return ByteUtils.fromLittleEndian(buffer, offset, 8);
@@ -91,7 +91,7 @@ final class DumpArchiveUtil {
      * Gets the ino associated with this buffer.
      *
      * @param buffer The source buffer.
-     * @return the ino associated with this buffer.
+     * @return The ino associated with this buffer.
      */
     public static int getIno(final byte[] buffer) {
         return convert32(buffer, 20);

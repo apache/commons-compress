@@ -168,7 +168,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
     /**
      * Length of the extra field in the central directory data - without Header-ID or length specifier.
      *
-     * @return a {@code ZipShort} for the length of the data of this extra field.
+     * @return A {@code ZipShort} for the length of the data of this extra field.
      */
     @Override
     public ZipShort getCentralDirectoryLength() {
@@ -179,7 +179,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
      * Gets the GID as a long. GID is typically a 32 bit unsigned value on most Unix systems, so we return a long to avoid integer overflow into the negatives
      * in case values above and including 2^31 are being used.
      *
-     * @return the GID value.
+     * @return The GID value.
      */
     public long getGID() {
         return ZipUtil.toLong(gid);
@@ -188,7 +188,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
     /**
      * The Header-ID.
      *
-     * @return the value for the header id for this extrafield.
+     * @return The value for the header id for this extrafield.
      */
     @Override
     public ZipShort getHeaderId() {
@@ -241,7 +241,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
     /**
      * Length of the extra field in the local file data - without Header-ID or length specifier.
      *
-     * @return a {@code ZipShort} for the length of the data of this extra field.
+     * @return A {@code ZipShort} for the length of the data of this extra field.
      */
     @Override
     public ZipShort getLocalFileDataLength() {
@@ -257,7 +257,7 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
      * Gets the UID as a long. UID is typically a 32 bit unsigned value on most Unix systems, so we return a long to avoid integer overflow into the negatives
      * in case values above and including 2^31 are being used.
      *
-     * @return the UID value.
+     * @return The UID value.
      */
     public long getUID() {
         return ZipUtil.toLong(uid);
@@ -284,9 +284,9 @@ public class X7875_NewUnix implements ZipExtraField, Cloneable, Serializable {
     /**
      * Populate data from this array as if it was in local file data.
      *
-     * @param data   an array of bytes.
-     * @param offset the start offset.
-     * @param length the number of bytes in the array from offset.
+     * @param data   An array of bytes.
+     * @param offset The start offset.
+     * @param length The number of bytes in the array from offset.
      * @throws java.util.zip.ZipException on error.
      */
     @Override

@@ -40,10 +40,10 @@ public class CompressException extends IOException {
      * Delegates to {@link Math#addExact(int, int)} wrapping its {@link ArithmeticException} in our {@link ArchiveException}.
      *
      * @param <E>             The type of the exception.
-     * @param x the first value.
-     * @param y the second value.
+     * @param x The first value.
+     * @param y The second value.
      * @param eFunction How to create an exception.
-     * @return the result.
+     * @return The result.
      * @throws E if the result or input overflows an {@code int}.
      * @see Math#addExact(int, int)
      * @since 1.29.0
@@ -101,7 +101,7 @@ public class CompressException extends IOException {
      * </p>
      *
      * @param message The message format (which is saved for later retrieval by the {@link #getMessage()} method).
-     * @param args    the format arguments to use.
+     * @param args    The format arguments to use.
      * @since 1.29.0
      * @see String#format(String, Object...)
      */

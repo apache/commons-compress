@@ -117,7 +117,7 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
          * You must set input that supports {@link InputStream}, otherwise, this method throws an exception.
          * </p>
          *
-         * @return a new instance.
+         * @return A new instance.
          * @throws IllegalStateException         if the {@code origin} is {@code null}.
          * @throws UnsupportedOperationException if the origin cannot be converted to an {@link InputStream}.
          * @see AbstractOrigin#getInputStream(java.nio.file.OpenOption...)
@@ -148,7 +148,7 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
          * The default value is {@link GzipUtils#GZIP_ENCODING}.
          * </p>
          *
-         * @param fileNameCharset the Charset to use for writing file names and comments, null maps to {@link GzipUtils#GZIP_ENCODING}.
+         * @param fileNameCharset The Charset to use for writing file names and comments, null maps to {@link GzipUtils#GZIP_ENCODING}.
          * @return {@code this} instance.
          */
         public Builder setFileNameCharset(final Charset fileNameCharset) {
@@ -210,7 +210,7 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
     /**
      * Constructs a new builder of {@link GzipCompressorInputStream}.
      *
-     * @return a new builder of {@link GzipCompressorInputStream}.
+     * @return A new builder of {@link GzipCompressorInputStream}.
      * @since 1.28.0
      */
     public static Builder builder() {
@@ -220,8 +220,8 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
     /**
      * Checks if the signature matches what is expected for a .gz file.
      *
-     * @param signature the bytes to check.
-     * @param length    the number of bytes to check.
+     * @param signature The bytes to check.
+     * @param length    The number of bytes to check.
      * @return true if this is a .gz stream, false otherwise.
      * @since 1.1
      */
@@ -297,7 +297,7 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
      * This is equivalent to {@code GzipCompressorInputStream(inputStream, false)} and thus will not decompress concatenated .gz files.
      * </p>
      *
-     * @param inputStream the InputStream from which this object should be created of.
+     * @param inputStream The InputStream from which this object should be created of.
      * @throws IOException if the stream could not be created.
      */
     public GzipCompressorInputStream(final InputStream inputStream) throws IOException {
@@ -312,7 +312,7 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
      * {@code mark} isn't supported, the input position will be undefined.
      * </p>
      *
-     * @param inputStream            the InputStream from which this object should be created of.
+     * @param inputStream            The InputStream from which this object should be created of.
      * @param decompressConcatenated if true, decompress until the end of the input; if false, stop after the first .gz member.
      * @throws IOException if the stream could not be created.
      * @deprecated Use {@link Builder#get()}.
@@ -351,7 +351,7 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
     /**
      * Provides the stream's metadata - may change with each stream when decompressing concatenated streams.
      *
-     * @return the stream's meta data.
+     * @return The stream's meta data.
      * @since 1.8
      */
     public GzipParameters getMetaData() {

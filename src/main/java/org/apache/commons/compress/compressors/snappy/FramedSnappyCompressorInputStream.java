@@ -69,8 +69,8 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream imp
      * .sz files start with a chunk with tag 0xff and content sNaPpY.
      * </p>
      *
-     * @param signature the bytes to check.
-     * @param length    the number of bytes to check.
+     * @param signature The bytes to check.
+     * @param length    The number of bytes to check.
      * @return true if this is a .sz stream, false otherwise.
      */
     public static boolean matches(final byte[] signature, final int length) {
@@ -120,7 +120,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream imp
      * Constructs a new input stream that decompresses snappy-framed-compressed data from the specified input stream using the
      * {@link FramedSnappyDialect#STANDARD} dialect.
      *
-     * @param in the InputStream from which to read the compressed data.
+     * @param in The InputStream from which to read the compressed data.
      * @throws IOException if reading fails.
      */
     public FramedSnappyCompressorInputStream(final InputStream in) throws IOException {
@@ -130,8 +130,8 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream imp
     /**
      * Constructs a new input stream that decompresses snappy-framed-compressed data from the specified input stream.
      *
-     * @param in      the InputStream from which to read the compressed data.
-     * @param dialect the dialect used by the compressed stream.
+     * @param in      The InputStream from which to read the compressed data.
+     * @param dialect The dialect used by the compressed stream.
      * @throws IOException if reading fails.
      */
     public FramedSnappyCompressorInputStream(final InputStream in, final FramedSnappyDialect dialect) throws IOException {
@@ -141,9 +141,9 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream imp
     /**
      * Constructs a new input stream that decompresses snappy-framed-compressed data from the specified input stream.
      *
-     * @param in        the InputStream from which to read the compressed data.
-     * @param blockSize the block size to use for the compressed stream.
-     * @param dialect   the dialect used by the compressed stream.
+     * @param in        The InputStream from which to read the compressed data.
+     * @param blockSize The block size to use for the compressed stream.
+     * @param dialect   The dialect used by the compressed stream.
      * @throws IOException              if reading fails.
      * @throws IllegalArgumentException if blockSize is not bigger than 0.
      * @since 1.14

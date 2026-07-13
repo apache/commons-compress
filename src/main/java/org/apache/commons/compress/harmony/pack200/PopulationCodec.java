@@ -30,39 +30,39 @@ import java.util.Arrays;
  */
 public class PopulationCodec extends Codec {
 
-    private final Codec favouredCodec;
+    private final Codec favoredCodec;
     private Codec tokenCodec;
-    private final Codec unfavouredCodec;
+    private final Codec unfavoredCodec;
     private int l;
-    private int[] favoured;
+    private int[] favored;
 
     /**
      * Constructs a new PopulationCodec.
      *
-     * @param favouredCodec the favoured codec.
-     * @param tokenCodec the token codec.
-     * @param unvafouredCodec the unfavoured codec.
+     * @param favoredCodec The favored codec.
+     * @param tokenCodec The token codec.
+     * @param unvaforedCodec The unfavored codec.
      */
-    public PopulationCodec(final Codec favouredCodec, final Codec tokenCodec, final Codec unvafouredCodec) {
-        this.favouredCodec = favouredCodec;
+    public PopulationCodec(final Codec favoredCodec, final Codec tokenCodec, final Codec unvaforedCodec) {
+        this.favoredCodec = favoredCodec;
         this.tokenCodec = tokenCodec;
-        this.unfavouredCodec = unvafouredCodec;
+        this.unfavoredCodec = unvaforedCodec;
     }
 
     /**
      * Constructs a new PopulationCodec.
      *
-     * @param favouredCodec the favoured codec.
-     * @param l the L value.
-     * @param unfavouredCodec the unfavoured codec.
+     * @param favoredCodec The favored codec.
+     * @param l The L value.
+     * @param unfavoredCodec The unfavored codec.
      */
-    public PopulationCodec(final Codec favouredCodec, final int l, final Codec unfavouredCodec) {
+    public PopulationCodec(final Codec favoredCodec, final int l, final Codec unfavoredCodec) {
         if (l >= 256 || l <= 0) {
             throw new IllegalArgumentException("L must be between 1..255");
         }
-        this.favouredCodec = favouredCodec;
+        this.favoredCodec = favoredCodec;
         this.l = l;
-        this.unfavouredCodec = unfavouredCodec;
+        this.unfavoredCodec = unfavoredCodec;
     }
 
     @Override
@@ -78,7 +78,7 @@ public class PopulationCodec extends Codec {
     @Override
     public int[] decodeInts(final int n, final InputStream in) throws IOException, Pack200Exception {
         lastBandLength = 0;
-        favoured = new int[Pack200Exception.checkIntArray(check(n, in))]; // there must be <= n values, but probably a lot
+        favored = new int[Pack200Exception.checkIntArray(check(n, in))]; // there must be <= n values, but probably a lot
         // less
         final int[] result;
         // read table of favorites first
@@ -89,11 +89,11 @@ public class PopulationCodec extends Codec {
         int absoluteValue;
         int k = -1;
         while (true) {
-            value = favouredCodec.decode(in, last);
+            value = favoredCodec.decode(in, last);
             if (k > -1 && (value == smallest || value == last)) {
                 break;
             }
-            favoured[++k] = value;
+            favored[++k] = value;
             absoluteSmallest = Math.abs(smallest);
             absoluteValue = Math.abs(value);
             if (absoluteSmallest > absoluteValue) {
@@ -132,9 +132,9 @@ public class PopulationCodec extends Codec {
             final int index = result[i];
             if (index == 0) {
                 lastBandLength++;
-                result[i] = last = unfavouredCodec.decode(in, last);
+                result[i] = last = unfavoredCodec.decode(in, last);
             } else {
-                result[i] = favoured[index - 1];
+                result[i] = favored[index - 1];
             }
         }
         return result;
@@ -153,58 +153,58 @@ public class PopulationCodec extends Codec {
     /**
      * Encodes the values.
      *
-     * @param favoured the favoured values.
-     * @param tokens the tokens.
-     * @param unfavoured the unfavoured values.
-     * @return the encoded bytes.
+     * @param favored The favored values.
+     * @param tokens The tokens.
+     * @param unfavored The unfavored values.
+     * @return The encoded bytes.
      * @throws Pack200Exception if an error occurs.
      */
-    public byte[] encode(final int[] favoured, final int[] tokens, final int[] unfavoured) throws Pack200Exception {
-        final int[] favoured2 = Arrays.copyOf(favoured, favoured.length + 1);
-        favoured2[favoured2.length - 1] = favoured[favoured.length - 1]; // repeat last value;
-        final byte[] favouredEncoded = favouredCodec.encode(favoured2);
+    public byte[] encode(final int[] favored, final int[] tokens, final int[] unfavored) throws Pack200Exception {
+        final int[] favored2 = Arrays.copyOf(favored, favored.length + 1);
+        favored2[favored2.length - 1] = favored[favored.length - 1]; // repeat last value;
+        final byte[] favoredEncoded = favoredCodec.encode(favored2);
         final byte[] tokensEncoded = tokenCodec.encode(tokens);
-        final byte[] unfavouredEncoded = unfavouredCodec.encode(unfavoured);
-        final byte[] band = new byte[favouredEncoded.length + tokensEncoded.length + unfavouredEncoded.length];
-        System.arraycopy(favouredEncoded, 0, band, 0, favouredEncoded.length);
-        System.arraycopy(tokensEncoded, 0, band, favouredEncoded.length, tokensEncoded.length);
-        System.arraycopy(unfavouredEncoded, 0, band, favouredEncoded.length + tokensEncoded.length, unfavouredEncoded.length);
+        final byte[] unfavoredEncoded = unfavoredCodec.encode(unfavored);
+        final byte[] band = new byte[favoredEncoded.length + tokensEncoded.length + unfavoredEncoded.length];
+        System.arraycopy(favoredEncoded, 0, band, 0, favoredEncoded.length);
+        System.arraycopy(tokensEncoded, 0, band, favoredEncoded.length, tokensEncoded.length);
+        System.arraycopy(unfavoredEncoded, 0, band, favoredEncoded.length + tokensEncoded.length, unfavoredEncoded.length);
         return band;
     }
 
     /**
-     * Gets the favoured values.
+     * Gets the favored values.
      *
-     * @return the favoured values.
+     * @return The favored values.
      */
     public int[] getFavoured() {
-        return favoured;
+        return favored;
     }
 
     /**
-     * Gets the favoured codec.
+     * Gets the favored codec.
      *
-     * @return the favoured codec.
+     * @return The favored codec.
      */
     public Codec getFavouredCodec() {
-        return favouredCodec;
+        return favoredCodec;
     }
 
     /**
      * Gets the token codec.
      *
-     * @return the token codec.
+     * @return The token codec.
      */
     public Codec getTokenCodec() {
         return tokenCodec;
     }
 
     /**
-     * Gets the unfavoured codec.
+     * Gets the unfavored codec.
      *
-     * @return the unfavoured codec.
+     * @return The unfavored codec.
      */
     public Codec getUnfavouredCodec() {
-        return unfavouredCodec;
+        return unfavoredCodec;
     }
 }

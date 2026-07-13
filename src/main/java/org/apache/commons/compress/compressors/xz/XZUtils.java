@@ -173,8 +173,8 @@ public class XZUtils {
      * This is more or less a copy of the version found in {@link XZCompressorInputStream} but doesn't depend on the presence of XZ for Java.
      * </p>
      *
-     * @param signature the bytes to check.
-     * @param length    the number of bytes to check.
+     * @param signature The bytes to check.
+     * @param length    The number of bytes to check.
      * @return true if signature matches the .xz magic bytes, false otherwise.
      * @since 1.9
      */

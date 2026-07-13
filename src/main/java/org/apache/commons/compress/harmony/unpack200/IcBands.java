@@ -53,7 +53,7 @@ public class IcBands extends BandSet {
     /**
      * Constructs a new IcBands instance.
      *
-     * @param segment the segment.
+     * @param segment The segment.
      */
     public IcBands(final Segment segment) {
         super(segment);
@@ -64,7 +64,7 @@ public class IcBands extends BandSet {
     /**
      * Gets the IC tuples.
      *
-     * @return the IC tuples.
+     * @return The IC tuples.
      */
     public IcTuple[] getIcTuples() {
         return icAll;

@@ -65,7 +65,7 @@ public class SegmentOptions {
     /**
      * Creates a new segment options with the given integer value.
      *
-     * @param options the integer value to use as the flags
+     * @param options The integer value to use as the flags
      * @throws Pack200Exception if an unused bit (bit 3 or bit 13+) is non-zero
      */
     public SegmentOptions(final int options) throws Pack200Exception {

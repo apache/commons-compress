@@ -47,7 +47,7 @@ import org.apache.commons.io.function.IOStream;
 import org.apache.commons.io.input.BoundedInputStream;
 
 /**
- * Provides random access to Unix archives.
+ * Provides random access to Unix TAR files.
  *
  * @since 1.21
  */
@@ -132,7 +132,7 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
     /**
      * Creates a new builder.
      *
-     * @return a new builder.
+     * @return A new builder.
      * @since 1.29.0
      */
     public static Builder builder() {
@@ -201,7 +201,7 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
     /**
      * Constructor for TarFile.
      *
-     * @param content the content to use.
+     * @param content The content to use.
      * @throws IOException when reading the tar archive fails.
      * @deprecated Use {@link #builder()} and {@link Builder}.
      */
@@ -213,7 +213,7 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
     /**
      * Constructor for TarFile.
      *
-     * @param content the content to use.
+     * @param content The content to use.
      * @param lenient when set to true illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to.
      *                {@link TarArchiveEntry#UNKNOWN}. When set to false such illegal fields cause an exception instead.
      * @throws IOException when reading the tar archive fails.
@@ -227,8 +227,8 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
     /**
      * Constructor for TarFile.
      *
-     * @param content  the content to use.
-     * @param encoding the encoding to use.
+     * @param content  The content to use.
+     * @param encoding The encoding to use.
      * @throws IOException when reading the tar archive fails.
      * @deprecated Use {@link #builder()} and {@link Builder}.
      */
@@ -240,7 +240,7 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
     /**
      * Constructor for TarFile.
      *
-     * @param archive the file of the archive to use.
+     * @param archive The file of the archive to use.
      * @throws IOException when reading the tar archive fails.
      * @deprecated Use {@link #builder()} and {@link Builder}.
      */
@@ -252,7 +252,7 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
     /**
      * Constructor for TarFile.
      *
-     * @param archive the file of the archive to use.
+     * @param archive The file of the archive to use.
      * @param lenient when set to true illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
      *                {@link TarArchiveEntry#UNKNOWN}. When set to false such illegal fields cause an exception instead.
      * @throws IOException when reading the tar archive fails.
@@ -266,8 +266,8 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
     /**
      * Constructor for TarFile.
      *
-     * @param archive  the file of the archive to use.
-     * @param encoding the encoding to use.
+     * @param archive  The file of the archive to use.
+     * @param encoding The encoding to use.
      * @throws IOException when reading the tar archive fails.
      * @deprecated Use {@link #builder()} and {@link Builder}.
      */
@@ -279,7 +279,7 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
     /**
      * Constructor for TarFile.
      *
-     * @param archivePath the path of the archive to use.
+     * @param archivePath The path of the archive to use.
      * @throws IOException when reading the tar archive fails.
      */
     public TarFile(final Path archivePath) throws IOException {
@@ -289,7 +289,7 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
     /**
      * Constructor for TarFile.
      *
-     * @param archivePath the path of the archive to use.
+     * @param archivePath The path of the archive to use.
      * @param lenient     when set to true illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
      *                    {@link TarArchiveEntry#UNKNOWN}. When set to false such illegal fields cause an exception instead.
      * @throws IOException when reading the tar archive fails.
@@ -303,8 +303,8 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
     /**
      * Constructor for TarFile.
      *
-     * @param archivePath the path of the archive to use.
-     * @param encoding    the encoding to use.
+     * @param archivePath The path of the archive to use.
+     * @param encoding    The encoding to use.
      * @throws IOException when reading the tar archive fails.
      * @deprecated Use {@link #builder()} and {@link Builder}.
      */
@@ -316,7 +316,7 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
     /**
      * Constructor for TarFile.
      *
-     * @param content the content to use.
+     * @param content The content to use.
      * @throws IOException when reading the tar archive fails.
      * @deprecated Use {@link #builder()} and {@link Builder}.
      */
@@ -328,10 +328,10 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
     /**
      * Constructor for TarFile.
      *
-     * @param archive    the seekable byte channel to use.
-     * @param blockSize  the blocks size to use.
-     * @param recordSize the record size to use.
-     * @param encoding   the encoding to use.
+     * @param archive    The seekable byte channel to use.
+     * @param blockSize  The blocks size to use.
+     * @param recordSize The record size to use.
+     * @param encoding   The encoding to use.
      * @param lenient    when set to true illegal values for group/userid, mode, device numbers and timestamp will be ignored and the fields set to
      *                   {@link TarArchiveEntry#UNKNOWN}. When set to false such illegal fields cause an exception instead.
      * @throws IOException when reading the tar archive fails.
@@ -358,6 +358,8 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
         // logical offset into the extracted entry
         long offset = 0;
         long numberOfZeroBytesInSparseEntry = 0;
+        // physical bytes backing this entry
+        long dataBytes = 0;
         for (final TarArchiveStructSparse sparseHeader : sparseHeaders) {
             final long zeroBlockSize = sparseHeader.getOffset() - offset;
             if (zeroBlockSize < 0) {
@@ -371,6 +373,12 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
             }
             // only store the input streams with non-zero size
             if (sparseHeader.getNumbytes() > 0) {
+                dataBytes = ArchiveException.addExact(dataBytes, sparseHeader.getNumbytes());
+                // the non-hole blocks map onto real bytes of the archive, so their total size must not
+                // exceed the entry's stored size, otherwise this entry would reach into following entries
+                if (dataBytes > currEntry.getSize()) {
+                    throw new ArchiveException("Corrupted TAR archive. Sparse blocks for '%s' are larger than the entry size.", currEntry.getName());
+                }
                 final long start = currEntry.getDataOffset() + sparseHeader.getOffset() - numberOfZeroBytesInSparseEntry;
                 if (start + sparseHeader.getNumbytes() < start) {
                     // possible integer overflow

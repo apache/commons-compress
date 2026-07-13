@@ -33,7 +33,7 @@ public class SignatureAttribute extends Attribute {
     /**
      * Sets the attribute name.
      *
-     * @param cpUTF8Value the attribute name.
+     * @param cpUTF8Value The attribute name.
      */
     public static void setAttributeName(final CPUTF8 cpUTF8Value) {
         attributeName = cpUTF8Value;
@@ -46,7 +46,7 @@ public class SignatureAttribute extends Attribute {
     /**
      * Constructs a new SignatureAttribute.
      *
-     * @param value the signature value.
+     * @param value The signature value.
      */
     public SignatureAttribute(final CPUTF8 value) {
         super(attributeName);

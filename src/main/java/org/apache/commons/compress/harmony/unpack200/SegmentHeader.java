@@ -99,7 +99,7 @@ public class SegmentHeader {
     /**
      * Constructs a new SegmentHeader.
      *
-     * @param segment the segment.
+     * @param segment The segment.
      */
     public SegmentHeader(final Segment segment) {
         this.segment = segment;
@@ -108,10 +108,10 @@ public class SegmentHeader {
     /**
      * Decode a scalar from the band file. A scalar is like a band, but does not perform any band code switching.
      *
-     * @param name  the name of the scalar (primarily for logging/debugging purposes)
-     * @param in    the input stream to read from
-     * @param codec the codec for this scalar
-     * @return the decoded value
+     * @param name  The name of the scalar (primarily for logging/debugging purposes)
+     * @param in    The input stream to read from
+     * @param codec The codec for this scalar
+     * @return The decoded value
      * @throws IOException      if there is a problem reading from the underlying input stream
      * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid
      */
@@ -124,10 +124,10 @@ public class SegmentHeader {
     /**
      * Decode a number of scalars from the band file. A scalar is like a band, but does not perform any band code switching.
      *
-     * @param name  the name of the scalar (primarily for logging/debugging purposes)
-     * @param in    the input stream to read from
-     * @param codec the codec for this scalar
-     * @return an array of decoded {@code long[]} values
+     * @param name  The name of the scalar (primarily for logging/debugging purposes)
+     * @param in    The input stream to read from
+     * @param codec The codec for this scalar
+     * @return An array of decoded {@code long[]} values
      * @throws IOException      if there is a problem reading from the underlying input stream
      * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid
      */
@@ -139,7 +139,7 @@ public class SegmentHeader {
     /**
      * Gets the archive modification time.
      *
-     * @return the archive modification time.
+     * @return The archive modification time.
      */
     public long getArchiveModtime() {
         return archiveModtime;
@@ -148,7 +148,7 @@ public class SegmentHeader {
     /**
      * Gets the archive size.
      *
-     * @return the archive size.
+     * @return The archive size.
      */
     public long getArchiveSize() {
         return archiveSize;
@@ -157,7 +157,7 @@ public class SegmentHeader {
     /**
      * Gets the archive size offset.
      *
-     * @return the archive size offset.
+     * @return The archive size offset.
      */
     public int getArchiveSizeOffset() {
         return archiveSizeOffset;
@@ -166,7 +166,7 @@ public class SegmentHeader {
     /**
      * Gets the attribute definition count.
      *
-     * @return the attribute definition count.
+     * @return The attribute definition count.
      */
     public int getAttributeDefinitionCount() {
         return attributeDefinitionCount;
@@ -179,7 +179,7 @@ public class SegmentHeader {
      * Note that as a stream, data consumed from this input stream can't be re-used. Data is only read from this stream if the encoding is such that additional
      * information needs to be decoded from the stream itself.
      *
-     * @return the band headers input stream
+     * @return The band headers input stream
      */
     public InputStream getBandHeadersInputStream() {
         if (bandHeadersInputStream == null) {
@@ -192,7 +192,7 @@ public class SegmentHeader {
     /**
      * Gets the band headers size.
      *
-     * @return the band headers size.
+     * @return The band headers size.
      */
     public int getBandHeadersSize() {
         return bandHeadersSize;
@@ -201,7 +201,7 @@ public class SegmentHeader {
     /**
      * Gets the class count.
      *
-     * @return the class count.
+     * @return The class count.
      */
     public int getClassCount() {
         return classCount;
@@ -210,7 +210,7 @@ public class SegmentHeader {
     /**
      * Gets the CP class count.
      *
-     * @return the CP class count.
+     * @return The CP class count.
      */
     public int getCpClassCount() {
         return cpClassCount;
@@ -219,7 +219,7 @@ public class SegmentHeader {
     /**
      * Gets the CP descriptor count.
      *
-     * @return the CP descriptor count.
+     * @return The CP descriptor count.
      */
     public int getCpDescriptorCount() {
         return cpDescriptorCount;
@@ -228,7 +228,7 @@ public class SegmentHeader {
     /**
      * Gets the CP double count.
      *
-     * @return the CP double count.
+     * @return The CP double count.
      */
     public int getCpDoubleCount() {
         return cpDoubleCount;
@@ -237,7 +237,7 @@ public class SegmentHeader {
     /**
      * Gets the CP field count.
      *
-     * @return the CP field count.
+     * @return The CP field count.
      */
     public int getCpFieldCount() {
         return cpFieldCount;
@@ -246,7 +246,7 @@ public class SegmentHeader {
     /**
      * Gets the CP float count.
      *
-     * @return the CP float count.
+     * @return The CP float count.
      */
     public int getCpFloatCount() {
         return cpFloatCount;
@@ -255,7 +255,7 @@ public class SegmentHeader {
     /**
      * Gets the CP interface method count.
      *
-     * @return the CP interface method count.
+     * @return The CP interface method count.
      */
     public int getCpIMethodCount() {
         return cpIMethodCount;
@@ -264,7 +264,7 @@ public class SegmentHeader {
     /**
      * Gets the CP int count.
      *
-     * @return the CP int count.
+     * @return The CP int count.
      */
     public int getCpIntCount() {
         return cpIntCount;
@@ -273,7 +273,7 @@ public class SegmentHeader {
     /**
      * Gets the CP long count.
      *
-     * @return the CP long count.
+     * @return The CP long count.
      */
     public int getCpLongCount() {
         return cpLongCount;
@@ -282,7 +282,7 @@ public class SegmentHeader {
     /**
      * Gets the CP method count.
      *
-     * @return the CP method count.
+     * @return The CP method count.
      */
     public int getCpMethodCount() {
         return cpMethodCount;
@@ -291,7 +291,7 @@ public class SegmentHeader {
     /**
      * Gets the CP signature count.
      *
-     * @return the CP signature count.
+     * @return The CP signature count.
      */
     public int getCpSignatureCount() {
         return cpSignatureCount;
@@ -300,7 +300,7 @@ public class SegmentHeader {
     /**
      * Gets the CP string count.
      *
-     * @return the CP string count.
+     * @return The CP string count.
      */
     public int getCpStringCount() {
         return cpStringCount;
@@ -309,7 +309,7 @@ public class SegmentHeader {
     /**
      * Gets the CP UTF8 count.
      *
-     * @return the CP UTF8 count.
+     * @return The CP UTF8 count.
      */
     public int getCpUTF8Count() {
         return cpUTF8Count;
@@ -318,7 +318,7 @@ public class SegmentHeader {
     /**
      * Gets the default class major version.
      *
-     * @return the default class major version.
+     * @return The default class major version.
      */
     public int getDefaultClassMajorVersion() {
         return defaultClassMajorVersion;
@@ -327,7 +327,7 @@ public class SegmentHeader {
     /**
      * Gets the default class minor version.
      *
-     * @return the default class minor version.
+     * @return The default class minor version.
      */
     public int getDefaultClassMinorVersion() {
         return defaultClassMinorVersion;
@@ -336,7 +336,7 @@ public class SegmentHeader {
     /**
      * Gets the inner class count.
      *
-     * @return the inner class count.
+     * @return The inner class count.
      */
     public int getInnerClassCount() {
         return innerClassCount;
@@ -345,7 +345,7 @@ public class SegmentHeader {
     /**
      * Gets the number of files.
      *
-     * @return the number of files.
+     * @return The number of files.
      */
     public int getNumberOfFiles() {
         return numberOfFiles;
@@ -354,7 +354,7 @@ public class SegmentHeader {
     /**
      * Gets the segment options.
      *
-     * @return the segment options.
+     * @return The segment options.
      */
     public SegmentOptions getOptions() {
         return options;
@@ -363,7 +363,7 @@ public class SegmentHeader {
     /**
      * Gets the number of segments remaining.
      *
-     * @return the segments remaining.
+     * @return The segments remaining.
      */
     public int getSegmentsRemaining() {
         return segmentsRemaining;
@@ -413,7 +413,7 @@ public class SegmentHeader {
     /**
      * Reads the segment header from the input stream.
      *
-     * @param in the input stream.
+     * @param in The input stream.
      * @throws IOException if an I/O error occurs.
      * @throws Error if an error occurs.
      * @throws Pack200Exception if a Pack200 error occurs.
@@ -441,7 +441,7 @@ public class SegmentHeader {
     /**
      * Sets the major version of this archive.
      *
-     * @param version the minor version of the archive
+     * @param version The minor version of the archive
      * @throws Pack200Exception if the major version is not 150
      */
     private void setArchiveMajorVersion(final int version) throws Pack200Exception {
@@ -454,7 +454,7 @@ public class SegmentHeader {
     /**
      * Sets the minor version of this archive
      *
-     * @param version the minor version of the archive
+     * @param version The minor version of the archive
      * @throws Pack200Exception if the minor version is not 7
      */
     private void setArchiveMinorVersion(final int version) throws Pack200Exception {
@@ -467,7 +467,7 @@ public class SegmentHeader {
     /**
      * Sets the archive modification time.
      *
-     * @param archiveModtime the archive modification time.
+     * @param archiveModtime The archive modification time.
      */
     public void setArchiveModtime(final long archiveModtime) {
         this.archiveModtime = archiveModtime;
@@ -476,7 +476,7 @@ public class SegmentHeader {
     /**
      * Sets the archive size.
      *
-     * @param archiveSize the archive size.
+     * @param archiveSize The archive size.
      */
     public void setArchiveSize(final long archiveSize) {
         this.archiveSize = archiveSize;
@@ -485,7 +485,7 @@ public class SegmentHeader {
     /**
      * Sets the attribute definition count.
      *
-     * @param valuie the attribute definition count.
+     * @param valuie The attribute definition count.
      */
     private void setAttributeDefinitionCount(final long valuie) {
         this.attributeDefinitionCount = (int) valuie;
@@ -494,7 +494,7 @@ public class SegmentHeader {
     /**
      * Sets the band headers data.
      *
-     * @param bandHeaders the band headers data.
+     * @param bandHeaders The band headers data.
      */
     private void setBandHeadersData(final byte[] bandHeaders) {
         this.bandHeadersInputStream = new ByteArrayInputStream(bandHeaders);
@@ -503,7 +503,7 @@ public class SegmentHeader {
     /**
      * Sets the number of segments remaining.
      *
-     * @param value the number of segments remaining.
+     * @param value The number of segments remaining.
      */
     public void setSegmentsRemaining(final long value) {
         segmentsRemaining = (int) value;

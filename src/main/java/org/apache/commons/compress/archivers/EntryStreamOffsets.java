@@ -31,7 +31,7 @@ public interface EntryStreamOffsets {
     /**
      * Gets the offset of data stream within the archive file,
      *
-     * @return the offset of entry data stream, {@code OFFSET_UNKNOWN} if not known.
+     * @return The offset of entry data stream, {@code OFFSET_UNKNOWN} if not known.
      */
     long getDataOffset();
 

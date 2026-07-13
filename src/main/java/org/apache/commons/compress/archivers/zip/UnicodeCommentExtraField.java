@@ -46,7 +46,7 @@ public class UnicodeCommentExtraField extends AbstractUnicodeExtraField {
      * Constructs a new instance as Unicode comment extension from the comment given as text as well as the bytes actually written to the archive.
      *
      * @param comment The file comment.
-     * @param bytes   the bytes actually written to the archive.
+     * @param bytes   The bytes actually written to the archive.
      */
     public UnicodeCommentExtraField(final String comment, final byte[] bytes) {
         super(comment, bytes);
@@ -56,7 +56,7 @@ public class UnicodeCommentExtraField extends AbstractUnicodeExtraField {
      * Assemble as Unicode comment extension from the name given as text as well as the encoded bytes actually written to the archive.
      *
      * @param text  The file name.
-     * @param bytes the bytes actually written to the archive.
+     * @param bytes The bytes actually written to the archive.
      * @param off   The offset of the encoded comment in {@code bytes}.
      * @param len   The length of the encoded comment or comment in {@code bytes}.
      */

@@ -50,7 +50,7 @@ public class ZstdCompressorInputStream extends CompressorInputStream implements 
     /**
      * Constructs a new input stream that decompresses zstd-compressed data from the specific input stream.
      *
-     * @param in         the input stream of compressed data.
+     * @param in         The input stream of compressed data.
      * @throws IOException if an I/O error occurs.
      */
     public ZstdCompressorInputStream(final InputStream in) throws IOException {
@@ -60,8 +60,8 @@ public class ZstdCompressorInputStream extends CompressorInputStream implements 
     /**
      * Constructs a new input stream that decompresses zstd-compressed data from the specific input stream.
      *
-     * @param in         the input stream of compressed data.
-     * @param bufferPool a configuration of zstd-jni that allows users to customize how buffers are recycled. Either a {@link com.github.luben.zstd.NoPool} or a
+     * @param in         The input stream of compressed data.
+     * @param bufferPool A configuration of zstd-jni that allows users to customize how buffers are recycled. Either a {@link com.github.luben.zstd.NoPool} or a
      *                   {@link com.github.luben.zstd.RecyclingBufferPool} is allowed here.
      * @throws IOException if an I/O error occurs.
      */

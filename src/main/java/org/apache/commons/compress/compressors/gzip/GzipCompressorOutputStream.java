@@ -51,7 +51,7 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
     /**
      * Creates a gzip compressed output stream with the default parameters.
      *
-     * @param out the stream to compress to.
+     * @param out The stream to compress to.
      * @throws IOException if writing fails.
      */
     public GzipCompressorOutputStream(final OutputStream out) throws IOException {
@@ -61,8 +61,8 @@ public class GzipCompressorOutputStream extends CompressorOutputStream<OutputStr
     /**
      * Creates a gzip compressed output stream with the specified parameters.
      *
-     * @param out        the stream to compress to.
-     * @param parameters the parameters to use.
+     * @param out        The stream to compress to.
+     * @param parameters The parameters to use.
      * @throws IOException if writing fails.
      * @since 1.7
      */

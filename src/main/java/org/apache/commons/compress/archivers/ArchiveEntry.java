@@ -35,7 +35,7 @@ public interface ArchiveEntry {
     /**
      * Gets the last modified date of this entry.
      *
-     * @return the last modified date of this entry.
+     * @return The last modified date of this entry.
      * @since 1.1
      */
     Date getLastModifiedDate();
@@ -53,7 +53,7 @@ public interface ArchiveEntry {
     /**
      * Gets the uncompressed size of this entry. May be -1 (SIZE_UNKNOWN) if the size is unknown
      *
-     * @return the uncompressed size of this entry.
+     * @return The uncompressed size of this entry.
      */
     long getSize();
 
@@ -67,8 +67,8 @@ public interface ArchiveEntry {
     /**
      * Resolves this entry in the given parent Path.
      *
-     * @param parentPath the {@link Path#resolve(Path)} receiver.
-     * @return a resolved and normalized Path.
+     * @param parentPath The {@link Path#resolve(Path)} receiver.
+     * @return A resolved and normalized Path.
      * @throws IOException if this method detects a Zip slip.
      * @since 1.26.0
      */

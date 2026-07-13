@@ -52,8 +52,8 @@ final class TarArchiveSparseZeroInputStream extends InputStream {
     /**
      * Returns the input.
      *
-     * @param n a value to return.
-     * @return the input.
+     * @param n A value to return.
+     * @return The input.
      */
     @Override
     public long skip(final long n) {

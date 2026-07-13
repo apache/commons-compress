@@ -89,7 +89,7 @@ public class ClassFile {
     /**
      * Writes this class file to the specified output stream.
      *
-     * @param dos the data output stream.
+     * @param dos The data output stream.
      * @throws IOException if an I/O error occurs.
      */
     public void write(final DataOutputStream dos) throws IOException {

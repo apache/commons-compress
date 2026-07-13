@@ -60,7 +60,7 @@ public class SegmentConstantPoolArrayCache {
         /**
          * Constructs a new CachedArray.
          *
-         * @param array the array to cache.
+         * @param array The array to cache.
          */
         public CachedArray(final String[] array) {
             this.primaryArray = array;
@@ -157,9 +157,9 @@ public class SegmentConstantPoolArrayCache {
     /**
      * Gets the indexes for the given key in the given array.
      *
-     * @param array the array.
-     * @param key the key.
-     * @return the list of indexes.
+     * @param array The array.
+     * @param key The key.
+     * @return The list of indexes.
      */
     public List<Integer> indexesForArrayKey(final String[] array, final String key) {
         if (!arrayIsCached(array)) {

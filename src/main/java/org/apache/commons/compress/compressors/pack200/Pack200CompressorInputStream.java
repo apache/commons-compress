@@ -48,8 +48,8 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
     /**
      * Checks if the signature matches what is expected for a pack200 file (0xCAFED00D).
      *
-     * @param signature the bytes to check.
-     * @param length    the number of bytes to check.
+     * @param signature The bytes to check.
+     * @param length    The number of bytes to check.
      * @return true, if this stream is a pack200 compressed stream, false otherwise.
      */
     public static boolean matches(final byte[] signature, final int length) {
@@ -73,7 +73,7 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
     /**
      * Decompresses the given file, caching the decompressed data in memory.
      *
-     * @param file the file to decompress.
+     * @param file The file to decompress.
      * @throws IOException if reading fails.
      */
     public Pack200CompressorInputStream(final File file) throws IOException {
@@ -83,7 +83,7 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
     /**
      * Decompresses the given file, caching the decompressed data in memory and using the given properties.
      *
-     * @param file       the file to decompress.
+     * @param file       The file to decompress.
      * @param properties Pack200 properties to use.
      * @throws IOException if reading fails.
      */
@@ -94,8 +94,8 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
     /**
      * Decompresses the given file using the given strategy to cache the results.
      *
-     * @param file the file to decompress.
-     * @param mode the strategy to use.
+     * @param file The file to decompress.
+     * @param mode The strategy to use.
      * @throws IOException if reading fails.
      */
     public Pack200CompressorInputStream(final File file, final Pack200Strategy mode) throws IOException {
@@ -105,8 +105,8 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
     /**
      * Decompresses the given file using the given strategy to cache the results and the given properties.
      *
-     * @param file       the file to decompress.
-     * @param mode       the strategy to use.
+     * @param file       The file to decompress.
+     * @param mode       The strategy to use.
      * @param properties Pack200 properties to use.
      * @throws IOException if reading fails.
      */
@@ -121,7 +121,7 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
      * When reading from a file the File-arg constructor may provide better performance.
      * </p>
      *
-     * @param inputStream the InputStream from which this object should be created.
+     * @param inputStream The InputStream from which this object should be created.
      * @throws IOException if reading fails.
      */
     public Pack200CompressorInputStream(final InputStream inputStream) throws IOException {
@@ -152,7 +152,7 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
      * When reading from a file the File-arg constructor may provide better performance.
      * </p>
      *
-     * @param inputStream the InputStream from which this object should be created.
+     * @param inputStream The InputStream from which this object should be created.
      * @param properties  Pack200 properties to use.
      * @throws IOException if reading fails.
      */
@@ -167,8 +167,8 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
      * When reading from a file the File-arg constructor may provide better performance.
      * </p>
      *
-     * @param inputStream the InputStream from which this object should be created.
-     * @param mode        the strategy to use.
+     * @param inputStream The InputStream from which this object should be created.
+     * @param mode        The strategy to use.
      * @throws IOException if reading fails.
      */
     public Pack200CompressorInputStream(final InputStream inputStream, final Pack200Strategy mode) throws IOException {
@@ -182,8 +182,8 @@ public class Pack200CompressorInputStream extends CompressorInputStream {
      * When reading from a file the File-arg constructor may provide better performance.
      * </p>
      *
-     * @param inputStream the InputStream from which this object should be created.
-     * @param mode        the strategy to use.
+     * @param inputStream The InputStream from which this object should be created.
+     * @param mode        The strategy to use.
      * @param properties  Pack200 properties to use.
      * @throws IOException if reading fails.
      */

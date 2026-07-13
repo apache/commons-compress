@@ -35,7 +35,7 @@ public class CloseShieldFilterInputStream extends FilterInputStream {
     /**
      * Creates a {@code CloseShieldFilterInputStream} by assigning the argument {@code in} to the field {@code this.in} to remember it for later use.
      *
-     * @param in the underlying input stream, or {@code null} if this instance is to be created without an underlying stream.
+     * @param in The underlying input stream, or {@code null} if this instance is to be created without an underlying stream.
      */
     public CloseShieldFilterInputStream(final InputStream in) {
         super(in);

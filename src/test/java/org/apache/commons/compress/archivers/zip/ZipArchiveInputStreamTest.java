@@ -129,7 +129,7 @@ class ZipArchiveInputStreamTest extends AbstractTest {
     /**
      * Forge a ZIP archive in memory, using STORED and Data Descriptor, and without signature of Data Descriptor.
      *
-     * @return the input stream of the generated zip
+     * @return The input stream of the generated zip
      * @throws IOException there are problems
      */
     private InputStream forgeZipInputStream() throws IOException {

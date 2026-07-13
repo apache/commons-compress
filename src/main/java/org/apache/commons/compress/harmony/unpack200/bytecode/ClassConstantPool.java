@@ -69,8 +69,8 @@ public class ClassConstantPool {
     /**
      * Adds a class file entry to the constant pool.
      *
-     * @param entry the entry to add.
-     * @return the added entry, or null if it's a ByteCode.
+     * @param entry The entry to add.
+     * @return The added entry, or null if it's a ByteCode.
      */
     public ClassFileEntry add(final ClassFileEntry entry) {
         if (entry instanceof ByteCode) {
@@ -141,8 +141,8 @@ public class ClassConstantPool {
     /**
      * Adds an entry along with all its nested entries recursively.
      *
-     * @param entry the entry to add.
-     * @return the added entry.
+     * @param entry The entry to add.
+     * @return The added entry.
      */
     public ClassFileEntry addWithNestedEntries(final ClassFileEntry entry) {
         add(entry);
@@ -155,7 +155,7 @@ public class ClassConstantPool {
     /**
      * Gets an unmodifiable list of all entries.
      *
-     * @return the list of entries.
+     * @return The list of entries.
      */
     public List<ClassFileEntry> entries() {
         return Collections.unmodifiableList(entries);
@@ -164,8 +164,8 @@ public class ClassConstantPool {
     /**
      * Gets the entry at the specified index (1-based).
      *
-     * @param i the index (1-based).
-     * @return the entry at the index.
+     * @param i The index (1-based).
+     * @return The entry at the index.
      * @throws IllegalStateException if pool is not resolved.
      */
     public ClassFileEntry get(int i) {
@@ -178,15 +178,15 @@ public class ClassConstantPool {
     /**
      * Gets the index of the given entry in the constant pool (1-based).
      *
-     * @param entry the entry to find.
-     * @return the 1-based index, or -1 if not found.
+     * @param entry The entry to find.
+     * @return The 1-based index, or -1 if not found.
      * @throws IllegalStateException if pool is not resolved.
      */
     public int indexOf(final ClassFileEntry entry) {
         if (!resolved) {
             throw new IllegalStateException("Constant pool is not yet resolved; this does not make any sense");
         }
-        if (null == indexCache) {
+        if (indexCache == null) {
             throw new IllegalStateException("Index cache is not initialized.");
         }
         final Integer entryIndex = indexCache.get(entry);
@@ -224,7 +224,7 @@ public class ClassConstantPool {
     /**
      * Resolves all entries in the constant pool.
      *
-     * @param segment the segment.
+     * @param segment The segment.
      */
     public void resolve(final Segment segment) {
         initialSort();
@@ -239,7 +239,7 @@ public class ClassConstantPool {
     /**
      * Gets the number of entries in the constant pool.
      *
-     * @return the size of the pool.
+     * @return The size of the pool.
      */
     public int size() {
         return entries.size();

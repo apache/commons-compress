@@ -152,7 +152,7 @@ public class Archive {
     /**
      * Creates an Archive with the given input file and a stream for the output.
      *
-     * @param jarFile      the input file.
+     * @param jarFile      The input file.
      * @param outputStream target output stream for the compressed data.
      * @param options      packing options (if null then defaults are used).
      * @throws IOException If an I/O error occurs.

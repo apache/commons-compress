@@ -39,7 +39,7 @@ public class CPUTF8 extends ConstantPoolEntry {
     /**
      * Constructs a new instance.
      *
-     * @param string a constant pool string.
+     * @param string A constant pool string.
      */
     public CPUTF8(final String string) {
         this(string, -1);
@@ -48,7 +48,7 @@ public class CPUTF8 extends ConstantPoolEntry {
     /**
      * Creates a new instance
      *
-     * @param string      a constant pool string.
+     * @param string      A constant pool string.
      * @param globalIndex index in CpBands
      * @throws NullPointerException if utf8 is null.
      */
@@ -86,7 +86,7 @@ public class CPUTF8 extends ConstantPoolEntry {
     /**
      * Sets the global index.
      *
-     * @param index the global index.
+     * @param index The global index.
      */
     public void setGlobalIndex(final int index) {
         globalIndex = index;
@@ -100,7 +100,7 @@ public class CPUTF8 extends ConstantPoolEntry {
     /**
      * Gets the underlying string.
      *
-     * @return the underlying string.
+     * @return The underlying string.
      */
     public String underlyingString() {
         return utf8;

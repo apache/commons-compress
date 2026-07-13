@@ -174,7 +174,7 @@ public class SnappyCompressorInputStream extends AbstractLZ77CompressorInputStre
     /**
      * Gets the uncompressed size of the stream.
      *
-     * @return the uncompressed size.
+     * @return The uncompressed size.
      * @deprecated Use {@link #getUncompressedSize()}
      */
     @Deprecated
@@ -186,7 +186,7 @@ public class SnappyCompressorInputStream extends AbstractLZ77CompressorInputStre
     /**
      * Gets the uncompressed size of the stream.
      *
-     * @return the uncompressed size.
+     * @return The uncompressed size.
      * @since 1.29.0
      */
     public long getUncompressedSize() {

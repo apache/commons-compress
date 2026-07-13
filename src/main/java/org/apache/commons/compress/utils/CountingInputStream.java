@@ -36,7 +36,7 @@ public class CountingInputStream extends FilterInputStream {
     /**
      * Creates a {@code CountingInputStream} by assigning the argument {@code in} to the field {@code this.in} to remember it for later use.
      *
-     * @param in the underlying input stream, or {@code null} if this instance is to be created without an underlying stream.
+     * @param in The underlying input stream, or {@code null} if this instance is to be created without an underlying stream.
      */
     public CountingInputStream(final InputStream in) {
         super(in);
@@ -45,7 +45,7 @@ public class CountingInputStream extends FilterInputStream {
     /**
      * Increments the counter of already read bytes. Doesn't increment if the EOF has been hit (read == -1)
      *
-     * @param read the number of bytes read.
+     * @param read The number of bytes read.
      */
     protected final void count(final long read) {
         if (read != -1) {
@@ -56,7 +56,7 @@ public class CountingInputStream extends FilterInputStream {
     /**
      * Returns the current number of bytes read from this stream.
      *
-     * @return the number of read bytes.
+     * @return The number of read bytes.
      */
     public long getBytesRead() {
         return bytesRead;

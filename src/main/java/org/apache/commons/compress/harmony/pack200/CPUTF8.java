@@ -30,7 +30,7 @@ public class CPUTF8 extends ConstantPoolEntry implements Comparable {
     /**
      * Constructs a new CPUTF8.
      *
-     * @param string the UTF-8 string.
+     * @param string The UTF-8 string.
      */
     public CPUTF8(final String string) {
         this.string = string;
@@ -55,7 +55,7 @@ public class CPUTF8 extends ConstantPoolEntry implements Comparable {
     /**
      * Gets the underlying string.
      *
-     * @return the underlying string.
+     * @return The underlying string.
      */
     public String getUnderlyingString() {
         return string;

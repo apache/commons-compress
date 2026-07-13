@@ -59,7 +59,7 @@ public class CPString extends CPConstant<CPString> {
     /**
      * Gets the index in the CP UTF8 pool.
      *
-     * @return the index.
+     * @return The index.
      */
     public int getIndexInCpUtf8() {
         return value.getIndex();

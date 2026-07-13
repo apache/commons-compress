@@ -49,7 +49,7 @@ public class ChecksumCalculatingInputStream extends CheckedInputStream {
     /**
      * Returns the calculated checksum.
      *
-     * @return the calculated checksum.
+     * @return The calculated checksum.
      * @deprecated Use {@link CheckedInputStream#getChecksum()} and {@link Checksum#getValue()}.
      */
     @Deprecated

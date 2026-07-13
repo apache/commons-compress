@@ -56,7 +56,7 @@ public abstract class AbstractTest extends AbstractTempDirTest {
     /**
      * Deletes a file or directory. For a directory, delete it and all subdirectories.
      *
-     * @param file a file or directory.
+     * @param file A file or directory.
      * @return whether deletion was successful
      */
     public static boolean forceDelete(final File file) {
@@ -75,7 +75,7 @@ public abstract class AbstractTest extends AbstractTempDirTest {
     /**
      * Deletes a file or directory. For a directory, delete it and all subdirectories.
      *
-     * @param path a file or directory
+     * @param path A file or directory
      * @return whether deletion was successful
      */
     public static boolean forceDelete(final Path path) {
@@ -153,7 +153,7 @@ public abstract class AbstractTest extends AbstractTempDirTest {
      * @param inputStream
      * @param expected    list of expected entries or {@code null} if no check of names desired
      * @param cleanUp     Cleans up resources if true
-     * @return the created result file if cleanUp = false, or null otherwise
+     * @return The created result file if cleanUp = false, or null otherwise
      * @throws Exception
      */
     protected File checkArchiveContent(final ArchiveInputStream<?> inputStream, final List<String> expected, final boolean cleanUp) throws Exception {
@@ -199,8 +199,8 @@ public abstract class AbstractTest extends AbstractTempDirTest {
     /**
      * Checks if an archive contains all expected files.
      *
-     * @param archive  the archive to check
-     * @param expected a list with expected string file names
+     * @param archive  The archive to check
+     * @param expected A list with expected string file names
      * @throws Exception
      */
     protected void checkArchiveContent(final File archive, final List<String> expected) throws Exception {
@@ -210,8 +210,8 @@ public abstract class AbstractTest extends AbstractTempDirTest {
     /**
      * Checks if an archive contains all expected files.
      *
-     * @param archive  the archive to check
-     * @param expected a list with expected string file names
+     * @param archive  The archive to check
+     * @param expected A list with expected string file names
      * @throws Exception
      */
     protected void checkArchiveContent(final Path archive, final List<String> expected) throws Exception {
@@ -252,8 +252,8 @@ public abstract class AbstractTest extends AbstractTempDirTest {
      * <li>test with spaces.txt</li>
      * </ul>
      *
-     * @param archiveName the identifier of this archive
-     * @return the newly created file
+     * @param archiveName The identifier of this archive
+     * @return The newly created file
      * @throws Exception in case something goes wrong
      */
     protected Path createArchive(final String archiveName) throws Exception {
@@ -288,7 +288,7 @@ public abstract class AbstractTest extends AbstractTempDirTest {
      * Create an empty archive.
      *
      * @param archiveName
-     * @return the archive File
+     * @return The archive File
      * @throws Exception
      */
     protected Path createEmptyArchive(final String archiveName) throws Exception {
@@ -305,7 +305,7 @@ public abstract class AbstractTest extends AbstractTempDirTest {
      * Create an archive with a single file "test1.xml".
      *
      * @param archiveName
-     * @return the archive File
+     * @return The archive File
      * @throws Exception
      */
     protected Path createSingleEntryArchive(final String archiveName) throws Exception {
@@ -328,7 +328,7 @@ public abstract class AbstractTest extends AbstractTempDirTest {
      * Override this method to change what is to be compared in the List. For example, size + name instead of just name.
      *
      * @param entry
-     * @return the entry name
+     * @return The entry name
      */
     protected String getExpectedString(final ArchiveEntry entry) {
         return entry.getName();

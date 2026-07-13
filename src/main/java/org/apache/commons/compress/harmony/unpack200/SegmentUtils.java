@@ -28,8 +28,8 @@ public final class SegmentUtils {
     /**
      * Counts the number of arguments in the descriptor.
      *
-     * @param descriptor the descriptor string.
-     * @return the number of arguments.
+     * @param descriptor The descriptor string.
+     * @return The number of arguments.
      */
     public static int countArgs(final String descriptor) {
         return countArgs(descriptor, 1);
@@ -80,8 +80,8 @@ public final class SegmentUtils {
     /**
      * Counts the number of bit 16 flags set.
      *
-     * @param flags the flags array.
-     * @return the count.
+     * @param flags The flags array.
+     * @return The count.
      */
     public static int countBit16(final int[] flags) {
         int count = 0;
@@ -96,8 +96,8 @@ public final class SegmentUtils {
     /**
      * Counts the number of bit 16 flags set.
      *
-     * @param flags the flags array.
-     * @return the count.
+     * @param flags The flags array.
+     * @return The count.
      */
     public static int countBit16(final long[] flags) {
         int count = 0;
@@ -112,8 +112,8 @@ public final class SegmentUtils {
     /**
      * Counts the number of bit 16 flags set.
      *
-     * @param flags the flags array.
-     * @return the count.
+     * @param flags The flags array.
+     * @return The count.
      */
     public static int countBit16(final long[][] flags) {
         int count = 0;
@@ -130,8 +130,8 @@ public final class SegmentUtils {
     /**
      * Counts the number of invoke interface arguments.
      *
-     * @param descriptor the descriptor string.
-     * @return the number of arguments.
+     * @param descriptor The descriptor string.
+     * @return The number of arguments.
      */
     public static int countInvokeInterfaceArgs(final String descriptor) {
         return countArgs(descriptor, 2);
@@ -140,9 +140,9 @@ public final class SegmentUtils {
     /**
      * Counts the number of matches.
      *
-     * @param flags the flags array.
-     * @param matcher the matcher.
-     * @return the count.
+     * @param flags The flags array.
+     * @param matcher The matcher.
+     * @return The count.
      */
     public static int countMatches(final long[] flags, final IMatcher matcher) {
         int count = 0;
@@ -157,9 +157,9 @@ public final class SegmentUtils {
     /**
      * Counts the number of matches.
      *
-     * @param flags the flags array.
-     * @param matcher the matcher.
-     * @return the count.
+     * @param flags The flags array.
+     * @param matcher The matcher.
+     * @return The count.
      */
     public static int countMatches(final long[][] flags, final IMatcher matcher) {
         int count = 0;

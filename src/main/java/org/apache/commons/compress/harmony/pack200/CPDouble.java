@@ -55,7 +55,7 @@ public class CPDouble extends CPConstant<CPDouble> {
     /**
      * Gets the double value.
      *
-     * @return the double value.
+     * @return The double value.
      */
     public double getDouble() {
         return value;

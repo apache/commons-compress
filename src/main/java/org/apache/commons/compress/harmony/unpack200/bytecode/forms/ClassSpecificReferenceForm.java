@@ -44,8 +44,8 @@ public abstract class ClassSpecificReferenceForm extends ReferenceForm {
     /**
      * Gets the context from the operand manager.
      *
-     * @param operandManager the operand manager.
-     * @return the context string.
+     * @param operandManager The operand manager.
+     * @return The context string.
      */
     protected abstract String context(OperandManager operandManager);
 

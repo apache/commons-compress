@@ -39,9 +39,9 @@ public class Pack200Exception extends CompressException {
     /**
      * Delegates to {@link Math#addExact(int, int)} wrapping its {@link ArithmeticException} in our {@link ArchiveException}.
      *
-     * @param x the first value.
-     * @param y the second value.
-     * @return the result.
+     * @param x The first value.
+     * @param y The second value.
+     * @return The result.
      * @throws Pack200Exception if the result or input overflows an {@code int}.
      * @see Math#addExact(int, int)
      * @since 1.29.0
@@ -108,7 +108,7 @@ public class Pack200Exception extends CompressException {
      * @param <T>     The object type.
      * @param obj     The object to test.
      * @param message The message format (which is saved for later retrieval by the {@link #getMessage()} method).
-     * @param args    the format arguments to use.
+     * @param args    The format arguments to use.
      * @return The given object.
      * @throws Pack200Exception Thrown if {@code obj} is null.
      * @since 1.29.0
@@ -136,7 +136,7 @@ public class Pack200Exception extends CompressException {
      * </p>
      *
      * @param message The message format (which is saved for later retrieval by the {@link #getMessage()} method).
-     * @param args    the format arguments to use.
+     * @param args    The format arguments to use.
      * @since 1.29.0
      * @see String#format(String, Object...)
      */

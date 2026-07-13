@@ -43,7 +43,7 @@ public abstract class ClassFileEntry {
     /**
      * Writes this instance to the output stream.
      *
-     * @param dos the output stream.
+     * @param dos The output stream.
      * @throws IOException if an I/O error occurs.
      */
     protected abstract void doWrite(DataOutputStream dos) throws IOException;
@@ -54,7 +54,7 @@ public abstract class ClassFileEntry {
     /**
      * Returns an empty array.
      *
-     * @return an empty array.
+     * @return An empty array.
      */
     protected ClassFileEntry[] getNestedClassFileEntries() {
         return NONE;
@@ -87,7 +87,7 @@ public abstract class ClassFileEntry {
     /**
      * Writes this instance to the output stream.
      *
-     * @param dos the output stream.
+     * @param dos The output stream.
      * @throws IOException if an I/O error occurs.
      */
     public final void write(final DataOutputStream dos) throws IOException {

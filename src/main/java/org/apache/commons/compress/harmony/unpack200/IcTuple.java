@@ -95,10 +95,10 @@ public class IcTuple {
      * @param F       flags.
      * @param C2      outer class name.
      * @param N       simple class name.
-     * @param cIndex  the index of C in cpClass.
-     * @param c2Index the index of C2 in cpClass, or -1 if C2 is null.
-     * @param nIndex  the index of N in cpUTF8, or -1 if N is null.
-     * @param tIndex  the tuple index.
+     * @param cIndex  The index of C in cpClass.
+     * @param c2Index The index of C2 in cpClass, or -1 if C2 is null.
+     * @param nIndex  The index of N in cpUTF8, or -1 if N is null.
+     * @param tIndex  The tuple index.
      */
     public IcTuple(final String C, final int F, final String C2, final String N, final int cIndex, final int c2Index, final int nIndex, final int tIndex) {
         this.C = C;
@@ -109,10 +109,10 @@ public class IcTuple {
         this.c2Index = c2Index;
         this.nIndex = nIndex;
         this.tIndex = tIndex;
-        if (null == N) {
+        if (N == null) {
             predictSimple = true;
         }
-        if (null == C2) {
+        if (C2 == null) {
             predictOuter = true;
         }
         initializeClassStrings();
@@ -159,7 +159,7 @@ public class IcTuple {
     /**
      * Gets the this class name (C).
      *
-     * @return the this class name.
+     * @return The this class name.
      */
     public String getC() {
         return C;
@@ -168,7 +168,7 @@ public class IcTuple {
     /**
      * Gets the outer class name (C2).
      *
-     * @return the outer class name.
+     * @return The outer class name.
      */
     public String getC2() {
         return C2;
@@ -177,7 +177,7 @@ public class IcTuple {
     /**
      * Gets the flags (F).
      *
-     * @return the flags.
+     * @return The flags.
      */
     public int getF() {
         return F;
@@ -186,7 +186,7 @@ public class IcTuple {
     /**
      * Gets the simple class name (N).
      *
-     * @return the simple class name.
+     * @return The simple class name.
      */
     public String getN() {
         return N;
@@ -195,7 +195,7 @@ public class IcTuple {
     /**
      * Gets the tuple index.
      *
-     * @return the tuple index.
+     * @return The tuple index.
      */
     public int getTupleIndex() {
         return tIndex;
@@ -280,7 +280,7 @@ public class IcTuple {
     /**
      * Break the receiver into components at $ boundaries.
      *
-     * @param className the class name to break.
+     * @param className The class name to break.
      * @return array of class name components.
      */
     public String[] innerBreakAtDollar(final String className) {
@@ -303,7 +303,7 @@ public class IcTuple {
 
     private boolean isAllDigits(final String nameString) {
         // Answer true if the receiver is all digits; otherwise answer false.
-        if (null == nameString) {
+        if (nameString == null) {
             return false;
         }
         for (int index = 0; index < nameString.length(); index++) {
@@ -344,13 +344,13 @@ public class IcTuple {
     /**
      * Tests whether the two strings are equal, treating null values as equal to each other.
      *
-     * @param stringOne the first string.
-     * @param stringTwo the second string.
+     * @param stringOne The first string.
+     * @param stringTwo The second string.
      * @return true if the strings are equal or both null.
      */
     public boolean nullSafeEquals(final String stringOne, final String stringTwo) {
-        if (null == stringOne) {
-            return null == stringTwo;
+        if (stringOne == null) {
+            return stringTwo == null;
         }
         return stringOne.equals(stringTwo);
     }
@@ -358,7 +358,7 @@ public class IcTuple {
     /**
      * Gets the outer class index.
      *
-     * @return the outer class index.
+     * @return The outer class index.
      */
     public int outerClassIndex() {
         return cachedOuterClassIndex;
@@ -403,7 +403,7 @@ public class IcTuple {
     /**
      * Gets the simple class name index.
      *
-     * @return the simple class name index.
+     * @return The simple class name index.
      */
     public int simpleClassNameIndex() {
         return cachedSimpleClassNameIndex;
@@ -412,7 +412,7 @@ public class IcTuple {
     /**
      * Gets the this class index.
      *
-     * @return the this class index, or -1 if not predicted.
+     * @return The this class index, or -1 if not predicted.
      */
     public int thisClassIndex() {
         if (predicted()) {

@@ -2391,7 +2391,7 @@ Changes
 
 * ZipFile now implements finalize which closes the underlying
         file. 
-* COMPRESS-117:  Certain tar files not recognised by
+* COMPRESS-117:  Certain tar files not recognized by
         ArchiveStreamFactory. 
 
 -----------------------------------------------------------------------------
@@ -2441,7 +2441,7 @@ Fixed Bugs
 * COMPRESS-72:  Move acknowledgements from NOTICE to README 
 * COMPRESS-113:  TarArchiveEntry.parseTarHeader() includes the trailing space/NUL when parsing the octal size 
 * COMPRESS-118:  TarUtils.parseName does not properly handle characters outside the range 0-127 
-* COMPRESS-107:  ArchiveStreamFactory does not recognise tar files created by Ant 
+* COMPRESS-107:  ArchiveStreamFactory does not recognize tar files created by Ant 
 * COMPRESS-110:  Support "ustar" prefix field, which is used when file paths are longer
        than 100 characters. 
 * COMPRESS-100:  ZipArchiveInputStream will throw an exception if it detects an

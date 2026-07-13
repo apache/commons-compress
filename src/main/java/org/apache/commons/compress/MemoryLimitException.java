@@ -166,7 +166,7 @@ public class MemoryLimitException extends CompressException {
     /**
      * Gets the memory limit in kibibytes (KiB).
      *
-     * @return the memory limit in kibibytes (KiB).
+     * @return The memory limit in kibibytes (KiB).
      */
     public int getMemoryLimitInKb() {
         return Math.toIntExact(memoryLimitKiB);
@@ -175,7 +175,7 @@ public class MemoryLimitException extends CompressException {
     /**
      * Gets the memory limit in kibibytes (KiB).
      *
-     * @return the memory limit in kibibytes (KiB).
+     * @return The memory limit in kibibytes (KiB).
      */
     public long getMemoryLimitInKiBLong() {
         return memoryLimitKiB;
@@ -184,7 +184,7 @@ public class MemoryLimitException extends CompressException {
     /**
      * Gets the memory needed in kibibytes (KiB).
      *
-     * @return the memory needed in kibibytes (KiB).
+     * @return The memory needed in kibibytes (KiB).
      */
     public long getMemoryNeededInKb() {
         return memoryRequestKiB;

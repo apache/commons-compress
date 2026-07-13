@@ -379,7 +379,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
     /**
      * Constructs an instance using the specified encoding.
      *
-     * @param entryEncoding the encoding to be used.
+     * @param entryEncoding The encoding to be used.
      * @since 1.10
      */
     public ArchiveStreamFactory(final String entryEncoding) {
@@ -391,8 +391,8 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
      * marks, like BufferedInputStream.
      *
      * @param <I> The {@link ArchiveInputStream} type.
-     * @param in  the input stream.
-     * @return the archive input stream.
+     * @param in  The input stream.
+     * @return The archive input stream.
      * @throws ArchiveException               if the archiver name is not known.
      * @throws StreamingNotSupportedException if the format cannot be read from a stream.
      * @throws IllegalArgumentException       if the stream is null or does not support mark.
@@ -405,10 +405,10 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
      * Creates an archive input stream from an archiver name and an input stream.
      *
      * @param <I>          The {@link ArchiveInputStream} type.
-     * @param archiverName the archive name, i.e. {@value #AR}, {@value #ARJ}, {@value #ZIP}, {@value #TAR}, {@value #JAR}, {@value #CPIO}, {@value #DUMP} or
+     * @param archiverName The archive name, i.e. {@value #AR}, {@value #ARJ}, {@value #ZIP}, {@value #TAR}, {@value #JAR}, {@value #CPIO}, {@value #DUMP} or
      *                     {@value #SEVEN_Z}.
-     * @param in           the input stream.
-     * @return the archive input stream.
+     * @param in           The input stream.
+     * @return The archive input stream.
      * @throws ArchiveException               if the archiver name is not known.
      * @throws StreamingNotSupportedException if the format cannot be read from a stream.
      * @throws IllegalArgumentException       if the archiver name or stream is null.
@@ -495,9 +495,9 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
      * Creates an archive output stream from an archiver name and an output stream.
      *
      * @param <O>          The {@link ArchiveOutputStream} type.
-     * @param archiverName the archive name, i.e. {@value #AR}, {@value #ZIP}, {@value #TAR}, {@value #JAR} or {@value #CPIO}.
-     * @param out          the output stream.
-     * @return the archive output stream.
+     * @param archiverName The archive name, i.e. {@value #AR}, {@value #ZIP}, {@value #TAR}, {@value #JAR} or {@value #CPIO}.
+     * @param out          The output stream.
+     * @return The archive output stream.
      * @throws ArchiveException               if the archiver name is not known.
      * @throws StreamingNotSupportedException if the format cannot be written to a stream.
      * @throws IllegalArgumentException       if the archiver name or stream is null.
@@ -558,7 +558,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
     /**
      * Gets an unmodifiable sorted map from input stream provider names to provider objects.
      *
-     * @return an unmodifiable sorted map of from input stream provider names to provider objects.
+     * @return An unmodifiable sorted map of from input stream provider names to provider objects.
      * @see #findAvailableArchiveInputStreamProviders()
      */
     public SortedMap<String, ArchiveStreamProvider> getArchiveInputStreamProviders() {
@@ -571,7 +571,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
     /**
      * Gets an unmodifiable sorted map from output stream provider names to provider objects.
      *
-     * @return an unmodifiable sorted map of from input stream provider names to provider objects.
+     * @return An unmodifiable sorted map of from input stream provider names to provider objects.
      * @see #findAvailableArchiveInputStreamProviders()
      */
     public SortedMap<String, ArchiveStreamProvider> getArchiveOutputStreamProviders() {
@@ -604,7 +604,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
     /**
      * Sets the encoding to use for arj, jar, ZIP, dump, cpio and tar files. Use null for the archiver default.
      *
-     * @param entryEncoding the entry encoding, null uses the archiver default.
+     * @param entryEncoding The entry encoding, null uses the archiver default.
      * @since 1.5
      * @deprecated 1.10 use {@link #ArchiveStreamFactory(String)} to specify the encoding.
      */

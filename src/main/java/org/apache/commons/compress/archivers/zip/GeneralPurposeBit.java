@@ -115,7 +115,7 @@ public final class GeneralPurposeBit implements Cloneable {
     /**
      * Encodes the set bits in a form suitable for ZIP archives.
      *
-     * @return the encoded general purpose bits.
+     * @return The encoded general purpose bits.
      */
     public byte[] encode() {
         final byte[] result = new byte[2];
@@ -126,7 +126,7 @@ public final class GeneralPurposeBit implements Cloneable {
     /**
      * Encodes the set bits in a form suitable for ZIP archives.
      *
-     * @param buf    the output buffer.
+     * @param buf    The output buffer.
      * @param offset The offset within the output buffer of the first byte to be written. must be non-negative and no larger than {@code buf.length-2}.
      */
     public void encode(final byte[] buf, final int offset) {

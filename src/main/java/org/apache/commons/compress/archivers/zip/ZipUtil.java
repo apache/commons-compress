@@ -105,8 +105,8 @@ public abstract class ZipUtil {
     /**
      * Assumes a negative integer really is a positive integer that has wrapped around and re-creates the original value.
      *
-     * @param i the value to treat as unsigned int.
-     * @return the unsigned int as a long.
+     * @param i The value to treat as unsigned int.
+     * @return The unsigned int as a long.
      */
     public static long adjustToLong(final int i) {
         if (i < 0) {
@@ -182,7 +182,7 @@ public abstract class ZipUtil {
      * Converts a DOS date/time field to a Date object.
      *
      * @param zipDosTime contains the stored DOS time.
-     * @return a Date instance corresponding to the given time.
+     * @return A Date instance corresponding to the given time.
      */
     public static Date fromDosTime(final ZipLong zipDosTime) {
         final long dosTime = zipDosTime.getValue();
@@ -266,9 +266,9 @@ public abstract class ZipUtil {
     /**
      * Constructs a new ZipException.
      *
-     * @param message the detail message.
+     * @param message The detail message.
      * @param cause   throwable The cause of this Throwable.
-     * @return a new ZipException.
+     * @return A new ZipException.
      */
     static ZipException newZipException(final String message, final Throwable cause) {
         return (ZipException) new ZipException(message).initCause(cause);
@@ -278,7 +278,7 @@ public abstract class ZipUtil {
      * Reverses a byte[] array. Reverses in-place (thus provided array is mutated), but also returns same for convenience.
      *
      * @param array to reverse (mutated in-place, but also returned for convenience).
-     * @return the reversed array (mutated in-place, but also returned for convenience).
+     * @return The reversed array (mutated in-place, but also returned for convenience).
      * @since 1.5
      */
     public static byte[] reverse(final byte[] array) {
@@ -354,8 +354,8 @@ public abstract class ZipUtil {
     /**
      * Converts a Date object to a DOS date/time field.
      *
-     * @param time the {@code Date} to convert.
-     * @return the date as a {@code ZipLong}.
+     * @param time The {@code Date} to convert.
+     * @return The date as a {@code ZipLong}.
      */
     public static ZipLong toDosTime(final Date time) {
         return new ZipLong(toDosTime(time.getTime()));
@@ -369,7 +369,7 @@ public abstract class ZipUtil {
      * </p>
      *
      * @param t number of milliseconds since the epoch.
-     * @return the date as a byte array.
+     * @return The date as a byte array.
      */
     public static byte[] toDosTime(final long t) {
         final byte[] result = new byte[4];
@@ -385,7 +385,7 @@ public abstract class ZipUtil {
      * </p>
      *
      * @param t      number of milliseconds since the epoch.
-     * @param buf    the output buffer.
+     * @param buf    The output buffer.
      * @param offset The offset within the output buffer of the first byte to be written. must be non-negative and no larger than {@code buf.length-4}.
      */
     public static void toDosTime(final long t, final byte[] buf, final int offset) {

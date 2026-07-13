@@ -35,7 +35,7 @@ public class Pack200ClassReader extends ClassReader {
     /**
      * Constructs a new Pack200ClassReader.
      *
-     * @param b the contents of class file in the format of bytes.
+     * @param b The contents of class file in the format of bytes.
      */
     public Pack200ClassReader(final byte[] b) {
         super(b);
@@ -44,7 +44,7 @@ public class Pack200ClassReader extends ClassReader {
     /**
      * Gets the file name.
      *
-     * @return the file name.
+     * @return The file name.
      */
     public String getFileName() {
         return fileName;
@@ -99,7 +99,7 @@ public class Pack200ClassReader extends ClassReader {
     /**
      * Sets the file name.
      *
-     * @param name the file name.
+     * @param name The file name.
      */
     public void setFileName(final String name) {
         this.fileName = name;

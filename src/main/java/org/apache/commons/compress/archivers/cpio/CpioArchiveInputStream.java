@@ -311,7 +311,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
     /**
      * Reads the next CPIO file entry and positions stream at the beginning of the entry data.
      *
-     * @return the CpioArchiveEntry just read.
+     * @return The CpioArchiveEntry just read.
      * @throws IOException if an I/O error has occurred or if a CPIO file error has occurred.
      * @deprecated Use {@link #getNextEntry()}.
      */
@@ -363,10 +363,10 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
     /**
      * Reads from the current CPIO entry into an array of bytes. Blocks until some input is available.
      *
-     * @param b   the buffer into which the data is read.
-     * @param off the start offset of the data.
-     * @param len the maximum number of bytes read.
-     * @return the actual number of bytes read, or -1 if the end of the entry is reached.
+     * @param b   The buffer into which the data is read.
+     * @param off The start offset of the data.
+     * @param len The maximum number of bytes read.
+     * @return The actual number of bytes read, or -1 if the end of the entry is reached.
      * @throws NullPointerException      if b is null.
      * @throws IndexOutOfBoundsException if {@code off} or {@code len} are negative, or if {@code off + len} is greater than {@code b.length}.
      * @throws IOException if an I/O error has occurred or if a CPIO file error has occurred.
@@ -561,8 +561,8 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
     /**
      * Skips specified number of bytes in the current CPIO entry.
      *
-     * @param n the number of bytes to skip.
-     * @return the actual number of bytes skipped.
+     * @param n The number of bytes to skip.
+     * @return The actual number of bytes skipped.
      * @throws IOException              if an I/O error has occurred.
      * @throws IllegalArgumentException if n &lt; 0.
      */

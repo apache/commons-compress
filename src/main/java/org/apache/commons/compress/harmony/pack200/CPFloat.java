@@ -55,7 +55,7 @@ public class CPFloat extends CPConstant<CPFloat> {
     /**
      * Gets the float value.
      *
-     * @return the float value.
+     * @return The float value.
      */
     public float getFloat() {
         return value;

@@ -56,7 +56,7 @@ public abstract class AbstractTarBuilder<T, B extends AbstractTarBuilder<T, B>> 
     /**
      * Sets the block size.
      *
-     * @param blockSize the block size.
+     * @param blockSize The block size.
      * @return {@code this} instance.
      */
     public B setBlockSize(final int blockSize) {
@@ -79,7 +79,7 @@ public abstract class AbstractTarBuilder<T, B extends AbstractTarBuilder<T, B>> 
     /**
      * Sets the record size.
      *
-     * @param recordSize the record size.
+     * @param recordSize The record size.
      * @return {@code this} instance.
      */
     public B setRecordSize(final int recordSize) {
