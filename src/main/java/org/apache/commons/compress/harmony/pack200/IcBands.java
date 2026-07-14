@@ -63,6 +63,7 @@ public class IcBands extends BandSet {
             return false;
         }
 
+        @Override
         public int hashCode() {
             return Objects.hash(C, F, C2, N);
         }
