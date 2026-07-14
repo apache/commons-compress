@@ -39,7 +39,7 @@ public class LineNumberTableAttribute extends BCIRenumberedAttribute {
         attributeName = cpUTF8Value;
     }
 
-    private int lineNumberTableLength;
+    private final int lineNumberTableLength;
     private final int[] startPcs;
     private final int[] lineNumbers;
 
