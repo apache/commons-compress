@@ -660,7 +660,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
      * @throws IOException on error.
      */
     @Override
-    public int read(final byte[] buf, final int offset, int numToRead) throws IOException {
+    public int read(final byte[] buf, final int offset, final int numToRead) throws IOException {
         IOUtils.checkFromIndexSize(buf, offset, numToRead);
         if (numToRead == 0) {
             return 0;
@@ -763,7 +763,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
     private void skipRecordPadding() throws IOException {
         final long entrySize = currEntry != null ? currEntry.getSize() : 0;
         if (!isDirectory() && entrySize > 0 && entrySize % getRecordSize() != 0) {
-            final long padding = getRecordSize() - (entrySize % getRecordSize());
+            final long padding = getRecordSize() - entrySize % getRecordSize();
             final long skipped = IOUtils.skip(in, padding);
             count(skipped);
             if (skipped != padding) {
