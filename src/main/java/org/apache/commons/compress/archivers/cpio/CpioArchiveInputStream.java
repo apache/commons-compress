@@ -143,29 +143,14 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         }
         // Check Ascii (String) values
         // 3037 3037 30nn
-        if (signature[0] != 0x30) {
-            return false;
-        }
-        if (signature[1] != 0x37) {
-            return false;
-        }
-        if (signature[2] != 0x30) {
-            return false;
-        }
-        if (signature[3] != 0x37) {
+        if (signature[0] != 0x30 || signature[1] != 0x37 || signature[2] != 0x30 || signature[3] != 0x37) {
             return false;
         }
         if (signature[4] != 0x30) {
             return false;
         }
         // Check last byte
-        if (signature[5] == 0x31) {
-            return true;
-        }
-        if (signature[5] == 0x32) {
-            return true;
-        }
-        if (signature[5] == 0x37) {
+        if (signature[5] == 0x31 || signature[5] == 0x32 || signature[5] == 0x37) {
             return true;
         }
         return false;
@@ -419,7 +404,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         return CpioUtil.byteArray2long(tmp, swapHalfWord);
     }
 
-    private String readEntryName(int lengthWithNull) throws IOException {
+    private String readEntryName(final int lengthWithNull) throws IOException {
         final int length = ArchiveUtils.checkEntryNameLength(lengthWithNull - 1, getMaxEntryNameLength(), "CPIO");
         // don't include trailing NUL in file name to decode
         final byte[] tmpBuffer = readRange(length);
