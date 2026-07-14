@@ -619,7 +619,7 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
      */
     private void skipRecordPadding() throws IOException {
         if (!isDirectory() && currEntry.getSize() > 0 && currEntry.getSize() % recordSize != 0) {
-            final long padding = recordSize - (currEntry.getSize() % recordSize);
+            final long padding = recordSize - currEntry.getSize() % recordSize;
             repositionForwardBy(padding);
             throwExceptionIfPositionIsNotInArchive();
         }
