@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
 
+import org.apache.commons.compress.compressors.CompressorException;
 import org.junit.jupiter.api.Test;
 
 class HuffmanDecoderTest {
@@ -205,6 +206,58 @@ class HuffmanDecoderTest {
                 fail("Should have failed but returned " + len + " entries: " + Arrays.toString(Arrays.copyOf(result, len)));
             });
             assertEquals("Illegal LEN / NLEN values", e.getMessage());
+        }
+    }
+
+    @Test
+    void testDecodeDynamicHuffmanBlockRejectsInvalidDistanceCode() throws Exception {
+        // final block + dynamic huffman with HLIT=1, HDIST=0, HCLEN=14. The code length tree
+        // assigns 1-bit codes to symbols 1 and 18, which encode 1-bit codes for literal/length
+        // symbols 256 and 257 and a single 1-bit code for distance symbol 0. The incomplete
+        // distance tree leaves the 1 branch empty, so the block data - length symbol 257
+        // followed by a 1 bit on the distance side - decodes to distance symbol -1.
+        final byte[] data = {
+                // |--- binary filling ---|76543210
+                0b00000000000000000000000000001101, // final block + dynamic huffman + HLIT 1
+                0b11111111111111111111111111000000, // HDIST 0 + low 3 bits of HCLEN 14
+                0b11111111111111111111111110000001, // high bit of HCLEN + zero lengths for 16, 17 + low bit of length 1 for 18
+                0b00000000000000000000000000000000, // high bits of length for 18 + zero lengths for 0, 8
+                0b00000000000000000000000000000000, // zero lengths for 7, 9 + low bits of 6
+                0b00000000000000000000000000000000, // zero lengths for 6, 10, 5
+                0b00000000000000000000000000000000, // zero lengths for 11, 4, 12
+                0b00000000000000000000000000000000, // zero lengths for 3, 13, 2
+                0b11111111111111111111111110010000, // zero length for 14 + length 1 for symbol 1 + code 18
+                0b11111111111111111111111111111111, // 7 extra bits (127 -> 138 zero lengths) + code 18
+                0b00000000000000000000000001101011, // 7 extra bits (107 -> 118 zero lengths) + code 1 (literal 256)
+                0b00000000000000000000000000001100 // code 1 twice (literal 257, distance 0) + length symbol 257 + invalid distance bit 1
+        };
+        try (HuffmanDecoder decoder = new HuffmanDecoder(new ByteArrayInputStream(data))) {
+            final byte[] result = new byte[100];
+            final CompressorException e = assertThrows(CompressorException.class, () -> {
+                final int len = decoder.decode(result);
+                fail("Should have failed but returned " + len + " entries: " + Arrays.toString(Arrays.copyOf(result, len)));
+            });
+            assertEquals("Invalid Deflate64 distance code -1", e.getMessage());
+        }
+    }
+
+    @Test
+    void testDecodeFixedHuffmanBlockRejectsReservedLiteralLengthCode() throws Exception {
+        // final block + fixed huffman, followed by the 8-bit fixed code 0b11000110 for
+        // literal/length symbol 286. That symbol is a decodable leaf of the fixed tree
+        // but is reserved by RFC 1951, so it has no entry in RUN_LENGTH_TABLE.
+        final byte[] data = {
+                // |--- binary filling ---|76543210
+                0b00000000000000000000000000011011, // final block + fixed huffman + low 5 bits of code 286
+                0b00000000000000000000000000000011 // high 3 bits of code 286
+        };
+        try (HuffmanDecoder decoder = new HuffmanDecoder(new ByteArrayInputStream(data))) {
+            final byte[] result = new byte[100];
+            final CompressorException e = assertThrows(CompressorException.class, () -> {
+                final int len = decoder.decode(result);
+                fail("Should have failed but returned " + len + " entries: " + Arrays.toString(Arrays.copyOf(result, len)));
+            });
+            assertEquals("Invalid Deflate64 literal/length code 286", e.getMessage());
         }
     }
 }
