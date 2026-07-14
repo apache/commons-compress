@@ -156,9 +156,9 @@ public final class AttributeLayoutParser<T> {
         return p >= definition.length();
     }
 
-    private char expect(char... expected) throws Pack200Exception {
+    private char expect(final char... expected) throws Pack200Exception {
         final char c = next();
-        for (char e : expected) {
+        for (final char e : expected) {
             if (c == e) {
                 return c;
             }
