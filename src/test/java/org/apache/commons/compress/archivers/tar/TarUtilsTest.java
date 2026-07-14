@@ -104,7 +104,7 @@ class TarUtilsTest extends AbstractTest {
     private static byte[] paddedUtf8Bytes(final String s) {
         final int blockSize = 1024;
         final byte[] bytes = s.getBytes(UTF_8);
-        return Arrays.copyOf(bytes, ((bytes.length + blockSize - 1) / blockSize) * blockSize);
+        return Arrays.copyOf(bytes, (bytes.length + blockSize - 1) / blockSize * blockSize);
     }
 
     private static Map<String, String> parsePaxHeaders(final byte[] data, final List<TarArchiveStructSparse> sparseHeaders,
