@@ -46,7 +46,7 @@ public class ArchiveUtils {
      * @throws MemoryLimitException If the length is valid, but too large for the current JVM to handle.
      * @since 1.29.0
      */
-    public static int checkEntryNameLength(long length, int maxEntryNameLength, String archiveType)
+    public static int checkEntryNameLength(final long length, final int maxEntryNameLength, final String archiveType)
             throws ArchiveException, MemoryLimitException {
         if (length > maxEntryNameLength) {
             throw new ArchiveException("Invalid %s archive entry: Invalid file name length %,d (must be between 1 and %,d). If the file is not corrupt, " +
