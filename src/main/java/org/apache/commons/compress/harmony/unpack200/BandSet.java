@@ -47,7 +47,7 @@ import org.apache.commons.lang3.ArrayUtils;
  */
 public abstract class BandSet {
 
-    private static final String[][] EMPTY_STRINGS = new String[][] { {} };
+    private static final String[][] EMPTY_STRINGS = { {} };
 
     static int sumPositive(final int[] counts) throws Pack200Exception {
         int totalCount = 0;
