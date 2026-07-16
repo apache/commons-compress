@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.commons.compress.utils;
+package org.apache.commons.compress.compressors.lha;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

@@ -17,14 +17,14 @@
  * under the License.
  */
 
-package org.apache.commons.compress.utils;
+package org.apache.commons.compress.archivers.zip;
 
 /**
  * Circular byte buffer.
  *
- * @since 1.29.0
+ * @since 1.7
  */
-public final class CircularBuffer {
+final class CircularBuffer {
 
     /** Size of the buffer */
     private final int size;
@@ -38,17 +38,9 @@ public final class CircularBuffer {
     /** Index of the next data written in the buffer */
     private int writeIndex;
 
-    private int bytesAvailable;
-
-    /**
-     * Creates a new circular buffer with the given size.
-     *
-     * @param size the size of the buffer
-     */
-    public CircularBuffer(final int size) {
+    CircularBuffer(final int size) {
         this.size = size;
         buffer = new byte[size];
-        bytesAvailable = 0;
     }
 
     /**
@@ -57,7 +49,7 @@ public final class CircularBuffer {
      * @return Whether a new byte can be read from the buffer.
      */
     public boolean available() {
-        return bytesAvailable > 0;
+        return readIndex != writeIndex;
     }
 
     /**
@@ -67,15 +59,11 @@ public final class CircularBuffer {
      * @param length   The number of bytes to copy.
      */
     public void copy(final int distance, final int length) {
-        if (distance < 1) {
-            throw new IllegalArgumentException("Distance must be at least 1");
-        } else if (distance > size) {
-            throw new IllegalArgumentException("Distance exceeds buffer size");
-        }
         final int pos1 = writeIndex - distance;
         final int pos2 = pos1 + length;
         for (int i = pos1; i < pos2; i++) {
-            put(buffer[(i + size) % size]);
+            buffer[writeIndex] = buffer[(i + size) % size];
+            writeIndex = (writeIndex + 1) % size;
         }
     }
 
@@ -88,7 +76,6 @@ public final class CircularBuffer {
         if (available()) {
             final int value = buffer[readIndex];
             readIndex = (readIndex + 1) % size;
-            bytesAvailable--;
             return value & 0xFF;
         }
         return -1;
@@ -100,11 +87,7 @@ public final class CircularBuffer {
      * @param value The value to put.
      */
     public void put(final int value) {
-        if (bytesAvailable == size) {
-            throw new IllegalStateException("Buffer overflow: Cannot write to a full buffer");
-        }
         buffer[writeIndex] = (byte) value;
         writeIndex = (writeIndex + 1) % size;
-        bytesAvailable++;
     }
 }

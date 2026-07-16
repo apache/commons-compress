@@ -26,7 +26,6 @@ import java.nio.ByteOrder;
 import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.utils.BitInputStream;
-import org.apache.commons.compress.utils.CircularBuffer;
 import org.apache.commons.compress.utils.InputStreamStatistics;
 import org.apache.commons.io.input.CloseShieldInputStream;
 

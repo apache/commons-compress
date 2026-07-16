@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.compress.archivers.ArchiveException;
-import org.apache.commons.compress.utils.CircularBuffer;
 import org.apache.commons.compress.utils.InputStreamStatistics;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.io.input.CloseShieldInputStream;
