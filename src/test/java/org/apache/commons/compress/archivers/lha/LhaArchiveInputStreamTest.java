@@ -1510,6 +1510,21 @@ class LhaArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
+    void testGetBytesReadReflectsDecompressedBytes() throws IOException {
+        try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder()
+                .setInputStream(new ByteArrayInputStream(toByteArray(VALID_HEADER_LEVEL_0_FILE)))
+                .get()) {
+
+            final LhaArchiveEntry entry = archive.getNextEntry();
+            assertNotNull(entry);
+
+            final byte[] content = IOUtils.toByteArray(archive);
+            assertEquals(entry.getSize(), content.length);
+            assertEquals(entry.getSize(), archive.getBytesRead());
+        }
+    }
+
+    @Test
     void testMatches() {
         byte[] data;
 

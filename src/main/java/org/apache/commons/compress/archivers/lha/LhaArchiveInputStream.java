@@ -216,7 +216,9 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
             throw new ArchiveException("Unsupported compression method: %s", currentEntry.getCompressionMethod());
         }
 
-        return currentDecompressedStream.read(buffer, offset, length);
+        final int read = currentDecompressedStream.read(buffer, offset, length);
+        count(read);
+        return read;
     }
 
     /**
