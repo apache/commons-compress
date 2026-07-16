@@ -241,8 +241,8 @@ public class LhaArchiveEntry implements ArchiveEntry {
                     headerCrc);
         }
 
-        Builder setFilename(String filenName) {
-            this.filename = filenName;
+        Builder setFilename(String fileName) {
+            this.filename = fileName;
             return this;
         }
 
