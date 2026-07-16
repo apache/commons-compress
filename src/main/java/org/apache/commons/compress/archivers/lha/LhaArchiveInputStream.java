@@ -414,6 +414,13 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
             extendedHeaderSize = Short.toUnsignedInt(extendedHeaderBuffer.getShort(extendedHeaderBuffer.limit() - 2));
         }
 
+        // The compressed size is derived by subtracting the extended header sizes from the skip size. A
+        // corrupt archive whose extended headers exceed the skip size would yield a negative compressed
+        // size, which must be rejected as it would otherwise disable the per-entry read bound.
+        if (skipSize < 0) {
+            throw new ArchiveException("Invalid compressed size");
+        }
+
         entryBuilder.setCompressedSize(skipSize);
 
         final LhaArchiveEntry entry = entryBuilder.get();
