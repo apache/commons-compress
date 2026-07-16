@@ -265,18 +265,6 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
         if (DumpArchiveInputStream.matches(dumpsig, signatureLength)) {
             return DUMP;
         }
-        // LHA needs a bigger buffer to check the signature
-        final byte[] lhasig = new byte[LHA_SIGNATURE_SIZE];
-        in.mark(lhasig.length);
-        try {
-            signatureLength = IOUtils.read(in, lhasig);
-            in.reset();
-        } catch (final IOException e) {
-            throw new ArchiveException("IOException while reading LHA signature", (Throwable) e);
-        }
-        if (LhaArchiveInputStream.matches(lhasig, signatureLength)) {
-            return LHA;
-        }
         // Tar needs an even bigger buffer to check the signature; read the first block
         final byte[] tarHeader = new byte[TAR_HEADER_SIZE];
         in.mark(tarHeader.length);
@@ -307,6 +295,19 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
             } catch (final Exception ignored) {
                 // can generate IllegalArgumentException as well as IOException auto-detection, simply not a TAR ignored
             }
+        }
+        // LHA has no magic signature, so its detection is heuristic. It is checked last so that
+        // formats with a stronger signature are not shadowed by a false positive LHA match.
+        final byte[] lhasig = new byte[LHA_SIGNATURE_SIZE];
+        in.mark(lhasig.length);
+        try {
+            signatureLength = IOUtils.read(in, lhasig);
+            in.reset();
+        } catch (final IOException e) {
+            throw new ArchiveException("IOException while reading LHA signature", (Throwable) e);
+        }
+        if (LhaArchiveInputStream.matches(lhasig, signatureLength)) {
+            return LHA;
         }
         throw new ArchiveException("No Archiver found for the stream signature");
     }
