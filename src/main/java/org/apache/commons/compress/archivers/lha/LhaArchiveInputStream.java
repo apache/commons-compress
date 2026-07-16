@@ -236,9 +236,9 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
 
         final ByteBuffer header = ByteBuffer.wrap(signature).order(ByteOrder.LITTLE_ENDIAN);
 
-        // Determine header level. Expected value is in the range 0-3.
+        // Determine header level. Only levels 0-2 are supported for reading.
         final byte headerLevel = header.get(HEADER_GENERIC_OFFSET_HEADER_LEVEL);
-        if (headerLevel < 0 || headerLevel > 3) {
+        if (headerLevel < 0 || headerLevel > 2) {
             return false;
         }
 

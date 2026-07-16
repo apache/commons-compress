@@ -1523,7 +1523,7 @@ class LhaArchiveInputStreamTest extends AbstractTest {
 
         // Change the header level to an invalid value
         data = toByteArray(VALID_HEADER_LEVEL_0_FILE);
-        data[20] = 4;
+        data[20] = 3;
         assertFalse(LhaArchiveInputStream.matches(data, data.length));
 
         // Change the compression method to an invalid value
