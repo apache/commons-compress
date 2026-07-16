@@ -165,7 +165,14 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
     public int read() throws IOException {
         if (!buffer.available()) {
             // Nothing in the buffer, try to fill it
-            fillBuffer();
+            try {
+                fillBuffer();
+            } catch (final IllegalArgumentException | IllegalStateException e) {
+                // A corrupt stream can decode an out-of-range distance or overflow the sliding
+                // dictionary, which the CircularBuffer signals with unchecked exceptions. Wrap
+                // them so callers only need to handle IOException.
+                throw new CompressorException("Bad LHA stream", e);
+            }
         }
 
         final int ret = buffer.get();
