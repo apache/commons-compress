@@ -53,7 +53,7 @@ class PaxHeaderOomTest {
         final String keyword = "test.data";
         final long fixedPart = 1L + keyword.length() + 1 + 1;
         long totalLen = fixedPart + valueSize;
-        int lenDigits = Long.toString(totalLen).length();
+        final int lenDigits = Long.toString(totalLen).length();
         totalLen = fixedPart + valueSize + lenDigits;
         if (Long.toString(totalLen).length() != lenDigits) {
             totalLen++;
