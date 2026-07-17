@@ -84,6 +84,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="pkarwasz" due-to="Gary Gregory, Piotr P. Karwasz" issue="COMPRESS-714">Internal IllegalArgumentException in ZipFile and TarFile creation is not caught #754.</action>
       <action type="fix" dev="pkarwasz" due-to="Piotr P. Karwasz">Improve Javadoc of ZipArchiveEntry #769.</action>
       <action type="fix" dev="pkarwasz" due-to="Zach Warneke, Gary Gregory">Fix NullPointerException when reading XZ entries in ZipArchiveInputStream (#774).</action>
+      <action type="fix" dev="pkarwasz" due-to="KALI 834X, Gary Gregory">Fix Zip rcount field width in x0015 and x0016 certificate id extra fields (#787).</action>
       <!-- FIX TAR -->
       <action type="fix" dev="pkarwasz" due-to="Tyler Nighswander, Piotr P. Karwasz, Gary Gregory">>Uniform handling of special tar records in TarFile and TarArchiveInputStream.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory, Stanislav Fort">TarArchiveOutputStream now throws a IllegalArgumentException instead of an OutOfMemoryError.</action>
