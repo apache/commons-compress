@@ -68,7 +68,7 @@ public class ScatterZipOutputStream implements Closeable {
         /**
          * Updates the original {@link ZipArchiveEntry} with sizes/CRC. Do not use this method from threads that did not create the instance itself!
          *
-         * @return the zipArchiveEntry that is the basis for this request.
+         * @return The zipArchiveEntry that is the basis for this request.
          */
         public ZipArchiveEntry transferToArchiveEntry() {
             final ZipArchiveEntry entry = zipArchiveEntryRequest.getZipArchiveEntry();
@@ -90,7 +90,7 @@ public class ScatterZipOutputStream implements Closeable {
         /**
          * Constructs a new instance.
          *
-         * @param out a ScatterZipOutputStream.
+         * @param out A ScatterZipOutputStream.
          * @throws IOException if an I/O error occurs.
          */
         public ZipEntryWriter(final ScatterZipOutputStream out) throws IOException {
@@ -188,7 +188,7 @@ public class ScatterZipOutputStream implements Closeable {
     /**
      * Constructs a new instance.
      *
-     * @param backingStore the backing store.
+     * @param backingStore The backing store.
      * @param streamCompressor Deflates ZIP entries.
      */
     public ScatterZipOutputStream(final ScatterGatherBackingStore backingStore, final StreamCompressor streamCompressor) {
@@ -256,7 +256,7 @@ public class ScatterZipOutputStream implements Closeable {
      * Gets a ZIP entry writer for this scatter stream.
      *
      * @throws IOException If getting scatter stream input stream.
-     * @return the ZipEntryWriter created on first call of the method.
+     * @return The ZipEntryWriter created on first call of the method.
      */
     public ZipEntryWriter zipEntryWriter() throws IOException {
         if (zipEntryWriter == null) {

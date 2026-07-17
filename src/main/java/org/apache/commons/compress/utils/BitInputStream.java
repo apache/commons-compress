@@ -47,8 +47,8 @@ public class BitInputStream implements Closeable {
     /**
      * Constructor taking an InputStream and its bit arrangement.
      *
-     * @param in        the InputStream.
-     * @param byteOrder the bit arrangement across byte boundaries, either BIG_ENDIAN (aaaaabbb bb000000) or LITTLE_ENDIAN (bbbaaaaa 000000bb).
+     * @param in        The InputStream.
+     * @param byteOrder The bit arrangement across byte boundaries, either BIG_ENDIAN (aaaaabbb bb000000) or LITTLE_ENDIAN (bbbaaaaa 000000bb).
      */
     public BitInputStream(final InputStream in, final ByteOrder byteOrder) {
         this.in = org.apache.commons.io.input.BoundedInputStream.builder().setInputStream(in).asSupplier().get();
@@ -132,7 +132,7 @@ public class BitInputStream implements Closeable {
      * This includes the bytes read to fill the current cache and not read as bits so far.
      * </p>
      *
-     * @return the number of bytes read from the underlying stream.
+     * @return The number of bytes read from the underlying stream.
      * @since 1.17
      */
     public long getBytesRead() {
@@ -169,7 +169,7 @@ public class BitInputStream implements Closeable {
     /**
      * Reads and returns the next bit read from the underlying stream.
      *
-     * @return the next bit (0 or 1) or -1 if the end of the stream has been reached.
+     * @return The next bit (0 or 1) or -1 if the end of the stream has been reached.
      * @throws IOException if an I/O error occurs.
      * @since 1.28
      */
@@ -180,8 +180,8 @@ public class BitInputStream implements Closeable {
     /**
      * Reads and returns at most 63 bits read from the underlying stream.
      *
-     * @param count the number of bits to read, must be a positive number not bigger than 63.
-     * @return the bits concatenated as a long using the stream's byte order. -1 if the end of the underlying stream has been reached before reading the
+     * @param count The number of bits to read, must be a positive number not bigger than 63.
+     * @return The bits concatenated as a long using the stream's byte order. -1 if the end of the underlying stream has been reached before reading the
      *         requested number of bits.
      * @throws IOException if an I/O error occurs.
      */

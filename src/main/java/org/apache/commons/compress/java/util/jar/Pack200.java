@@ -142,7 +142,7 @@ public abstract class Pack200 {
         /**
          * Adds a listener for PropertyChange events
          *
-         * @param listener the listener to listen if PropertyChange events occurs.
+         * @param listener The listener to listen if PropertyChange events occurs.
          */
         void addPropertyChangeListener(PropertyChangeListener listener);
 
@@ -167,7 +167,7 @@ public abstract class Pack200 {
         /**
          * Gets a sorted map of the properties of this packer.
          *
-         * @return the properties of the packer.
+         * @return The properties of the packer.
          */
         SortedMap<String, String> properties();
 
@@ -212,14 +212,14 @@ public abstract class Pack200 {
         /**
          * Adds a listener for {@code PropertyChange} events.
          *
-         * @param listener the listener to listen if {@code PropertyChange} events occurs.
+         * @param listener The listener to listen if {@code PropertyChange} events occurs.
          */
         void addPropertyChangeListener(PropertyChangeListener listener);
 
         /**
          * Gets a sorted map of the properties of this unpacker.
          *
-         * @return the properties of unpacker.
+         * @return The properties of unpacker.
          */
         SortedMap<String, String> properties();
 
@@ -283,7 +283,7 @@ public abstract class Pack200 {
      * instance of the specified class is returned, otherwise the system's default implementation is returned.
      * </p>
      *
-     * @return an instance of {@code Packer}.
+     * @return An instance of {@code Packer}.
      */
     public static Pack200.Packer newPacker() {
         return (Packer) newInstance(SYSTEM_PROPERTY_PACKER, "org.apache.commons.compress.harmony.pack200.Pack200PackerAdapter"); //$NON-NLS-1$
@@ -296,7 +296,7 @@ public abstract class Pack200 {
      * the specified class is returned, otherwise the system's default implementation is returned.
      * </p>
      *
-     * @return an instance of {@link Pack200.Unpacker}.
+     * @return An instance of {@link Pack200.Unpacker}.
      */
     public static Pack200.Unpacker newUnpacker() {
         return (Unpacker) newInstance(SYSTEM_PROPERTY_UNPACKER, "org.apache.commons.compress.harmony.unpack200.Pack200UnpackerAdapter"); //$NON-NLS-1$

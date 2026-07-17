@@ -42,7 +42,7 @@ public interface CompressorStreamProvider {
      *                           {@value org.apache.commons.compress.compressors.CompressorStreamFactory#SNAPPY_FRAMED},
      *                           {@value org.apache.commons.compress.compressors.CompressorStreamFactory#Z} or
      *                           {@value org.apache.commons.compress.compressors.CompressorStreamFactory#DEFLATE}
-     * @param in                 the input stream.
+     * @param in                 The input stream.
      * @param decompressUntilEof if true, decompress until the end of the input; if false, stop after the first stream and leave the input position to point to
      *                           the next byte after the stream. This setting applies to the gzip, bzip2 and XZ formats only.
      * @return compressor input stream.
@@ -55,13 +55,13 @@ public interface CompressorStreamProvider {
      * Creates a compressor output stream from a compressor name and an output stream.
      *
      * @param <T> The underlying output stream.
-     * @param name the compressor name, i.e. {@value org.apache.commons.compress.compressors.CompressorStreamFactory#GZIP},
+     * @param name The compressor name, i.e. {@value org.apache.commons.compress.compressors.CompressorStreamFactory#GZIP},
      *             {@value org.apache.commons.compress.compressors.CompressorStreamFactory#BZIP2},
      *             {@value org.apache.commons.compress.compressors.CompressorStreamFactory#XZ},
      *             {@value org.apache.commons.compress.compressors.CompressorStreamFactory#PACK200} or
      *             {@value org.apache.commons.compress.compressors.CompressorStreamFactory#DEFLATE}
-     * @param out  the output stream.
-     * @return the compressor output stream.
+     * @param out  The output stream.
+     * @return The compressor output stream.
      * @throws CompressorException      if the archiver name is not known.
      * @throws IllegalArgumentException if the archiver name or stream is null.
      */

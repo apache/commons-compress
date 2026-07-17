@@ -394,7 +394,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
      * </p>
      *
      * @param extraFieldFactory custom lookup factory for extra fields or null.
-     * @param name the name of the entry.
+     * @param name The name of the entry.
      */
     private ZipArchiveEntry(final Function<ZipShort, ZipExtraField> extraFieldFactory, final String name) {
         super(name);
@@ -409,8 +409,8 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
      * Assumes the entry represents a directory if and only if the name ends with a forward slash "/".
      * </p>
      *
-     * @param extraFieldFactory the extra field lookup factory.
-     * @param entry the entry to get fields from.
+     * @param extraFieldFactory The extra field lookup factory.
+     * @param entry The entry to get fields from.
      * @throws ZipException on error.
      */
     private ZipArchiveEntry(final Function<ZipShort, ZipExtraField> extraFieldFactory, final ZipEntry entry) throws ZipException {
@@ -453,7 +453,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
      * Assumes the entry represents a directory if and only if the name ends with a forward slash "/".
      * </p>
      *
-     * @param name the name of the entry.
+     * @param name The name of the entry.
      * @since 1.26.0
      */
     public ZipArchiveEntry(final String name) {
@@ -467,7 +467,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
      * Assumes the entry represents a directory if and only if the name ends with a forward slash "/".
      * </p>
      *
-     * @param entry the entry to get fields from.
+     * @param entry The entry to get fields from.
      * @throws ZipException on error.
      */
     public ZipArchiveEntry(final ZipArchiveEntry entry) throws ZipException {
@@ -487,7 +487,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
      * Assumes the entry represents a directory if and only if the name ends with a forward slash "/".
      * </p>
      *
-     * @param entry the entry to get fields from.
+     * @param entry The entry to get fields from.
      * @throws ZipException on error.
      */
     public ZipArchiveEntry(final ZipEntry entry) throws ZipException {
@@ -501,7 +501,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
      * The new extra field will be the first one.
      * </p>
      *
-     * @param ze an extra field.
+     * @param ze An extra field.
      */
     public void addAsFirstExtraField(final ZipExtraField ze) {
         if (ze instanceof UnparseableExtraFieldData) {
@@ -528,7 +528,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
      * If no extra field of the same type exists, the field will be added as last field.
      * </p>
      *
-     * @param ze an extra field.
+     * @param ze An extra field.
      */
     public void addExtraField(final ZipExtraField ze) {
         internalAddExtraField(ze);
@@ -566,7 +566,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     /**
      * Overwrite clone.
      *
-     * @return a cloned copy of this ZipArchiveEntry.
+     * @return A cloned copy of this ZipArchiveEntry.
      */
     @Override
     public Object clone() {
@@ -652,7 +652,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     /**
      * Gets the extra data for the central directory.
      *
-     * @return the central directory extra data.
+     * @return The central directory extra data.
      */
     public byte[] getCentralDirectoryExtra() {
         return ExtraFieldUtils.mergeCentralDirectoryData(getAllExtraFieldsNoCopy());
@@ -676,7 +676,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     /**
      * Gets the number of the split segment this entry starts at.
      *
-     * @return the number of the split segment this entry starts at.
+     * @return The number of the split segment this entry starts at.
      * @since 1.20
      */
     public long getDiskNumberStart() {
@@ -687,11 +687,11 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
      * Gets the external file attributes.
      *
      * <p>
-     * <strong>Note</strong>: {@link ZipArchiveInputStream} is unable to fill this field, you must use {@link ZipFile} if you want to read entries using this
-     * attribute.
+     * <strong>Note:</strong> This field is stored in the central directory only and is not populated when reading entries via
+     * {@link ZipArchiveInputStream}; use {@link ZipFile} instead.
      * </p>
      *
-     * @return the external file attributes.
+     * @return The external file attributes.
      */
     public long getExternalAttributes() {
         return externalAttributes;
@@ -700,7 +700,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     /**
      * Gets an extra field by its header id.
      *
-     * @param type the header id.
+     * @param type The header id.
      * @return null if no such field exists.
      */
     public ZipExtraField getExtraField(final ZipShort type) {
@@ -722,7 +722,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
      * directory to store additional information.
      * </p>
      *
-     * @return an array of the extra fields.
+     * @return An array of the extra fields.
      */
     public ZipExtraField[] getExtraFields() {
         return getParseableExtraFields();
@@ -732,7 +732,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
      * Gets extra fields.
      *
      * @param includeUnparseable whether to also return unparseable extra fields as {@link UnparseableExtraFieldData} if such data exists.
-     * @return an array of the extra fields.
+     * @return An array of the extra fields.
      * @since 1.1
      */
     public ZipExtraField[] getExtraFields(final boolean includeUnparseable) {
@@ -743,7 +743,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
      * Gets extra fields.
      *
      * @param parsingBehavior controls parsing of extra fields.
-     * @return an array of the extra fields.
+     * @return An array of the extra fields.
      * @throws ZipException if parsing fails, cannot happen if {@code
      * parsingBehavior}  is {@link ExtraFieldParsingMode#BEST_EFFORT}.
      * @since 1.19
@@ -783,7 +783,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     /**
      * The "general purpose bit" field.
      *
-     * @return the general purpose bit.
+     * @return The general purpose bit.
      * @since 1.1
      */
     public GeneralPurposeBit getGeneralPurposeBit() {
@@ -798,7 +798,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
      * attribute.
      * </p>
      *
-     * @return the internal file attributes.
+     * @return The internal file attributes.
      */
     public int getInternalAttributes() {
         return internalAttributes;
@@ -820,7 +820,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     /**
      * Gets the extra data for the local file data.
      *
-     * @return the extra data for local file.
+     * @return The extra data for local file.
      */
     public byte[] getLocalFileDataExtra() {
         final byte[] extra = getExtra();
@@ -830,7 +830,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     /**
      * Gets the local header offset.
      *
-     * @return the local header offset.
+     * @return The local header offset.
      * @since 1.24.0
      */
     public long getLocalHeaderOffset() {
@@ -861,7 +861,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
      * This method returns the raw name as it is stored inside of the archive.
      * </p>
      *
-     * @return the entry name.
+     * @return The entry name.
      */
     @Override
     public String getName() {
@@ -916,7 +916,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
      * This method will return null if this instance has not been read from an archive.
      * </p>
      *
-     * @return the raw name bytes.
+     * @return The raw name bytes.
      * @since 1.2
      */
     public byte[] getRawName() {
@@ -934,7 +934,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
      * read completely.
      * </p>
      *
-     * @return the entry size.
+     * @return The entry size.
      */
     @Override
     public long getSize() {
@@ -963,7 +963,12 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     /**
      * Gets the Unix permission.
      *
-     * @return the Unix permissions.
+     * <p>
+     * <strong>Note:</strong> This method relies on {@link #getExternalAttributes()}, which is not populated when reading entries via
+     * {@link ZipArchiveInputStream}; use {@link ZipFile} instead.
+     * </p>
+     *
+     * @return The Unix permissions, or 0 if the platform is not {@link #PLATFORM_UNIX}.
      */
     public int getUnixMode() {
         return platform != PLATFORM_UNIX ? 0 : (int) (getExternalAttributes() >> SHORT_SHIFT & SHORT_MASK);
@@ -1006,7 +1011,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     /**
      * Gets the hash code of the entry. This uses the name as the hash code.
      *
-     * @return a hash code.
+     * @return A hash code.
      */
     @Override
     public int hashCode() {
@@ -1072,6 +1077,11 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     /**
      * Tests whether this entry represents a Unix symlink, in which case the entry's content contains the target path for the symlink.
      *
+     * <p>
+     * <strong>Note:</strong> This method relies on {@link #getExternalAttributes()}, which is not populated when reading entries via
+     * {@link ZipArchiveInputStream}; use {@link ZipFile} instead.
+     * </p>
+     *
      * @return true if the entry represents a Unix symlink, false otherwise.
      * @since 1.5
      */
@@ -1083,7 +1093,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
      * If there are no extra fields, use the given fields as new extra data - otherwise merge the fields assuming the existing fields and the new fields stem
      * from different locations inside the archive.
      *
-     * @param f     the extra fields to merge.
+     * @param f     The extra fields to merge.
      * @param local whether the new fields originate from local data.
      */
     private void mergeExtraFields(final ZipExtraField[] f, final boolean local) {
@@ -1154,7 +1164,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     /**
      * Remove an extra field.
      *
-     * @param type the type of extra field to remove.
+     * @param type The type of extra field to remove.
      */
     public void removeExtraField(final ZipShort type) {
         if (getExtraField(type) == null) {
@@ -1211,7 +1221,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     /**
      * Sets the central directory part of extra fields.
      *
-     * @param b an array of bytes to be parsed into extra fields.
+     * @param b An array of bytes to be parsed into extra fields.
      */
     public void setCentralDirectoryExtra(final byte[] b) {
         try {
@@ -1256,7 +1266,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     /**
      * The number of the split segment this entry starts at.
      *
-     * @param diskNumberStart the number of the split segment this entry starts at.
+     * @param diskNumberStart The number of the split segment this entry starts at.
      * @since 1.20
      */
     public void setDiskNumberStart(final long diskNumberStart) {
@@ -1266,7 +1276,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     /**
      * Sets the external file attributes.
      *
-     * @param value an {@code long} value.
+     * @param value An {@code long} value.
      */
     public void setExternalAttributes(final long value) {
         externalAttributes = value;
@@ -1286,7 +1296,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     /**
      * Parses the given bytes as extra field data and consumes any unparseable data as an {@link UnparseableExtraFieldData} instance.
      *
-     * @param extra an array of bytes to be parsed into extra fields.
+     * @param extra An array of bytes to be parsed into extra fields.
      * @throws RuntimeException if the bytes cannot be parsed.
      * @throws RuntimeException on error.
      */
@@ -1304,7 +1314,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     /**
      * Replaces all currently attached extra fields with the new array.
      *
-     * @param fields an array of extra fields.
+     * @param fields An array of extra fields.
      */
     public void setExtraFields(final ZipExtraField[] fields) {
         unparseableExtra = null;
@@ -1344,7 +1354,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     /**
      * Sets the "general purpose bit" field.
      *
-     * @param generalPurposeBit the general purpose bit.
+     * @param generalPurposeBit The general purpose bit.
      * @since 1.1
      */
     public void setGeneralPurposeBit(final GeneralPurposeBit generalPurposeBit) {
@@ -1354,7 +1364,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     /**
      * Sets the internal file attributes.
      *
-     * @param internalAttributes an {@code int} value.
+     * @param internalAttributes An {@code int} value.
      */
     public void setInternalAttributes(final int internalAttributes) {
         this.internalAttributes = internalAttributes;
@@ -1377,7 +1387,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     /**
      * Sets the local header offset.
      *
-     * @param localHeaderOffset the local header offset.
+     * @param localHeaderOffset The local header offset.
      */
     protected void setLocalHeaderOffset(final long localHeaderOffset) {
         this.localHeaderOffset = localHeaderOffset;
@@ -1400,7 +1410,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     /**
      * Sets the name of the entry.
      *
-     * @param name the name to use.
+     * @param name The name to use.
      */
     protected void setName(String name) {
         if (name != null && getPlatform() == PLATFORM_FAT && !name.contains(ZIP_DIR_SEP)) {
@@ -1412,8 +1422,8 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     /**
      * Sets the name using the raw bytes and the string created from it by guessing or using the configured encoding.
      *
-     * @param name    the name to use created from the raw bytes using the guessed or configured encoding.
-     * @param rawName the bytes originally read as name from the archive.
+     * @param name    The name to use created from the raw bytes using the guessed or configured encoding.
+     * @param rawName The bytes originally read as name from the archive.
      * @since 1.2
      */
     protected void setName(final String name, final byte[] rawName) {
@@ -1434,7 +1444,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     /**
      * Sets the platform (Unix or FAT).
      *
-     * @param platform an {@code int} value - 0 is FAT, 3 is Unix.
+     * @param platform An {@code int} value - 0 is FAT, 3 is Unix.
      */
     protected void setPlatform(final int platform) {
         this.platform = platform;
@@ -1453,7 +1463,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     /**
      * Sets the uncompressed size of the entry data.
      *
-     * @param size the uncompressed size in bytes.
+     * @param size The uncompressed size in bytes.
      * @throws IllegalArgumentException if the specified size is less than 0.
      */
     @Override
@@ -1476,7 +1486,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     /**
      * Sets the modification time of the entry.
      *
-     * @param fileTime the entry modification time.
+     * @param fileTime The entry modification time.
      * @since 1.21
      */
     public void setTime(final FileTime fileTime) {
@@ -1510,7 +1520,7 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     /**
      * Sets Unix permissions in a way that is understood by Info-Zip's unzip command.
      *
-     * @param mode an {@code int} value.
+     * @param mode An {@code int} value.
      */
     public void setUnixMode(final int mode) {
         // CheckStyle:MagicNumberCheck OFF - no point

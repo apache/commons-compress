@@ -34,7 +34,7 @@ public class ConstantValueAttribute extends Attribute {
     /**
      * Sets the attribute name.
      *
-     * @param cpUTF8Value the attribute name.
+     * @param cpUTF8Value The attribute name.
      */
     public static void setAttributeName(final CPUTF8 cpUTF8Value) {
         attributeName = cpUTF8Value;
@@ -47,7 +47,7 @@ public class ConstantValueAttribute extends Attribute {
     /**
      * Constructs a new instance.
      *
-     * @param entry an entry.
+     * @param entry An entry.
      */
     public ConstantValueAttribute(final ClassFileEntry entry) {
         super(attributeName);

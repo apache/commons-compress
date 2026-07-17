@@ -69,8 +69,8 @@ public class NewAttributeBands extends BandSet {
         /**
          * Reads the bands associated with this part of the layout.
          *
-         * @param in    the input stream to read from.
-         * @param count the number of elements to read.
+         * @param in    The input stream to read from.
+         * @param count The number of elements to read.
          * @throws Pack200Exception Bad archive.
          * @throws IOException      If an I/O error occurs.
          */
@@ -81,32 +81,32 @@ public class NewAttributeBands extends BandSet {
     private class AttributeLayoutFactory implements AttributeLayoutParser.Factory<LayoutElement> {
 
         @Override
-        public LayoutElement createCall(int callableIndex) {
+        public LayoutElement createCall(final int callableIndex) {
             return new Call(callableIndex);
         }
 
         @Override
-        public LayoutElement createCallable(List<LayoutElement> body) throws Pack200Exception {
+        public LayoutElement createCallable(final List<LayoutElement> body) throws Pack200Exception {
             return new Callable(body);
         }
 
         @Override
-        public LayoutElement createIntegral(String tag) {
+        public LayoutElement createIntegral(final String tag) {
             return new Integral(tag);
         }
 
         @Override
-        public LayoutElement createReference(String tag) {
+        public LayoutElement createReference(final String tag) {
             return new Reference(tag);
         }
 
         @Override
-        public LayoutElement createReplication(String unsignedInt, List<LayoutElement> body) throws Pack200Exception {
+        public LayoutElement createReplication(final String unsignedInt, final List<LayoutElement> body) throws Pack200Exception {
             return new Replication(unsignedInt, body);
         }
 
         @Override
-        public LayoutElement createUnion(String anyInt, List<UnionCaseData<LayoutElement>> cases, List<LayoutElement> body) throws Pack200Exception {
+        public LayoutElement createUnion(final String anyInt, final List<UnionCaseData<LayoutElement>> cases, final List<LayoutElement> body) throws Pack200Exception {
             final List<UnionCase> unionCases = new ArrayList<>();
             for (final UnionCaseData<LayoutElement> unionCaseData : cases) {
                 unionCases.add(new UnionCase(unionCaseData.tagRanges, unionCaseData.body, false));
@@ -126,7 +126,7 @@ public class NewAttributeBands extends BandSet {
         /**
          * Constructs a new Call.
          *
-         * @param callableIndex the callable index.
+         * @param callableIndex The callable index.
          */
         public Call(final int callableIndex) {
             this.callableIndex = callableIndex;
@@ -140,7 +140,7 @@ public class NewAttributeBands extends BandSet {
         /**
          * Gets the callable.
          *
-         * @return the callable.
+         * @return The callable.
          */
         public Callable getCallable() {
             return callable;
@@ -149,7 +149,7 @@ public class NewAttributeBands extends BandSet {
         /**
          * Gets the callable index.
          *
-         * @return the callable index.
+         * @return The callable index.
          */
         public int getCallableIndex() {
             return callableIndex;
@@ -169,7 +169,7 @@ public class NewAttributeBands extends BandSet {
         /**
          * Sets the callable.
          *
-         * @param callable the callable.
+         * @param callable The callable.
          */
         public void setCallable(final Callable callable) {
             this.callable = callable;
@@ -197,7 +197,7 @@ public class NewAttributeBands extends BandSet {
         /**
          * Constructs a new Callable layout element with the given body.
          *
-         * @param body the body of the callable.
+         * @param body The body of the callable.
          * @throws Pack200Exception If the body is empty.
          */
         public Callable(final List<LayoutElement> body) throws Pack200Exception {
@@ -210,7 +210,7 @@ public class NewAttributeBands extends BandSet {
         /**
          * Adds the count of a call to this callable (ie the number of calls)
          *
-         * @param count the count to add.
+         * @param count The count to add.
          */
         public void addCount(final int count) {
             this.count += count;
@@ -219,7 +219,7 @@ public class NewAttributeBands extends BandSet {
         /**
          * Used by calls when adding band contents to attributes, so they don't have to keep track of the internal index of the callable.
          *
-         * @param attribute the attribute to add to.
+         * @param attribute The attribute to add to.
          */
         public void addNextToAttribute(final NewAttribute attribute) {
             for (final LayoutElement element : body) {
@@ -242,7 +242,7 @@ public class NewAttributeBands extends BandSet {
         /**
          * Gets the body of this callable.
          *
-         * @return the body elements.
+         * @return The body elements.
          */
         public List<LayoutElement> getBody() {
             return body;
@@ -370,7 +370,7 @@ public class NewAttributeBands extends BandSet {
         /**
          * Gets the tag of this integral.
          *
-         * @return the tag.
+         * @return The tag.
          */
         public String getTag() {
             return tag;
@@ -379,8 +379,8 @@ public class NewAttributeBands extends BandSet {
         /**
          * Gets the value at the specified index.
          *
-         * @param index the index.
-         * @return the value.
+         * @param index The index.
+         * @return The value.
          */
         int getValue(final int index) {
             return band[index];
@@ -401,8 +401,8 @@ public class NewAttributeBands extends BandSet {
         /**
          * Gets the length for the given unsigned int type.
          *
-         * @param uintType the unsigned int type character.
-         * @return the length in bytes.
+         * @param uintType The unsigned int type character.
+         * @return The length in bytes.
          */
         protected int getLength(final char uintType) {
             int length = 0;
@@ -478,7 +478,7 @@ public class NewAttributeBands extends BandSet {
         /**
          * Gets the tag.
          *
-         * @return the tag.
+         * @return The tag.
          */
         public String getTag() {
             return tag;
@@ -535,8 +535,8 @@ public class NewAttributeBands extends BandSet {
         /**
          * Constructs a new Replication layout element.
          *
-         * @param tag the tag of the Integral element.
-         * @param contents the contents of the replication.
+         * @param tag The tag of the Integral element.
+         * @param contents The contents of the replication.
          * @throws IllegalArgumentException If the tag is invalid or the contents are empty.
          * @throws Pack200Exception If the contents are invalid.
          */
@@ -565,7 +565,7 @@ public class NewAttributeBands extends BandSet {
         /**
          * Gets the count element.
          *
-         * @return the count element.
+         * @return The count element.
          */
         public Integral getCountElement() {
             return countElement;
@@ -574,7 +574,7 @@ public class NewAttributeBands extends BandSet {
         /**
          * Gets the layout elements.
          *
-         * @return the layout elements.
+         * @return The layout elements.
          */
         public List<LayoutElement> getLayoutElements() {
             return layoutElements;
@@ -607,9 +607,9 @@ public class NewAttributeBands extends BandSet {
         /**
          * Constructs a new Union layout element.
          *
-         * @param tag the tag of the Integral element.
-         * @param unionCases the union cases.
-         * @param body the default case body.
+         * @param tag The tag of the Integral element.
+         * @param unionCases The union cases.
+         * @param body The default case body.
          * @throws IllegalArgumentException If the tag is invalid.
          */
         public Union(final String tag, final List<UnionCase> unionCases, final List<LayoutElement> body) {
@@ -661,7 +661,7 @@ public class NewAttributeBands extends BandSet {
         /**
          * Gets the default case body.
          *
-         * @return the default case body.
+         * @return The default case body.
          */
         public List<LayoutElement> getDefaultCaseBody() {
             return defaultCaseBody;
@@ -670,7 +670,7 @@ public class NewAttributeBands extends BandSet {
         /**
          * Gets the union cases.
          *
-         * @return the union cases.
+         * @return The union cases.
          */
         public List<UnionCase> getUnionCases() {
             return unionCases;
@@ -679,7 +679,7 @@ public class NewAttributeBands extends BandSet {
         /**
          * Gets the union tag.
          *
-         * @return the union tag.
+         * @return The union tag.
          */
         public Integral getUnionTag() {
             return unionTag;
@@ -732,7 +732,7 @@ public class NewAttributeBands extends BandSet {
         /**
          * Constructs a new UnionCase with the given tags.
          *
-         * @param tags the tags.
+         * @param tags The tags.
          */
         public UnionCase(final List<Integer> tags) {
             this(tags, Collections.emptyList());
@@ -741,8 +741,8 @@ public class NewAttributeBands extends BandSet {
         /**
          * Constructs a new UnionCase.
          *
-         * @param tags the tags.
-         * @param body the body elements.
+         * @param tags The tags.
+         * @param body The body elements.
          */
         public UnionCase(final List<Integer> tags, final List<LayoutElement> body) {
             this(AttributeLayoutUtils.toRanges(tags), body, false);
@@ -763,7 +763,7 @@ public class NewAttributeBands extends BandSet {
         /**
          * Gets the body of this union case.
          *
-         * @return the body elements.
+         * @return The body elements.
          */
         public List<LayoutElement> getBody() {
             return body;
@@ -772,7 +772,7 @@ public class NewAttributeBands extends BandSet {
         /**
          * Tests whether this union case has the given tag.
          *
-         * @param i the tag value.
+         * @param i The tag value.
          * @return true if this case matches the tag.
          */
         public boolean hasTag(final int i) {
@@ -782,7 +782,7 @@ public class NewAttributeBands extends BandSet {
         /**
          * Tests whether this union case has the given tag.
          *
-         * @param l the tag value.
+         * @param l The tag value.
          * @return true if this case matches the tag.
          */
         public boolean hasTag(final long l) {
@@ -815,8 +815,8 @@ public class NewAttributeBands extends BandSet {
     /**
      * Constructs new attribute bands for the given segment and layout.
      *
-     * @param segment the segment.
-     * @param attributeLayout the attribute layout.
+     * @param segment The segment.
+     * @param attributeLayout The attribute layout.
      * @throws IOException if an I/O error occurs.
      */
     public NewAttributeBands(final Segment segment, final AttributeLayout attributeLayout) throws IOException {
@@ -829,7 +829,7 @@ public class NewAttributeBands extends BandSet {
     /**
      * Gets the backwards call count.
      *
-     * @return the backwards call count.
+     * @return The backwards call count.
      */
     public int getBackwardsCallCount() {
         return backwardsCallCount;
@@ -838,8 +838,8 @@ public class NewAttributeBands extends BandSet {
     /**
      * Returns the {@link BHSDCodec} that should be used for the given layout element.
      *
-     * @param layoutElement the layout element string.
-     * @return the {@link BHSDCodec} that should be used for the given layout element.
+     * @param layoutElement The layout element string.
+     * @return The {@link BHSDCodec} that should be used for the given layout element.
      */
     public BHSDCodec getCodec(final String layoutElement) {
         if (layoutElement.indexOf('O') >= 0) {
@@ -861,8 +861,8 @@ public class NewAttributeBands extends BandSet {
     /**
      * Gets one attribute at the given index from the various bands. The correct bands must have already been read in.
      *
-     * @param index    the index of the attribute.
-     * @param elements the layout elements.
+     * @param index    The index of the attribute.
+     * @param elements The layout elements.
      * @return attribute at the given index.
      */
     private Attribute getOneAttribute(final int index, final List<LayoutElement> elements) {
@@ -877,7 +877,7 @@ public class NewAttributeBands extends BandSet {
      * Parse the bands relating to this AttributeLayout and return the correct class file attributes as a List of {@link Attribute}.
      *
      * @param in              parse source.
-     * @param occurrenceCount the number of occurrences.
+     * @param occurrenceCount The number of occurrences.
      * @return Class file attributes as a List of {@link Attribute}.
      * @throws IOException      If an I/O error occurs.
      * @throws Pack200Exception If a Pack200 semantic error occurs.

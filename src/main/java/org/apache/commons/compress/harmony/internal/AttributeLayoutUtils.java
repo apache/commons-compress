@@ -117,8 +117,8 @@ public final class AttributeLayoutUtils {
     /**
      * Validates that the given tag matches the {@code any_int} layout definition production rule.
      *
-     * @param tag the layout tag to validate
-     * @return the validated tag
+     * @param tag The layout tag to validate
+     * @return The validated tag
      * @throws IllegalArgumentException if the tag is invalid
      */
     static String checkAnyIntTag(final String tag) {
@@ -131,8 +131,8 @@ public final class AttributeLayoutUtils {
     /**
      * Validates that the given tag matches the {@code integral} layout definition production rule.
      *
-     * @param tag the layout tag to validate
-     * @return the validated tag
+     * @param tag The layout tag to validate
+     * @return The validated tag
      * @throws IllegalArgumentException if the tag is invalid
      */
     public static String checkIntegralTag(final String tag) {
@@ -145,8 +145,8 @@ public final class AttributeLayoutUtils {
     /**
      * Validates that the given tag matches the {@code reference} layout definition production rule.
      *
-     * @param tag the layout tag to validate
-     * @return the validated tag
+     * @param tag The layout tag to validate
+     * @return The validated tag
      * @throws IllegalArgumentException if the tag is invalid
      */
     public static String checkReferenceTag(final String tag) {
@@ -164,8 +164,8 @@ public final class AttributeLayoutUtils {
     /**
      * Validates that the given tag matches the {@code unsigned_int} layout definition production rule.
      *
-     * @param tag the layout tag to validate
-     * @return the validated tag
+     * @param tag The layout tag to validate
+     * @return The validated tag
      * @throws IllegalArgumentException if the tag is invalid
      */
     static String checkUnsignedIntTag(final String tag) {
@@ -185,8 +185,8 @@ public final class AttributeLayoutUtils {
      *       ( layout_element )* | ( callable )+
      * </pre>
      *
-     * @param definition the attribute layout definition body.
-     * @param factory the factory to create AttributeLayoutElements.
+     * @param definition The attribute layout definition body.
+     * @param factory The factory to create AttributeLayoutElements.
      * @param <T> a common type shared by {@code attribute_layout} and {@code callable}.
      * @return not empty list of LayoutElements from the body or, if the stream is empty, an empty list.
      * @throws Pack200Exception If the layout definition is invalid.
@@ -207,8 +207,8 @@ public final class AttributeLayoutUtils {
      *       ( layout_element )+
      * </pre>
      *
-     * @param body the attribute layout definition body.
-     * @param factory the factory to create LayoutElements.
+     * @param body The attribute layout definition body.
+     * @param factory The factory to create LayoutElements.
      * @param <T> a common type shared by {@code attribute_layout} and {@code callable}.
      * @return not empty list of LayoutElements from the body or, if the stream is empty, an empty list.
      * @throws Pack200Exception If the layout definition is invalid.
@@ -223,8 +223,8 @@ public final class AttributeLayoutUtils {
     /**
      * Converts a list of integers to a list of ranges where each range represents a single integer.
      *
-     * @param tags the list of integer tags
-     * @return a list of ranges representing the tags
+     * @param tags The list of integer tags
+     * @return A list of ranges representing the tags
      */
     public static List<IntegerRange> toRanges(final List<Integer> tags) {
         return tags.stream().map(n -> IntegerRange.of(n, n)).collect(Collectors.toList());
@@ -233,8 +233,8 @@ public final class AttributeLayoutUtils {
     /**
      * Checks if any of the given tag ranges contains the specified tag.
      *
-     * @param tagRanges the list of tag ranges
-     * @param tag       the tag to check
+     * @param tagRanges The list of tag ranges
+     * @param tag       The tag to check
      * @return {@code true} if any range contains the tag, {@code false} otherwise
      */
     public static boolean unionCaseMatches(final List<IntegerRange> tagRanges, final int tag) {

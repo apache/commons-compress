@@ -34,7 +34,7 @@ public class SourceFileAttribute extends Attribute {
     /**
      * Sets the attribute name.
      *
-     * @param cpUTF8Value the attribute name.
+     * @param cpUTF8Value The attribute name.
      */
     public static void setAttributeName(final CPUTF8 cpUTF8Value) {
         attributeName = cpUTF8Value;
@@ -47,7 +47,7 @@ public class SourceFileAttribute extends Attribute {
     /**
      * Constructs a new SourceFileAttribute.
      *
-     * @param name the source file name.
+     * @param name The source file name.
      */
     public SourceFileAttribute(final CPUTF8 name) {
         super(attributeName);

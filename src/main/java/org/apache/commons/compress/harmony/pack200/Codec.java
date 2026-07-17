@@ -114,8 +114,8 @@ public abstract class Codec {
      * Decodes a sequence of bytes from the given input stream, returning the value as a long. Note that this method can only be applied for non-delta
      * encodings.
      *
-     * @param in the input stream to read from
-     * @return the value as a long
+     * @param in The input stream to read from
+     * @return The value as a long
      * @throws IOException      if there is a problem reading from the underlying input stream
      * @throws Pack200Exception if the encoding is a delta encoding
      */
@@ -134,9 +134,9 @@ public abstract class Codec {
      * }
      * </pre>
      *
-     * @param in   the input stream to read from
-     * @param last the previous value read, which must be supplied if the codec is a delta encoding
-     * @return the value as a long
+     * @param in   The input stream to read from
+     * @param last The previous value read, which must be supplied if the codec is a delta encoding
+     * @return The value as a long
      * @throws IOException      if there is a problem reading from the underlying input stream
      * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid
      */
@@ -146,9 +146,9 @@ public abstract class Codec {
      * Decodes a sequence of {@code n} values from {@code in}. This should probably be used in most cases, since some codecs (such as {@link PopulationCodec})
      * only work when the number of values to be read is known.
      *
-     * @param n  the number of values to decode
-     * @param in the input stream to read from
-     * @return an array of {@code int} values corresponding to values decoded
+     * @param n  The number of values to decode
+     * @param in The input stream to read from
+     * @return An array of {@code int} values corresponding to values decoded
      * @throws IOException      if there is a problem reading from the underlying input stream
      * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid
      */
@@ -165,10 +165,10 @@ public abstract class Codec {
     /**
      * Decodes a sequence of {@code n} values from {@code in}.
      *
-     * @param n          the number of values to decode
-     * @param in         the input stream to read from
-     * @param firstValue the first value in the band if it has already been read
-     * @return an array of {@code int} values corresponding to values decoded, with firstValue as the first value in the array.
+     * @param n          The number of values to decode
+     * @param in         The input stream to read from
+     * @param firstValue The first value in the band if it has already been read
+     * @return An array of {@code int} values corresponding to values decoded, with firstValue as the first value in the array.
      * @throws IOException      if there is a problem reading from the underlying input stream
      * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid
      */
@@ -185,8 +185,8 @@ public abstract class Codec {
     /**
      * Encodes a single value into a sequence of bytes. Note that this method can only be used for non-delta encodings.
      *
-     * @param value the value to encode.
-     * @return the encoded bytes.
+     * @param value The value to encode.
+     * @return The encoded bytes.
      * @throws Pack200Exception If a Pack200 semantic error occurs.
      */
     public abstract byte[] encode(int value) throws Pack200Exception;
@@ -194,9 +194,9 @@ public abstract class Codec {
     /**
      * Encodes a single value into a sequence of bytes.
      *
-     * @param value the value to encode.
-     * @param last  the previous value encoded (for delta encodings).
-     * @return the encoded bytes.
+     * @param value The value to encode.
+     * @param last  The previous value encoded (for delta encodings).
+     * @return The encoded bytes.
      * @throws Pack200Exception If a Pack200 semantic error occurs.
      */
     public abstract byte[] encode(int value, int last) throws Pack200Exception;
@@ -204,7 +204,7 @@ public abstract class Codec {
     /**
      * Encodes a sequence of integers into a byte array.
      *
-     * @param ints the values to encode.
+     * @param ints The values to encode.
      * @return byte[] encoded bytes.
      * @throws Pack200Exception if there is a problem encoding any of the values.
      */

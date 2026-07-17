@@ -37,7 +37,7 @@ public abstract class ConstantPoolEntry {
     /**
      * Gets the index.
      *
-     * @return the index.
+     * @return The index.
      */
     public int getIndex() {
         return index;
@@ -46,7 +46,7 @@ public abstract class ConstantPoolEntry {
     /**
      * Sets the index.
      *
-     * @param index the index.
+     * @param index The index.
      */
     public void setIndex(final int index) {
         this.index = index;

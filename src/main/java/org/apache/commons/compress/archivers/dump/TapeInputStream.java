@@ -48,7 +48,7 @@ final class TapeInputStream extends FilterInputStream {
     /**
      * Constructs a new instance.
      *
-     * @param in the underlying input stream.
+     * @param in The underlying input stream.
      */
     TapeInputStream(final InputStream in) {
         super(in);

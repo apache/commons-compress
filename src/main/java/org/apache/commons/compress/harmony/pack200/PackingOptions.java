@@ -89,8 +89,8 @@ public class PackingOptions {
     /**
      * Adds a class attribute action.
      *
-     * @param attributeName the attribute name.
-     * @param action the action.
+     * @param attributeName The attribute name.
+     * @param action The action.
      */
     public void addClassAttributeAction(final String attributeName, final String action) {
         classAttributeActions.put(attributeName, action);
@@ -99,8 +99,8 @@ public class PackingOptions {
     /**
      * Adds a code attribute action.
      *
-     * @param attributeName the attribute name.
-     * @param action the action.
+     * @param attributeName The attribute name.
+     * @param action The action.
      */
     public void addCodeAttributeAction(final String attributeName, final String action) {
         codeAttributeActions.put(attributeName, action);
@@ -109,8 +109,8 @@ public class PackingOptions {
     /**
      * Adds a field attribute action.
      *
-     * @param attributeName the attribute name.
-     * @param action the action.
+     * @param attributeName The attribute name.
+     * @param action The action.
      */
     public void addFieldAttributeAction(final String attributeName, final String action) {
         fieldAttributeActions.put(attributeName, action);
@@ -119,8 +119,8 @@ public class PackingOptions {
     /**
      * Adds a method attribute action.
      *
-     * @param attributeName the attribute name.
-     * @param action the action.
+     * @param attributeName The attribute name.
+     * @param action The action.
      */
     public void addMethodAttributeAction(final String attributeName, final String action) {
         methodAttributeActions.put(attributeName, action);
@@ -167,7 +167,7 @@ public class PackingOptions {
     /**
      * Tell the compressor to pass the file with the given name, or if the name is a directory name all files under that directory will be passed.
      *
-     * @param passFileName the file name
+     * @param passFileName The file name
      */
     public void addPassFile(final String passFileName) {
         String fileSeparator = FileSystems.getDefault().getSeparator();
@@ -181,7 +181,7 @@ public class PackingOptions {
     /**
      * Gets the deflate hint.
      *
-     * @return the deflate hint.
+     * @return The deflate hint.
      */
     public String getDeflateHint() {
         return deflateHint;
@@ -190,7 +190,7 @@ public class PackingOptions {
     /**
      * Gets the effort level.
      *
-     * @return the effort level.
+     * @return The effort level.
      */
     public int getEffort() {
         return effort;
@@ -199,7 +199,7 @@ public class PackingOptions {
     /**
      * Gets the log file.
      *
-     * @return the log file.
+     * @return The log file.
      */
     public String getLogFile() {
         return logFile;
@@ -208,7 +208,7 @@ public class PackingOptions {
     /**
      * Gets the modification time.
      *
-     * @return the modification time.
+     * @return The modification time.
      */
     public String getModificationTime() {
         return modificationTime;
@@ -221,7 +221,7 @@ public class PackingOptions {
     /**
      * Gets the segment limit.
      *
-     * @return the segment limit.
+     * @return The segment limit.
      */
     public long getSegmentLimit() {
         return segmentLimit;
@@ -230,7 +230,7 @@ public class PackingOptions {
     /**
      * Gets the unknown attribute action.
      *
-     * @return the unknown attribute action.
+     * @return The unknown attribute action.
      */
     public String getUnknownAttributeAction() {
         return unknownAttributeAction;
@@ -239,7 +239,7 @@ public class PackingOptions {
     /**
      * Gets the unknown attribute prototypes.
      *
-     * @return the attribute prototypes.
+     * @return The attribute prototypes.
      */
     public Attribute[] getUnknownAttributePrototypes() {
         if (unknownAttributeTypes == null) {
@@ -256,8 +256,8 @@ public class PackingOptions {
     /**
      * Gets the unknown class attribute action.
      *
-     * @param type the attribute type.
-     * @return the action.
+     * @param type The attribute type.
+     * @return The action.
      */
     public String getUnknownClassAttributeAction(final String type) {
         return getOrDefault(classAttributeActions, type, unknownAttributeAction);
@@ -266,8 +266,8 @@ public class PackingOptions {
     /**
      * Gets the unknown code attribute action.
      *
-     * @param type the attribute type.
-     * @return the action.
+     * @param type The attribute type.
+     * @return The action.
      */
     public String getUnknownCodeAttributeAction(final String type) {
         return getOrDefault(codeAttributeActions, type, unknownAttributeAction);
@@ -276,8 +276,8 @@ public class PackingOptions {
     /**
      * Gets the unknown field attribute action.
      *
-     * @param type the attribute type.
-     * @return the action.
+     * @param type The attribute type.
+     * @return The action.
      */
     public String getUnknownFieldAttributeAction(final String type) {
         return getOrDefault(fieldAttributeActions, type, unknownAttributeAction);
@@ -286,8 +286,8 @@ public class PackingOptions {
     /**
      * Gets the unknown method attribute action.
      *
-     * @param type the attribute type.
-     * @return the action.
+     * @param type The attribute type.
+     * @return The action.
      */
     public String getUnknownMethodAttributeAction(final String type) {
         return getOrDefault(methodAttributeActions, type, unknownAttributeAction);
@@ -323,7 +323,7 @@ public class PackingOptions {
     /**
      * Tests whether the file should be passed.
      *
-     * @param passFileName the file name.
+     * @param passFileName The file name.
      * @return true if the file should be passed.
      */
     public boolean isPassFile(final String passFileName) {
@@ -366,7 +366,7 @@ public class PackingOptions {
     /**
      * Removes a pass file.
      *
-     * @param passFileName the file name to remove.
+     * @param passFileName The file name to remove.
      */
     public void removePassFile(final String passFileName) {
         passFiles.remove(passFileName);
@@ -375,7 +375,7 @@ public class PackingOptions {
     /**
      * Sets the deflate hint.
      *
-     * @param deflateHint the deflate hint.
+     * @param deflateHint The deflate hint.
      */
     public void setDeflateHint(final String deflateHint) {
         if (!KEEP.equals(deflateHint) && !"true".equals(deflateHint) && !"false".equals(deflateHint)) {
@@ -387,7 +387,7 @@ public class PackingOptions {
     /**
      * Sets the compression effort level (0-9, equivalent to -E command line option)
      *
-     * @param effort the compression effort level, 0-9.
+     * @param effort The compression effort level, 0-9.
      */
     public void setEffort(final int effort) {
         this.effort = effort;
@@ -414,7 +414,7 @@ public class PackingOptions {
     /**
      * Sets the log file.
      *
-     * @param logFile the log file path.
+     * @param logFile The log file path.
      */
     public void setLogFile(final String logFile) {
         this.logFile = logFile;
@@ -423,7 +423,7 @@ public class PackingOptions {
     /**
      * Sets the modification time.
      *
-     * @param modificationTime the modification time.
+     * @param modificationTime The modification time.
      */
     public void setModificationTime(final String modificationTime) {
         if (!KEEP.equals(modificationTime) && !"latest".equals(modificationTime)) {
@@ -444,7 +444,7 @@ public class PackingOptions {
     /**
      * Sets the segment limit (equivalent to -S command line option)
      *
-     * @param segmentLimit the limit in bytes.
+     * @param segmentLimit The limit in bytes.
      */
     public void setSegmentLimit(final long segmentLimit) {
         this.segmentLimit = segmentLimit;
@@ -463,7 +463,7 @@ public class PackingOptions {
     /**
      * Sets the compressor behavior when an unknown attribute is encountered.
      *
-     * @param unknownAttributeAction   the action to perform
+     * @param unknownAttributeAction   The action to perform
      */
     public void setUnknownAttributeAction(final String unknownAttributeAction) {
         this.unknownAttributeAction = unknownAttributeAction;

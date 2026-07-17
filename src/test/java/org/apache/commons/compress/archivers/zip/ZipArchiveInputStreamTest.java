@@ -129,7 +129,7 @@ class ZipArchiveInputStreamTest extends AbstractTest {
     /**
      * Forge a ZIP archive in memory, using STORED and Data Descriptor, and without signature of Data Descriptor.
      *
-     * @return the input stream of the generated zip
+     * @return The input stream of the generated zip
      * @throws IOException there are problems
      */
     private InputStream forgeZipInputStream() throws IOException {
@@ -768,6 +768,20 @@ class ZipArchiveInputStreamTest extends AbstractTest {
             assertEquals(42, ze.getSize());
             final byte[] expected = ArrayFill.fill(new byte[42], (byte) 'a');
             assertArrayEquals(expected, IOUtils.toByteArray(in));
+        }
+    }
+
+    @Test
+    void testUnzipXZCompressedEntry() throws Exception {
+        try (ZipArchiveInputStream in = ZipArchiveInputStream.builder().setURI(getURI("org/apache/commons/compress/zip/test-method-xz.zip")).get()) {
+            final ZipArchiveEntry ze = in.getNextZipEntry();
+            final byte[] buf = IOUtils.toByteArray(in);
+            final String text = new String(buf);
+            assertEquals("LICENSE.txt", ze.getName());
+            assertEquals(11357, text.length());
+            assertTrue(text.startsWith("                                 Apache License"), text);
+            assertTrue(text.endsWith("   limitations under the License.\n"), text);
+            assertEquals(11357, text.length());
         }
     }
 

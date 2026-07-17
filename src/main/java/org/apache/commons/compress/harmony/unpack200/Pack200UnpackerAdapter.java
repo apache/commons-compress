@@ -52,7 +52,7 @@ public class Pack200UnpackerAdapter extends Pack200Adapter implements Unpacker {
      * </p>
      *
      * @param file The file.
-     * @return a new BoundedInputStream
+     * @return A new BoundedInputStream
      * @throws IOException if an I/O error occurs
      */
     static BoundedInputStream newBoundedInputStream(final File file) throws IOException {
@@ -90,7 +90,7 @@ public class Pack200UnpackerAdapter extends Pack200Adapter implements Unpacker {
      * </p>
      *
      * @param path The path.
-     * @return a new BoundedInputStream
+     * @return A new BoundedInputStream
      * @throws IOException if an I/O error occurs
      */
     @SuppressWarnings("resource") // Caller closes.
@@ -110,9 +110,9 @@ public class Pack200UnpackerAdapter extends Pack200Adapter implements Unpacker {
      * The new BoundedInputStream wraps a new {@link BufferedInputStream}.
      * </p>
      *
-     * @param first the path string or initial part of the path string.
+     * @param first The path string or initial part of the path string.
      * @param more  additional strings to be joined to form the path string.
-     * @return a new BoundedInputStream
+     * @return A new BoundedInputStream
      * @throws IOException if an I/O error occurs
      */
     static BoundedInputStream newBoundedInputStream(final String first, final String... more) throws IOException {
@@ -126,7 +126,7 @@ public class Pack200UnpackerAdapter extends Pack200Adapter implements Unpacker {
      * </p>
      *
      * @param url The URL.
-     * @return a new BoundedInputStream
+     * @return A new BoundedInputStream
      * @throws IOException        if an I/O error occurs.
      * @throws URISyntaxException if the URL is not formatted strictly according to RFC2396 and cannot be converted to a URI.
      */

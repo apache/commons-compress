@@ -40,7 +40,7 @@ public class Pack200CompressorOutputStream extends CompressorOutputStream<Output
     /**
      * Compresses the given stream, caching the compressed data in memory.
      *
-     * @param out the stream to write to.
+     * @param out The stream to write to.
      * @throws IOException if writing fails.
      */
     public Pack200CompressorOutputStream(final OutputStream out) throws IOException {
@@ -50,7 +50,7 @@ public class Pack200CompressorOutputStream extends CompressorOutputStream<Output
     /**
      * Compresses the given stream, caching the compressed data in memory and using the given properties.
      *
-     * @param out   the stream to write to.
+     * @param out   The stream to write to.
      * @param props Pack200 properties to use.
      * @throws IOException if writing fails.
      */
@@ -61,8 +61,8 @@ public class Pack200CompressorOutputStream extends CompressorOutputStream<Output
     /**
      * Compresses the given stream using the given strategy to cache the results.
      *
-     * @param out  the stream to write to.
-     * @param mode the strategy to use.
+     * @param out  The stream to write to.
+     * @param mode The strategy to use.
      * @throws IOException if writing fails.
      */
     public Pack200CompressorOutputStream(final OutputStream out, final Pack200Strategy mode) throws IOException {
@@ -72,8 +72,8 @@ public class Pack200CompressorOutputStream extends CompressorOutputStream<Output
     /**
      * Compresses the given stream using the given strategy to cache the results and the given properties.
      *
-     * @param out   the stream to write to.
-     * @param mode  the strategy to use.
+     * @param out   The stream to write to.
+     * @param mode  The strategy to use.
      * @param props Pack200 properties to use.
      * @throws IOException if writing fails.
      */

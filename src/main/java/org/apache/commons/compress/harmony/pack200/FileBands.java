@@ -51,11 +51,11 @@ public class FileBands extends BandSet {
     /**
      * Constructs a new FileBands.
      *
-     * @param cpBands the constant pool bands.
-     * @param segmentHeader the segment header.
-     * @param options the packing options.
-     * @param segmentUnit the segment unit.
-     * @param effort the effort level.
+     * @param cpBands The constant pool bands.
+     * @param segmentHeader The segment header.
+     * @param options The packing options.
+     * @param segmentUnit The segment unit.
+     * @param effort The effort level.
      * @throws Pack200Exception if an error occurs.
      */
     public FileBands(final CpBands cpBands, final SegmentHeader segmentHeader, final PackingOptions options, final SegmentUnit segmentUnit, final int effort)

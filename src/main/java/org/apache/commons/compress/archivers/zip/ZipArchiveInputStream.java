@@ -46,6 +46,7 @@ import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.deflate64.Deflate64CompressorInputStream;
+import org.apache.commons.compress.compressors.xz.XZCompressorInputStream;
 import org.apache.commons.compress.compressors.zstandard.ZstdCompressorInputStream;
 import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
@@ -345,8 +346,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     /**
      * Checks if the signature matches what is expected for a ZIP file. Does not currently handle self-extracting ZIPs which may have arbitrary leading content.
      *
-     * @param buffer the bytes to check.
-     * @param length the number of bytes to check.
+     * @param buffer The bytes to check.
+     * @param length The number of bytes to check.
      * @return true, if this stream is a ZIP archive stream, false otherwise.
      */
     public static boolean matches(final byte[] buffer, final int length) {
@@ -438,7 +439,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
      *
      * <p>Since 1.29.0: throws {@link IOException}.</p>
      *
-     * @param inputStream the stream to wrap.
+     * @param inputStream The stream to wrap.
      * @throws IOException if an I/O error occurs.
      */
     public ZipArchiveInputStream(final InputStream inputStream) throws IOException {
@@ -450,8 +451,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
      *
      * <p>Since 1.29.0: throws {@link IOException}.</p>
      *
-     * @param inputStream the stream to wrap.
-     * @param encoding    the encoding to use for file names, use null for the platform's default encoding.
+     * @param inputStream The stream to wrap.
+     * @param encoding    The encoding to use for file names, use null for the platform's default encoding.
      * @throws IOException if an I/O error occurs.
      * @since 1.5
      * @deprecated Since 1.29.0, use {@link #builder()}.
@@ -466,8 +467,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
      *
      * <p>Since 1.29.0: throws {@link IOException}.</p>
      *
-     * @param inputStream           the stream to wrap.
-     * @param encoding              the encoding to use for file names, use null for the platform's default encoding.
+     * @param inputStream           The stream to wrap.
+     * @param encoding              The encoding to use for file names, use null for the platform's default encoding.
      * @param useUnicodeExtraFields whether to use InfoZIP Unicode Extra Fields (if present) to set the file names.
      * @throws IOException if an I/O error occurs.
      * @deprecated Since 1.29.0, use {@link #builder()}.
@@ -482,8 +483,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
      *
      * <p>Since 1.29.0: throws {@link IOException}.</p>
      *
-     * @param inputStream                      the stream to wrap.
-     * @param encoding                         the encoding to use for file names, use null for the platform's default encoding.
+     * @param inputStream                      The stream to wrap.
+     * @param encoding                         The encoding to use for file names, use null for the platform's default encoding.
      * @param useUnicodeExtraFields            whether to use InfoZIP Unicode Extra Fields (if present) to set the file names.
      * @param supportStoredEntryDataDescriptor whether the stream will try to read STORED entries that use a data descriptor.
      * @throws IOException if an I/O error occurs.
@@ -510,8 +511,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
      *
      * <p>Since 1.29.0: throws {@link IOException}.</p>
      *
-     * @param inputStream                      the stream to wrap.
-     * @param encoding                         the encoding to use for file names, use null for the platform's default encoding.
+     * @param inputStream                      The stream to wrap.
+     * @param encoding                         The encoding to use for file names, use null for the platform's default encoding.
      * @param useUnicodeExtraFields            whether to use InfoZIP Unicode Extra Fields (if present) to set the file names.
      * @param supportStoredEntryDataDescriptor whether the stream will try to read STORED entries that use a data descriptor.
      * @param skipSplitSignature               Whether the stream will try to skip the zip split signature(08074B50) at the beginning.
@@ -679,8 +680,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     /**
      * Creates the appropriate InputStream for the Zstd compression method.
      *
-     * @param in the input stream which should be used for compression.
-     * @return the {@link InputStream} for handling the Zstd compression.
+     * @param in The input stream which should be used for compression.
+     * @return The {@link InputStream} for handling the Zstd compression.
      * @throws IOException if an I/O error occurs.
      * @since 1.28.0
      */
@@ -817,7 +818,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
     /**
      * Gets the next entry.
      *
-     * @return the next entry.
+     * @return The next entry.
      * @throws IOException if an I/O error occurs.
      * @deprecated Use {@link #getNextEntry()}.
      */
@@ -928,6 +929,9 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
                     break;
                 case ENHANCED_DEFLATED:
                     current.inputStream = new Deflate64CompressorInputStream(bis);
+                    break;
+                case XZ:
+                    current.inputStream = new XZCompressorInputStream(bis);
                     break;
                 case ZSTD:
                 case ZSTD_DEPRECATED:
@@ -1353,8 +1357,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
      *
      * Sets the custom extra fields factory.
      *
-     * @param extraFieldSupport the lookup function based on extra field header id.
-     * @return the archive.
+     * @param extraFieldSupport The lookup function based on extra field header id.
+     * @return The archive.
      */
     public ZipArchiveInputStream setExtraFieldSupport(final Function<ZipShort, ZipExtraField> extraFieldSupport) {
         // this.extraFieldSupport = extraFieldSupport;
@@ -1370,8 +1374,8 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
      * The actual number of bytes skipped is returned.
      * </p>
      *
-     * @param value the number of bytes to be skipped.
-     * @return the actual number of bytes skipped.
+     * @param value The number of bytes to be skipped.
+     * @return The actual number of bytes skipped.
      * @throws IOException              - if an I/O error occurs.
      * @throws IllegalArgumentException - if value is negative.
      */

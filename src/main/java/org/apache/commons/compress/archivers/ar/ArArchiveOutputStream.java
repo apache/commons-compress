@@ -53,7 +53,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
     /**
      * Constructs a new instance with the given backing OutputStream.
      *
-     * @param out the underlying output stream to be assigned to the field {@code this.out} for later use, or {@code null} if this instance is to be created
+     * @param out The underlying output stream to be assigned to the field {@code this.out} for later use, or {@code null} if this instance is to be created
      *            without an underlying stream.
      */
     public ArArchiveOutputStream(final OutputStream out) {
@@ -153,7 +153,7 @@ public class ArArchiveOutputStream extends ArchiveOutputStream<ArArchiveEntry> {
      * Sets the long file mode. This can be LONGFILE_ERROR(0) or LONGFILE_BSD(1). This specifies the treatment of long file names (names &gt;= 16). Default is
      * LONGFILE_ERROR.
      *
-     * @param longFileMode the mode to use.
+     * @param longFileMode The mode to use.
      * @since 1.3
      */
     public void setLongFileMode(final int longFileMode) {

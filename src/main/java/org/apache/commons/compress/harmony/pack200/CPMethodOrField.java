@@ -33,8 +33,8 @@ public class CPMethodOrField extends ConstantPoolEntry implements Comparable {
     /**
      * Constructs a new instance.
      *
-     * @param className the class name.
-     * @param nameAndType the name and type.
+     * @param className The class name.
+     * @param nameAndType The name and type.
      */
     public CPMethodOrField(final CPClass className, final CPNameAndType nameAndType) {
         this.className = className;
@@ -57,7 +57,7 @@ public class CPMethodOrField extends ConstantPoolEntry implements Comparable {
     /**
      * Gets the class index.
      *
-     * @return the class index.
+     * @return The class index.
      */
     public int getClassIndex() {
         return className.getIndex();
@@ -66,7 +66,7 @@ public class CPMethodOrField extends ConstantPoolEntry implements Comparable {
     /**
      * Gets the class name.
      *
-     * @return the class name.
+     * @return The class name.
      */
     public CPClass getClassName() {
         return className;
@@ -75,7 +75,7 @@ public class CPMethodOrField extends ConstantPoolEntry implements Comparable {
     /**
      * Gets the descriptor (name and type).
      *
-     * @return the descriptor.
+     * @return The descriptor.
      */
     public CPNameAndType getDesc() {
         return nameAndType;
@@ -84,7 +84,7 @@ public class CPMethodOrField extends ConstantPoolEntry implements Comparable {
     /**
      * Gets the descriptor index.
      *
-     * @return the descriptor index.
+     * @return The descriptor index.
      */
     public int getDescIndex() {
         return nameAndType.getIndex();
@@ -93,7 +93,7 @@ public class CPMethodOrField extends ConstantPoolEntry implements Comparable {
     /**
      * Gets the index in class.
      *
-     * @return the index in class.
+     * @return The index in class.
      */
     public int getIndexInClass() {
         return indexInClass;
@@ -102,7 +102,7 @@ public class CPMethodOrField extends ConstantPoolEntry implements Comparable {
     /**
      * Gets the index in class for constructor.
      *
-     * @return the index in class for constructor.
+     * @return The index in class for constructor.
      */
     public int getIndexInClassForConstructor() {
         return indexInClassForConstructor;
@@ -111,7 +111,7 @@ public class CPMethodOrField extends ConstantPoolEntry implements Comparable {
     /**
      * Sets the index in class.
      *
-     * @param index the index.
+     * @param index The index.
      */
     public void setIndexInClass(final int index) {
         indexInClass = index;
@@ -120,7 +120,7 @@ public class CPMethodOrField extends ConstantPoolEntry implements Comparable {
     /**
      * Sets the index in class for constructor.
      *
-     * @param index the index.
+     * @param index The index.
      */
     public void setIndexInClassForConstructor(final int index) {
         indexInClassForConstructor = index;

@@ -30,6 +30,7 @@ import java.io.InputStream;
 import java.nio.ByteOrder;
 import java.util.Arrays;
 
+import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.utils.BitInputStream;
 import org.apache.commons.compress.utils.ExactMath;
 import org.apache.commons.lang3.ArrayFill;
@@ -171,14 +172,23 @@ class HuffmanDecoder implements Closeable {
             while (result < len) {
                 final int symbol = nextSymbol(reader, lengthTree);
                 if (symbol < 256) {
+                    if (symbol < 0) {
+                        throw new CompressorException("Invalid Deflate64 literal/length code %,d", symbol);
+                    }
                     b[off + result++] = memory.add((byte) symbol);
                 } else if (symbol > 256) {
+                    if (symbol - 257 >= RUN_LENGTH_TABLE.length) {
+                        throw new CompressorException("Invalid Deflate64 literal/length code %,d", symbol);
+                    }
                     final int runMask = RUN_LENGTH_TABLE[symbol - 257];
                     int run = runMask >>> 5;
                     final int runXtra = runMask & 0x1F;
                     run = ExactMath.add(run, readBits(runXtra));
 
                     final int distSym = nextSymbol(reader, distanceTree);
+                    if (distSym < 0 || distSym >= DISTANCE_TABLE.length) {
+                        throw new CompressorException("Invalid Deflate64 distance code %,d", distSym);
+                    }
 
                     final int distMask = DISTANCE_TABLE[distSym];
                     int dist = distMask >>> 4;

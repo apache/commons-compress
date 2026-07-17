@@ -40,7 +40,7 @@ final class TarArchiveSparseZeroInputStream extends InputStream {
     }
 
     @Override
-    public int read(byte[] b, int off, int len) throws IOException {
+    public int read(final byte[] b, final int off, final int len) throws IOException {
         IOUtils.checkFromIndexSize(b, off, len);
         if (len == 0) {
             return 0;
@@ -52,8 +52,8 @@ final class TarArchiveSparseZeroInputStream extends InputStream {
     /**
      * Returns the input.
      *
-     * @param n a value to return.
-     * @return the input.
+     * @param n A value to return.
+     * @return The input.
      */
     @Override
     public long skip(final long n) {

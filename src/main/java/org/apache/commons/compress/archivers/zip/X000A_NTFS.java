@@ -162,7 +162,7 @@ public class X000A_NTFS implements ZipExtraField {
     /**
      * Gets the actual data to put into central directory data - without Header-ID or length specifier.
      *
-     * @return the central directory data.
+     * @return The central directory data.
      */
     @Override
     public byte[] getCentralDirectoryData() {
@@ -176,7 +176,7 @@ public class X000A_NTFS implements ZipExtraField {
      * For X5455 the central length is often smaller than the local length, because central cannot contain access or create timestamps.
      * </p>
      *
-     * @return a {@code ZipShort} for the length of the data of this extra field.
+     * @return A {@code ZipShort} for the length of the data of this extra field.
      */
     @Override
     public ZipShort getCentralDirectoryLength() {
@@ -215,7 +215,7 @@ public class X000A_NTFS implements ZipExtraField {
     /**
      * Gets the Header-ID.
      *
-     * @return the value for the header id for this extrafield.
+     * @return The value for the header id for this extrafield.
      */
     @Override
     public ZipShort getHeaderId() {
@@ -246,7 +246,7 @@ public class X000A_NTFS implements ZipExtraField {
     /**
      * Gets the length of the extra field in the local file data - without Header-ID or length specifier.
      *
-     * @return a {@code ZipShort} for the length of the data of this extra field.
+     * @return A {@code ZipShort} for the length of the data of this extra field.
      */
     @Override
     public ZipShort getLocalFileDataLength() {
@@ -314,9 +314,9 @@ public class X000A_NTFS implements ZipExtraField {
     /**
      * Populate data from this array as if it was in local file data.
      *
-     * @param data   an array of bytes.
-     * @param offset the start offset.
-     * @param length the number of bytes in the array from offset.
+     * @param data   An array of bytes.
+     * @param offset The start offset.
+     * @param length The number of bytes in the array from offset.
      * @throws java.util.zip.ZipException on error.
      */
     @Override

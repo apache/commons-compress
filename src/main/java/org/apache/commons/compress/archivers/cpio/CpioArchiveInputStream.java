@@ -143,29 +143,14 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         }
         // Check Ascii (String) values
         // 3037 3037 30nn
-        if (signature[0] != 0x30) {
-            return false;
-        }
-        if (signature[1] != 0x37) {
-            return false;
-        }
-        if (signature[2] != 0x30) {
-            return false;
-        }
-        if (signature[3] != 0x37) {
+        if (signature[0] != 0x30 || signature[1] != 0x37 || signature[2] != 0x30 || signature[3] != 0x37) {
             return false;
         }
         if (signature[4] != 0x30) {
             return false;
         }
         // Check last byte
-        if (signature[5] == 0x31) {
-            return true;
-        }
-        if (signature[5] == 0x32) {
-            return true;
-        }
-        if (signature[5] == 0x37) {
+        if (signature[5] == 0x31 || signature[5] == 0x32 || signature[5] == 0x37) {
             return true;
         }
         return false;
@@ -311,7 +296,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
     /**
      * Reads the next CPIO file entry and positions stream at the beginning of the entry data.
      *
-     * @return the CpioArchiveEntry just read.
+     * @return The CpioArchiveEntry just read.
      * @throws IOException if an I/O error has occurred or if a CPIO file error has occurred.
      * @deprecated Use {@link #getNextEntry()}.
      */
@@ -363,10 +348,10 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
     /**
      * Reads from the current CPIO entry into an array of bytes. Blocks until some input is available.
      *
-     * @param b   the buffer into which the data is read.
-     * @param off the start offset of the data.
-     * @param len the maximum number of bytes read.
-     * @return the actual number of bytes read, or -1 if the end of the entry is reached.
+     * @param b   The buffer into which the data is read.
+     * @param off The start offset of the data.
+     * @param len The maximum number of bytes read.
+     * @return The actual number of bytes read, or -1 if the end of the entry is reached.
      * @throws NullPointerException      if b is null.
      * @throws IndexOutOfBoundsException if {@code off} or {@code len} are negative, or if {@code off + len} is greater than {@code b.length}.
      * @throws IOException if an I/O error has occurred or if a CPIO file error has occurred.
@@ -419,7 +404,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         return CpioUtil.byteArray2long(tmp, swapHalfWord);
     }
 
-    private String readEntryName(int lengthWithNull) throws IOException {
+    private String readEntryName(final int lengthWithNull) throws IOException {
         final int length = ArchiveUtils.checkEntryNameLength(lengthWithNull - 1, getMaxEntryNameLength(), "CPIO");
         // don't include trailing NUL in file name to decode
         final byte[] tmpBuffer = readRange(length);
@@ -462,18 +447,18 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         newEntry.setDeviceMin(readAsciiLong(8, 16));
         newEntry.setRemoteDeviceMaj(readAsciiLong(8, 16));
         newEntry.setRemoteDeviceMin(readAsciiLong(8, 16));
-        final long namesize = readAsciiLong(8, 16);
-        if (namesize < 0) {
+        final long nameSize = readAsciiLong(8, 16);
+        if (nameSize <= 0) {
             throw new ArchiveException("Found illegal entry with negative name length");
         }
         newEntry.setChksum(readAsciiLong(8, 16));
-        final String name = readEntryName(ArchiveException.toIntExact(namesize));
+        final String name = readEntryName(ArchiveException.toIntExact(nameSize));
         newEntry.setName(name);
         if (CpioUtil.fileType(mode) == 0 && !name.equals(CPIO_TRAILER)) {
             throw new ArchiveException(
                     "Mode 0 only allowed in the trailer. Found entry name: " + ArchiveUtils.sanitize(name) + " Occurred at byte: " + getBytesRead());
         }
-        final int headerPadCount = newEntry.getHeaderPadCount(namesize - 1);
+        final int headerPadCount = newEntry.getHeaderPadCount(nameSize - 1);
         if (skip(headerPadCount) != headerPadCount) {
             throw new ArchiveException("Header pad count mismatch.");
         }
@@ -494,7 +479,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         ret.setRemoteDevice(readAsciiLong(6, 8));
         ret.setTime(readAsciiLong(11, 8));
         final long nameSize = readAsciiLong(6, 8);
-        if (nameSize < 0) {
+        if (nameSize <= 0) {
             throw new ArchiveException("Found illegal entry with negative name length");
         }
         ret.setSize(readAsciiLong(11, 8));
@@ -524,7 +509,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         oldEntry.setRemoteDevice(readBinaryLong(2, swapHalfWord));
         oldEntry.setTime(readBinaryLong(4, swapHalfWord));
         final long nameSize = readBinaryLong(2, swapHalfWord);
-        if (nameSize < 0) {
+        if (nameSize <= 0) {
             throw new ArchiveException("Found illegal entry with negative name length");
         }
         oldEntry.setSize(readBinaryLong(4, swapHalfWord));
@@ -561,8 +546,8 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
     /**
      * Skips specified number of bytes in the current CPIO entry.
      *
-     * @param n the number of bytes to skip.
-     * @return the actual number of bytes skipped.
+     * @param n The number of bytes to skip.
+     * @return The actual number of bytes skipped.
      * @throws IOException              if an I/O error has occurred.
      * @throws IllegalArgumentException if n &lt; 0.
      */

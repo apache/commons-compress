@@ -87,7 +87,7 @@ public class DumpArchiveSummary {
     /**
      * Gets the date of this dump.
      *
-     * @return the date of this dump.
+     * @return The date of this dump.
      */
     public Date getDumpDate() {
         return new Date(dumpDate);
@@ -155,7 +155,7 @@ public class DumpArchiveSummary {
      *     This is typically either 10 (for standard density tapes) or 32 (for high density tapes).
      * </p>
      *
-     * @return the number of records per tape block.
+     * @return The number of records per tape block.
      */
     public int getNTRec() {
         return ntrec;
@@ -232,7 +232,7 @@ public class DumpArchiveSummary {
     /**
      * Sets the device name.
      *
-     * @param devname the device name.
+     * @param devname The device name.
      */
     public void setDevname(final String devname) {
         this.devname = devname;
@@ -241,7 +241,7 @@ public class DumpArchiveSummary {
     /**
      * Sets dump date.
      *
-     * @param dumpDate the dump date.
+     * @param dumpDate The dump date.
      */
     public void setDumpDate(final Date dumpDate) {
         this.dumpDate = dumpDate.getTime();
@@ -250,7 +250,7 @@ public class DumpArchiveSummary {
     /**
      * Sets the last mountpoint.
      *
-     * @param fileSystem the last mountpoint.
+     * @param fileSystem The last mountpoint.
      */
     public void setFilesystem(final String fileSystem) {
         this.filesys = fileSystem;
@@ -259,7 +259,7 @@ public class DumpArchiveSummary {
     /**
      * Sets the inode of the first record.
      *
-     * @param firstrec the first record.
+     * @param firstrec The first record.
      */
     public void setFirstRecord(final int firstrec) {
         this.firstrec = firstrec;
@@ -277,7 +277,7 @@ public class DumpArchiveSummary {
     /**
      * Sets the hostname.
      *
-     * @param hostname the host name.
+     * @param hostname The host name.
      */
     public void setHostname(final String hostname) {
         this.hostname = hostname;
@@ -286,7 +286,7 @@ public class DumpArchiveSummary {
     /**
      * Sets dump label.
      *
-     * @param label the label.
+     * @param label The label.
      */
     public void setLabel(final String label) {
         this.label = label;
@@ -295,7 +295,7 @@ public class DumpArchiveSummary {
     /**
      * Sets level.
      *
-     * @param level the level.
+     * @param level The level.
      */
     public void setLevel(final int level) {
         this.level = level;
@@ -304,7 +304,7 @@ public class DumpArchiveSummary {
     /**
      * Sets the number of records per tape block.
      *
-     * @param ntrec the number of records per tape block.
+     * @param ntrec The number of records per tape block.
      */
     public void setNTRec(final int ntrec) {
         this.ntrec = ntrec;
@@ -313,7 +313,7 @@ public class DumpArchiveSummary {
     /**
      * Sets previous dump date.
      *
-     * @param previousDumpDate the previous dump dat.
+     * @param previousDumpDate The previous dump dat.
      */
     public void setPreviousDumpDate(final Date previousDumpDate) {
         this.previousDumpDate = previousDumpDate.getTime();
@@ -322,7 +322,7 @@ public class DumpArchiveSummary {
     /**
      * Sets volume (tape) number.
      *
-     * @param volume the volume number.
+     * @param volume The volume number.
      */
     public void setVolume(final int volume) {
         this.volume = volume;

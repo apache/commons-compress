@@ -42,7 +42,7 @@ public abstract class CompressorOutputStream<T extends OutputStream> extends Com
     /**
      * Creates an output stream filter built on top of the specified underlying {@link OutputStream}.
      *
-     * @param out the underlying output stream to be assigned to the field {@code this.out} for later use, or {@code null} if this instance is to be created
+     * @param out The underlying output stream to be assigned to the field {@code this.out} for later use, or {@code null} if this instance is to be created
      *            without an underlying stream.
      * @since 1.27.0
      */

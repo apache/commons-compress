@@ -33,8 +33,8 @@ public interface ExtraFieldParsingBehavior extends UnparseableExtraFieldBehavior
      * A good default implementation would be {@link ExtraFieldUtils#createExtraField}.
      * </p>
      *
-     * @param headerId the id for the extra field.
-     * @return an instance of ZipExtraField, must not be {@code null}.
+     * @param headerId The id for the extra field.
+     * @return An instance of ZipExtraField, must not be {@code null}.
      * @throws ZipException           if an error occurs.
      * @throws InstantiationException if unable to instantiate the class, not thrown by Commons Compress.
      * @throws IllegalAccessException if not allowed to instantiate the class, not thrown by Commons Compress.
@@ -47,13 +47,13 @@ public interface ExtraFieldParsingBehavior extends UnparseableExtraFieldBehavior
      * A good default implementation would be {@link ExtraFieldUtils#fillExtraField}.
      * </p>
      *
-     * @param field the extra field instance to fill.
-     * @param data  the array of extra field data.
+     * @param field The extra field instance to fill.
+     * @param data  The array of extra field data.
      * @param off   offset into data where this field's data starts.
-     * @param len   the length of this field's data.
+     * @param len   The length of this field's data.
      * @param local whether the extra field data stems from the local file header. If this is false then the data is part if the central directory header extra
      *              data.
-     * @return the filled field. Usually this is the same as {@code
+     * @return The filled field. Usually this is the same as {@code
      * field} but it could be a replacement extra field as well. Must not be {@code null}.
      * @throws ZipException if an error occurs.
      */

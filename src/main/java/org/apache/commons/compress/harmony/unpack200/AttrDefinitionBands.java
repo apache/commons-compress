@@ -56,7 +56,7 @@ public class AttrDefinitionBands extends BandSet {
     /**
      * Constructs a new instance.
      *
-     * @param segment the segment.
+     * @param segment The segment.
      */
     public AttrDefinitionBands(final Segment segment) {
         super(segment);
@@ -66,7 +66,7 @@ public class AttrDefinitionBands extends BandSet {
     /**
      * Gets the attribute layout map.
      *
-     * @return the attribute layout map.
+     * @return The attribute layout map.
      */
     public AttributeLayoutMap getAttributeDefinitionMap() {
         return attributeDefinitionMap;

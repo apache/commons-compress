@@ -47,6 +47,19 @@ import org.apache.commons.lang3.ArrayUtils;
  */
 public abstract class BandSet {
 
+    private static final String[][] EMPTY_STRINGS = { {} };
+
+    static int sumPositive(final int[] counts) throws Pack200Exception {
+        int totalCount = 0;
+        for (final int count : counts) {
+            if (count < 0) {
+                throw new Pack200Exception("count < 0");
+            }
+            totalCount += count;
+        }
+        return totalCount;
+    }
+
     /**
      * Segment.
      */
@@ -70,11 +83,11 @@ public abstract class BandSet {
     /**
      * Decodes a band and return an array of {@code int} values.
      *
-     * @param name  the name of the band (for logging and debugging).
-     * @param in    the InputStream to decode.
-     * @param codec the default Codec for this band.
-     * @param count the number of elements to read.
-     * @return an array of decoded {@code int} values.
+     * @param name  The name of the band (for logging and debugging).
+     * @param in    The InputStream to decode.
+     * @param codec The default Codec for this band.
+     * @param count The number of elements to read.
+     * @return An array of decoded {@code int} values.
      * @throws IOException      if there is a problem reading from the underlying input stream.
      * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid.
      */
@@ -115,11 +128,11 @@ public abstract class BandSet {
         // }
         if (codecUsed instanceof PopulationCodec) {
             final PopulationCodec popCodec = (PopulationCodec) codecUsed;
-            final int[] favoured = popCodec.getFavoured().clone();
-            Arrays.sort(favoured);
+            final int[] favored = popCodec.getFavoured().clone();
+            Arrays.sort(favored);
             for (int i = 0; i < band.length; i++) {
-                final boolean favouredValue = Arrays.binarySearch(favoured, band[i]) > -1;
-                final Codec theCodec = favouredValue ? popCodec.getFavouredCodec() : popCodec.getUnfavouredCodec();
+                final boolean favoredValue = Arrays.binarySearch(favored, band[i]) > -1;
+                final Codec theCodec = favoredValue ? popCodec.getFavouredCodec() : popCodec.getUnfavouredCodec();
                 if (theCodec instanceof BHSDCodec && ((BHSDCodec) theCodec).isDelta()) {
                     final BHSDCodec bhsd = (BHSDCodec) theCodec;
                     final long cardinality = bhsd.cardinality();
@@ -138,21 +151,18 @@ public abstract class BandSet {
     /**
      * Decodes a band and return an array of {@code int[]} values.
      *
-     * @param name         the name of the band (primarily for logging/debugging purposes)
-     * @param in           the InputStream to decode from
-     * @param defaultCodec the default codec for this band
-     * @param counts       the numbers of elements to read for each int array within the array to be returned
-     * @return an array of decoded {@code int[]} values
+     * @param name         The name of the band (primarily for logging/debugging purposes)
+     * @param in           The InputStream to decode from
+     * @param defaultCodec The default codec for this band
+     * @param counts       The numbers of elements to read for each int array within the array to be returned
+     * @return An array of decoded {@code int[]} values
      * @throws IOException      if there is a problem reading from the underlying input stream
      * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid
      */
     public int[][] decodeBandInt(final String name, final InputStream in, final BHSDCodec defaultCodec, final int[] counts)
             throws IOException, Pack200Exception {
         final int[][] result = new int[counts.length][];
-        int totalCount = 0;
-        for (final int count : counts) {
-            totalCount += count;
-        }
+        final int totalCount = sumPositive(counts);
         final int[] twoDResult = decodeBandInt(name, in, defaultCodec, totalCount);
         int index = 0;
         for (int i = 0; i < result.length; i++) {
@@ -173,7 +183,7 @@ public abstract class BandSet {
      *
      * @param ints The indices into the {@code reference} array.
      * @param reference The source array.
-     * @return a new array.
+     * @return A new array.
      */
     protected String[] getReferences(final int[] ints, final String[] reference) {
         return ArrayUtils.setAll(new String[ints.length], i -> reference[ints[i]]);
@@ -184,7 +194,7 @@ public abstract class BandSet {
      *
      * @param ints The indices into the {@code reference} array.
      * @param reference The source array.
-     * @return a new array.
+     * @return A new array.
      */
     protected String[][] getReferences(final int[][] ints, final String[] reference) {
         final String[][] result = new String[ints.length][];
@@ -200,11 +210,11 @@ public abstract class BandSet {
     /**
      * Parses an input stream into an array of {@link CPClass}.
      *
-     * @param name  the name of the band (for logging and debugging).
-     * @param in    the input stream to parse.
-     * @param codec the default {@link BHSDCodec} for this band
-     * @param count the number of elements to read.
-     * @return an array of decoded {@link CPClass}.
+     * @param name  The name of the band (for logging and debugging).
+     * @param in    The input stream to parse.
+     * @param codec The default {@link BHSDCodec} for this band
+     * @param count The number of elements to read.
+     * @return An array of decoded {@link CPClass}.
      * @throws IOException      if there is a problem reading from the underlying input stream.
      * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid.
      */
@@ -218,11 +228,11 @@ public abstract class BandSet {
     /**
      * Parses an input stream into an array of {@link CPNameAndType}.
      *
-     * @param name  the name of the band (for logging and debugging).
-     * @param in    the input stream to parse.
-     * @param codec the default {@link BHSDCodec} for this band
-     * @param count the number of elements to read.
-     * @return an array of decoded {@link CPNameAndType}.
+     * @param name  The name of the band (for logging and debugging).
+     * @param in    The input stream to parse.
+     * @param codec The default {@link BHSDCodec} for this band
+     * @param count The number of elements to read.
+     * @return An array of decoded {@link CPNameAndType}.
      * @throws IOException      if there is a problem reading from the underlying input stream.
      * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid.
      */
@@ -236,11 +246,11 @@ public abstract class BandSet {
     /**
      * Parses an input stream into an array of {@link CPDouble}.
      *
-     * @param name  the name of the band (for logging and debugging).
-     * @param in    the input stream to parse.
-     * @param codec the default {@link BHSDCodec} for this band
-     * @param count the number of elements to read.
-     * @return an array of decoded {@link CPDouble}.
+     * @param name  The name of the band (for logging and debugging).
+     * @param in    The input stream to parse.
+     * @param codec The default {@link BHSDCodec} for this band
+     * @param count The number of elements to read.
+     * @return An array of decoded {@link CPDouble}.
      * @throws IOException      if there is a problem reading from the underlying input stream.
      * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid.
      */
@@ -254,11 +264,11 @@ public abstract class BandSet {
     /**
      * Parses an input stream into an array of {@link CPFieldRef}.
      *
-     * @param name  the name of the band (for logging and debugging).
-     * @param in    the input stream to parse.
-     * @param codec the default {@link BHSDCodec} for this band
-     * @param count the number of elements to read.
-     * @return an array of decoded {@link CPFieldRef}.
+     * @param name  The name of the band (for logging and debugging).
+     * @param in    The input stream to parse.
+     * @param codec The default {@link BHSDCodec} for this band
+     * @param count The number of elements to read.
+     * @return An array of decoded {@link CPFieldRef}.
      * @throws IOException      if there is a problem reading from the underlying input stream.
      * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid.
      */
@@ -272,11 +282,11 @@ public abstract class BandSet {
     /**
      * Parses an input stream into an array of {@link CPFloat}.
      *
-     * @param name  the name of the band (for logging and debugging).
-     * @param in    the input stream to parse.
-     * @param codec the default {@link BHSDCodec} for this band
-     * @param count the number of elements to read.
-     * @return an array of decoded {@link CPFloat}.
+     * @param name  The name of the band (for logging and debugging).
+     * @param in    The input stream to parse.
+     * @param codec The default {@link BHSDCodec} for this band
+     * @param count The number of elements to read.
+     * @return An array of decoded {@link CPFloat}.
      * @throws IOException      if there is a problem reading from the underlying input stream.
      * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid.
      */
@@ -290,11 +300,11 @@ public abstract class BandSet {
     /**
      * Parses an input stream into an array of {@link CPInterfaceMethodRef}.
      *
-     * @param name  the name of the band (for logging and debugging).
-     * @param in    the input stream to parse.
-     * @param codec the default {@link BHSDCodec} for this band
-     * @param count the number of elements to read.
-     * @return an array of decoded {@link CPInterfaceMethodRef}.
+     * @param name  The name of the band (for logging and debugging).
+     * @param in    The input stream to parse.
+     * @param codec The default {@link BHSDCodec} for this band
+     * @param count The number of elements to read.
+     * @return An array of decoded {@link CPInterfaceMethodRef}.
      * @throws IOException      if there is a problem reading from the underlying input stream.
      * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid.
      */
@@ -308,11 +318,11 @@ public abstract class BandSet {
     /**
      * Parses an input stream into an array of {@link CPInteger}.
      *
-     * @param name  the name of the band (for logging and debugging).
-     * @param in    the input stream to parse.
-     * @param codec the default {@link BHSDCodec} for this band
-     * @param count the number of elements to read.
-     * @return an array of decoded {@link CPInteger}.
+     * @param name  The name of the band (for logging and debugging).
+     * @param in    The input stream to parse.
+     * @param codec The default {@link BHSDCodec} for this band
+     * @param count The number of elements to read.
+     * @return An array of decoded {@link CPInteger}.
      * @throws IOException      if there is a problem reading from the underlying input stream.
      * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid.
      */
@@ -335,11 +345,11 @@ public abstract class BandSet {
     /**
      * Parses an input stream into an array of {@link CPLong}.
      *
-     * @param name  the name of the band (for logging and debugging).
-     * @param in    the input stream to parse.
-     * @param codec the default {@link BHSDCodec} for this band
-     * @param count the number of elements to read.
-     * @return an array of decoded {@link CPLong}.
+     * @param name  The name of the band (for logging and debugging).
+     * @param in    The input stream to parse.
+     * @param codec The default {@link BHSDCodec} for this band
+     * @param count The number of elements to read.
+     * @return An array of decoded {@link CPLong}.
      * @throws IOException      if there is a problem reading from the underlying input stream.
      * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid.
      */
@@ -362,11 +372,11 @@ public abstract class BandSet {
     /**
      * Parses an input stream into an array of {@link CPMethodRef}.
      *
-     * @param name  the name of the band (for logging and debugging).
-     * @param in    the input stream to parse.
-     * @param codec the default {@link BHSDCodec} for this band
-     * @param count the number of elements to read.
-     * @return an array of decoded {@link CPMethodRef}.
+     * @param name  The name of the band (for logging and debugging).
+     * @param in    The input stream to parse.
+     * @param codec The default {@link BHSDCodec} for this band
+     * @param count The number of elements to read.
+     * @return An array of decoded {@link CPMethodRef}.
      * @throws IOException      if there is a problem reading from the underlying input stream.
      * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid.
      */
@@ -380,11 +390,11 @@ public abstract class BandSet {
     /**
      * Parses an input stream into an array of {@link CPUTF8}.
      *
-     * @param name  the name of the band (for logging and debugging).
-     * @param in    the input stream to parse.
-     * @param codec the default {@link BHSDCodec} for this band
-     * @param count the number of elements to read.
-     * @return an array of decoded {@link CPUTF8}.
+     * @param name  The name of the band (for logging and debugging).
+     * @param in    The input stream to parse.
+     * @param codec The default {@link BHSDCodec} for this band
+     * @param count The number of elements to read.
+     * @return An array of decoded {@link CPUTF8}.
      * @throws IOException      if there is a problem reading from the underlying input stream.
      * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid.
      */
@@ -398,11 +408,11 @@ public abstract class BandSet {
     /**
      * Parses an input stream into an array of array of {@link CPUTF8}.
      *
-     * @param name  the name of the band (for logging and debugging).
-     * @param in    the input stream to parse.
-     * @param codec the default {@link BHSDCodec} for this band
-     * @param counts the number of elements to read.
-     * @return an array of array of decoded {@link CPUTF8}.
+     * @param name  The name of the band (for logging and debugging).
+     * @param in    The input stream to parse.
+     * @param codec The default {@link BHSDCodec} for this band
+     * @param counts The number of elements to read.
+     * @return An array of array of decoded {@link CPUTF8}.
      * @throws IOException      if there is a problem reading from the underlying input stream.
      * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid.
      */
@@ -429,11 +439,11 @@ public abstract class BandSet {
     /**
      * Parses an input stream into an array of {@link CPString}.
      *
-     * @param name  the name of the band (for logging and debugging).
-     * @param in    the input stream to parse.
-     * @param codec the default {@link BHSDCodec} for this band
-     * @param count the number of elements to read.
-     * @return an array of decoded {@link CPString}.
+     * @param name  The name of the band (for logging and debugging).
+     * @param in    The input stream to parse.
+     * @param codec The default {@link BHSDCodec} for this band
+     * @param count The number of elements to read.
+     * @return An array of decoded {@link CPString}.
      * @throws IOException      if there is a problem reading from the underlying input stream.
      * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid.
      */
@@ -447,11 +457,11 @@ public abstract class BandSet {
     /**
      * Parses an input stream into an array of {@link CPUTF8}.
      *
-     * @param name  the name of the band (for logging and debugging).
-     * @param in    the input stream to parse.
-     * @param codec the default {@link BHSDCodec} for this band
-     * @param count the number of elements to read.
-     * @return an array of decoded {@link CPUTF8}.
+     * @param name  The name of the band (for logging and debugging).
+     * @param in    The input stream to parse.
+     * @param codec The default {@link BHSDCodec} for this band
+     * @param count The number of elements to read.
+     * @return An array of decoded {@link CPUTF8}.
      * @throws IOException      if there is a problem reading from the underlying input stream.
      * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid.
      */
@@ -465,11 +475,11 @@ public abstract class BandSet {
     /**
      * Parses an input stream into an array of array of {@link CPUTF8}.
      *
-     * @param name  the name of the band (for logging and debugging).
-     * @param in    the input stream to parse.
-     * @param codec the default {@link BHSDCodec} for this band
-     * @param counts the number of elements to read.
-     * @return an array of array of decoded {@link CPUTF8}.
+     * @param name  The name of the band (for logging and debugging).
+     * @param in    The input stream to parse.
+     * @param codec The default {@link BHSDCodec} for this band
+     * @param counts The number of elements to read.
+     * @return An array of array of decoded {@link CPUTF8}.
      * @throws IOException      if there is a problem reading from the underlying input stream.
      * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid.
      */
@@ -497,12 +507,12 @@ public abstract class BandSet {
     /**
      * Parses an input stream into an array of flags.
      *
-     * @param name  the name of the band (for logging and debugging).
-     * @param in    the InputStream to decode.
-     * @param count the number of elements to read.
-     * @param hiCodec an optional codec if the high flag is on.
-     * @param loCodec the codec.
-     * @return an array of decoded {@code long} flags.
+     * @param name  The name of the band (for logging and debugging).
+     * @param in    The InputStream to decode.
+     * @param count The number of elements to read.
+     * @param hiCodec An optional codec if the high flag is on.
+     * @param loCodec The codec.
+     * @return An array of decoded {@code long} flags.
      * @throws IOException      if there is a problem reading from the underlying input stream.
      * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid.
      */
@@ -514,12 +524,12 @@ public abstract class BandSet {
     /**
      * Parses an input stream into an array of flags.
      *
-     * @param name  the name of the band (for logging and debugging).
-     * @param in    the InputStream to decode.
-     * @param count the number of elements to read.
-     * @param codec the codec.
+     * @param name  The name of the band (for logging and debugging).
+     * @param in    The InputStream to decode.
+     * @param count The number of elements to read.
+     * @param codec The codec.
      * @param hasHi whether to the high flag is enabled.
-     * @return an array of decoded {@code long} flags.
+     * @return An array of decoded {@code long} flags.
      * @throws IOException      if there is a problem reading from the underlying input stream.
      * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid.
      */
@@ -531,12 +541,12 @@ public abstract class BandSet {
     /**
      * Parses an input stream into an array of flags.
      *
-     * @param name  the name of the band (for logging and debugging).
-     * @param in    the InputStream to decode.
-     * @param counts the number of elements to read.
-     * @param hiCodec an optional codec if the high flag is on.
-     * @param loCodec the codec.
-     * @return an array of decoded {@code long} flags.
+     * @param name  The name of the band (for logging and debugging).
+     * @param in    The InputStream to decode.
+     * @param counts The number of elements to read.
+     * @param hiCodec An optional codec if the high flag is on.
+     * @param loCodec The codec.
+     * @return An array of decoded {@code long} flags.
      * @throws IOException      if there is a problem reading from the underlying input stream.
      * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid.
      */
@@ -546,19 +556,15 @@ public abstract class BandSet {
         if (count == 0) {
             return new long[][] { {} };
         }
-        int sum = 0;
-        final long[][] result = new long[count][];
-        for (int i = 0; i < count; i++) {
-            sum += counts[i];
-        }
+        final int sum = sumPositive(counts);
         int[] hi = null;
         final int[] lo;
         if (hiCodec != null) {
             hi = decodeBandInt(name, in, hiCodec, sum);
         }
         lo = decodeBandInt(name, in, loCodec, sum);
-
         int index = 0;
+        final long[][] result = new long[count][];
         for (int i = 0; i < count; i++) {
             result[i] = new long[counts[i]];
             for (int j = 0; j < result[i].length; j++) {
@@ -576,12 +582,12 @@ public abstract class BandSet {
     /**
      * Parses an input stream into an array of flags.
      *
-     * @param name  the name of the band (for logging and debugging).
-     * @param in    the InputStream to decode.
-     * @param counts the number of elements to read.
-     * @param codec the codec.
+     * @param name  The name of the band (for logging and debugging).
+     * @param in    The InputStream to decode.
+     * @param counts The number of elements to read.
+     * @param codec The codec.
      * @param hasHi whether the high flag is enabnled.
-     * @return an array of decoded {@code long} flags.
+     * @return An array of decoded {@code long} flags.
      * @throws IOException      if there is a problem reading from the underlying input stream.
      * @throws Pack200Exception if there is a problem decoding the value or that the value is invalid.
      */
@@ -594,11 +600,11 @@ public abstract class BandSet {
      * Parses <em>count</em> references from {@code in}, using {@code codec} to decode the values as indexes into {@code reference} (which is populated prior to
      * this call). An exception is thrown if a decoded index falls outside the range [0..reference.length-1].
      *
-     * @param name      the band name
-     * @param in        the input stream to read from
-     * @param codec     the BHSDCodec to use for decoding
-     * @param count     the number of references to decode
-     * @param reference the array of values to use for the references
+     * @param name      The band name
+     * @param in        The input stream to read from
+     * @param codec     The BHSDCodec to use for decoding
+     * @param count     The number of references to decode
+     * @param reference The array of values to use for the references
      * @return Parsed references.
      * @throws IOException      if a problem occurs during reading from the underlying stream.
      * @throws Pack200Exception if a problem occurs with an unexpected value or unsupported Codec.
@@ -613,11 +619,11 @@ public abstract class BandSet {
      * this call). An exception is thrown if a decoded index falls outside the range [0..reference.length-1]. Unlike the other parseReferences, this
      * post-processes the result into an array of results.
      *
-     * @param name      the name of the band (for logging and debugging).
-     * @param in        the input stream to read from.
-     * @param codec     the BHSDCodec to use for decoding.
-     * @param counts    the numbers of references to decode for each array entry.
-     * @param reference the array of values to use for the references.
+     * @param name      The name of the band (for logging and debugging).
+     * @param in        The input stream to read from.
+     * @param codec     The BHSDCodec to use for decoding.
+     * @param counts    The numbers of references to decode for each array entry.
+     * @param reference The array of values to use for the references.
      * @return Parsed references.
      * @throws IOException      if a problem occurs during reading from the underlying stream.
      * @throws Pack200Exception if a problem occurs with an unexpected value or unsupported Codec.
@@ -626,12 +632,9 @@ public abstract class BandSet {
             throws IOException, Pack200Exception {
         final int count = counts.length;
         if (count == 0) {
-            return new String[][] { {} };
+            return EMPTY_STRINGS;
         }
-        int sum = 0;
-        for (int i = 0; i < count; i++) {
-            sum += counts[i];
-        }
+        final int sum = sumPositive(counts);
         // TODO Merge the decode and parsing of a multiple structure into one
         final int[] indices = decodeBandInt(name, in, codec, sum);
         final String[] result1 = new String[sum];
@@ -657,7 +660,7 @@ public abstract class BandSet {
     /**
      * Reads the input stream.
      *
-     * @param inputStream the stream to read.
+     * @param inputStream The stream to read.
      * @throws IOException      if a problem occurs during reading from the underlying stream.
      * @throws Pack200Exception if a problem occurs with an unexpected value or unsupported Codec.
      */
@@ -674,7 +677,7 @@ public abstract class BandSet {
     /**
      * Unpacks the input stream.
      *
-     * @param in the stream to unpack.
+     * @param in The stream to unpack.
      * @throws IOException      if a problem occurs during reading from the underlying stream.
      * @throws Pack200Exception if a problem occurs with an unexpected value or unsupported Codec.
      */

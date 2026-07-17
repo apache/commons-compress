@@ -105,7 +105,7 @@ public class XZCompressorOutputStream extends CompressorOutputStream<XZOutputStr
     /**
      * Constructs a new builder of {@link XZCompressorOutputStream}.
      *
-     * @return a new builder of {@link XZCompressorOutputStream}.
+     * @return A new builder of {@link XZCompressorOutputStream}.
      * @since 1.28.0
      */
     public static Builder builder() {
@@ -120,7 +120,7 @@ public class XZCompressorOutputStream extends CompressorOutputStream<XZOutputStr
     /**
      * Creates a new XZ compressor using the default LZMA2 options. This is equivalent to {@code XZCompressorOutputStream(outputStream, 6)}.
      *
-     * @param outputStream the stream to wrap.
+     * @param outputStream The stream to wrap.
      * @throws IOException on error.
      */
     public XZCompressorOutputStream(final OutputStream outputStream) throws IOException {
@@ -137,8 +137,8 @@ public class XZCompressorOutputStream extends CompressorOutputStream<XZOutputStr
      * uncompressed size of the file exceeds 8&nbsp;MiB, 16&nbsp;MiB, or 32&nbsp;MiB, it is waste of memory to use the presets 7, 8, or 9, respectively.
      * </p>
      *
-     * @param outputStream the stream to wrap.
-     * @param preset       the preset.
+     * @param outputStream The stream to wrap.
+     * @param preset       The preset.
      * @throws IOException on error.
      * @deprecated Use {@link #builder()}.
      */

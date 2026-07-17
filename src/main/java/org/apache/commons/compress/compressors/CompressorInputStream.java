@@ -37,7 +37,7 @@ public abstract class CompressorInputStream extends InputStream {
     /**
      * Increments the counter of already read bytes. Doesn't increment if the EOF has been hit (read == -1)
      *
-     * @param read the number of bytes read.
+     * @param read The number of bytes read.
      * @since 1.1
      */
     protected void count(final int read) {
@@ -47,7 +47,7 @@ public abstract class CompressorInputStream extends InputStream {
     /**
      * Increments the counter of already read bytes. Doesn't increment if the EOF has been hit (read == -1)
      *
-     * @param read the number of bytes read.
+     * @param read The number of bytes read.
      */
     protected void count(final long read) {
         if (read != -1) {
@@ -58,7 +58,7 @@ public abstract class CompressorInputStream extends InputStream {
     /**
      * Gets the current number of bytes read from this stream.
      *
-     * @return the number of read bytes.
+     * @return The number of read bytes.
      * @since 1.1
      */
     public long getBytesRead() {
@@ -68,7 +68,7 @@ public abstract class CompressorInputStream extends InputStream {
     /**
      * Gets the current number of bytes read from this stream.
      *
-     * @return the number of read bytes.
+     * @return The number of read bytes.
      * @deprecated this method may yield wrong results for large archives, use {@link #getBytesRead()} instead.
      */
     @Deprecated
@@ -87,7 +87,7 @@ public abstract class CompressorInputStream extends InputStream {
      * Provides half of {@link org.apache.commons.compress.utils.InputStreamStatistics} without forcing subclasses to implement the other half.
      * </p>
      *
-     * @return the amount of decompressed bytes returned by the stream.
+     * @return The amount of decompressed bytes returned by the stream.
      * @since 1.17
      */
     public long getUncompressedCount() {
@@ -97,7 +97,7 @@ public abstract class CompressorInputStream extends InputStream {
     /**
      * Decrements the counter of already read bytes.
      *
-     * @param pushedBack the number of bytes pushed back.
+     * @param pushedBack The number of bytes pushed back.
      * @since 1.7
      */
     protected void pushedBackBytes(final long pushedBack) {

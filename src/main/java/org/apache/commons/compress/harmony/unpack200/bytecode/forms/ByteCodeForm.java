@@ -314,7 +314,7 @@ public abstract class ByteCodeForm {
      * Gets a ByteCodeForm.
      *
      * @param opcode opcode index.
-     * @return the matching ByteCodeForm at the given opcode.
+     * @return The matching ByteCodeForm at the given opcode.
      */
     public static ByteCodeForm get(final int opcode) {
         return byteCodeArray[opcode];
@@ -398,7 +398,7 @@ public abstract class ByteCodeForm {
     /**
      * Gets the first operand index.
      *
-     * @return the first operand index.
+     * @return The first operand index.
      */
     public int firstOperandIndex() {
         return firstOperandIndex;
@@ -407,8 +407,8 @@ public abstract class ByteCodeForm {
     /**
      * The ByteCodeForm knows how to fix up a bytecode if it needs to be fixed up because it holds a Label bytecode.
      *
-     * @param byteCode      a ByteCode to be fixed up
-     * @param codeAttribute a CodeAttribute used to determine how the ByteCode should be fixed up.
+     * @param byteCode      A ByteCode to be fixed up
+     * @param codeAttribute A CodeAttribute used to determine how the ByteCode should be fixed up.
      */
     public void fixUpByteCodeTargets(final ByteCode byteCode, final CodeAttribute codeAttribute) {
         // Most ByteCodeForms don't have any fixing up to do.
@@ -417,7 +417,7 @@ public abstract class ByteCodeForm {
     /**
      * Gets the name.
      *
-     * @return the name.
+     * @return The name.
      */
     public String getName() {
         return name;
@@ -426,7 +426,7 @@ public abstract class ByteCodeForm {
     /**
      * Gets the opcode.
      *
-     * @return the opcode.
+     * @return The opcode.
      */
     public int getOpcode() {
         return opcode;
@@ -435,7 +435,7 @@ public abstract class ByteCodeForm {
     /**
      * Gets the rewrite array.
      *
-     * @return the rewrite array.
+     * @return The rewrite array.
      */
     public int[] getRewrite() {
         return rewrite;
@@ -444,7 +444,7 @@ public abstract class ByteCodeForm {
     /**
      * Gets a copy of the rewrite array.
      *
-     * @return a copy of the rewrite array.
+     * @return A copy of the rewrite array.
      */
     public int[] getRewriteCopy() {
         return Arrays.copyOf(rewrite, rewrite.length);
@@ -488,7 +488,7 @@ public abstract class ByteCodeForm {
     /**
      * Gets the operand length.
      *
-     * @return the operand length.
+     * @return The operand length.
      */
     public int operandLength() {
         return operandLength;

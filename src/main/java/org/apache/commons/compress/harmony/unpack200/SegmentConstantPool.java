@@ -208,7 +208,7 @@ public class SegmentConstantPool {
      *
      * @param type Constant pool type.
      * @param index Index into a specific constant pool.
-     * @return a constant pool entry.
+     * @return A constant pool entry.
      * @throws Pack200Exception if a type is not supported or the index not in the range [0, {@link Integer#MAX_VALUE}].
      */
     public ConstantPoolEntry getConstantPoolEntry(final int type, final long index) throws Pack200Exception {
@@ -272,9 +272,9 @@ public class SegmentConstantPool {
     /**
      * Gets the value at the specified constant pool index.
      *
-     * @param cp the constant pool index.
-     * @param longIndex the long index.
-     * @return the constant pool entry.
+     * @param cp The constant pool index.
+     * @param longIndex The long index.
+     * @return The constant pool entry.
      * @throws Pack200Exception if a Pack200 error occurs.
      */
     public ClassFileEntry getValue(final int cp, final long longIndex) throws Pack200Exception {

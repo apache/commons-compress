@@ -83,7 +83,7 @@ public class PackingUtils {
     /**
      * Configures packing options.
      *
-     * @param options the packing options.
+     * @param options The packing options.
      * @throws IOException if an I/O error occurs.
      */
     public static void config(final PackingOptions options) throws IOException {
@@ -105,8 +105,8 @@ public class PackingUtils {
     /**
      * When effort is 0, the packer copys through the original jar file without compression
      *
-     * @param jarFile      the input jar file
-     * @param outputStream the jar output stream
+     * @param jarFile      The input jar file
+     * @param outputStream The jar output stream
      * @throws IOException If an I/O error occurs.
      */
     public static void copyThroughJar(final JarFile jarFile, final OutputStream outputStream) throws IOException {
@@ -129,8 +129,8 @@ public class PackingUtils {
     /**
      * When effort is 0, the packer copies through the original jar input stream without compression
      *
-     * @param jarInputStream the jar input stream
-     * @param outputStream   the jar output stream
+     * @param jarInputStream The jar input stream
+     * @param outputStream   The jar output stream
      * @throws IOException If an I/O error occurs.
      */
     public static void copyThroughJar(final JarInputStream jarInputStream, final OutputStream outputStream) throws IOException {
@@ -152,9 +152,9 @@ public class PackingUtils {
     /**
      * Gets the packing file list from a JAR file.
      *
-     * @param jarFile the JAR file.
+     * @param jarFile The JAR file.
      * @param keepFileOrder whether to keep file order.
-     * @return the packing file list.
+     * @return The packing file list.
      * @throws IOException if an I/O error occurs.
      */
     public static List<PackingFile> getPackingFileListFromJar(final JarFile jarFile, final boolean keepFileOrder) throws IOException {
@@ -175,9 +175,9 @@ public class PackingUtils {
     /**
      * Gets the packing file list from a JAR input stream.
      *
-     * @param jarInputStream the JAR input stream.
+     * @param jarInputStream The JAR input stream.
      * @param keepFileOrder whether to keep file order.
-     * @return the packing file list.
+     * @return The packing file list.
      * @throws IOException if an I/O error occurs.
      */
     public static List<PackingFile> getPackingFileListFromJar(final JarInputStream jarInputStream, final boolean keepFileOrder) throws IOException {
@@ -207,7 +207,7 @@ public class PackingUtils {
     /**
      * Logs a message.
      *
-     * @param message the message to log.
+     * @param message The message to log.
      */
     public static void log(final String message) {
         packingLogger.log(Level.INFO, message);

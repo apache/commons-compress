@@ -59,6 +59,8 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="pkarwasz" due-to="Piotr P. Karwasz">SevenZFile now enforces the same folder and coder limits as the CPP implementation.</action>
       <action type="fix" dev="pkarwasz" due-to="Piotr P. Karwasz">Refactor unsigned number parsing and header validation in SevenZFile.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Fix Apache RAT plugin console warnings.</action>
+      <action type="fix" dev="ggregory" due-to="KALI 834X, Gary Gregory">Reject short LZMA properties and oversized dictionary in LZMADecoder (#784).</action>
+      <action type="fix" dev="ggregory" due-to="KALI 834X, Gary Gregory">Fix copyOfRange end index in x0017 strong encryption header (#786).</action>
       <!-- FIX bzip2 -->
       <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">BZip2CompressorInputStream now throw CompressorException (a subclass of IOException) for invalid or corrupted data, providing more specific error reporting.</action>
       <action type="fix" dev="pkarwasz" due-to="Tyler Nighswander, Piotr P. Karwasz">BZip2 input streams treat Huffman codes longer than 20 bits as corrupted data, matching the behavior of the reference implementation.</action>
@@ -68,6 +70,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">DumpArchiveInputStream.getNextEntry() throws an ArchiveException instead of ArrayIndexOutOfBoundsException.</action>
       <action type="fix" dev="pkarwasz" due-to="Piotr P. Karwasz">Fix DumpArchiveInputStream to correctly handle file names up to 255 bytes #711.</action>
       <action type="fix" dev="ggregory" due-to="Philip Betzler-Braun, Gary Gregory, Piotr P. Karwasz" issue="COMPRESS-712">Unsanitized read causes IndexOutOfBoundsException in #749.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory, KALI 834X">DumpArchiveEntry rejects out-of-range directory header count (#781).</action>
       <!-- FIX zip -->
       <action type="fix" dev="ggregory" due-to="Dominik Stadler, Gary Gregory" issue="COMPRESS-598">ZipArchiveInputStream.read(byte[], int, int) now throws an IOException instead of a NullPointerException.</action>
       <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">ZipFile.createBoundedInputStream(long, long) now throws an ArchiveException instead of IllegalArgumentException.</action>
@@ -78,10 +81,17 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="YuWeiBoy, Gary Gregory" issue="COMPRESS-708">ZstdCompressorInputStream closes the InputStream held by ZipArchiveInputStream garbage collection.</action>
       <action type="fix" dev="pkarwasz" due-to="Gary Gregory, Piotr P. Karwasz" issue="COMPRESS-713">Unchecked pre-decremental notation in for-loop as array index causes ArrayOutOfBounds access #755.</action>
       <action type="fix" dev="pkarwasz" due-to="Gary Gregory, Piotr P. Karwasz, Soheila Esmaeili" issue="COMPRESS-715">ZipArchiveInputStream fails with "Unexpected record signature: 0x0" #753.</action>
-      <!-- FIX tar -->
+      <action type="fix" dev="pkarwasz" due-to="Gary Gregory, Piotr P. Karwasz" issue="COMPRESS-714">Internal IllegalArgumentException in ZipFile and TarFile creation is not caught #754.</action>
+      <action type="fix" dev="pkarwasz" due-to="Piotr P. Karwasz">Improve Javadoc of ZipArchiveEntry #769.</action>
+      <action type="fix" dev="pkarwasz" due-to="Zach Warneke, Gary Gregory">Fix NullPointerException when reading XZ entries in ZipArchiveInputStream (#774).</action>
+      <action type="fix" dev="pkarwasz" due-to="KALI 834X, Gary Gregory">Fix Zip rcount field width in x0015 and x0016 certificate id extra fields (#787).</action>
+      <!-- FIX TAR -->
       <action type="fix" dev="pkarwasz" due-to="Tyler Nighswander, Piotr P. Karwasz, Gary Gregory">>Uniform handling of special tar records in TarFile and TarArchiveInputStream.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory, Stanislav Fort">TarArchiveOutputStream now throws a IllegalArgumentException instead of an OutOfMemoryError.</action>
       <action type="fix" dev="ggregory" issue="COMPRESS-707" due-to="Gary Gregory, Roel van Dijk">TarUtils.verifyCheckSum() throws an Exception when checksum could not be parsed.</action>
+      <action type="fix" dev="ggregory" issue="COMPRESS-724" due-to="Ruiqi Dong, Gary Gregory">TarUtils.parsePAX1XSparseHeaders(InputStream, int) skips an extra record when sparse headers are already record-aligned.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory, KALI 834X">Reject tar sparse blocks larger than the entry size (#780).</action>
+      <action type="fix" dev="ggregory" due-to="OldTruckDriver, Gary Gregory" issue="COMPRESS-724">Fix TAR PAX 1.x sparse header alignment (#775).</action>
       <!-- FIX ar -->      
       <action type="fix" dev="ggregory" due-to="Gary Gregory">ArArchiveInputStream.readGNUStringTable(byte[], int, int) now provides a better exception message, wrapping the underlying exception.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">ArArchiveInputStream.read(byte[], int, int) now throws ArchiveException instead of ArithmeticException.</action>
@@ -92,6 +102,7 @@ The <action> type attribute can be add,update,fix,remove.
       <!-- FIX unpack200 -->
       <action type="fix" dev="ggregory" due-to="Gary Gregory, Stanislav Fort">org.apache.commons.compress.harmony.unpack200 now throws Pack200Exception, IllegalArgumentException, and IllegalStateException instead of other runtime exceptions and Error.</action>
       <action type="fix" dev="pkarwasz" due-to="Piotr P. Karwasz">Enforce strict attribute layout parsing in Pack200.</action>
+      <action type="fix" dev="ggregory" due-to="KALI 834X, Gary Gregory">Reject negative element counts in BandSet band decoding (#782).</action>
       <!-- FIX pack200 -->      
       <action type="fix" dev="ggregory" due-to="Gary Gregory, Igor Morgenstern">org.apache.commons.compress.harmony.pack200 now throws Pack200Exception, IllegalArgumentException, IllegalStateException, instead of other runtime exceptions and Error.</action>
       <action type="fix" dev="ppkarwasz" due-to="Raeps">Extract duplicate code in org.apache.commons.compress.harmony.pack200.IntList.</action>
@@ -103,11 +114,14 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory">CpioArchiveInputStream.readOldBinaryEntry(boolean) now throws ArchiveException instead of Arithmetic exception.</action>
       <action type="fix" issue="COMPRESS-711" dev="pkarwasz" due-to="Piotr P. Karwasz">Fix checksum calculation in CpioArchiveInputStream when reading with a non-zero offset.</action>
       <action type="fix" issue="COMPRESS-718" dev="ggregory" due-to="Anay Wadhera, Gary Gregory">CpioArchiveEntry does not allow files over 4GB in OLD_ASCII format.</action>
+      <action type="fix" dev="ggregory" due-to="Christopher Linke, Gary Gregory">Throw ArchiveException instead of EOFException when CPIO name size less than or equal to 0 #771.</action>
       <!-- FIX gzip -->
       <action type="fix" dev="ggregory" due-to="Gary Gregory">GzipParameters.setOperatingSystem(int) now throws CompressorException on illegal input.</action>
       <action type="fix" issue="COMPRESS-705" dev="ggregory" due-to="Mario Fredenhagen, Gary Gregory">GZip IOException: Extra subfield length exceeds remaining bytes in extra field; use new option GzipCompressorInputStream.Builder.setIgnoreExtraField(boolean).</action>
       <!-- FIX snappy -->
       <action type="fix" dev="ggregory" due-to="Stanislav Fort, Gary Gregory">Fix for when a valid raw Snappy stream with uncompressed size > 2 GiB used to decompress and then fail at physical EOF with a “Premature end of stream” exception instead of completing cleanly.</action>
+      <!-- FIX deflate64 -->
+      <action type="fix" dev="ggregory" due-to="KALI 834X, Gary Gregory">Reject invalid literal/length and distance codes in Deflate64 decoder (#785).</action>
       <!-- FIX general -->      
       <action type="fix" dev="ggregory" due-to="Piotr P. Karwasz, Gary Gregory">Add missing Javadoc @since tag to org.apache.commons.compress.compressors.lz77support.LZ77Compressor.AbstractReference.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Classes in org.apache.commons.compress.archivers now throw a subclass of IOException called ArchiveException instead of IOException when a formatting problem is found.</action>
@@ -163,15 +177,17 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="add" dev="pkarwasz" due-to="Piotr P. Karwasz">Add a configurable maxEntryNameLength option to all archivers.</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add UnsupportedZipFeatureException.Feature.toString().</action>
       <!-- UPDATE -->
-      <action type="update" dev="ggregory" due-to="Gary Gregory">Bump org.apache.commons:commons-parent from 85 to 98 #707, #752.</action>
+      <action type="update" dev="ggregory" due-to="Gary Gregory">Bump org.apache.commons:commons-parent from 85 to 102 #707, #752.</action>
       <action type="update" dev="ggregory" due-to="Gary Gregory">Bump org.apache.commons:commons-lang3 from 3.18.0 to 3.20.0.</action>
       <action type="update" dev="ggregory" due-to="Gary Gregory, Dependabot">Bump com.github.luben:zstd-jni from 1.5.7-4 to 1.5.7-6 #717, #740.</action>
       <action type="update" dev="ggregory" due-to="Gary Gregory, Dependabot">Bump com.github.luben:zstd-jni from 1.5.7-6 to 1.5.7-7 #768 https://github.com/luben/zstd-jni/compare/v1.5.7-6...v1.5.7-7.</action>
+      <action type="update" dev="ggregory" due-to="Gary Gregory, Dependabot">Bump com.github.luben:zstd-jni from 1.5.7-7 to 1.5.7-11 (#778).</action>
       <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump com.github.marschall:memoryfilesystem from 2.8.1 to 2.8.2 #727.</action>
-      <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump commons-codec:commons-codec from 1.19.0 to 1.21.0 #745.</action>
+      <action type="update" dev="ggregory" due-to="Dependabot, Gary Gregory">Bump commons-codec:commons-codec from 1.19.0 to 1.22.0 #745.</action>
       <action type="update" dev="ggregory" due-to="Gary Gregory">Bump org.tukaani:xz from 1.10 to 1.11, https://github.com/tukaani-project/xz-java/compare/v1.10..v1.11</action>
       <action type="update" dev="ggregory" due-to="Gary Gregory">Bump org.tukaani:xz from 1.11 to 1.12, #767, https://github.com/tukaani-project/xz-java/compare/v1.11...v1.12</action>
       <action type="update" dev="ggregory" due-to="Gary Gregory">Bump Bump io.airlift:aircompressor from 2.0.2 to 2.0.3 #760.</action>
+      <action type="update" dev="ggregory" due-to="Gary Gregory">Bump commons-io:commons-io from 2.21.0 to 2.22.0.</action>
       <!-- REMOVE -->
       <action type="remove" dev="pkarwasz" due-to="Piotr P. Karwasz">Deprecate IOUtils.readFully and IOUtils.skip.</action>
     </release>
@@ -2516,7 +2532,7 @@ This also changes the superclass of ZCompressorInputStream.
         file.
       </action>
       <action issue="COMPRESS-117" type="update" date="2011-03-23">
-        Certain tar files not recognised by ArchiveStreamFactory.
+        Certain tar files not recognized by ArchiveStreamFactory.
       </action>
       <action issue="COMPRESS-125" type="fix" date="2011-03-23">
         BZip2CompressorInputStream throws IOException if underlying stream returns available() == 0.
@@ -2558,7 +2574,7 @@ This also changes the superclass of ZCompressorInputStream.
        Note: does not support global pax headers
       </action>
       <action issue="COMPRESS-107" type="fix" date="2010-05-10">
-       ArchiveStreamFactory does not recognise tar files created by Ant
+       ArchiveStreamFactory does not recognize tar files created by Ant
       </action>
       <action issue="COMPRESS-110" type="fix" date="2010-05-09">
        Support "ustar" prefix field, which is used when file paths are longer

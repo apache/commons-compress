@@ -34,7 +34,7 @@ public interface ArchiveStreamProvider {
      * Creates an archive input stream from an archiver name and an input stream.
      *
      * @param <I>          The {@link ArchiveInputStream} type.
-     * @param archiverName the archiver name, i.e. {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#AR},
+     * @param archiverName The archiver name, i.e. {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#AR},
      *                     {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#ARJ},
      *                     {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#ZIP},
      *                     {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#TAR},
@@ -42,9 +42,9 @@ public interface ArchiveStreamProvider {
      *                     {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#CPIO},
      *                     {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#DUMP} or
      *                     {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#SEVEN_Z}
-     * @param inputStream  the input stream.
+     * @param inputStream  The input stream.
      * @param encoding     encoding name or null for the default.
-     * @return the archive input stream.
+     * @return The archive input stream.
      * @throws ArchiveException               if the archiver name is not known.
      * @throws StreamingNotSupportedException if the format cannot be read from a stream.
      * @throws IllegalArgumentException       if the archiver name or stream is null.
@@ -56,14 +56,14 @@ public interface ArchiveStreamProvider {
      * Creates an archive output stream from an archiver name and an output stream.
      *
      * @param <O>          The {@link ArchiveInputStream} type.
-     * @param archiverName the archiver name, i.e. {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#AR},
+     * @param archiverName The archiver name, i.e. {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#AR},
      *                     {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#ZIP},
      *                     {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#TAR},
      *                     {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#JAR} or
      *                     {@value org.apache.commons.compress.archivers.ArchiveStreamFactory#CPIO}
-     * @param outputStream the output stream.
+     * @param outputStream The output stream.
      * @param encoding     encoding name or null for the default.
-     * @return the archive output stream.
+     * @return The archive output stream.
      * @throws ArchiveException               if the archiver name is not known.
      * @throws StreamingNotSupportedException if the format cannot be written to a stream.
      * @throws IllegalArgumentException       if the archiver name or stream is null.

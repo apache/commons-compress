@@ -126,7 +126,7 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
     /**
      * Constructs a new instance.
      *
-     * @param inputStream the underlying input stream, or {@code null} if this instance is to be created without an underlying stream.
+     * @param inputStream The underlying input stream, or {@code null} if this instance is to be created without an underlying stream.
      * @param charsetName charset name.
      * @since 1.26.0
      * @deprecated Since 1.29.0, use {@link #ArchiveInputStream(AbstractArchiveBuilder)} instead.
@@ -144,7 +144,7 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
      * Some archive formats support variants or details that are not supported (yet).
      * </p>
      *
-     * @param archiveEntry the entry to test.
+     * @param archiveEntry The entry to test.
      * @return This implementation always returns true.
      * @since 1.1
      */
@@ -155,7 +155,7 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
     /**
      * Increments the counter of already read bytes. Doesn't increment if the EOF has been hit (read == -1).
      *
-     * @param read the number of bytes read.
+     * @param read The number of bytes read.
      */
     protected void count(final int read) {
         count((long) read);
@@ -164,7 +164,7 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
     /**
      * Increments the counter of already read bytes. Doesn't increment if the EOF has been hit (read == -1).
      *
-     * @param read the number of bytes read.
+     * @param read The number of bytes read.
      * @since 1.1
      */
     protected void count(final long read) {
@@ -193,7 +193,7 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
     /**
      * Gets the current number of bytes read from this stream.
      *
-     * @return the number of read bytes.
+     * @return The number of read bytes.
      * @since 1.1
      */
     public long getBytesRead() {
@@ -203,7 +203,7 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
     /**
      * Gets the Charset.
      *
-     * @return the Charset.
+     * @return The Charset.
      */
     public Charset getCharset() {
         return charset;
@@ -212,7 +212,7 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
     /**
      * Gets the current number of bytes read from this stream.
      *
-     * @return the number of read.
+     * @return The number of read.
      * @deprecated this method may yield wrong results for large archives, use {@link #getBytesRead()} instead.
      */
     @Deprecated
@@ -233,7 +233,7 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
     /**
      * Gets the next Archive Entry in this Stream.
      *
-     * @return the next entry, or {@code null} if there are no more entries.
+     * @return The next entry, or {@code null} if there are no more entries.
      * @throws IOException if the next entry could not be read.
      */
     public abstract E getNextEntry() throws IOException;
@@ -241,7 +241,7 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
     /**
      * Returns an iterator over the SubField elements in this extra field in proper sequence.
      *
-     * @return an iterator over the SubField elements in this extra field in proper sequence.
+     * @return An iterator over the SubField elements in this extra field in proper sequence.
      * @since 1.27.0
      */
     public IOIterator<E> iterator() {
@@ -277,7 +277,7 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
     /**
      * Decrements the counter of already read bytes.
      *
-     * @param pushedBack the number of bytes pushed back.
+     * @param pushedBack The number of bytes pushed back.
      * @since 1.1
      */
     protected void pushedBackBytes(final long pushedBack) {
@@ -293,7 +293,7 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
      * MUST be overridden if the {@link #read(byte[], int, int)} method is not overridden; may be overridden otherwise.
      * </p>
      *
-     * @return the byte read, or -1 if end of input is reached.
+     * @return The byte read, or -1 if end of input is reached.
      * @throws IOException if an I/O error has occurred.
      */
     @Override

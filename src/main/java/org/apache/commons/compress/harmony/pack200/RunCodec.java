@@ -38,9 +38,9 @@ public class RunCodec extends Codec {
     /**
      * Constructs a new RunCodec.
      *
-     * @param k the number of values.
-     * @param aCodec the A codec.
-     * @param bCodec the B codec.
+     * @param k The number of values.
+     * @param aCodec The A codec.
+     * @param bCodec The B codec.
      * @throws Pack200Exception if k is negative or codecs are null.
      */
     public RunCodec(final int k, final Codec aCodec, final Codec bCodec) throws Pack200Exception {
@@ -94,7 +94,7 @@ public class RunCodec extends Codec {
     /**
      * Gets the A codec.
      *
-     * @return the A codec.
+     * @return The A codec.
      */
     public Codec getACodec() {
         return aCodec;
@@ -103,7 +103,7 @@ public class RunCodec extends Codec {
     /**
      * Gets the B codec.
      *
-     * @return the B codec.
+     * @return The B codec.
      */
     public Codec getBCodec() {
         return bCodec;
@@ -112,7 +112,7 @@ public class RunCodec extends Codec {
     /**
      * Gets the K value.
      *
-     * @return the K value.
+     * @return The K value.
      */
     public int getK() {
         return k;
@@ -150,11 +150,11 @@ public class RunCodec extends Codec {
             }
         } else if (codecUsed instanceof PopulationCodec) {
             final PopulationCodec popCodec = (PopulationCodec) codecUsed;
-            final int[] favoured = popCodec.getFavoured().clone();
-            Arrays.sort(favoured);
+            final int[] favored = popCodec.getFavoured().clone();
+            Arrays.sort(favored);
             for (int i = 0; i < band.length; i++) {
-                final boolean favouredValue = Arrays.binarySearch(favoured, band[i]) > -1;
-                final Codec theCodec = favouredValue ? popCodec.getFavouredCodec() : popCodec.getUnfavouredCodec();
+                final boolean favoredValue = Arrays.binarySearch(favored, band[i]) > -1;
+                final Codec theCodec = favoredValue ? popCodec.getFavouredCodec() : popCodec.getUnfavouredCodec();
                 if (theCodec instanceof BHSDCodec) {
                     final BHSDCodec bhsd = (BHSDCodec) theCodec;
                     if (bhsd.isDelta()) {

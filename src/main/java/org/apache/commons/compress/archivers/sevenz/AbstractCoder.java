@@ -56,7 +56,7 @@ abstract class AbstractCoder {
     /**
      * Decodes using stream that reads from in using the configured coder and password.
      *
-     * @return a stream that reads from in using the configured coder and password.
+     * @return A stream that reads from in using the configured coder and password.
      */
     abstract InputStream decode(String archiveName, InputStream in, long uncompressedLength, Coder coder, byte[] password, int maxMemoryLimitKiB)
             throws IOException;
@@ -64,7 +64,7 @@ abstract class AbstractCoder {
     /**
      * Encodes using a stream that writes to out using the given configuration.
      *
-     * @return a stream that writes to out using the given configuration.
+     * @return A stream that writes to out using the given configuration.
      * @throws IOException Optionally thrown by subclassses.
      */
     OutputStream encode(final OutputStream out, final Object options) throws IOException {

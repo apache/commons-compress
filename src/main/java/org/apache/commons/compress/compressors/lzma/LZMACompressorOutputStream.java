@@ -88,7 +88,7 @@ public class LZMACompressorOutputStream extends CompressorOutputStream<LZMAOutpu
     /**
      * Constructs a new builder of {@link LZMACompressorOutputStream}.
      *
-     * @return a new builder of {@link LZMACompressorOutputStream}.
+     * @return A new builder of {@link LZMACompressorOutputStream}.
      * @since 1.28.0
      */
     public static Builder builder() {
@@ -103,7 +103,7 @@ public class LZMACompressorOutputStream extends CompressorOutputStream<LZMAOutpu
     /**
      * Creates a LZMA compressor.
      *
-     * @param outputStream the stream to wrap.
+     * @param outputStream The stream to wrap.
      * @throws IOException on error.
      */
     public LZMACompressorOutputStream(final OutputStream outputStream) throws IOException {

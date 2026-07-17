@@ -30,10 +30,10 @@ public class CPField extends CPMember {
     /**
      * Constructs a new CPField.
      *
-     * @param name the field name.
-     * @param descriptor the field descriptor.
-     * @param flags the field flags.
-     * @param attributes the field attributes.
+     * @param name The field name.
+     * @param descriptor The field descriptor.
+     * @param flags The field flags.
+     * @param attributes The field attributes.
      */
     public CPField(final CPUTF8 name, final CPUTF8 descriptor, final long flags, final List<Attribute> attributes) {
         super(name, descriptor, flags, attributes);

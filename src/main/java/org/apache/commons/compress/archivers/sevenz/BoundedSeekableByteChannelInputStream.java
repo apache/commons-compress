@@ -66,10 +66,10 @@ final class BoundedSeekableByteChannelInputStream extends InputStream {
      * This implementation may return 0 if the underlying {@link SeekableByteChannel} is non-blocking and currently hasn't got any bytes available.
      * </p>
      *
-     * @param b   the buffer into which the data is read.
-     * @param off the start offset in array b at which the data is written.
-     * @param len the maximum number of bytes to read.
-     * @return the total number of bytes read into the buffer, or -1 if EOF is reached.
+     * @param b   The buffer into which the data is read.
+     * @param off The start offset in array b at which the data is written.
+     * @param len The maximum number of bytes to read.
+     * @return The total number of bytes read into the buffer, or -1 if EOF is reached.
      * @throws NullPointerException      if b is null.
      * @throws IndexOutOfBoundsException if {@code off} or {@code len} are negative, or if {@code off + len} is greater than {@code b.length}.
      * @throws IOException               if an I/O error occurs.

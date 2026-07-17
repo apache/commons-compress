@@ -63,6 +63,7 @@ public class IcBands extends BandSet {
             return false;
         }
 
+        @Override
         public int hashCode() {
             return Objects.hash(C, F, C2, N);
         }
@@ -89,9 +90,9 @@ public class IcBands extends BandSet {
     /**
      * Constructs a new IcBands.
      *
-     * @param segmentHeader the segment header.
-     * @param cpBands the constant pool bands.
-     * @param effort the effort level.
+     * @param segmentHeader The segment header.
+     * @param cpBands The constant pool bands.
+     * @param effort The effort level.
      */
     public IcBands(final SegmentHeader segmentHeader, final CpBands cpBands, final int effort) {
         super(effort, segmentHeader);
@@ -101,10 +102,10 @@ public class IcBands extends BandSet {
     /**
      * Adds an inner class.
      *
-     * @param name the class name.
-     * @param outerName the outer class name.
-     * @param innerName the inner class name.
-     * @param flags the flags.
+     * @param name The class name.
+     * @param outerName The outer class name.
+     * @param innerName The inner class name.
+     * @param flags The flags.
      */
     public void addInnerClass(final String name, final String outerName, final String innerName, int flags) {
         if (outerName != null || innerName != null) {
@@ -154,8 +155,8 @@ public class IcBands extends BandSet {
     /**
      * Gets the IC tuple for the given inner class.
      *
-     * @param inner the inner class.
-     * @return the IC tuple, or null if not found.
+     * @param inner The inner class.
+     * @return The IC tuple, or null if not found.
      */
     public IcTuple getIcTuple(final CPClass inner) {
         for (final IcTuple icTuple : innerClasses) {
@@ -169,8 +170,8 @@ public class IcBands extends BandSet {
     /**
      * Gets the inner classes for the given outer class.
      *
-     * @param outerClassName the outer class name.
-     * @return the list of inner classes.
+     * @param outerClassName The outer class name.
+     * @return The list of inner classes.
      */
     public List<IcTuple> getInnerClassesForOuter(final String outerClassName) {
         return outerToInner.get(outerClassName);

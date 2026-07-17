@@ -85,7 +85,7 @@ public abstract class ZipEncodingHelper {
     /**
      * Tests whether the given non-null charset name is a UTF-8 alias.
      *
-     * @param name a non-null charset name.
+     * @param name A non-null charset name.
      * @return whether the given non-null charset name is a UTF-8 alias.
      */
     private static boolean isUTF8Alias(final String name) {
@@ -96,7 +96,7 @@ public abstract class ZipEncodingHelper {
      * Returns a Charset for the named charset. If the name cannot find a charset, return {@link Charset#defaultCharset()}.
      *
      * @param name The name of the requested charset, may be null.
-     * @return a Charset for the named charset.
+     * @return A Charset for the named charset.
      * @see Charset#defaultCharset()
      */
     private static Charset toSafeCharset(final String name) {

@@ -83,27 +83,27 @@ public class OperandManager {
     /**
      * Constructs a new OperandManager.
      *
-     * @param bcCaseCount the case counts.
-     * @param bcCaseValue the case values.
-     * @param bcByte the byte values.
-     * @param bcShort the short values.
-     * @param bcLocal the local values.
-     * @param bcLabel the label values.
-     * @param bcIntRef the integer references.
-     * @param bcFloatRef the float references.
-     * @param bcLongRef the long references.
-     * @param bcDoubleRef the double references.
-     * @param bcStringRef the string references.
-     * @param bcClassRef the class references.
-     * @param bcFieldRef the field references.
-     * @param bcMethodRef the method references.
-     * @param bcIMethodRef the interface method references.
-     * @param bcThisField the this field references.
-     * @param bcSuperField the super field references.
-     * @param bcThisMethod the this method references.
-     * @param bcSuperMethod the super method references.
-     * @param bcInitRef the init references.
-     * @param wideByteCodes the wide bytecodes.
+     * @param bcCaseCount The case counts.
+     * @param bcCaseValue The case values.
+     * @param bcByte The byte values.
+     * @param bcShort The short values.
+     * @param bcLocal The local values.
+     * @param bcLabel The label values.
+     * @param bcIntRef The integer references.
+     * @param bcFloatRef The float references.
+     * @param bcLongRef The long references.
+     * @param bcDoubleRef The double references.
+     * @param bcStringRef The string references.
+     * @param bcClassRef The class references.
+     * @param bcFieldRef The field references.
+     * @param bcMethodRef The method references.
+     * @param bcIMethodRef The interface method references.
+     * @param bcThisField The this field references.
+     * @param bcSuperField The super field references.
+     * @param bcThisMethod The this method references.
+     * @param bcSuperMethod The super method references.
+     * @param bcInitRef The init references.
+     * @param wideByteCodes The wide bytecodes.
      */
     public OperandManager(final int[] bcCaseCount, final int[] bcCaseValue, final int[] bcByte, final int[] bcShort, final int[] bcLocal, final int[] bcLabel,
             final int[] bcIntRef, final int[] bcFloatRef, final int[] bcLongRef, final int[] bcDoubleRef, final int[] bcStringRef, final int[] bcClassRef,
@@ -135,10 +135,10 @@ public class OperandManager {
     /**
      * Gets the current class.
      *
-     * @return the current class.
+     * @return The current class.
      */
     public String getCurrentClass() {
-        if (null == currentClass) {
+        if (currentClass == null) {
             throw new IllegalStateException("Current class not set yet");
         }
         return currentClass;
@@ -147,10 +147,10 @@ public class OperandManager {
     /**
      * Gets the new class.
      *
-     * @return the new class.
+     * @return The new class.
      */
     public String getNewClass() {
-        if (null == newClass) {
+        if (newClass == null) {
             throw new IllegalStateException("New class not set yet");
         }
         return newClass;
@@ -159,10 +159,10 @@ public class OperandManager {
     /**
      * Gets the super class.
      *
-     * @return the super class.
+     * @return The super class.
      */
     public String getSuperClass() {
-        if (null == superClass) {
+        if (superClass == null) {
             throw new IllegalStateException("SuperClass not set yet");
         }
         return superClass;
@@ -171,7 +171,7 @@ public class OperandManager {
     /**
      * Gets the global constant pool.
      *
-     * @return the constant pool.
+     * @return The constant pool.
      */
     public SegmentConstantPool globalConstantPool() {
         return segment.getConstantPool();
@@ -180,7 +180,7 @@ public class OperandManager {
     /**
      * Gets the next byte value.
      *
-     * @return the next byte.
+     * @return The next byte.
      */
     public int nextByte() {
         return bcByte[bcByteIndex++];
@@ -189,7 +189,7 @@ public class OperandManager {
     /**
      * Gets the next case count.
      *
-     * @return the next case count.
+     * @return The next case count.
      */
     public int nextCaseCount() {
         return bcCaseCount[bcCaseCountIndex++];
@@ -198,7 +198,7 @@ public class OperandManager {
     /**
      * Gets the next case value.
      *
-     * @return the next case value.
+     * @return The next case value.
      */
     public int nextCaseValues() {
         return bcCaseValue[bcCaseValueIndex++];
@@ -207,7 +207,7 @@ public class OperandManager {
     /**
      * Gets the next class reference.
      *
-     * @return the next class reference.
+     * @return The next class reference.
      */
     public int nextClassRef() {
         return bcClassRef[bcClassRefIndex++];
@@ -216,7 +216,7 @@ public class OperandManager {
     /**
      * Gets the next double reference.
      *
-     * @return the next double reference.
+     * @return The next double reference.
      */
     public int nextDoubleRef() {
         return bcDoubleRef[bcDoubleRefIndex++];
@@ -225,7 +225,7 @@ public class OperandManager {
     /**
      * Gets the next field reference.
      *
-     * @return the next field reference.
+     * @return The next field reference.
      */
     public int nextFieldRef() {
         return bcFieldRef[bcFieldRefIndex++];
@@ -234,7 +234,7 @@ public class OperandManager {
     /**
      * Gets the next float reference.
      *
-     * @return the next float reference.
+     * @return The next float reference.
      */
     public int nextFloatRef() {
         return bcFloatRef[bcFloatRefIndex++];
@@ -243,7 +243,7 @@ public class OperandManager {
     /**
      * Gets the next interface method reference.
      *
-     * @return the next interface method reference.
+     * @return The next interface method reference.
      */
     public int nextIMethodRef() {
         return bcIMethodRef[bcIMethodRefIndex++];
@@ -252,7 +252,7 @@ public class OperandManager {
     /**
      * Gets the next init reference.
      *
-     * @return the next init reference.
+     * @return The next init reference.
      */
     public int nextInitRef() {
         return bcInitRef[bcInitRefIndex++];
@@ -261,7 +261,7 @@ public class OperandManager {
     /**
      * Gets the next int reference.
      *
-     * @return the next int reference.
+     * @return The next int reference.
      */
     public int nextIntRef() {
         return bcIntRef[bcIntRefIndex++];
@@ -270,7 +270,7 @@ public class OperandManager {
     /**
      * Gets the next label.
      *
-     * @return the next label.
+     * @return The next label.
      */
     public int nextLabel() {
         return bcLabel[bcLabelIndex++];
@@ -279,7 +279,7 @@ public class OperandManager {
     /**
      * Gets the next local.
      *
-     * @return the next local.
+     * @return The next local.
      */
     public int nextLocal() {
         return bcLocal[bcLocalIndex++];
@@ -288,7 +288,7 @@ public class OperandManager {
     /**
      * Gets the next long reference.
      *
-     * @return the next long reference.
+     * @return The next long reference.
      */
     public int nextLongRef() {
         return bcLongRef[bcLongRefIndex++];
@@ -297,7 +297,7 @@ public class OperandManager {
     /**
      * Gets the next method reference.
      *
-     * @return the next method reference.
+     * @return The next method reference.
      */
     public int nextMethodRef() {
         return bcMethodRef[bcMethodRefIndex++];
@@ -306,7 +306,7 @@ public class OperandManager {
     /**
      * Gets the next short value.
      *
-     * @return the next short.
+     * @return The next short.
      */
     public int nextShort() {
         return bcShort[bcShortIndex++];
@@ -315,7 +315,7 @@ public class OperandManager {
     /**
      * Gets the next string reference.
      *
-     * @return the next string reference.
+     * @return The next string reference.
      */
     public int nextStringRef() {
         return bcStringRef[bcStringRefIndex++];
@@ -324,7 +324,7 @@ public class OperandManager {
     /**
      * Gets the next super field reference.
      *
-     * @return the next super field reference.
+     * @return The next super field reference.
      */
     public int nextSuperFieldRef() {
         return bcSuperField[bcSuperFieldIndex++];
@@ -333,7 +333,7 @@ public class OperandManager {
     /**
      * Gets the next super method reference.
      *
-     * @return the next super method reference.
+     * @return The next super method reference.
      */
     public int nextSuperMethodRef() {
         return bcSuperMethod[bcSuperMethodIndex++];
@@ -342,7 +342,7 @@ public class OperandManager {
     /**
      * Gets the next this field reference.
      *
-     * @return the next this field reference.
+     * @return The next this field reference.
      */
     public int nextThisFieldRef() {
         return bcThisField[bcThisFieldIndex++];
@@ -351,7 +351,7 @@ public class OperandManager {
     /**
      * Gets the next this method reference.
      *
-     * @return the next this method reference.
+     * @return The next this method reference.
      */
     public int nextThisMethodRef() {
         return bcThisMethod[bcThisMethodIndex++];
@@ -360,7 +360,7 @@ public class OperandManager {
     /**
      * Gets the next wide bytecode.
      *
-     * @return the next wide bytecode.
+     * @return The next wide bytecode.
      */
     public int nextWideByteCode() {
         return wideByteCodes[wideByteCodeIndex++];
@@ -369,7 +369,7 @@ public class OperandManager {
     /**
      * Sets the current class.
      *
-     * @param string the current class name.
+     * @param string The current class name.
      */
     public void setCurrentClass(final String string) {
         currentClass = string;
@@ -378,7 +378,7 @@ public class OperandManager {
     /**
      * Sets the new class.
      *
-     * @param newClass the new class name.
+     * @param newClass The new class name.
      */
     public void setNewClass(final String newClass) {
         this.newClass = newClass;
@@ -387,7 +387,7 @@ public class OperandManager {
     /**
      * Sets the segment.
      *
-     * @param segment the segment.
+     * @param segment The segment.
      */
     public void setSegment(final Segment segment) {
         this.segment = segment;
@@ -396,7 +396,7 @@ public class OperandManager {
     /**
      * Sets the super class.
      *
-     * @param superClass the super class name.
+     * @param superClass The super class name.
      */
     public void setSuperClass(final String superClass) {
         this.superClass = superClass;

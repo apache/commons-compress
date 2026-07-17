@@ -251,7 +251,7 @@ public abstract class StreamCompressor implements Closeable {
     /**
      * Gets the CRC-32 of the last deflated file
      *
-     * @return the CRC-32.
+     * @return The CRC-32.
      */
     public long getCrc32() {
         return crc.getValue();
@@ -276,11 +276,11 @@ public abstract class StreamCompressor implements Closeable {
     /**
      * Writes bytes to ZIP entry.
      *
-     * @param b      the byte array to write.
-     * @param offset the start position to write from.
-     * @param length the number of bytes to write.
-     * @param method the compression method to use.
-     * @return the number of bytes written to the stream this time.
+     * @param b      The byte array to write.
+     * @param offset The start position to write from.
+     * @param length The number of bytes to write.
+     * @param method The compression method to use.
+     * @return The number of bytes written to the stream this time.
      * @throws IOException on error.
      */
     long write(final byte[] b, final int offset, final int length, final int method) throws IOException {
@@ -298,7 +298,7 @@ public abstract class StreamCompressor implements Closeable {
     /**
      * Writes the specified byte array to the output stream.
      *
-     * @param data   the data.
+     * @param data   The data.
      * @exception IOException if an I/O error occurs.
      */
     public void writeCounted(final byte[] data) throws IOException {
@@ -308,9 +308,9 @@ public abstract class StreamCompressor implements Closeable {
     /**
      * Writes {@code len} bytes from the specified byte array starting at offset {@code off} to the output stream.
      *
-     * @param data   the data.
-     * @param offset the start offset in the data.
-     * @param length the number of bytes to write.
+     * @param data   The data.
+     * @param offset The start offset in the data.
+     * @param length The number of bytes to write.
      * @exception IOException if an I/O error occurs.
      */
     public void writeCounted(final byte[] data, final int offset, final int length) throws IOException {
@@ -342,9 +342,9 @@ public abstract class StreamCompressor implements Closeable {
     /**
      * Writes {@code len} bytes from the specified byte array starting at offset {@code off} to the output stream.
      *
-     * @param data   the data.
-     * @param offset the start offset in the data.
-     * @param length the number of bytes to write.
+     * @param data   The data.
+     * @param offset The start offset in the data.
+     * @param length The number of bytes to write.
      * @exception IOException if an I/O error occurs.
      */
     protected abstract void writeOut(byte[] data, int offset, int length) throws IOException;

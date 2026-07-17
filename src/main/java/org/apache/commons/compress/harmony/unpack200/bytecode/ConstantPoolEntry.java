@@ -121,7 +121,7 @@ public abstract class ConstantPoolEntry extends ClassFileEntry {
     /**
      * Gets the global index.
      *
-     * @return the global index.
+     * @return The global index.
      */
     public int getGlobalIndex() {
         return globalIndex;
@@ -130,7 +130,7 @@ public abstract class ConstantPoolEntry extends ClassFileEntry {
     /**
      * Gets the tag.
 
-     * @return the tag.
+     * @return The tag.
      */
     public byte getTag() {
         return tag;
@@ -142,7 +142,7 @@ public abstract class ConstantPoolEntry extends ClassFileEntry {
     /**
      * Writes this instance to the given output stream.
      *
-     * @param dos the output stream.
+     * @param dos The output stream.
      * @throws IOException if an I/O error occurs.
      */
     protected abstract void writeBody(DataOutputStream dos) throws IOException;

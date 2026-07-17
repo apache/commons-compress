@@ -24,10 +24,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,6 +39,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 import org.apache.commons.compress.AbstractTest;
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.TestArchiveGenerator;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.BeforeAll;
@@ -49,12 +53,64 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 class SparseFilesTest extends AbstractTest {
 
+    // numbytes claimed by the crafted sparse map, deliberately larger than the entry's stored size
+    private static final long SPARSE_MAP_NUMBYTES = 1024 * 1024;
+
     @TempDir
     private static Path tempDir;
+
+    private static void appendPadded(final ByteArrayOutputStream out, final byte[] data) {
+        out.write(data, 0, data.length);
+        final int rem = data.length % TarConstants.DEFAULT_RCDSIZE;
+        if (rem != 0) {
+            out.write(new byte[TarConstants.DEFAULT_RCDSIZE - rem], 0, TarConstants.DEFAULT_RCDSIZE - rem);
+        }
+    }
+
+    private static String paxRecord(final String key, final String value) {
+        final int size = key.length() + value.length() + 3; // ' ', '=', '\n'
+        int len = size + Integer.toString(size).length();
+        while (len != size + Integer.toString(len).length()) {
+            len = size + Integer.toString(len).length();
+        }
+        return len + " " + key + "=" + value + "\n";
+    }
+
+    private static void putField(final byte[] header, final int offset, final int length, final String value) {
+        final byte[] bytes = value.getBytes(java.nio.charset.StandardCharsets.US_ASCII);
+        System.arraycopy(bytes, 0, header, offset, Math.min(length, bytes.length));
+    }
+
+    private static void putOctal(final byte[] header, final int offset, final int length, final long value) {
+        putField(header, offset, length, String.format("%0" + (length - 1) + "o", value));
+    }
 
     @BeforeAll
     static void setupAll() throws IOException {
         TestArchiveGenerator.createSparseFileTestCases(tempDir);
+    }
+
+    private static byte[] ustarHeader(final String name, final long size, final char typeFlag) {
+        final byte[] header = new byte[TarConstants.DEFAULT_RCDSIZE];
+        putField(header, 0, 100, name);
+        putOctal(header, 100, 8, 0644);
+        putOctal(header, 108, 8, 0);
+        putOctal(header, 116, 8, 0);
+        putOctal(header, 124, 12, size);
+        putOctal(header, 136, 12, 0);
+        java.util.Arrays.fill(header, 148, 156, (byte) ' '); // checksum placeholder
+        header[156] = (byte) typeFlag;
+        putField(header, 257, 6, "ustar");
+        header[263] = '0';
+        header[264] = '0';
+        long checksum = 0;
+        for (final byte b : header) {
+            checksum += b & 0xff;
+        }
+        putField(header, 148, 6, String.format("%06o", checksum));
+        header[154] = 0;
+        header[155] = ' ';
+        return header;
     }
 
     private void assertPaxGNUEntry(final TarArchiveEntry entry, final String suffix) {
@@ -124,6 +180,25 @@ class SparseFilesTest extends AbstractTest {
         try (InputStream inputStream = process.getInputStream()) {
             return new String(IOUtils.toByteArray(inputStream));
         }
+    }
+
+    // Builds a PAX GNU 0.1 sparse entry whose stored size is 4 bytes but whose sparse map claims a
+    // single 1 MiB data block. realsize equals the block size, so the existing realSize check passes.
+    // A second entry follows, whose bytes must not be reachable through the sparse entry.
+    private byte[] sparseArchiveWithNumbytesLargerThanSize() {
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        final String pax = paxRecord("GNU.sparse.size", String.valueOf(SPARSE_MAP_NUMBYTES)) + paxRecord("GNU.sparse.map", "0," + SPARSE_MAP_NUMBYTES);
+        final byte[] paxData = pax.getBytes(java.nio.charset.StandardCharsets.US_ASCII);
+        appendPadded(bos, ustarHeader("PaxHeaders/sparse.bin", paxData.length, 'x'));
+        appendPadded(bos, paxData);
+        appendPadded(bos, ustarHeader("sparse.bin", 4, '0'));
+        appendPadded(bos, new byte[] { 1, 2, 3, 4 });
+        final byte[] payload = "the following entry".getBytes(java.nio.charset.StandardCharsets.US_ASCII);
+        appendPadded(bos, ustarHeader("next.bin", payload.length, '0'));
+        appendPadded(bos, payload);
+        final int eofLength = 2 * TarConstants.DEFAULT_RCDSIZE; // two zero EOF records
+        bos.write(new byte[eofLength], 0, eofLength);
+        return bos.toByteArray();
     }
 
     @Test
@@ -357,6 +432,24 @@ class SparseFilesTest extends AbstractTest {
             assertPaxGNUEntry(tin, "0.1");
             assertPaxGNUEntry(tin, "1.0");
         }
+    }
+
+    @Test
+    void testRejectsSparseBlocksLargerThanEntrySizeTarArchiveInputStream() throws IOException {
+        final byte[] archive = sparseArchiveWithNumbytesLargerThanSize();
+        try (TarArchiveInputStream tis = new TarArchiveInputStream(new ByteArrayInputStream(archive))) {
+            assertThrows(ArchiveException.class, tis::getNextEntry);
+        }
+    }
+
+    @Test
+    void testRejectsSparseBlocksLargerThanEntrySizeTarFile() throws IOException {
+        final byte[] archive = sparseArchiveWithNumbytesLargerThanSize();
+        assertThrows(ArchiveException.class, () -> {
+            try (TarFile tarFile = TarFile.builder().setByteArray(archive).get()) {
+                tarFile.getEntries();
+            }
+        });
     }
 
     @Test

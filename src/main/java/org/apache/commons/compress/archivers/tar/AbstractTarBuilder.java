@@ -24,8 +24,8 @@ import org.apache.commons.compress.archivers.AbstractArchiveBuilder;
 /**
  * Abstracts TAR builder operations.
  *
- * @param <T> the type of instances to build.
- * @param <B> the type of builder subclass.
+ * @param <T> The type of instances to build.
+ * @param <B> The type of builder subclass.
  * @since 1.29.0
  */
 public abstract class AbstractTarBuilder<T, B extends AbstractTarBuilder<T, B>> extends AbstractArchiveBuilder<T, B> {
@@ -61,7 +61,7 @@ public abstract class AbstractTarBuilder<T, B extends AbstractTarBuilder<T, B>> 
     /**
      * Sets the block size.
      *
-     * @param blockSize the block size.
+     * @param blockSize The block size.
      * @return {@code this} instance.
      */
     public B setBlockSize(final int blockSize) {
@@ -105,7 +105,7 @@ public abstract class AbstractTarBuilder<T, B extends AbstractTarBuilder<T, B>> 
     /**
      * Sets the record size.
      *
-     * @param recordSize the record size.
+     * @param recordSize The record size.
      * @return {@code this} instance.
      */
     public B setRecordSize(final int recordSize) {

@@ -32,9 +32,9 @@ public class CPMethodRef extends CPRef {
     /**
      * Constructs a new CPMethodRef.
      *
-     * @param className the class name.
-     * @param descriptor the method descriptor.
-     * @param globalIndex the global index.
+     * @param className The class name.
+     * @param descriptor The method descriptor.
+     * @param globalIndex The global index.
      */
     public CPMethodRef(final CPClass className, final CPNameAndType descriptor, final int globalIndex) {
         super(CP_Methodref, className, descriptor, globalIndex);

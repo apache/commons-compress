@@ -33,22 +33,22 @@ public class LineNumberTableAttribute extends BCIRenumberedAttribute {
     /**
      * Sets the attribute name.
      *
-     * @param cpUTF8Value the attribute name.
+     * @param cpUTF8Value The attribute name.
      */
     public static void setAttributeName(final CPUTF8 cpUTF8Value) {
         attributeName = cpUTF8Value;
     }
 
-    private int lineNumberTableLength;
+    private final int lineNumberTableLength;
     private final int[] startPcs;
     private final int[] lineNumbers;
 
     /**
      * Constructs a new LineNumberTableAttribute.
      *
-     * @param lineNumberTableLength the table length.
-     * @param startPcs the start program counters.
-     * @param lineNumbers the line numbers.
+     * @param lineNumberTableLength The table length.
+     * @param startPcs The start program counters.
+     * @param lineNumbers The line numbers.
      */
     public LineNumberTableAttribute(final int lineNumberTableLength, final int[] startPcs, final int[] lineNumbers) {
         super(attributeName);

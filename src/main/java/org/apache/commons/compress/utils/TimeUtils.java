@@ -59,7 +59,7 @@ public final class TimeUtils {
     /**
      * Tests whether a FileTime can be safely represented in the standard Unix time.
      *
-     * @param time the FileTime to evaluate, can be null.
+     * @param time The FileTime to evaluate, can be null.
      * @return true if the time exceeds the minimum or maximum Unix time, false otherwise.
      * @deprecated use {@link FileTimes#isUnixTime(FileTime)}
      */
@@ -71,7 +71,7 @@ public final class TimeUtils {
     /**
      * Tests whether a given number of seconds (since Epoch) can be safely represented in the standard Unix time.
      *
-     * @param seconds the number of seconds (since Epoch) to evaluate.
+     * @param seconds The number of seconds (since Epoch) to evaluate.
      * @return true if the time can be represented in the standard Unix time, false otherwise.
      * @deprecated Use {@link FileTimes#isUnixTime(long)}
      */
@@ -83,8 +83,8 @@ public final class TimeUtils {
     /**
      * Converts NTFS time (100 nanosecond units since 1 January 1601) to Java time.
      *
-     * @param ntfsTime the NTFS time in 100 nanosecond units.
-     * @return the Date.
+     * @param ntfsTime The NTFS time in 100 nanosecond units.
+     * @return The Date.
      * @deprecated Use {@link FileTimes#ntfsTimeToDate(long)}.
      */
     @Deprecated
@@ -95,8 +95,8 @@ public final class TimeUtils {
     /**
      * Converts NTFS time (100-nanosecond units since 1 January 1601) to a FileTime.
      *
-     * @param ntfsTime the NTFS time in 100-nanosecond units.
-     * @return the FileTime.
+     * @param ntfsTime The NTFS time in 100-nanosecond units.
+     * @return The FileTime.
      * @see FileTimes#toNtfsTime(FileTime)
      * @deprecated Use {@link FileTimes#ntfsTimeToFileTime(long)}.
      */
@@ -108,8 +108,8 @@ public final class TimeUtils {
     /**
      * Converts {@link FileTime} to a {@link Date}. If the provided FileTime is {@code null}, the returned Date is also {@code null}.
      *
-     * @param fileTime the file time to be converted.
-     * @return a {@link Date} which corresponds to the supplied time, or {@code null} if the time is {@code null}.
+     * @param fileTime The file time to be converted.
+     * @return A {@link Date} which corresponds to the supplied time, or {@code null} if the time is {@code null}.
      * @see FileTimes#toFileTime(Date)
      * @deprecated Use {@link FileTimes#toDate(FileTime)}.
      */
@@ -121,8 +121,8 @@ public final class TimeUtils {
     /**
      * Converts {@link Date} to a {@link FileTime}. If the provided Date is {@code null}, the returned FileTime is also {@code null}.
      *
-     * @param date the date to be converted.
-     * @return a {@link FileTime} which corresponds to the supplied date, or {@code null} if the date is {@code null}.
+     * @param date The date to be converted.
+     * @return A {@link FileTime} which corresponds to the supplied date, or {@code null} if the date is {@code null}.
      * @see FileTimes#toDate(FileTime)
      * @deprecated Use {@link FileTimes#toFileTime(Date)}.
      */
@@ -134,8 +134,8 @@ public final class TimeUtils {
     /**
      * Converts a {@link Date} to NTFS time.
      *
-     * @param date the Date.
-     * @return the NTFS time.
+     * @param date The Date.
+     * @return The NTFS time.
      * @deprecated Use {@link FileTimes#toNtfsTime(Date)}.
      */
     @Deprecated
@@ -146,8 +146,8 @@ public final class TimeUtils {
     /**
      * Converts a {@link FileTime} to NTFS time (100-nanosecond units since 1 January 1601).
      *
-     * @param fileTime the FileTime.
-     * @return the NTFS time in 100-nanosecond units.
+     * @param fileTime The FileTime.
+     * @return The NTFS time in 100-nanosecond units.
      * @see FileTimes#ntfsTimeToFileTime(long)
      * @deprecated Use {@link FileTimes#toNtfsTime(FileTime)}.
      */
@@ -159,8 +159,8 @@ public final class TimeUtils {
     /**
      * Converts Java time (milliseconds since Epoch) to NTFS time.
      *
-     * @param javaTime the Java time.
-     * @return the NTFS time.
+     * @param javaTime The Java time.
+     * @return The NTFS time.
      * @deprecated Use {@link FileTimes#toNtfsTime(long)}
      */
     @Deprecated
@@ -174,8 +174,8 @@ public final class TimeUtils {
      * The returned seconds value may lie out of bounds of Unix time. Check with {@link FileTimes#isUnixTime(long)}.
      * </p>
      *
-     * @param fileTime the original FileTime.
-     * @return the Unix timestamp or 0 if the input is null.
+     * @param fileTime The original FileTime.
+     * @return The Unix timestamp or 0 if the input is null.
      * @see FileTimes#isUnixTime(long)
      * @deprecated Use {@link FileTimes#toUnixTime(FileTime)}.
      */
@@ -187,8 +187,8 @@ public final class TimeUtils {
     /**
      * Truncates a FileTime to 100-nanosecond precision.
      *
-     * @param fileTime the FileTime to be truncated.
-     * @return the truncated FileTime.
+     * @param fileTime The FileTime to be truncated.
+     * @return The truncated FileTime.
      * @deprecated No replacement, only used in tests.
      */
     @Deprecated
@@ -201,7 +201,7 @@ public final class TimeUtils {
      * Converts standard Unix time (in seconds, UTC/GMT) to {@link FileTime}.
      *
      * @param time Unix timestamp (in seconds, UTC/GMT).
-     * @return the corresponding FileTime.
+     * @return The corresponding FileTime.
      * @deprecated Use {@link FileTimes#fromUnixTime(long)}
      */
     @Deprecated

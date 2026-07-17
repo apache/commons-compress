@@ -67,7 +67,7 @@ public final class UnparseableExtraFieldData implements ZipExtraField {
     /**
      * The Header-ID.
      *
-     * @return a completely arbitrary value that should be ignored.
+     * @return A completely arbitrary value that should be ignored.
      */
     @Override
     public ZipShort getHeaderId() {
@@ -97,9 +97,9 @@ public final class UnparseableExtraFieldData implements ZipExtraField {
     /**
      * Populate data from this array as if it was in central directory data.
      *
-     * @param buffer the buffer to read data from.
+     * @param buffer The buffer to read data from.
      * @param offset offset into buffer to read data.
-     * @param length the length of data.
+     * @param length The length of data.
      */
     @Override
     public void parseFromCentralDirectoryData(final byte[] buffer, final int offset, final int length) {
@@ -112,9 +112,9 @@ public final class UnparseableExtraFieldData implements ZipExtraField {
     /**
      * Populate data from this array as if it was in local file data.
      *
-     * @param buffer the buffer to read data from.
+     * @param buffer The buffer to read data from.
      * @param offset offset into buffer to read data.
-     * @param length the length of data.
+     * @param length The length of data.
      */
     @Override
     public void parseFromLocalFileData(final byte[] buffer, final int offset, final int length) {

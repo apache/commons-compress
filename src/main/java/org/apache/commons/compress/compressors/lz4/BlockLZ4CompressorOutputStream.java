@@ -177,7 +177,7 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream<Outpu
     /**
      * Returns a builder correctly configured for the LZ4 algorithm.
      *
-     * @return a builder correctly configured for the LZ4 algorithm.
+     * @return A builder correctly configured for the LZ4 algorithm.
      */
     public static Parameters.Builder createParameterBuilder() {
         final int maxLen = BlockLZ4CompressorInputStream.WINDOW_SIZE - 1;
@@ -358,7 +358,7 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream<Outpu
     /**
      * Adds some initial data to fill the window with.
      *
-     * @param data the data to fill the window with.
+     * @param data The data to fill the window with.
      * @param off  offset of real data into the array.
      * @param len  amount of data.
      * @throws IllegalStateException if the stream has already started to write data.

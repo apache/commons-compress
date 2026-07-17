@@ -77,7 +77,7 @@ public class FileNameUtil {
      *                         ".tgz" to ".tar". This map also contains format-specific suffixes like ".gz" and "-z". These suffixes are mapped to the empty
      *                         string, as they should simply be removed from the file name when the file is uncompressed.
      *
-     * @param defaultExtension the format's default extension like ".gz".
+     * @param defaultExtension The format's default extension like ".gz".
      */
     public FileNameUtil(final Map<String, String> uncompressSuffix, final String defaultExtension) {
         this.uncompressSuffix = Collections.unmodifiableMap(uncompressSuffix);
