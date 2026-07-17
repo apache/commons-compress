@@ -20,5 +20,7 @@
 /**
  * Provides stream classes for reading archives using the <a href="https://en.wikipedia.org/wiki/LHA_(file_format)">LHA</a> format,
  * also known as the LZH format or LHarc format.
+ *
+ * @since 1.29.0
  */
 package org.apache.commons.compress.archivers.lha;
