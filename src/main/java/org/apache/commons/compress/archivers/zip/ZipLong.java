@@ -25,7 +25,7 @@ import java.io.Serializable;
 import org.apache.commons.compress.utils.ByteUtils;
 
 /**
- * Utility class that represents a four byte integer with conversion rules for the little-endian byte order of ZIP files.
+ * A four byte integer with conversion rules for the little-endian byte order of ZIP files.
  *
  * @Immutable
  */
