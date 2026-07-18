@@ -49,6 +49,33 @@ class PaxHeaderOomTest {
         return buf.toByteArray();
     }
 
+    private static int pad(final long len) {
+        final int rem = (int) (len % BLOCK);
+        return rem == 0 ? 0 : BLOCK - rem;
+    }
+
+    private static byte[] tarHeader(final String name, final long size, final byte type) {
+        final byte[] h = new byte[BLOCK];
+        System.arraycopy(name.getBytes(StandardCharsets.UTF_8), 0, h, 0, Math.min(name.length(), 100));
+        System.arraycopy("0000644\0".getBytes(), 0, h, 100, 8);
+        System.arraycopy("0000000\0".getBytes(), 0, h, 108, 8);
+        System.arraycopy("0000000\0".getBytes(), 0, h, 116, 8);
+        System.arraycopy(String.format("%011o", size).getBytes(), 0, h, 124, 11);
+        h[135] = 0;
+        System.arraycopy("00000000000\0".getBytes(), 0, h, 136, 12);
+        h[156] = type;
+        System.arraycopy("ustar\0".getBytes(), 0, h, 257, 6);
+        h[263] = '0';
+        h[264] = '0';
+        Arrays.fill(h, 148, 156, (byte) ' ');
+        long chk = 0;
+        for (final byte b : h) {
+            chk += b & 0xFF;
+        }
+        System.arraycopy(String.format("%06o\0 ", chk).getBytes(), 0, h, 148, 8);
+        return h;
+    }
+
     private static void writeTar(final OutputStream out, final long valueSize) throws IOException {
         final String keyword = "test.data";
         final long fixedPart = 1L + keyword.length() + 1 + 1;
@@ -80,44 +107,6 @@ class PaxHeaderOomTest {
         out.write(new byte[BLOCK * 2]);
     }
 
-    private static byte[] tarHeader(final String name, final long size, final byte type) {
-        final byte[] h = new byte[BLOCK];
-        System.arraycopy(name.getBytes(StandardCharsets.UTF_8), 0, h, 0, Math.min(name.length(), 100));
-        System.arraycopy("0000644\0".getBytes(), 0, h, 100, 8);
-        System.arraycopy("0000000\0".getBytes(), 0, h, 108, 8);
-        System.arraycopy("0000000\0".getBytes(), 0, h, 116, 8);
-        System.arraycopy(String.format("%011o", size).getBytes(), 0, h, 124, 11);
-        h[135] = 0;
-        System.arraycopy("00000000000\0".getBytes(), 0, h, 136, 12);
-        h[156] = type;
-        System.arraycopy("ustar\0".getBytes(), 0, h, 257, 6);
-        h[263] = '0';
-        h[264] = '0';
-        Arrays.fill(h, 148, 156, (byte) ' ');
-        long chk = 0;
-        for (final byte b : h) {
-            chk += b & 0xFF;
-        }
-        System.arraycopy(String.format("%06o\0 ", chk).getBytes(), 0, h, 148, 8);
-        return h;
-    }
-
-    private static int pad(final long len) {
-        final int rem = (int) (len % BLOCK);
-        return rem == 0 ? 0 : BLOCK - rem;
-    }
-
-    @Test
-    void testDefaultLimitRejectsOversizedPaxHeader() throws Exception {
-        final byte[] tgz = buildTarGzWithPaxValue(20L * 1024 * 1024);
-        try (TarArchiveInputStream tis = new TarArchiveInputStream(
-                new GZIPInputStream(new ByteArrayInputStream(tgz)))) {
-            tis.getNextEntry();
-            fail("Should have thrown MemoryLimitException");
-        } catch (final MemoryLimitException ignored) {
-        }
-    }
-
     @Test
     void testCustomLimitAllowsHeader() throws Exception {
         final byte[] tgz = buildTarGzWithPaxValue(1024);
@@ -140,6 +129,17 @@ class PaxHeaderOomTest {
             final TarArchiveEntry entry = tis.getNextEntry();
             assertNotNull(entry);
             assertEquals("entry.txt", entry.getName());
+        }
+    }
+
+    @Test
+    void testDefaultLimitRejectsOversizedPaxHeader() throws Exception {
+        final byte[] tgz = buildTarGzWithPaxValue(20L * 1024 * 1024);
+        try (TarArchiveInputStream tis = new TarArchiveInputStream(
+                new GZIPInputStream(new ByteArrayInputStream(tgz)))) {
+            tis.getNextEntry();
+            fail("Should have thrown MemoryLimitException");
+        } catch (final MemoryLimitException ignored) {
         }
     }
 }

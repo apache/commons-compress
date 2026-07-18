@@ -42,17 +42,17 @@ class X0015_X0016_CertificateIdTest {
     }
 
     @Test
+    void testX0015RejectsTruncatedHashAlg() {
+        final X0015_CertificateIdForFile field = new X0015_CertificateIdForFile();
+        assertThrows(ZipException.class, () -> field.parseFromCentralDirectoryData(CENTRAL_DATA, 0, 5));
+    }
+
+    @Test
     void testX0016ReadsFourByteRecordCountAndHashAlg() throws ZipException {
         final X0016_CertificateIdForCentralDirectory field = new X0016_CertificateIdForCentralDirectory();
         field.parseFromCentralDirectoryData(CENTRAL_DATA, 0, CENTRAL_DATA.length);
         assertEquals(0x00010001, field.getRecordCount());
         assertEquals(HashAlgorithm.SHA256, field.getHashAlgorithm());
-    }
-
-    @Test
-    void testX0015RejectsTruncatedHashAlg() {
-        final X0015_CertificateIdForFile field = new X0015_CertificateIdForFile();
-        assertThrows(ZipException.class, () -> field.parseFromCentralDirectoryData(CENTRAL_DATA, 0, 5));
     }
 
     @Test
