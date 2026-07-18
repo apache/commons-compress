@@ -23,8 +23,6 @@ package org.apache.commons.compress.compressors.lha;
  * Circular byte buffer.
  *
  * Copied from org.apache.commons.compress.archivers.zip.CircularBuffer and modified for LHA.
- *
- * @since 1.29.0
  */
 final class CircularBuffer {
 
