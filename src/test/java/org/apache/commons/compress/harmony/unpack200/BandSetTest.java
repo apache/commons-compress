@@ -79,6 +79,20 @@ class BandSetTest {
     }
 
     @Test
+    void testGetReferencesRejectsOutOfRangeIndex() throws Exception {
+        // getReferences resolves band-decoded indices into a constant-pool array. An index at or past the
+        // end of that array must be rejected the same way the sibling parseReferences rejects it, instead of
+        // reaching reference[index] and surfacing an ArrayIndexOutOfBoundsException that escapes the declared
+        // Pack200Exception contract.
+        final String[] reference = { "a", "b" };
+        assertThrows(Pack200Exception.class, () -> bandSet.getReferences(new int[] { 2 }, reference));
+        assertThrows(Pack200Exception.class, () -> bandSet.getReferences(new int[] { -1 }, reference));
+        assertThrows(Pack200Exception.class, () -> bandSet.getReferences(new int[][] { { 2 } }, reference));
+        // A valid index still resolves.
+        assertEquals("b", bandSet.getReferences(new int[] { 1 }, reference)[0]);
+    }
+
+    @Test
     @Disabled("TODO: Implement")
     void testParseFlags1() {
 
