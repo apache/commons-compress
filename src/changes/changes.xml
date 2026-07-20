@@ -101,6 +101,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="pkarwasz" due-to="Piotr P. Karwasz">Correct byte accounting and truncation errors in ARJ input stream.</action>
       <action type="fix" dev="pkarwasz" due-to="Piotr P. Karwasz">Add strict header validation in ARJ input stream and `selfExtracting` option.</action>
       <!-- FIX unpack200 -->
+      <action type="fix" dev="tallison" due-to="Tim Allison">Pack200CompressorInputStream no longer throws InaccessibleObjectException when decompressing a FileInputStream or buffered stream on Java 17 and later; org.apache.commons.compress.harmony.unpack200 no longer reflects into java.io internals.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory, Stanislav Fort">org.apache.commons.compress.harmony.unpack200 now throws Pack200Exception, IllegalArgumentException, and IllegalStateException instead of other runtime exceptions and Error.</action>
       <action type="fix" dev="pkarwasz" due-to="Piotr P. Karwasz">Enforce strict attribute layout parsing in Pack200.</action>
       <action type="fix" dev="ggregory" due-to="KALI 834X, Gary Gregory">Reject negative element counts in BandSet band decoding (#782).</action>
