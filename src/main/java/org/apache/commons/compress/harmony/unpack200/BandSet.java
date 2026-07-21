@@ -55,7 +55,7 @@ public abstract class BandSet {
             if (count < 0) {
                 throw new Pack200Exception("count < 0");
             }
-            totalCount += count;
+            totalCount = Pack200Exception.addExact(count, totalCount);
         }
         return totalCount;
     }
