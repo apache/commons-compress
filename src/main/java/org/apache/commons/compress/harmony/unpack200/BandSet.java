@@ -191,7 +191,7 @@ public abstract class BandSet {
         for (int i = 0; i < ints.length; i++) {
             final int index = ints[i];
             if (index < 0 || index >= reference.length) {
-                throw new Pack200Exception("Something has gone wrong parsing references, index = %,d, array size = %,d", index, reference.length);
+                throw new Pack200Exception("Invalid reference index = %,d, array length = %,d", index, reference.length);
             }
             result[i] = reference[index];
         }
@@ -213,7 +213,7 @@ public abstract class BandSet {
             for (int j = 0; j < result[i].length; j++) {
                 final int index = ints[i][j];
                 if (index < 0 || index >= reference.length) {
-                    throw new Pack200Exception("Something has gone wrong parsing references, index = %,d, array size = %,d", index, reference.length);
+                    throw new Pack200Exception("Invalid reference index = %,d, array length = %,d", index, reference.length);
                 }
                 result[i][j] = reference[index];
             }
