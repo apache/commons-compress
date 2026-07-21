@@ -184,9 +184,18 @@ public abstract class BandSet {
      * @param ints The indices into the {@code reference} array.
      * @param reference The source array.
      * @return A new array.
+     * @throws Pack200Exception if an index falls outside the range [0..reference.length-1].
      */
-    protected String[] getReferences(final int[] ints, final String[] reference) {
-        return ArrayUtils.setAll(new String[ints.length], i -> reference[ints[i]]);
+    protected String[] getReferences(final int[] ints, final String[] reference) throws Pack200Exception {
+        final String[] result = new String[ints.length];
+        for (int i = 0; i < ints.length; i++) {
+            final int index = ints[i];
+            if (index < 0 || index >= reference.length) {
+                throw new Pack200Exception("Invalid reference index = %,d, array length = %,d", index, reference.length);
+            }
+            result[i] = reference[index];
+        }
+        return result;
     }
 
     /**
@@ -195,13 +204,18 @@ public abstract class BandSet {
      * @param ints The indices into the {@code reference} array.
      * @param reference The source array.
      * @return A new array.
+     * @throws Pack200Exception if an index falls outside the range [0..reference.length-1].
      */
-    protected String[][] getReferences(final int[][] ints, final String[] reference) {
+    protected String[][] getReferences(final int[][] ints, final String[] reference) throws Pack200Exception {
         final String[][] result = new String[ints.length][];
         for (int i = 0; i < result.length; i++) {
             result[i] = new String[ints[i].length];
             for (int j = 0; j < result[i].length; j++) {
-                result[i][j] = reference[ints[i][j]];
+                final int index = ints[i][j];
+                if (index < 0 || index >= reference.length) {
+                    throw new Pack200Exception("Invalid reference index = %,d, array length = %,d", index, reference.length);
+                }
+                result[i][j] = reference[index];
             }
         }
         return result;
