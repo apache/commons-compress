@@ -49,7 +49,7 @@ public abstract class BandSet {
 
     private static final String[][] EMPTY_STRINGS = { {} };
 
-    static int sumPositive(final int[] counts) throws Pack200Exception {
+    static int sumNonNegative(final int[] counts) throws Pack200Exception {
         int totalCount = 0;
         for (final int count : counts) {
             if (count < 0) {
@@ -169,7 +169,7 @@ public abstract class BandSet {
     public int[][] decodeBandInt(final String name, final InputStream in, final BHSDCodec defaultCodec, final int[] counts)
             throws IOException, Pack200Exception {
         final int[][] result = new int[counts.length][];
-        final int totalCount = sumPositive(counts);
+        final int totalCount = sumNonNegative(counts);
         final int[] twoDResult = decodeBandInt(name, in, defaultCodec, totalCount);
         int index = 0;
         for (int i = 0; i < result.length; i++) {
@@ -569,7 +569,7 @@ public abstract class BandSet {
         if (count == 0) {
             return new long[][] { {} };
         }
-        final int sum = sumPositive(counts);
+        final int sum = sumNonNegative(counts);
         int[] hi = null;
         final int[] lo;
         if (hiCodec != null) {
@@ -647,7 +647,7 @@ public abstract class BandSet {
         if (count == 0) {
             return EMPTY_STRINGS;
         }
-        final int sum = sumPositive(counts);
+        final int sum = sumNonNegative(counts);
         // TODO Merge the decode and parsing of a multiple structure into one
         final int[] indices = decodeBandInt(name, in, codec, sum);
         final String[] result1 = new String[sum];
