@@ -79,6 +79,19 @@ class BandSetTest {
     }
 
     @Test
+    void testParseCPUTF8AndSignatureReferencesRejectNegativeCount() {
+        final BHSDCodec codec = Codec.BYTE1;
+        // The int[] overloads of parseCPUTF8References and parseCPSignatureReferences size each sub-array straight
+        // from a per-entry count. A count decoded through a signed band can be negative, so it must be rejected
+        // here the same way decodeBandInt/parseFlags/parseReferences reject it, instead of reaching new CPUTF8[-1]
+        // and surfacing a NegativeArraySizeException that escapes the declared Pack200Exception contract.
+        assertThrows(Pack200Exception.class,
+                () -> bandSet.parseCPUTF8References("Test", new ByteArrayInputStream(new byte[0]), codec, new int[] { -1, 1 }));
+        assertThrows(Pack200Exception.class,
+                () -> bandSet.parseCPSignatureReferences("Test", new ByteArrayInputStream(new byte[0]), codec, new int[] { -1, 1 }));
+    }
+
+    @Test
     void testGetReferencesRejectsOutOfRangeIndex() throws Exception {
         // getReferences resolves band-decoded indices into a constant-pool array. An index at or past the
         // end of that array must be rejected the same way the sibling parseReferences rejects it, instead of

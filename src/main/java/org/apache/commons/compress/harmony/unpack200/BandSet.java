@@ -431,10 +431,7 @@ public abstract class BandSet {
      */
     protected CPUTF8[][] parseCPSignatureReferences(final String name, final InputStream in, final BHSDCodec codec, final int[] counts)
             throws IOException, Pack200Exception {
-        int sum = 0;
-        for (final int count : counts) {
-            sum += count;
-        }
+        final int sum = sumNonNegative(counts);
         final int[] indices = decodeBandInt(name, in, codec, sum);
         final CpBands cpBands = segment.getCpBands();
         final CPUTF8[] result1 = ArrayUtils.setAll(new CPUTF8[sum], i -> cpBands.cpSignatureValue(indices[i]));
@@ -498,12 +495,8 @@ public abstract class BandSet {
      */
     public CPUTF8[][] parseCPUTF8References(final String name, final InputStream in, final BHSDCodec codec, final int[] counts)
             throws IOException, Pack200Exception {
+        final int sum = sumNonNegative(counts);
         final CPUTF8[][] result = new CPUTF8[counts.length][];
-        int sum = 0;
-        for (int i = 0; i < counts.length; i++) {
-            result[i] = new CPUTF8[counts[i]];
-            sum += counts[i];
-        }
         final int[] indices = decodeBandInt(name, in, codec, sum);
         final CpBands cpBands = segment.getCpBands();
         final CPUTF8[] result1 = ArrayUtils.setAll(new CPUTF8[sum], i -> cpBands.cpUTF8Value(indices[i]));
