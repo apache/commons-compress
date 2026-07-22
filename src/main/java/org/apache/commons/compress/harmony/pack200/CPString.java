@@ -36,7 +36,7 @@ public class CPString extends CPConstant<CPString> {
      * @param value The value.
      */
     public CPString(final CPUTF8 value) {
-        this.value = Objects.requireNonNull(value);
+        this.value = Objects.requireNonNull(value, "value");
         this.string = value.getUnderlyingString();
     }
 

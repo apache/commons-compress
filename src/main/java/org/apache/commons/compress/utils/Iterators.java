@@ -43,8 +43,8 @@ public class Iterators {
      * @return {@code true} if the target {@code collection} was modified as a result of this operation.
      */
     public static <T> boolean addAll(final Collection<T> collection, final Iterator<? extends T> iterator) {
-        Objects.requireNonNull(collection);
-        Objects.requireNonNull(iterator);
+        Objects.requireNonNull(collection, "collection");
+        Objects.requireNonNull(iterator, "iterator");
         boolean wasModified = false;
         while (iterator.hasNext()) {
             wasModified |= collection.add(iterator.next());

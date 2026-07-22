@@ -37,7 +37,7 @@ public class CPClass extends CPConstant<CPClass> {
      * @param value The value.
      */
     public CPClass(final CPUTF8 value) {
-        this.value = Objects.requireNonNull(value);
+        this.value = Objects.requireNonNull(value, "value");
         this.className = value.getUnderlyingString();
         final char[] chars = className.toCharArray();
         for (final char element : chars) {
