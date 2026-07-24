@@ -582,7 +582,6 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
                     <moduleInfo>
                       <exports>
                         !org.apache.commons.compress.harmony.internal.*;
-                        !org.apache.commons.compress.harmony.archive.internal.*;
                         *;
                       </exports>
                     </moduleInfo>
