@@ -42,7 +42,7 @@ jobs:
              java: 27-ea
              experimental: true
            - os: ubuntu-latest
-             java: 27-ea
+             java: 28-ea
              experimental: true
         
     steps:
