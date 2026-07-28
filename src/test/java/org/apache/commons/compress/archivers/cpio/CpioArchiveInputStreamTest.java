@@ -176,6 +176,79 @@ class CpioArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
+    void testInvalidFileTypeInMode() throws Exception {
+        // c_mode declares file type 0170000, which CPIO does not define
+        // @formatter:off
+        final String header =
+                "070701" + // c_magic
+                "00000001" + // c_ino
+                "0000F000" + // c_mode
+                "00000000" + // c_uid
+                "00000000" + // c_gid
+                "00000001" + // c_nlink
+                "00000000" + // c_mtime
+                "00000000" + // c_filesize
+                "00000000" + // c_devmajor
+                "00000000" + // c_devminor
+                "00000000" + // c_rdevmajor
+                "00000000" + // c_rdevminor
+                "00000002" + // c_namesize
+                "00000000" + // c_check
+                "a\0";
+        // @formatter:on
+        try (CpioArchiveInputStream cpio = CpioArchiveInputStream.builder()
+                .setByteArray(header.getBytes(StandardCharsets.US_ASCII))
+                .get()) {
+            assertThrows(ArchiveException.class, cpio::getNextEntry);
+        }
+    }
+
+    @Test
+    void testInvalidFileTypeInModeMagicOldAscii() throws Exception {
+        // c_mode declares file type 0170000, which CPIO does not define
+        // @formatter:off
+        final String header =
+                "070707" + // c_magic
+                "000000" + // c_dev
+                "000001" + // c_ino
+                "170000" + // c_mode
+                "000000" + // c_uid
+                "000000" + // c_gid
+                "000001" + // c_nlink
+                "000000" + // c_rdev
+                "00000000000" + // c_mtime
+                "000002" + // c_namesize
+                "00000000000" + // c_filesize
+                "a\0";
+        // @formatter:on
+        try (CpioArchiveInputStream cpio = CpioArchiveInputStream.builder()
+                .setByteArray(header.getBytes(StandardCharsets.US_ASCII))
+                .get()) {
+            assertThrows(ArchiveException.class, cpio::getNextEntry);
+        }
+    }
+
+    @Test
+    void testInvalidFileTypeInModeMagicOldBinary() throws Exception {
+        // c_mode declares file type 0170000, which CPIO does not define
+        // c_magic, c_dev, c_ino, c_mode, c_uid, c_gid, c_nlink, c_rdev as little endian half words
+        final int[] halfWords = { 070707, 0, 1, 0170000, 0, 0, 1, 0 };
+        final byte[] data = new byte[halfWords.length * 2 + 10 + 2];
+        int off = 0;
+        for (final int halfWord : halfWords) {
+            data[off++] = (byte) halfWord;
+            data[off++] = (byte) (halfWord >> 8);
+        }
+        off += 4; // c_mtime
+        data[off] = 2; // c_namesize
+        off += 6; // c_namesize and c_filesize
+        data[off] = 'a';
+        try (CpioArchiveInputStream cpio = CpioArchiveInputStream.builder().setByteArray(data).get()) {
+            assertThrows(ArchiveException.class, cpio::getNextEntry);
+        }
+    }
+
+    @Test
     void testInvalidLongValueInMetadata() throws Exception {
         try (CpioArchiveInputStream archive = CpioArchiveInputStream.builder()
                 .setURI(getURI("org/apache/commons/compress/cpio/bad_long_value.cpio"))

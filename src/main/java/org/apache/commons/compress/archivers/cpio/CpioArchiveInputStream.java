@@ -432,9 +432,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         }
         newEntry.setInode(readAsciiLong(8, 16));
         final long mode = readAsciiLong(8, 16);
-        if (CpioUtil.fileType(mode) != 0) { // mode is initialized to 0
-            newEntry.setMode(mode);
-        }
+        setMode(newEntry, mode);
         newEntry.setUID(readAsciiLong(8, 16));
         newEntry.setGID(readAsciiLong(8, 16));
         newEntry.setNumberOfLinks(readAsciiLong(8, 16));
@@ -470,9 +468,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         ret.setDevice(readAsciiLong(6, 8));
         ret.setInode(readAsciiLong(6, 8));
         final long mode = readAsciiLong(6, 8);
-        if (CpioUtil.fileType(mode) != 0) {
-            ret.setMode(mode);
-        }
+        setMode(ret, mode);
         ret.setUID(readAsciiLong(6, 8));
         ret.setGID(readAsciiLong(6, 8));
         ret.setNumberOfLinks(readAsciiLong(6, 8));
@@ -500,9 +496,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         oldEntry.setDevice(readBinaryLong(2, swapHalfWord));
         oldEntry.setInode(readBinaryLong(2, swapHalfWord));
         final long mode = readBinaryLong(2, swapHalfWord);
-        if (CpioUtil.fileType(mode) != 0) {
-            oldEntry.setMode(mode);
-        }
+        setMode(oldEntry, mode);
         oldEntry.setUID(readBinaryLong(2, swapHalfWord));
         oldEntry.setGID(readBinaryLong(2, swapHalfWord));
         oldEntry.setNumberOfLinks(readBinaryLong(2, swapHalfWord));
@@ -536,6 +530,27 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
             throw new EOFException();
         }
         return b;
+    }
+
+    /**
+     * Sets the mode of an entry from a header field.
+     * <p>
+     * A mode of 0 is left unset because only the trailer may use it; the callers check that by name.
+     * </p>
+     *
+     * @param entry The entry to update.
+     * @param mode  The mode read from the header.
+     * @throws ArchiveException if the mode names a file type CPIO does not define.
+     */
+    private void setMode(final CpioArchiveEntry entry, final long mode) throws ArchiveException {
+        if (CpioUtil.fileType(mode) == 0) {
+            return;
+        }
+        try {
+            entry.setMode(mode);
+        } catch (final IllegalArgumentException e) {
+            throw new ArchiveException("Corrupted CPIO archive: Invalid file mode 0%s at byte: %,d", Long.toOctalString(mode), getBytesRead());
+        }
     }
 
     private int skip(final int length) throws IOException {
