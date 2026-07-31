@@ -27,8 +27,14 @@ import java.nio.ByteOrder;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 class BitInputStreamTest {
+
+    static ByteOrder[] byteOrderProvider() {
+        return new ByteOrder[] { ByteOrder.BIG_ENDIAN, ByteOrder.LITTLE_ENDIAN, ByteOrder.nativeOrder() };
+    }
 
     private ByteArrayInputStream getStream() {
         return new ByteArrayInputStream(new byte[] { (byte) 0xF8, // 11111000
@@ -110,6 +116,14 @@ class BitInputStreamTest {
         try (BitInputStream bis = new BitInputStream(getStream(), ByteOrder.LITTLE_ENDIAN)) {
             assertEquals(0x2f0140f8, bis.readBits(30));
             assertEquals(-1, bis.readBits(3));
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("byteOrderProvider")
+    void testGetByteOrder(final ByteOrder byteOrder) throws IOException {
+        try (BitInputStream bis = new BitInputStream(getStream(), byteOrder)) {
+            assertEquals(byteOrder, bis.getByteOrder());
         }
     }
 
