@@ -31,12 +31,125 @@ import org.apache.commons.compress.utils.BitInputStream;
 import org.junit.jupiter.api.Test;
 
 class BinaryTreeTest {
+    private BitInputStream createBitInputStream(final int... data) throws IOException {
+        final byte[] bytes = new byte[data.length];
+        for (int i = 0; i < data.length; i++) {
+            bytes[i] = (byte) data[i];
+        }
+
+        return new BitInputStream(new ByteArrayInputStream(bytes), ByteOrder.BIG_ENDIAN);
+    }
+
+    @Test
+    void testCheckMaxDepth() throws Exception {
+        try {
+            new BinaryTree(1, 17);
+            fail("Expected CompressorException for depth > 16");
+        } catch (CompressorException e) {
+            assertEquals("Tree depth must not be negative and not bigger than 16 but is 17", e.getMessage());
+        }
+    }
+
+    @Test
+    void testInvalidBitstream() throws Exception {
+        final int[] length = new int[] { 4, 2, 3, 0, 5, 0, 1 };
+        //                        Value: 0  1  2  3  4  5  6
+
+        final BinaryTree tree = new BinaryTree(length);
+
+        assertEquals(6, tree.read(createBitInputStream(0x00))); // 0xxx xxxx
+        assertEquals(1, tree.read(createBitInputStream(0x80))); // 10xx xxxx
+        assertEquals(2, tree.read(createBitInputStream(0xc0))); // 110x xxxx
+        assertEquals(0, tree.read(createBitInputStream(0xe0))); // 1110 xxxx
+        assertEquals(4, tree.read(createBitInputStream(0xf0))); // 1111 0xxx
+
+        try {
+            assertEquals(5, tree.read(createBitInputStream(0xf8))); // 1111 1xxx
+            fail("Expected CompressorException for invalid bitstream");
+        } catch (CompressorException e) {
+            assertEquals("Invalid bitstream. The node at index 62 is not defined.", e.getMessage());
+        }
+    }
+
+    @Test
+    void testNoLeafNodes() throws Exception {
+        try {
+            new BinaryTree(0, 0, 0, 0, 0);
+            fail("Expected CompressorException for no leaf nodes");
+        } catch (CompressorException e) {
+            assertEquals("Tree contains no leaf nodes", e.getMessage());
+        }
+    }
+
+    @Test
+    void testReadEof() throws Exception {
+        final int[] length = new int[] { 4, 2, 3, 0, 5, 5, 1 };
+        //                        Value: 0  1  2  3  4  5  6
+
+        final BinaryTree tree = new BinaryTree(length);
+
+        final BitInputStream in = createBitInputStream(0xfe); // 1111 1110
+
+        assertEquals(5, tree.read(in));  // 1111 1xxx
+        assertEquals(2, tree.read(in));  // 110x xxxx
+        assertEquals(-1, tree.read(in)); // EOF
+    }
+
+    @Test
+    void testTooManyLeafNodes() throws Exception {
+        try {
+            new BinaryTree(0, 2, 1, 2, 2);
+            fail("Expected CompressorException for too many leaf nodes");
+        } catch (CompressorException e) {
+            assertEquals("Tree contains too many leaf nodes for depth 2", e.getMessage());
+        }
+    }
+
     @Test
     void testTree1() throws Exception {
         // Special case where the single array value is the root node value
         final BinaryTree tree = new BinaryTree(4);
 
         assertEquals(4, tree.read(createBitInputStream())); // Nothing to read, just return the root value
+    }
+
+    @Test
+    void testTree10() throws Exception {
+        // Maximum length of 510 entries for command tree and maximum supported depth of 16
+        final int[] length = new int[] { 4, 7, 7, 8, 7, 9, 8, 9, 7, 10, 8, 10, 7, 10, 8, 10, 7, 9, 8, 9, 8, 10, 8, 12, 8, 10, 9, 11, 9, 9, 8, 10, 6, 9,
+                7, 9, 8, 10, 8, 11, 7, 9, 8, 9, 8, 9, 8, 9, 7, 9, 8, 8, 8, 10, 9, 11, 8, 9, 8, 10, 8, 9, 8, 9, 7, 7, 7, 8, 8, 8, 8, 9, 7, 8, 7, 9, 8, 9,
+                8, 8, 8, 10, 7, 7, 8, 8, 8, 9, 8, 9, 8, 9, 9, 10, 9, 10, 7, 8, 9, 9, 8, 7, 7, 7, 8, 8, 9, 8, 8, 9, 8, 8, 8, 11, 8, 9, 8, 8, 9, 10, 9, 9,
+                8, 10, 8, 10, 9, 9, 7, 9, 9, 10, 9, 10, 9, 9, 9, 10, 9, 11, 10, 11, 9, 10, 8, 10, 9, 11, 9, 10, 10, 12, 9, 11, 9, 12, 10, 14, 10, 14, 10,
+                11, 10, 11, 9, 11, 10, 12, 9, 11, 10, 11, 9, 10, 10, 11, 9, 11, 10, 12, 10, 13, 11, 13, 10, 11, 10, 13, 10, 15, 10, 14, 8, 10, 9, 10, 9,
+                10, 10, 11, 9, 11, 10, 12, 10, 13, 10, 13, 9, 11, 9, 11, 9, 12, 9, 11, 9, 10, 9, 12, 9, 11, 9, 9, 9, 10, 8, 10, 9, 11, 9, 10, 9, 10, 9,
+                10, 9, 10, 9, 11, 8, 10, 9, 10, 9, 10, 9, 11, 9, 10, 8, 10, 8, 10, 9, 7, 3, 4, 5, 5, 6, 7, 7, 7, 8, 8, 9, 9, 9, 9, 10, 10, 11, 11, 11,
+                10, 11, 12, 11, 12, 12, 12, 12, 13, 13, 13, 14, 12, 14, 13, 16, 14, 16, 13, 15, 14, 13, 15, 14, 15, 14, 15, 14, 14, 0, 14, 15, 14, 0,
+                14, 0, 0, 0, 0, 0, 0, 0, 15, 0, 15, 0, 0, 15, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                13, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 15, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 15, 10 };
+
+        final BinaryTree tree = new BinaryTree(length);
+
+        assertEquals(256, tree.read(createBitInputStream(0x00, 0x00))); // 000x xxxx  xxxx xxxx
+        assertEquals(0, tree.read(createBitInputStream(0x20, 0x00)));   // 0010 xxxx  xxxx xxxx
+        assertEquals(257, tree.read(createBitInputStream(0x30, 0x00))); // 0011 xxxx  xxxx xxxx
+        assertEquals(258, tree.read(createBitInputStream(0x40, 0x00))); // 0100 0xxx  xxxx xxxx
+        assertEquals(259, tree.read(createBitInputStream(0x48, 0x00))); // 0100 1xxx  xxxx xxxx
+        assertEquals(32, tree.read(createBitInputStream(0x50, 0x00)));  // 0101 00xx  xxxx xxxx
+        assertEquals(260, tree.read(createBitInputStream(0x54, 0x00))); // 0101 01xx  xxxx xxxx
+
+        assertEquals(226, tree.read(createBitInputStream(0xbd, 0x00))); // 1011 1101  xxxx xxxx
+        assertEquals(240, tree.read(createBitInputStream(0xbe, 0x00))); // 1011 1110  xxxx xxxx
+
+        assertEquals(163, tree.read(createBitInputStream(0xfb, 0xa0))); // 1111 1011  101x xxxx
+        assertEquals(165, tree.read(createBitInputStream(0xfb, 0xc0))); // 1111 1011  110x xxxx
+
+        assertEquals(499, tree.read(createBitInputStream(0xff, 0xfa))); // 1111 1111  1111 101x
+        assertEquals(508, tree.read(createBitInputStream(0xff, 0xfc))); // 1111 1111  1111 110x
+        assertEquals(290, tree.read(createBitInputStream(0xff, 0xfe))); // 1111 1111  1111 1110
+        assertEquals(292, tree.read(createBitInputStream(0xff, 0xff))); // 1111 1111  1111 1111
     }
 
     @Test
@@ -148,118 +261,5 @@ class BinaryTreeTest {
         assertEquals(8, tree.read(createBitInputStream(0xfc)));  // 1111 110x
         assertEquals(5, tree.read(createBitInputStream(0xfe)));  // 1111 1110
         assertEquals(18, tree.read(createBitInputStream(0xff))); // 1111 1111
-    }
-
-    @Test
-    void testTree10() throws Exception {
-        // Maximum length of 510 entries for command tree and maximum supported depth of 16
-        final int[] length = new int[] { 4, 7, 7, 8, 7, 9, 8, 9, 7, 10, 8, 10, 7, 10, 8, 10, 7, 9, 8, 9, 8, 10, 8, 12, 8, 10, 9, 11, 9, 9, 8, 10, 6, 9,
-                7, 9, 8, 10, 8, 11, 7, 9, 8, 9, 8, 9, 8, 9, 7, 9, 8, 8, 8, 10, 9, 11, 8, 9, 8, 10, 8, 9, 8, 9, 7, 7, 7, 8, 8, 8, 8, 9, 7, 8, 7, 9, 8, 9,
-                8, 8, 8, 10, 7, 7, 8, 8, 8, 9, 8, 9, 8, 9, 9, 10, 9, 10, 7, 8, 9, 9, 8, 7, 7, 7, 8, 8, 9, 8, 8, 9, 8, 8, 8, 11, 8, 9, 8, 8, 9, 10, 9, 9,
-                8, 10, 8, 10, 9, 9, 7, 9, 9, 10, 9, 10, 9, 9, 9, 10, 9, 11, 10, 11, 9, 10, 8, 10, 9, 11, 9, 10, 10, 12, 9, 11, 9, 12, 10, 14, 10, 14, 10,
-                11, 10, 11, 9, 11, 10, 12, 9, 11, 10, 11, 9, 10, 10, 11, 9, 11, 10, 12, 10, 13, 11, 13, 10, 11, 10, 13, 10, 15, 10, 14, 8, 10, 9, 10, 9,
-                10, 10, 11, 9, 11, 10, 12, 10, 13, 10, 13, 9, 11, 9, 11, 9, 12, 9, 11, 9, 10, 9, 12, 9, 11, 9, 9, 9, 10, 8, 10, 9, 11, 9, 10, 9, 10, 9,
-                10, 9, 10, 9, 11, 8, 10, 9, 10, 9, 10, 9, 11, 9, 10, 8, 10, 8, 10, 9, 7, 3, 4, 5, 5, 6, 7, 7, 7, 8, 8, 9, 9, 9, 9, 10, 10, 11, 11, 11,
-                10, 11, 12, 11, 12, 12, 12, 12, 13, 13, 13, 14, 12, 14, 13, 16, 14, 16, 13, 15, 14, 13, 15, 14, 15, 14, 15, 14, 14, 0, 14, 15, 14, 0,
-                14, 0, 0, 0, 0, 0, 0, 0, 15, 0, 15, 0, 0, 15, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                13, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                0, 0, 15, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 0, 0, 15, 10 };
-
-        final BinaryTree tree = new BinaryTree(length);
-
-        assertEquals(256, tree.read(createBitInputStream(0x00, 0x00))); // 000x xxxx  xxxx xxxx
-        assertEquals(0, tree.read(createBitInputStream(0x20, 0x00)));   // 0010 xxxx  xxxx xxxx
-        assertEquals(257, tree.read(createBitInputStream(0x30, 0x00))); // 0011 xxxx  xxxx xxxx
-        assertEquals(258, tree.read(createBitInputStream(0x40, 0x00))); // 0100 0xxx  xxxx xxxx
-        assertEquals(259, tree.read(createBitInputStream(0x48, 0x00))); // 0100 1xxx  xxxx xxxx
-        assertEquals(32, tree.read(createBitInputStream(0x50, 0x00)));  // 0101 00xx  xxxx xxxx
-        assertEquals(260, tree.read(createBitInputStream(0x54, 0x00))); // 0101 01xx  xxxx xxxx
-
-        assertEquals(226, tree.read(createBitInputStream(0xbd, 0x00))); // 1011 1101  xxxx xxxx
-        assertEquals(240, tree.read(createBitInputStream(0xbe, 0x00))); // 1011 1110  xxxx xxxx
-
-        assertEquals(163, tree.read(createBitInputStream(0xfb, 0xa0))); // 1111 1011  101x xxxx
-        assertEquals(165, tree.read(createBitInputStream(0xfb, 0xc0))); // 1111 1011  110x xxxx
-
-        assertEquals(499, tree.read(createBitInputStream(0xff, 0xfa))); // 1111 1111  1111 101x
-        assertEquals(508, tree.read(createBitInputStream(0xff, 0xfc))); // 1111 1111  1111 110x
-        assertEquals(290, tree.read(createBitInputStream(0xff, 0xfe))); // 1111 1111  1111 1110
-        assertEquals(292, tree.read(createBitInputStream(0xff, 0xff))); // 1111 1111  1111 1111
-    }
-
-    @Test
-    void testReadEof() throws Exception {
-        final int[] length = new int[] { 4, 2, 3, 0, 5, 5, 1 };
-        //                        Value: 0  1  2  3  4  5  6
-
-        final BinaryTree tree = new BinaryTree(length);
-
-        final BitInputStream in = createBitInputStream(0xfe); // 1111 1110
-
-        assertEquals(5, tree.read(in));  // 1111 1xxx
-        assertEquals(2, tree.read(in));  // 110x xxxx
-        assertEquals(-1, tree.read(in)); // EOF
-    }
-
-    @Test
-    void testInvalidBitstream() throws Exception {
-        final int[] length = new int[] { 4, 2, 3, 0, 5, 0, 1 };
-        //                        Value: 0  1  2  3  4  5  6
-
-        final BinaryTree tree = new BinaryTree(length);
-
-        assertEquals(6, tree.read(createBitInputStream(0x00))); // 0xxx xxxx
-        assertEquals(1, tree.read(createBitInputStream(0x80))); // 10xx xxxx
-        assertEquals(2, tree.read(createBitInputStream(0xc0))); // 110x xxxx
-        assertEquals(0, tree.read(createBitInputStream(0xe0))); // 1110 xxxx
-        assertEquals(4, tree.read(createBitInputStream(0xf0))); // 1111 0xxx
-
-        try {
-            assertEquals(5, tree.read(createBitInputStream(0xf8))); // 1111 1xxx
-            fail("Expected CompressorException for invalid bitstream");
-        } catch (CompressorException e) {
-            assertEquals("Invalid bitstream. The node at index 62 is not defined.", e.getMessage());
-        }
-    }
-
-    @Test
-    void testCheckMaxDepth() throws Exception {
-        try {
-            new BinaryTree(1, 17);
-            fail("Expected CompressorException for depth > 16");
-        } catch (CompressorException e) {
-            assertEquals("Tree depth must not be negative and not bigger than 16 but is 17", e.getMessage());
-        }
-    }
-
-    @Test
-    void testTooManyLeafNodes() throws Exception {
-        try {
-            new BinaryTree(0, 2, 1, 2, 2);
-            fail("Expected CompressorException for too many leaf nodes");
-        } catch (CompressorException e) {
-            assertEquals("Tree contains too many leaf nodes for depth 2", e.getMessage());
-        }
-    }
-
-    @Test
-    void testNoLeafNodes() throws Exception {
-        try {
-            new BinaryTree(0, 0, 0, 0, 0);
-            fail("Expected CompressorException for no leaf nodes");
-        } catch (CompressorException e) {
-            assertEquals("Tree contains no leaf nodes", e.getMessage());
-        }
-    }
-
-    private BitInputStream createBitInputStream(final int... data) throws IOException {
-        final byte[] bytes = new byte[data.length];
-        for (int i = 0; i < data.length; i++) {
-            bytes[i] = (byte) data[i];
-        }
-
-        return new BitInputStream(new ByteArrayInputStream(bytes), ByteOrder.BIG_ENDIAN);
     }
 }
