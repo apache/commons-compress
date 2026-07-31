@@ -29,6 +29,8 @@ import java.io.InputStream;
  */
 public class Lh7CompressorInputStream extends AbstractLhStaticHuffmanCompressorInputStream {
 
+    private static final int DICT_BITS_LH7 = 16;
+
     /**
      * Constructs a new Lh7CompressorInputStream which decompresses bytes read from the specified stream.
      *
@@ -36,16 +38,7 @@ public class Lh7CompressorInputStream extends AbstractLhStaticHuffmanCompressorI
      * @throws IOException if an I/O error occurs.
      */
     public Lh7CompressorInputStream(final InputStream in) throws IOException {
-        super(in);
+        super(in, DICT_BITS_LH7, 5, DICT_BITS_LH7 + 1);
     }
 
-    @Override
-    int getDictionaryBits() {
-        return 16;
-    }
-
-    @Override
-    int getDistanceBits() {
-        return 5;
-    }
 }

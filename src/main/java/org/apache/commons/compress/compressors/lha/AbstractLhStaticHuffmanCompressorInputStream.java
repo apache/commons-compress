@@ -77,13 +77,26 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
      */
     private BinaryTree distanceTree;
 
+    private final int dictionaryBits;
+
+    private final int distanceBits;
+
+    private final int maxNumberOfDistanceCodes;
+
     /**
      * Constructs a new CompressorInputStream which decompresses bytes read from the specified stream.
      *
-     * @param in the InputStream from which to read compressed data.
+     * @param in The InputStream from which to read compressed data.
+     * @param dictionaryBits The number of bits used for the dictionary size.
+     * @param distanceBits The number of bits used for the distance.
+     * @param maxNumberOfDistanceCodes The maximum number of distance codes.
      * @throws IOException if an I/O error occurs.
      */
-    AbstractLhStaticHuffmanCompressorInputStream(final InputStream in) throws IOException {
+    AbstractLhStaticHuffmanCompressorInputStream(final InputStream in, final int dictionaryBits, final int distanceBits, final int maxNumberOfDistanceCodes)
+            throws IOException {
+        this.dictionaryBits = dictionaryBits;
+        this.distanceBits = distanceBits;
+        this.maxNumberOfDistanceCodes = maxNumberOfDistanceCodes;
         this.bin = new BitInputStream(in == System.in ? CloseShieldInputStream.wrap(in) : in, ByteOrder.BIG_ENDIAN);
         // Create a sliding dictionary buffer that can hold the full dictionary size and the maximum match length
         this.buffer = new CircularBuffer(getDictionarySize() + getMaxMatchLength());
@@ -160,7 +173,9 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
      *
      * @return the number of bits used for the dictionary size.
      */
-    abstract int getDictionaryBits();
+    int getDictionaryBits() {
+        return dictionaryBits;
+    }
 
     /**
      * Gets the size of the dictionary.
@@ -176,7 +191,9 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
      *
      * @return the number of bits used for the distance.
      */
-    abstract int getDistanceBits();
+    int getDistanceBits() {
+        return distanceBits;
+    }
 
     /**
      * Gets the maximum match length for the copy command.
@@ -202,7 +219,7 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
      * @return the maximum number of distance codes.
      */
     int getMaxNumberOfDistanceCodes() {
-        return getDictionaryBits() + 1;
+        return maxNumberOfDistanceCodes;
     }
 
     @Override

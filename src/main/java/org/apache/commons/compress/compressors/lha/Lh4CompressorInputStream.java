@@ -29,6 +29,8 @@ import java.io.InputStream;
  */
 public class Lh4CompressorInputStream extends AbstractLhStaticHuffmanCompressorInputStream {
 
+    private static final int DICT_BITS_LH4 = 12;
+
     /**
      * Constructs a new Lh4CompressorInputStream which decompresses bytes read from the specified stream.
      *
@@ -36,21 +38,7 @@ public class Lh4CompressorInputStream extends AbstractLhStaticHuffmanCompressorI
      * @throws IOException if an I/O error occurs
      */
     public Lh4CompressorInputStream(final InputStream in) throws IOException {
-        super(in);
+        super(in, DICT_BITS_LH4, 4, DICT_BITS_LH4 + 2);
     }
 
-    @Override
-    int getDictionaryBits() {
-        return 12;
-    }
-
-    @Override
-    int getDistanceBits() {
-        return 4;
-    }
-
-    @Override
-    int getMaxNumberOfDistanceCodes() {
-        return getDictionaryBits() + 2;
-    }
 }
