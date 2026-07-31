@@ -47,7 +47,7 @@ import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
 class LhaArchiveInputStreamTest extends AbstractTest {
-    private static final int[] VALID_HEADER_LEVEL_0_FILE = new int[] {
+    private static final int[] VALID_HEADER_LEVEL_0_FILE = {
         0x2b, 0x70, 0x2d, 0x6c, 0x68, 0x35, 0x2d, 0x34, 0x00, 0x00, 0x00, 0x39, 0x00, 0x00, 0x00, 0x4b, // |+p-lh5-4...9...K|
         0x80, 0x03, 0x5b, 0x20, 0x00, 0x09, 0x74, 0x65, 0x73, 0x74, 0x31, 0x2e, 0x74, 0x78, 0x74, 0x96, // |..[ ..test1.txt.|
         0x64, 0x55, 0x00, 0xef, 0x6b, 0x8f, 0x68, 0xa4, 0x81, 0xf5, 0x01, 0x14, 0x00, 0x00, 0x39, 0x4a, // |dU..k.h.......9J|
@@ -57,7 +57,7 @@ class LhaArchiveInputStreamTest extends AbstractTest {
         0x7c, 0x00                                                                                      // ||.|
     };
 
-    private static final int[] VALID_HEADER_LEVEL_0_FILE_MACOS_UTF8 = new int[] {
+    private static final int[] VALID_HEADER_LEVEL_0_FILE_MACOS_UTF8 = {
         0x31, 0x65, 0x2d, 0x6c, 0x68, 0x30, 0x2d, 0x0d, 0x00, 0x00, 0x00, 0x0d, 0x00, 0x00, 0x00, 0x06, // |1e-lh0-.........|
         0x8c, 0x0d, 0x5b, 0x20, 0x00, 0x0f, 0x74, 0x65, 0x73, 0x74, 0x2d, 0xc3, 0xa5, 0xc3, 0xa4, 0xc3, // |..[ ..test-.....|
         0xb6, 0x2e, 0x74, 0x78, 0x74, 0x57, 0x77, 0x55, 0x00, 0xfc, 0xaf, 0x9c, 0x68, 0xa4, 0x81, 0xf5, // |..txtWwU....h...|
@@ -65,14 +65,14 @@ class LhaArchiveInputStreamTest extends AbstractTest {
         0x00                                                                                            // |.|
     };
 
-    private static final int[] VALID_HEADER_LEVEL_0_FILE_MSDOS_ISO8859_1 = new int[] {
+    private static final int[] VALID_HEADER_LEVEL_0_FILE_MSDOS_ISO8859_1 = {
         0x22, 0x6b, 0x2d, 0x6c, 0x68, 0x30, 0x2d, 0x0e, 0x00, 0x00, 0x00, 0x0e, 0x00, 0x00, 0x00, 0x52, // |"k-lh0-........R|
         0x54, 0x0d, 0x5b, 0x20, 0x00, 0x0c, 0x74, 0x65, 0x73, 0x74, 0x2d, 0xe5, 0xe4, 0xf6, 0x2e, 0x74, // |T.[ ..test-....t|
         0x78, 0x74, 0xb4, 0xc9, 0x48, 0x65, 0x6c, 0x6c, 0x6f, 0x20, 0x57, 0x6f, 0x72, 0x6c, 0x64, 0x21, // |xt..Hello World!|
         0x0d, 0x0a, 0x00                                                                                // |...|
     };
 
-    private static final int[] VALID_HEADER_LEVEL_1_FILE = new int[] {
+    private static final int[] VALID_HEADER_LEVEL_1_FILE = {
         0x22, 0x09, 0x2d, 0x6c, 0x68, 0x35, 0x2d, 0x47, 0x00, 0x00, 0x00, 0x39, 0x00, 0x00, 0x00, 0x4b, // |".-lh5-G...9...K|
         0x80, 0x03, 0x5b, 0x20, 0x01, 0x09, 0x74, 0x65, 0x73, 0x74, 0x31, 0x2e, 0x74, 0x78, 0x74, 0x96, // |..[ ..test1.txt.|
         0x64, 0x55, 0x05, 0x00, 0x50, 0xa4, 0x81, 0x07, 0x00, 0x51, 0x14, 0x00, 0xf5, 0x01, 0x07, 0x00, // |dU..P....Q......|
@@ -82,7 +82,7 @@ class LhaArchiveInputStreamTest extends AbstractTest {
         0xbb, 0xc1, 0x7c, 0x1d, 0x9a, 0x63, 0xaf, 0xc3, 0xe4, 0xaf, 0x7c, 0x00                          // |..|..c....|.|
     };
 
-    private static final int[] VALID_HEADER_LEVEL_1_FILE_MSDOS_WITH_CHECKSUM_AND_CRC = new int[] {
+    private static final int[] VALID_HEADER_LEVEL_1_FILE_MSDOS_WITH_CHECKSUM_AND_CRC = {
         0x19, 0x36, 0x2d, 0x6c, 0x68, 0x64, 0x2d, 0x12, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x3d, // |.6-lhd-........=|
         0x77, 0x0d, 0x5b, 0x20, 0x01, 0x00, 0x00, 0x00, 0x4d, 0x08, 0x00, 0x02, 0x64, 0x69, 0x72, 0x31, // |w.[ ....M...dir1|
         0xff, 0x05, 0x00, 0x40, 0x10, 0x00, 0x05, 0x00, 0x00, 0x72, 0xb7, 0x00, 0x00, 0x22, 0x10, 0x2d, // |...@.....r...".-|
@@ -92,7 +92,7 @@ class LhaArchiveInputStreamTest extends AbstractTest {
         0x6c, 0x6c, 0x6f, 0x20, 0x57, 0x6f, 0x72, 0x6c, 0x64, 0x21, 0x0d, 0x0a, 0x00                    // |llo World!...|
     };
 
-    private static final int[] VALID_HEADER_LEVEL_2_FILE = new int[] {
+    private static final int[] VALID_HEADER_LEVEL_2_FILE = {
         0x37, 0x00, 0x2d, 0x6c, 0x68, 0x35, 0x2d, 0x34, 0x00, 0x00, 0x00, 0x39, 0x00, 0x00, 0x00, 0xef, // |7.-lh5-4...9....|
         0x6b, 0x8f, 0x68, 0x20, 0x02, 0x96, 0x64, 0x55, 0x05, 0x00, 0x00, 0xa5, 0x01, 0x0c, 0x00, 0x01, // |k.h ..dU........|
         0x74, 0x65, 0x73, 0x74, 0x31, 0x2e, 0x74, 0x78, 0x74, 0x05, 0x00, 0x50, 0xa4, 0x81, 0x07, 0x00, // |test1.txt..P....|
@@ -232,7 +232,7 @@ class LhaArchiveInputStreamTest extends AbstractTest {
         try {
             LhaArchiveInputStream.getCompressionMethod(ByteBuffer.wrap(toByteArray(0x00, 0x00, '-', 'l', 'h', '0', 0xff)));
             fail("Expected ArchiveException for invalid compression method");
-        } catch (ArchiveException e) {
+        } catch (final ArchiveException e) {
             assertEquals("Invalid compression method: 0x2d 0x6c 0x68 0x30 0xff", e.getMessage());
         }
     }
@@ -241,10 +241,10 @@ class LhaArchiveInputStreamTest extends AbstractTest {
     void testGetPathnameInvalidLength() throws IOException, UnsupportedEncodingException {
         try (LhaArchiveInputStream is = LhaArchiveInputStream.builder().setInputStream(newEmptyInputStream()).get()) {
             try {
-                final byte[] pathname = new byte[] { 'a', 'b', 'c' };
+                final byte[] pathname = { 'a', 'b', 'c' };
                 is.getPathname(ByteBuffer.wrap(pathname), pathname.length + 1);
                 fail("Expected ArchiveException for invalid pathname length");
-            } catch (ArchiveException e) {
+            } catch (final ArchiveException e) {
                 assertEquals("Invalid pathname length", e.getMessage());
             }
         }
@@ -256,7 +256,7 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             try {
                 is.getPathname(ByteBuffer.wrap(new byte[0]), -1);
                 fail("Expected ArchiveException when pathname length is negative");
-            } catch (ArchiveException e) {
+            } catch (final ArchiveException e) {
                 assertEquals("Pathname length is negative", e.getMessage());
             }
         }
@@ -269,7 +269,7 @@ class LhaArchiveInputStreamTest extends AbstractTest {
                 final byte[] pathname = new byte[4097];
                 is.getPathname(ByteBuffer.wrap(pathname), pathname.length);
                 fail("Expected ArchiveException when pathname is longer than the maximum allowed");
-            } catch (ArchiveException e) {
+            } catch (final ArchiveException e) {
                 assertEquals("Pathname is longer than the maximum allowed (4097 > 4096)", e.getMessage());
             }
         }
@@ -341,7 +341,7 @@ class LhaArchiveInputStreamTest extends AbstractTest {
         try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(new ByteArrayInputStream(data)).get()) {
             archive.getNextEntry();
             fail("Expected ArchiveException for invalid header level");
-        } catch (ArchiveException e) {
+        } catch (final ArchiveException e) {
             assertEquals("Invalid header level: 4", e.getMessage());
         }
     }
@@ -355,7 +355,7 @@ class LhaArchiveInputStreamTest extends AbstractTest {
         try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(new ByteArrayInputStream(data)).get()) {
             archive.getNextEntry();
             fail("Expected ArchiveException for invalid header checksum");
-        } catch (ArchiveException e) {
+        } catch (final ArchiveException e) {
             assertEquals("Invalid header level 0 checksum", e.getMessage());
         }
     }
@@ -369,7 +369,7 @@ class LhaArchiveInputStreamTest extends AbstractTest {
         try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(new ByteArrayInputStream(data)).get()) {
             archive.getNextEntry();
             fail("Expected ArchiveException for invalid filename");
-        } catch (ArchiveException e) {
+        } catch (final ArchiveException e) {
             assertEquals("Invalid pathname length", e.getMessage());
         }
     }
@@ -383,7 +383,7 @@ class LhaArchiveInputStreamTest extends AbstractTest {
         try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(new ByteArrayInputStream(data)).get()) {
             archive.getNextEntry();
             fail("Expected ArchiveException for invalid header length");
-        } catch (ArchiveException e) {
+        } catch (final ArchiveException e) {
             assertEquals("Invalid header level 0 length: 18", e.getMessage());
         }
     }
@@ -397,7 +397,7 @@ class LhaArchiveInputStreamTest extends AbstractTest {
         try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(new ByteArrayInputStream(data)).get()) {
             archive.getNextEntry();
             fail("Expected ArchiveException for invalid header checksum");
-        } catch (ArchiveException e) {
+        } catch (final ArchiveException e) {
             assertEquals("Invalid header level 1 checksum", e.getMessage());
         }
     }
@@ -413,7 +413,7 @@ class LhaArchiveInputStreamTest extends AbstractTest {
         try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(new ByteArrayInputStream(data)).get()) {
             archive.getNextEntry();
             fail("Expected ArchiveException for invalid header checksum");
-        } catch (ArchiveException e) {
+        } catch (final ArchiveException e) {
             assertEquals("Invalid header CRC expected=0xb772 found=0x2233", e.getMessage());
         }
     }
@@ -427,7 +427,7 @@ class LhaArchiveInputStreamTest extends AbstractTest {
         try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(new ByteArrayInputStream(data)).get()) {
             archive.getNextEntry();
             fail("Expected ArchiveException for invalid filename");
-        } catch (ArchiveException e) {
+        } catch (final ArchiveException e) {
             assertEquals("Invalid pathname length", e.getMessage());
         }
     }
@@ -441,7 +441,7 @@ class LhaArchiveInputStreamTest extends AbstractTest {
         try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(new ByteArrayInputStream(data)).get()) {
             archive.getNextEntry();
             fail("Expected ArchiveException for invalid header length");
-        } catch (ArchiveException e) {
+        } catch (final ArchiveException e) {
             assertEquals("Invalid header level 1 length: 18", e.getMessage());
         }
     }
@@ -469,7 +469,7 @@ class LhaArchiveInputStreamTest extends AbstractTest {
         try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(new ByteArrayInputStream(data)).get()) {
             archive.getNextEntry();
             fail("Expected ArchiveException for negative compressed size");
-        } catch (ArchiveException e) {
+        } catch (final ArchiveException e) {
             assertEquals("Invalid compressed size", e.getMessage());
         }
     }
@@ -485,7 +485,7 @@ class LhaArchiveInputStreamTest extends AbstractTest {
         try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(new ByteArrayInputStream(data)).get()) {
             archive.getNextEntry();
             fail("Expected ArchiveException for invalid header checksum");
-        } catch (ArchiveException e) {
+        } catch (final ArchiveException e) {
             assertEquals("Invalid header CRC expected=0x01a5 found=0x2233", e.getMessage());
         }
     }
@@ -499,19 +499,19 @@ class LhaArchiveInputStreamTest extends AbstractTest {
         try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(new ByteArrayInputStream(data)).get()) {
             archive.getNextEntry();
             fail("Expected ArchiveException for invalid header length");
-        } catch (ArchiveException e) {
+        } catch (final ArchiveException e) {
             assertEquals("Invalid header level 2 length: 25", e.getMessage());
         }
     }
 
     @Test
     void testInvalidHeaderLevelLength() throws IOException {
-        final byte[] data = new byte[] { 0x04, 0x00, 0x00, 0x00, 0x00, 0x00 };
+        final byte[] data = { 0x04, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
         try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(new ByteArrayInputStream(data)).get()) {
             archive.getNextEntry();
             fail("Expected ArchiveException for invalid header length");
-        } catch (ArchiveException e) {
+        } catch (final ArchiveException e) {
             assertEquals("Invalid header length", e.getMessage());
         }
     }
@@ -551,7 +551,7 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             try {
                 archive.parseExtendedHeader(toByteBuffer(0x00, 0x22, 0x00, 0x00), entryBuilder);
                 fail("Expected ArchiveException for invalid extended header length");
-            } catch (ArchiveException e) {
+            } catch (final ArchiveException e) {
                 assertEquals("Invalid extended header length", e.getMessage());
             }
         }
@@ -573,7 +573,7 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             try {
                 archive.parseExtendedHeader(toByteBuffer(0x02, 0x00), entryBuilder);
                 fail("Expected ArchiveException for invalid extended header length");
-            } catch (ArchiveException e) {
+            } catch (final ArchiveException e) {
                 assertEquals("Invalid extended header length", e.getMessage());
             }
         }
@@ -591,7 +591,7 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             try {
                 archive.parseExtendedHeader(toByteBuffer(0x01, 0x00), entryBuilder);
                 fail("Expected ArchiveException for invalid extended header length");
-            } catch (ArchiveException e) {
+            } catch (final ArchiveException e) {
                 assertEquals("Invalid extended header length", e.getMessage());
             }
         }
@@ -650,7 +650,7 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             try {
                 archive.parseExtendedHeader(toByteBuffer(0x40, 0x10, 0x00, 0x00), entryBuilder);
                 fail("Expected ArchiveException for invalid extended header length");
-            } catch (ArchiveException e) {
+            } catch (final ArchiveException e) {
                 assertEquals("Invalid extended header length", e.getMessage());
             }
         }
@@ -663,7 +663,7 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             try {
                 archive.parseExtendedHeader(toByteBuffer(0x00, 0x00), entryBuilder);
                 fail("Expected ArchiveException for invalid extended header length");
-            } catch (ArchiveException e) {
+            } catch (final ArchiveException e) {
                 assertEquals("Invalid extended header length", e.getMessage());
             }
         }
@@ -682,7 +682,7 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             try {
                 archive.parseExtendedHeader(toByteBuffer(0x50, 0xa4, 0x00, 0x00), entryBuilder);
                 fail("Expected ArchiveException for invalid extended header length");
-            } catch (ArchiveException e) {
+            } catch (final ArchiveException e) {
                 assertEquals("Invalid extended header length", e.getMessage());
             }
         }
@@ -700,7 +700,7 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             try {
                 archive.parseExtendedHeader(toByteBuffer(0x54, 0x5c, 0x73, 0x9c, 0x00, 0x00), entryBuilder);
                 fail("Expected ArchiveException for invalid extended header length");
-            } catch (ArchiveException e) {
+            } catch (final ArchiveException e) {
                 assertEquals("Invalid extended header length", e.getMessage());
             }
         }
@@ -719,7 +719,7 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             try {
                 archive.parseExtendedHeader(toByteBuffer(0x51, 0x14, 0x00, 0xf5, 0x00, 0x00), entryBuilder);
                 fail("Expected ArchiveException for invalid extended header length");
-            } catch (ArchiveException e) {
+            } catch (final ArchiveException e) {
                 assertEquals("Invalid extended header length", e.getMessage());
             }
         }
@@ -1658,7 +1658,7 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             try {
                 IOUtils.toByteArray(archive);
                 fail("Expected IllegalStateException for reading data before entry");
-            } catch (IllegalStateException e) {
+            } catch (final IllegalStateException e) {
                 assertEquals("No current entry", e.getMessage());
             }
         }
@@ -1681,7 +1681,7 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             try {
                 IOUtils.toByteArray(archive);
                 fail("Expected ArchiveException for unsupported compression method");
-            } catch (ArchiveException e) {
+            } catch (final ArchiveException e) {
                 assertEquals("Unsupported compression method: -lha-", e.getMessage());
             }
         }
