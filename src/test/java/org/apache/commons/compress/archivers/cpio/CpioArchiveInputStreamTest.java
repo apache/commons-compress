@@ -20,6 +20,7 @@ package org.apache.commons.compress.archivers.cpio;
 
 import static org.apache.commons.lang3.reflect.FieldUtils.readDeclaredField;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
@@ -199,7 +200,8 @@ class CpioArchiveInputStreamTest extends AbstractTest {
         try (CpioArchiveInputStream cpio = CpioArchiveInputStream.builder()
                 .setByteArray(header.getBytes(StandardCharsets.US_ASCII))
                 .get()) {
-            assertThrows(ArchiveException.class, cpio::getNextEntry);
+            final ArchiveException e = assertThrows(ArchiveException.class, cpio::getNextEntry);
+            assertInstanceOf(IllegalArgumentException.class, e.getCause());
         }
     }
 
@@ -266,6 +268,35 @@ class CpioArchiveInputStreamTest extends AbstractTest {
             IOUtils.toByteArray(archive);
             assertEquals(-1, archive.read(buf));
             assertEquals(-1, archive.read(buf));
+        }
+    }
+
+    @Test
+    void testNegativeSizeInHeader() throws Exception {
+        // c_filesize parses to -1, making CpioArchiveEntry.setSize throw IllegalArgumentException
+        // @formatter:off
+        final String header =
+                "070701" + // c_magic
+                "00000001" + // c_ino
+                "000081A4" + // c_mode
+                "00000000" + // c_uid
+                "00000000" + // c_gid
+                "00000001" + // c_nlink
+                "00000000" + // c_mtime
+                "-0000001" + // c_filesize
+                "00000000" + // c_devmajor
+                "00000000" + // c_devminor
+                "00000000" + // c_rdevmajor
+                "00000000" + // c_rdevminor
+                "00000002" + // c_namesize
+                "00000000" + // c_check
+                "a\0";
+        // @formatter:on
+        try (CpioArchiveInputStream cpio = CpioArchiveInputStream.builder()
+                .setByteArray(header.getBytes(StandardCharsets.US_ASCII))
+                .get()) {
+            final ArchiveException e = assertThrows(ArchiveException.class, cpio::getNextEntry);
+            assertInstanceOf(IllegalArgumentException.class, e.getCause());
         }
     }
 

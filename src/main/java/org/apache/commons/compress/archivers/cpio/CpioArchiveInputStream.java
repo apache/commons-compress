@@ -307,27 +307,31 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
             IOUtils.consume(this);
         }
         readFully(buffer2, 0, buffer2.length);
-        if (CpioUtil.byteArray2long(buffer2, false) == MAGIC_OLD_BINARY) {
-            entry = readOldBinaryEntry(false);
-        } else if (CpioUtil.byteArray2long(buffer2, true) == MAGIC_OLD_BINARY) {
-            entry = readOldBinaryEntry(true);
-        } else {
-            System.arraycopy(buffer2, 0, buffer6, 0, buffer2.length);
-            readFully(buffer6, buffer2.length, buffer4.length);
-            final String magicString = ArchiveUtils.toAsciiString(buffer6);
-            switch (magicString) {
-            case MAGIC_NEW:
-                entry = readNewEntry(false);
-                break;
-            case MAGIC_NEW_CRC:
-                entry = readNewEntry(true);
-                break;
-            case MAGIC_OLD_ASCII:
-                entry = readOldAsciiEntry();
-                break;
-            default:
-                throw new ArchiveException("Unknown magic '%s' at byte: %,d", magicString, getBytesRead());
+        try {
+            if (CpioUtil.byteArray2long(buffer2, false) == MAGIC_OLD_BINARY) {
+                entry = readOldBinaryEntry(false);
+            } else if (CpioUtil.byteArray2long(buffer2, true) == MAGIC_OLD_BINARY) {
+                entry = readOldBinaryEntry(true);
+            } else {
+                System.arraycopy(buffer2, 0, buffer6, 0, buffer2.length);
+                readFully(buffer6, buffer2.length, buffer4.length);
+                final String magicString = ArchiveUtils.toAsciiString(buffer6);
+                switch (magicString) {
+                case MAGIC_NEW:
+                    entry = readNewEntry(false);
+                    break;
+                case MAGIC_NEW_CRC:
+                    entry = readNewEntry(true);
+                    break;
+                case MAGIC_OLD_ASCII:
+                    entry = readOldAsciiEntry();
+                    break;
+                default:
+                    throw new ArchiveException("Unknown magic '%s' at byte: %,d", magicString, getBytesRead());
+                }
             }
+        } catch (final IllegalArgumentException e) {
+            throw new ArchiveException("Corrupted CPIO archive at byte: " + getBytesRead(), (Throwable) e);
         }
         entryBytesRead = 0;
         entryEOF = false;
@@ -432,7 +436,9 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         }
         newEntry.setInode(readAsciiLong(8, 16));
         final long mode = readAsciiLong(8, 16);
-        setMode(newEntry, mode);
+        if (CpioUtil.fileType(mode) != 0) { // mode is initialized to 0
+            newEntry.setMode(mode);
+        }
         newEntry.setUID(readAsciiLong(8, 16));
         newEntry.setGID(readAsciiLong(8, 16));
         newEntry.setNumberOfLinks(readAsciiLong(8, 16));
@@ -468,7 +474,9 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         ret.setDevice(readAsciiLong(6, 8));
         ret.setInode(readAsciiLong(6, 8));
         final long mode = readAsciiLong(6, 8);
-        setMode(ret, mode);
+        if (CpioUtil.fileType(mode) != 0) {
+            ret.setMode(mode);
+        }
         ret.setUID(readAsciiLong(6, 8));
         ret.setGID(readAsciiLong(6, 8));
         ret.setNumberOfLinks(readAsciiLong(6, 8));
@@ -496,7 +504,9 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         oldEntry.setDevice(readBinaryLong(2, swapHalfWord));
         oldEntry.setInode(readBinaryLong(2, swapHalfWord));
         final long mode = readBinaryLong(2, swapHalfWord);
-        setMode(oldEntry, mode);
+        if (CpioUtil.fileType(mode) != 0) {
+            oldEntry.setMode(mode);
+        }
         oldEntry.setUID(readBinaryLong(2, swapHalfWord));
         oldEntry.setGID(readBinaryLong(2, swapHalfWord));
         oldEntry.setNumberOfLinks(readBinaryLong(2, swapHalfWord));
@@ -530,27 +540,6 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
             throw new EOFException();
         }
         return b;
-    }
-
-    /**
-     * Sets the mode of an entry from a header field.
-     * <p>
-     * A mode of 0 is left unset because only the trailer may use it; the callers check that by name.
-     * </p>
-     *
-     * @param entry The entry to update.
-     * @param mode  The mode read from the header.
-     * @throws ArchiveException if the mode names a file type CPIO does not define.
-     */
-    private void setMode(final CpioArchiveEntry entry, final long mode) throws ArchiveException {
-        if (CpioUtil.fileType(mode) == 0) {
-            return;
-        }
-        try {
-            entry.setMode(mode);
-        } catch (final IllegalArgumentException e) {
-            throw new ArchiveException("Corrupted CPIO archive: Invalid file mode 0%s at byte: %,d", Long.toOctalString(mode), getBytesRead());
-        }
     }
 
     private int skip(final int length) throws IOException {
