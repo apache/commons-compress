@@ -71,72 +71,72 @@ public class LhaArchiveEntry implements ArchiveEntry {
                     headerCrc);
         }
 
-        Builder setCompressedSize(long compressedSize) {
+        Builder setCompressedSize(final long compressedSize) {
             this.compressedSize = compressedSize;
             return this;
         }
 
-        Builder setCompressionMethod(String compressionMethod) {
+        Builder setCompressionMethod(final String compressionMethod) {
             this.compressionMethod = compressionMethod;
             return this;
         }
 
-        Builder setCrcValue(int crcValue) {
+        Builder setCrcValue(final int crcValue) {
             this.crcValue = crcValue;
             return this;
         }
 
-        Builder setDirectory(boolean directory) {
+        Builder setDirectory(final boolean directory) {
             this.directory = directory;
             return this;
         }
 
-        Builder setDirectoryName(String directoryName) {
+        Builder setDirectoryName(final String directoryName) {
             this.directoryName = directoryName;
             return this;
         }
 
-        Builder setFilename(String fileName) {
+        Builder setFilename(final String fileName) {
             this.filename = fileName;
             return this;
         }
 
-        Builder setHeaderCrc(Integer headerCrc) {
+        Builder setHeaderCrc(final Integer headerCrc) {
             this.headerCrc = headerCrc;
             return this;
         }
 
-        Builder setLastModifiedDate(Date lastModifiedDate) {
+        Builder setLastModifiedDate(final Date lastModifiedDate) {
             this.lastModifiedDate = lastModifiedDate;
             return this;
         }
 
-        Builder setMsdosFileAttributes(Integer msdosFileAttributes) {
+        Builder setMsdosFileAttributes(final Integer msdosFileAttributes) {
             this.msdosFileAttributes = msdosFileAttributes;
             return this;
         }
 
-        Builder setOsId(Integer osId) {
+        Builder setOsId(final Integer osId) {
             this.osId = osId;
             return this;
         }
 
-        Builder setSize(long size) {
+        Builder setSize(final long size) {
             this.size = size;
             return this;
         }
 
-        Builder setUnixGroupId(Integer unixGroupId) {
+        Builder setUnixGroupId(final Integer unixGroupId) {
             this.unixGroupId = unixGroupId;
             return this;
         }
 
-        Builder setUnixPermissionMode(Integer unixPermissionMode) {
+        Builder setUnixPermissionMode(final Integer unixPermissionMode) {
             this.unixPermissionMode = unixPermissionMode;
             return this;
         }
 
-        Builder setUnixUserId(Integer unixUserId) {
+        Builder setUnixUserId(final Integer unixUserId) {
             this.unixUserId = unixUserId;
             return this;
         }
@@ -160,10 +160,10 @@ public class LhaArchiveEntry implements ArchiveEntry {
 
     private final Integer headerCrc;
 
-    LhaArchiveEntry(String name, boolean directory, long size, Date lastModifiedDate,
-            long compressedSize, String compressionMethod, int crcValue, Integer osId,
-            Integer unixPermissionMode, Integer unixUserId, Integer unixGroupId,
-            Integer msdosFileAttributes, Integer headerCrc) {
+    LhaArchiveEntry(final String name, final boolean directory, final long size, final Date lastModifiedDate,
+            final long compressedSize, final String compressionMethod, final int crcValue, final Integer osId,
+            final Integer unixPermissionMode, final Integer unixUserId, final Integer unixGroupId,
+            final Integer msdosFileAttributes, final Integer headerCrc) {
         this.name = name;
         this.directory = directory;
         this.size = size;
