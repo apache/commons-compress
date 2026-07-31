@@ -161,7 +161,7 @@ class CircularBufferTest {
         try {
             buffer.copy(4, 4); // Copying 4 bytes and write to the buffer that will be full during copy
             fail("Expected IllegalStateException for buffer overflow during copy");
-        } catch (IllegalStateException e) {
+        } catch (final IllegalStateException e) {
             assertEquals("Buffer overflow: Cannot write to a full buffer", e.getMessage());
         }
     }
@@ -179,7 +179,7 @@ class CircularBufferTest {
         try {
             buffer.copy(5, 2); // Try to copy from a distance that is bigger than the buffer size
             fail("Expected IllegalArgumentException for distance exceeding buffer size");
-        } catch (IllegalArgumentException e) {
+        } catch (final IllegalArgumentException e) {
             assertEquals("Distance exceeds buffer size", e.getMessage());
         }
     }
@@ -195,7 +195,7 @@ class CircularBufferTest {
         try {
             buffer.copy(0, 2); // Try to copy from distance 0
             fail("Expected IllegalArgumentException for invalid distance");
-        } catch (IllegalArgumentException e) {
+        } catch (final IllegalArgumentException e) {
             assertEquals("Distance must be at least 1", e.getMessage());
         }
     }
@@ -305,7 +305,7 @@ class CircularBufferTest {
         try {
             buffer.put(0x05);
             fail("Expected IllegalStateException for buffer overflow");
-        } catch (IllegalStateException e) {
+        } catch (final IllegalStateException e) {
             assertEquals("Buffer overflow: Cannot write to a full buffer", e.getMessage());
         }
     }

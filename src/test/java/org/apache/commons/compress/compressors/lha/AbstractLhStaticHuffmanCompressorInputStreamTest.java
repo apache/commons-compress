@@ -84,7 +84,7 @@ class AbstractLhStaticHuffmanCompressorInputStreamTest {
         try {
             createLh5CompressorInputStream(0xff, 0xf8).readCodeLength(); // 1111 1111  1111 1000
             fail("Expected CompressorException for code length overflow");
-        } catch (CompressorException e) {
+        } catch (final CompressorException e) {
             assertEquals("Code length overflow", e.getMessage());
         }
     }
@@ -94,7 +94,7 @@ class AbstractLhStaticHuffmanCompressorInputStreamTest {
         try {
             createLh5CompressorInputStream(0xff).readCodeLength(); // 1111 1111  EOF
             fail("Expected CompressorException for unexpected end of stream");
-        } catch (CompressorException e) {
+        } catch (final CompressorException e) {
             assertEquals("Unexpected end of stream", e.getMessage());
         }
     }
@@ -107,7 +107,7 @@ class AbstractLhStaticHuffmanCompressorInputStreamTest {
             ).readCommandDecodingTree();
 
             fail("Expected CompressorException for table invalid size");
-        } catch (CompressorException e) {
+        } catch (final CompressorException e) {
             assertEquals("Code length table has invalid size (20 > 19)", e.getMessage());
         }
     }
@@ -126,9 +126,9 @@ class AbstractLhStaticHuffmanCompressorInputStreamTest {
         try {
             createLh5CompressorInputStream(
                 0b00000000, 0b01111111 // 9 bits length (0x00) and only 8 bits instead of expected 9 bits which will cause an unexpected end of stream
-            ).readCommandTree(new BinaryTree(new int [] { 0 }));
+            ).readCommandTree(new BinaryTree(0));
             fail("Expected CompressorException for unexpected end of stream");
-        } catch (CompressorException e) {
+        } catch (final CompressorException e) {
             assertEquals("Unexpected end of stream", e.getMessage());
         }
     }
@@ -138,10 +138,10 @@ class AbstractLhStaticHuffmanCompressorInputStreamTest {
         try {
             createLh5CompressorInputStream(
                 0b11111111, 0b10000000 // 9 bits length (0x01ff = 511)
-            ).readCommandTree(new BinaryTree(new int [] { 0 }));
+            ).readCommandTree(new BinaryTree(0));
 
             fail("Expected CompressorException for table invalid size");
-        } catch (CompressorException e) {
+        } catch (final CompressorException e) {
             assertEquals("Code length table has invalid size (511 > 510)", e.getMessage());
         }
     }
@@ -150,7 +150,7 @@ class AbstractLhStaticHuffmanCompressorInputStreamTest {
     void testReadCommandTreeWithSingleValue() throws IOException {
         final BinaryTree tree = createLh5CompressorInputStream(
             0b00000000, 0b01111111, 0b01000000 // 9 bits length (0x00) and 9 bits the root value (0x01fd = 509)
-        ).readCommandTree(new BinaryTree(new int [] { 0 }));
+        ).readCommandTree(new BinaryTree(0));
 
         assertEquals(0x01fd, tree.read(new BitInputStream(new ByteArrayInputStream(new byte[0]), ByteOrder.BIG_ENDIAN)));
     }

@@ -45,14 +45,14 @@ class BinaryTreeTest {
         try {
             new BinaryTree(1, 17);
             fail("Expected CompressorException for depth > 16");
-        } catch (CompressorException e) {
+        } catch (final CompressorException e) {
             assertEquals("Tree depth must not be negative and not bigger than 16 but is 17", e.getMessage());
         }
     }
 
     @Test
     void testInvalidBitstream() throws Exception {
-        final int[] length = new int[] { 4, 2, 3, 0, 5, 0, 1 };
+        final int[] length = { 4, 2, 3, 0, 5, 0, 1 };
         //                        Value: 0  1  2  3  4  5  6
 
         final BinaryTree tree = new BinaryTree(length);
@@ -66,7 +66,7 @@ class BinaryTreeTest {
         try {
             assertEquals(5, tree.read(createBitInputStream(0xf8))); // 1111 1xxx
             fail("Expected CompressorException for invalid bitstream");
-        } catch (CompressorException e) {
+        } catch (final CompressorException e) {
             assertEquals("Invalid bitstream. The node at index 62 is not defined.", e.getMessage());
         }
     }
@@ -76,14 +76,14 @@ class BinaryTreeTest {
         try {
             new BinaryTree(0, 0, 0, 0, 0);
             fail("Expected CompressorException for no leaf nodes");
-        } catch (CompressorException e) {
+        } catch (final CompressorException e) {
             assertEquals("Tree contains no leaf nodes", e.getMessage());
         }
     }
 
     @Test
     void testReadEof() throws Exception {
-        final int[] length = new int[] { 4, 2, 3, 0, 5, 5, 1 };
+        final int[] length = { 4, 2, 3, 0, 5, 5, 1 };
         //                        Value: 0  1  2  3  4  5  6
 
         final BinaryTree tree = new BinaryTree(length);
@@ -100,7 +100,7 @@ class BinaryTreeTest {
         try {
             new BinaryTree(0, 2, 1, 2, 2);
             fail("Expected CompressorException for too many leaf nodes");
-        } catch (CompressorException e) {
+        } catch (final CompressorException e) {
             assertEquals("Tree contains too many leaf nodes for depth 2", e.getMessage());
         }
     }
@@ -116,7 +116,7 @@ class BinaryTreeTest {
     @Test
     void testTree10() throws Exception {
         // Maximum length of 510 entries for command tree and maximum supported depth of 16
-        final int[] length = new int[] { 4, 7, 7, 8, 7, 9, 8, 9, 7, 10, 8, 10, 7, 10, 8, 10, 7, 9, 8, 9, 8, 10, 8, 12, 8, 10, 9, 11, 9, 9, 8, 10, 6, 9,
+        final int[] length = { 4, 7, 7, 8, 7, 9, 8, 9, 7, 10, 8, 10, 7, 10, 8, 10, 7, 9, 8, 9, 8, 10, 8, 12, 8, 10, 9, 11, 9, 9, 8, 10, 6, 9,
                 7, 9, 8, 10, 8, 11, 7, 9, 8, 9, 8, 9, 8, 9, 7, 9, 8, 8, 8, 10, 9, 11, 8, 9, 8, 10, 8, 9, 8, 9, 7, 7, 7, 8, 8, 8, 8, 9, 7, 8, 7, 9, 8, 9,
                 8, 8, 8, 10, 7, 7, 8, 8, 8, 9, 8, 9, 8, 9, 9, 10, 9, 10, 7, 8, 9, 9, 8, 7, 7, 7, 8, 8, 9, 8, 8, 9, 8, 8, 8, 11, 8, 9, 8, 8, 9, 10, 9, 9,
                 8, 10, 8, 10, 9, 9, 7, 9, 9, 10, 9, 10, 9, 9, 9, 10, 9, 11, 10, 11, 9, 10, 8, 10, 9, 11, 9, 10, 10, 12, 9, 11, 9, 12, 10, 14, 10, 14, 10,
@@ -154,7 +154,7 @@ class BinaryTreeTest {
 
     @Test
     void testTree2() throws Exception {
-        final int[] length = new int[] { 1, 1 };
+        final int[] length = { 1, 1 };
         //                        Value: 0  1
 
         final BinaryTree tree = new BinaryTree(length);
@@ -165,7 +165,7 @@ class BinaryTreeTest {
 
     @Test
     void testTree3() throws Exception {
-        final int[] length = new int[] { 1, 0, 1 };
+        final int[] length = { 1, 0, 1 };
         //                        Value: 0  1  2
 
         final BinaryTree tree = new BinaryTree(length);
@@ -176,7 +176,7 @@ class BinaryTreeTest {
 
     @Test
     void testTree4() throws Exception {
-        final int[] length = new int[] { 2, 0, 1, 2 };
+        final int[] length = { 2, 0, 1, 2 };
         //                        Value: 0  1  2  3
 
         final BinaryTree tree = new BinaryTree(length);
@@ -188,7 +188,7 @@ class BinaryTreeTest {
 
     @Test
     void testTree5() throws Exception {
-        final int[] length = new int[] { 2, 0, 0, 2, 1 };
+        final int[] length = { 2, 0, 0, 2, 1 };
         //                        Value: 0  1  2  3  4
 
         final BinaryTree tree = new BinaryTree(length);
@@ -200,7 +200,7 @@ class BinaryTreeTest {
 
     @Test
     void testTree6() throws Exception {
-        final int[] length = new int[] { 1, 0, 2, 3, 3 };
+        final int[] length = { 1, 0, 2, 3, 3 };
         //                        Value: 0  1  2  3  4
 
         final BinaryTree tree = new BinaryTree(length);
@@ -213,7 +213,7 @@ class BinaryTreeTest {
 
     @Test
     void testTree7() throws Exception {
-        final int[] length = new int[] { 0, 0, 0, 0, 1, 1 };
+        final int[] length = { 0, 0, 0, 0, 1, 1 };
         //                        Value: 0  1  2  3  4  5
 
         final BinaryTree tree = new BinaryTree(length);
@@ -224,7 +224,7 @@ class BinaryTreeTest {
 
     @Test
     void testTree8() throws Exception {
-        final int[] length = new int[] { 4, 2, 3, 0, 5, 5, 1 };
+        final int[] length = { 4, 2, 3, 0, 5, 5, 1 };
         //                        Value: 0  1  2  3  4  5  6
 
         final BinaryTree tree = new BinaryTree(length);
@@ -239,7 +239,7 @@ class BinaryTreeTest {
 
     @Test
     void testTree9() throws Exception {
-        final int[] length = new int[] { 5, 6, 6, 0, 0, 8, 7, 7, 7, 4, 3, 2, 2, 4, 5, 5, 5, 4, 8 };
+        final int[] length = { 5, 6, 6, 0, 0, 8, 7, 7, 7, 4, 3, 2, 2, 4, 5, 5, 5, 4, 8 };
         //                        Value: 0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18
 
         final BinaryTree tree = new BinaryTree(length);
