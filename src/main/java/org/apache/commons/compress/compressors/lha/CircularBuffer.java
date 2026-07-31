@@ -69,7 +69,8 @@ final class CircularBuffer {
     public void copy(final int distance, final int length) {
         if (distance < 1) {
             throw new IllegalArgumentException("Distance must be at least 1");
-        } else if (distance > size) {
+        }
+        if (distance > size) {
             throw new IllegalArgumentException("Distance exceeds buffer size");
         }
         final int pos1 = writeIndex - distance;

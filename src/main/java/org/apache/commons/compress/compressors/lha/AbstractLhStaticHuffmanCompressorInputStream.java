@@ -103,7 +103,8 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
         if (this.blockSize == -1) {
             // End of stream
             return;
-        } else if (this.blockSize == 0) {
+        }
+        if (this.blockSize == 0) {
             // Start to read the next block
 
             // Read the block size (number of commands to read)
@@ -125,7 +126,8 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
         final int command = commandTree.read(bin);
         if (command == -1) {
             throw new CompressorException("Unexpected end of stream");
-        } else if (command < NUMBER_OF_LITERAL_CODES) {
+        }
+        if (command < NUMBER_OF_LITERAL_CODES) {
             // Literal command, just write the byte to the buffer
             buffer.put(command);
         } else {
@@ -280,23 +282,22 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
 
         if (numCodeLengths > MAX_NUMBER_OF_COMMAND_DECODING_CODE_LENGTHS) {
             throw new CompressorException("Code length table has invalid size (%d > %d)", numCodeLengths, MAX_NUMBER_OF_COMMAND_DECODING_CODE_LENGTHS);
-        } else if (numCodeLengths == 0) {
+        }
+        if (numCodeLengths == 0) {
             // If numCodeLengths is zero, we read a single code length of COMMAND_DECODING_LENGTH_BITS bits and use as root of the tree
             return new BinaryTree(readBits(COMMAND_DECODING_LENGTH_BITS));
-        } else {
-            // Read all code lengths
-            final int[] codeLengths = new int[numCodeLengths];
-            for (int index = 0; index < numCodeLengths; index++) {
-                codeLengths[index] = readCodeLength();
-
-                if (index == 2) {
-                    // After reading the first three code lengths, we read a 2-bit skip range
-                    index += readBits(2);
-                }
-            }
-
-            return new BinaryTree(codeLengths);
         }
+        // Read all code lengths
+        final int[] codeLengths = new int[numCodeLengths];
+        for (int index = 0; index < numCodeLengths; index++) {
+            codeLengths[index] = readCodeLength();
+
+            if (index == 2) {
+                // After reading the first three code lengths, we read a 2-bit skip range
+                index += readBits(2);
+            }
+        }
+        return new BinaryTree(codeLengths);
     }
 
     /**
@@ -311,35 +312,38 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
 
         if (numCodeLengths > getMaxNumberOfCommands()) {
             throw new CompressorException("Code length table has invalid size (%d > %d)", numCodeLengths, getMaxNumberOfCommands());
-        } else if (numCodeLengths == 0) {
+        }
+        if (numCodeLengths == 0) {
             // If numCodeLengths is zero, we read a single code length of COMMAND_TREE_LENGTH_BITS bits and use as root of the tree
             return new BinaryTree(readBits(COMMAND_TREE_LENGTH_BITS));
-        } else {
-            // Read all code lengths
-            final int[] codeLengths = new int[numCodeLengths];
-
-            for (int index = 0; index < numCodeLengths;) {
-                final int codeOrSkipRange = commandDecodingTree.read(bin);
-
-                if (codeOrSkipRange == -1) {
-                    throw new CompressorException("Unexpected end of stream");
-                } else if (codeOrSkipRange == 0) {
-                    // Skip one code length
-                    index++;
-                } else if (codeOrSkipRange == 1) {
-                    // Skip a range of code lengths, read 4 bits to determine how many to skip
-                    index += readBits(4) + 3;
-                } else if (codeOrSkipRange == 2) {
-                    // Skip a range of code lengths, read 9 bits to determine how many to skip
-                    index += readBits(9) + 20;
-                } else {
-                    // Subtract 2 from the codeOrSkipRange to get the code length
-                    codeLengths[index++] = codeOrSkipRange - 2;
-                }
-            }
-
-            return new BinaryTree(codeLengths);
         }
+        // Read all code lengths
+        final int[] codeLengths = new int[numCodeLengths];
+        for (int index = 0; index < numCodeLengths;) {
+            final int codeOrSkipRange = commandDecodingTree.read(bin);
+
+            switch (codeOrSkipRange) {
+            case -1:
+                throw new CompressorException("Unexpected end of stream");
+            case 0:
+                // Skip one code length
+                index++;
+                break;
+            case 1:
+                // Skip a range of code lengths, read 4 bits to determine how many to skip
+                index += readBits(4) + 3;
+                break;
+            case 2:
+                // Skip a range of code lengths, read 9 bits to determine how many to skip
+                index += readBits(9) + 20;
+                break;
+            default:
+                // Subtract 2 from the codeOrSkipRange to get the code length
+                codeLengths[index++] = codeOrSkipRange - 2;
+                break;
+            }
+        }
+        return new BinaryTree(codeLengths);
     }
 
     /**
@@ -354,17 +358,16 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
         final int bits = distanceTree.read(bin);
         if (bits == -1) {
             throw new CompressorException("Unexpected end of stream");
-        } else if (bits == 0 || bits == 1) {
+        }
+        if (bits == 0 || bits == 1) {
             // This is effectively run length encoding
             return bits;
-        } else {
-            // Bits minus one is the number of bits to read for the distance
-            final int value = readBits(bits - 1);
-
-            // Add the implicit bit (1 << (bits - 1)) to the value read from the stream giving the distance.
-            // E.g. if bits is 6, we read 5 bits giving value 8 and then we add 32 giving a distance of 40.
-            return value | (1 << (bits - 1));
         }
+        // Bits minus one is the number of bits to read for the distance
+        final int value = readBits(bits - 1);
+        // Add the implicit bit (1 << (bits - 1)) to the value read from the stream giving the distance.
+        // E.g. if bits is 6, we read 5 bits giving value 8 and then we add 32 giving a distance of 40.
+        return value | 1 << bits - 1;
     }
 
     /**
@@ -379,17 +382,16 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
 
         if (numCodeLengths > getMaxNumberOfDistanceCodes()) {
             throw new CompressorException("Code length table has invalid size (%d > %d)", numCodeLengths, getMaxNumberOfDistanceCodes());
-        } else if (numCodeLengths == 0) {
+        }
+        if (numCodeLengths == 0) {
             // If numCodeLengths is zero, we read a single code length of getDistanceBits() bits and use as root of the tree
             return new BinaryTree(readBits(getDistanceBits()));
-        } else {
-            // Read all code lengths
-            final int[] codeLengths = new int[numCodeLengths];
-            for (int index = 0; index < numCodeLengths; index++) {
-                codeLengths[index] = readCodeLength();
-            }
-
-            return new BinaryTree(codeLengths);
         }
+        // Read all code lengths
+        final int[] codeLengths = new int[numCodeLengths];
+        for (int index = 0; index < numCodeLengths; index++) {
+            codeLengths[index] = readCodeLength();
+        }
+        return new BinaryTree(codeLengths);
     }
 }
