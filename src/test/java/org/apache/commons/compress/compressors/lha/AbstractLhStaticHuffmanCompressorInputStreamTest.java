@@ -32,6 +32,15 @@ import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
 class AbstractLhStaticHuffmanCompressorInputStreamTest {
+    private Lh5CompressorInputStream createLh5CompressorInputStream(final int... data) throws IOException {
+        final byte[] bytes = new byte[data.length];
+        for (int i = 0; i < data.length; i++) {
+            bytes[i] = (byte) data[i];
+        }
+
+        return new Lh5CompressorInputStream(new ByteArrayInputStream(bytes));
+    }
+
     @Test
     void testInputStreamStatistics() throws IOException {
         final int[] compressedData = {
@@ -49,62 +58,6 @@ class AbstractLhStaticHuffmanCompressorInputStreamTest {
 
             assertEquals(12, in.getCompressedCount());
             assertEquals(1024, in.getUncompressedCount());
-        }
-    }
-
-    @Test
-    void testReadCommandDecodingTreeWithSingleValue() throws IOException {
-        final BinaryTree tree = createLh5CompressorInputStream(
-            0b00000000, 0b00111111 // 5 bits length (0x00) and 5 bits the root value (0x00)
-        ).readCommandDecodingTree();
-
-        assertEquals(0, tree.read(new BitInputStream(new ByteArrayInputStream(new byte[0]), ByteOrder.BIG_ENDIAN)));
-    }
-
-    @Test
-    void testReadCommandDecodingTreeWithInvalidSize() throws IOException {
-        try {
-            createLh5CompressorInputStream(
-                0b10100000, 0b00000000 // 5 bits length (0x14 = 20)
-            ).readCommandDecodingTree();
-
-            fail("Expected CompressorException for table invalid size");
-        } catch (CompressorException e) {
-            assertEquals("Code length table has invalid size (20 > 19)", e.getMessage());
-        }
-    }
-
-    @Test
-    void testReadCommandTreeWithSingleValue() throws IOException {
-        final BinaryTree tree = createLh5CompressorInputStream(
-            0b00000000, 0b01111111, 0b01000000 // 9 bits length (0x00) and 9 bits the root value (0x01fd = 509)
-        ).readCommandTree(new BinaryTree(new int [] { 0 }));
-
-        assertEquals(0x01fd, tree.read(new BitInputStream(new ByteArrayInputStream(new byte[0]), ByteOrder.BIG_ENDIAN)));
-    }
-
-    @Test
-    void testReadCommandTreeWithInvalidSize() throws IOException {
-        try {
-            createLh5CompressorInputStream(
-                0b11111111, 0b10000000 // 9 bits length (0x01ff = 511)
-            ).readCommandTree(new BinaryTree(new int [] { 0 }));
-
-            fail("Expected CompressorException for table invalid size");
-        } catch (CompressorException e) {
-            assertEquals("Code length table has invalid size (511 > 510)", e.getMessage());
-        }
-    }
-
-    @Test
-    void testReadCommandTreeUnexpectedEndOfStream() throws IOException {
-        try {
-            createLh5CompressorInputStream(
-                0b00000000, 0b01111111 // 9 bits length (0x00) and only 8 bits instead of expected 9 bits which will cause an unexpected end of stream
-            ).readCommandTree(new BinaryTree(new int [] { 0 }));
-            fail("Expected CompressorException for unexpected end of stream");
-        } catch (CompressorException e) {
-            assertEquals("Unexpected end of stream", e.getMessage());
         }
     }
 
@@ -146,12 +99,59 @@ class AbstractLhStaticHuffmanCompressorInputStreamTest {
         }
     }
 
-    private Lh5CompressorInputStream createLh5CompressorInputStream(final int... data) throws IOException {
-        final byte[] bytes = new byte[data.length];
-        for (int i = 0; i < data.length; i++) {
-            bytes[i] = (byte) data[i];
-        }
+    @Test
+    void testReadCommandDecodingTreeWithInvalidSize() throws IOException {
+        try {
+            createLh5CompressorInputStream(
+                0b10100000, 0b00000000 // 5 bits length (0x14 = 20)
+            ).readCommandDecodingTree();
 
-        return new Lh5CompressorInputStream(new ByteArrayInputStream(bytes));
+            fail("Expected CompressorException for table invalid size");
+        } catch (CompressorException e) {
+            assertEquals("Code length table has invalid size (20 > 19)", e.getMessage());
+        }
+    }
+
+    @Test
+    void testReadCommandDecodingTreeWithSingleValue() throws IOException {
+        final BinaryTree tree = createLh5CompressorInputStream(
+            0b00000000, 0b00111111 // 5 bits length (0x00) and 5 bits the root value (0x00)
+        ).readCommandDecodingTree();
+
+        assertEquals(0, tree.read(new BitInputStream(new ByteArrayInputStream(new byte[0]), ByteOrder.BIG_ENDIAN)));
+    }
+
+    @Test
+    void testReadCommandTreeUnexpectedEndOfStream() throws IOException {
+        try {
+            createLh5CompressorInputStream(
+                0b00000000, 0b01111111 // 9 bits length (0x00) and only 8 bits instead of expected 9 bits which will cause an unexpected end of stream
+            ).readCommandTree(new BinaryTree(new int [] { 0 }));
+            fail("Expected CompressorException for unexpected end of stream");
+        } catch (CompressorException e) {
+            assertEquals("Unexpected end of stream", e.getMessage());
+        }
+    }
+
+    @Test
+    void testReadCommandTreeWithInvalidSize() throws IOException {
+        try {
+            createLh5CompressorInputStream(
+                0b11111111, 0b10000000 // 9 bits length (0x01ff = 511)
+            ).readCommandTree(new BinaryTree(new int [] { 0 }));
+
+            fail("Expected CompressorException for table invalid size");
+        } catch (CompressorException e) {
+            assertEquals("Code length table has invalid size (511 > 510)", e.getMessage());
+        }
+    }
+
+    @Test
+    void testReadCommandTreeWithSingleValue() throws IOException {
+        final BinaryTree tree = createLh5CompressorInputStream(
+            0b00000000, 0b01111111, 0b01000000 // 9 bits length (0x00) and 9 bits the root value (0x01fd = 509)
+        ).readCommandTree(new BinaryTree(new int [] { 0 }));
+
+        assertEquals(0x01fd, tree.read(new BitInputStream(new ByteArrayInputStream(new byte[0]), ByteOrder.BIG_ENDIAN)));
     }
 }
