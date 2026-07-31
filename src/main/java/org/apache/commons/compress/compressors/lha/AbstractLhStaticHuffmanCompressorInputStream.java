@@ -95,91 +95,6 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
     }
 
     /**
-     * Gets the threshold for copying data from the sliding dictionary. This is the minimum
-     * possible number of bytes that will be part of a copy command.
-     *
-     * @return the copy threshold
-     */
-    int getCopyThreshold() {
-        return 3;
-    }
-
-    /**
-     * Gets the number of bits used for the dictionary size.
-     *
-     * @return the number of bits used for the dictionary size
-     */
-    abstract int getDictionaryBits();
-
-    /**
-     * Gets the size of the dictionary.
-     *
-     * @return the size of the dictionary
-     */
-    int getDictionarySize() {
-        return 1 << getDictionaryBits();
-    }
-
-    /**
-     * Gets the number of bits used for the distance.
-     *
-     * @return the number of bits used for the distance
-     */
-    abstract int getDistanceBits();
-
-    /**
-     * Gets the maximum number of distance codes in the distance tree.
-     *
-     * @return the maximum number of distance codes
-     */
-    int getMaxNumberOfDistanceCodes() {
-        return getDictionaryBits() + 1;
-    }
-
-    /**
-     * Gets the maximum match length for the copy command.
-     *
-     * @return the maximum match length
-     */
-    int getMaxMatchLength() {
-        return 256;
-    }
-
-    /**
-     * Gets the maximum number of commands in the command tree.
-     * This is 256 literals (0-255) and 254 copy lengths combinations (3-256).
-     *
-     * @return the maximum number of commands
-     */
-    int getMaxNumberOfCommands() {
-        return NUMBER_OF_LITERAL_CODES + getMaxMatchLength() - getCopyThreshold() + 1;
-    }
-
-    @Override
-    public long getCompressedCount() {
-        return bin.getBytesRead();
-    }
-
-    @Override
-    public int read() throws IOException {
-        if (!buffer.available()) {
-            // Nothing in the buffer, try to fill it
-            try {
-                fillBuffer();
-            } catch (final IllegalArgumentException | IllegalStateException e) {
-                // A corrupt stream can decode an out-of-range distance or overflow the sliding
-                // dictionary, which the CircularBuffer signals with unchecked exceptions. Wrap
-                // them so callers only need to handle IOException.
-                throw new CompressorException("Bad LHA stream", e);
-            }
-        }
-
-        final int ret = buffer.get();
-        count(ret < 0 ? 0 : 1); // Increment input stream statistics
-        return ret;
-    }
-
-    /**
      * Fill the sliding dictionary with more data.
      *
      * @throws IOException if an I/O error occurs
@@ -223,6 +138,135 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
         }
     }
 
+    @Override
+    public long getCompressedCount() {
+        return bin.getBytesRead();
+    }
+
+    /**
+     * Gets the threshold for copying data from the sliding dictionary. This is the minimum
+     * possible number of bytes that will be part of a copy command.
+     *
+     * @return the copy threshold
+     */
+    int getCopyThreshold() {
+        return 3;
+    }
+
+    /**
+     * Gets the number of bits used for the dictionary size.
+     *
+     * @return the number of bits used for the dictionary size
+     */
+    abstract int getDictionaryBits();
+
+    /**
+     * Gets the size of the dictionary.
+     *
+     * @return the size of the dictionary
+     */
+    int getDictionarySize() {
+        return 1 << getDictionaryBits();
+    }
+
+    /**
+     * Gets the number of bits used for the distance.
+     *
+     * @return the number of bits used for the distance
+     */
+    abstract int getDistanceBits();
+
+    /**
+     * Gets the maximum match length for the copy command.
+     *
+     * @return the maximum match length
+     */
+    int getMaxMatchLength() {
+        return 256;
+    }
+
+    /**
+     * Gets the maximum number of commands in the command tree.
+     * This is 256 literals (0-255) and 254 copy lengths combinations (3-256).
+     *
+     * @return the maximum number of commands
+     */
+    int getMaxNumberOfCommands() {
+        return NUMBER_OF_LITERAL_CODES + getMaxMatchLength() - getCopyThreshold() + 1;
+    }
+
+    /**
+     * Gets the maximum number of distance codes in the distance tree.
+     *
+     * @return the maximum number of distance codes
+     */
+    int getMaxNumberOfDistanceCodes() {
+        return getDictionaryBits() + 1;
+    }
+
+    @Override
+    public int read() throws IOException {
+        if (!buffer.available()) {
+            // Nothing in the buffer, try to fill it
+            try {
+                fillBuffer();
+            } catch (final IllegalArgumentException | IllegalStateException e) {
+                // A corrupt stream can decode an out-of-range distance or overflow the sliding
+                // dictionary, which the CircularBuffer signals with unchecked exceptions. Wrap
+                // them so callers only need to handle IOException.
+                throw new CompressorException("Bad LHA stream", e);
+            }
+        }
+
+        final int ret = buffer.get();
+        count(ret < 0 ? 0 : 1); // Increment input stream statistics
+        return ret;
+    }
+
+    /**
+     * Read the specified number of bits from the underlying stream throwing CompressorException
+     * if the end of the stream is reached before reading the requested number of bits.
+     *
+     * @param count the number of bits to read
+     * @return the bits concatenated as an int using the stream's byte order
+     * @throws IOException if an I/O error occurs.
+     */
+    private int readBits(final int count) throws IOException {
+        final long value = bin.readBits(count);
+        if (value < 0) {
+            throw new CompressorException("Unexpected end of stream");
+        }
+
+        return (int) value;
+    }
+
+    /**
+     * Read code length (depth in tree). Usually 0-7 but could be higher and if so,
+     * count the number of following consecutive one bits and add to the length.
+     *
+     * @return code length
+     * @throws IOException if an I/O error occurs
+     */
+    int readCodeLength() throws IOException {
+        int len = readBits(CODE_LENGTH_BITS);
+        if (len == 0x07) {
+            int bit = bin.readBit();
+            while (bit == 1) {
+                if (++len > MAX_CODE_LENGTH) {
+                    throw new CompressorException("Code length overflow");
+                }
+
+                bit = bin.readBit();
+            }
+
+            if (bit == -1) {
+                throw new CompressorException("Unexpected end of stream");
+            }
+        }
+
+        return len;
+    }
+
     /**
      * Read the command decoding tree. The command decoding tree is used when reading the command tree
      * which is then actually used to decode the commands (literals or copy commands).
@@ -253,33 +297,6 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
 
             return new BinaryTree(codeLengths);
         }
-    }
-
-    /**
-     * Read code length (depth in tree). Usually 0-7 but could be higher and if so,
-     * count the number of following consecutive one bits and add to the length.
-     *
-     * @return code length
-     * @throws IOException if an I/O error occurs
-     */
-    int readCodeLength() throws IOException {
-        int len = readBits(CODE_LENGTH_BITS);
-        if (len == 0x07) {
-            int bit = bin.readBit();
-            while (bit == 1) {
-                if (++len > MAX_CODE_LENGTH) {
-                    throw new CompressorException("Code length overflow");
-                }
-
-                bit = bin.readBit();
-            }
-
-            if (bit == -1) {
-                throw new CompressorException("Unexpected end of stream");
-            }
-        }
-
-        return len;
     }
 
     /**
@@ -326,32 +343,6 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
     }
 
     /**
-     * Read the distance tree which is used to decode the distance of the copy command.
-     *
-     * @return the distance tree
-     * @throws IOException if an I/O error occurs
-     */
-    private BinaryTree readDistanceTree() throws IOException {
-        // Number of code lengths to read
-        final int numCodeLengths = readBits(getDistanceBits());
-
-        if (numCodeLengths > getMaxNumberOfDistanceCodes()) {
-            throw new CompressorException("Code length table has invalid size (%d > %d)", numCodeLengths, getMaxNumberOfDistanceCodes());
-        } else if (numCodeLengths == 0) {
-            // If numCodeLengths is zero, we read a single code length of getDistanceBits() bits and use as root of the tree
-            return new BinaryTree(readBits(getDistanceBits()));
-        } else {
-            // Read all code lengths
-            final int[] codeLengths = new int[numCodeLengths];
-            for (int index = 0; index < numCodeLengths; index++) {
-                codeLengths[index] = readCodeLength();
-            }
-
-            return new BinaryTree(codeLengths);
-        }
-    }
-
-    /**
      * Read the distance by first decoding the number of bits to read from the distance tree
      * and then reading the actual distance value from the bit input stream.
      *
@@ -377,19 +368,28 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
     }
 
     /**
-     * Read the specified number of bits from the underlying stream throwing CompressorException
-     * if the end of the stream is reached before reading the requested number of bits.
+     * Read the distance tree which is used to decode the distance of the copy command.
      *
-     * @param count the number of bits to read
-     * @return the bits concatenated as an int using the stream's byte order
-     * @throws IOException if an I/O error occurs.
+     * @return the distance tree
+     * @throws IOException if an I/O error occurs
      */
-    private int readBits(final int count) throws IOException {
-        final long value = bin.readBits(count);
-        if (value < 0) {
-            throw new CompressorException("Unexpected end of stream");
-        }
+    private BinaryTree readDistanceTree() throws IOException {
+        // Number of code lengths to read
+        final int numCodeLengths = readBits(getDistanceBits());
 
-        return (int) value;
+        if (numCodeLengths > getMaxNumberOfDistanceCodes()) {
+            throw new CompressorException("Code length table has invalid size (%d > %d)", numCodeLengths, getMaxNumberOfDistanceCodes());
+        } else if (numCodeLengths == 0) {
+            // If numCodeLengths is zero, we read a single code length of getDistanceBits() bits and use as root of the tree
+            return new BinaryTree(readBits(getDistanceBits()));
+        } else {
+            // Read all code lengths
+            final int[] codeLengths = new int[numCodeLengths];
+            for (int index = 0; index < numCodeLengths; index++) {
+                codeLengths[index] = readCodeLength();
+            }
+
+            return new BinaryTree(codeLengths);
+        }
     }
 }
