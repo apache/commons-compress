@@ -30,39 +30,48 @@ import org.apache.commons.compress.utils.InputStreamStatistics;
 import org.apache.commons.io.input.CloseShieldInputStream;
 
 /**
- * This is an implementation of a static Huffman compressor input stream for LHA files that
- * supports lh4, lh5, lh6 and lh7 compression methods.
+ * Implements a static Huffman compressor input stream for LHA files that supports lh4, lh5, lh6 and lh7 compression methods.
  */
 abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorInputStream implements InputStreamStatistics {
+
     /**
-     *  Number of bits used to encode the command decoding tree length.
+     * Number of bits used to encode the command decoding tree length.
      */
     private static final int COMMAND_DECODING_LENGTH_BITS = 5;
+
     /**
      * Maximum number of codes in the command decoding tree.
      */
     private static final int MAX_NUMBER_OF_COMMAND_DECODING_CODE_LENGTHS = 19;
+
     /**
      * Number of bits used to encode the command tree length.
      */
     private static final int COMMAND_TREE_LENGTH_BITS = 9;
+
     /**
      * Number of literal codes (0-255).
      */
     private static final int NUMBER_OF_LITERAL_CODES = 0x100;
+
     /**
      * Number of bits used to encode the code length.
      */
     private static final int CODE_LENGTH_BITS = 3;
+
     private static final int MAX_CODE_LENGTH = 16;
 
     private BitInputStream bin;
+
     private CircularBuffer buffer;
+
     private int blockSize;
+
     /**
      * Command is either a literal or a copy command.
      */
     private BinaryTree commandTree;
+
     /**
      * Distance is the offset to copy from the sliding dictionary.
      */
@@ -71,12 +80,11 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
     /**
      * Constructs a new CompressorInputStream which decompresses bytes read from the specified stream.
      *
-     * @param in the InputStream from which to read compressed data
-     * @throws IOException if an I/O error occurs
+     * @param in the InputStream from which to read compressed data.
+     * @throws IOException if an I/O error occurs.
      */
     AbstractLhStaticHuffmanCompressorInputStream(final InputStream in) throws IOException {
         this.bin = new BitInputStream(in == System.in ? CloseShieldInputStream.wrap(in) : in, ByteOrder.BIG_ENDIAN);
-
         // Create a sliding dictionary buffer that can hold the full dictionary size and the maximum match length
         this.buffer = new CircularBuffer(getDictionarySize() + getMaxMatchLength());
     }
@@ -97,7 +105,7 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
     /**
      * Fill the sliding dictionary with more data.
      *
-     * @throws IOException if an I/O error occurs
+     * @throws IOException if an I/O error occurs.
      */
     private void fillBuffer() throws IOException {
         if (this.blockSize == -1) {
@@ -106,23 +114,17 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
         }
         if (this.blockSize == 0) {
             // Start to read the next block
-
             // Read the block size (number of commands to read)
             this.blockSize = (int) bin.readBits(16);
             if (this.blockSize == -1) {
                 // End of stream
                 return;
             }
-
             final BinaryTree commandDecodingTree = readCommandDecodingTree();
-
             this.commandTree = readCommandTree(commandDecodingTree);
-
             this.distanceTree = readDistanceTree();
         }
-
         this.blockSize--;
-
         final int command = commandTree.read(bin);
         if (command == -1) {
             throw new CompressorException("Unexpected end of stream");
@@ -134,7 +136,6 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
             // Copy command, read the distance and calculate the length from the command
             final int distance = readDistance();
             final int length = command - NUMBER_OF_LITERAL_CODES + getCopyThreshold();
-
             // Copy the data from the sliding dictionary and add to the buffer
             buffer.copy(distance + 1, length);
         }
@@ -146,10 +147,9 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
     }
 
     /**
-     * Gets the threshold for copying data from the sliding dictionary. This is the minimum
-     * possible number of bytes that will be part of a copy command.
+     * Gets the threshold for copying data from the sliding dictionary. This is the minimum possible number of bytes that will be part of a copy command.
      *
-     * @return the copy threshold
+     * @return the copy threshold.
      */
     int getCopyThreshold() {
         return 3;
@@ -158,14 +158,14 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
     /**
      * Gets the number of bits used for the dictionary size.
      *
-     * @return the number of bits used for the dictionary size
+     * @return the number of bits used for the dictionary size.
      */
     abstract int getDictionaryBits();
 
     /**
      * Gets the size of the dictionary.
      *
-     * @return the size of the dictionary
+     * @return the size of the dictionary.
      */
     int getDictionarySize() {
         return 1 << getDictionaryBits();
@@ -174,24 +174,23 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
     /**
      * Gets the number of bits used for the distance.
      *
-     * @return the number of bits used for the distance
+     * @return the number of bits used for the distance.
      */
     abstract int getDistanceBits();
 
     /**
      * Gets the maximum match length for the copy command.
      *
-     * @return the maximum match length
+     * @return the maximum match length.
      */
     int getMaxMatchLength() {
         return 256;
     }
 
     /**
-     * Gets the maximum number of commands in the command tree.
-     * This is 256 literals (0-255) and 254 copy lengths combinations (3-256).
+     * Gets the maximum number of commands in the command tree. This is 256 literals (0-255) and 254 copy lengths combinations (3-256).
      *
-     * @return the maximum number of commands
+     * @return the maximum number of commands.
      */
     int getMaxNumberOfCommands() {
         return NUMBER_OF_LITERAL_CODES + getMaxMatchLength() - getCopyThreshold() + 1;
@@ -200,7 +199,7 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
     /**
      * Gets the maximum number of distance codes in the distance tree.
      *
-     * @return the maximum number of distance codes
+     * @return the maximum number of distance codes.
      */
     int getMaxNumberOfDistanceCodes() {
         return getDictionaryBits() + 1;
@@ -219,18 +218,17 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
                 throw new CompressorException("Bad LHA stream", e);
             }
         }
-
         final int ret = buffer.get();
         count(ret < 0 ? 0 : 1); // Increment input stream statistics
         return ret;
     }
 
     /**
-     * Read the specified number of bits from the underlying stream throwing CompressorException
-     * if the end of the stream is reached before reading the requested number of bits.
+     * Read the specified number of bits from the underlying stream throwing CompressorException if the end of the stream is reached before reading the
+     * requested number of bits.
      *
-     * @param count the number of bits to read
-     * @return the bits concatenated as an int using the stream's byte order
+     * @param count the number of bits to read.
+     * @return the bits concatenated as an int using the stream's byte order.
      * @throws IOException if an I/O error occurs.
      */
     private int readBits(final int count) throws IOException {
@@ -238,16 +236,14 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
         if (value < 0) {
             throw new CompressorException("Unexpected end of stream");
         }
-
         return (int) value;
     }
 
     /**
-     * Read code length (depth in tree). Usually 0-7 but could be higher and if so,
-     * count the number of following consecutive one bits and add to the length.
+     * Reads code length (depth in tree). Usually 0-7 but could be higher and if so, count the number of following consecutive one bits and add to the length.
      *
-     * @return code length
-     * @throws IOException if an I/O error occurs
+     * @return code length.
+     * @throws IOException if an I/O error occurs.
      */
     int readCodeLength() throws IOException {
         int len = readBits(CODE_LENGTH_BITS);
@@ -257,29 +253,25 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
                 if (++len > MAX_CODE_LENGTH) {
                     throw new CompressorException("Code length overflow");
                 }
-
                 bit = bin.readBit();
             }
-
             if (bit == -1) {
                 throw new CompressorException("Unexpected end of stream");
             }
         }
-
         return len;
     }
 
     /**
-     * Read the command decoding tree. The command decoding tree is used when reading the command tree
-     * which is then actually used to decode the commands (literals or copy commands).
+     * Reads the command decoding tree. The command decoding tree is used when reading the command tree which is then actually used to decode the commands
+     * (literals or copy commands).
      *
-     * @return the command decoding tree
-     * @throws IOException if an I/O error occurs
+     * @return the command decoding tree.
+     * @throws IOException if an I/O error occurs.
      */
     BinaryTree readCommandDecodingTree() throws IOException {
         // Number of code lengths to read
         final int numCodeLengths = readBits(COMMAND_DECODING_LENGTH_BITS);
-
         if (numCodeLengths > MAX_NUMBER_OF_COMMAND_DECODING_CODE_LENGTHS) {
             throw new CompressorException("Code length table has invalid size (%d > %d)", numCodeLengths, MAX_NUMBER_OF_COMMAND_DECODING_CODE_LENGTHS);
         }
@@ -291,7 +283,6 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
         final int[] codeLengths = new int[numCodeLengths];
         for (int index = 0; index < numCodeLengths; index++) {
             codeLengths[index] = readCodeLength();
-
             if (index == 2) {
                 // After reading the first three code lengths, we read a 2-bit skip range
                 index += readBits(2);
@@ -301,15 +292,14 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
     }
 
     /**
-     * Read the command tree which is used to decode the commands (literals or copy commands).
+     * Reads the command tree which is used to decode the commands (literals or copy commands).
      *
-     * @param commandDecodingTree the Huffman tree used to decode the command lengths
-     * @return the command tree
-     * @throws IOException if an I/O error occurs
+     * @param commandDecodingTree the Huffman tree used to decode the command lengths.
+     * @return the command tree.
+     * @throws IOException if an I/O error occurs.
      */
     BinaryTree readCommandTree(final BinaryTree commandDecodingTree) throws IOException {
         final int numCodeLengths = readBits(COMMAND_TREE_LENGTH_BITS);
-
         if (numCodeLengths > getMaxNumberOfCommands()) {
             throw new CompressorException("Code length table has invalid size (%d > %d)", numCodeLengths, getMaxNumberOfCommands());
         }
@@ -321,7 +311,6 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
         final int[] codeLengths = new int[numCodeLengths];
         for (int index = 0; index < numCodeLengths;) {
             final int codeOrSkipRange = commandDecodingTree.read(bin);
-
             switch (codeOrSkipRange) {
             case -1:
                 throw new CompressorException("Unexpected end of stream");
@@ -347,11 +336,11 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
     }
 
     /**
-     * Read the distance by first decoding the number of bits to read from the distance tree
-     * and then reading the actual distance value from the bit input stream.
+     * Reads the distance by first decoding the number of bits to read from the distance tree and then reading the actual distance value from the bit input
+     * stream.
      *
-     * @return the distance
-     * @throws IOException if an I/O error occurs
+     * @return the distance.
+     * @throws IOException if an I/O error occurs.
      */
     private int readDistance() throws IOException {
         // Determine the number of bits to read for the distance by reading an entry from the distance tree
@@ -371,15 +360,14 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
     }
 
     /**
-     * Read the distance tree which is used to decode the distance of the copy command.
+     * Reads the distance tree which is used to decode the distance of the copy command.
      *
-     * @return the distance tree
-     * @throws IOException if an I/O error occurs
+     * @return the distance tree.
+     * @throws IOException if an I/O error occurs.
      */
     private BinaryTree readDistanceTree() throws IOException {
         // Number of code lengths to read
         final int numCodeLengths = readBits(getDistanceBits());
-
         if (numCodeLengths > getMaxNumberOfDistanceCodes()) {
             throw new CompressorException("Code length table has invalid size (%d > %d)", numCodeLengths, getMaxNumberOfDistanceCodes());
         }

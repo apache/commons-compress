@@ -20,22 +20,20 @@
 package org.apache.commons.compress.compressors.lha;
 
 /**
- * Circular byte buffer.
- *
- * Copied from org.apache.commons.compress.archivers.zip.CircularBuffer and modified for LHA.
+ * Circular byte buffer. Copied from org.apache.commons.compress.archivers.zip.CircularBuffer and modified for LHA.
  */
 final class CircularBuffer {
 
-    /** Size of the buffer */
+    /** Size of the buffer. */
     private final int size;
 
-    /** The buffer */
+    /** The buffer. */
     private final byte[] buffer;
 
-    /** Index of the next data to be read from the buffer */
+    /** Index of the next data to be read from the buffer. */
     private int readIndex;
 
-    /** Index of the next data written in the buffer */
+    /** Index of the next data written in the buffer. */
     private int writeIndex;
 
     private int bytesAvailable;
@@ -43,7 +41,7 @@ final class CircularBuffer {
     /**
      * Creates a new circular buffer with the given size.
      *
-     * @param size the size of the buffer
+     * @param size the size of the buffer.
      */
     CircularBuffer(final int size) {
         this.size = size;
