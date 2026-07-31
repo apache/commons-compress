@@ -33,7 +33,8 @@ import java.util.zip.CRC32;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.io.channels.ByteArraySeekableByteChannel;
 import org.apache.commons.io.output.UnsynchronizedByteArrayOutputStream;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 /**
  * Tests the number of packed streams the folders of an archive consume against the number of packed streams the header declares.
@@ -117,16 +118,18 @@ class SevenZPackedStreamCountTest {
         }
     }
 
-    @Test
-    void testFoldersConsumingMorePackedStreamsThanDeclared() {
+    @ParameterizedTest
+    @ValueSource(ints = {0, 1, 2, 4, 8, 16})
+    void testFoldersConsumingMorePackedStreamsThanDeclared(final int count) {
         // the second folder maps to a packed stream index the header never declared
-        assertThrows(ArchiveException.class, () -> open(1, 2).close());
+        assertThrows(ArchiveException.class, () -> open(count, count + 1).close());
     }
 
-    @Test
-    void testMatchingPackedStreamCount() throws IOException {
-        try (SevenZFile sevenZFile = open(2, 2)) {
-            for (int i = 0; i < 2; i++) {
+    @ParameterizedTest
+    @ValueSource(ints = {0, 1, 2, 4, 8, 16})
+    void testMatchingPackedStreamCount(final int count) throws IOException {
+        try (SevenZFile sevenZFile = open(count, count)) {
+            for (int i = 0; i < count; i++) {
                 final SevenZArchiveEntry entry = sevenZFile.getNextEntry();
                 assertNotNull(entry);
                 assertEquals(String.valueOf((char) ('a' + i)), entry.getName());
