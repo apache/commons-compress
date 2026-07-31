@@ -31,7 +31,8 @@ import java.nio.ByteOrder;
 import java.util.zip.CRC32;
 
 import org.apache.commons.compress.archivers.ArchiveException;
-import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
+import org.apache.commons.io.channels.ByteArraySeekableByteChannel;
+import org.apache.commons.io.output.UnsynchronizedByteArrayOutputStream;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -48,16 +49,14 @@ class SevenZPackedStreamCountTest {
      * @return the archive bytes.
      */
     private static byte[] archive(final int numPackStreams, final int numFolders) {
-        final ByteArrayOutputStream header = new ByteArrayOutputStream();
+        final UnsynchronizedByteArrayOutputStream header = UnsynchronizedByteArrayOutputStream.builder().get();
         header.write(NID.kHeader);
         header.write(NID.kMainStreamsInfo);
         header.write(NID.kPackInfo);
         header.write(0); // packPos
         header.write(numPackStreams);
         header.write(NID.kSize);
-        for (int i = 0; i < numPackStreams; i++) {
-            header.write(1); // packSize
-        }
+        writeRepeat(1, numPackStreams, header); // pack size
         header.write(NID.kEnd); // of kPackInfo
         header.write(NID.kUnpackInfo);
         header.write(NID.kFolder);
@@ -69,9 +68,7 @@ class SevenZPackedStreamCountTest {
             header.write(0); // coder id COPY
         }
         header.write(NID.kCodersUnpackSize);
-        for (int i = 0; i < numFolders; i++) {
-            header.write(1); // unpack size
-        }
+        writeRepeat(1, numFolders, header); // unpack size
         header.write(NID.kEnd); // of kUnpackInfo
         header.write(NID.kSubStreamsInfo);
         header.write(NID.kEnd); // of kSubStreamsInfo, one substream per folder
@@ -83,9 +80,7 @@ class SevenZPackedStreamCountTest {
         header.write(0); // not external
         for (int i = 0; i < numFolders; i++) {
             header.write('a' + i); // a one character UTF-16LE name
-            header.write(0);
-            header.write(0); // terminator
-            header.write(0);
+            writeRepeat(0, 3, header); // terminator
         }
         header.write(NID.kEnd); // of kFilesInfo
         header.write(NID.kEnd); // of kHeader
@@ -112,7 +107,14 @@ class SevenZPackedStreamCountTest {
     }
 
     private static SevenZFile open(final int numPackStreams, final int numFolders) throws IOException {
-        return SevenZFile.builder().setSeekableByteChannel(new SeekableInMemoryByteChannel(archive(numPackStreams, numFolders))).get();
+        return SevenZFile.builder().setChannel(ByteArraySeekableByteChannel.builder().setByteArray(archive(numPackStreams, numFolders)).get()).get();
+    }
+
+    static void writeRepeat(final int value, final int numPackStreams, final UnsynchronizedByteArrayOutputStream header) {
+        // TODO use UnsynchronizedByteArrayOutputStream.writeRepeat(int, int) in Commons IO 2.23.0
+        for (int i = 0; i < numPackStreams; i++) {
+            header.write(value);
+        }
     }
 
     @Test
