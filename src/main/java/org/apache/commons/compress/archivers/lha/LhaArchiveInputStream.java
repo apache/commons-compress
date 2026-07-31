@@ -182,11 +182,6 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
      */
     private static final Charset DEFAULT_CHARSET = StandardCharsets.US_ASCII;
 
-    private final char fileSeparatorChar;
-    private LhaArchiveEntry currentEntry;
-    private InputStream currentCompressedStream;
-    private InputStream currentDecompressedStream;
-
     /**
      * Creates a new builder.
      *
@@ -195,32 +190,47 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
     public static Builder builder() {
         return new Builder();
     }
-
-    private LhaArchiveInputStream(final Builder builder) throws IOException {
-        super(builder);
-        this.fileSeparatorChar = builder.fileSeparatorChar;
-    }
-
-    @Override
-    public boolean canReadEntryData(final ArchiveEntry archiveEntry) {
-        return currentDecompressedStream != null;
-    }
-
-    @Override
-    public int read(final byte[] buffer, final int offset, final int length) throws IOException {
-        if (currentEntry == null) {
-            throw new IllegalStateException("No current entry");
+    /**
+     * Get a byte array from the ByteBuffer at the specified position and length.
+     * This is needed until this repo has been updated to use Java 9+ where we
+     * can use buffer.get(position, dst) directly.
+     *
+     * @param buffer the buffer to get the byte array from
+     * @param position the position in the buffer to start reading from
+     * @param dst the destination byte array to fill
+     */
+    private static void byteBufferGet(final ByteBuffer buffer, final int position, final byte[] dst) {
+        for (int i = 0; i < dst.length; i++) {
+            dst[i] = buffer.get(position + i);
         }
-
-        if (currentDecompressedStream == null) {
-            throw new ArchiveException("Unsupported compression method: %s", currentEntry.getCompressionMethod());
-        }
-
-        final int read = currentDecompressedStream.read(buffer, offset, length);
-        count(read);
-        return read;
     }
+    /**
+     * Gets the compression method from the header. It is always located at the same offset for all header levels.
+     *
+     * @param buffer the buffer containing the header data
+     * @return compression method, e.g. -lh5-
+     * @throws ArchiveException if the compression method is invalid
+     */
+    static String getCompressionMethod(final ByteBuffer buffer) throws ArchiveException {
+        final byte[] compressionMethodBuffer = new byte[5];
+        byteBufferGet(buffer, HEADER_GENERIC_OFFSET_COMPRESSION_METHOD, compressionMethodBuffer);
 
+        // Validate the compression method
+        if (compressionMethodBuffer[0] == '-' &&
+            Character.isLowerCase(compressionMethodBuffer[1]) &&
+            Character.isLowerCase(compressionMethodBuffer[2]) &&
+            (Character.isLowerCase(compressionMethodBuffer[3]) || Character.isDigit(compressionMethodBuffer[3])) &&
+            compressionMethodBuffer[4] == '-') {
+            return new String(compressionMethodBuffer, StandardCharsets.US_ASCII);
+        } else {
+            throw new ArchiveException("Invalid compression method: 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x",
+                    compressionMethodBuffer[0],
+                    compressionMethodBuffer[1],
+                    compressionMethodBuffer[2],
+                    compressionMethodBuffer[3],
+                    compressionMethodBuffer[4]);
+        }
+    }
     /**
      * Checks if the signature matches what is expected for an LHA file. There is no specific
      * signature for LHA files, so this method checks if the header level and the compression
@@ -254,6 +264,69 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
         return true;
     }
 
+    private final char fileSeparatorChar;
+
+    private LhaArchiveEntry currentEntry;
+
+    private InputStream currentCompressedStream;
+
+    private InputStream currentDecompressedStream;
+
+    private LhaArchiveInputStream(final Builder builder) throws IOException {
+        super(builder);
+        this.fileSeparatorChar = builder.fileSeparatorChar;
+    }
+
+    /**
+     * Create a new ByteBuffer slice from the provided buffer at the specified position and length. This is needed until this
+     * repo has been updated to use Java 9+ where we can use buffer.position(position).slice().limit(length) directly.
+     *
+     * @param buffer the buffer to slice from
+     * @param position the position in the buffer to start slicing from
+     * @param length the length of the slice
+     * @return a new ByteBuffer slice with the specified position and length
+     */
+    private ByteBuffer byteBufferSlice(final ByteBuffer buffer, final int position, final int length) {
+        return ByteBuffer.wrap(buffer.array(), position, length);
+    }
+
+    /**
+     * Calculate the CRC16 checksum of the provided buffers.
+     *
+     * @param buffers the buffers to calculate the CRC16 checksum for
+     * @return CRC16 checksum
+     */
+    private long calculateCRC16(final ByteBuffer... buffers) {
+        final Checksum crc = Crc16.arc();
+        for (ByteBuffer buffer : buffers) {
+            crc.update(buffer.array(), 0, buffer.limit());
+        }
+
+        return crc.getValue();
+    }
+
+    /**
+     * Calculate the header sum for level 0 and 1 headers. The checksum is calculated by summing the
+     * value of all bytes in the header except for the first two bytes (header length and header checksum)
+     * and get the low 8 bits.
+     *
+     * @param buffer the buffer containing the header
+     * @return checksum
+     */
+    private int calculateHeaderChecksum(final ByteBuffer buffer) {
+        int sum = 0;
+        for (int i = 2; i < buffer.limit(); i++) {
+            sum += Byte.toUnsignedInt(buffer.get(i));
+        }
+
+        return sum & 0xff;
+    }
+
+    @Override
+    public boolean canReadEntryData(final ArchiveEntry archiveEntry) {
+        return currentDecompressedStream != null;
+    }
+
     @Override
     public LhaArchiveEntry getNextEntry() throws IOException {
         if (this.currentCompressedStream != null) {
@@ -267,6 +340,230 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
         this.currentEntry = readHeader();
 
         return this.currentEntry;
+    }
+
+    /**
+     * Gets the pathname from the current position in the provided buffer. Any 0xFF bytes
+     * and '\' chars will be converted into the configured file path separator char.
+     * Any leading file path separator char will be removed to avoid extracting to
+     * absolute locations.
+     *
+     * @param buffer the buffer where to get the pathname from
+     * @param pathnameLength the length of the pathname
+     * @return pathname
+     * @throws ArchiveException if the pathname is too long
+     */
+    String getPathname(final ByteBuffer buffer, final int pathnameLength) throws ArchiveException {
+        // Check pathname length to ensure we don't allocate too much memory
+        if (pathnameLength > MAX_PATHNAME_LENGTH) {
+            throw new ArchiveException("Pathname is longer than the maximum allowed (%d > %d)", pathnameLength, MAX_PATHNAME_LENGTH);
+        } else if (pathnameLength < 0) {
+            throw new ArchiveException("Pathname length is negative");
+        } else if (pathnameLength > (buffer.limit() - buffer.position())) {
+            throw new ArchiveException("Invalid pathname length");
+        }
+
+        final byte[] pathnameBuffer = new byte[pathnameLength];
+        buffer.get(pathnameBuffer);
+
+        // Split the pathname into parts by 0xFF bytes
+        final StringBuilder pathnameStringBuilder = new StringBuilder();
+        int start = 0;
+        for (int i = 0; i < pathnameLength; i++) {
+            if (pathnameBuffer[i] == (byte) 0xFF) {
+                if (i > start) {
+                    // Decode the path segment into a string using the specified charset and append it to the result
+                    pathnameStringBuilder.append(new String(pathnameBuffer, start, i - start, getCharset())).append(fileSeparatorChar);
+                }
+
+                start = i + 1; // Move start to the next segment
+            }
+        }
+
+        // Append the last segment if it exists
+        if (start < pathnameLength) {
+            pathnameStringBuilder.append(new String(pathnameBuffer, start, pathnameLength - start, getCharset()));
+        }
+
+        String pathname = pathnameStringBuilder.toString();
+
+        // If the path separator char is not '\', replace all '\' characters with the path separator char
+        if (fileSeparatorChar != '\\') {
+            pathname = pathname.replace('\\', fileSeparatorChar);
+        }
+
+        // Remove leading file separator chars to avoid extracting to absolute locations
+        while (pathname.length() > 0 && pathname.charAt(0) == fileSeparatorChar) {
+            pathname = pathname.substring(1);
+        }
+
+        return pathname;
+    }
+
+    /**
+     * Tests whether the compression method is a directory entry.
+     *
+     * @param compressionMethod the compression method
+     * @return true if the compression method is a directory entry, false otherwise
+     */
+    private boolean isDirectory(final String compressionMethod) {
+        return COMPRESSION_METHOD_DIRECTORY.equals(compressionMethod);
+    }
+
+    /**
+     * Parse the extended header and set the values in the provided entry.
+     *
+     * @param extendedHeaderBuffer the buffer containing the extended header
+     * @param entryBuilder the entry builder to set the values in
+     * @throws IOException
+     */
+    void parseExtendedHeader(final ByteBuffer extendedHeaderBuffer, final LhaArchiveEntry.Builder entryBuilder) throws IOException {
+        final int extendedHeaderLength = extendedHeaderBuffer.limit() - extendedHeaderBuffer.position();
+        if (extendedHeaderLength < MIN_EXTENDED_HEADER_LENGTH) {
+            throw new ArchiveException("Invalid extended header length");
+        }
+
+        final int extendedHeaderType = Byte.toUnsignedInt(extendedHeaderBuffer.get());
+        if (extendedHeaderType == EXTENDED_HEADER_TYPE_COMMON) {
+            // Common header
+            if (extendedHeaderLength < (MIN_EXTENDED_HEADER_LENGTH + EXTENDED_HEADER_TYPE_COMMON_MIN_PAYLOAD_LENGTH)) {
+                throw new ArchiveException("Invalid extended header length");
+            }
+
+            final int crcPos = extendedHeaderBuffer.position(); // Save the current position to be able to set the header CRC later
+
+            // Header CRC
+            entryBuilder.setHeaderCrc(Short.toUnsignedInt(extendedHeaderBuffer.getShort()));
+
+            // Set header CRC to zero to be able to later compute the CRC of the full header
+            extendedHeaderBuffer.putShort(crcPos, (short) 0);
+        } else if (extendedHeaderType == EXTENDED_HEADER_TYPE_FILENAME) {
+            // File name header
+            final int filenameLength = extendedHeaderBuffer.limit() - extendedHeaderBuffer.position() - EXTENDED_HEADER_NEXT_HEADER_SIZE_LENGTH;
+            final String filename = getPathname(extendedHeaderBuffer, filenameLength);
+            entryBuilder.setFilename(filename);
+        } else if (extendedHeaderType == EXTENDED_HEADER_TYPE_DIRECTORY_NAME) {
+            // Directory name header
+            final int directoryNameLength = extendedHeaderBuffer.limit() - extendedHeaderBuffer.position() - EXTENDED_HEADER_NEXT_HEADER_SIZE_LENGTH;
+            final String directoryName = getPathname(extendedHeaderBuffer, directoryNameLength);
+            if (directoryName.length() > 0 && directoryName.charAt(directoryName.length() - 1) != fileSeparatorChar) {
+                // If the directory name does not end with a file separator, append it
+                entryBuilder.setDirectoryName(directoryName + fileSeparatorChar);
+            } else {
+                entryBuilder.setDirectoryName(directoryName);
+            }
+
+        } else if (extendedHeaderType == EXTENDED_HEADER_TYPE_MSDOS_FILE_ATTRIBUTES) {
+            // MS-DOS file attributes
+            if (extendedHeaderLength != (MIN_EXTENDED_HEADER_LENGTH + EXTENDED_HEADER_TYPE_MSDOS_FILE_ATTRIBUTES_PAYLOAD_LENGTH)) {
+                throw new ArchiveException("Invalid extended header length");
+            }
+
+            entryBuilder.setMsdosFileAttributes(Short.toUnsignedInt(extendedHeaderBuffer.getShort()));
+        } else if (extendedHeaderType == EXTENDED_HEADER_TYPE_UNIX_PERMISSION) {
+            // UNIX file permission
+            if (extendedHeaderLength != (MIN_EXTENDED_HEADER_LENGTH + EXTENDED_HEADER_TYPE_UNIX_PERMISSION_PAYLOAD_LENGTH)) {
+                throw new ArchiveException("Invalid extended header length");
+            }
+
+            entryBuilder.setUnixPermissionMode(Short.toUnsignedInt(extendedHeaderBuffer.getShort()));
+        } else if (extendedHeaderType == EXTENDED_HEADER_TYPE_UNIX_UID_GID) {
+            // UNIX group/user ID
+            if (extendedHeaderLength != (MIN_EXTENDED_HEADER_LENGTH + EXTENDED_HEADER_TYPE_UNIX_UID_GID_PAYLOAD_LENGTH)) {
+                throw new ArchiveException("Invalid extended header length");
+            }
+
+            entryBuilder.setUnixGroupId(Short.toUnsignedInt(extendedHeaderBuffer.getShort()));
+            entryBuilder.setUnixUserId(Short.toUnsignedInt(extendedHeaderBuffer.getShort()));
+        } else if (extendedHeaderType == EXTENDED_HEADER_TYPE_UNIX_TIMESTAMP) {
+            // UNIX last modified time
+            if (extendedHeaderLength != (MIN_EXTENDED_HEADER_LENGTH + EXTENDED_HEADER_TYPE_UNIX_TIMESTAMP_PAYLOAD_LENGTH)) {
+                throw new ArchiveException("Invalid extended header length");
+            }
+
+            entryBuilder.setLastModifiedDate(new Date(Integer.toUnsignedLong(extendedHeaderBuffer.getInt()) * 1000));
+        }
+
+        // Ignore unknown extended header
+    }
+
+    private void prepareDecompression(final LhaArchiveEntry entry) throws IOException {
+        // Make sure we never read more than the compressed size of the entry
+        this.currentCompressedStream = BoundedInputStream.builder()
+                .setInputStream(in)
+                .setMaxCount(entry.getCompressedSize())
+                .get();
+
+        if (isDirectory(entry.getCompressionMethod())) {
+            // Directory entry
+            this.currentDecompressedStream = new ByteArrayInputStream(new byte [0]);
+        } else if (COMPRESSION_METHOD_LH0.equals(entry.getCompressionMethod()) || COMPRESSION_METHOD_LZ4.equals(entry.getCompressionMethod())) {
+            // No compression
+            this.currentDecompressedStream = ChecksumInputStream.builder()
+                    .setChecksum(Crc16.arc())
+                    .setExpectedChecksumValue(entry.getCrcValue())
+                    .setInputStream(this.currentCompressedStream)
+                    .get();
+        } else if (COMPRESSION_METHOD_LH4.equals(entry.getCompressionMethod())) {
+            this.currentDecompressedStream = ChecksumInputStream.builder()
+                    .setChecksum(Crc16.arc())
+                    .setExpectedChecksumValue(entry.getCrcValue())
+                    .setInputStream(new Lh4CompressorInputStream(this.currentCompressedStream))
+                    .get();
+        } else if (COMPRESSION_METHOD_LH5.equals(entry.getCompressionMethod())) {
+            this.currentDecompressedStream = ChecksumInputStream.builder()
+                    .setChecksum(Crc16.arc())
+                    .setExpectedChecksumValue(entry.getCrcValue())
+                    .setInputStream(new Lh5CompressorInputStream(this.currentCompressedStream))
+                    .get();
+        } else if (COMPRESSION_METHOD_LH6.equals(entry.getCompressionMethod())) {
+            this.currentDecompressedStream = ChecksumInputStream.builder()
+                    .setChecksum(Crc16.arc())
+                    .setExpectedChecksumValue(entry.getCrcValue())
+                    .setInputStream(new Lh6CompressorInputStream(this.currentCompressedStream))
+                    .get();
+        } else if (COMPRESSION_METHOD_LH7.equals(entry.getCompressionMethod())) {
+            this.currentDecompressedStream = ChecksumInputStream.builder()
+                    .setChecksum(Crc16.arc())
+                    .setExpectedChecksumValue(entry.getCrcValue())
+                    .setInputStream(new Lh7CompressorInputStream(this.currentCompressedStream))
+                    .get();
+        } else {
+            // Unsupported compression
+            this.currentDecompressedStream = null;
+        }
+    }
+
+    @Override
+    public int read(final byte[] buffer, final int offset, final int length) throws IOException {
+        if (currentEntry == null) {
+            throw new IllegalStateException("No current entry");
+        }
+
+        if (currentDecompressedStream == null) {
+            throw new ArchiveException("Unsupported compression method: %s", currentEntry.getCompressionMethod());
+        }
+
+        final int read = currentDecompressedStream.read(buffer, offset, length);
+        count(read);
+        return read;
+    }
+
+    /**
+     * Read extended header from the input stream.
+     *
+     * @param headerSize the size of the extended header to read
+     * @return the extended header as a ByteBuffer
+     * @throws IOException
+     */
+    private ByteBuffer readExtendedHeader(final int headerSize) throws IOException {
+        final byte[] extensionHeader = new byte[headerSize];
+        final int len = IOUtils.read(in, extensionHeader);
+        if (len != extensionHeader.length) {
+            throw new ArchiveException("Error reading extended header");
+        }
+
+        return ByteBuffer.wrap(extensionHeader).order(ByteOrder.LITTLE_ENDIAN);
     }
 
     /**
@@ -499,92 +796,6 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
     }
 
     /**
-     * Gets the compression method from the header. It is always located at the same offset for all header levels.
-     *
-     * @param buffer the buffer containing the header data
-     * @return compression method, e.g. -lh5-
-     * @throws ArchiveException if the compression method is invalid
-     */
-    static String getCompressionMethod(final ByteBuffer buffer) throws ArchiveException {
-        final byte[] compressionMethodBuffer = new byte[5];
-        byteBufferGet(buffer, HEADER_GENERIC_OFFSET_COMPRESSION_METHOD, compressionMethodBuffer);
-
-        // Validate the compression method
-        if (compressionMethodBuffer[0] == '-' &&
-            Character.isLowerCase(compressionMethodBuffer[1]) &&
-            Character.isLowerCase(compressionMethodBuffer[2]) &&
-            (Character.isLowerCase(compressionMethodBuffer[3]) || Character.isDigit(compressionMethodBuffer[3])) &&
-            compressionMethodBuffer[4] == '-') {
-            return new String(compressionMethodBuffer, StandardCharsets.US_ASCII);
-        } else {
-            throw new ArchiveException("Invalid compression method: 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x",
-                    compressionMethodBuffer[0],
-                    compressionMethodBuffer[1],
-                    compressionMethodBuffer[2],
-                    compressionMethodBuffer[3],
-                    compressionMethodBuffer[4]);
-        }
-    }
-
-    /**
-     * Gets the pathname from the current position in the provided buffer. Any 0xFF bytes
-     * and '\' chars will be converted into the configured file path separator char.
-     * Any leading file path separator char will be removed to avoid extracting to
-     * absolute locations.
-     *
-     * @param buffer the buffer where to get the pathname from
-     * @param pathnameLength the length of the pathname
-     * @return pathname
-     * @throws ArchiveException if the pathname is too long
-     */
-    String getPathname(final ByteBuffer buffer, final int pathnameLength) throws ArchiveException {
-        // Check pathname length to ensure we don't allocate too much memory
-        if (pathnameLength > MAX_PATHNAME_LENGTH) {
-            throw new ArchiveException("Pathname is longer than the maximum allowed (%d > %d)", pathnameLength, MAX_PATHNAME_LENGTH);
-        } else if (pathnameLength < 0) {
-            throw new ArchiveException("Pathname length is negative");
-        } else if (pathnameLength > (buffer.limit() - buffer.position())) {
-            throw new ArchiveException("Invalid pathname length");
-        }
-
-        final byte[] pathnameBuffer = new byte[pathnameLength];
-        buffer.get(pathnameBuffer);
-
-        // Split the pathname into parts by 0xFF bytes
-        final StringBuilder pathnameStringBuilder = new StringBuilder();
-        int start = 0;
-        for (int i = 0; i < pathnameLength; i++) {
-            if (pathnameBuffer[i] == (byte) 0xFF) {
-                if (i > start) {
-                    // Decode the path segment into a string using the specified charset and append it to the result
-                    pathnameStringBuilder.append(new String(pathnameBuffer, start, i - start, getCharset())).append(fileSeparatorChar);
-                }
-
-                start = i + 1; // Move start to the next segment
-            }
-        }
-
-        // Append the last segment if it exists
-        if (start < pathnameLength) {
-            pathnameStringBuilder.append(new String(pathnameBuffer, start, pathnameLength - start, getCharset()));
-        }
-
-        String pathname = pathnameStringBuilder.toString();
-
-        // If the path separator char is not '\', replace all '\' characters with the path separator char
-        if (fileSeparatorChar != '\\') {
-            pathname = pathname.replace('\\', fileSeparatorChar);
-        }
-
-        // Remove leading file separator chars to avoid extracting to absolute locations
-        while (pathname.length() > 0 && pathname.charAt(0) == fileSeparatorChar) {
-            pathname = pathname.substring(1);
-        }
-
-        return pathname;
-    }
-
-    /**
      * Read the remaining part of the header and append it to the already loaded parts.
      *
      * @param currentHeader all header parts that have already been loaded into memory
@@ -600,216 +811,5 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
         }
 
         return ByteBuffer.allocate(currentHeader.capacity() + len).put(currentHeader.array()).put(remainingData).order(ByteOrder.LITTLE_ENDIAN);
-    }
-
-    /**
-     * Read extended header from the input stream.
-     *
-     * @param headerSize the size of the extended header to read
-     * @return the extended header as a ByteBuffer
-     * @throws IOException
-     */
-    private ByteBuffer readExtendedHeader(final int headerSize) throws IOException {
-        final byte[] extensionHeader = new byte[headerSize];
-        final int len = IOUtils.read(in, extensionHeader);
-        if (len != extensionHeader.length) {
-            throw new ArchiveException("Error reading extended header");
-        }
-
-        return ByteBuffer.wrap(extensionHeader).order(ByteOrder.LITTLE_ENDIAN);
-    }
-
-    /**
-     * Parse the extended header and set the values in the provided entry.
-     *
-     * @param extendedHeaderBuffer the buffer containing the extended header
-     * @param entryBuilder the entry builder to set the values in
-     * @throws IOException
-     */
-    void parseExtendedHeader(final ByteBuffer extendedHeaderBuffer, final LhaArchiveEntry.Builder entryBuilder) throws IOException {
-        final int extendedHeaderLength = extendedHeaderBuffer.limit() - extendedHeaderBuffer.position();
-        if (extendedHeaderLength < MIN_EXTENDED_HEADER_LENGTH) {
-            throw new ArchiveException("Invalid extended header length");
-        }
-
-        final int extendedHeaderType = Byte.toUnsignedInt(extendedHeaderBuffer.get());
-        if (extendedHeaderType == EXTENDED_HEADER_TYPE_COMMON) {
-            // Common header
-            if (extendedHeaderLength < (MIN_EXTENDED_HEADER_LENGTH + EXTENDED_HEADER_TYPE_COMMON_MIN_PAYLOAD_LENGTH)) {
-                throw new ArchiveException("Invalid extended header length");
-            }
-
-            final int crcPos = extendedHeaderBuffer.position(); // Save the current position to be able to set the header CRC later
-
-            // Header CRC
-            entryBuilder.setHeaderCrc(Short.toUnsignedInt(extendedHeaderBuffer.getShort()));
-
-            // Set header CRC to zero to be able to later compute the CRC of the full header
-            extendedHeaderBuffer.putShort(crcPos, (short) 0);
-        } else if (extendedHeaderType == EXTENDED_HEADER_TYPE_FILENAME) {
-            // File name header
-            final int filenameLength = extendedHeaderBuffer.limit() - extendedHeaderBuffer.position() - EXTENDED_HEADER_NEXT_HEADER_SIZE_LENGTH;
-            final String filename = getPathname(extendedHeaderBuffer, filenameLength);
-            entryBuilder.setFilename(filename);
-        } else if (extendedHeaderType == EXTENDED_HEADER_TYPE_DIRECTORY_NAME) {
-            // Directory name header
-            final int directoryNameLength = extendedHeaderBuffer.limit() - extendedHeaderBuffer.position() - EXTENDED_HEADER_NEXT_HEADER_SIZE_LENGTH;
-            final String directoryName = getPathname(extendedHeaderBuffer, directoryNameLength);
-            if (directoryName.length() > 0 && directoryName.charAt(directoryName.length() - 1) != fileSeparatorChar) {
-                // If the directory name does not end with a file separator, append it
-                entryBuilder.setDirectoryName(directoryName + fileSeparatorChar);
-            } else {
-                entryBuilder.setDirectoryName(directoryName);
-            }
-
-        } else if (extendedHeaderType == EXTENDED_HEADER_TYPE_MSDOS_FILE_ATTRIBUTES) {
-            // MS-DOS file attributes
-            if (extendedHeaderLength != (MIN_EXTENDED_HEADER_LENGTH + EXTENDED_HEADER_TYPE_MSDOS_FILE_ATTRIBUTES_PAYLOAD_LENGTH)) {
-                throw new ArchiveException("Invalid extended header length");
-            }
-
-            entryBuilder.setMsdosFileAttributes(Short.toUnsignedInt(extendedHeaderBuffer.getShort()));
-        } else if (extendedHeaderType == EXTENDED_HEADER_TYPE_UNIX_PERMISSION) {
-            // UNIX file permission
-            if (extendedHeaderLength != (MIN_EXTENDED_HEADER_LENGTH + EXTENDED_HEADER_TYPE_UNIX_PERMISSION_PAYLOAD_LENGTH)) {
-                throw new ArchiveException("Invalid extended header length");
-            }
-
-            entryBuilder.setUnixPermissionMode(Short.toUnsignedInt(extendedHeaderBuffer.getShort()));
-        } else if (extendedHeaderType == EXTENDED_HEADER_TYPE_UNIX_UID_GID) {
-            // UNIX group/user ID
-            if (extendedHeaderLength != (MIN_EXTENDED_HEADER_LENGTH + EXTENDED_HEADER_TYPE_UNIX_UID_GID_PAYLOAD_LENGTH)) {
-                throw new ArchiveException("Invalid extended header length");
-            }
-
-            entryBuilder.setUnixGroupId(Short.toUnsignedInt(extendedHeaderBuffer.getShort()));
-            entryBuilder.setUnixUserId(Short.toUnsignedInt(extendedHeaderBuffer.getShort()));
-        } else if (extendedHeaderType == EXTENDED_HEADER_TYPE_UNIX_TIMESTAMP) {
-            // UNIX last modified time
-            if (extendedHeaderLength != (MIN_EXTENDED_HEADER_LENGTH + EXTENDED_HEADER_TYPE_UNIX_TIMESTAMP_PAYLOAD_LENGTH)) {
-                throw new ArchiveException("Invalid extended header length");
-            }
-
-            entryBuilder.setLastModifiedDate(new Date(Integer.toUnsignedLong(extendedHeaderBuffer.getInt()) * 1000));
-        }
-
-        // Ignore unknown extended header
-    }
-
-    /**
-     * Tests whether the compression method is a directory entry.
-     *
-     * @param compressionMethod the compression method
-     * @return true if the compression method is a directory entry, false otherwise
-     */
-    private boolean isDirectory(final String compressionMethod) {
-        return COMPRESSION_METHOD_DIRECTORY.equals(compressionMethod);
-    }
-
-    /**
-     * Calculate the header sum for level 0 and 1 headers. The checksum is calculated by summing the
-     * value of all bytes in the header except for the first two bytes (header length and header checksum)
-     * and get the low 8 bits.
-     *
-     * @param buffer the buffer containing the header
-     * @return checksum
-     */
-    private int calculateHeaderChecksum(final ByteBuffer buffer) {
-        int sum = 0;
-        for (int i = 2; i < buffer.limit(); i++) {
-            sum += Byte.toUnsignedInt(buffer.get(i));
-        }
-
-        return sum & 0xff;
-    }
-
-    /**
-     * Calculate the CRC16 checksum of the provided buffers.
-     *
-     * @param buffers the buffers to calculate the CRC16 checksum for
-     * @return CRC16 checksum
-     */
-    private long calculateCRC16(final ByteBuffer... buffers) {
-        final Checksum crc = Crc16.arc();
-        for (ByteBuffer buffer : buffers) {
-            crc.update(buffer.array(), 0, buffer.limit());
-        }
-
-        return crc.getValue();
-    }
-
-    private void prepareDecompression(final LhaArchiveEntry entry) throws IOException {
-        // Make sure we never read more than the compressed size of the entry
-        this.currentCompressedStream = BoundedInputStream.builder()
-                .setInputStream(in)
-                .setMaxCount(entry.getCompressedSize())
-                .get();
-
-        if (isDirectory(entry.getCompressionMethod())) {
-            // Directory entry
-            this.currentDecompressedStream = new ByteArrayInputStream(new byte [0]);
-        } else if (COMPRESSION_METHOD_LH0.equals(entry.getCompressionMethod()) || COMPRESSION_METHOD_LZ4.equals(entry.getCompressionMethod())) {
-            // No compression
-            this.currentDecompressedStream = ChecksumInputStream.builder()
-                    .setChecksum(Crc16.arc())
-                    .setExpectedChecksumValue(entry.getCrcValue())
-                    .setInputStream(this.currentCompressedStream)
-                    .get();
-        } else if (COMPRESSION_METHOD_LH4.equals(entry.getCompressionMethod())) {
-            this.currentDecompressedStream = ChecksumInputStream.builder()
-                    .setChecksum(Crc16.arc())
-                    .setExpectedChecksumValue(entry.getCrcValue())
-                    .setInputStream(new Lh4CompressorInputStream(this.currentCompressedStream))
-                    .get();
-        } else if (COMPRESSION_METHOD_LH5.equals(entry.getCompressionMethod())) {
-            this.currentDecompressedStream = ChecksumInputStream.builder()
-                    .setChecksum(Crc16.arc())
-                    .setExpectedChecksumValue(entry.getCrcValue())
-                    .setInputStream(new Lh5CompressorInputStream(this.currentCompressedStream))
-                    .get();
-        } else if (COMPRESSION_METHOD_LH6.equals(entry.getCompressionMethod())) {
-            this.currentDecompressedStream = ChecksumInputStream.builder()
-                    .setChecksum(Crc16.arc())
-                    .setExpectedChecksumValue(entry.getCrcValue())
-                    .setInputStream(new Lh6CompressorInputStream(this.currentCompressedStream))
-                    .get();
-        } else if (COMPRESSION_METHOD_LH7.equals(entry.getCompressionMethod())) {
-            this.currentDecompressedStream = ChecksumInputStream.builder()
-                    .setChecksum(Crc16.arc())
-                    .setExpectedChecksumValue(entry.getCrcValue())
-                    .setInputStream(new Lh7CompressorInputStream(this.currentCompressedStream))
-                    .get();
-        } else {
-            // Unsupported compression
-            this.currentDecompressedStream = null;
-        }
-    }
-
-    /**
-     * Create a new ByteBuffer slice from the provided buffer at the specified position and length. This is needed until this
-     * repo has been updated to use Java 9+ where we can use buffer.position(position).slice().limit(length) directly.
-     *
-     * @param buffer the buffer to slice from
-     * @param position the position in the buffer to start slicing from
-     * @param length the length of the slice
-     * @return a new ByteBuffer slice with the specified position and length
-     */
-    private ByteBuffer byteBufferSlice(final ByteBuffer buffer, final int position, final int length) {
-        return ByteBuffer.wrap(buffer.array(), position, length);
-    }
-
-    /**
-     * Get a byte array from the ByteBuffer at the specified position and length.
-     * This is needed until this repo has been updated to use Java 9+ where we
-     * can use buffer.get(position, dst) directly.
-     *
-     * @param buffer the buffer to get the byte array from
-     * @param position the position in the buffer to start reading from
-     * @param dst the destination byte array to fill
-     */
-    private static void byteBufferGet(final ByteBuffer buffer, final int position, final byte[] dst) {
-        for (int i = 0; i < dst.length; i++) {
-            dst[i] = buffer.get(position + i);
-        }
     }
 }
