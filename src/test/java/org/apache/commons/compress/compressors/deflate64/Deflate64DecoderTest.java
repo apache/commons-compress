@@ -28,7 +28,7 @@ import java.util.Arrays;
 import org.apache.commons.compress.compressors.CompressorException;
 import org.junit.jupiter.api.Test;
 
-class HuffmanDecoderTest {
+class Deflate64DecoderTest {
 
     @Test
     void testDecodeDynamicHuffmanBlockRejectsInvalidDistanceCode() throws Exception {
@@ -52,7 +52,7 @@ class HuffmanDecoderTest {
                 0b00000000000000000000000001101011, // 7 extra bits (107 -> 118 zero lengths) + code 1 (literal 256)
                 0b00000000000000000000000000001100 // code 1 twice (literal 257, distance 0) + length symbol 257 + invalid distance bit 1
         };
-        try (HuffmanDecoder decoder = new HuffmanDecoder(new ByteArrayInputStream(data))) {
+        try (Deflate64Decoder decoder = new Deflate64Decoder(new ByteArrayInputStream(data))) {
             final byte[] result = new byte[100];
             final CompressorException e = assertThrows(CompressorException.class, () -> {
                 final int len = decoder.decode(result);
@@ -72,7 +72,7 @@ class HuffmanDecoderTest {
                 0b00000000000000000000000000011011, // final block + fixed huffman + low 5 bits of code 286
                 0b00000000000000000000000000000011 // high 3 bits of code 286
         };
-        try (HuffmanDecoder decoder = new HuffmanDecoder(new ByteArrayInputStream(data))) {
+        try (Deflate64Decoder decoder = new Deflate64Decoder(new ByteArrayInputStream(data))) {
             final byte[] result = new byte[100];
             final CompressorException e = assertThrows(CompressorException.class, () -> {
                 final int len = decoder.decode(result);
@@ -103,7 +103,7 @@ class HuffmanDecoderTest {
                 0b00000000000000000000000000001101, // dist6 + offset <11> + end of block (000000)
                 0b11111111111111111111111111111000 // end of block (0000) + garbage
         };
-        try (HuffmanDecoder decoder = new HuffmanDecoder(new ByteArrayInputStream(data))) {
+        try (Deflate64Decoder decoder = new Deflate64Decoder(new ByteArrayInputStream(data))) {
             final byte[] result = new byte[100];
             final int len = decoder.decode(result);
             assertEquals(48, len);
@@ -132,7 +132,7 @@ class HuffmanDecoderTest {
                 0b00000000000000000000000000001101, // dist6 + offset <11> + end of block (000000)
                 0b11111111111111111111111111111000 // end of block (0000) + garbage
         };
-        try (HuffmanDecoder decoder = new HuffmanDecoder(new ByteArrayInputStream(data))) {
+        try (Deflate64Decoder decoder = new Deflate64Decoder(new ByteArrayInputStream(data))) {
             final byte[] result = new byte[48];
             int len;
             len = decoder.decode(result);
@@ -165,7 +165,7 @@ class HuffmanDecoderTest {
                 0b11111111111111111111111111111000 // end of block (0000) + garbage
         };
 
-        try (HuffmanDecoder decoder = new HuffmanDecoder(new ByteArrayInputStream(data))) {
+        try (Deflate64Decoder decoder = new Deflate64Decoder(new ByteArrayInputStream(data))) {
             final byte[] result = new byte[30];
             int len;
             len = decoder.decode(result);
@@ -195,7 +195,7 @@ class HuffmanDecoderTest {
                 0b00000000000000000000000000000001, // d + end of block
                 0b11111111111111111111111111111100 // end of block (00) + garbage
         };
-        try (HuffmanDecoder decoder = new HuffmanDecoder(new ByteArrayInputStream(data))) {
+        try (Deflate64Decoder decoder = new Deflate64Decoder(new ByteArrayInputStream(data))) {
             final byte[] result = new byte[100];
             final int len = decoder.decode(result);
             assertEquals(11, len);
@@ -221,7 +221,7 @@ class HuffmanDecoderTest {
                 0b00000000000000000000000000000001, // d + end of block
                 0b11111111111111111111111111111100 // end of block (00) + garbage
         };
-        try (HuffmanDecoder decoder = new HuffmanDecoder(new ByteArrayInputStream(data))) {
+        try (Deflate64Decoder decoder = new Deflate64Decoder(new ByteArrayInputStream(data))) {
             final byte[] result = new byte[10];
             int len;
             len = decoder.decode(result);
@@ -238,7 +238,7 @@ class HuffmanDecoderTest {
         final byte[] data = { 0b1, // end of block + no compression mode
                 11, 0, -12, -1, // len & ~len
                 'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd' };
-        try (HuffmanDecoder decoder = new HuffmanDecoder(new ByteArrayInputStream(data))) {
+        try (Deflate64Decoder decoder = new Deflate64Decoder(new ByteArrayInputStream(data))) {
             final byte[] result = new byte[100];
             final int len = decoder.decode(result);
             assertEquals(11, len);
@@ -251,7 +251,7 @@ class HuffmanDecoderTest {
         final byte[] data = { 0b1, // end of block + no compression mode
                 11, 0, -12, -2, // len & ~len
                 'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd' };
-        try (HuffmanDecoder decoder = new HuffmanDecoder(new ByteArrayInputStream(data))) {
+        try (Deflate64Decoder decoder = new Deflate64Decoder(new ByteArrayInputStream(data))) {
             final byte[] result = new byte[100];
             final IllegalStateException e = assertThrows(IllegalStateException.class, () -> {
                 final int len = decoder.decode(result);

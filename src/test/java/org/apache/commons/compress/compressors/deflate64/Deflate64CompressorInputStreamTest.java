@@ -44,10 +44,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class Deflate64CompressorInputStreamTest {
-    private final HuffmanDecoder nullDecoder = null;
+    private final Deflate64Decoder nullDecoder = null;
 
     @Mock
-    private HuffmanDecoder decoder;
+    private Deflate64Decoder decoder;
 
     private void fuzzingTest(final int[] bytes) throws IOException, ArchiveException {
         final int len = bytes.length;

@@ -18,10 +18,10 @@
  */
 package org.apache.commons.compress.compressors.deflate64;
 
-import static org.apache.commons.compress.compressors.deflate64.HuffmanState.DYNAMIC_CODES;
-import static org.apache.commons.compress.compressors.deflate64.HuffmanState.FIXED_CODES;
-import static org.apache.commons.compress.compressors.deflate64.HuffmanState.INITIAL;
-import static org.apache.commons.compress.compressors.deflate64.HuffmanState.STORED;
+import static org.apache.commons.compress.compressors.deflate64.Deflate64State.DYNAMIC_CODES;
+import static org.apache.commons.compress.compressors.deflate64.Deflate64State.FIXED_CODES;
+import static org.apache.commons.compress.compressors.deflate64.Deflate64State.INITIAL;
+import static org.apache.commons.compress.compressors.deflate64.Deflate64State.STORED;
 
 import java.io.Closeable;
 import java.io.EOFException;
@@ -39,7 +39,7 @@ import org.apache.commons.lang3.ArrayUtils;
 /**
  * TODO This class can't be final because it is mocked by Mockito.
  */
-class HuffmanDecoder implements Closeable {
+class Deflate64Decoder implements Closeable {
 
     private static final class BinaryTreeNode {
         private final int bits;
@@ -79,7 +79,7 @@ class HuffmanDecoder implements Closeable {
 
         abstract int read(byte[] b, int off, int len) throws IOException;
 
-        abstract HuffmanState state();
+        abstract Deflate64State state();
     }
 
     private static final class DecodingMemory {
@@ -133,7 +133,7 @@ class HuffmanDecoder implements Closeable {
 
     private final class HuffmanCodes extends DecoderState {
         private boolean endOfBlock;
-        private final HuffmanState state;
+        private final Deflate64State state;
         private final BinaryTreeNode lengthTree;
         private final BinaryTreeNode distanceTree;
 
@@ -141,7 +141,7 @@ class HuffmanDecoder implements Closeable {
         private byte[] runBuffer = ArrayUtils.EMPTY_BYTE_ARRAY;
         private int runBufferLength;
 
-        HuffmanCodes(final HuffmanState state, final int[] lengths, final int[] distance) {
+        HuffmanCodes(final Deflate64State state, final int[] lengths, final int[] distance) {
             this.state = state;
             lengthTree = buildTree(lengths);
             distanceTree = buildTree(distance);
@@ -226,7 +226,7 @@ class HuffmanDecoder implements Closeable {
         }
 
         @Override
-        HuffmanState state() {
+        Deflate64State state() {
             return endOfBlock ? INITIAL : state;
         }
     }
@@ -251,7 +251,7 @@ class HuffmanDecoder implements Closeable {
         }
 
         @Override
-        HuffmanState state() {
+        Deflate64State state() {
             return INITIAL;
         }
     }
@@ -302,7 +302,7 @@ class HuffmanDecoder implements Closeable {
         }
 
         @Override
-        HuffmanState state() {
+        Deflate64State state() {
             return read < blockLength ? STORED : INITIAL;
         }
     }
@@ -502,7 +502,7 @@ class HuffmanDecoder implements Closeable {
 
     private final DecodingMemory memory = new DecodingMemory();
 
-    HuffmanDecoder(final InputStream in) {
+    Deflate64Decoder(final InputStream in) {
         this.reader = new BitInputStream(in, ByteOrder.LITTLE_ENDIAN);
         this.in = in;
         state = new InitialState();
