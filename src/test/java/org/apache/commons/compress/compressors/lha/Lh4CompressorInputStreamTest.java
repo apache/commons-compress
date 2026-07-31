@@ -33,10 +33,14 @@ import org.apache.commons.compress.archivers.lha.LhaArchiveInputStream;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
+/**
+ * Tests {@link LhStaticHuffmanCompressorInputStream} for LH4.
+ */
 class Lh4CompressorInputStreamTest extends AbstractTest {
     @Test
     void testConfiguration() throws IOException {
-        try (Lh4CompressorInputStream in = new Lh4CompressorInputStream(new ByteArrayInputStream(new byte[0]))) {
+        try (LhStaticHuffmanCompressorInputStream in = LhStaticHuffmanCompressorInputStream
+                .lh4CompressorInputStream(new ByteArrayInputStream(new byte[0]))) {
             assertEquals(12, in.getDictionaryBits());
             assertEquals(4096, in.getDictionarySize());
             assertEquals(4, in.getDistanceBits());

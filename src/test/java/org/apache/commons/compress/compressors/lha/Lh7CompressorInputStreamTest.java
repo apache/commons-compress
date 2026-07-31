@@ -33,10 +33,15 @@ import org.apache.commons.compress.archivers.lha.LhaArchiveInputStream;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
+/**
+ * Tests {@link LhStaticHuffmanCompressorInputStream} for LH7.
+ */
 class Lh7CompressorInputStreamTest extends AbstractTest {
+
     @Test
     void testConfiguration() throws IOException {
-        try (Lh7CompressorInputStream in = new Lh7CompressorInputStream(new ByteArrayInputStream(new byte[0]))) {
+        try (LhStaticHuffmanCompressorInputStream in = LhStaticHuffmanCompressorInputStream
+                .lh7CompressorInputStream(new ByteArrayInputStream(new byte[0]))) {
             assertEquals(16, in.getDictionaryBits());
             assertEquals(65536, in.getDictionarySize());
             assertEquals(5, in.getDistanceBits());
@@ -57,11 +62,9 @@ class Lh7CompressorInputStreamTest extends AbstractTest {
             assertEquals(37401, entry.getCompressedSize());
             assertEquals("-lh7-", entry.getCompressionMethod());
             assertEquals(0x8c8a, entry.getCrcValue());
-
             // Decompress entry
             assertTrue(archive.canReadEntryData(entry));
             final byte[] data = IOUtils.toByteArray(archive);
-
             assertEquals(144060, data.length);
             assertEquals("\nLorem ipsum", new String(data, 0, 12, StandardCharsets.US_ASCII));
         }

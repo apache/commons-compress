@@ -31,8 +31,10 @@ import org.apache.commons.io.input.CloseShieldInputStream;
 
 /**
  * Implements a static Huffman compressor input stream for LHA files that supports lh4, lh5, lh6 and lh7 compression methods.
+ *
+ * @since 1.29.0
  */
-abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorInputStream implements InputStreamStatistics {
+public class LhStaticHuffmanCompressorInputStream extends CompressorInputStream implements InputStreamStatistics {
 
     /**
      * Number of bits used to encode the command decoding tree length.
@@ -61,6 +63,14 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
 
     private static final int MAX_CODE_LENGTH = 16;
 
+    private static final int DICT_BITS_LH4 = 12;
+
+    private static final int DICT_BITS_LH5 = 13;
+
+    private static final int DICT_BITS_LH6 = 15;
+
+    private static final int DICT_BITS_LH7 = 16;
+
     private BitInputStream bin;
 
     private CircularBuffer buffer;
@@ -84,15 +94,59 @@ abstract class AbstractLhStaticHuffmanCompressorInputStream extends CompressorIn
     private final int maxNumberOfDistanceCodes;
 
     /**
+     * Creates a new LhStaticHuffmanCompressorInputStream for the specified InputStream and LH4.
+     *
+     * @param in The InputStream to read compressed data from.
+     * @return a new LhStaticHuffmanCompressorInputStream for LH4.
+     * @throws IOException Thrown if an I/O error occurs.
+     */
+    public static LhStaticHuffmanCompressorInputStream lh4CompressorInputStream(final InputStream in) throws IOException {
+        return new LhStaticHuffmanCompressorInputStream(in, DICT_BITS_LH4, 4, DICT_BITS_LH4 + 2);
+    }
+
+    /**
+     * Creates a new LhStaticHuffmanCompressorInputStream for the specified InputStream and LH5.
+     *
+     * @param in The InputStream to read compressed data from.
+     * @return a new LhStaticHuffmanCompressorInputStream for LH5.
+     * @throws IOException Thrown if an I/O error occurs.
+     */
+    public static LhStaticHuffmanCompressorInputStream lh5CompressorInputStream(final InputStream in) throws IOException {
+        return new LhStaticHuffmanCompressorInputStream(in, DICT_BITS_LH5, 4, DICT_BITS_LH5 + 1);
+    }
+
+    /**
+     * Creates a new LhStaticHuffmanCompressorInputStream for the specified InputStream and LH6.
+     *
+     * @param in The InputStream to read compressed data from.
+     * @return a new LhStaticHuffmanCompressorInputStream for LH6.
+     * @throws IOException Thrown if an I/O error occurs.
+     */
+    public static LhStaticHuffmanCompressorInputStream lh6CompressorInputStream(final InputStream in) throws IOException {
+        return new LhStaticHuffmanCompressorInputStream(in, DICT_BITS_LH6, 5, DICT_BITS_LH6 + 1);
+    }
+
+    /**
+     * Creates a new LhStaticHuffmanCompressorInputStream for the specified InputStream and LH7.
+     *
+     * @param in The InputStream to read compressed data from.
+     * @return a new LhStaticHuffmanCompressorInputStream for LH7.
+     * @throws IOException Thrown if an I/O error occurs.
+     */
+    public static LhStaticHuffmanCompressorInputStream lh7CompressorInputStream(final InputStream in) throws IOException {
+        return new LhStaticHuffmanCompressorInputStream(in, DICT_BITS_LH7, 5, DICT_BITS_LH7 + 1);
+    }
+
+    /**
      * Constructs a new CompressorInputStream which decompresses bytes read from the specified stream.
      *
-     * @param in The InputStream from which to read compressed data.
-     * @param dictionaryBits The number of bits used for the dictionary size.
-     * @param distanceBits The number of bits used for the distance.
+     * @param in                       The InputStream from which to read compressed data.
+     * @param dictionaryBits           The number of bits used for the dictionary size.
+     * @param distanceBits             The number of bits used for the distance.
      * @param maxNumberOfDistanceCodes The maximum number of distance codes.
      * @throws IOException if an I/O error occurs.
      */
-    AbstractLhStaticHuffmanCompressorInputStream(final InputStream in, final int dictionaryBits, final int distanceBits, final int maxNumberOfDistanceCodes)
+    LhStaticHuffmanCompressorInputStream(final InputStream in, final int dictionaryBits, final int distanceBits, final int maxNumberOfDistanceCodes)
             throws IOException {
         this.dictionaryBits = dictionaryBits;
         this.distanceBits = distanceBits;

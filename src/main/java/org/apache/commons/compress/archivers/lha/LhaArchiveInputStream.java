@@ -38,10 +38,7 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipUtil;
-import org.apache.commons.compress.compressors.lha.Lh4CompressorInputStream;
-import org.apache.commons.compress.compressors.lha.Lh5CompressorInputStream;
-import org.apache.commons.compress.compressors.lha.Lh6CompressorInputStream;
-import org.apache.commons.compress.compressors.lha.Lh7CompressorInputStream;
+import org.apache.commons.compress.compressors.lha.LhStaticHuffmanCompressorInputStream;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.io.input.ChecksumInputStream;
@@ -509,16 +506,16 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
                     .setInputStream(this.currentCompressedStream).get();
         } else if (COMPRESSION_METHOD_LH4.equals(entry.getCompressionMethod())) {
             this.currentDecompressedStream = ChecksumInputStream.builder().setChecksum(Crc16.arc()).setExpectedChecksumValue(entry.getCrcValue())
-                    .setInputStream(new Lh4CompressorInputStream(this.currentCompressedStream)).get();
+                    .setInputStream(LhStaticHuffmanCompressorInputStream.lh4CompressorInputStream(this.currentCompressedStream)).get();
         } else if (COMPRESSION_METHOD_LH5.equals(entry.getCompressionMethod())) {
             this.currentDecompressedStream = ChecksumInputStream.builder().setChecksum(Crc16.arc()).setExpectedChecksumValue(entry.getCrcValue())
-                    .setInputStream(new Lh5CompressorInputStream(this.currentCompressedStream)).get();
+                    .setInputStream(LhStaticHuffmanCompressorInputStream.lh5CompressorInputStream(this.currentCompressedStream)).get();
         } else if (COMPRESSION_METHOD_LH6.equals(entry.getCompressionMethod())) {
             this.currentDecompressedStream = ChecksumInputStream.builder().setChecksum(Crc16.arc()).setExpectedChecksumValue(entry.getCrcValue())
-                    .setInputStream(new Lh6CompressorInputStream(this.currentCompressedStream)).get();
+                    .setInputStream(LhStaticHuffmanCompressorInputStream.lh6CompressorInputStream(this.currentCompressedStream)).get();
         } else if (COMPRESSION_METHOD_LH7.equals(entry.getCompressionMethod())) {
             this.currentDecompressedStream = ChecksumInputStream.builder().setChecksum(Crc16.arc()).setExpectedChecksumValue(entry.getCrcValue())
-                    .setInputStream(new Lh7CompressorInputStream(this.currentCompressedStream)).get();
+                    .setInputStream(LhStaticHuffmanCompressorInputStream.lh7CompressorInputStream(this.currentCompressedStream)).get();
         } else {
             // Unsupported compression
             this.currentDecompressedStream = null;
