@@ -171,8 +171,7 @@ public class LhaArchiveEntry implements ArchiveEntry {
     private final Integer headerCrc;
 
     LhaArchiveEntry(final Builder builder) {
-        this.name = new StringBuilder().append(Objects.toString(builder.directoryName, ""))
-                .append(Objects.toString(builder.fileName, "")).toString();
+        this.name = new StringBuilder().append(Objects.toString(builder.directoryName, "")).append(Objects.toString(builder.fileName, "")).toString();
         this.directory = builder.directory;
         this.size = builder.size;
         this.lastModifiedDate = builder.lastModifiedDate;

@@ -47,6 +47,8 @@ import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
 class LhaArchiveInputStreamTest extends AbstractTest {
+
+    // @formatter:off
     private static final int[] VALID_HEADER_LEVEL_0_FILE = {
         0x2b, 0x70, 0x2d, 0x6c, 0x68, 0x35, 0x2d, 0x34, 0x00, 0x00, 0x00, 0x39, 0x00, 0x00, 0x00, 0x4b, // |+p-lh5-4...9...K|
         0x80, 0x03, 0x5b, 0x20, 0x00, 0x09, 0x74, 0x65, 0x73, 0x74, 0x31, 0x2e, 0x74, 0x78, 0x74, 0x96, // |..[ ..test1.txt.|
@@ -101,6 +103,7 @@ class LhaArchiveInputStreamTest extends AbstractTest {
         0xc0, 0x3b, 0xae, 0xc0, 0xc4, 0xe6, 0x78, 0x28, 0xa1, 0x78, 0x75, 0x60, 0xd3, 0xaa, 0x76, 0x4e, // |.;....x(.xu`..vN|
         0xbb, 0xc1, 0x7c, 0x1d, 0x9a, 0x63, 0xaf, 0xc3, 0xe4, 0xaf, 0x7c, 0x00                          // |..|..c....|.|
     };
+    // @formatter:on
 
     private static byte[] toByteArray(final int... data) {
         final byte[] bytes = new byte[data.length];
@@ -115,9 +118,8 @@ class LhaArchiveInputStreamTest extends AbstractTest {
     }
 
     /**
-     * The timestamp used in header level 0 and 1 entries has no time zone information and is
-     * converted in the system default time zone. This method converts the date to UTC to verify
-     * the timestamp in unit tests.
+     * The timestamp used in header level 0 and 1 entries has no time zone information and is converted in the system default time zone. This method converts
+     * the date to UTC to verify the timestamp in unit tests.
      *
      * @param date the date to convert
      * @return a ZonedDateTime in UTC
@@ -136,10 +138,7 @@ class LhaArchiveInputStreamTest extends AbstractTest {
 
     @Test
     void testDecompressLh0() throws Exception {
-        try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder()
-                .setInputStream(newInputStream("test-macos-l0.lha"))
-                .get()) {
-
+        try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(newInputStream("test-macos-l0.lha")).get()) {
             final List<String> files = new ArrayList<>();
             files.add("dir1" + File.separatorChar);
             files.add("dir1" + File.separatorChar + "dir1-1" + File.separatorChar);
@@ -169,8 +168,8 @@ class LhaArchiveInputStreamTest extends AbstractTest {
     }
 
     /**
-     * Test decompressing a file with lh5 compression that contains only one characters and thus is
-     * basically RLE encoded. The distance tree contains only one entry (root node).
+     * Test decompressing a file with lh5 compression that contains only one characters and thus is basically RLE encoded. The distance tree contains only one
+     * entry (root node).
      */
     @Test
     void testDecompressLh5Rle() throws Exception {
@@ -211,13 +210,10 @@ class LhaArchiveInputStreamTest extends AbstractTest {
 
     @Test
     void testGetBytesReadReflectsDecompressedBytes() throws IOException {
-        try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder()
-                .setInputStream(new ByteArrayInputStream(toByteArray(VALID_HEADER_LEVEL_0_FILE)))
+        try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(new ByteArrayInputStream(toByteArray(VALID_HEADER_LEVEL_0_FILE)))
                 .get()) {
-
             final LhaArchiveEntry entry = archive.getNextEntry();
             assertNotNull(entry);
-
             final byte[] content = IOUtils.toByteArray(archive);
             assertEquals(entry.getSize(), content.length);
             assertEquals(entry.getSize(), archive.getBytesRead());
@@ -228,7 +224,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
     void testGetCompressionMethod() throws IOException {
         assertEquals("-lh0-", LhaArchiveInputStream.getCompressionMethod(ByteBuffer.wrap(toByteArray(0x00, 0x00, '-', 'l', 'h', '0', '-'))));
         assertEquals("-lhd-", LhaArchiveInputStream.getCompressionMethod(ByteBuffer.wrap(toByteArray(0x00, 0x00, '-', 'l', 'h', 'd', '-'))));
-
         try {
             LhaArchiveInputStream.getCompressionMethod(ByteBuffer.wrap(toByteArray(0x00, 0x00, '-', 'l', 'h', '0', 0xff)));
             fail("Expected ArchiveException for invalid compression method");
@@ -285,7 +280,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals("folder/file.txt", getPathname(is, 'f', 'o', 'l', 'd', 'e', 'r', 0xff, 'f', 'i', 'l', 'e', '.', 't', 'x', 't'));
             assertEquals("folder/file.txt", getPathname(is, 0xff, 'f', 'o', 'l', 'd', 'e', 'r', 0xff, 'f', 'i', 'l', 'e', '.', 't', 'x', 't'));
             assertEquals("folder/file.txt", getPathname(is, '\\', 'f', 'o', 'l', 'd', 'e', 'r', '\\', 'f', 'i', 'l', 'e', '.', 't', 'x', 't'));
-
             // Unicode replacement characters for unsupported characters
             assertEquals("\uFFFD/\uFFFD/\uFFFD.txt", getPathname(is, 0xe5, 0xff, 0xe4, 0xff, 0xf6, '.', 't', 'x', 't'));
             assertEquals("\uFFFD/\uFFFD/\uFFFD.txt", getPathname(is, 0xe5, '\\', 0xe4, '\\', 0xf6, '.', 't', 'x', 't'));
@@ -294,12 +288,8 @@ class LhaArchiveInputStreamTest extends AbstractTest {
 
     @Test
     void testGetPathnameUnixFileSeparatorCharIso88591() throws IOException, UnsupportedEncodingException {
-        try (LhaArchiveInputStream is = LhaArchiveInputStream.builder()
-                .setInputStream(newEmptyInputStream())
-                .setCharset(StandardCharsets.ISO_8859_1)
-                .setFileSeparatorChar('/')
-                .get()) {
-
+        try (LhaArchiveInputStream is = LhaArchiveInputStream.builder().setInputStream(newEmptyInputStream()).setCharset(StandardCharsets.ISO_8859_1)
+                .setFileSeparatorChar('/').get()) {
             assertEquals("\u00E5/\u00E4/\u00F6.txt", getPathname(is, 0xe5, 0xff, 0xe4, 0xff, 0xf6, '.', 't', 'x', 't'));
             assertEquals("\u00E5/\u00E4/\u00F6.txt", getPathname(is, 0xe5, '\\', 0xe4, '\\', 0xf6, '.', 't', 'x', 't'));
         }
@@ -312,7 +302,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals("folder\\file.txt", getPathname(is, 'f', 'o', 'l', 'd', 'e', 'r', 0xff, 'f', 'i', 'l', 'e', '.', 't', 'x', 't'));
             assertEquals("folder\\file.txt", getPathname(is, 0xff, 'f', 'o', 'l', 'd', 'e', 'r', 0xff, 'f', 'i', 'l', 'e', '.', 't', 'x', 't'));
             assertEquals("folder\\file.txt", getPathname(is, '\\', 'f', 'o', 'l', 'd', 'e', 'r', '\\', 'f', 'i', 'l', 'e', '.', 't', 'x', 't'));
-
             // Unicode replacement characters for unsupported characters
             assertEquals("\uFFFD\\\uFFFD\\\uFFFD.txt", getPathname(is, 0xe5, 0xff, 0xe4, 0xff, 0xf6, '.', 't', 'x', 't'));
             assertEquals("\uFFFD\\\uFFFD\\\uFFFD.txt", getPathname(is, 0xe5, '\\', 0xe4, '\\', 0xf6, '.', 't', 'x', 't'));
@@ -321,12 +310,8 @@ class LhaArchiveInputStreamTest extends AbstractTest {
 
     @Test
     void testGetPathnameWindowsFileSeparatorCharIso88591() throws IOException, UnsupportedEncodingException {
-        try (LhaArchiveInputStream is = LhaArchiveInputStream.builder()
-                .setInputStream(newEmptyInputStream())
-                .setCharset(StandardCharsets.ISO_8859_1)
-                .setFileSeparatorChar('\\')
-                .get()) {
-
+        try (LhaArchiveInputStream is = LhaArchiveInputStream.builder().setInputStream(newEmptyInputStream()).setCharset(StandardCharsets.ISO_8859_1)
+                .setFileSeparatorChar('\\').get()) {
             assertEquals("\u00E5\\\u00E4\\\u00F6.txt", getPathname(is, 0xe5, 0xff, 0xe4, 0xff, 0xf6, '.', 't', 'x', 't'));
             assertEquals("\u00E5\\\u00E4\\\u00F6.txt", getPathname(is, 0xe5, '\\', 0xe4, '\\', 0xf6, '.', 't', 'x', 't'));
         }
@@ -335,9 +320,7 @@ class LhaArchiveInputStreamTest extends AbstractTest {
     @Test
     void testInvalidHeaderLevel() throws IOException {
         final byte[] data = toByteArray(VALID_HEADER_LEVEL_0_FILE);
-
         data[20] = 4; // Change the header level to an invalid value
-
         try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(new ByteArrayInputStream(data)).get()) {
             archive.getNextEntry();
             fail("Expected ArchiveException for invalid header level");
@@ -349,9 +332,7 @@ class LhaArchiveInputStreamTest extends AbstractTest {
     @Test
     void testInvalidHeaderLevel0Checksum() throws IOException {
         final byte[] data = toByteArray(VALID_HEADER_LEVEL_0_FILE);
-
         data[1] = 0x55; // Change the second byte to an invalid header checksum
-
         try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(new ByteArrayInputStream(data)).get()) {
             archive.getNextEntry();
             fail("Expected ArchiveException for invalid header checksum");
@@ -363,9 +344,7 @@ class LhaArchiveInputStreamTest extends AbstractTest {
     @Test
     void testInvalidHeaderLevel0FilenameLength() throws IOException {
         final byte[] data = toByteArray(VALID_HEADER_LEVEL_0_FILE);
-
         data[21] = 22; // Change the length of the filename
-
         try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(new ByteArrayInputStream(data)).get()) {
             archive.getNextEntry();
             fail("Expected ArchiveException for invalid filename");
@@ -377,9 +356,7 @@ class LhaArchiveInputStreamTest extends AbstractTest {
     @Test
     void testInvalidHeaderLevel0Length() throws IOException {
         final byte[] data = toByteArray(VALID_HEADER_LEVEL_0_FILE);
-
         data[0] = 0x10; // Change the first byte to an invalid length
-
         try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(new ByteArrayInputStream(data)).get()) {
             archive.getNextEntry();
             fail("Expected ArchiveException for invalid header length");
@@ -391,9 +368,7 @@ class LhaArchiveInputStreamTest extends AbstractTest {
     @Test
     void testInvalidHeaderLevel1Checksum() throws IOException {
         final byte[] data = toByteArray(VALID_HEADER_LEVEL_1_FILE);
-
         data[1] = 0x55; // Change the second byte to an invalid header checksum
-
         try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(new ByteArrayInputStream(data)).get()) {
             archive.getNextEntry();
             fail("Expected ArchiveException for invalid header checksum");
@@ -405,11 +380,9 @@ class LhaArchiveInputStreamTest extends AbstractTest {
     @Test
     void testInvalidHeaderLevel1Crc() throws IOException {
         final byte[] data = toByteArray(VALID_HEADER_LEVEL_1_FILE_MSDOS_WITH_CHECKSUM_AND_CRC);
-
         // Change header CRC to an invalid value
         data[41] = 0x33;
         data[42] = 0x22;
-
         try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(new ByteArrayInputStream(data)).get()) {
             archive.getNextEntry();
             fail("Expected ArchiveException for invalid header checksum");
@@ -421,9 +394,7 @@ class LhaArchiveInputStreamTest extends AbstractTest {
     @Test
     void testInvalidHeaderLevel1FilenameLength() throws IOException {
         final byte[] data = toByteArray(VALID_HEADER_LEVEL_1_FILE);
-
         data[21] = 10; // Change the length of the filename
-
         try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(new ByteArrayInputStream(data)).get()) {
             archive.getNextEntry();
             fail("Expected ArchiveException for invalid filename");
@@ -435,9 +406,7 @@ class LhaArchiveInputStreamTest extends AbstractTest {
     @Test
     void testInvalidHeaderLevel1Length() throws IOException {
         final byte[] data = toByteArray(VALID_HEADER_LEVEL_1_FILE);
-
         data[0] = 0x10; // Change the first byte to an invalid length
-
         try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(new ByteArrayInputStream(data)).get()) {
             archive.getNextEntry();
             fail("Expected ArchiveException for invalid header length");
@@ -449,14 +418,12 @@ class LhaArchiveInputStreamTest extends AbstractTest {
     @Test
     void testInvalidHeaderLevel1NegativeCompressedSize() throws IOException {
         final byte[] data = toByteArray(VALID_HEADER_LEVEL_1_FILE);
-
         // Zero out the 4-byte skip size field (offset 7) so that subtracting the extended header
         // sizes underflows to a negative compressed size.
         data[7] = 0x00;
         data[8] = 0x00;
         data[9] = 0x00;
         data[10] = 0x00;
-
         // Recompute the base header checksum so the header passes checksum validation and reaches
         // the compressed size check.
         final int baseHeaderSize = (data[0] & 0xff) + 2;
@@ -465,7 +432,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             sum += data[i] & 0xff;
         }
         data[1] = (byte) (sum & 0xff);
-
         try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(new ByteArrayInputStream(data)).get()) {
             archive.getNextEntry();
             fail("Expected ArchiveException for negative compressed size");
@@ -477,11 +443,9 @@ class LhaArchiveInputStreamTest extends AbstractTest {
     @Test
     void testInvalidHeaderLevel2Checksum() throws IOException {
         final byte[] data = toByteArray(VALID_HEADER_LEVEL_2_FILE);
-
         // Change header CRC to an invalid value
         data[27] = 0x33;
         data[28] = 0x22;
-
         try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(new ByteArrayInputStream(data)).get()) {
             archive.getNextEntry();
             fail("Expected ArchiveException for invalid header checksum");
@@ -493,9 +457,7 @@ class LhaArchiveInputStreamTest extends AbstractTest {
     @Test
     void testInvalidHeaderLevel2Length() throws IOException {
         final byte[] data = toByteArray(VALID_HEADER_LEVEL_2_FILE);
-
         data[0] = 25; // Change the first byte to an invalid length
-
         try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(new ByteArrayInputStream(data)).get()) {
             archive.getNextEntry();
             fail("Expected ArchiveException for invalid header length");
@@ -507,7 +469,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
     @Test
     void testInvalidHeaderLevelLength() throws IOException {
         final byte[] data = { 0x04, 0x00, 0x00, 0x00, 0x00, 0x00 };
-
         try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(new ByteArrayInputStream(data)).get()) {
             archive.getNextEntry();
             fail("Expected ArchiveException for invalid header length");
@@ -519,20 +480,16 @@ class LhaArchiveInputStreamTest extends AbstractTest {
     @Test
     void testMatches() {
         byte[] data;
-
         assertTrue(LhaArchiveInputStream.matches(toByteArray(VALID_HEADER_LEVEL_0_FILE), VALID_HEADER_LEVEL_0_FILE.length));
         assertTrue(LhaArchiveInputStream.matches(toByteArray(VALID_HEADER_LEVEL_1_FILE), VALID_HEADER_LEVEL_1_FILE.length));
         assertTrue(LhaArchiveInputStream.matches(toByteArray(VALID_HEADER_LEVEL_2_FILE), VALID_HEADER_LEVEL_2_FILE.length));
-
         // Header to short
         data = toByteArray(0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09);
         assertFalse(LhaArchiveInputStream.matches(data, data.length));
-
         // Change the header level to an invalid value
         data = toByteArray(VALID_HEADER_LEVEL_0_FILE);
         data[20] = 3;
         assertFalse(LhaArchiveInputStream.matches(data, data.length));
-
         // Change the compression method to an invalid value
         data = toByteArray(VALID_HEADER_LEVEL_0_FILE);
         data[6] = 0x08;
@@ -546,7 +503,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             final LhaArchiveEntry.Builder entryBuilder = LhaArchiveEntry.builder();
             archive.parseExtendedHeader(toByteBuffer(0x00, 0x22, 0x33, 0x00, 0x00), entryBuilder);
             assertEquals(0x3322, entryBuilder.get().getHeaderCrc());
-
             // Invalid length
             try {
                 archive.parseExtendedHeader(toByteBuffer(0x00, 0x22, 0x00, 0x00), entryBuilder);
@@ -559,16 +515,11 @@ class LhaArchiveInputStreamTest extends AbstractTest {
 
     @Test
     void testParseExtendedHeaderDirectoryName() throws IOException {
-        try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder()
-                .setInputStream(newEmptyInputStream())
-                .setFileSeparatorChar('/')
-                .get()) {
-
+        try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(newEmptyInputStream()).setFileSeparatorChar('/').get()) {
             // Valid
             final LhaArchiveEntry.Builder entryBuilder = LhaArchiveEntry.builder();
             archive.parseExtendedHeader(toByteBuffer(0x02, 'd', 'i', 'r', '1', 0xff, 0x00, 0x00), entryBuilder);
             assertEquals("dir1/", entryBuilder.get().getName());
-
             // Invalid length
             try {
                 archive.parseExtendedHeader(toByteBuffer(0x02, 0x00), entryBuilder);
@@ -586,7 +537,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             final LhaArchiveEntry.Builder entryBuilder = LhaArchiveEntry.builder();
             archive.parseExtendedHeader(toByteBuffer(0x01, 't', 'e', 's', 't', '.', 't', 'x', 't', 0x00, 0x00), entryBuilder);
             assertEquals("test.txt", entryBuilder.get().getName());
-
             // Invalid length
             try {
                 archive.parseExtendedHeader(toByteBuffer(0x01, 0x00), entryBuilder);
@@ -599,37 +549,28 @@ class LhaArchiveInputStreamTest extends AbstractTest {
 
     @Test
     void testParseExtendedHeaderFilenameAndDirectoryName() throws IOException {
-        try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder()
-                .setInputStream(newEmptyInputStream())
-                .setFileSeparatorChar('/')
-                .get()) {
-
+        try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(newEmptyInputStream()).setFileSeparatorChar('/').get()) {
             LhaArchiveEntry.Builder entryBuilder;
-
             // Test filename and directory name order
             entryBuilder = LhaArchiveEntry.builder();
             archive.parseExtendedHeader(toByteBuffer(0x01, 't', 'e', 's', 't', '.', 't', 'x', 't', 0x00, 0x00), entryBuilder);
             archive.parseExtendedHeader(toByteBuffer(0x02, 'd', 'i', 'r', '1', 0xff, 0x00, 0x00), entryBuilder);
             assertEquals("dir1/test.txt", entryBuilder.get().getName());
-
             // Test filename and directory name order, no trailing slash
             entryBuilder = LhaArchiveEntry.builder();
             archive.parseExtendedHeader(toByteBuffer(0x01, 't', 'e', 's', 't', '.', 't', 'x', 't', 0x00, 0x00), entryBuilder);
             archive.parseExtendedHeader(toByteBuffer(0x02, 'd', 'i', 'r', '1', 0x00, 0x00), entryBuilder);
             assertEquals("dir1/test.txt", entryBuilder.get().getName());
-
             // Test directory name and filename order
             entryBuilder = LhaArchiveEntry.builder();
             archive.parseExtendedHeader(toByteBuffer(0x02, 'd', 'i', 'r', '1', 0xff, 0x00, 0x00), entryBuilder);
             archive.parseExtendedHeader(toByteBuffer(0x01, 't', 'e', 's', 't', '.', 't', 'x', 't', 0x00, 0x00), entryBuilder);
             assertEquals("dir1/test.txt", entryBuilder.get().getName());
-
             // Test directory name and filename order, no trailing slash
             entryBuilder = LhaArchiveEntry.builder();
             archive.parseExtendedHeader(toByteBuffer(0x02, 'd', 'i', 'r', '1', 0x00, 0x00), entryBuilder);
             archive.parseExtendedHeader(toByteBuffer(0x01, 't', 'e', 's', 't', '.', 't', 'x', 't', 0x00, 0x00), entryBuilder);
             assertEquals("dir1/test.txt", entryBuilder.get().getName());
-
             // Test empty directory name, no trailing slash
             entryBuilder = LhaArchiveEntry.builder();
             archive.parseExtendedHeader(toByteBuffer(0x02, 0x00, 0x00), entryBuilder);
@@ -645,7 +586,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             final LhaArchiveEntry.Builder entryBuilder = LhaArchiveEntry.builder();
             archive.parseExtendedHeader(toByteBuffer(0x40, 0x10, 0x00, 0x00, 0x00), entryBuilder);
             assertEquals(0x10, entryBuilder.get().getMsdosFileAttributes());
-
             // Invalid length
             try {
                 archive.parseExtendedHeader(toByteBuffer(0x40, 0x10, 0x00, 0x00), entryBuilder);
@@ -677,7 +617,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             archive.parseExtendedHeader(toByteBuffer(0x50, 0xa4, 0x81, 0x00, 0x00), entryBuilder);
             assertEquals(0x81a4, entryBuilder.get().getUnixPermissionMode());
             assertEquals(0100644, entryBuilder.get().getUnixPermissionMode());
-
             // Invalid length
             try {
                 archive.parseExtendedHeader(toByteBuffer(0x50, 0xa4, 0x00, 0x00), entryBuilder);
@@ -695,7 +634,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             final LhaArchiveEntry.Builder entryBuilder = LhaArchiveEntry.builder();
             archive.parseExtendedHeader(toByteBuffer(0x54, 0x5c, 0x73, 0x9c, 0x68, 0x00, 0x00), entryBuilder);
             assertEquals(0x689c735cL, entryBuilder.get().getLastModifiedDate().getTime() / 1000);
-
             // Invalid length
             try {
                 archive.parseExtendedHeader(toByteBuffer(0x54, 0x5c, 0x73, 0x9c, 0x00, 0x00), entryBuilder);
@@ -714,7 +652,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             archive.parseExtendedHeader(toByteBuffer(0x51, 0x14, 0x00, 0xf5, 0x01, 0x00, 0x00), entryBuilder);
             assertEquals(0x0014, entryBuilder.get().getUnixGroupId());
             assertEquals(0x01f5, entryBuilder.get().getUnixUserId());
-
             // Invalid length
             try {
                 archive.parseExtendedHeader(toByteBuffer(0x51, 0x14, 0x00, 0xf5, 0x00, 0x00), entryBuilder);
@@ -727,10 +664,8 @@ class LhaArchiveInputStreamTest extends AbstractTest {
 
     @Test
     void testParseHeaderLevel0File() throws IOException {
-        try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder()
-                .setInputStream(new ByteArrayInputStream(toByteArray(VALID_HEADER_LEVEL_0_FILE)))
+        try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(new ByteArrayInputStream(toByteArray(VALID_HEADER_LEVEL_0_FILE)))
                 .get()) {
-
             // Entry should be parsed correctly
             final LhaArchiveEntry entry = archive.getNextEntry();
             assertNotNull(entry);
@@ -748,7 +683,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertNull(entry.getUnixUserId());
             assertNull(entry.getMsdosFileAttributes());
             assertNull(entry.getHeaderCrc());
-
             // No more entries expected
             assertNull(archive.getNextEntry());
         }
@@ -757,15 +691,11 @@ class LhaArchiveInputStreamTest extends AbstractTest {
     @Test
     void testParseHeaderLevel0FileMacosUtf8() throws IOException {
         try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder()
-                .setInputStream(new ByteArrayInputStream(toByteArray(VALID_HEADER_LEVEL_0_FILE_MACOS_UTF8)))
-                .setCharset(StandardCharsets.UTF_8)
-                .get()) {
-
+                .setInputStream(new ByteArrayInputStream(toByteArray(VALID_HEADER_LEVEL_0_FILE_MACOS_UTF8))).setCharset(StandardCharsets.UTF_8).get()) {
             // Entry name should be parsed correctly
             final LhaArchiveEntry entry = archive.getNextEntry();
             assertNotNull(entry);
             assertEquals("test-\u00E5\u00E4\u00F6.txt", entry.getName());
-
             // No more entries expected
             assertNull(archive.getNextEntry());
         }
@@ -774,15 +704,12 @@ class LhaArchiveInputStreamTest extends AbstractTest {
     @Test
     void testParseHeaderLevel0FileMsdosIso88591() throws IOException {
         try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder()
-                .setInputStream(new ByteArrayInputStream(toByteArray(VALID_HEADER_LEVEL_0_FILE_MSDOS_ISO8859_1)))
-                .setCharset(StandardCharsets.ISO_8859_1)
+                .setInputStream(new ByteArrayInputStream(toByteArray(VALID_HEADER_LEVEL_0_FILE_MSDOS_ISO8859_1))).setCharset(StandardCharsets.ISO_8859_1)
                 .get()) {
-
             // Entry name should be parsed correctly
             final LhaArchiveEntry entry = archive.getNextEntry();
             assertNotNull(entry);
             assertEquals("test-\u00E5\u00E4\u00F6.txt", entry.getName());
-
             // No more entries expected
             assertNull(archive.getNextEntry());
         }
@@ -791,14 +718,11 @@ class LhaArchiveInputStreamTest extends AbstractTest {
     @Test
     void testParseHeaderLevel0FileMsdosIso88591DefaultEncoding() throws IOException {
         try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder()
-                .setInputStream(new ByteArrayInputStream(toByteArray(VALID_HEADER_LEVEL_0_FILE_MSDOS_ISO8859_1)))
-                .get()) {
-
+                .setInputStream(new ByteArrayInputStream(toByteArray(VALID_HEADER_LEVEL_0_FILE_MSDOS_ISO8859_1))).get()) {
             // First entry should be with replacement characters for unsupported characters
             final LhaArchiveEntry entry = archive.getNextEntry();
             assertNotNull(entry);
             assertEquals("test-\uFFFD\uFFFD\uFFFD.txt", entry.getName()); // Unicode replacement characters for unsupported characters
-
             // No more entries expected
             assertNull(archive.getNextEntry());
         }
@@ -807,13 +731,9 @@ class LhaArchiveInputStreamTest extends AbstractTest {
     @Test
     void testParseHeaderLevel0FileWithFoldersMacos() throws IOException {
         // The lha file was generated by LHa for UNIX version 1.14i-ac20211125 for Macos
-        try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder()
-                .setInputStream(newInputStream("test-macos-l0.lha"))
-                .setFileSeparatorChar('/')
+        try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(newInputStream("test-macos-l0.lha")).setFileSeparatorChar('/')
                 .get()) {
-
             LhaArchiveEntry entry;
-
             // Check directory entry
             entry = archive.getNextEntry();
             assertNotNull(entry);
@@ -831,7 +751,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertNull(entry.getUnixUserId());
             assertNull(entry.getMsdosFileAttributes());
             assertNull(entry.getHeaderCrc());
-
             // Check directory entry
             entry = archive.getNextEntry();
             assertNotNull(entry);
@@ -849,7 +768,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertNull(entry.getUnixUserId());
             assertNull(entry.getMsdosFileAttributes());
             assertNull(entry.getHeaderCrc());
-
             // Check file entry
             entry = archive.getNextEntry();
             assertNotNull(entry);
@@ -867,7 +785,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertNull(entry.getUnixUserId());
             assertNull(entry.getMsdosFileAttributes());
             assertNull(entry.getHeaderCrc());
-
             // Check directory entry
             entry = archive.getNextEntry();
             assertNotNull(entry);
@@ -885,7 +802,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertNull(entry.getUnixUserId());
             assertNull(entry.getMsdosFileAttributes());
             assertNull(entry.getHeaderCrc());
-
             // Check file entry
             entry = archive.getNextEntry();
             assertNotNull(entry);
@@ -903,7 +819,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertNull(entry.getUnixUserId());
             assertNull(entry.getMsdosFileAttributes());
             assertNull(entry.getHeaderCrc());
-
             // No more entries expected
             assertNull(archive.getNextEntry());
         }
@@ -912,12 +827,9 @@ class LhaArchiveInputStreamTest extends AbstractTest {
     @Test
     void testParseHeaderLevel0FileWithFoldersMsdos() throws IOException {
         // The lha file was generated by LHA32 v2.67.00 for Windows
-        try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder()
-                .setInputStream(newInputStream("test-msdos-l0.lha"))
-                .setFileSeparatorChar('/')
+        try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(newInputStream("test-msdos-l0.lha")).setFileSeparatorChar('/')
                 .get()) {
             LhaArchiveEntry entry;
-
             // Check directory entry
             entry = archive.getNextEntry();
             assertNotNull(entry);
@@ -935,7 +847,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertNull(entry.getUnixUserId());
             assertNull(entry.getMsdosFileAttributes());
             assertNull(entry.getHeaderCrc());
-
             // Check directory entry
             entry = archive.getNextEntry();
             assertNotNull(entry);
@@ -953,7 +864,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertNull(entry.getUnixUserId());
             assertNull(entry.getMsdosFileAttributes());
             assertNull(entry.getHeaderCrc());
-
             // Check file entry
             entry = archive.getNextEntry();
             assertNotNull(entry);
@@ -971,7 +881,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertNull(entry.getUnixUserId());
             assertNull(entry.getMsdosFileAttributes());
             assertNull(entry.getHeaderCrc());
-
             // Check directory entry
             entry = archive.getNextEntry();
             assertNotNull(entry);
@@ -989,7 +898,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertNull(entry.getUnixUserId());
             assertNull(entry.getMsdosFileAttributes());
             assertNull(entry.getHeaderCrc());
-
             // Check file entry
             entry = archive.getNextEntry();
             assertNotNull(entry);
@@ -1007,7 +915,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertNull(entry.getUnixUserId());
             assertNull(entry.getMsdosFileAttributes());
             assertNull(entry.getHeaderCrc());
-
             // No more entries expected
             assertNull(archive.getNextEntry());
         }
@@ -1034,7 +941,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertNull(entry.getUnixUserId());
             assertNull(entry.getMsdosFileAttributes());
             assertNull(entry.getHeaderCrc());
-
             // No more entries expected
             assertNull(archive.getNextEntry());
         }
@@ -1042,10 +948,8 @@ class LhaArchiveInputStreamTest extends AbstractTest {
 
     @Test
     void testParseHeaderLevel1File() throws IOException {
-        try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder()
-                .setInputStream(new ByteArrayInputStream(toByteArray(VALID_HEADER_LEVEL_1_FILE)))
+        try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(new ByteArrayInputStream(toByteArray(VALID_HEADER_LEVEL_1_FILE)))
                 .get()) {
-
             // Entry should be parsed correctly
             final LhaArchiveEntry entry = archive.getNextEntry();
             assertNotNull(entry);
@@ -1063,7 +967,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(501, entry.getUnixUserId());
             assertNull(entry.getMsdosFileAttributes());
             assertNull(entry.getHeaderCrc());
-
             // No more entries expected
             assertNull(archive.getNextEntry());
         }
@@ -1073,12 +976,8 @@ class LhaArchiveInputStreamTest extends AbstractTest {
     void testParseHeaderLevel1FileMsdosChecksumAndCrc() throws IOException {
         // The lha file was generated by LHA32 v2.67.00 for Windows
         try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder()
-                .setInputStream(new ByteArrayInputStream(toByteArray(VALID_HEADER_LEVEL_1_FILE_MSDOS_WITH_CHECKSUM_AND_CRC)))
-                .setFileSeparatorChar('/')
-                .get()) {
-
+                .setInputStream(new ByteArrayInputStream(toByteArray(VALID_HEADER_LEVEL_1_FILE_MSDOS_WITH_CHECKSUM_AND_CRC))).setFileSeparatorChar('/').get()) {
             LhaArchiveEntry entry;
-
             // Check directory entry
             entry = archive.getNextEntry();
             assertNotNull(entry);
@@ -1096,7 +995,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertNull(entry.getUnixUserId());
             assertEquals(0x0010, entry.getMsdosFileAttributes());
             assertEquals(0xb772, entry.getHeaderCrc());
-
             // Check file entry
             entry = archive.getNextEntry();
             assertNotNull(entry);
@@ -1114,7 +1012,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertNull(entry.getUnixUserId());
             assertNull(entry.getMsdosFileAttributes());
             assertEquals(0x9b71, entry.getHeaderCrc());
-
             // No more entries expected
             assertNull(archive.getNextEntry());
         }
@@ -1123,13 +1020,9 @@ class LhaArchiveInputStreamTest extends AbstractTest {
     @Test
     void testParseHeaderLevel1FileWithFoldersMacos() throws IOException {
         // The lha file was generated by LHa for UNIX version 1.14i-ac20211125 for Macos
-        try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder()
-                .setInputStream(newInputStream("test-macos-l1.lha"))
-                .setFileSeparatorChar('/')
+        try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(newInputStream("test-macos-l1.lha")).setFileSeparatorChar('/')
                 .get()) {
-
             LhaArchiveEntry entry;
-
             // Check directory entry
             entry = archive.getNextEntry();
             assertNotNull(entry);
@@ -1147,7 +1040,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(501, entry.getUnixUserId());
             assertNull(entry.getMsdosFileAttributes());
             assertNull(entry.getHeaderCrc());
-
             // Check directory entry
             entry = archive.getNextEntry();
             assertNotNull(entry);
@@ -1165,7 +1057,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(501, entry.getUnixUserId());
             assertNull(entry.getMsdosFileAttributes());
             assertNull(entry.getHeaderCrc());
-
             // Check file entry
             entry = archive.getNextEntry();
             assertNotNull(entry);
@@ -1183,7 +1074,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(501, entry.getUnixUserId());
             assertNull(entry.getMsdosFileAttributes());
             assertNull(entry.getHeaderCrc());
-
             // Check directory entry
             entry = archive.getNextEntry();
             assertNotNull(entry);
@@ -1201,7 +1091,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(501, entry.getUnixUserId());
             assertNull(entry.getMsdosFileAttributes());
             assertNull(entry.getHeaderCrc());
-
             // Check file entry
             entry = archive.getNextEntry();
             assertNotNull(entry);
@@ -1219,7 +1108,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(501, entry.getUnixUserId());
             assertNull(entry.getMsdosFileAttributes());
             assertNull(entry.getHeaderCrc());
-
             // No more entries expected
             assertNull(archive.getNextEntry());
         }
@@ -1228,13 +1116,9 @@ class LhaArchiveInputStreamTest extends AbstractTest {
     @Test
     void testParseHeaderLevel1FileWithFoldersMsdos() throws IOException {
         // The lha file was generated by LHA32 v2.67.00 for Windows
-        try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder()
-                .setInputStream(newInputStream("test-msdos-l1.lha"))
-                .setFileSeparatorChar('/')
+        try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(newInputStream("test-msdos-l1.lha")).setFileSeparatorChar('/')
                 .get()) {
-
             LhaArchiveEntry entry;
-
             // Check directory entry
             entry = archive.getNextEntry();
             assertNotNull(entry);
@@ -1252,7 +1136,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertNull(entry.getUnixUserId());
             assertEquals(0x0010, entry.getMsdosFileAttributes());
             assertEquals(0xd458, entry.getHeaderCrc());
-
             // Check directory entry
             entry = archive.getNextEntry();
             assertNotNull(entry);
@@ -1270,7 +1153,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertNull(entry.getUnixUserId());
             assertEquals(0x0010, entry.getMsdosFileAttributes());
             assertEquals(0x40de, entry.getHeaderCrc());
-
             // Check file entry
             entry = archive.getNextEntry();
             assertNotNull(entry);
@@ -1288,7 +1170,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertNull(entry.getUnixUserId());
             assertNull(entry.getMsdosFileAttributes());
             assertEquals(0x34b0, entry.getHeaderCrc());
-
             // Check directory entry
             entry = archive.getNextEntry();
             assertNotNull(entry);
@@ -1306,7 +1187,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertNull(entry.getUnixUserId());
             assertEquals(0x0010, entry.getMsdosFileAttributes());
             assertEquals(0x21b2, entry.getHeaderCrc());
-
             // Check file entry
             entry = archive.getNextEntry();
             assertNotNull(entry);
@@ -1324,7 +1204,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertNull(entry.getUnixUserId());
             assertNull(entry.getMsdosFileAttributes());
             assertEquals(0x8f0c, entry.getHeaderCrc());
-
             // No more entries expected
             assertNull(archive.getNextEntry());
         }
@@ -1332,11 +1211,8 @@ class LhaArchiveInputStreamTest extends AbstractTest {
 
     @Test
     void testParseHeaderLevel2File() throws IOException {
-        try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder()
-                .setInputStream(new ByteArrayInputStream(toByteArray(VALID_HEADER_LEVEL_2_FILE)))
-                .setFileSeparatorChar('/')
-                .get()) {
-
+        try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(new ByteArrayInputStream(toByteArray(VALID_HEADER_LEVEL_2_FILE)))
+                .setFileSeparatorChar('/').get()) {
             // Entry should be parsed correctly
             final LhaArchiveEntry entry = archive.getNextEntry();
             assertNotNull(entry);
@@ -1354,7 +1230,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(501, entry.getUnixUserId());
             assertNull(entry.getMsdosFileAttributes());
             assertEquals(0x01a5, entry.getHeaderCrc());
-
             // No more entries expected
             assertNull(archive.getNextEntry());
         }
@@ -1363,15 +1238,10 @@ class LhaArchiveInputStreamTest extends AbstractTest {
     @Test
     void testParseHeaderLevel2FileWithFoldersAmiga() throws IOException {
         // The lha file was generated by LhA 2.15 on Amiga
-        try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder()
-                .setInputStream(newInputStream("test-amiga-l2.lha"))
-                .setFileSeparatorChar('/')
+        try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(newInputStream("test-amiga-l2.lha")).setFileSeparatorChar('/')
                 .get()) {
-
             LhaArchiveEntry entry;
-
             // No -lhd- directory entries in Amiga LHA files, so we expect only file entries
-
             // Check file entry
             entry = archive.getNextEntry();
             assertNotNull(entry);
@@ -1389,7 +1259,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertNull(entry.getUnixUserId());
             assertNull(entry.getMsdosFileAttributes());
             assertEquals(0xe1a5, entry.getHeaderCrc());
-
             // Check file entry
             entry = archive.getNextEntry();
             assertNotNull(entry);
@@ -1407,7 +1276,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertNull(entry.getUnixUserId());
             assertNull(entry.getMsdosFileAttributes());
             assertEquals(0xd6b0, entry.getHeaderCrc());
-
             // No more entries expected
             assertNull(archive.getNextEntry());
         }
@@ -1416,13 +1284,9 @@ class LhaArchiveInputStreamTest extends AbstractTest {
     @Test
     void testParseHeaderLevel2FileWithFoldersMacos() throws IOException {
         // The lha file was generated by LHa for UNIX version 1.14i-ac20211125 for Macos
-        try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder()
-                .setInputStream(newInputStream("test-macos-l2.lha"))
-                .setFileSeparatorChar('/')
+        try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(newInputStream("test-macos-l2.lha")).setFileSeparatorChar('/')
                 .get()) {
-
             LhaArchiveEntry entry;
-
             // Check directory entry
             entry = archive.getNextEntry();
             assertNotNull(entry);
@@ -1440,7 +1304,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(501, entry.getUnixUserId());
             assertNull(entry.getMsdosFileAttributes());
             assertEquals(0xf3f7, entry.getHeaderCrc());
-
             // Check directory entry
             entry = archive.getNextEntry();
             assertNotNull(entry);
@@ -1458,7 +1321,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(501, entry.getUnixUserId());
             assertNull(entry.getMsdosFileAttributes());
             assertEquals(0x50d3, entry.getHeaderCrc());
-
             // Check file entry
             entry = archive.getNextEntry();
             assertNotNull(entry);
@@ -1476,7 +1338,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(501, entry.getUnixUserId());
             assertNull(entry.getMsdosFileAttributes());
             assertEquals(0x589e, entry.getHeaderCrc());
-
             // Check directory entry
             entry = archive.getNextEntry();
             assertNotNull(entry);
@@ -1494,7 +1355,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(501, entry.getUnixUserId());
             assertNull(entry.getMsdosFileAttributes());
             assertEquals(0x126d, entry.getHeaderCrc());
-
             // Check file entry
             entry = archive.getNextEntry();
             assertNotNull(entry);
@@ -1512,7 +1372,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertEquals(501, entry.getUnixUserId());
             assertNull(entry.getMsdosFileAttributes());
             assertEquals(0xdbdd, entry.getHeaderCrc());
-
             // No more entries expected
             assertNull(archive.getNextEntry());
         }
@@ -1521,13 +1380,9 @@ class LhaArchiveInputStreamTest extends AbstractTest {
     @Test
     void testParseHeaderLevel2FileWithFoldersMsdos() throws IOException {
         // The lha file was generated by LHA32 v2.67.00 for Windows
-        try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder()
-                .setInputStream(newInputStream("test-msdos-l2.lha"))
-                .setFileSeparatorChar('/')
+        try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(newInputStream("test-msdos-l2.lha")).setFileSeparatorChar('/')
                 .get()) {
-
             LhaArchiveEntry entry;
-
             // Check directory entry
             entry = archive.getNextEntry();
             assertNotNull(entry);
@@ -1545,7 +1400,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertNull(entry.getUnixUserId());
             assertEquals(0x0010, entry.getMsdosFileAttributes());
             assertEquals(0x496a, entry.getHeaderCrc());
-
             // Check directory entry
             entry = archive.getNextEntry();
             assertNotNull(entry);
@@ -1563,7 +1417,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertNull(entry.getUnixUserId());
             assertEquals(0x0010, entry.getMsdosFileAttributes());
             assertEquals(0xebe7, entry.getHeaderCrc());
-
             // Check file entry
             entry = archive.getNextEntry();
             assertNotNull(entry);
@@ -1581,7 +1434,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertNull(entry.getUnixUserId());
             assertNull(entry.getMsdosFileAttributes());
             assertEquals(0x214a, entry.getHeaderCrc());
-
             // Check directory entry
             entry = archive.getNextEntry();
             assertNotNull(entry);
@@ -1599,7 +1451,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertNull(entry.getUnixUserId());
             assertEquals(0x0010, entry.getMsdosFileAttributes());
             assertEquals(0x74ca, entry.getHeaderCrc());
-
             // Check file entry
             entry = archive.getNextEntry();
             assertNotNull(entry);
@@ -1617,7 +1468,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertNull(entry.getUnixUserId());
             assertNull(entry.getMsdosFileAttributes());
             assertEquals(0x165f, entry.getHeaderCrc());
-
             // No more entries expected
             assertNull(archive.getNextEntry());
         }
@@ -1644,7 +1494,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             assertNull(entry.getUnixUserId());
             assertEquals(0x0021, entry.getMsdosFileAttributes());
             assertEquals(0x14bb, entry.getHeaderCrc());
-
             // No more entries expected
             assertNull(archive.getNextEntry());
         }
@@ -1653,7 +1502,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
     @Test
     void testReadDataBeforeEntry() throws IOException {
         final byte[] data = toByteArray(VALID_HEADER_LEVEL_0_FILE);
-
         try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(new ByteArrayInputStream(data)).get()) {
             try {
                 IOUtils.toByteArray(archive);
@@ -1667,17 +1515,13 @@ class LhaArchiveInputStreamTest extends AbstractTest {
     @Test
     void testUnsupportedCompressionMethod() throws IOException {
         final byte[] data = toByteArray(VALID_HEADER_LEVEL_0_FILE);
-
         data[1] = (byte) 0x9c; // Change the header checksum
         data[5] = 'a'; // Change the compression method to an unsupported value
-
         try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(new ByteArrayInputStream(data)).get()) {
             final LhaArchiveEntry entry = archive.getNextEntry();
             assertNotNull(entry);
             assertEquals("-lha-", entry.getCompressionMethod());
-
             assertFalse(archive.canReadEntryData(entry));
-
             try {
                 IOUtils.toByteArray(archive);
                 fail("Expected ArchiveException for unsupported compression method");

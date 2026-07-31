@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.commons.compress.compressors.lha;
+package org.apache.commons.compress.archivers.lha;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -28,8 +28,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.compress.AbstractTest;
-import org.apache.commons.compress.archivers.lha.LhaArchiveEntry;
-import org.apache.commons.compress.archivers.lha.LhaArchiveInputStream;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
@@ -40,8 +38,7 @@ class Lh7CompressorInputStreamTest extends AbstractTest {
 
     @Test
     void testConfiguration() throws IOException {
-        try (LhStaticHuffmanCompressorInputStream in = LhStaticHuffmanCompressorInputStream
-                .lh7CompressorInputStream(new ByteArrayInputStream(new byte[0]))) {
+        try (LhStaticHuffmanCompressorInputStream in = LhStaticHuffmanCompressorInputStream.lh7CompressorInputStream(new ByteArrayInputStream(new byte[0]))) {
             assertEquals(16, in.getDictionaryBits());
             assertEquals(65536, in.getDictionarySize());
             assertEquals(5, in.getDistanceBits());

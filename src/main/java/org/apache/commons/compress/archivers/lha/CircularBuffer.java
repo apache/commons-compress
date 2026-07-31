@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.commons.compress.compressors.lha;
+package org.apache.commons.compress.archivers.lha;
 
 /**
  * Circular byte buffer. Copied from org.apache.commons.compress.archivers.zip.CircularBuffer and modified for LHA.

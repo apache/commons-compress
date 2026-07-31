@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.commons.compress.compressors.lha;
+package org.apache.commons.compress.archivers.lha;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -113,8 +113,8 @@ class BinaryTree {
     }
 
     /**
-     * Reads a value from the specified bit stream.
-     *.
+     * Reads a value from the specified bit stream. .
+     *
      * @param stream The data source.
      * @return the value decoded, or -1 if the end of the stream is reached.
      * @throws IOException on error.

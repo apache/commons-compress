@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.commons.compress.compressors.lha;
+package org.apache.commons.compress.archivers.lha;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -28,8 +28,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.compress.AbstractTest;
-import org.apache.commons.compress.archivers.lha.LhaArchiveEntry;
-import org.apache.commons.compress.archivers.lha.LhaArchiveInputStream;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
@@ -37,10 +35,10 @@ import org.junit.jupiter.api.Test;
  * Tests {@link LhStaticHuffmanCompressorInputStream} for LH6.
  */
 class Lh6CompressorInputStreamTest extends AbstractTest {
+
     @Test
     void testConfiguration() throws IOException {
-        try (LhStaticHuffmanCompressorInputStream in = LhStaticHuffmanCompressorInputStream
-                .lh6CompressorInputStream(new ByteArrayInputStream(new byte[0]))) {
+        try (LhStaticHuffmanCompressorInputStream in = LhStaticHuffmanCompressorInputStream.lh6CompressorInputStream(new ByteArrayInputStream(new byte[0]))) {
             assertEquals(15, in.getDictionaryBits());
             assertEquals(32768, in.getDictionarySize());
             assertEquals(5, in.getDistanceBits());
@@ -52,7 +50,7 @@ class Lh6CompressorInputStreamTest extends AbstractTest {
 
     @Test
     void testDecompress() throws IOException {
-        try (LhaArchiveInputStream archive = LhaArchiveInputStream .builder().setInputStream(newInputStream("test-macos-l0-lh6.lha")).get()) {
+        try (LhaArchiveInputStream archive = LhaArchiveInputStream.builder().setInputStream(newInputStream("test-macos-l0-lh6.lha")).get()) {
             // Check entry
             final LhaArchiveEntry entry = archive.getNextEntry();
             assertNotNull(entry);
@@ -61,11 +59,9 @@ class Lh6CompressorInputStreamTest extends AbstractTest {
             assertEquals(38037, entry.getCompressedSize());
             assertEquals("-lh6-", entry.getCompressionMethod());
             assertEquals(0x8c8a, entry.getCrcValue());
-
             // Decompress entry
             assertTrue(archive.canReadEntryData(entry));
             final byte[] data = IOUtils.toByteArray(archive);
-
             assertEquals(144060, data.length);
             assertEquals("\nLorem ipsum", new String(data, 0, 12, StandardCharsets.US_ASCII));
         }

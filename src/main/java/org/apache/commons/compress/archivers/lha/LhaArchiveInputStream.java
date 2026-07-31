@@ -38,7 +38,6 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipUtil;
-import org.apache.commons.compress.compressors.lha.LhStaticHuffmanCompressorInputStream;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.io.input.ChecksumInputStream;
@@ -58,6 +57,7 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
      * </p>
      *
      * <pre>{@code
+     *
      * LhaArchiveInputStream in = LhaArchiveInputStream.builder().setPath(inputPath).setCharset(StandardCharsets.UTF_8).get();
      * }</pre>
      */

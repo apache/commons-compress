@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.commons.compress.compressors.lha;
+package org.apache.commons.compress.archivers.lha;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,10 +31,8 @@ import org.apache.commons.io.input.CloseShieldInputStream;
 
 /**
  * Implements a static Huffman compressor input stream for LHA files that supports lh4, lh5, lh6 and lh7 compression methods.
- *
- * @since 1.29.0
  */
-public class LhStaticHuffmanCompressorInputStream extends CompressorInputStream implements InputStreamStatistics {
+class LhStaticHuffmanCompressorInputStream extends CompressorInputStream implements InputStreamStatistics {
 
     /**
      * Number of bits used to encode the command decoding tree length.
@@ -70,28 +68,6 @@ public class LhStaticHuffmanCompressorInputStream extends CompressorInputStream 
     private static final int DICT_BITS_LH6 = 15;
 
     private static final int DICT_BITS_LH7 = 16;
-
-    private BitInputStream bin;
-
-    private CircularBuffer buffer;
-
-    private int blockSize;
-
-    /**
-     * Command is either a literal or a copy command.
-     */
-    private BinaryTree commandTree;
-
-    /**
-     * Distance is the offset to copy from the sliding dictionary.
-     */
-    private BinaryTree distanceTree;
-
-    private final int dictionaryBits;
-
-    private final int distanceBits;
-
-    private final int maxNumberOfDistanceCodes;
 
     /**
      * Creates a new LhStaticHuffmanCompressorInputStream for the specified InputStream and LH4.
@@ -136,6 +112,28 @@ public class LhStaticHuffmanCompressorInputStream extends CompressorInputStream 
     public static LhStaticHuffmanCompressorInputStream lh7CompressorInputStream(final InputStream in) throws IOException {
         return new LhStaticHuffmanCompressorInputStream(in, DICT_BITS_LH7, 5, DICT_BITS_LH7 + 1);
     }
+
+    private BitInputStream bin;
+
+    private CircularBuffer buffer;
+
+    private int blockSize;
+
+    /**
+     * Command is either a literal or a copy command.
+     */
+    private BinaryTree commandTree;
+
+    /**
+     * Distance is the offset to copy from the sliding dictionary.
+     */
+    private BinaryTree distanceTree;
+
+    private final int dictionaryBits;
+
+    private final int distanceBits;
+
+    private final int maxNumberOfDistanceCodes;
 
     /**
      * Constructs a new CompressorInputStream which decompresses bytes read from the specified stream.
