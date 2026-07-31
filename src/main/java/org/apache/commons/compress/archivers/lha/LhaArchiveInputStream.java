@@ -222,14 +222,13 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
             (Character.isLowerCase(compressionMethodBuffer[3]) || Character.isDigit(compressionMethodBuffer[3])) &&
             compressionMethodBuffer[4] == '-') {
             return new String(compressionMethodBuffer, StandardCharsets.US_ASCII);
-        } else {
-            throw new ArchiveException("Invalid compression method: 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x",
-                    compressionMethodBuffer[0],
-                    compressionMethodBuffer[1],
-                    compressionMethodBuffer[2],
-                    compressionMethodBuffer[3],
-                    compressionMethodBuffer[4]);
         }
+        throw new ArchiveException("Invalid compression method: 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x",
+                compressionMethodBuffer[0],
+                compressionMethodBuffer[1],
+                compressionMethodBuffer[2],
+                compressionMethodBuffer[3],
+                compressionMethodBuffer[4]);
     }
     /**
      * Checks if the signature matches what is expected for an LHA file. There is no specific
@@ -257,7 +256,7 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
         // Check if the compression method is valid for LHA archives
         try {
             getCompressionMethod(header);
-        } catch (ArchiveException e) {
+        } catch (final ArchiveException e) {
             return false;
         }
 
@@ -298,7 +297,7 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
      */
     private long calculateCRC16(final ByteBuffer... buffers) {
         final Checksum crc = Crc16.arc();
-        for (ByteBuffer buffer : buffers) {
+        for (final ByteBuffer buffer : buffers) {
             crc.update(buffer.array(), 0, buffer.limit());
         }
 
@@ -357,9 +356,10 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
         // Check pathname length to ensure we don't allocate too much memory
         if (pathnameLength > MAX_PATHNAME_LENGTH) {
             throw new ArchiveException("Pathname is longer than the maximum allowed (%d > %d)", pathnameLength, MAX_PATHNAME_LENGTH);
-        } else if (pathnameLength < 0) {
+        }
+        if (pathnameLength < 0) {
             throw new ArchiveException("Pathname length is negative");
-        } else if (pathnameLength > (buffer.limit() - buffer.position())) {
+        } else if (pathnameLength > buffer.limit() - buffer.position()) {
             throw new ArchiveException("Invalid pathname length");
         }
 
@@ -424,25 +424,27 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
         }
 
         final int extendedHeaderType = Byte.toUnsignedInt(extendedHeaderBuffer.get());
-        if (extendedHeaderType == EXTENDED_HEADER_TYPE_COMMON) {
+        switch (extendedHeaderType) {
+        case EXTENDED_HEADER_TYPE_COMMON: {
             // Common header
-            if (extendedHeaderLength < (MIN_EXTENDED_HEADER_LENGTH + EXTENDED_HEADER_TYPE_COMMON_MIN_PAYLOAD_LENGTH)) {
+            if (extendedHeaderLength < MIN_EXTENDED_HEADER_LENGTH + EXTENDED_HEADER_TYPE_COMMON_MIN_PAYLOAD_LENGTH) {
                 throw new ArchiveException("Invalid extended header length");
             }
-
             final int crcPos = extendedHeaderBuffer.position(); // Save the current position to be able to set the header CRC later
-
             // Header CRC
             entryBuilder.setHeaderCrc(Short.toUnsignedInt(extendedHeaderBuffer.getShort()));
-
             // Set header CRC to zero to be able to later compute the CRC of the full header
             extendedHeaderBuffer.putShort(crcPos, (short) 0);
-        } else if (extendedHeaderType == EXTENDED_HEADER_TYPE_FILENAME) {
+            break;
+        }
+        case EXTENDED_HEADER_TYPE_FILENAME: {
             // File name header
             final int filenameLength = extendedHeaderBuffer.limit() - extendedHeaderBuffer.position() - EXTENDED_HEADER_NEXT_HEADER_SIZE_LENGTH;
             final String filename = getPathname(extendedHeaderBuffer, filenameLength);
             entryBuilder.setFilename(filename);
-        } else if (extendedHeaderType == EXTENDED_HEADER_TYPE_DIRECTORY_NAME) {
+            break;
+        }
+        case EXTENDED_HEADER_TYPE_DIRECTORY_NAME: {
             // Directory name header
             final int directoryNameLength = extendedHeaderBuffer.limit() - extendedHeaderBuffer.position() - EXTENDED_HEADER_NEXT_HEADER_SIZE_LENGTH;
             final String directoryName = getPathname(extendedHeaderBuffer, directoryNameLength);
@@ -452,36 +454,39 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
             } else {
                 entryBuilder.setDirectoryName(directoryName);
             }
-
-        } else if (extendedHeaderType == EXTENDED_HEADER_TYPE_MSDOS_FILE_ATTRIBUTES) {
+            break;
+        }
+        case EXTENDED_HEADER_TYPE_MSDOS_FILE_ATTRIBUTES:
             // MS-DOS file attributes
-            if (extendedHeaderLength != (MIN_EXTENDED_HEADER_LENGTH + EXTENDED_HEADER_TYPE_MSDOS_FILE_ATTRIBUTES_PAYLOAD_LENGTH)) {
+            if (extendedHeaderLength != MIN_EXTENDED_HEADER_LENGTH + EXTENDED_HEADER_TYPE_MSDOS_FILE_ATTRIBUTES_PAYLOAD_LENGTH) {
                 throw new ArchiveException("Invalid extended header length");
             }
-
             entryBuilder.setMsdosFileAttributes(Short.toUnsignedInt(extendedHeaderBuffer.getShort()));
-        } else if (extendedHeaderType == EXTENDED_HEADER_TYPE_UNIX_PERMISSION) {
+            break;
+        case EXTENDED_HEADER_TYPE_UNIX_PERMISSION:
             // UNIX file permission
-            if (extendedHeaderLength != (MIN_EXTENDED_HEADER_LENGTH + EXTENDED_HEADER_TYPE_UNIX_PERMISSION_PAYLOAD_LENGTH)) {
+            if (extendedHeaderLength != MIN_EXTENDED_HEADER_LENGTH + EXTENDED_HEADER_TYPE_UNIX_PERMISSION_PAYLOAD_LENGTH) {
                 throw new ArchiveException("Invalid extended header length");
             }
-
             entryBuilder.setUnixPermissionMode(Short.toUnsignedInt(extendedHeaderBuffer.getShort()));
-        } else if (extendedHeaderType == EXTENDED_HEADER_TYPE_UNIX_UID_GID) {
+            break;
+        case EXTENDED_HEADER_TYPE_UNIX_UID_GID:
             // UNIX group/user ID
-            if (extendedHeaderLength != (MIN_EXTENDED_HEADER_LENGTH + EXTENDED_HEADER_TYPE_UNIX_UID_GID_PAYLOAD_LENGTH)) {
+            if (extendedHeaderLength != MIN_EXTENDED_HEADER_LENGTH + EXTENDED_HEADER_TYPE_UNIX_UID_GID_PAYLOAD_LENGTH) {
                 throw new ArchiveException("Invalid extended header length");
             }
-
             entryBuilder.setUnixGroupId(Short.toUnsignedInt(extendedHeaderBuffer.getShort()));
             entryBuilder.setUnixUserId(Short.toUnsignedInt(extendedHeaderBuffer.getShort()));
-        } else if (extendedHeaderType == EXTENDED_HEADER_TYPE_UNIX_TIMESTAMP) {
+            break;
+        case EXTENDED_HEADER_TYPE_UNIX_TIMESTAMP:
             // UNIX last modified time
-            if (extendedHeaderLength != (MIN_EXTENDED_HEADER_LENGTH + EXTENDED_HEADER_TYPE_UNIX_TIMESTAMP_PAYLOAD_LENGTH)) {
+            if (extendedHeaderLength != MIN_EXTENDED_HEADER_LENGTH + EXTENDED_HEADER_TYPE_UNIX_TIMESTAMP_PAYLOAD_LENGTH) {
                 throw new ArchiveException("Invalid extended header length");
             }
-
             entryBuilder.setLastModifiedDate(new Date(Integer.toUnsignedLong(extendedHeaderBuffer.getInt()) * 1000));
+            break;
+        default:
+            break;
         }
 
         // Ignore unknown extended header
@@ -579,7 +584,8 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
         if (len == 0) {
             // EOF
             return null;
-        } else if (len == 1 && buffer[0] == 0) {
+        }
+        if (len == 1 && buffer[0] == 0) {
             // Last byte of the file is zero indicating no more entries
             return null;
         } else if (len < HEADER_GENERIC_MINIMUM_HEADER_LENGTH) {
@@ -590,13 +596,14 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
 
         // Determine header level
         final byte headerLevel = header.get(HEADER_GENERIC_OFFSET_HEADER_LEVEL);
-        if (headerLevel == 0) {
+        switch (headerLevel) {
+        case 0:
             return readHeaderLevel0(header);
-        } else if (headerLevel == 1) {
+        case 1:
             return readHeaderLevel1(header);
-        } else if (headerLevel == 2) {
+        case 2:
             return readHeaderLevel2(header);
-        } else {
+        default:
             throw new ArchiveException("Invalid header level: %d", headerLevel);
         }
     }
@@ -630,7 +637,7 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
         final int filenameLength = Byte.toUnsignedInt(buffer.get(HEADER_LEVEL_0_OFFSET_FILENAME_LENGTH));
 
         // Make sure the filename is not overflowing into the CRC field
-        if (filenameLength > (headerSize - HEADER_LEVEL_0_OFFSET_FILENAME - 2)) {
+        if (filenameLength > headerSize - HEADER_LEVEL_0_OFFSET_FILENAME - 2) {
             throw new ArchiveException("Invalid pathname length");
         }
 
@@ -681,7 +688,7 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
         // Make sure the filename is not overflowing into the CRC, OS ID and first extended header length fields.
         // This check is not bulletproof because there might also be an extended area after the filename that
         // we cannot detect for corrupt archives.
-        if (filenameLength > (baseHeaderSize - HEADER_LEVEL_1_OFFSET_FILENAME - 5)) {
+        if (filenameLength > baseHeaderSize - HEADER_LEVEL_1_OFFSET_FILENAME - 5) {
             throw new ArchiveException("Invalid pathname length");
         }
 
@@ -766,7 +773,7 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
         int extendedHeaderSize = Short.toUnsignedInt(buffer.getShort(HEADER_LEVEL_2_OFFSET_FIRST_EXTENDED_HEADER_SIZE));
         int extendedHeaderOffset = HEADER_LEVEL_2_OFFSET_FIRST_EXTENDED_HEADER_SIZE + 2;
         while (extendedHeaderSize > 0) {
-            if ((extendedHeaderOffset + extendedHeaderSize) > buffer.limit()) {
+            if (extendedHeaderOffset + extendedHeaderSize > buffer.limit()) {
                 throw new ArchiveException("Invalid extended header length");
             }
 
