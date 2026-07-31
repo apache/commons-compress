@@ -2236,8 +2236,9 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         }
         final long totalNumberOfBindPairs = stats.numberOfOutStreams - stats.numberOfFolders;
         final long packedStreamsRequiredByFolders = stats.numberOfInStreams - totalNumberOfBindPairs;
-        if (packedStreamsRequiredByFolders < stats.numberOfPackedStreams) {
-            throw new ArchiveException("7z archive: Archive doesn't contain enough packed streams");
+        if (packedStreamsRequiredByFolders != stats.numberOfPackedStreams) {
+            throw new ArchiveException("7z archive: Folders require %,d packed streams but the archive contains %,d", packedStreamsRequiredByFolders,
+                    stats.numberOfPackedStreams);
         }
         nid = getUnsignedByte(header);
         if (nid != NID.kCodersUnpackSize) {
