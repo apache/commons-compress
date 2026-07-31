@@ -30,176 +30,6 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
  * @since 1.29.0
  */
 public class LhaArchiveEntry implements ArchiveEntry {
-    private final String name;
-    private final boolean directory;
-    private final long size;
-    private final Date lastModifiedDate;
-    private final long compressedSize;
-    private final String compressionMethod;
-    private final int crcValue;
-    private final Integer osId;
-    private final Integer unixPermissionMode;
-    private final Integer unixUserId;
-    private final Integer unixGroupId;
-    private final Integer msdosFileAttributes;
-    private final Integer headerCrc;
-
-    LhaArchiveEntry(String name, boolean directory, long size, Date lastModifiedDate,
-            long compressedSize, String compressionMethod, int crcValue, Integer osId,
-            Integer unixPermissionMode, Integer unixUserId, Integer unixGroupId,
-            Integer msdosFileAttributes, Integer headerCrc) {
-        this.name = name;
-        this.directory = directory;
-        this.size = size;
-        this.lastModifiedDate = lastModifiedDate;
-        this.compressedSize = compressedSize;
-        this.compressionMethod = compressionMethod;
-        this.crcValue = crcValue;
-        this.osId = osId;
-        this.unixPermissionMode = unixPermissionMode;
-        this.unixUserId = unixUserId;
-        this.unixGroupId = unixGroupId;
-        this.msdosFileAttributes = msdosFileAttributes;
-        this.headerCrc = headerCrc;
-    }
-
-    @Override
-    public String toString() {
-        final StringBuffer sb = new StringBuffer().append("LhaArchiveEntry[")
-                .append("name=").append(name)
-                .append(",directory=").append(directory)
-                .append(",size=").append(size)
-                .append(",lastModifiedDate=").append(lastModifiedDate == null ? "" : lastModifiedDate.toInstant().atZone(ZoneOffset.UTC).toString())
-                .append(",compressedSize=").append(compressedSize)
-                .append(",compressionMethod=").append(compressionMethod)
-                .append(",crcValue=").append(String.format("0x%04x", crcValue));
-
-        if (osId != null) {
-            sb.append(",osId=").append(osId);
-        }
-
-        if (unixPermissionMode != null) {
-            sb.append(",unixPermissionMode=").append(String.format("%03o", unixPermissionMode));
-        }
-
-        if (msdosFileAttributes != null) {
-            sb.append(",msdosFileAttributes=").append(String.format("%04x", msdosFileAttributes));
-        }
-
-        if (headerCrc != null) {
-            sb.append(",headerCrc=").append(String.format("0x%04x", headerCrc));
-        }
-
-        return sb.append("]").toString();
-    }
-
-    static Builder builder() {
-        return new Builder();
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public long getSize() {
-        return size;
-    }
-
-    @Override
-    public Date getLastModifiedDate() {
-        return lastModifiedDate;
-    }
-
-    /**
-     * Gets the compressed size of this entry.
-     *
-     * @return the compressed size
-     */
-    public long getCompressedSize() {
-        return compressedSize;
-    }
-
-    @Override
-    public boolean isDirectory() {
-        return directory;
-    }
-
-    /**
-     * Gets the compression method of this entry.
-     *
-     * @return the compression method
-     */
-    public String getCompressionMethod() {
-        return compressionMethod;
-    }
-
-    /**
-     * Gets the CRC-16 checksum of the uncompressed data of this entry.
-     *
-     * @return CRC-16 checksum of the uncompressed data
-     */
-    public int getCrcValue() {
-        return crcValue;
-    }
-
-    /**
-     * Gets the operating system id if available for this entry.
-     *
-     * @return operating system id or null if not available
-     */
-    public Integer getOsId() {
-        return osId;
-    }
-
-    /**
-     * Gets the Unix permission mode if available for this entry.
-     *
-     * @return Unix permission mode or null if not available
-     */
-    public Integer getUnixPermissionMode() {
-        return unixPermissionMode;
-    }
-
-    /**
-     * Gets the Unix user id if available for this entry.
-     *
-     * @return Unix user id or null if not available
-     */
-    public Integer getUnixUserId() {
-        return unixUserId;
-    }
-
-    /**
-     * Gets the Unix group id if available for this entry.
-     *
-     * @return Unix group id or null if not available
-     */
-    public Integer getUnixGroupId() {
-        return unixGroupId;
-    }
-
-    /**
-     * Gets the MS-DOS file attributes if available for this entry.
-     *
-     * @return MS-DOS file attributes or null if not available
-     */
-    public Integer getMsdosFileAttributes() {
-        return msdosFileAttributes;
-    }
-
-    /**
-     * Gets the header CRC if available for this entry.
-     *
-     * This method is package private, as it is of no interest to most users.
-     *
-     * @return header CRC or null if not available
-     */
-    Integer getHeaderCrc() {
-        return headerCrc;
-    }
-
     static class Builder {
         private String filename;
         private String directoryName;
@@ -241,31 +71,6 @@ public class LhaArchiveEntry implements ArchiveEntry {
                     headerCrc);
         }
 
-        Builder setFilename(String fileName) {
-            this.filename = fileName;
-            return this;
-        }
-
-        Builder setDirectoryName(String directoryName) {
-            this.directoryName = directoryName;
-            return this;
-        }
-
-        Builder setDirectory(boolean directory) {
-            this.directory = directory;
-            return this;
-        }
-
-        Builder setSize(long size) {
-            this.size = size;
-            return this;
-        }
-
-        Builder setLastModifiedDate(Date lastModifiedDate) {
-            this.lastModifiedDate = lastModifiedDate;
-            return this;
-        }
-
         Builder setCompressedSize(long compressedSize) {
             this.compressedSize = compressedSize;
             return this;
@@ -281,8 +86,48 @@ public class LhaArchiveEntry implements ArchiveEntry {
             return this;
         }
 
+        Builder setDirectory(boolean directory) {
+            this.directory = directory;
+            return this;
+        }
+
+        Builder setDirectoryName(String directoryName) {
+            this.directoryName = directoryName;
+            return this;
+        }
+
+        Builder setFilename(String fileName) {
+            this.filename = fileName;
+            return this;
+        }
+
+        Builder setHeaderCrc(Integer headerCrc) {
+            this.headerCrc = headerCrc;
+            return this;
+        }
+
+        Builder setLastModifiedDate(Date lastModifiedDate) {
+            this.lastModifiedDate = lastModifiedDate;
+            return this;
+        }
+
+        Builder setMsdosFileAttributes(Integer msdosFileAttributes) {
+            this.msdosFileAttributes = msdosFileAttributes;
+            return this;
+        }
+
         Builder setOsId(Integer osId) {
             this.osId = osId;
+            return this;
+        }
+
+        Builder setSize(long size) {
+            this.size = size;
+            return this;
+        }
+
+        Builder setUnixGroupId(Integer unixGroupId) {
+            this.unixGroupId = unixGroupId;
             return this;
         }
 
@@ -295,20 +140,175 @@ public class LhaArchiveEntry implements ArchiveEntry {
             this.unixUserId = unixUserId;
             return this;
         }
+    }
+    static Builder builder() {
+        return new Builder();
+    }
+    private final String name;
+    private final boolean directory;
+    private final long size;
+    private final Date lastModifiedDate;
+    private final long compressedSize;
+    private final String compressionMethod;
+    private final int crcValue;
+    private final Integer osId;
+    private final Integer unixPermissionMode;
+    private final Integer unixUserId;
+    private final Integer unixGroupId;
 
-        Builder setUnixGroupId(Integer unixGroupId) {
-            this.unixGroupId = unixGroupId;
-            return this;
+    private final Integer msdosFileAttributes;
+
+    private final Integer headerCrc;
+
+    LhaArchiveEntry(String name, boolean directory, long size, Date lastModifiedDate,
+            long compressedSize, String compressionMethod, int crcValue, Integer osId,
+            Integer unixPermissionMode, Integer unixUserId, Integer unixGroupId,
+            Integer msdosFileAttributes, Integer headerCrc) {
+        this.name = name;
+        this.directory = directory;
+        this.size = size;
+        this.lastModifiedDate = lastModifiedDate;
+        this.compressedSize = compressedSize;
+        this.compressionMethod = compressionMethod;
+        this.crcValue = crcValue;
+        this.osId = osId;
+        this.unixPermissionMode = unixPermissionMode;
+        this.unixUserId = unixUserId;
+        this.unixGroupId = unixGroupId;
+        this.msdosFileAttributes = msdosFileAttributes;
+        this.headerCrc = headerCrc;
+    }
+
+    /**
+     * Gets the compressed size of this entry.
+     *
+     * @return the compressed size
+     */
+    public long getCompressedSize() {
+        return compressedSize;
+    }
+
+    /**
+     * Gets the compression method of this entry.
+     *
+     * @return the compression method
+     */
+    public String getCompressionMethod() {
+        return compressionMethod;
+    }
+
+    /**
+     * Gets the CRC-16 checksum of the uncompressed data of this entry.
+     *
+     * @return CRC-16 checksum of the uncompressed data
+     */
+    public int getCrcValue() {
+        return crcValue;
+    }
+
+    /**
+     * Gets the header CRC if available for this entry.
+     *
+     * This method is package private, as it is of no interest to most users.
+     *
+     * @return header CRC or null if not available
+     */
+    Integer getHeaderCrc() {
+        return headerCrc;
+    }
+
+    @Override
+    public Date getLastModifiedDate() {
+        return lastModifiedDate;
+    }
+
+    /**
+     * Gets the MS-DOS file attributes if available for this entry.
+     *
+     * @return MS-DOS file attributes or null if not available
+     */
+    public Integer getMsdosFileAttributes() {
+        return msdosFileAttributes;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Gets the operating system id if available for this entry.
+     *
+     * @return operating system id or null if not available
+     */
+    public Integer getOsId() {
+        return osId;
+    }
+
+    @Override
+    public long getSize() {
+        return size;
+    }
+
+    /**
+     * Gets the Unix group id if available for this entry.
+     *
+     * @return Unix group id or null if not available
+     */
+    public Integer getUnixGroupId() {
+        return unixGroupId;
+    }
+
+    /**
+     * Gets the Unix permission mode if available for this entry.
+     *
+     * @return Unix permission mode or null if not available
+     */
+    public Integer getUnixPermissionMode() {
+        return unixPermissionMode;
+    }
+
+    /**
+     * Gets the Unix user id if available for this entry.
+     *
+     * @return Unix user id or null if not available
+     */
+    public Integer getUnixUserId() {
+        return unixUserId;
+    }
+
+    @Override
+    public boolean isDirectory() {
+        return directory;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer().append("LhaArchiveEntry[")
+                .append("name=").append(name)
+                .append(",directory=").append(directory)
+                .append(",size=").append(size)
+                .append(",lastModifiedDate=").append(lastModifiedDate == null ? "" : lastModifiedDate.toInstant().atZone(ZoneOffset.UTC).toString())
+                .append(",compressedSize=").append(compressedSize)
+                .append(",compressionMethod=").append(compressionMethod)
+                .append(",crcValue=").append(String.format("0x%04x", crcValue));
+
+        if (osId != null) {
+            sb.append(",osId=").append(osId);
         }
 
-        Builder setMsdosFileAttributes(Integer msdosFileAttributes) {
-            this.msdosFileAttributes = msdosFileAttributes;
-            return this;
+        if (unixPermissionMode != null) {
+            sb.append(",unixPermissionMode=").append(String.format("%03o", unixPermissionMode));
         }
 
-        Builder setHeaderCrc(Integer headerCrc) {
-            this.headerCrc = headerCrc;
-            return this;
+        if (msdosFileAttributes != null) {
+            sb.append(",msdosFileAttributes=").append(String.format("%04x", msdosFileAttributes));
         }
+
+        if (headerCrc != null) {
+            sb.append(",headerCrc=").append(String.format("0x%04x", headerCrc));
+        }
+
+        return sb.append("]").toString();
     }
 }
