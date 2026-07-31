@@ -25,50 +25,47 @@ import java.util.Date;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 
 /**
- * Represents an entry in a LHA archive.
+ * An entry in a LHA archive.
  *
  * @since 1.29.0
  */
 public class LhaArchiveEntry implements ArchiveEntry {
+
     static class Builder {
+
         private String filename;
+
         private String directoryName;
+
         private boolean directory;
+
         private long size;
+
         private Date lastModifiedDate;
+
         private long compressedSize;
+
         private String compressionMethod;
+
         private int crcValue;
+
         private Integer osId;
+
         private Integer unixPermissionMode;
+
         private Integer unixUserId;
+
         private Integer unixGroupId;
+
         private Integer msdosFileAttributes;
+
         private Integer headerCrc;
 
         Builder() {
         }
 
         LhaArchiveEntry get() {
-            final String name = new StringBuilder()
-                .append(directoryName == null ? "" : directoryName)
-                .append(filename == null ? "" : filename)
-                .toString();
-
-            return new LhaArchiveEntry(
-                    name,
-                    directory,
-                    size,
-                    lastModifiedDate,
-                    compressedSize,
-                    compressionMethod,
-                    crcValue,
-                    osId,
-                    unixPermissionMode,
-                    unixUserId,
-                    unixGroupId,
-                    msdosFileAttributes,
-                    headerCrc);
+            return new LhaArchiveEntry(this);
         }
 
         Builder setCompressedSize(final long compressedSize) {
@@ -141,42 +138,52 @@ public class LhaArchiveEntry implements ArchiveEntry {
             return this;
         }
     }
+
     static Builder builder() {
         return new Builder();
     }
+
     private final String name;
+
     private final boolean directory;
+
     private final long size;
+
     private final Date lastModifiedDate;
+
     private final long compressedSize;
+
     private final String compressionMethod;
+
     private final int crcValue;
+
     private final Integer osId;
+
     private final Integer unixPermissionMode;
+
     private final Integer unixUserId;
+
     private final Integer unixGroupId;
 
     private final Integer msdosFileAttributes;
 
     private final Integer headerCrc;
 
-    LhaArchiveEntry(final String name, final boolean directory, final long size, final Date lastModifiedDate,
-            final long compressedSize, final String compressionMethod, final int crcValue, final Integer osId,
-            final Integer unixPermissionMode, final Integer unixUserId, final Integer unixGroupId,
-            final Integer msdosFileAttributes, final Integer headerCrc) {
-        this.name = name;
-        this.directory = directory;
-        this.size = size;
-        this.lastModifiedDate = lastModifiedDate;
-        this.compressedSize = compressedSize;
-        this.compressionMethod = compressionMethod;
-        this.crcValue = crcValue;
-        this.osId = osId;
-        this.unixPermissionMode = unixPermissionMode;
-        this.unixUserId = unixUserId;
-        this.unixGroupId = unixGroupId;
-        this.msdosFileAttributes = msdosFileAttributes;
-        this.headerCrc = headerCrc;
+    LhaArchiveEntry(final Builder builder) {
+        this.name = new StringBuilder().append(builder.directoryName == null ? "" : builder.directoryName)
+                .append(builder.filename == null ? "" : builder.filename).toString();
+        this.directory = builder.directory;
+        this.size = builder.size;
+        this.lastModifiedDate = builder.lastModifiedDate;
+        this.compressedSize = builder.compressedSize;
+        this.compressionMethod = builder.compressionMethod;
+        this.crcValue = builder.crcValue;
+        this.osId = builder.osId;
+        this.unixPermissionMode = builder.unixPermissionMode;
+        this.unixUserId = builder.unixUserId;
+        this.unixGroupId = builder.unixGroupId;
+        this.msdosFileAttributes = builder.msdosFileAttributes;
+        this.headerCrc = builder.headerCrc;
     }
 
     /**
@@ -207,9 +214,7 @@ public class LhaArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Gets the header CRC if available for this entry.
-     *
-     * This method is package private, as it is of no interest to most users.
+     * Gets the header CRC if available for this entry. This method is package private, as it is of no interest to most users.
      *
      * @return header CRC or null if not available
      */
@@ -284,31 +289,34 @@ public class LhaArchiveEntry implements ArchiveEntry {
 
     @Override
     public String toString() {
-        final StringBuffer sb = new StringBuffer().append("LhaArchiveEntry[")
+        // @formatter:off
+        final StringBuffer sb = new StringBuffer()
+                .append("LhaArchiveEntry[")
                 .append("name=").append(name)
-                .append(",directory=").append(directory)
+                .append(",directory=")
+                .append(directory)
                 .append(",size=").append(size)
-                .append(",lastModifiedDate=").append(lastModifiedDate == null ? "" : lastModifiedDate.toInstant().atZone(ZoneOffset.UTC).toString())
-                .append(",compressedSize=").append(compressedSize)
-                .append(",compressionMethod=").append(compressionMethod)
-                .append(",crcValue=").append(String.format("0x%04x", crcValue));
-
+                .append(",lastModifiedDate=")
+                .append(lastModifiedDate == null ? "" : lastModifiedDate.toInstant().atZone(ZoneOffset.UTC).toString())
+                .append(",compressedSize=")
+                .append(compressedSize)
+                .append(",compressionMethod=")
+                .append(compressionMethod)
+                .append(",crcValue=")
+                .append(String.format("0x%04x", crcValue));
+        // @formatter:on
         if (osId != null) {
             sb.append(",osId=").append(osId);
         }
-
         if (unixPermissionMode != null) {
             sb.append(",unixPermissionMode=").append(String.format("%03o", unixPermissionMode));
         }
-
         if (msdosFileAttributes != null) {
             sb.append(",msdosFileAttributes=").append(String.format("%04x", msdosFileAttributes));
         }
-
         if (headerCrc != null) {
             sb.append(",headerCrc=").append(String.format("0x%04x", headerCrc));
         }
-
         return sb.append("]").toString();
     }
 }
