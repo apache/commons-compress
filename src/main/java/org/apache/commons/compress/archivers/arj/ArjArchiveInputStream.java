@@ -416,6 +416,9 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
 
     private MainHeader readMainHeader(final boolean selfExtracting) throws IOException {
         final byte[] basicHeaderBytes = selfExtracting ? findMainHeader() : readHeader();
+        if (basicHeaderBytes == null) {
+            throw new ArchiveException("Corrupted ARJ archive: Missing main header");
+        }
         final MainHeader header = new MainHeader();
         try (InputStream basicHeader = new ByteArrayInputStream(basicHeaderBytes)) {
             final int firstHeaderSize = readUnsignedByte(basicHeader);
