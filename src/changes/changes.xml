@@ -184,6 +184,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add UnsupportedZipFeatureException.Feature.toString().</action>
       <action type="add" dev="ggregory" due-to="Fredrik Kjellberg, Gary Gregory, Piotr P. Karwasz" issue="COMPRESS-706">Add support for reading LHA archive format (#690).</action>
       <action type="add" dev="ggregory" due-to="Piotr P. Karwasz, Gary Gregory">Add BitInputStream.getByteOrder() (#720).</action>
+      <action type="add" dev="ggregory" due-to="Piotr P. Karwasz, Gary Gregory">Add reusable Huffman decoder (2nd version) (#701, #792).</action>
       <!-- UPDATE -->
       <action type="update" dev="ggregory" due-to="Gary Gregory">Bump org.apache.commons:commons-parent from 85 to 103 #707, #752.</action>
       <action type="update" dev="ggregory" due-to="Gary Gregory">Bump org.apache.commons:commons-lang3 from 3.18.0 to 3.20.0.</action>
