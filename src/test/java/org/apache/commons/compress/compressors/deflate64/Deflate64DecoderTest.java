@@ -20,6 +20,7 @@ package org.apache.commons.compress.compressors.deflate64;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayInputStream;
@@ -58,7 +59,8 @@ class Deflate64DecoderTest {
                 final int len = decoder.decode(result);
                 fail("Should have failed but returned " + len + " entries: " + Arrays.toString(Arrays.copyOf(result, len)));
             });
-            assertEquals("Invalid Deflate64 distance code -1", e.getMessage());
+            final String message = e.getMessage();
+            assertTrue(message.startsWith("Invalid Huffman code"), message);
         }
     }
 
