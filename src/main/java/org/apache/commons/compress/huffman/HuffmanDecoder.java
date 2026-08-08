@@ -88,7 +88,7 @@ public final class HuffmanDecoder {
      * @throws IllegalArgumentException if any code length is out of range [0, 30].
      */
     public HuffmanDecoder(final int[] codeLengths) {
-        this(codeLengths, codeLengths.length, 0, MAX_SUPPORTED_CODE_LENGTH);
+        this(codeLengths, 0, MAX_SUPPORTED_CODE_LENGTH);
     }
 
     /**
@@ -99,28 +99,24 @@ public final class HuffmanDecoder {
      * </p>
      *
      * @param codeLengths    code length per symbol; {@code 0} means the symbol is not used; not {@code null}.
-     * @param codeLengthSize number of symbols to read from {@code codeLengths} (must be {@code > 0} and {@code <= codeLengths.length}).
      * @param minCodeLength  minimum allowed code length present in {@code codeLengths}.
      * @param maxCodeLength  maximum allowed code length present in {@code codeLengths}.
      * @throws NullPointerException     if {@code codeLengths} is {@code null}.
-     * @throws IllegalArgumentException if {@code codeLengthSize} is out of range, if any code length is out of range or if {@code maxCodeLength} exceeds the
+     * @throws IllegalArgumentException if {@code codeLengths} size is out of range, if any code length is out of range or if {@code maxCodeLength} exceeds the
      *                                  implementation limit (30).
      */
-    public HuffmanDecoder(final int[] codeLengths, final int codeLengthSize, final int minCodeLength, final int maxCodeLength) throws IllegalArgumentException {
+    public HuffmanDecoder(final int[] codeLengths, final int minCodeLength, final int maxCodeLength) throws IllegalArgumentException {
         Objects.requireNonNull(codeLengths, "codeLengths");
         if (maxCodeLength > MAX_SUPPORTED_CODE_LENGTH) {
             throw new IllegalArgumentException(String.format("maxCodeLength (%d) exceeds supported limit (%d)", maxCodeLength, MAX_SUPPORTED_CODE_LENGTH));
         }
-        if (codeLengthSize <= 0) {
-            throw new IllegalArgumentException(String.format("codeLengthSize must be > 0; was %d", codeLengthSize));
-        }
-        if (codeLengths.length < codeLengthSize) {
-            throw new IllegalArgumentException(String.format("codeLengthSize (%d) exceeds codeLengths.length (%d)", codeLengthSize, codeLengths.length));
+        if (codeLengths.length <= 0) {
+            throw new IllegalArgumentException(String.format("codeLengthSize must be > 0; was %d", codeLengths.length));
         }
         // Validate and find min/max lengths
         int min = maxCodeLength;
         int max = minCodeLength;
-        for (int i = 0; i < codeLengthSize; i++) {
+        for (int i = 0; i < codeLengths.length; i++) {
             final int len = codeLengths[i];
             if (len < minCodeLength || len > maxCodeLength) {
                 throw new IllegalArgumentException(
@@ -141,9 +137,9 @@ public final class HuffmanDecoder {
         // Allocate outputs; we reuse them as scratch inside fillCodeTable
         this.bias = new int[max + 1];
         this.limit = new int[max + 1];
-        this.sorted = new int[codeLengthSize];
+        this.sorted = new int[codeLengths.length];
         // Arrays are zero-initialized; no additional temps needed.
-        fillCodeTable(codeLengths, minLength, max, codeLengthSize, bias, limit, sorted);
+        fillCodeTable(codeLengths, minLength, max, bias, limit, sorted);
     }
 
     /**
@@ -167,11 +163,11 @@ public final class HuffmanDecoder {
     /**
      * Builds canonical decode tables.
      */
-    private static void fillCodeTable(final int[] codeLengths, final int minLen, final int maxLen, final int codeLengthSize, final int[] bias,
+    private static void fillCodeTable(final int[] codeLengths, final int minLen, final int maxLen, final int[] bias,
             final int[] limit, final int[] sorted) {
         // 1) Histogram of code lengths
         final int[] count = new int[maxLen + 1];
-        for (int symbol = 0; symbol < codeLengthSize; symbol++) {
+        for (int symbol = 0; symbol < codeLengths.length; symbol++) {
             final int len = codeLengths[symbol];
             if (len == 0) {
                 continue;
@@ -187,7 +183,7 @@ public final class HuffmanDecoder {
         }
         // 3) Build table of symbols sorted by length, then by symbol
         // Adjust offsets to point to the last element of each length
-        for (int symbol = 0; symbol < codeLengthSize; symbol++) {
+        for (int symbol = 0; symbol < codeLengths.length; symbol++) {
             final int len = codeLengths[symbol];
             if (len == 0) {
                 continue;
