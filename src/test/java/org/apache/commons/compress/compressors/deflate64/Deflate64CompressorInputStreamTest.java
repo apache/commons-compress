@@ -30,9 +30,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
+import org.apache.commons.compress.archivers.zip.ZipMethod;
 import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.io.IOUtils;
@@ -240,6 +245,19 @@ class Deflate64CompressorInputStreamTest {
                 BufferedReader br = new BufferedReader(new InputStreamReader(input))) {
             assertEquals("Hello World", br.readLine());
             assertNull(br.readLine());
+        }
+    }
+
+    @Test
+    void testDecompress() throws Exception {
+        try (ZipArchiveInputStream archive = new ZipArchiveInputStream(AbstractTest.newInputStream("lorem-ipsum-deflate64.zip"))) {
+            final ZipArchiveEntry entry = archive.getNextEntry();
+            assertEquals("lorem-ipsum.txt", entry.getName());
+            assertEquals(ZipMethod.ENHANCED_DEFLATED, ZipMethod.getMethodByCode(entry.getMethod()));
+
+            final byte[] data = IOUtils.toByteArray(archive);
+            assertEquals(144060, data.length);
+            assertEquals("a00c4f3f36515c96b2faef71c054e7f3e86a4f0f4ed4824cb7c5293bb455d28a", DigestUtils.sha256Hex(data));
         }
     }
 }

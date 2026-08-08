@@ -26,13 +26,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
@@ -137,9 +137,8 @@ class BZip2CompressorInputStreamTest extends AbstractTest {
 
     @Test
     void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
-        final File input = getFile("bla.txt.bz2");
         final byte[] buf = new byte[2];
-        try (InputStream is = Files.newInputStream(input.toPath());
+        try (InputStream is = newInputStream("bla.txt.bz2");
                 BZip2CompressorInputStream in = new BZip2CompressorInputStream(is)) {
             IOUtils.toByteArray(in);
             assertEquals(-1, in.read(buf));
@@ -255,12 +254,21 @@ class BZip2CompressorInputStreamTest extends AbstractTest {
 
     @Test
     void testSingleByteReadConsistentlyReturnsMinusOneAtEof() throws IOException {
-        final File input = getFile("bla.txt.bz2");
-        try (InputStream is = Files.newInputStream(input.toPath());
+        try (InputStream is = newInputStream("bla.txt.bz2");
                 BZip2CompressorInputStream in = new BZip2CompressorInputStream(is)) {
             IOUtils.toByteArray(in);
             assertEquals(-1, in.read());
             assertEquals(-1, in.read());
+        }
+    }
+
+    @Test
+    void testDecompress() throws Exception {
+        try (InputStream is = newInputStream("lorem-ipsum.txt.bz2");
+                BZip2CompressorInputStream in = new BZip2CompressorInputStream(is)) {
+            final byte[] data = IOUtils.toByteArray(in);
+            assertEquals(144060, data.length);
+            assertEquals("a00c4f3f36515c96b2faef71c054e7f3e86a4f0f4ed4824cb7c5293bb455d28a", DigestUtils.sha256Hex(data));
         }
     }
 
