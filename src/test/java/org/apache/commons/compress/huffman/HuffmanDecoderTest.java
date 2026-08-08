@@ -36,6 +36,7 @@ import java.util.stream.Stream;
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.utils.BitInputStream;
+import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -107,6 +108,42 @@ class HuffmanDecoderTest {
         // @formatter:on
     }
 
+    static Stream<Arguments> testKraftsInequality() {
+        // Each case provides code lengths that satisfy Kraft's inequality, one extra code length that overflows the tree, the code length at which the
+        // violation surfaces, and the leaf node and available node counts at that code length. The extra code length and the code length at which the
+        // violation surfaces differ when the extra code still fits at its own depth but takes a node the longer codes need.
+        // @formatter:off
+        return Stream.of(
+                // Symbol 2: 0, symbols 1 and 3: 10 and 11
+                Arguments.of(new int[] {0, 2, 1, 2}, 2, 2, 3, 2),
+                // Symbols 0 and 1: 0 and 1
+                Arguments.of(new int[] {1, 1}, 1, 1, 3, 2),
+                // Symbols 0-2: 00, 01 and 10, symbols 3 and 4: 110 and 111
+                Arguments.of(new int[] {2, 2, 2, 3, 3}, 3, 3, 3, 2),
+                // Symbols 0-2: 00, 01 and 10, symbols 3-6: 1100, 1101, 1110 and 1111
+                Arguments.of(new int[] {2, 2, 2, 4, 4, 4, 4}, 4, 4, 5, 4),
+                // All 16 codes of length 4 are taken
+                Arguments.of(new int[] {4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4}, 4, 4, 17, 16),
+                // All 16 codes of length 4 are taken, so no node is left to extend to length 5
+                Arguments.of(new int[] {4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4}, 5, 5, 1, 0),
+                // 15 codes of length 4 leave a single free node, split into the two codes of length 5
+                Arguments.of(new int[] {4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5}, 5, 5, 3, 2),
+                // Same tree, now full at length 5, so no node is left to extend to length 6
+                Arguments.of(new int[] {4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5}, 6, 6, 1, 0),
+                // Symbol 0: 0 takes half the tree, the other half holds 7 codes of length 4 plus the two codes of length 5
+                Arguments.of(new int[] {1, 4, 4, 4, 4, 4, 4, 4, 5, 5}, 5, 5, 3, 2),
+                // Leaf nodes at four different depths: 0, 10, then 3 codes of length 4 and the two codes of length 5
+                Arguments.of(new int[] {1, 2, 4, 4, 4, 5, 5}, 5, 5, 3, 2),
+                // Symbol 0: 0, symbols 1-4: 100, 101, 110 and 111; the added leaf node at length 2 used to be the parent of two of the codes of length 3
+                Arguments.of(new int[] {1, 3, 3, 3, 3}, 2, 3, 4, 2),
+                // Symbol 0: 0, symbols 1-8: 1000-1111; the added leaf node at length 2 used to be the ancestor of four of the codes of length 4
+                Arguments.of(new int[] {1, 4, 4, 4, 4, 4, 4, 4, 4}, 2, 4, 8, 4),
+                // Same tree, where the added leaf node at length 3 used to be the parent of two of the codes of length 4
+                Arguments.of(new int[] {1, 4, 4, 4, 4, 4, 4, 4, 4}, 3, 4, 8, 6)
+            );
+        // @formatter:on
+    }
+
     private int decodeSymbol(final HuffmanDecoder decoder, final int... data) throws IOException {
         try (BitInputStream in = new BitInputStream(new ByteArrayInputStream(AbstractTest.toByteArray(data)), ByteOrder.BIG_ENDIAN)) {
             return decoder.decodeSymbol(in);
@@ -133,9 +170,10 @@ class HuffmanDecoderTest {
     void testCreateHuffmanDecodingTablesWithLargeAlphaSize() {
         // Use a codeLengths array with length equal to MAX_ALPHA_SIZE (258) to test array bounds.
         final int[] codeLengths = new int[258];
-        for (int i = 0; i < codeLengths.length; i++) {
-            // Use all code lengths within valid range [1, 20]
-            codeLengths[i] = (char) (i % 20 + 1);
+        // One symbol at the minimum length and the rest at the maximum length so Kraft's inequality holds.
+        codeLengths[0] = 1;
+        for (int i = 1; i < codeLengths.length; i++) {
+            codeLengths[i] = 20;
         }
         final HuffmanDecoder decoder = assertDoesNotThrow(() -> new HuffmanDecoder(codeLengths, 1, 20),
                 "HuffmanDecoder constructor should not throw for valid codeLengths array of MAX_ALPHA_SIZE");
@@ -196,7 +234,7 @@ class HuffmanDecoderTest {
     }
 
     @Test
-    void testNoCodeLengths() throws Exception {
+    void testNoCodeLengths() {
         final CompressorException e = assertThrows(CompressorException.class, () -> new HuffmanDecoder(new int[0]),
                 "Expected CompressorException for empty code length list");
         assertEquals("Empty code length list", e.getMessage());
@@ -233,5 +271,17 @@ class HuffmanDecoderTest {
         final CompressorException e = assertThrows(CompressorException.class, () -> decodeSymbol(decoder, 0x80),
                 "Expected CompressorException for invalid bitstream");
         assertEquals("Invalid Huffman code: 2", e.getMessage());
+    }
+
+    @ParameterizedTest(name = "appending code length {1} to {0} overflows at code length {2}")
+    @MethodSource
+    void testKraftsInequality(final int[] codeLengths, final int extraCodeLength, final int expectedCodeLength, final int expectedLeafNodes,
+            final int expectedAvailableNodes) {
+        assertDoesNotThrow(() -> new HuffmanDecoder(codeLengths), "Code lengths are expected to satisfy Kraft's inequality");
+        final int[] tooManyCodeLengths = ArrayUtils.add(codeLengths, extraCodeLength);
+        final CompressorException e = assertThrows(CompressorException.class, () -> new HuffmanDecoder(tooManyCodeLengths),
+                "Expected CompressorException for too many leaf nodes");
+        assertEquals(String.format("Tree contains too many leaf nodes for code length %d: %d leaf nodes, but only %d nodes available", expectedCodeLength,
+                expectedLeafNodes, expectedAvailableNodes), e.getMessage());
     }
 }
