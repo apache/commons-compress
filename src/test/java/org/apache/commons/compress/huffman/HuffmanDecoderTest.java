@@ -47,7 +47,7 @@ class HuffmanDecoderTest {
             // Use all code lengths within valid range [1, 20]
             codeLengths[i] = (char) (i % 20 + 1);
         }
-        final HuffmanDecoder decoder = assertDoesNotThrow(() -> new HuffmanDecoder(codeLengths, codeLengths.length, 1, 20),
+        final HuffmanDecoder decoder = assertDoesNotThrow(() -> new HuffmanDecoder(codeLengths, 1, 20),
                 "HuffmanDecoder constructor should not throw for valid codeLengths array of MAX_ALPHA_SIZE");
         assertEquals(decoder.getMinLength(), 1, "Minimum code length should be 1");
         assertEquals(decoder.getMaxLength(), 20, "Maximum code length should be 20");

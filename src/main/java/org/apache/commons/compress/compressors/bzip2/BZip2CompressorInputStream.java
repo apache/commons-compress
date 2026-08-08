@@ -270,7 +270,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
             }
             try {
                 // Same limits as in the reference C implementation of bzip2
-                dataShadow.huffmanDecoders[t] = new HuffmanDecoder(codeLengths, alphaSize, 1, MAX_CODE_LEN);
+                dataShadow.huffmanDecoders[t] = new HuffmanDecoder(codeLengths, 1, MAX_CODE_LEN);
             } catch (final IllegalArgumentException e) {
                 throw new CompressorException("Invalid Huffman data: " + e.getMessage(), e);
             }
