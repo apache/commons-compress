@@ -21,7 +21,7 @@ package org.apache.commons.compress.huffman;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayInputStream;
 import java.io.EOFException;
@@ -135,12 +135,9 @@ class HuffmanDecoderTest {
 
     @Test
     void testNoCodeLengths() throws Exception {
-        try {
-            new HuffmanDecoder(new int[0]);
-            fail("Expected IllegalArgumentException for empty code length list");
-        } catch (final IllegalArgumentException e) {
-            assertEquals("codeLengthSize must be > 0; was 0", e.getMessage());
-        }
+        final IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> new HuffmanDecoder(new int[0]),
+                "Expected IllegalArgumentException for empty code length list");
+        assertEquals("codeLengthSize must be > 0; was 0", e.getMessage());
     }
 
     @Test
@@ -149,24 +146,17 @@ class HuffmanDecoderTest {
         // Value: 0
         final HuffmanDecoder decoder = new HuffmanDecoder(length);
         assertEquals(0, decodeSymbol(decoder, (byte) 0x00)); // 0xxx xxxx
-        try {
-            decodeSymbol(decoder, (byte) 0x80); // 1xxx xxxx
-            fail("Expected CompressorException for invalid bitstream");
-        } catch (final CompressorException e) {
-            assertEquals("Invalid Huffman code: 2", e.getMessage());
-        }
+        final CompressorException e = assertThrows(CompressorException.class, () -> decodeSymbol(decoder, (byte) 0x80),
+                "Expected CompressorException for invalid bitstream");
+        assertEquals("Invalid Huffman code: 2", e.getMessage());
     }
 
     @Test
     void testNoLeafNodes() throws Exception {
         final HuffmanDecoder decoder = new HuffmanDecoder(new int[] { 0, 0, 0, 0, 0 });
-
-        try {
-            decodeSymbol(decoder, (byte) 0, (byte) 0, (byte) 0, (byte) 0);
-            fail("Expected CompressorException when decoding symbols for tree with no leaf nodes");
-        } catch (final CompressorException e) {
-            assertEquals("Invalid Huffman code: 0", e.getMessage());
-        }
+        final CompressorException e = assertThrows(CompressorException.class, () -> decodeSymbol(decoder, (byte) 0, (byte) 0, (byte) 0, (byte) 0),
+                "Expected CompressorException when decoding symbols for tree with no leaf nodes");
+        assertEquals("Invalid Huffman code: 0", e.getMessage());
     }
 
     @Test
@@ -179,12 +169,9 @@ class HuffmanDecoderTest {
         assertEquals(2, decodeSymbol(decoder, (byte) 0xc0)); // 110x xxxx
         assertEquals(0, decodeSymbol(decoder, (byte) 0xe0)); // 1110 xxxx
         assertEquals(4, decodeSymbol(decoder, (byte) 0xf0)); // 1111 0xxx
-        try {
-            decodeSymbol(decoder, (byte) 0xf8); // 1111 1xxx
-            fail("Expected CompressorException for invalid bitstream");
-        } catch (final CompressorException e) {
-            assertEquals("Invalid Huffman code: 62", e.getMessage());
-        }
+        final CompressorException e = assertThrows(CompressorException.class, () -> decodeSymbol(decoder, (byte) 0xf8),
+                "Expected CompressorException for invalid bitstream");
+        assertEquals("Invalid Huffman code: 62", e.getMessage());
     }
 
     @Test
@@ -195,12 +182,9 @@ class HuffmanDecoderTest {
         try (BitInputStream in = new BitInputStream(new ByteArrayInputStream(new byte[] { (byte) 0b11111_110 }), ByteOrder.BIG_ENDIAN)) {
             assertEquals(5, decoder.decodeSymbol(in)); // 1111 1xxx
             assertEquals(2, decoder.decodeSymbol(in)); // 110x xxxx
-            try {
-                decoder.decodeSymbol(in); // EOF
-                fail("Expected EOFException for end of stream");
-            } catch (final EOFException e) {
-                assertEquals("Truncated Huffman bit stream", e.getMessage());
-            }
+            final EOFException e = assertThrows(EOFException.class, () -> decoder.decodeSymbol(in),
+                    "Expected EOFException for end of stream");
+            assertEquals("Truncated Huffman bit stream", e.getMessage());
         }
     }
 
