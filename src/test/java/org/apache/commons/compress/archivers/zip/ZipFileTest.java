@@ -1124,4 +1124,57 @@ class ZipFileTest extends AbstractArchiveFileTest<ZipArchiveEntry> {
             }
         }
     }
+
+    private static byte[] createZip64Archive() throws IOException {
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try (ZipArchiveOutputStream zos = new ZipArchiveOutputStream(bos)) {
+            zos.setUseZip64(Zip64Mode.Always);
+            zos.putArchiveEntry(new ZipArchiveEntry("a.txt"));
+            zos.write("hello".getBytes(UTF_8));
+            zos.closeArchiveEntry();
+        }
+        return bos.toByteArray();
+    }
+
+    private static int indexOfSignature(final byte[] data, final byte[] signature) {
+        for (int i = 0; i + signature.length <= data.length; i++) {
+            int j = 0;
+            while (j < signature.length && data[i + j] == signature[j]) {
+                j++;
+            }
+            if (j == signature.length) {
+                return i;
+            }
+        }
+        return fail("signature not found");
+    }
+
+    /**
+     * The ZIP64 offsets are 8-byte signed values, so a crafted archive can make them negative. Feeding such a value straight to
+     * {@link java.nio.channels.SeekableByteChannel#position(long)} used to throw a raw {@link IllegalArgumentException} out of the {@link ZipFile} constructor,
+     * which only declares {@link IOException}.
+     */
+    @Test
+    void testZip64NegativeOffsetsAreRejected() throws Exception {
+        final byte[] valid = createZip64Archive();
+        // A well-formed ZIP64 archive still opens.
+        try (ZipFile zf = ZipFile.builder().setByteArray(valid).get()) {
+            assertNotNull(zf.getEntry("a.txt"));
+        }
+        // Negative "relative offset of the ZIP64 end of central directory record" inside the locator.
+        final byte[] badLocator = valid.clone();
+        writeNegativeLongAt(badLocator, indexOfSignature(badLocator, ZipArchiveOutputStream.ZIP64_EOCD_LOC_SIG) + 8);
+        assertThrows(ArchiveException.class, () -> ZipFile.builder().setByteArray(badLocator).get());
+        // Negative "offset of start of central directory" inside the ZIP64 end of central directory record.
+        final byte[] badRecord = valid.clone();
+        writeNegativeLongAt(badRecord, indexOfSignature(badRecord, ZipArchiveOutputStream.ZIP64_EOCD_SIG) + 48);
+        assertThrows(ArchiveException.class, () -> ZipFile.builder().setByteArray(badRecord).get());
+    }
+
+    private static void writeNegativeLongAt(final byte[] data, final int offset) {
+        for (int i = 0; i < 8; i++) {
+            data[offset + i] = 0;
+        }
+        data[offset + 7] = (byte) 0x80; // little-endian sign byte -> the 8-byte value is negative
+    }
 }
