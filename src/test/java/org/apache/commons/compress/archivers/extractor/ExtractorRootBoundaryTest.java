@@ -81,17 +81,20 @@ class ExtractorRootBoundaryTest {
     }
 
     @Test
-    void canonicalizesTargetWithParentComponentAndStaysContained() throws Exception {
-        // A ".."-spelled target must behave like the "." and trailing-separator cases. A bare relative Path.of("..") is
-        // avoided on purpose: it would resolve to the parent of the process working directory and extract outside the
-        // @TempDir, so the ".." is anchored to a real in-root subdirectory that resolves back to the canonical target.
-        final Path sub = Files.createDirectory(target.resolve("sub"));
-        final Path viaParent = Paths.get(sub.toString(), "..");
-        Fixtures.extractTar(Extractor.newExtractor(viaParent), Fixtures.tar(file("a.txt", "hi")));
-        assertArrayEquals("hi".getBytes(StandardCharsets.UTF_8), Files.readAllBytes(target.resolve("a.txt")));
-        final Extractor extractor = Extractor.newExtractor(viaParent);
-        assertThrows(IOException.class, () -> Fixtures.extractTar(extractor, Fixtures.tar(file("../escape", "x"))));
-        assertFalse(Files.exists(target.getParent().resolve("escape")));
+    void rejectsTraversalWhenTargetIsRelativeParent() throws Exception {
+        // A bare ".." target is the one spelling a lexical normalize() cannot collapse, so the containment check would
+        // wrongly accept an escape: "..".resolve("../x").normalize() is "../../x", which still startsWith(".."). The
+        // toRealPath in newExtractor is what defeats that, and this test fails if it is ever dropped. Only the rejecting
+        // half is exercised, because a benign entry would land in the parent of the working directory; the entry name is
+        // distinctive so that an unexpected escape is recognizable instead of looking like a stray file.
+        final Path relativeParent = Paths.get("..");
+        final Path root = relativeParent.toRealPath();
+        assumeTrue(root.getParent() != null);
+        final Path escaped = root.getParent().resolve("commons-compress-escape.txt");
+        final Extractor extractor = Extractor.newExtractor(relativeParent);
+        assertThrows(IOException.class,
+                () -> Fixtures.extractTar(extractor, Fixtures.tar(file("../commons-compress-escape.txt", "x"))));
+        assertFalse(Files.exists(escaped));
     }
 
     @ParameterizedTest
