@@ -73,9 +73,9 @@ class TarArchiveEntryTest implements TarConstants {
         return entry;
     }
 
-    private String readMagic(final TarArchiveEntry t) {
+    private String readMagic(final TarArchiveEntry entry) {
         final byte[] buf = new byte[512];
-        t.writeEntryHeader(buf);
+        entry.writeEntryHeader(buf);
         return new String(buf, MAGIC_OFFSET, MAGICLEN + VERSIONLEN);
     }
 

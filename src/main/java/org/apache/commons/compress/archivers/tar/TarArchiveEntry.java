@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -185,6 +186,8 @@ import org.apache.commons.lang3.SystemUtils;
  */
 public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamOffsets {
 
+    private static final String SCHILY_REALSIZE = "SCHILY.realsize";
+
     private static final TarArchiveEntry[] EMPTY_TAR_ARCHIVE_ENTRY_ARRAY = {};
 
     /**
@@ -213,7 +216,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     public static final int MILLIS_PER_SECOND = 1000;
 
     /**
-     * Regular expression pattern for validating values in pax extended header file time fields. These fields contain two numeric values (seconds and sub-second
+     * Regular expression pattern for validating values in PAX extended header file time fields. These fields contain two numeric values (seconds and sub-second
      * values) as per this definition: https://pubs.opengroup.org/onlinepubs/9699919799/utilities/pax.html#tag_20_92_13_05
      * <p>
      * Since they are parsed into long values, maximum length of each is the same as Long.MAX_VALUE which is 19 digits.
@@ -292,6 +295,20 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
             // ArithmeticException: Thrown if numeric overflow occurs.
             throw new ArchiveException("Corrupted PAX header. Time field value is invalid '" + value + "'", (Throwable) e);
         }
+    }
+
+    private static int requireNonNegative(final int value, final Supplier<String> message) {
+        if (value < 0) {
+            throw new IllegalArgumentException(message.get());
+        }
+        return value;
+    }
+
+    private static long requireNonNegative(final long value, final Supplier<String> message) {
+        if (value < 0) {
+            throw new IllegalArgumentException(message.get());
+        }
+        return value;
     }
 
     /** The entry's name. */
@@ -391,7 +408,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /** The entry's file linkOptions. */
     private final LinkOption[] linkOptions;
 
-    /** Extra, user supplied pax headers. */
+    /** Extra, user supplied PAX headers. */
     private final Map<String, String> extraPaxHeaders = new HashMap<>();
 
     private long dataOffset = OFFSET_UNKNOWN;
@@ -670,7 +687,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
 
     /**
      * Adds a PAX header to this entry. If the header corresponds to an existing field in the entry, that field will be set; otherwise the header will be added
-     * to the extraPaxHeaders Map
+     * to the extraPaxHeaders Map.
      *
      * @param name  The full name of the header to set.
      * @param value value of header.
@@ -767,8 +784,8 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
 
     void fillStarSparseData(final Map<String, String> headers) throws IOException {
         starSparse = true;
-        if (headers.containsKey("SCHILY.realsize")) {
-            realSize = ParsingUtils.parseLongValue(headers.get("SCHILY.realsize"));
+        if (headers.containsKey(SCHILY_REALSIZE)) {
+            realSize = ParsingUtils.parseLongValue(headers.get(SCHILY_REALSIZE));
         }
     }
 
@@ -839,7 +856,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Gets named extra PAX header
      *
-     * @param name The full name of an extended PAX header to retrieve.
+     * @param name The full name of an extendedheader to retrieve.
      * @return The value of the header, if any.
      * @since 1.15
      */
@@ -1525,7 +1542,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * <ul>
      *     <li>POSIX.1-1988</li>
      *     <li>Old GNU tar format (pre-PAX)</li>
-     *     <li>POSIX.1-2001 pax interchange format</li>
+     *     <li>POSIX.1-2001 PAX interchange format</li>
      *     <li>STAR format (Schily tar)</li>
      * </ul>
      *
@@ -1609,7 +1626,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Processes one pax header, using the entries extraPaxHeaders map as source for extra headers used when handling entries for sparse files.
+     * Processes one PAX header, using the entries extraPaxHeaders map as source for extra headers used when handling entries for sparse files.
      *
      * @param key     The header name.
      * @param val     The header value.
@@ -1620,7 +1637,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Processes one pax header, using the supplied map as source for extra headers to be used when handling entries for sparse files
+     * Processes one PAX header, using the supplied map as source for extra headers to be used when handling entries for sparse files
      *
      * @param key     The header name.
      * @param val     The header value.
@@ -1764,10 +1781,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * @since 1.21
      */
     public void setDataOffset(final long dataOffset) {
-        if (dataOffset < 0) {
-            throw new IllegalArgumentException("The offset cannot be smaller than 0");
-        }
-        this.dataOffset = dataOffset;
+        this.dataOffset = requireNonNegative(dataOffset, () -> "The offset cannot be smaller than 0");
     }
 
     /**
@@ -1778,10 +1792,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * @since 1.4
      */
     public void setDevMajor(final int devNo) {
-        if (devNo < 0) {
-            throw new IllegalArgumentException("Major device number is out of range: " + devNo);
-        }
-        this.devMajor = devNo;
+        this.devMajor = requireNonNegative(devNo, () -> "Major device number is out of range: " + devNo);
     }
 
     /**
@@ -1792,10 +1803,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * @since 1.4
      */
     public void setDevMinor(final int devNo) {
-        if (devNo < 0) {
-            throw new IllegalArgumentException("Minor device number is out of range: " + devNo);
-        }
-        this.devMinor = devNo;
+        this.devMinor = requireNonNegative(devNo, () -> "Minor device number is out of range: " + devNo);
     }
 
     /**
@@ -1934,10 +1942,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * @throws IllegalArgumentException if the size is &lt; 0.
      */
     public void setSize(final long size) {
-        if (size < 0) {
-            throw new IllegalArgumentException("Size is out of range: " + size);
-        }
-        this.size = size;
+        this.size = requireNonNegative(size, () -> "Size is out of range: " + size);
     }
 
     /**
@@ -1999,7 +2004,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Update the entry using a map of pax headers.
+     * Update the entry using a map of PAX headers.
      *
      * @param headers PAX headers.
      */
