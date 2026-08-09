@@ -22,8 +22,7 @@ package org.apache.commons.compress.utils;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.io.IOException;
-
+import org.apache.commons.compress.CompressException;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -37,7 +36,7 @@ class ParsingUtilsTest {
     @ParameterizedTest
     @ValueSource(strings = {Integer.MIN_VALUE + "1", "x.x", "9e999", "1.1", "one", Integer.MAX_VALUE + "1"})
     void testParseIntValueInvalidValues(final String value) {
-        assertThrows(IOException.class, () -> ParsingUtils.parseIntValue(value, 10));
+        assertThrows(CompressException.class, () -> ParsingUtils.parseIntValue(value, 10));
     }
 
     @ParameterizedTest
@@ -49,7 +48,7 @@ class ParsingUtilsTest {
     @ParameterizedTest
     @ValueSource(strings = {Long.MIN_VALUE + "1", "x.x", "9e999", "1.1", "one", Long.MAX_VALUE + "1"})
     void testParseLongValueInvalidValues(final String value) {
-        assertThrows(IOException.class, () -> ParsingUtils.parseLongValue(value, 10));
+        assertThrows(CompressException.class, () -> ParsingUtils.parseLongValue(value, 10));
     }
 
     @ParameterizedTest

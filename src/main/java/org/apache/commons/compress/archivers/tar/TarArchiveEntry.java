@@ -46,6 +46,7 @@ import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.apache.commons.compress.CompressException;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.EntryStreamOffsets;
@@ -764,7 +765,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         return fill((byte) value, offset, outbuf, length);
     }
 
-    void fillGNUSparse0xData(final Map<String, String> headers) throws IOException {
+    void fillGNUSparse0xData(final Map<String, String> headers) throws CompressException {
         paxGNUSparse = true;
         realSize = ParsingUtils.parseIntValue(headers.get(TarGnuSparseKeys.SIZE));
         if (headers.containsKey(TarGnuSparseKeys.NAME)) {
@@ -773,7 +774,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         }
     }
 
-    void fillGNUSparse1xData(final Map<String, String> headers) throws IOException {
+    void fillGNUSparse1xData(final Map<String, String> headers) throws CompressException {
         paxGNUSparse = true;
         paxGNU1XSparse = true;
         if (headers.containsKey(TarGnuSparseKeys.NAME)) {
@@ -784,7 +785,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         }
     }
 
-    void fillStarSparseData(final Map<String, String> headers) throws IOException {
+    void fillStarSparseData(final Map<String, String> headers) throws CompressException {
         starSparse = true;
         if (headers.containsKey(SCHILY_REALSIZE)) {
             realSize = ParsingUtils.parseLongValue(headers.get(SCHILY_REALSIZE));
@@ -1632,7 +1633,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * @throws IOException if encountered errors when parsing the numbers.
      * @since 1.15
      */
-    private void processPaxHeader(final String key, final String val, final Map<String, String> headers) throws IOException {
+    private void processPaxHeader(final String key, final String val, final Map<String, String> headers) throws CompressException {
         /*
          * The following headers are defined for PAX. charset: cannot use these without changing TarArchiveEntry fields mtime atime ctime
          * LIBARCHIVE.creationtime comment gid, gname linkpath size uid,uname SCHILY.devminor, SCHILY.devmajor: don't have setters/getters for those

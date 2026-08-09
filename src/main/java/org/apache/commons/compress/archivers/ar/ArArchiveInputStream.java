@@ -25,6 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
+import org.apache.commons.compress.CompressException;
 import org.apache.commons.compress.MemoryLimitException;
 import org.apache.commons.compress.archivers.AbstractArchiveBuilder;
 import org.apache.commons.compress.archivers.ArchiveException;
@@ -186,15 +187,15 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
         this(builder().setInputStream(inputStream));
     }
 
-    private int asInt(final byte[] byteArray, final int offset, final int len, final boolean treatBlankAsZero) throws IOException {
+    private int asInt(final byte[] byteArray, final int offset, final int len, final boolean treatBlankAsZero) throws CompressException {
         return asInt(byteArray, offset, len, 10, treatBlankAsZero);
     }
 
-    private int asInt(final byte[] byteArray, final int offset, final int len, final int base) throws IOException {
+    private int asInt(final byte[] byteArray, final int offset, final int len, final int base) throws CompressException {
         return asInt(byteArray, offset, len, base, false);
     }
 
-    private int asInt(final byte[] byteArray, final int offset, final int len, final int base, final boolean treatBlankAsZero) throws IOException {
+    private int asInt(final byte[] byteArray, final int offset, final int len, final int base, final boolean treatBlankAsZero) throws CompressException {
         final String string = ArchiveUtils.toAsciiString(byteArray, offset, len).trim();
         if (string.isEmpty() && treatBlankAsZero) {
             return 0;
@@ -202,7 +203,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
         return ParsingUtils.parseIntValue(string, base);
     }
 
-    private long asLong(final byte[] byteArray, final int offset, final int len) throws IOException {
+    private long asLong(final byte[] byteArray, final int offset, final int len) throws CompressException {
         return ParsingUtils.parseLongValue(ArchiveUtils.toAsciiString(byteArray, offset, len).trim());
     }
 
