@@ -42,20 +42,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 class HuffmanDecoderTest {
 
-    @Test
-    void testCreateHuffmanDecodingTablesWithLargeAlphaSize() {
-        // Use a codeLengths array with length equal to MAX_ALPHA_SIZE (258) to test array bounds.
-        final int[] codeLengths = new int[258];
-        for (int i = 0; i < codeLengths.length; i++) {
-            // Use all code lengths within valid range [1, 20]
-            codeLengths[i] = (char) (i % 20 + 1);
-        }
-        final HuffmanDecoder decoder = assertDoesNotThrow(() -> new HuffmanDecoder(codeLengths, 1, 20),
-                "HuffmanDecoder constructor should not throw for valid codeLengths array of MAX_ALPHA_SIZE");
-        assertEquals(decoder.getMinLength(), 1, "Minimum code length should be 1");
-        assertEquals(decoder.getMaxLength(), 20, "Maximum code length should be 20");
-    }
-
     static Stream<Arguments> testDecodeSymbols() {
         // @formatter:off
         return Stream.of(
@@ -120,6 +106,26 @@ class HuffmanDecoderTest {
         // @formatter:on
     }
 
+    private int decodeSymbol(HuffmanDecoder decoder, final byte... data) throws IOException {
+        try (BitInputStream in = new BitInputStream(new ByteArrayInputStream(data), ByteOrder.BIG_ENDIAN)) {
+            return decoder.decodeSymbol(in);
+        }
+    }
+
+    @Test
+    void testCreateHuffmanDecodingTablesWithLargeAlphaSize() {
+        // Use a codeLengths array with length equal to MAX_ALPHA_SIZE (258) to test array bounds.
+        final int[] codeLengths = new int[258];
+        for (int i = 0; i < codeLengths.length; i++) {
+            // Use all code lengths within valid range [1, 20]
+            codeLengths[i] = (char) (i % 20 + 1);
+        }
+        final HuffmanDecoder decoder = assertDoesNotThrow(() -> new HuffmanDecoder(codeLengths, 1, 20),
+                "HuffmanDecoder constructor should not throw for valid codeLengths array of MAX_ALPHA_SIZE");
+        assertEquals(decoder.getMinLength(), 1, "Minimum code length should be 1");
+        assertEquals(decoder.getMaxLength(), 20, "Maximum code length should be 20");
+    }
+
     @ParameterizedTest
     @MethodSource
     void testDecodeSymbols(final int[] codeLengths, final byte[] inputData, final List<Integer> expectedSymbols, final ByteOrder byteOrder) throws IOException {
@@ -131,32 +137,6 @@ class HuffmanDecoderTest {
             }
         }
         assertEquals(expectedSymbols, actualSymbols, "Decoded symbols do not match expected symbols");
-    }
-
-    @Test
-    void testNoCodeLengths() throws Exception {
-        final IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> new HuffmanDecoder(new int[0]),
-                "Expected IllegalArgumentException for empty code length list");
-        assertEquals("codeLengthSize must be > 0; was 0", e.getMessage());
-    }
-
-    @Test
-    void testSingleCodeLength() throws Exception {
-        final int[] length = { 1 };
-        // Value: 0
-        final HuffmanDecoder decoder = new HuffmanDecoder(length);
-        assertEquals(0, decodeSymbol(decoder, (byte) 0x00)); // 0xxx xxxx
-        final CompressorException e = assertThrows(CompressorException.class, () -> decodeSymbol(decoder, (byte) 0x80),
-                "Expected CompressorException for invalid bitstream");
-        assertEquals("Invalid Huffman code: 2", e.getMessage());
-    }
-
-    @Test
-    void testNoLeafNodes() throws Exception {
-        final HuffmanDecoder decoder = new HuffmanDecoder(new int[] { 0, 0, 0, 0, 0 });
-        final CompressorException e = assertThrows(CompressorException.class, () -> decodeSymbol(decoder, (byte) 0, (byte) 0, (byte) 0, (byte) 0),
-                "Expected CompressorException when decoding symbols for tree with no leaf nodes");
-        assertEquals("Invalid Huffman code: 0", e.getMessage());
     }
 
     @Test
@@ -175,6 +155,21 @@ class HuffmanDecoderTest {
     }
 
     @Test
+    void testNoCodeLengths() throws Exception {
+        final IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> new HuffmanDecoder(new int[0]),
+                "Expected IllegalArgumentException for empty code length list");
+        assertEquals("codeLengthSize must be > 0; was 0", e.getMessage());
+    }
+
+    @Test
+    void testNoLeafNodes() throws Exception {
+        final HuffmanDecoder decoder = new HuffmanDecoder(new int[] { 0, 0, 0, 0, 0 });
+        final CompressorException e = assertThrows(CompressorException.class, () -> decodeSymbol(decoder, (byte) 0, (byte) 0, (byte) 0, (byte) 0),
+                "Expected CompressorException when decoding symbols for tree with no leaf nodes");
+        assertEquals("Invalid Huffman code: 0", e.getMessage());
+    }
+
+    @Test
     void testReadEof() throws Exception {
         final int[] length = { 4, 2, 3, 0, 5, 5, 1 };
         // Value: 0 1 2 3 4 5 6
@@ -188,9 +183,14 @@ class HuffmanDecoderTest {
         }
     }
 
-    private int decodeSymbol(HuffmanDecoder decoder, final byte... data) throws IOException {
-        try (BitInputStream in = new BitInputStream(new ByteArrayInputStream(data), ByteOrder.BIG_ENDIAN)) {
-            return decoder.decodeSymbol(in);
-        }
+    @Test
+    void testSingleCodeLength() throws Exception {
+        final int[] length = { 1 };
+        // Value: 0
+        final HuffmanDecoder decoder = new HuffmanDecoder(length);
+        assertEquals(0, decodeSymbol(decoder, (byte) 0x00)); // 0xxx xxxx
+        final CompressorException e = assertThrows(CompressorException.class, () -> decodeSymbol(decoder, (byte) 0x80),
+                "Expected CompressorException for invalid bitstream");
+        assertEquals("Invalid Huffman code: 2", e.getMessage());
     }
 }

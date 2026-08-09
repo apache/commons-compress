@@ -55,6 +55,66 @@ public final class HuffmanDecoder {
      */
     private static final int MAX_SUPPORTED_CODE_LENGTH = 30;
 
+    /**
+     * Builds canonical decode tables.
+     */
+    private static void fillCodeTable(final int[] codeLengths, final int minLen, final int maxLen, final int[] bias,
+            final int[] limit, final int[] sorted) {
+        // 1) Histogram of code lengths
+        final int[] count = new int[maxLen + 1];
+        for (int symbol = 0; symbol < codeLengths.length; symbol++) {
+            final int len = codeLengths[symbol];
+            if (len == 0) {
+                continue;
+            }
+            count[codeLengths[symbol]]++;
+        }
+        // 2) Generate starting offsets into sorted symbol table
+        // The offsets are biased by -1 to simplify code in the next step
+        final int[] offset = new int[maxLen + 1];
+        offset[0] = -1;
+        for (int len = 1; len <= maxLen; len++) {
+            offset[len] = offset[len - 1] + count[len - 1];
+        }
+        // 3) Build table of symbols sorted by length, then by symbol
+        // Adjust offsets to point to the last element of each length
+        for (int symbol = 0; symbol < codeLengths.length; symbol++) {
+            final int len = codeLengths[symbol];
+            if (len == 0) {
+                continue;
+            }
+            sorted[++offset[len]] = symbol;
+        }
+        // 4) Compute the largest left-justified code for each length
+        int firstCode = 0;
+        for (int len = minLen; len <= maxLen; len++) {
+            firstCode += count[len];
+            limit[len] = firstCode - 1;
+            firstCode <<= 1; // prepare for next length
+        }
+        // 5) Compute the bias for each length
+        for (int len = minLen; len <= maxLen; len++) {
+            bias[len] = limit[len] - offset[len];
+        }
+    }
+
+    private static int readBit(final BitInputStream in) throws IOException {
+        final int bit = in.readBit();
+        if (bit < 0) {
+            throw new EOFException("Truncated Huffman bit stream");
+        }
+        return bit;
+    }
+
+    private static int readBitsFully(final BitInputStream in, final int numBits) throws IOException {
+        final int code = (int) in.readBits(numBits);
+        if (code < 0) {
+            throw new EOFException("Truncated Huffman bit stream");
+        }
+        // Adjust for bit order
+        return in.getByteOrder() == ByteOrder.BIG_ENDIAN ? code : Integer.reverse(code) >>> 32 - numBits;
+    }
+
     /** Minimum non-zero code length */
     private final int minLength;
 
@@ -143,67 +203,6 @@ public final class HuffmanDecoder {
     }
 
     /**
-     * Gets the minimum code length (in bits) for this code set.
-     *
-     * @return minimum code length (in bits).
-     */
-    public int getMinLength() {
-        return minLength;
-    }
-
-    /**
-     * Gets the maximum code length (in bits) for this code set.
-     *
-     * @return maximum code length (in bits).
-     */
-    public int getMaxLength() {
-        return maxLength;
-    }
-
-    /**
-     * Builds canonical decode tables.
-     */
-    private static void fillCodeTable(final int[] codeLengths, final int minLen, final int maxLen, final int[] bias,
-            final int[] limit, final int[] sorted) {
-        // 1) Histogram of code lengths
-        final int[] count = new int[maxLen + 1];
-        for (int symbol = 0; symbol < codeLengths.length; symbol++) {
-            final int len = codeLengths[symbol];
-            if (len == 0) {
-                continue;
-            }
-            count[codeLengths[symbol]]++;
-        }
-        // 2) Generate starting offsets into sorted symbol table
-        // The offsets are biased by -1 to simplify code in the next step
-        final int[] offset = new int[maxLen + 1];
-        offset[0] = -1;
-        for (int len = 1; len <= maxLen; len++) {
-            offset[len] = offset[len - 1] + count[len - 1];
-        }
-        // 3) Build table of symbols sorted by length, then by symbol
-        // Adjust offsets to point to the last element of each length
-        for (int symbol = 0; symbol < codeLengths.length; symbol++) {
-            final int len = codeLengths[symbol];
-            if (len == 0) {
-                continue;
-            }
-            sorted[++offset[len]] = symbol;
-        }
-        // 4) Compute the largest left-justified code for each length
-        int firstCode = 0;
-        for (int len = minLen; len <= maxLen; len++) {
-            firstCode += count[len];
-            limit[len] = firstCode - 1;
-            firstCode <<= 1; // prepare for next length
-        }
-        // 5) Compute the bias for each length
-        for (int len = minLen; len <= maxLen; len++) {
-            bias[len] = limit[len] - offset[len];
-        }
-    }
-
-    /**
      * Decodes one symbol from the input bitstream.
      *
      * @param in the source of bits (MSB-first) to read from.
@@ -225,20 +224,21 @@ public final class HuffmanDecoder {
         return sorted[code - bias[len]];
     }
 
-    private static int readBit(final BitInputStream in) throws IOException {
-        final int bit = in.readBit();
-        if (bit < 0) {
-            throw new EOFException("Truncated Huffman bit stream");
-        }
-        return bit;
+    /**
+     * Gets the maximum code length (in bits) for this code set.
+     *
+     * @return maximum code length (in bits).
+     */
+    public int getMaxLength() {
+        return maxLength;
     }
 
-    private static int readBitsFully(final BitInputStream in, final int numBits) throws IOException {
-        final int code = (int) in.readBits(numBits);
-        if (code < 0) {
-            throw new EOFException("Truncated Huffman bit stream");
-        }
-        // Adjust for bit order
-        return in.getByteOrder() == ByteOrder.BIG_ENDIAN ? code : Integer.reverse(code) >>> 32 - numBits;
+    /**
+     * Gets the minimum code length (in bits) for this code set.
+     *
+     * @return minimum code length (in bits).
+     */
+    public int getMinLength() {
+        return minLength;
     }
 }

@@ -104,6 +104,16 @@ class BZip2CompressorInputStreamTest extends AbstractTest {
     }
 
     @Test
+    void testDecompress() throws Exception {
+        try (InputStream is = newInputStream("lorem-ipsum.txt.bz2");
+                BZip2CompressorInputStream in = new BZip2CompressorInputStream(is)) {
+            final byte[] data = IOUtils.toByteArray(in);
+            assertEquals(144060, data.length);
+            assertEquals("a00c4f3f36515c96b2faef71c054e7f3e86a4f0f4ed4824cb7c5293bb455d28a", DigestUtils.sha256Hex(data));
+        }
+    }
+
+    @Test
     void testFinishClose() throws Exception {
         // Create a big random piece of data
         final byte[] rawData = new byte[1048576];
@@ -259,16 +269,6 @@ class BZip2CompressorInputStreamTest extends AbstractTest {
             IOUtils.toByteArray(in);
             assertEquals(-1, in.read());
             assertEquals(-1, in.read());
-        }
-    }
-
-    @Test
-    void testDecompress() throws Exception {
-        try (InputStream is = newInputStream("lorem-ipsum.txt.bz2");
-                BZip2CompressorInputStream in = new BZip2CompressorInputStream(is)) {
-            final byte[] data = IOUtils.toByteArray(in);
-            assertEquals(144060, data.length);
-            assertEquals("a00c4f3f36515c96b2faef71c054e7f3e86a4f0f4ed4824cb7c5293bb455d28a", DigestUtils.sha256Hex(data));
         }
     }
 

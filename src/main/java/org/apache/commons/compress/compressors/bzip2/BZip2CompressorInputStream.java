@@ -161,6 +161,11 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         }
     }
 
+    private static HuffmanDecoder getHuffmanDecoder(final Data dataShadow, final int zt) throws IOException {
+        checkBounds(zt, dataShadow.huffmanDecodersCount, "zt");
+        return dataShadow.huffmanDecoders[zt];
+    }
+
     private static void makeMaps(final Data data) throws IOException {
         final boolean[] inUse = data.inUse;
         final byte[] seqToUnseq = data.seqToUnseq;
@@ -175,7 +180,6 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
 
         data.inUseCount = nInUseShadow;
     }
-
     /**
      * Checks if the signature matches what is expected for a bzip2 file.
      *
@@ -187,6 +191,9 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     public static boolean matches(final byte[] signature, final int length) {
         return length >= 3 && signature[0] == 'B' && signature[1] == 'Z' && signature[2] == 'h';
     }
+
+    // Variables used by setup* methods exclusively
+
     static void recvDecodingTables(final BitInputStream bin, final Data dataShadow) throws IOException {
         final boolean[] inUse = dataShadow.inUse;
         final byte[] pos = dataShadow.recvDecodingTables_pos;
@@ -278,8 +285,6 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         dataShadow.huffmanDecodersCount = nGroups;
     }
 
-    // Variables used by setup* methods exclusively
-
     /**
      * Index of the last char in the block, so the block size == last + 1.
      */
@@ -289,7 +294,6 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
      * Index in zptr[] of original string after sorting.
      */
     private int origPtr;
-
     /**
      * always: in the range 0 .. 9. The current block size is 100000 * this number.
      */
@@ -307,6 +311,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     private int su_chPrev;
     private int su_i2;
     private int su_j2;
+
     private int su_rNToGo;
 
     private int su_rTPos;
@@ -790,10 +795,5 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         this.su_i2++;
         this.su_count = 0;
         return setupRandPartA();
-    }
-
-    private static HuffmanDecoder getHuffmanDecoder(final Data dataShadow, final int zt) throws IOException {
-        checkBounds(zt, dataShadow.huffmanDecodersCount, "zt");
-        return dataShadow.huffmanDecoders[zt];
     }
 }
