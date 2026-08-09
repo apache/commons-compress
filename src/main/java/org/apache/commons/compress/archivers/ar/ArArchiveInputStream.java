@@ -432,10 +432,10 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
             final int mode = asInt(metaData, FILE_MODE_OFFSET, FILE_MODE_LEN, 8);
             final long lastModified = asLong(metaData, LAST_MODIFIED_OFFSET, LAST_MODIFIED_LEN);
             return new ArArchiveEntry(name, length, userId, groupId, mode, lastModified);
-        } catch (final IllegalArgumentException e) {
-            throw new ArchiveException("Broken archive, entry with negative size", (Throwable) e);
+        } catch (final ArchiveException e) {
+            throw e;
         } catch (final IOException e) {
-            throw new ArchiveException("Failed to parse ar entry.", (Throwable) e);
+            throw new ArchiveException("Failed to parse AR entry.", (Throwable) e);
         }
     }
 

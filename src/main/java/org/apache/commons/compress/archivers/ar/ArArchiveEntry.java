@@ -29,6 +29,7 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.ArchiveException;
 
 /**
  * Represents an archive entry in the "ar" format.
@@ -86,8 +87,9 @@ public class ArArchiveEntry implements ArchiveEntry {
      *
      * @param inputFile The file to create an entry from.
      * @param entryName The name of the entry.
+     * @throws ArchiveException Thrown if the length is negative (this is an internal error).
      */
-    public ArArchiveEntry(final File inputFile, final String entryName) {
+    public ArArchiveEntry(final File inputFile, final String entryName) throws ArchiveException {
         // TODO sort out mode
         this(entryName, inputFile.isFile() ? inputFile.length() : 0, 0, 0, DEFAULT_MODE, TimeUnit.MILLISECONDS.toSeconds(inputFile.lastModified()));
     }
@@ -115,8 +117,9 @@ public class ArArchiveEntry implements ArchiveEntry {
      *
      * @param name   name of the entry.
      * @param length length of the entry in bytes.
+     * @throws ArchiveException Thrown if the length is negative.
      */
-    public ArArchiveEntry(final String name, final long length) {
+    public ArArchiveEntry(final String name, final long length) throws ArchiveException {
         this(name, length, 0, 0, DEFAULT_MODE, TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()));
     }
 
@@ -129,13 +132,12 @@ public class ArArchiveEntry implements ArchiveEntry {
      * @param groupId      numeric group id.
      * @param mode         file mode.
      * @param lastModified last modified time in seconds since the epoch.
+     * @throws ArchiveException Thrown if the length is negative.
      */
-    public ArArchiveEntry(final String name, final long length, final int userId, final int groupId, final int mode, final long lastModified) {
+    public ArArchiveEntry(final String name, final long length, final int userId, final int groupId, final int mode, final long lastModified)
+            throws ArchiveException {
         this.name = name;
-        if (length < 0) {
-            throw new IllegalArgumentException("Length must not be negative");
-        }
-        this.length = length;
+        this.length = ArchiveException.requireNonNegative(length, "Length must not be negative");
         this.userId = userId;
         this.groupId = groupId;
         this.mode = mode;
