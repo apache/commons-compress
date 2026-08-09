@@ -214,11 +214,11 @@ class TarArchiveEntryTest implements TarConstants {
     }
 
     @Test
-    void testMaxFileSize() {
+    void testMaxFileSize() throws ArchiveException {
         final TarArchiveEntry t = new TarArchiveEntry("");
         t.setSize(0);
         t.setSize(1);
-        assertThrows(IllegalArgumentException.class, () -> t.setSize(-1));
+        assertThrows(ArchiveException.class, () -> t.setSize(-1));
         t.setSize(077777777777L);
         t.setSize(0100000000000L);
     }
@@ -248,13 +248,13 @@ class TarArchiveEntryTest implements TarConstants {
             + "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
             + "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000").getBytes(UTF_8);
         // @formatter:on
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(ArchiveException.class,
                 () -> new TarArchiveEntry(entryContent, ZipEncodingHelper.getZipEncoding(StandardCharsets.ISO_8859_1.name()), false, -1));
     }
 
     @Test
     void testNegativeOffsetInSetterNotAllowed() {
-        assertThrows(IllegalArgumentException.class, () -> new TarArchiveEntry("test").setDataOffset(-1));
+        assertThrows(ArchiveException.class, () -> new TarArchiveEntry("test").setDataOffset(-1));
     }
 
     @Test

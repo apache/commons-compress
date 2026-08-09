@@ -420,8 +420,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
     private ArArchiveEntry parseEntry(final byte[] headerBuf) throws IOException {
         // Parse the entry metadata from the header buffer
         try {
-            final String name =
-                    ArchiveUtils.toAsciiString(headerBuf, NAME_OFFSET, NAME_LEN).trim();
+            final String name = ArchiveUtils.toAsciiString(headerBuf, NAME_OFFSET, NAME_LEN).trim();
             final long length = asLong(headerBuf, LENGTH_OFFSET, LENGTH_LEN);
             // The remaining fields in the GNU string table entry are not used and may be blank.
             if (GNU_STRING_TABLE_NAME.equals(name)) {

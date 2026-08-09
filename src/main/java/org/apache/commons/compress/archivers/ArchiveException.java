@@ -90,9 +90,41 @@ public class ArchiveException extends CompressException {
      * @throws ArchiveException if {@code value} is negative.
      * @since 1.29.0
      */
+    public static int requireNonNegative(final int value, final Supplier<String> message) throws ArchiveException {
+        if (value < 0) {
+            throw new ArchiveException(message.get());
+        }
+        return value;
+    }
+
+    /**
+     * Checks that the specified value is not negative and throws a customized {@link ArchiveException} if it is.
+     *
+     * @param value   The value to check for negativity.
+     * @param message The detail message to be used in the event that a {@code ArchiveException} is thrown.
+     * @return {@code value} if not negative.
+     * @throws ArchiveException if {@code value} is negative.
+     * @since 1.29.0
+     */
     public static long requireNonNegative(final long value, final String message) throws ArchiveException {
         if (value < 0) {
             throw new ArchiveException(message);
+        }
+        return value;
+    }
+
+    /**
+     * Checks that the specified value is not negative and throws a customized {@link ArchiveException} if it is.
+     *
+     * @param value   The value to check for negativity.
+     * @param message The detail message to be used in the event that a {@code ArchiveException} is thrown.
+     * @return {@code value} if not negative.
+     * @throws ArchiveException if {@code value} is negative.
+     * @since 1.29.0
+     */
+    public static long requireNonNegative(final long value, final Supplier<String> message) throws ArchiveException {
+        if (value < 0) {
+            throw new ArchiveException(message.get());
         }
         return value;
     }

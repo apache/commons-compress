@@ -50,18 +50,10 @@ import org.apache.commons.io.output.ByteArrayOutputStream;
  */
 public final class TarUtils {
 
-    private static final Pattern HEADER_STRINGS_PATTERN = Pattern.compile(",");
-
-    private static final BigInteger NEG_1_BIG_INT = BigInteger.valueOf(-1);
-
-    private static final int BYTE_MASK = 255;
-
-    static final ZipEncoding DEFAULT_ENCODING = ZipEncodingHelper.getZipEncoding(Charset.defaultCharset());
-
     /**
      * Encapsulates the algorithms used up to Commons Compress 1.3 as ZipEncoding.
      */
-    static final ZipEncoding FALLBACK_ENCODING = new ZipEncoding() {
+    private static final class FallbackZipEncoding implements ZipEncoding {
 
         @Override
         public boolean canEncode(final String name) {
@@ -85,7 +77,20 @@ public final class TarUtils {
         public ByteBuffer encode(final String name) {
             return ByteBuffer.wrap(ArchiveUtils.toAsciiBytes(name));
         }
-    };
+    }
+
+    private static final Pattern HEADER_STRINGS_PATTERN = Pattern.compile(",");
+
+    private static final BigInteger NEG_1_BIG_INT = BigInteger.valueOf(-1);
+
+    private static final int BYTE_MASK = 255;
+
+    static final ZipEncoding DEFAULT_ENCODING = ZipEncodingHelper.getZipEncoding(Charset.defaultCharset());
+
+    /**
+     * Encapsulates the algorithms used up to Commons Compress 1.3 as ZipEncoding.
+     */
+    static final FallbackZipEncoding FALLBACK_ENCODING = new FallbackZipEncoding();
 
     /**
      * Applies the PAX headers and sparse headers to the given tar entry.

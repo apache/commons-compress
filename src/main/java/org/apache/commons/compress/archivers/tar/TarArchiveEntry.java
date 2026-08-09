@@ -280,7 +280,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         return fileName;
     }
 
-    private static Instant parseInstantFromDecimalSeconds(final String value) throws IOException {
+    private static Instant parseInstantFromDecimalSeconds(final String value) throws ArchiveException {
         // Validate field values to prevent denial of service attacks with BigDecimal values (see JDK-6560193)
         if (!PAX_EXTENDED_HEADER_FILE_TIMES_PATTERN.matcher(value).matches()) {
             throw new ArchiveException("Corrupted PAX header. Time field value is invalid '%s'", value);
@@ -297,18 +297,20 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         }
     }
 
-    private static int requireNonNegative(final int value, final Supplier<String> message) {
-        if (value < 0) {
-            throw new IllegalArgumentException(message.get());
+    private static long parseOctalOrBinary(final byte[] header, final int offset, final int length, final boolean lenient) {
+        if (lenient) {
+            try {
+                return TarUtils.parseOctalOrBinary(header, offset, length);
+            } catch (final IllegalArgumentException ex) { // NOSONAR
+                return UNKNOWN;
+            }
         }
-        return value;
+        return TarUtils.parseOctalOrBinary(header, offset, length);
     }
 
-    private static long requireNonNegative(final long value, final Supplier<String> message) {
-        if (value < 0) {
-            throw new IllegalArgumentException(message.get());
-        }
-        return value;
+    private static int parseOctalOrBinaryAsInt(final byte[] header, final int offset, final int length, final boolean lenient) throws ArchiveException {
+        //return ArchiveException.toIntExact(parseOctalOrBinary(header, offset, length, lenient));
+        return (int) parseOctalOrBinary(header, offset, length, lenient);
     }
 
     /** The entry's name. */
@@ -1443,17 +1445,6 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         return true;
     }
 
-    private long parseOctalOrBinary(final byte[] header, final int offset, final int length, final boolean lenient) {
-        if (lenient) {
-            try {
-                return TarUtils.parseOctalOrBinary(header, offset, length);
-            } catch (final IllegalArgumentException ex) { // NOSONAR
-                return UNKNOWN;
-            }
-        }
-        return TarUtils.parseOctalOrBinary(header, offset, length);
-    }
-
     /**
      * Parses an entry's header information from a header buffer.
      *
@@ -1515,13 +1506,13 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         int offset = 0;
         name = oldStyle ? TarUtils.parseName(header, offset, NAMELEN) : TarUtils.parseName(header, offset, NAMELEN, encoding);
         offset += NAMELEN;
-        mode = (int) parseOctalOrBinary(header, offset, MODELEN, lenient);
+        mode = parseOctalOrBinaryAsInt(header, offset, MODELEN, lenient);
         offset += MODELEN;
-        userId = (int) parseOctalOrBinary(header, offset, UIDLEN, lenient);
+        userId = parseOctalOrBinaryAsInt(header, offset, UIDLEN, lenient);
         offset += UIDLEN;
-        groupId = (int) parseOctalOrBinary(header, offset, GIDLEN, lenient);
+        groupId = parseOctalOrBinaryAsInt(header, offset, GIDLEN, lenient);
         offset += GIDLEN;
-        size = TarUtils.parseOctalOrBinary(header, offset, SIZELEN);
+        setSize(TarUtils.parseOctalOrBinary(header, offset, SIZELEN));
         ArchiveException.requireNonNegative(size, "Broken archive, entry with negative size");
         offset += SIZELEN;
         mTime = FileTimes.fromUnixTime(parseOctalOrBinary(header, offset, MODTIMELEN, lenient));
@@ -1568,60 +1559,56 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         groupName = oldStyle ? TarUtils.parseName(header, offset, GNAMELEN) : TarUtils.parseName(header, offset, GNAMELEN, encoding);
         offset += GNAMELEN;
         if (linkFlag == LF_CHR || linkFlag == LF_BLK) {
-            devMajor = (int) parseOctalOrBinary(header, offset, DEVLEN, lenient);
+            setDevMajor(parseOctalOrBinaryAsInt(header, offset, DEVLEN, lenient));
             offset += DEVLEN;
-            devMinor = (int) parseOctalOrBinary(header, offset, DEVLEN, lenient);
+            setDevMinor(parseOctalOrBinaryAsInt(header, offset, DEVLEN, lenient));
             offset += DEVLEN;
         } else {
             offset += 2 * DEVLEN;
         }
         final int type = evaluateType(globalPaxHeaders, header);
         switch (type) {
-            // GNU format as before 1.12
-            case FORMAT_OLDGNU: {
-                aTime = fileTimeFromOptionalSeconds(parseOctalOrBinary(header, offset, ATIMELEN_GNU, lenient));
-                offset += ATIMELEN_GNU;
-                cTime = fileTimeFromOptionalSeconds(parseOctalOrBinary(header, offset, CTIMELEN_GNU, lenient));
-                offset += CTIMELEN_GNU;
-                offset += OFFSETLEN_GNU;
-                offset += LONGNAMESLEN_GNU;
-                offset += PAD2LEN_GNU;
-                sparseHeaders =
-                        new ArrayList<>(TarUtils.readSparseStructs(header, offset, SPARSE_HEADERS_IN_OLDGNU_HEADER));
-                offset += SPARSELEN_GNU;
-                isExtended = TarUtils.parseBoolean(header, offset);
-                offset += ISEXTENDEDLEN_GNU;
-                realSize = TarUtils.parseOctal(header, offset, REALSIZELEN_GNU, "parseUstarHeaderBlock()", false);
-                break;
+        // GNU format as before 1.12
+        case FORMAT_OLDGNU: {
+            aTime = fileTimeFromOptionalSeconds(parseOctalOrBinary(header, offset, ATIMELEN_GNU, lenient));
+            offset += ATIMELEN_GNU;
+            cTime = fileTimeFromOptionalSeconds(parseOctalOrBinary(header, offset, CTIMELEN_GNU, lenient));
+            offset += CTIMELEN_GNU;
+            offset += OFFSETLEN_GNU;
+            offset += LONGNAMESLEN_GNU;
+            offset += PAD2LEN_GNU;
+            sparseHeaders = new ArrayList<>(TarUtils.readSparseStructs(header, offset, SPARSE_HEADERS_IN_OLDGNU_HEADER));
+            offset += SPARSELEN_GNU;
+            isExtended = TarUtils.parseBoolean(header, offset);
+            offset += ISEXTENDEDLEN_GNU;
+            realSize = TarUtils.parseOctal(header, offset, REALSIZELEN_GNU, "parseUstarHeaderBlock()", false);
+            break;
+        }
+        // Star format (Schily tar)
+        case FORMAT_XSTAR: {
+            final String xstarPrefix = oldStyle ? TarUtils.parseName(header, offset, PREFIXLEN_XSTAR)
+                    : TarUtils.parseName(header, offset, PREFIXLEN_XSTAR, encoding);
+            offset += PREFIXLEN_XSTAR;
+            if (!xstarPrefix.isEmpty()) {
+                name = xstarPrefix + "/" + name;
             }
-            // Star format (Schily tar)
-            case FORMAT_XSTAR: {
-                final String xstarPrefix = oldStyle
-                        ? TarUtils.parseName(header, offset, PREFIXLEN_XSTAR)
-                        : TarUtils.parseName(header, offset, PREFIXLEN_XSTAR, encoding);
-                offset += PREFIXLEN_XSTAR;
-                if (!xstarPrefix.isEmpty()) {
-                    name = xstarPrefix + "/" + name;
-                }
-                aTime = fileTimeFromOptionalSeconds(parseOctalOrBinary(header, offset, ATIMELEN_XSTAR, lenient));
-                offset += ATIMELEN_XSTAR;
-                cTime = fileTimeFromOptionalSeconds(parseOctalOrBinary(header, offset, CTIMELEN_XSTAR, lenient));
-                break;
+            aTime = fileTimeFromOptionalSeconds(parseOctalOrBinary(header, offset, ATIMELEN_XSTAR, lenient));
+            offset += ATIMELEN_XSTAR;
+            cTime = fileTimeFromOptionalSeconds(parseOctalOrBinary(header, offset, CTIMELEN_XSTAR, lenient));
+            break;
+        }
+        // Pure POSIX.1-1988 UStar format
+        case FORMAT_POSIX:
+        default: {
+            final String prefix = oldStyle ? TarUtils.parseName(header, offset, PREFIXLEN) : TarUtils.parseName(header, offset, PREFIXLEN, encoding);
+            // SunOS tar -E does not add / to directory names, so fix up to be consistent
+            if (isDirectory() && !name.endsWith("/")) {
+                name += "/";
             }
-            // Pure POSIX.1-1988 UStar format
-            case FORMAT_POSIX:
-            default: {
-                final String prefix = oldStyle
-                        ? TarUtils.parseName(header, offset, PREFIXLEN)
-                        : TarUtils.parseName(header, offset, PREFIXLEN, encoding);
-                // SunOS tar -E does not add / to directory names, so fix up to be consistent
-                if (isDirectory() && !name.endsWith("/")) {
-                    name += "/";
-                }
-                if (!prefix.isEmpty()) {
-                    name = prefix + "/" + name;
-                }
+            if (!prefix.isEmpty()) {
+                name = prefix + "/" + name;
             }
+        }
         }
     }
 
@@ -1642,7 +1629,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * @param key     The header name.
      * @param val     The header value.
      * @param headers map of headers used for dealing with sparse file.
-     * @throws NumberFormatException if encountered errors when parsing the numbers.
+     * @throws IOException if encountered errors when parsing the numbers.
      * @since 1.15
      */
     private void processPaxHeader(final String key, final String val, final Map<String, String> headers) throws IOException {
@@ -1676,7 +1663,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
             setUserName(val);
             break;
         case "size":
-            setSize(ArchiveException.requireNonNegative(ParsingUtils.parseLongValue(val), "Corrupted TAR archive. Entry size is negative"));
+            setSize(ParsingUtils.parseLongValue(val));
             break;
         case "mtime":
             setLastModifiedTime(FileTime.from(parseInstantFromDecimalSeconds(val)));
@@ -1691,10 +1678,10 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
             setCreationTime(FileTime.from(parseInstantFromDecimalSeconds(val)));
             break;
         case "SCHILY.devminor":
-            setDevMinor(ArchiveException.requireNonNegative(ParsingUtils.parseIntValue(val), "Corrupted TAR archive. Dev-Minor is negative"));
+            setDevMinor(ParsingUtils.parseIntValue(val));
             break;
         case "SCHILY.devmajor":
-            setDevMajor(ArchiveException.requireNonNegative(ParsingUtils.parseIntValue(val), "Corrupted TAR archive. Dev-Major is negative"));
+            setDevMajor(ParsingUtils.parseIntValue(val));
             break;
         case TarGnuSparseKeys.SIZE:
             fillGNUSparse0xData(headers);
@@ -1778,32 +1765,33 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * Sets the offset of the data for the tar entry.
      *
      * @param dataOffset The position of the data in the tar.
+     * @throws ArchiveException if the dataOffset is &lt; 0.
      * @since 1.21
      */
-    public void setDataOffset(final long dataOffset) {
-        this.dataOffset = requireNonNegative(dataOffset, () -> "The offset cannot be smaller than 0");
+    public void setDataOffset(final long dataOffset) throws ArchiveException {
+        this.dataOffset = ArchiveException.requireNonNegative(dataOffset, (Supplier<String>) () -> "The offset cannot be smaller than 0");
     }
 
     /**
      * Sets this entry's major device number.
      *
      * @param devNo This entry's major device number.
-     * @throws IllegalArgumentException if the devNo is &lt; 0.
+     * @throws ArchiveException if the devNo is &lt; 0.
      * @since 1.4
      */
-    public void setDevMajor(final int devNo) {
-        this.devMajor = requireNonNegative(devNo, () -> "Major device number is out of range: " + devNo);
+    public void setDevMajor(final int devNo) throws ArchiveException {
+        this.devMajor = ArchiveException.requireNonNegative(devNo, (Supplier<String>) () -> "Major device number is out of range: " + devNo);
     }
 
     /**
      * Sets this entry's minor device number.
      *
      * @param devNo This entry's minor device number.
-     * @throws IllegalArgumentException if the devNo is &lt; 0.
+     * @throws ArchiveException if the devNo is &lt; 0.
      * @since 1.4
      */
-    public void setDevMinor(final int devNo) {
-        this.devMinor = requireNonNegative(devNo, () -> "Minor device number is out of range: " + devNo);
+    public void setDevMinor(final int devNo) throws ArchiveException {
+        this.devMinor = ArchiveException.requireNonNegative(devNo, (Supplier<String>) () -> "Minor device number is out of range: " + devNo);
     }
 
     /**
@@ -1939,10 +1927,10 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * Sets this entry's file size.
      *
      * @param size This entry's new file size.
-     * @throws IllegalArgumentException if the size is &lt; 0.
+     * @throws ArchiveException if the size is &lt; 0.
      */
-    public void setSize(final long size) {
-        this.size = requireNonNegative(size, () -> "Size is out of range: " + size);
+    public void setSize(final long size) throws ArchiveException {
+        this.size = ArchiveException.requireNonNegative(size, (Supplier<String>) () -> "Size is out of range: " + size);
     }
 
     /**
@@ -1958,11 +1946,11 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Sets this entry's status change time.
      *
-     * @param time This entry's new status change time.
+     * @param cTime This entry's new status change time.
      * @since 1.22
      */
-    public void setStatusChangeTime(final FileTime time) {
-        cTime = time;
+    public void setStatusChangeTime(final FileTime cTime) {
+        this.cTime = cTime;
     }
 
     /**
