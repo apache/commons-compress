@@ -25,7 +25,7 @@ import java.io.OutputStream;
 import org.apache.commons.compress.MemoryLimitException;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.utils.ByteUtils;
-import org.apache.commons.compress.utils.FlushShieldFilterOutputStream;
+import org.apache.commons.io.output.FlushShieldOutputStream;
 import org.tukaani.xz.LZMA2Options;
 import org.tukaani.xz.LZMAInputStream;
 import org.tukaani.xz.LZMAOutputStream;
@@ -59,7 +59,7 @@ final class LZMADecoder extends AbstractCoder {
     @Override
     OutputStream encode(final OutputStream out, final Object opts) throws IOException {
         // NOOP as LZMAOutputStream throws an exception in flush
-        return new FlushShieldFilterOutputStream(new LZMAOutputStream(out, getOptions(opts), false));
+        return new FlushShieldOutputStream(new LZMAOutputStream(out, getOptions(opts), false));
     }
 
     private int getDictionarySize(final Coder coder) throws ArchiveException {

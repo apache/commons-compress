@@ -26,8 +26,9 @@ import java.io.OutputStream;
 /**
  * Re-implements {@link FilterOutputStream#flush()} to do nothing.
  *
- * TODO Deprecate.
+ * @deprecated Use FlushShieldOutputStream from Apache Commons IO instead. This class will be removed in a future release.
  */
+@Deprecated
 public class FlushShieldFilterOutputStream extends FilterOutputStream {
 
     /**

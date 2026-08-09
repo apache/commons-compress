@@ -205,6 +205,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="update" dev="ggregory" due-to="Gary Gregory">Bump commons-io:commons-io from 2.21.0 to 2.22.0.</action>
       <!-- REMOVE -->
       <action type="remove" dev="pkarwasz" due-to="Piotr P. Karwasz">Deprecate IOUtils.readFully and IOUtils.skip.</action>
+      <action type="remove" dev="ggregory" due-to="Piotr P. Karwasz">Deprecate FlushShieldFilterOutputStream.</action>
     </release>
     <release version="1.28.0" date="2025-07-26" description="This is a feature and maintenance release. Java 8 or later is required.">
       <!-- FIX -->
