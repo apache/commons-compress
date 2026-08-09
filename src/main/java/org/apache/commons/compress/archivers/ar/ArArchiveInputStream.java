@@ -418,7 +418,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
      * @return An {@link ArArchiveEntry} object containing the parsed metadata.
      * @throws IOException if the metadata cannot be parsed correctly.
      */
-    private ArArchiveEntry parseEntry(final byte[] headerBuf) throws IOException {
+    private ArArchiveEntry parseEntry(final byte[] headerBuf) throws ArchiveException {
         // Parse the entry metadata from the header buffer
         try {
             final String name = ArchiveUtils.toAsciiString(headerBuf, NAME_OFFSET, NAME_LEN).trim();
