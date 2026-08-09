@@ -106,7 +106,7 @@ class HuffmanDecoderTest {
         // @formatter:on
     }
 
-    private int decodeSymbol(HuffmanDecoder decoder, final byte... data) throws IOException {
+    private int decodeSymbol(final HuffmanDecoder decoder, final byte... data) throws IOException {
         try (BitInputStream in = new BitInputStream(new ByteArrayInputStream(data), ByteOrder.BIG_ENDIAN)) {
             return decoder.decodeSymbol(in);
         }
