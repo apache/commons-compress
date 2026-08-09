@@ -195,10 +195,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
     public void closeArchiveEntry() throws IOException {
         checkFinished();
         checkOpen();
-        if (entry == null) {
-            throw new ArchiveException("Trying to close non-existent entry");
-        }
-
+        ArchiveException.requireNonNull(entry, "Trying to close non-existent entry");
         if (this.entry.getSize() != this.written) {
             throw new ArchiveException("Invalid entry size (expected " + this.entry.getSize() + " but got " + this.written + " bytes)");
         }
@@ -325,9 +322,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
             return;
         }
         checkOpen();
-        if (this.entry == null) {
-            throw new ArchiveException("No current CPIO entry");
-        }
+        ArchiveException.requireNonNull(entry, "No current CPIO entry");
         if (this.written + len > this.entry.getSize()) {
             throw new ArchiveException("Attempt to write past end of STORED entry");
         }

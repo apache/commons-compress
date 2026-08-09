@@ -953,9 +953,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
      * @throws IOException if there are exceptions when reading the file.
      */
     private void buildDecodingStream(final int entryIndex, final boolean isRandomAccess) throws IOException {
-        if (archive.streamMap == null) {
-            throw new ArchiveException("Archive doesn't contain stream information to read entries");
-        }
+        ArchiveException.requireNonNull(archive.streamMap, "Archive doesn't contain stream information to read entries");
         final int folderIndex = archive.streamMap.fileFolderIndex[entryIndex];
         if (folderIndex < 0) {
             deferredBlockStreams.clear();
@@ -1573,9 +1571,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
             }
             entryAtIndex.setHasStream(isEmptyStream == null || !isEmptyStream.get(i));
             if (entryAtIndex.hasStream()) {
-                if (archive.subStreamsInfo == null) {
-                    throw new ArchiveException("7z archive: Archive contains file with streams but no subStreamsInfo.");
-                }
+                ArchiveException.requireNonNull(archive.subStreamsInfo, "7z archive: Archive contains file with streams but no subStreamsInfo.");
                 entryAtIndex.setDirectory(false);
                 entryAtIndex.setAntiItem(false);
                 entryAtIndex.setHasCrc(archive.subStreamsInfo.hasCrc.get(nonEmptyFileCounter));

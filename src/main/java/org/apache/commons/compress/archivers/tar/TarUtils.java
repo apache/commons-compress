@@ -468,14 +468,10 @@ public final class TarUtils {
             throw new ArchiveException("Corrupted TAR archive. Bad format in GNU.sparse.map PAX Header");
         }
         for (int i = 0; i < sparseHeaderStrings.length; i += 2) {
-            final long sparseOffset = ParsingUtils.parseLongValue(sparseHeaderStrings[i]);
-            if (sparseOffset < 0) {
-                throw new ArchiveException("Corrupted TAR archive. Sparse struct offset contains negative value");
-            }
-            final long sparseNumbytes = ParsingUtils.parseLongValue(sparseHeaderStrings[i + 1]);
-            if (sparseNumbytes < 0) {
-                throw new ArchiveException("Corrupted TAR archive. Sparse struct numbytes contains negative value");
-            }
+            final long sparseOffset = ArchiveException.requireNonNegative(ParsingUtils.parseLongValue(sparseHeaderStrings[i]),
+                    "Corrupted TAR archive. Sparse struct offset contains negative value");
+            final long sparseNumbytes = ArchiveException.requireNonNegative(ParsingUtils.parseLongValue(sparseHeaderStrings[i + 1]),
+                    "Corrupted TAR archive. Sparse struct numbytes contains negative value");
             sparseHeaders.add(new TarArchiveStructSparse(sparseOffset, sparseNumbytes));
         }
         return Collections.unmodifiableList(sparseHeaders);
@@ -629,25 +625,17 @@ public final class TarUtils {
         final List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
         long bytesRead = 0;
         long[] readResult = readLineOfNumberForPax1x(inputStream);
-        long sparseHeadersCount = readResult[0];
-        if (sparseHeadersCount < 0) {
-            // overflow while reading number?
-            throw new ArchiveException("Corrupted TAR archive: Negative value in sparse headers block.");
-        }
+        // overflow while reading number?
+        long sparseHeadersCount = ArchiveException.requireNonNegative(readResult[0], "Corrupted TAR archive: Negative value in sparse headers block.");
         bytesRead += readResult[1];
         while (sparseHeadersCount-- > 0) {
             readResult = readLineOfNumberForPax1x(inputStream);
-            final long sparseOffset = readResult[0];
-            if (sparseOffset < 0) {
-                throw new ArchiveException("Corrupted TAR archive: Sparse header block offset contains negative value.");
-            }
+            final long sparseOffset = ArchiveException.requireNonNegative(readResult[0],
+                    "Corrupted TAR archive: Sparse header block offset contains negative value.");
             bytesRead += readResult[1];
-
             readResult = readLineOfNumberForPax1x(inputStream);
-            final long sparseNumbytes = readResult[0];
-            if (sparseNumbytes < 0) {
-                throw new ArchiveException("Corrupted TAR archive: Sparse header block numbytes contains negative value.");
-            }
+            final long sparseNumbytes = ArchiveException.requireNonNegative(readResult[0],
+                    "Corrupted TAR archive: Sparse header block numbytes contains negative value.");
             bytesRead += readResult[1];
             sparseHeaders.add(new TarArchiveStructSparse(sparseOffset, sparseNumbytes));
         }
@@ -757,17 +745,17 @@ public final class TarUtils {
                                         throw new ArchiveException("Failed to read PAX header: %s is expected before GNU.sparse.numbytes shows up.",
                                                 TarGnuSparseKeys.OFFSET);
                                     }
-                                    final long numbytes;
+                                    final long numBytes;
                                     try {
-                                        numbytes = ParsingUtils.parseLongValue(value);
+                                        numBytes = ParsingUtils.parseLongValue(value);
                                     } catch (final IOException ex) {
                                         throw new ArchiveException("Failed to read PAX header: Numbytes %s contains a non-numeric value.",
                                                 TarGnuSparseKeys.NUMBYTES);
                                     }
-                                    if (numbytes < 0) {
+                                    if (numBytes < 0) {
                                         throw new ArchiveException("Failed to read PAX header: %s contains negative value.", TarGnuSparseKeys.NUMBYTES);
                                     }
-                                    sparseHeaders.add(new TarArchiveStructSparse(offset, numbytes));
+                                    sparseHeaders.add(new TarArchiveStructSparse(offset, numBytes));
                                     offset = null;
                                 }
                             }
@@ -866,17 +854,9 @@ public final class TarUtils {
         final List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
         for (int i = 0; i < entries; i++) {
             try {
-                final TarArchiveStructSparse sparseHeader = parseSparse(buffer,
-                        offset + i * (TarConstants.SPARSE_OFFSET_LEN + TarConstants.SPARSE_NUMBYTES_LEN));
-                if (sparseHeader.getOffset() < 0) {
-                    throw new ArchiveException("Corrupted TAR archive: Sparse entry with negative offset.");
-                }
-                if (sparseHeader.getNumbytes() < 0) {
-                    throw new ArchiveException("Corrupted TAR archive: Sparse entry with negative numbytes.");
-                }
-                sparseHeaders.add(sparseHeader);
+                sparseHeaders.add(parseSparse(buffer, offset + i * (TarConstants.SPARSE_OFFSET_LEN + TarConstants.SPARSE_NUMBYTES_LEN)));
             } catch (final IllegalArgumentException e) {
-                // thrown internally by parseOctalOrBinary
+                // thrown internally by parseSparse
                 throw new ArchiveException("Corrupted TAR archive: Sparse entry is invalid.", (Throwable) e);
             }
         }

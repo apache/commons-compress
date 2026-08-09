@@ -1505,9 +1505,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         groupId = (int) parseOctalOrBinary(header, offset, GIDLEN, lenient);
         offset += GIDLEN;
         size = TarUtils.parseOctalOrBinary(header, offset, SIZELEN);
-        if (size < 0) {
-            throw new ArchiveException("Broken archive, entry with negative size");
-        }
+        ArchiveException.requireNonNegative(size, "Broken archive, entry with negative size");
         offset += SIZELEN;
         mTime = FileTimes.fromUnixTime(parseOctalOrBinary(header, offset, MODTIMELEN, lenient));
         offset += MODTIMELEN;
@@ -1661,11 +1659,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
             setUserName(val);
             break;
         case "size":
-            final long size = ParsingUtils.parseLongValue(val);
-            if (size < 0) {
-                throw new ArchiveException("Corrupted TAR archive. Entry size is negative");
-            }
-            setSize(size);
+            setSize(ArchiveException.requireNonNegative(ParsingUtils.parseLongValue(val), "Corrupted TAR archive. Entry size is negative"));
             break;
         case "mtime":
             setLastModifiedTime(FileTime.from(parseInstantFromDecimalSeconds(val)));
@@ -1680,18 +1674,10 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
             setCreationTime(FileTime.from(parseInstantFromDecimalSeconds(val)));
             break;
         case "SCHILY.devminor":
-            final int devMinor = ParsingUtils.parseIntValue(val);
-            if (devMinor < 0) {
-                throw new ArchiveException("Corrupted TAR archive. Dev-Minor is negative");
-            }
-            setDevMinor(devMinor);
+            setDevMinor(ArchiveException.requireNonNegative(ParsingUtils.parseIntValue(val), "Corrupted TAR archive. Dev-Minor is negative"));
             break;
         case "SCHILY.devmajor":
-            final int devMajor = ParsingUtils.parseIntValue(val);
-            if (devMajor < 0) {
-                throw new ArchiveException("Corrupted TAR archive. Dev-Major is negative");
-            }
-            setDevMajor(devMajor);
+            setDevMajor(ArchiveException.requireNonNegative(ParsingUtils.parseIntValue(val), "Corrupted TAR archive. Dev-Major is negative"));
             break;
         case TarGnuSparseKeys.SIZE:
             fillGNUSparse0xData(headers);

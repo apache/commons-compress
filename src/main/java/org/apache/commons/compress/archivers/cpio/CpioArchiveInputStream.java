@@ -440,9 +440,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         newEntry.setNumberOfLinks(readAsciiLong(8, 16));
         newEntry.setTime(readAsciiLong(8, 16));
         newEntry.setSize(readAsciiLong(8, 16));
-        if (newEntry.getSize() < 0) {
-            throw new ArchiveException("Found illegal entry with negative length");
-        }
+        ArchiveException.requireNonNegative(newEntry.getSize(), "Found illegal entry with negative length");
         newEntry.setDeviceMaj(readAsciiLong(8, 16));
         newEntry.setDeviceMin(readAsciiLong(8, 16));
         newEntry.setRemoteDeviceMaj(readAsciiLong(8, 16));
@@ -483,9 +481,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
             throw new ArchiveException("Found illegal entry with negative name length");
         }
         ret.setSize(readAsciiLong(11, 8));
-        if (ret.getSize() < 0) {
-            throw new ArchiveException("Found illegal entry with negative length");
-        }
+        ArchiveException.requireNonNegative(ret.getSize(), "Found illegal entry with negative length");
         final String name = readEntryName(ArchiveException.toIntExact(nameSize));
         ret.setName(name);
         if (CpioUtil.fileType(mode) == 0 && !name.equals(CPIO_TRAILER)) {
@@ -513,9 +509,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
             throw new ArchiveException("Found illegal entry with negative name length");
         }
         oldEntry.setSize(readBinaryLong(4, swapHalfWord));
-        if (oldEntry.getSize() < 0) {
-            throw new ArchiveException("Found illegal entry with negative length");
-        }
+        ArchiveException.requireNonNegative(oldEntry.getSize(), "Found illegal entry with negative length");
         final String name = readEntryName(ArchiveException.toIntExact(nameSize));
         oldEntry.setName(name);
         if (CpioUtil.fileType(mode) == 0 && !name.equals(CPIO_TRAILER)) {

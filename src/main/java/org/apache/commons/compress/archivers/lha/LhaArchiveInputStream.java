@@ -359,27 +359,25 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
      * separator char. Any leading file path separator char will be removed to avoid extracting to absolute locations.
      *
      * @param buffer         the buffer where to get the pathname from.
-     * @param pathnameLength the length of the pathname.
+     * @param pathNameLength the length of the pathname.
      * @return pathname.
      * @throws ArchiveException if the pathname is too long.
      */
-    String getPathname(final ByteBuffer buffer, final int pathnameLength) throws ArchiveException {
+    String getPathName(final ByteBuffer buffer, final int pathNameLength) throws ArchiveException {
         // Check pathname length to ensure we don't allocate too much memory
-        if (pathnameLength > MAX_PATHNAME_LENGTH) {
-            throw new ArchiveException("Pathname is longer than the maximum allowed (%d > %d)", pathnameLength, MAX_PATHNAME_LENGTH);
+        if (pathNameLength > MAX_PATHNAME_LENGTH) {
+            throw new ArchiveException("Pathname is longer than the maximum allowed (%d > %d)", pathNameLength, MAX_PATHNAME_LENGTH);
         }
-        if (pathnameLength < 0) {
-            throw new ArchiveException("Pathname length is negative");
-        }
-        if (pathnameLength > buffer.limit() - buffer.position()) {
+        ArchiveException.requireNonNegative(pathNameLength, "Pathname length is negative");
+        if (pathNameLength > buffer.limit() - buffer.position()) {
             throw new ArchiveException("Invalid pathname length");
         }
-        final byte[] pathnameBuffer = new byte[pathnameLength];
+        final byte[] pathnameBuffer = new byte[pathNameLength];
         buffer.get(pathnameBuffer);
         // Split the pathname into parts by 0xFF bytes
         final StringBuilder pathnameStringBuilder = new StringBuilder();
         int start = 0;
-        for (int i = 0; i < pathnameLength; i++) {
+        for (int i = 0; i < pathNameLength; i++) {
             if (pathnameBuffer[i] == (byte) 0xFF) {
                 if (i > start) {
                     // Decode the path segment into a string using the specified charset and append it to the result
@@ -389,8 +387,8 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
             }
         }
         // Append the last segment if it exists
-        if (start < pathnameLength) {
-            pathnameStringBuilder.append(new String(pathnameBuffer, start, pathnameLength - start, getCharset()));
+        if (start < pathNameLength) {
+            pathnameStringBuilder.append(new String(pathnameBuffer, start, pathNameLength - start, getCharset()));
         }
         String pathname = pathnameStringBuilder.toString();
         // If the path separator char is not '\', replace all '\' characters with the path separator char
@@ -443,14 +441,14 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
         case EXTENDED_HEADER_TYPE_FILENAME: {
             // File name header
             final int filenameLength = extendedHeaderBuffer.limit() - extendedHeaderBuffer.position() - EXTENDED_HEADER_NEXT_HEADER_SIZE_LENGTH;
-            final String filename = getPathname(extendedHeaderBuffer, filenameLength);
+            final String filename = getPathName(extendedHeaderBuffer, filenameLength);
             entryBuilder.setFileName(filename);
             break;
         }
         case EXTENDED_HEADER_TYPE_DIRECTORY_NAME: {
             // Directory name header
             final int directoryNameLength = extendedHeaderBuffer.limit() - extendedHeaderBuffer.position() - EXTENDED_HEADER_NEXT_HEADER_SIZE_LENGTH;
-            final String directoryName = getPathname(extendedHeaderBuffer, directoryNameLength);
+            final String directoryName = getPathName(extendedHeaderBuffer, directoryNameLength);
             if (directoryName.length() > 0 && directoryName.charAt(directoryName.length() - 1) != fileSeparatorChar) {
                 // If the directory name does not end with a file separator, append it
                 entryBuilder.setDirectoryName(directoryName + fileSeparatorChar);
@@ -615,7 +613,7 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
         buffer.position(HEADER_LEVEL_0_OFFSET_FILENAME);
         // @formatter:off
         entryBuilder
-            .setFileName(getPathname(buffer, filenameLength))
+            .setFileName(getPathName(buffer, filenameLength))
             .setDirectory(isDirectory(compressionMethod))
             .setCrc(Short.toUnsignedInt(buffer.getShort()));
         // @formatter:on
@@ -658,7 +656,7 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
         buffer.position(HEADER_LEVEL_1_OFFSET_FILENAME);
         // @formatter:off
         entryBuilder
-            .setFileName(getPathname(buffer, filenameLength))
+            .setFileName(getPathName(buffer, filenameLength))
             .setDirectory(isDirectory(compressionMethod))
             .setCrc(Short.toUnsignedInt(buffer.getShort()))
             .setOsId(Byte.toUnsignedInt(buffer.get()));
@@ -682,9 +680,7 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
         // The compressed size is derived by subtracting the extended header sizes from the skip size. A
         // corrupt archive whose extended headers exceed the skip size would yield a negative compressed
         // size, which must be rejected as it would otherwise disable the per-entry read bound.
-        if (skipSize < 0) {
-            throw new ArchiveException("Invalid compressed size");
-        }
+        ArchiveException.requireNonNegative(skipSize, "Invalid compressed size");
         entryBuilder.setCompressedSize(skipSize);
         final LhaArchiveEntry entry = entryBuilder.get();
         if (entry.getHeaderCrc() != null) {

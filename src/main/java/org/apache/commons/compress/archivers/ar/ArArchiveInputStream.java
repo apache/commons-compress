@@ -158,7 +158,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
     private ArArchiveEntry currentEntry;
 
     /** Storage area for extra long names (GNU ar). */
-    private byte[] namebuffer;
+    private byte[] nameBuffer;
 
     /**
      * The offset where the data for the current entry starts.
@@ -269,21 +269,19 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
      * @throws IOException if name not found or buffer not set up.
      */
     private String getExtendedName(final int offset) throws IOException {
-        if (namebuffer == null) {
-            throw new ArchiveException("Cannot process GNU long file name as no GNU string table was found");
-        }
-        if (offset >= namebuffer.length) {
+        ArchiveException.requireNonNull(nameBuffer, "Cannot process GNU long file name as no GNU string table was found");
+        if (offset >= nameBuffer.length) {
             throw new ArchiveException("GNU long file name offset out of range: " + offset);
         }
-        for (int i = offset; i < namebuffer.length; i++) {
-            final byte c = namebuffer[i];
+        for (int i = offset; i < nameBuffer.length; i++) {
+            final byte c = nameBuffer[i];
             if (c == '\n' || c == 0) {
-                if (i > offset && namebuffer[i - 1] == '/') {
+                if (i > offset && nameBuffer[i - 1] == '/') {
                     i--; // drop trailing '/'
                 }
                 // Check there is a something to return, otherwise break out of the loop
                 if (i > offset) {
-                    return ArchiveUtils.toAsciiString(namebuffer, offset, checkEntryNameLength(i - offset));
+                    return ArchiveUtils.toAsciiString(nameBuffer, offset, checkEntryNameLength(i - offset));
                 }
                 break;
             }
@@ -348,7 +346,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
             foundGNUStringTable = isGNUStringTable(currentEntry);
             if (foundGNUStringTable) {
                 // If this is a GNU string table entry, read the extended names and continue
-                namebuffer = readGNUStringTable(currentEntry);
+                nameBuffer = readGNUStringTable(currentEntry);
             }
         } while (foundGNUStringTable);
 

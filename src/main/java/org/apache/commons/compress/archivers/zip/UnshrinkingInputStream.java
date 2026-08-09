@@ -97,10 +97,7 @@ final class UnshrinkingInputStream extends LZWInputStream {
             }
             return expandCodeToOutputStack(effectiveCode, addedUnfinishedEntry);
         }
-        final int subCode = readNextCode();
-        if (subCode < 0) {
-            throw new ArchiveException("Unexpected EOF");
-        }
+        final int subCode = ArchiveException.requireNonNegative(readNextCode(), "Unexpected EOF");
         if (subCode == 1) {
             if (getCodeSize() >= MAX_CODE_SIZE) {
                 throw new ArchiveException("Attempt to increase code size beyond maximum");

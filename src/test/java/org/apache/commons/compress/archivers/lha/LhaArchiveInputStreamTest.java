@@ -129,7 +129,7 @@ class LhaArchiveInputStreamTest extends AbstractTest {
     }
 
     private String getPathname(final LhaArchiveInputStream is, final int... filepathBuffer) throws ArchiveException, UnsupportedEncodingException {
-        return is.getPathname(ByteBuffer.wrap(toByteArray(filepathBuffer)), filepathBuffer.length);
+        return is.getPathName(ByteBuffer.wrap(toByteArray(filepathBuffer)), filepathBuffer.length);
     }
 
     private InputStream newEmptyInputStream() {
@@ -237,7 +237,7 @@ class LhaArchiveInputStreamTest extends AbstractTest {
         try (LhaArchiveInputStream is = LhaArchiveInputStream.builder().setInputStream(newEmptyInputStream()).get()) {
             try {
                 final byte[] pathname = { 'a', 'b', 'c' };
-                is.getPathname(ByteBuffer.wrap(pathname), pathname.length + 1);
+                is.getPathName(ByteBuffer.wrap(pathname), pathname.length + 1);
                 fail("Expected ArchiveException for invalid pathname length");
             } catch (final ArchiveException e) {
                 assertEquals("Invalid pathname length", e.getMessage());
@@ -249,7 +249,7 @@ class LhaArchiveInputStreamTest extends AbstractTest {
     void testGetPathnameNegativeLength() throws IOException, UnsupportedEncodingException {
         try (LhaArchiveInputStream is = LhaArchiveInputStream.builder().setInputStream(newEmptyInputStream()).get()) {
             try {
-                is.getPathname(ByteBuffer.wrap(new byte[0]), -1);
+                is.getPathName(ByteBuffer.wrap(new byte[0]), -1);
                 fail("Expected ArchiveException when pathname length is negative");
             } catch (final ArchiveException e) {
                 assertEquals("Pathname length is negative", e.getMessage());
@@ -262,7 +262,7 @@ class LhaArchiveInputStreamTest extends AbstractTest {
         try (LhaArchiveInputStream is = LhaArchiveInputStream.builder().setInputStream(newEmptyInputStream()).get()) {
             try {
                 final byte[] pathname = new byte[4097];
-                is.getPathname(ByteBuffer.wrap(pathname), pathname.length);
+                is.getPathName(ByteBuffer.wrap(pathname), pathname.length);
                 fail("Expected ArchiveException when pathname is longer than the maximum allowed");
             } catch (final ArchiveException e) {
                 assertEquals("Pathname is longer than the maximum allowed (4097 > 4096)", e.getMessage());

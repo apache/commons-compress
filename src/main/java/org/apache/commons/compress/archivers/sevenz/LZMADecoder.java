@@ -43,9 +43,7 @@ final class LZMADecoder extends AbstractCoder {
     @Override
     InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength, final Coder coder, final byte[] password,
             final int maxMemoryLimitKiB) throws IOException {
-        if (coder.properties == null) {
-            throw new ArchiveException("Missing LZMA properties");
-        }
+        ArchiveException.requireNonNull(coder.properties, "Missing LZMA properties");
         if (coder.properties.length < 1) {
             throw new ArchiveException("LZMA properties too short");
         }
@@ -97,9 +95,7 @@ final class LZMADecoder extends AbstractCoder {
 
     @Override
     Object getOptionsFromCoder(final Coder coder, final InputStream in) throws IOException {
-        if (coder.properties == null) {
-            throw new ArchiveException("Missing LZMA properties");
-        }
+        ArchiveException.requireNonNull(coder.properties, "Missing LZMA properties");
         if (coder.properties.length < 1) {
             throw new ArchiveException("LZMA properties too short");
         }

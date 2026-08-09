@@ -585,12 +585,6 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
         return found64;
     }
 
-    private static void requireNonNegative(final long value, final String message) throws ArchiveException {
-        if (value < 0) {
-            throw new ArchiveException(message);
-        }
-    }
-
     /**
      * Converts a raw version made by int to a <a href="https://pkwaredownloads.blob.core.windows.net/pkware-general/Documentation/APPNOTE_6.2.0.TXT">platform
      * code</a>.
@@ -1423,14 +1417,14 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
             dwordBbuf.rewind();
             IOUtils.readFully(archive, dwordBbuf);
             final long relativeOffsetOfEOCD = ZipEightByteInteger.getLongValue(dwordBuf);
-            requireNonNegative(relativeOffsetOfEOCD, "Broken archive, ZIP64 end of central directory locator with negative offset");
+            ArchiveException.requireNonNegative(relativeOffsetOfEOCD, "Broken archive, ZIP64 end of central directory locator with negative offset");
             ((ZipSplitReadOnlySeekableByteChannel) archive).position(diskNumberOfEOCD, relativeOffsetOfEOCD);
         } else {
             skipBytes(ZIP64_EOCDL_LOCATOR_OFFSET - ZipConstants.WORD /* signature has already been read */);
             dwordBbuf.rewind();
             IOUtils.readFully(archive, dwordBbuf);
             final long relativeOffsetOfEOCD = ZipEightByteInteger.getLongValue(dwordBuf);
-            requireNonNegative(relativeOffsetOfEOCD, "Broken archive, ZIP64 end of central directory locator with negative offset");
+            ArchiveException.requireNonNegative(relativeOffsetOfEOCD, "Broken archive, ZIP64 end of central directory locator with negative offset");
             archive.position(relativeOffsetOfEOCD);
         }
 
@@ -1451,7 +1445,8 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
             dwordBbuf.rewind();
             IOUtils.readFully(archive, dwordBbuf);
             centralDirectoryStartRelativeOffset = ZipEightByteInteger.getLongValue(dwordBuf);
-            requireNonNegative(centralDirectoryStartRelativeOffset, "Broken archive, ZIP64 end of central directory record with negative central directory offset");
+            ArchiveException.requireNonNegative(centralDirectoryStartRelativeOffset,
+                    "Broken archive, ZIP64 end of central directory record with negative central directory offset");
             ((ZipSplitReadOnlySeekableByteChannel) archive).position(centralDirectoryStartDiskNumber, centralDirectoryStartRelativeOffset);
         } else {
             skipBytes(ZIP64_EOCD_CFD_LOCATOR_OFFSET - ZipConstants.WORD /* signature has already been read */);
@@ -1459,7 +1454,8 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
             IOUtils.readFully(archive, dwordBbuf);
             centralDirectoryStartDiskNumber = 0;
             centralDirectoryStartRelativeOffset = ZipEightByteInteger.getLongValue(dwordBuf);
-            requireNonNegative(centralDirectoryStartRelativeOffset, "Broken archive, ZIP64 end of central directory record with negative central directory offset");
+            ArchiveException.requireNonNegative(centralDirectoryStartRelativeOffset,
+                    "Broken archive, ZIP64 end of central directory record with negative central directory offset");
             archive.position(centralDirectoryStartRelativeOffset);
         }
     }
@@ -1506,37 +1502,23 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
         ze.setCrc(ZipLong.getValue(cfhBuf, off));
         off += ZipConstants.WORD;
 
-        long size = ZipLong.getValue(cfhBuf, off);
-        if (size < 0) {
-            throw new ArchiveException("Broken archive, entry with negative compressed size");
-        }
+        long size = ArchiveException.requireNonNegative(ZipLong.getValue(cfhBuf, off), "Broken archive, entry with negative compressed size");
         ze.setCompressedSize(size);
         off += ZipConstants.WORD;
 
-        size = ZipLong.getValue(cfhBuf, off);
-        if (size < 0) {
-            throw new ArchiveException("Broken archive, entry with negative size");
-        }
+        size = ArchiveException.requireNonNegative(ZipLong.getValue(cfhBuf, off), "Broken archive, entry with negative size");
         ze.setSize(size);
         off += ZipConstants.WORD;
 
         final int fileNameLen = ArchiveUtils.checkEntryNameLength(ZipShort.getValue(cfhBuf, off), maxEntryNameLength, "ZIP");
+        ArchiveException.requireNonNegative(fileNameLen, "Broken archive, entry with negative fileNameLen");
         off += ZipConstants.SHORT;
-        if (fileNameLen < 0) {
-            throw new ArchiveException("Broken archive, entry with negative fileNameLen");
-        }
 
-        final int extraLen = ZipShort.getValue(cfhBuf, off);
+        final int extraLen = ArchiveException.requireNonNegative(ZipShort.getValue(cfhBuf, off), "Broken archive, entry with negative extraLen");
         off += ZipConstants.SHORT;
-        if (extraLen < 0) {
-            throw new ArchiveException("Broken archive, entry with negative extraLen");
-        }
 
-        final int commentLen = ZipShort.getValue(cfhBuf, off);
+        final int commentLen = ArchiveException.requireNonNegative(ZipShort.getValue(cfhBuf, off), "Broken archive, entry with negative commentLen");
         off += ZipConstants.SHORT;
-        if (commentLen < 0) {
-            throw new ArchiveException("Broken archive, entry with negative commentLen");
-        }
 
         ze.setDiskNumberStart(ZipShort.getValue(cfhBuf, off));
         off += ZipConstants.SHORT;
@@ -1615,12 +1597,8 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
     }
 
     private void sanityCheckLFHOffset(final ZipArchiveEntry entry) throws IOException {
-        if (entry.getDiskNumberStart() < 0) {
-            throw new ArchiveException("Broken archive, entry with negative disk number");
-        }
-        if (entry.getLocalHeaderOffset() < 0) {
-            throw new ArchiveException("Broken archive, entry with negative local file header offset");
-        }
+        ArchiveException.requireNonNegative(entry.getDiskNumberStart(), "Broken archive, entry with negative disk number");
+        ArchiveException.requireNonNegative(entry.getLocalHeaderOffset(), "Broken archive, entry with negative local file header offset");
         if (isSplitZipArchive) {
             if (entry.getDiskNumberStart() > centralDirectoryStartDiskNumber) {
                 throw new ArchiveException("Local file header for '%s' starts on a later disk than central directory", entry.getName());
@@ -1676,31 +1654,20 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
             final boolean hasRelativeHeaderOffset = entry.getLocalHeaderOffset() == ZipConstants.ZIP64_MAGIC;
             final boolean hasDiskStart = entry.getDiskNumberStart() == ZipConstants.ZIP64_MAGIC_SHORT;
             z64.reparseCentralDirectoryData(hasUncompressedSize, hasCompressedSize, hasRelativeHeaderOffset, hasDiskStart);
-
             if (hasUncompressedSize) {
-                final long size = z64.getSize().getLongValue();
-                if (size < 0) {
-                    throw new ArchiveException("Broken archive, entry with negative size");
-                }
-                entry.setSize(size);
+                entry.setSize(ArchiveException.requireNonNegative(z64.getSize().getLongValue(), "Broken archive, entry with negative size"));
             } else if (hasCompressedSize) {
                 z64.setSize(new ZipEightByteInteger(entry.getSize()));
             }
-
             if (hasCompressedSize) {
-                final long size = z64.getCompressedSize().getLongValue();
-                if (size < 0) {
-                    throw new ArchiveException("Broken archive, entry with negative compressed size");
-                }
-                entry.setCompressedSize(size);
+                entry.setCompressedSize(
+                        ArchiveException.requireNonNegative(z64.getCompressedSize().getLongValue(), "Broken archive, entry with negative compressed size"));
             } else if (hasUncompressedSize) {
                 z64.setCompressedSize(new ZipEightByteInteger(entry.getCompressedSize()));
             }
-
             if (hasRelativeHeaderOffset) {
                 entry.setLocalHeaderOffset(z64.getRelativeHeaderOffset().getLongValue());
             }
-
             if (hasDiskStart) {
                 entry.setDiskNumberStart(z64.getDiskStartNumber().getValue());
             }

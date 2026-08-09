@@ -1162,11 +1162,7 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
         if (finished) {
             throw new ArchiveException("Stream has already been finished");
         }
-
-        if (entry == null) {
-            throw new ArchiveException("No current entry to close");
-        }
-
+        ArchiveException.requireNonNull(entry, "No current entry to close");
         if (!entry.hasWritten) {
             write(ArrayUtils.EMPTY_BYTE_ARRAY, 0, 0);
         }

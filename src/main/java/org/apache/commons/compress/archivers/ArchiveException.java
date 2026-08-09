@@ -66,6 +66,52 @@ public class ArchiveException extends CompressException {
     }
 
     /**
+     * Checks that the specified value is not negative and throws a customized {@link ArchiveException} if it is.
+     *
+     * @param value   The value to check for negativity.
+     * @param message The detail message to be used in the event that a {@code ArchiveException} is thrown.
+     * @return {@code value} if not negative.
+     * @throws ArchiveException if {@code value} is negative.
+     * @since 1.29.0
+     */
+    public static int requireNonNegative(final int value, final String message) throws ArchiveException {
+        if (value < 0) {
+            throw new ArchiveException(message);
+        }
+        return value;
+    }
+
+    /**
+     * Checks that the specified value is not negative and throws a customized {@link ArchiveException} if it is.
+     *
+     * @param value   The value to check for negativity.
+     * @param message The detail message to be used in the event that a {@code ArchiveException} is thrown.
+     * @return {@code value} if not negative.
+     * @throws ArchiveException if {@code value} is negative.
+     * @since 1.29.0
+     */
+    public static long requireNonNegative(final long value, final String message) throws ArchiveException {
+        if (value < 0) {
+            throw new ArchiveException(message);
+        }
+        return value;
+    }
+
+    /**
+     * Checks that the specified object reference is not {@code null} and throws a customized {@link ArchiveException} if it is. *
+     *
+     * @param obj     The object reference to check for nullity.
+     * @param message The detail message to be used in the event that a {@code ArchiveException} is thrown.
+     * @param <T>     the type of the reference.
+     * @return {@code obj} if not {@code null}.
+     * @throws ArchiveException if {@code obj} is {@code null}.
+     * @since 1.29.0
+     */
+    public static <T> T requireNonNull(final T obj, final String message) throws ArchiveException {
+        return CompressException.requireNonNull(ArchiveException.class, obj, message);
+    }
+
+    /**
      * Checks that the specified object reference is not {@code null} and throws a customized {@link ArchiveException} if it is. *
      *
      * @param obj             The object reference to check for nullity.

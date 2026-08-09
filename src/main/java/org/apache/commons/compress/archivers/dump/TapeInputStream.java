@@ -173,10 +173,7 @@ final class TapeInputStream extends FilterInputStream {
      * @throws IOException Thrown if an I/O error occurs.
      */
     private void readBlock(final boolean decompress) throws IOException {
-        if (in == null) {
-            throw new ArchiveException("Input buffer is closed");
-        }
-
+        ArchiveException.requireNonNull(in, "Input buffer is closed");
         if (!isCompressed || currBlkIdx == -1) {
             // file is not compressed
             readFully(blockBuffer, 0, blockSize);

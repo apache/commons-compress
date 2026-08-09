@@ -364,11 +364,8 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
         // physical bytes backing this entry
         long dataBytes = 0;
         for (final TarArchiveStructSparse sparseHeader : sparseHeaders) {
-            final long zeroBlockSize = sparseHeader.getOffset() - offset;
-            if (zeroBlockSize < 0) {
-                // sparse header says to move backwards inside the extracted entry
-                throw new ArchiveException("Corrupted struct sparse detected");
-            }
+            final long zeroBlockSize = ArchiveException.requireNonNegative(sparseHeader.getOffset() - offset, "Corrupted struct sparse detected");
+            // sparse header says to move backwards inside the extracted entry
             // only store the zero block if it is not empty
             if (zeroBlockSize > 0) {
                 streams.add(BoundedInputStream.builder().setInputStream(zeroInputStream).setMaxCount(zeroBlockSize).get());
@@ -569,10 +566,8 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
         if (currEntry.isExtended()) {
             TarArchiveSparseEntry entry;
             do {
-                final ByteBuffer headerBuf = getRecord();
-                if (headerBuf == null) {
-                    throw new ArchiveException("Premature end of tar archive. Didn't find extended_header after header with extended flag.");
-                }
+                final ByteBuffer headerBuf = ArchiveException.requireNonNull(getRecord(),
+                        "Premature end of tar archive. Didn't find extended_header after header with extended flag.");
                 entry = new TarArchiveSparseEntry(headerBuf.array());
                 currEntry.getSparseHeaders().addAll(entry.getSparseHeaders());
             } while (entry.isExtended());

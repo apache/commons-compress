@@ -39,9 +39,9 @@ public class CompressException extends IOException {
     /**
      * Delegates to {@link Math#addExact(int, int)} wrapping its {@link ArithmeticException} in our {@link ArchiveException}.
      *
-     * @param <E>             The type of the exception.
-     * @param x The first value.
-     * @param y The second value.
+     * @param <E>       The type of the exception.
+     * @param x         The first value.
+     * @param y         The second value.
      * @param eFunction How to create an exception.
      * @return The result.
      * @throws E if the result or input overflows an {@code int}.
@@ -56,25 +56,48 @@ public class CompressException extends IOException {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    private static <E extends CompressException> E newInstance(final Class<E> cls, final String string) throws E {
+        try {
+            return cls.getConstructor(String.class).newInstance(string);
+        } catch (ReflectiveOperationException | SecurityException e) {
+            return (E) new CompressException(string, e);
+        }
+    }
+
     /**
-     * Checks that the specified object reference is not {@code null} and throws a customized {@link CompressException} if it is. *
+     * Checks that the specified object reference is not {@code null} and throws a customized {@link CompressException} if it is.
+     *
+     * @param <T>     The type of the reference.
+     * @param <E>     The type of the exception.
+     * @param cls     The exception class.
+     * @param obj     The object reference to check for nullity.
+     * @param message The detail message to be used in the event that a {@code CompressException} is thrown.
+     * @return {@code obj} if not {@code null}.
+     * @throws E if {@code obj} is {@code null}.
+     * @since 1.29.0
+     */
+    protected static <T, E extends CompressException> T requireNonNull(final Class<E> cls, final T obj, final String message) throws E {
+        if (obj == null) {
+            throw (E) newInstance(cls, message);
+        }
+        return obj;
+    }
+
+    /**
+     * Checks that the specified object reference is not {@code null} and throws a customized {@link CompressException} if it is.
      *
      * @param <T>             The type of the reference.
      * @param <E>             The type of the exception.
      * @param cls             The exception class.
      * @param obj             The object reference to check for nullity.
-     * @param messageSupplier supplier of the detail message to be used in the event that a {@code ArchiveException} is thrown.
+     * @param messageSupplier supplier of the detail message to be used in the event that a {@code CompressException} is thrown.
      * @return {@code obj} if not {@code null}.
      * @throws E if {@code obj} is {@code null}.
      */
-    protected static <T, E extends Throwable> T requireNonNull(final Class<? super E> cls, final T obj, final Supplier<String> messageSupplier) throws E {
+    protected static <T, E extends CompressException> T requireNonNull(final Class<E> cls, final T obj, final Supplier<String> messageSupplier) throws E {
         if (obj == null) {
-            final String string = Suppliers.get(messageSupplier);
-            try {
-                cls.getConstructor(String.class).newInstance(string);
-            } catch (ReflectiveOperationException | SecurityException e) {
-                new CompressException(string, e);
-            }
+            throw (E) newInstance(cls, Suppliers.get(messageSupplier));
         }
         return obj;
     }

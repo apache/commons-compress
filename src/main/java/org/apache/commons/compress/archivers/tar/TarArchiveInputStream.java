@@ -369,11 +369,8 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
         // physical bytes read from the archive for this entry
         long dataBytes = 0;
         for (final TarArchiveStructSparse sparseHeader : sparseHeaders) {
-            final long zeroBlockSize = sparseHeader.getOffset() - offset;
-            if (zeroBlockSize < 0) {
-                // sparse header says to move backwards inside the extracted entry
-                throw new ArchiveException("Corrupted struct sparse detected");
-            }
+            final long zeroBlockSize = ArchiveException.requireNonNegative(sparseHeader.getOffset() - offset, "Corrupted struct sparse detected");
+            // sparse header says to move backwards inside the extracted entry
             // only store the zero block if it is not empty
             if (zeroBlockSize > 0) {
                 // @formatter:off
@@ -686,10 +683,8 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
         if (currEntry.isExtended()) {
             TarArchiveSparseEntry entry;
             do {
-                final byte[] headerBuf = getRecord();
-                if (headerBuf == null) {
-                    throw new ArchiveException("Premature end of tar archive. Didn't find extended_header after header with extended flag.");
-                }
+                final byte[] headerBuf = ArchiveException.requireNonNull(getRecord(),
+                        "Premature end of tar archive. Didn't find extended_header after header with extended flag.");
                 entry = new TarArchiveSparseEntry(headerBuf);
                 currEntry.getSparseHeaders().addAll(entry.getSparseHeaders());
             } while (entry.isExtended());
