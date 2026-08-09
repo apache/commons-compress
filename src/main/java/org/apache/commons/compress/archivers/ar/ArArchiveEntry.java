@@ -26,6 +26,7 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.Date;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 
@@ -88,7 +89,7 @@ public class ArArchiveEntry implements ArchiveEntry {
      */
     public ArArchiveEntry(final File inputFile, final String entryName) {
         // TODO sort out mode
-        this(entryName, inputFile.isFile() ? inputFile.length() : 0, 0, 0, DEFAULT_MODE, inputFile.lastModified() / 1000);
+        this(entryName, inputFile.isFile() ? inputFile.length() : 0, 0, 0, DEFAULT_MODE, TimeUnit.MILLISECONDS.toSeconds(inputFile.lastModified()));
     }
 
     /**
@@ -102,7 +103,7 @@ public class ArArchiveEntry implements ArchiveEntry {
      */
     public ArArchiveEntry(final Path inputPath, final String entryName, final LinkOption... options) throws IOException {
         this(entryName, Files.isRegularFile(inputPath, options) ? Files.size(inputPath) : 0, 0, 0, DEFAULT_MODE,
-                Files.getLastModifiedTime(inputPath, options).toMillis() / 1000);
+                Files.getLastModifiedTime(inputPath, options).to(TimeUnit.SECONDS));
     }
 
     /**
@@ -116,7 +117,7 @@ public class ArArchiveEntry implements ArchiveEntry {
      * @param length length of the entry in bytes.
      */
     public ArArchiveEntry(final String name, final long length) {
-        this(name, length, 0, 0, DEFAULT_MODE, System.currentTimeMillis() / 1000);
+        this(name, length, 0, 0, DEFAULT_MODE, TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()));
     }
 
     /**

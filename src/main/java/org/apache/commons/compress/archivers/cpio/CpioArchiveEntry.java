@@ -27,6 +27,7 @@ import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
 import java.util.Date;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
@@ -294,7 +295,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
             throw new IllegalArgumentException("Cannot determine type of file " + inputFile.getName());
         }
         // TODO set other fields as needed
-        setTime(inputFile.lastModified() / 1000);
+        setTimeMillis(inputFile.lastModified());
     }
 
     /**
@@ -931,10 +932,20 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Sets the time in seconds.
      *
-     * @param time The time to set.
+     * @param time The time to set in seconds.
      */
     public void setTime(final long time) {
         this.mtime = time;
+    }
+
+    /**
+     * Sets the time in milliseconds.
+     *
+     * @param time The time to set in milliseconds.
+     * @since 1.29.0
+     */
+    public void setTimeMillis(final long time) {
+        this.mtime = TimeUnit.MILLISECONDS.toSeconds(time);
     }
 
     /**

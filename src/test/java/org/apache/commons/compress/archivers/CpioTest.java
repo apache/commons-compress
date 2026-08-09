@@ -138,7 +138,7 @@ public final class CpioTest extends AbstractTest {
         try (CpioArchiveOutputStream tos = new CpioArchiveOutputStream(Files.newOutputStream(archive.toPath()))) {
             beforeArchiveWrite = getTempDirFile().lastModified();
             final CpioArchiveEntry in = new CpioArchiveEntry("foo/");
-            in.setTime(beforeArchiveWrite / 1000);
+            in.setTimeMillis(beforeArchiveWrite);
             in.setMode(CpioConstants.C_ISDIR);
             tos.putArchiveEntry(in);
             tos.closeArchiveEntry();
@@ -160,7 +160,7 @@ public final class CpioTest extends AbstractTest {
         final File archive = createTempFile("test.", ".cpio");
         try (CpioArchiveOutputStream tos = new CpioArchiveOutputStream(Files.newOutputStream(archive.toPath()))) {
             final CpioArchiveEntry in = new CpioArchiveEntry("foo");
-            in.setTime(tmp.lastModified() / 1000);
+            in.setTimeMillis(tmp.lastModified());
             in.setSize(tmp.length());
             in.setMode(CpioConstants.C_ISREG);
             tos.putArchiveEntry(in);
@@ -211,7 +211,7 @@ public final class CpioTest extends AbstractTest {
         final Charset charset = StandardCharsets.UTF_8;
         try (CpioArchiveOutputStream tos = new CpioArchiveOutputStream(Files.newOutputStream(archive.toPath()))) {
             final CpioArchiveEntry entry = new CpioArchiveEntry(name);
-            entry.setTime(tmp.lastModified() / 1000);
+            entry.setTimeMillis(tmp.lastModified());
             entry.setSize(nameLink.length());
             entry.setMode(CpioConstants.C_ISLNK);
             assertTrue(entry.isSymbolicLink());

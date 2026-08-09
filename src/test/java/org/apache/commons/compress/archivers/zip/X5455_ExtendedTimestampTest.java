@@ -40,6 +40,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipException;
 
 import org.apache.commons.compress.AbstractTest;
@@ -193,7 +194,7 @@ class X5455_ExtendedTimestampTest {
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
         final long timeMillis = cal.getTimeInMillis();
-        final ZipLong time = new ZipLong(timeMillis / 1000);
+        final ZipLong time = new ZipLong(TimeUnit.MILLISECONDS.toSeconds(timeMillis));
 
         // set too big
         // Java time is 1000 x larger (milliseconds).

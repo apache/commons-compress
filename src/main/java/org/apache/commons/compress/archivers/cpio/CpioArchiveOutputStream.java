@@ -291,7 +291,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
             closeArchiveEntry(); // close previous entry
         }
         if (entry.getTime() == -1) {
-            entry.setTime(System.currentTimeMillis() / 1000);
+            entry.setTimeMillis(System.currentTimeMillis());
         }
         final short format = entry.getFormat();
         if (format != this.entryFormat) {

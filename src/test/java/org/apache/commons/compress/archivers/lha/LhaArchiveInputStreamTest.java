@@ -40,6 +40,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveException;
@@ -633,7 +634,7 @@ class LhaArchiveInputStreamTest extends AbstractTest {
             // Valid
             final LhaArchiveEntry.Builder entryBuilder = LhaArchiveEntry.builder();
             archive.parseExtendedHeader(toByteBuffer(0x54, 0x5c, 0x73, 0x9c, 0x68, 0x00, 0x00), entryBuilder);
-            assertEquals(0x689c735cL, entryBuilder.get().getLastModifiedDate().getTime() / 1000);
+            assertEquals(0x689c735cL, TimeUnit.MILLISECONDS.toSeconds(entryBuilder.get().getLastModifiedDate().getTime()));
             // Invalid length
             try {
                 archive.parseExtendedHeader(toByteBuffer(0x54, 0x5c, 0x73, 0x9c, 0x00, 0x00), entryBuilder);

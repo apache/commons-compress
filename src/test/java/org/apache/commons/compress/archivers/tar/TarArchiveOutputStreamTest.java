@@ -41,6 +41,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -212,7 +213,8 @@ class TarArchiveOutputStreamTest extends AbstractTest {
             final ArchiveEntry nextEntry = tarIn.getNextEntry();
             assertEquals(longFileName, nextEntry.getName());
             // tar archive stores modification time to second granularity only (floored)
-            assertEquals(modificationDate.getTime() / 1000, nextEntry.getLastModifiedDate().getTime() / 1000);
+            assertEquals(TimeUnit.MILLISECONDS.toSeconds(modificationDate.getTime()),
+                    TimeUnit.MILLISECONDS.toSeconds(nextEntry.getLastModifiedDate().getTime()));
         }
     }
 
