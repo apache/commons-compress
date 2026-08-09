@@ -585,6 +585,12 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
         return found64;
     }
 
+    private static void requireNonNegative(final long value, final String message) throws ArchiveException {
+        if (value < 0) {
+            throw new ArchiveException(message);
+        }
+    }
+
     /**
      * Converts a raw version made by int to a <a href="https://pkwaredownloads.blob.core.windows.net/pkware-general/Documentation/APPNOTE_6.2.0.TXT">platform
      * code</a>.
@@ -1417,18 +1423,14 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
             dwordBbuf.rewind();
             IOUtils.readFully(archive, dwordBbuf);
             final long relativeOffsetOfEOCD = ZipEightByteInteger.getLongValue(dwordBuf);
-            if (relativeOffsetOfEOCD < 0) {
-                throw new ArchiveException("Broken archive, ZIP64 end of central directory locator with negative offset");
-            }
+            requireNonNegative(relativeOffsetOfEOCD, "Broken archive, ZIP64 end of central directory locator with negative offset");
             ((ZipSplitReadOnlySeekableByteChannel) archive).position(diskNumberOfEOCD, relativeOffsetOfEOCD);
         } else {
             skipBytes(ZIP64_EOCDL_LOCATOR_OFFSET - ZipConstants.WORD /* signature has already been read */);
             dwordBbuf.rewind();
             IOUtils.readFully(archive, dwordBbuf);
             final long relativeOffsetOfEOCD = ZipEightByteInteger.getLongValue(dwordBuf);
-            if (relativeOffsetOfEOCD < 0) {
-                throw new ArchiveException("Broken archive, ZIP64 end of central directory locator with negative offset");
-            }
+            requireNonNegative(relativeOffsetOfEOCD, "Broken archive, ZIP64 end of central directory locator with negative offset");
             archive.position(relativeOffsetOfEOCD);
         }
 
@@ -1449,9 +1451,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
             dwordBbuf.rewind();
             IOUtils.readFully(archive, dwordBbuf);
             centralDirectoryStartRelativeOffset = ZipEightByteInteger.getLongValue(dwordBuf);
-            if (centralDirectoryStartRelativeOffset < 0) {
-                throw new ArchiveException("Broken archive, ZIP64 end of central directory record with negative central directory offset");
-            }
+            requireNonNegative(centralDirectoryStartRelativeOffset, "Broken archive, ZIP64 end of central directory record with negative central directory offset");
             ((ZipSplitReadOnlySeekableByteChannel) archive).position(centralDirectoryStartDiskNumber, centralDirectoryStartRelativeOffset);
         } else {
             skipBytes(ZIP64_EOCD_CFD_LOCATOR_OFFSET - ZipConstants.WORD /* signature has already been read */);
@@ -1459,9 +1459,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
             IOUtils.readFully(archive, dwordBbuf);
             centralDirectoryStartDiskNumber = 0;
             centralDirectoryStartRelativeOffset = ZipEightByteInteger.getLongValue(dwordBuf);
-            if (centralDirectoryStartRelativeOffset < 0) {
-                throw new ArchiveException("Broken archive, ZIP64 end of central directory record with negative central directory offset");
-            }
+            requireNonNegative(centralDirectoryStartRelativeOffset, "Broken archive, ZIP64 end of central directory record with negative central directory offset");
             archive.position(centralDirectoryStartRelativeOffset);
         }
     }
