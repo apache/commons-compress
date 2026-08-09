@@ -82,5 +82,6 @@ public final class ParsingUtils {
     }
 
     private ParsingUtils() {
-        /* no instances */ }
+        // no instances.
+    }
 }
