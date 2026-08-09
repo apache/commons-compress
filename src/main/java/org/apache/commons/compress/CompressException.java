@@ -69,10 +69,11 @@ public class CompressException extends IOException {
      */
     protected static <T, E extends Throwable> T requireNonNull(final Class<? super E> cls, final T obj, final Supplier<String> messageSupplier) throws E {
         if (obj == null) {
+            final String string = Suppliers.get(messageSupplier);
             try {
-                cls.getConstructor(String.class).newInstance(Suppliers.get(messageSupplier));
+                cls.getConstructor(String.class).newInstance(string);
             } catch (ReflectiveOperationException | SecurityException e) {
-                new CompressException(Suppliers.get(messageSupplier), e);
+                new CompressException(string, e);
             }
         }
         return obj;
