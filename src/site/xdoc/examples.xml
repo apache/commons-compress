@@ -224,6 +224,79 @@ try (InputStream fi = Files.newInputStream(Paths.get("my.tar.gz"));
 
       </subsection>
 
+      <subsection name="Safe Extraction">
+        <p>The skeleton above trusts the archive: it follows symbolic
+        links and can be raced by a concurrent attacker. Starting with
+        Compress 1.29 the
+        <code>org.apache.commons.compress.archivers.extractor.Extractor</code>
+        class materializes a whole archive into a target directory
+        safely, resisting both symlink-slip from the archive and
+        concurrent symlink races.</p>
+
+        <p>Obtain one with <code>Extractor.newExtractor(Path)</code>,
+        which returns the strongest implementation the platform
+        supports: a race-safe extractor backed by
+        <code>java.nio.file.SecureDirectoryStream</code> where the file
+        system provides one (Linux), otherwise a best-effort extractor
+        that still resists symlink-slip from the archive but cannot
+        fully close a concurrent time-of-check-to-time-of-use race.</p>
+
+<source><![CDATA[
+Path targetDir = ...
+try (ArchiveInputStream<?> i = ... create the stream for your format, use buffering...) {
+    Extractor.newExtractor(targetDir).extract(i);
+}
+]]></source>
+
+        <p>Defaults are conservative: symbolic-link entries are
+        rejected, special entries such as devices and FIFOs are
+        skipped, and existing files are not overwritten. The handling
+        of symbolic links is controlled by <code>SymlinkPolicy</code>:</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Policy</th>
+              <th>Behavior</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>REJECT</code> (default)</td>
+              <td>Fail if the archive contains any symbolic-link entry. Safest for untrusted archives.</td>
+            </tr>
+            <tr>
+              <td><code>SKIP</code></td>
+              <td>Silently ignore symbolic-link entries.</td>
+            </tr>
+            <tr>
+              <td><code>ALLOW_WITHIN_ROOT</code></td>
+              <td>Create a symbolic link only when its target lexically resolves inside the root. Best-effort, see the caveat below.</td>
+            </tr>
+            <tr>
+              <td><code>ALLOW_ALL</code></td>
+              <td>Create symbolic links verbatim. Only for fully trusted archives.</td>
+            </tr>
+          </tbody>
+        </table>
+
+<source><![CDATA[
+Extractor.newExtractor(targetDir)
+    .setSymlinkPolicy(SymlinkPolicy.ALLOW_WITHIN_ROOT)
+    .extract(archiveInputStream);
+]]></source>
+
+        <p><code>ALLOW_WITHIN_ROOT</code> is best-effort: the
+        containment test is lexical and evaluated at creation time, so
+        it cannot prevent a link reached through another link, nor a
+        chain of individually in-root links that escapes only once the
+        operating system resolves them together. Extraction itself
+        never follows these links, so nothing is written outside the
+        root while extracting; the residual risk is a created link that
+        a later consumer follows. For untrusted archives use
+        <code>REJECT</code> (the default) or <code>SKIP</code>.</p>
+      </subsection>
+
       <subsection name="Common Archival Logic">
         <p>Apart from 7z all formats that support writing provide a
         subclass of <code>ArchiveOutputStream</code> that can be used
