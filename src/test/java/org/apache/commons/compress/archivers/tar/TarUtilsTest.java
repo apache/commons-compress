@@ -440,7 +440,7 @@ class TarUtilsTest extends AbstractTest {
     }
 
     @Test
-    void testParseSparse() {
+    void testParseSparse() throws ArchiveException {
         final long expectedOffset = 0100000;
         final long expectedNumbytes = 0111000;
         final byte[] buffer = { ' ', ' ', ' ', ' ', ' ', '0', '1', '0', '0', '0', '0', '0', // sparseOffset

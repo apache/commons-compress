@@ -468,11 +468,8 @@ public final class TarUtils {
             throw new ArchiveException("Corrupted TAR archive. Bad format in GNU.sparse.map PAX Header");
         }
         for (int i = 0; i < sparseHeaderStrings.length; i += 2) {
-            final long sparseOffset = ArchiveException.requireNonNegative(ParsingUtils.parseLongValue(sparseHeaderStrings[i]),
-                    "Corrupted TAR archive. Sparse struct offset contains negative value");
-            final long sparseNumbytes = ArchiveException.requireNonNegative(ParsingUtils.parseLongValue(sparseHeaderStrings[i + 1]),
-                    "Corrupted TAR archive. Sparse struct numbytes contains negative value");
-            sparseHeaders.add(new TarArchiveStructSparse(sparseOffset, sparseNumbytes));
+            sparseHeaders.add(
+                    new TarArchiveStructSparse(ParsingUtils.parseLongValue(sparseHeaderStrings[i]), ParsingUtils.parseLongValue(sparseHeaderStrings[i + 1])));
         }
         return Collections.unmodifiableList(sparseHeaders);
     }
@@ -618,7 +615,7 @@ public final class TarUtils {
      * @param inputStream parsing source.
      * @param recordSize  The size the TAR header.
      * @return sparse headers.
-     * @throws IOException if an I/O error occurs.
+     * @throws IOException if an I/O error occurs or the sparse header is malformed.
      */
     static List<TarArchiveStructSparse> parsePAX1XSparseHeaders(final InputStream inputStream, final int recordSize) throws IOException {
         // for 1.X PAX Headers
@@ -626,16 +623,14 @@ public final class TarUtils {
         long bytesRead = 0;
         long[] readResult = readLineOfNumberForPax1x(inputStream);
         // overflow while reading number?
-        long sparseHeadersCount = ArchiveException.requireNonNegative(readResult[0], "Corrupted TAR archive: Negative value in sparse headers block.");
+        long sparseHeadersCount = readResult[0];
         bytesRead += readResult[1];
         while (sparseHeadersCount-- > 0) {
             readResult = readLineOfNumberForPax1x(inputStream);
-            final long sparseOffset = ArchiveException.requireNonNegative(readResult[0],
-                    "Corrupted TAR archive: Sparse header block offset contains negative value.");
+            final long sparseOffset = readResult[0];
             bytesRead += readResult[1];
             readResult = readLineOfNumberForPax1x(inputStream);
-            final long sparseNumbytes = ArchiveException.requireNonNegative(readResult[0],
-                    "Corrupted TAR archive: Sparse header block numbytes contains negative value.");
+            final long sparseNumbytes = readResult[0];
             bytesRead += readResult[1];
             sparseHeaders.add(new TarArchiveStructSparse(sparseOffset, sparseNumbytes));
         }
@@ -789,9 +784,10 @@ public final class TarUtils {
      * @param buffer The buffer from which to parse.
      * @param offset The offset into the buffer from which to parse.
      * @return A parsed sparse struct.
+     * @throws ArchiveException Thrown if either TarArchiveStructSparse's {@code offset} or {@code numBytes} is negative.
      * @since 1.20
      */
-    public static TarArchiveStructSparse parseSparse(final byte[] buffer, final int offset) {
+    public static TarArchiveStructSparse parseSparse(final byte[] buffer, final int offset) throws ArchiveException {
         final long sparseOffset = parseOctalOrBinary(buffer, offset, TarConstants.SPARSE_OFFSET_LEN);
         final long sparseNumbytes = parseOctalOrBinary(buffer, offset + TarConstants.SPARSE_OFFSET_LEN, TarConstants.SPARSE_NUMBYTES_LEN);
         return new TarArchiveStructSparse(sparseOffset, sparseNumbytes);
@@ -802,7 +798,7 @@ public final class TarUtils {
      * delimited by newlines.
      *
      * @param inputStream The input stream of the tar file.
-     * @return The decimal number delimited by '\n', and the bytes read from input stream.
+     * @return The decimal number delimited by '\n', and the bytes read from input stream, a long array of size 2.
      * @throws IOException if an I/O error occurs.
      */
     private static long[] readLineOfNumberForPax1x(final InputStream inputStream) throws IOException {
@@ -820,7 +816,9 @@ public final class TarUtils {
             result = result * 10 + (number - '0');
         }
         bytesRead += 1;
-        return new long[] { result, bytesRead };
+        return new long[] {
+                ArchiveException.requireNonNegative(result, "Corrupted TAR archive: Sparse header block offset contains negative value."),
+                ArchiveException.requireNonNegative(bytesRead, "Corrupted TAR archive: Sparse header block numbytes contains negative value.") };
     }
 
     /**

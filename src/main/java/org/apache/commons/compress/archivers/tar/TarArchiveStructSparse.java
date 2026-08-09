@@ -20,6 +20,8 @@ package org.apache.commons.compress.archivers.tar;
 
 import java.util.Objects;
 
+import org.apache.commons.compress.archivers.ArchiveException;
+
 /**
  * A {@code struct sparse} in a <a href="https://www.gnu.org/software/tar/manual/html_node/Standard.html">TAR archive</a>.
  * <p>
@@ -35,6 +37,7 @@ import java.util.Objects;
  * @since 1.20
  */
 public final class TarArchiveStructSparse {
+
     private final long offset;
     private final long numbytes;
 
@@ -43,16 +46,11 @@ public final class TarArchiveStructSparse {
      *
      * @param offset An offset greater or equal to zero.
      * @param numBytes A count greater or equal to zero.
+     * @throws ArchiveException Thrown if either {@code offset} or {@code numBytes} is negative.
      */
-    public TarArchiveStructSparse(final long offset, final long numBytes) {
-        if (offset < 0) {
-            throw new IllegalArgumentException("offset must not be negative");
-        }
-        if (numBytes < 0) {
-            throw new IllegalArgumentException("numBytes must not be negative");
-        }
-        this.offset = offset;
-        this.numbytes = numBytes;
+    public TarArchiveStructSparse(final long offset, final long numBytes) throws ArchiveException {
+        this.offset = ArchiveException.requireNonNegative(offset, "TarArchiveStructSparse offset must not be negative.");
+        this.numbytes = ArchiveException.requireNonNegative(numBytes, "TarArchiveStructSparse numbytes must not be negative.");
     }
 
     @Override
