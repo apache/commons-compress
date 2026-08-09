@@ -18,7 +18,7 @@
  */
 package org.apache.commons.compress.utils;
 
-import java.io.IOException;
+import org.apache.commons.compress.CompressException;
 
 /**
  * Utility methods for parsing data and converting it to other formats.
@@ -32,9 +32,9 @@ public final class ParsingUtils {
      *
      * @param value string value to parse.
      * @return parsed value as an int.
-     * @throws IOException when the value cannot be parsed.
+     * @throws CompressException when the value cannot be parsed.
      */
-    public static int parseIntValue(final String value) throws IOException {
+    public static int parseIntValue(final String value) throws CompressException {
         return parseIntValue(value, 10);
     }
 
@@ -44,13 +44,13 @@ public final class ParsingUtils {
      * @param value string value to parse.
      * @param radix radix value to use for parsing.
      * @return parsed value as an int.
-     * @throws IOException when the value cannot be parsed.
+     * @throws CompressException when the value cannot be parsed.
      */
-    public static int parseIntValue(final String value, final int radix) throws IOException {
+    public static int parseIntValue(final String value, final int radix) throws CompressException {
         try {
             return Integer.parseInt(value, radix);
         } catch (final NumberFormatException e) {
-            throw new IOException("Unable to parse int from string value: " + value, e);
+            throw new CompressException("Unable to parse int from string value: " + value, e);
         }
     }
 
@@ -59,9 +59,9 @@ public final class ParsingUtils {
      *
      * @param value string value to parse.
      * @return parsed value as a long.
-     * @throws IOException when the value cannot be parsed.
+     * @throws CompressException when the value cannot be parsed.
      */
-    public static long parseLongValue(final String value) throws IOException {
+    public static long parseLongValue(final String value) throws CompressException {
         return parseLongValue(value, 10);
     }
 
@@ -71,13 +71,13 @@ public final class ParsingUtils {
      * @param value string value to parse.
      * @param radix radix value to use for parsing.
      * @return parsed value as a long.
-     * @throws IOException when the value cannot be parsed.
+     * @throws CompressException when the value cannot be parsed.
      */
-    public static long parseLongValue(final String value, final int radix) throws IOException {
+    public static long parseLongValue(final String value, final int radix) throws CompressException {
         try {
             return Long.parseLong(value, radix);
         } catch (final NumberFormatException e) {
-            throw new IOException("Unable to parse long from string value: " + value, e);
+            throw new CompressException("Unable to parse long from string value: " + value, e);
         }
     }
 

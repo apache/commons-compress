@@ -168,6 +168,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory">TarArchiveEntry.setDevMajor(int) now throw ArchiveException instead of IllegalArgumentException.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">TarArchiveEntry.setDevMinor(int) now throw ArchiveException instead of IllegalArgumentException.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">TarArchiveEntry.setSize(long) now throw ArchiveException instead of IllegalArgumentException.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">ParsingUtils now throws the IOException subclass CompressException.</action>
       <!-- ADD -->
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add MemoryLimitException.MemoryLimitException(long, long).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add CompressException.CompressException(String, Object...).</action>
