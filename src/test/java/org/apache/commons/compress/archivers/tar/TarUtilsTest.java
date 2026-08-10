@@ -184,18 +184,18 @@ class TarUtilsTest extends AbstractTest {
         assertEquals(string, TarUtils.parseName(buff, 0, len));
     }
 
-    private void checkRoundTripOctal(final long value) {
+    private void checkRoundTripOctal(final long value) throws ArchiveException {
         checkRoundTripOctal(value, TarConstants.SIZELEN);
     }
 
-    private void checkRoundTripOctal(final long value, final int bufsize) {
+    private void checkRoundTripOctal(final long value, final int bufsize) throws ArchiveException {
         final byte[] buffer = new byte[bufsize];
         TarUtils.formatLongOctalBytes(value, buffer, 0, buffer.length);
         final long parseValue = TarUtils.parseOctal(buffer, 0, buffer.length);
         assertEquals(value, parseValue);
     }
 
-    private void checkRoundTripOctalOrBinary(final long value, final int bufsize) {
+    private void checkRoundTripOctalOrBinary(final long value, final int bufsize) throws ArchiveException {
         final byte[] buffer = new byte[bufsize];
         TarUtils.formatLongOctalOrBinaryBytes(value, buffer, 0, buffer.length);
         final long parseValue = TarUtils.parseOctalOrBinary(buffer, 0, buffer.length);
@@ -223,18 +223,18 @@ class TarUtilsTest extends AbstractTest {
     }
 
     @Test
-    void testNegative() {
+    void testNegative() throws ArchiveException {
         final byte[] buffer = new byte[22];
         TarUtils.formatUnsignedOctalString(-1, buffer, 0, buffer.length);
         assertEquals("1777777777777777777777", new String(buffer, UTF_8));
     }
 
     @Test
-    void testOverflow() {
+    void testOverflow() throws ArchiveException {
         final byte[] buffer = new byte[8 - 1]; // a lot of the numbers have 8-byte buffers (nul term)
         TarUtils.formatUnsignedOctalString(07777777L, buffer, 0, buffer.length);
         assertEquals("7777777", new String(buffer, UTF_8));
-        assertThrows(IllegalArgumentException.class, () -> TarUtils.formatUnsignedOctalString(017777777L, buffer, 0, buffer.length),
+        assertThrows(ArchiveException.class, () -> TarUtils.formatUnsignedOctalString(017777777L, buffer, 0, buffer.length),
                 "Should have cause IllegalArgumentException");
     }
 
@@ -640,7 +640,7 @@ class TarUtilsTest extends AbstractTest {
     }
 
     @Test
-    void testRoundTripOctal() {
+    void testRoundTripOctal() throws ArchiveException {
         checkRoundTripOctal(0);
         checkRoundTripOctal(1);
 //        checkRoundTripOctal(-1); // TODO What should this do?
@@ -652,7 +652,7 @@ class TarUtilsTest extends AbstractTest {
         checkRoundTripOctal(TarConstants.MAXID, 8);
     }
 
-    private void testRoundTripOctalOrBinary(final int length) {
+    private void testRoundTripOctalOrBinary(final int length) throws ArchiveException {
         checkRoundTripOctalOrBinary(0, length);
         checkRoundTripOctalOrBinary(1, length);
         checkRoundTripOctalOrBinary(TarConstants.MAXSIZE, length); // will need binary format
@@ -662,20 +662,20 @@ class TarUtilsTest extends AbstractTest {
     }
 
     @Test
-    void testRoundTripOctalOrBinary12() {
+    void testRoundTripOctalOrBinary12() throws ArchiveException {
         testRoundTripOctalOrBinary(12);
         checkRoundTripOctalOrBinary(Long.MAX_VALUE, 12);
         checkRoundTripOctalOrBinary(Long.MIN_VALUE + 1, 12);
     }
 
     @Test
-    void testRoundTripOctalOrBinary8() {
+    void testRoundTripOctalOrBinary8() throws ArchiveException {
         testRoundTripOctalOrBinary(8);
     }
 
     @Test
     void testRoundTripOctalOrBinary8_ValueTooBigForBinary() {
-        final IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> checkRoundTripOctalOrBinary(Long.MAX_VALUE, 8),
+        final ArchiveException e = assertThrows(ArchiveException.class, () -> checkRoundTripOctalOrBinary(Long.MAX_VALUE, 8),
                 "Should throw exception - value is too long to fit buffer of this len");
         assertEquals("Value 9223372036854775807 is too large for 8 byte field.", e.getMessage());
     }
@@ -690,7 +690,7 @@ class TarUtilsTest extends AbstractTest {
 
     // Check correct trailing bytes are generated
     @Test
-    void testTrailers() {
+    void testTrailers() throws ArchiveException {
         final byte[] buffer = new byte[12];
         TarUtils.formatLongOctalBytes(123, buffer, 0, buffer.length);
         assertEquals(' ', buffer[buffer.length - 1]);

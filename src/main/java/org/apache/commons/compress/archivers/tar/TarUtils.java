@@ -150,12 +150,13 @@ public final class TarUtils {
         return "Invalid byte " + currentByte + " at offset " + (current - offset) + " in '" + string + "' len=" + length;
     }
 
-    private static void formatBigIntegerBinary(final long value, final byte[] buf, final int offset, final int length, final boolean negative) {
+    private static void formatBigIntegerBinary(final long value, final byte[] buf, final int offset, final int length, final boolean negative)
+            throws ArchiveException {
         final BigInteger val = BigInteger.valueOf(value);
         final byte[] b = val.toByteArray();
         final int len = b.length;
         if (len > length - 1) {
-            throw new IllegalArgumentException("Value " + value + " is too large for " + length + " byte field.");
+            throw new ArchiveException("Value " + value + " is too large for " + length + " byte field.");
         }
         final int off = offset + length - len;
         System.arraycopy(b, 0, buf, off, len);
@@ -173,9 +174,9 @@ public final class TarUtils {
      * @param offset The starting offset into the buffer.
      * @param length The size of the buffer.
      * @return The updated value of offset, i.e. offset+length.
-     * @throws IllegalArgumentException if the value (and trailer) will not fit in the buffer.
+     * @throws ArchiveException if the value (and trailer) will not fit in the buffer.
      */
-    public static int formatCheckSumOctalBytes(final long value, final byte[] buf, final int offset, final int length) {
+    public static int formatCheckSumOctalBytes(final long value, final byte[] buf, final int offset, final int length) throws ArchiveException {
         int idx = length - 2; // for NUL and space
         formatUnsignedOctalString(value, buf, offset, idx);
         buf[offset + idx++] = 0; // Trailing null
@@ -183,12 +184,13 @@ public final class TarUtils {
         return offset + length;
     }
 
-    private static void formatLongBinary(final long value, final byte[] buf, final int offset, final int length, final boolean negative) {
+    private static void formatLongBinary(final long value, final byte[] buf, final int offset, final int length, final boolean negative)
+            throws ArchiveException {
         final int bits = (length - 1) * 8;
         final long max = 1L << bits;
         long val = Math.abs(value); // Long.MIN_VALUE stays Long.MIN_VALUE
         if (val < 0 || val >= max) {
-            throw new IllegalArgumentException("Value " + value + " is too large for " + length + " byte field.");
+            throw new ArchiveException("Value " + value + " is too large for " + length + " byte field.");
         }
         if (negative) {
             val ^= max - 1;
@@ -211,9 +213,9 @@ public final class TarUtils {
      * @param offset The starting offset into the buffer.
      * @param length The length of the buffer.
      * @return The updated offset.
-     * @throws IllegalArgumentException if the value (and trailer) will not fit in the buffer.
+     * @throws ArchiveException if the value (and trailer) will not fit in the buffer.
      */
-    public static int formatLongOctalBytes(final long value, final byte[] buf, final int offset, final int length) {
+    public static int formatLongOctalBytes(final long value, final byte[] buf, final int offset, final int length) throws ArchiveException {
         final int idx = length - 1; // For space
         formatUnsignedOctalString(value, buf, offset, idx);
         buf[offset + idx] = (byte) SP; // Trailing space
@@ -230,10 +232,10 @@ public final class TarUtils {
      * @param offset The starting offset into the buffer.
      * @param length The length of the buffer.
      * @return The updated offset.
-     * @throws IllegalArgumentException if the value (and trailer) will not fit in the buffer.
+     * @throws ArchiveException if the value (and trailer) will not fit in the buffer.
      * @since 1.4
      */
-    public static int formatLongOctalOrBinaryBytes(final long value, final byte[] buf, final int offset, final int length) {
+    public static int formatLongOctalOrBinaryBytes(final long value, final byte[] buf, final int offset, final int length) throws ArchiveException {
         // Check whether we are dealing with UID/GID or SIZE field
         final long maxAsOctalChar = length == TarConstants.UIDLEN ? TarConstants.MAXID : TarConstants.MAXSIZE;
         final boolean negative = value < 0;
@@ -308,9 +310,9 @@ public final class TarUtils {
      * @param offset The starting offset into the buffer.
      * @param length The size of the output buffer.
      * @return The updated offset, i.e. offset+length.
-     * @throws IllegalArgumentException if the value (and trailer) will not fit in the buffer.
+     * @throws ArchiveException if the value (and trailer) will not fit in the buffer.
      */
-    public static int formatOctalBytes(final long value, final byte[] buf, final int offset, final int length) {
+    public static int formatOctalBytes(final long value, final byte[] buf, final int offset, final int length) throws ArchiveException {
         int idx = length - 2; // For space and trailing null
         formatUnsignedOctalString(value, buf, offset, idx);
         buf[offset + idx++] = (byte) SP; // Trailing space
@@ -325,9 +327,9 @@ public final class TarUtils {
      * @param buffer destination buffer.
      * @param offset starting offset in buffer.
      * @param length length of buffer to fill.
-     * @throws IllegalArgumentException if the value will not fit in the buffer.
+     * @throws ArchiveException if the value will not fit in the buffer.
      */
-    public static void formatUnsignedOctalString(final long value, final byte[] buffer, final int offset, final int length) {
+    public static void formatUnsignedOctalString(final long value, final byte[] buffer, final int offset, final int length) throws ArchiveException {
         int remaining = length;
         remaining--;
         if (value == 0) {
@@ -341,7 +343,7 @@ public final class TarUtils {
                 // CheckStyle:MagicNumber ON
             }
             if (val != 0) {
-                throw new IllegalArgumentException(value + "=" + Long.toOctalString(value) + " will not fit in octal number buffer of length " + length);
+                throw new ArchiveException(value + "=" + Long.toOctalString(value) + " will not fit in octal number buffer of length " + length);
             }
         }
         for (; remaining >= 0; --remaining) { // leading zeros

@@ -2069,7 +2069,8 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         TarUtils.formatCheckSumOctalBytes(chk, outbuf, csOffset, CHKSUMLEN);
     }
 
-    private int writeEntryHeaderField(final long value, final byte[] outbuf, final int offset, final int length, final boolean starMode) {
+    private int writeEntryHeaderField(final long value, final byte[] outbuf, final int offset, final int length, final boolean starMode)
+            throws ArchiveException {
         if (!starMode && (value < 0 || value >= 1L << 3 * (length - 1))) {
             // value doesn't fit into field when written as octal
             // number, will be written to PAX header or causes an
@@ -2079,7 +2080,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         return TarUtils.formatLongOctalOrBinaryBytes(value, outbuf, offset, length);
     }
 
-    private int writeEntryHeaderOptionalTimeField(final FileTime time, int offset, final byte[] outbuf, final int fieldLength) {
+    private int writeEntryHeaderOptionalTimeField(final FileTime time, int offset, final byte[] outbuf, final int fieldLength) throws ArchiveException {
         if (time != null) {
             offset = writeEntryHeaderField(FileTimes.toUnixTime(time), outbuf, offset, fieldLength, true);
         } else {
