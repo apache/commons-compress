@@ -116,7 +116,7 @@ final class TapeInputStream extends FilterInputStream {
      */
     @Override
     public int read() throws IOException {
-        throw new IllegalArgumentException("All reads must be multiple of record size (" + RECORD_SIZE + " bytes.");
+        throw new ArchiveException("All reads must be multiple of record size (" + RECORD_SIZE + " bytes.");
     }
 
     /**
@@ -135,7 +135,7 @@ final class TapeInputStream extends FilterInputStream {
             return 0;
         }
         if (len % RECORD_SIZE != 0) {
-            throw new IllegalArgumentException("All reads must be multiple of record size (" + RECORD_SIZE + " bytes.");
+            throw new ArchiveException("All reads must be multiple of record size (" + RECORD_SIZE + " bytes.");
         }
         int bytes = 0;
         while (bytes < len) {
@@ -313,7 +313,7 @@ final class TapeInputStream extends FilterInputStream {
     @Override
     public long skip(final long len) throws IOException {
         if (len % RECORD_SIZE != 0) {
-            throw new IllegalArgumentException("All reads must be multiple of record size (" + RECORD_SIZE + " bytes.");
+            throw new ArchiveException("All reads must be multiple of record size (" + RECORD_SIZE + " bytes.");
         }
         long bytes = 0;
         while (bytes < len) {
