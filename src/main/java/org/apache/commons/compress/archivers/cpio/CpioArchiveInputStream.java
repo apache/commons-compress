@@ -186,7 +186,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
     private CpioArchiveInputStream(final Builder builder) throws IOException {
         super(builder);
         if (builder.blockSize <= 0) {
-            throw new IllegalArgumentException("blockSize must be bigger than 0");
+            throw new ArchiveException("blockSize must be bigger than 0");
         }
         this.blockSize = builder.blockSize;
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(builder.getCharset());
@@ -227,7 +227,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
      *
      * @param in        The cpio stream.
      * @param blockSize The block size of the archive.
-     * @param encoding  The encoding of file names to expect - use null for the platform's default.
+     * @param encoding  The encoding of file names to expect, use null for the platform's default.
      * @throws IllegalArgumentException if {@code blockSize} is not bigger than 0.
      * @throws IOException if an I/O error has occurred.
      * @since 1.6
@@ -244,7 +244,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
      * <p>Since 1.29.0: throws {@link IOException}.</p>
      *
      * @param in       The cpio stream.
-     * @param encoding The encoding of file names to expect - use null for the platform's default.
+     * @param encoding The encoding of file names to expect, use null for the platform's default.
      * @throws IOException if an I/O error has occurred.
      * @since 1.6
      * @deprecated Since 1.29.0, use {@link #builder()}.
@@ -542,14 +542,12 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
      *
      * @param n The number of bytes to skip.
      * @return The actual number of bytes skipped.
-     * @throws IOException              if an I/O error has occurred.
-     * @throws IllegalArgumentException if n &lt; 0.
+     * @throws IOException      Thrown if an I/O error has occurred.
+     * @throws ArchiveException Thrown if n &lt; 0.
      */
     @Override
     public long skip(final long n) throws IOException {
-        if (n < 0) {
-            throw new IllegalArgumentException("Negative skip length");
-        }
+        ArchiveException.requireNonNegative(n, "Negative skip length");
         checkOpen();
         final int max = (int) Math.min(n, Integer.MAX_VALUE);
         int total = 0;
