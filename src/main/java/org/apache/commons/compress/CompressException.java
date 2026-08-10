@@ -24,10 +24,21 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.lang3.function.Suppliers;
 
 /**
- * Signals that a Compress I/O exception of some sort has occurred.
+ * Signals that a Commons Compress I/O exception of some sort has occurred.
+ * <p>
+ * This class is the general class of exceptions produced by failed or interrupted I/O operations in Commons Compress.
+ * </p>
+ * <p>
+ * Note that we also have the following subclasses of {@link CompressException} that are more specific to the type of operation that failed:
+ * </p>
+ * <ul>
+ * <li>{@link ArchiveException} is used for exceptions specific to archive operations.</li>
+ * <li>{@link CompressorException} is used for exceptions specific to compression operations.</li>
+ * </ul>
  *
  * @since 1.28.0
  */
