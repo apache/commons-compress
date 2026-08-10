@@ -267,7 +267,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
         }
     }
 
-    private void addPaxHeadersForBigNumbers(final Map<String, String> paxHeaders, final TarArchiveEntry entry) {
+    private void addPaxHeadersForBigNumbers(final Map<String, String> paxHeaders, final TarArchiveEntry entry) throws ArchiveException {
         addPaxHeaderForBigNumber(paxHeaders, "size", entry.getSize(), TarConstants.MAXSIZE);
         addPaxHeaderForBigNumber(paxHeaders, "gid", entry.getLongGroupId(), TarConstants.MAXID);
         addFileTimePaxHeaderForBigNumber(paxHeaders, "mtime", entry.getLastModifiedTime(), TarConstants.MAXSIZE);
@@ -363,18 +363,18 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
         return toUtf8Bytes(w.toString());
     }
 
-    private void failForBigNumber(final String field, final long value, final long maxValue) {
+    private void failForBigNumber(final String field, final long value, final long maxValue) throws ArchiveException {
         failForBigNumber(field, value, maxValue, "");
     }
 
-    private void failForBigNumber(final String field, final long value, final long maxValue, final String additionalMsg) {
+    private void failForBigNumber(final String field, final long value, final long maxValue, final String additionalMsg) throws ArchiveException {
         if (value < 0 || value > maxValue) {
-            throw new IllegalArgumentException(field + " '" + value // NOSONAR
+            throw new ArchiveException(field + " '" + value // NOSONAR
                     + "' is too big ( > " + maxValue + " )." + additionalMsg);
         }
     }
 
-    private void failForBigNumbers(final TarArchiveEntry entry) {
+    private void failForBigNumbers(final TarArchiveEntry entry) throws ArchiveException {
         failForBigNumber("entry size", entry.getSize(), TarConstants.MAXSIZE);
         failForBigNumberWithPosixMessage("group id", entry.getLongGroupId(), TarConstants.MAXID);
         failForBigNumber("last modification time", FileTimes.toUnixTime(entry.getLastModifiedTime()), TarConstants.MAXSIZE);
@@ -384,7 +384,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
         failForBigNumber("minor device number", entry.getDevMinor(), TarConstants.MAXID);
     }
 
-    private void failForBigNumberWithPosixMessage(final String field, final long value, final long maxValue) {
+    private void failForBigNumberWithPosixMessage(final String field, final long value, final long maxValue) throws ArchiveException {
         failForBigNumber(field, value, maxValue, " Use STAR or POSIX extensions to overcome this limit");
     }
 

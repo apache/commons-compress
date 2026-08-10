@@ -45,6 +45,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.io.IOUtils;
@@ -92,7 +93,7 @@ class TarArchiveOutputStreamTest extends AbstractTest {
         t.setSize(0100000000000L);
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try (TarArchiveOutputStream tos = new TarArchiveOutputStream(bos)) {
-            assertThrows(IllegalArgumentException.class, () -> tos.putArchiveEntry(t));
+            assertThrows(ArchiveException.class, () -> tos.putArchiveEntry(t));
         }
     }
 
@@ -226,7 +227,7 @@ class TarArchiveOutputStreamTest extends AbstractTest {
         tos1.putArchiveEntry(t);
         t.setSize(0100000000000L);
         final TarArchiveOutputStream tos2 = new TarArchiveOutputStream(new ByteArrayOutputStream());
-        assertThrows(RuntimeException.class, () -> tos2.putArchiveEntry(t), "Should have generated RuntimeException");
+        assertThrows(ArchiveException.class, () -> tos2.putArchiveEntry(t));
     }
 
     @Test
@@ -235,7 +236,7 @@ class TarArchiveOutputStreamTest extends AbstractTest {
         t.setSize(Integer.MAX_VALUE);
         t.setModTime(-1000);
         try (TarArchiveOutputStream tos = new TarArchiveOutputStream(new ByteArrayOutputStream())) {
-            assertThrows(RuntimeException.class, () -> tos.putArchiveEntry(t));
+            assertThrows(ArchiveException.class, () -> tos.putArchiveEntry(t));
         }
     }
 

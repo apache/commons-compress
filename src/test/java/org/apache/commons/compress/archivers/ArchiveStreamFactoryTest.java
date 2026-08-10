@@ -281,9 +281,9 @@ class ArchiveStreamFactoryTest extends AbstractTest {
                 "shouldn't be able to detect empty stream");
         assertEquals("No Archiver found for the stream signature", e1.getMessage());
 
-        final IllegalArgumentException e2 = assertThrows(IllegalArgumentException.class, () -> ArchiveStreamFactory.detect(null),
+        final ArchiveException e2 = assertThrows(ArchiveException.class, () -> ArchiveStreamFactory.detect(null),
                 "shouldn't be able to detect null stream");
-        assertEquals("Stream must not be null.", e2.getMessage());
+        assertEquals("null inputStream", e2.getMessage());
 
         final ArchiveException e3 = assertThrows(ArchiveException.class, () -> ArchiveStreamFactory.detect(new BufferedInputStream(new BrokenInputStream())),
                 "Expected ArchiveException");
