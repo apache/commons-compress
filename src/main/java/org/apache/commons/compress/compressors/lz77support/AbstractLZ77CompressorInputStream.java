@@ -271,11 +271,14 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
      *
      * @param offset The offset of the back-reference.
      * @param length The length of the back-reference.
-     * @throws IllegalArgumentException if offset not bigger than 0 or bigger than the number of bytes available for back-references or if length is negative.
+     * @throws IllegalArgumentException if offset not bigger than 0, bigger than the window size or bigger than the number of bytes available for back-references,
+     *                                  or if length is negative.
      */
     protected final void startBackReference(final int offset, final long length) {
-        if (offset <= 0 || offset > writeIndex) {
-            throw new IllegalArgumentException("offset must be bigger than 0 but not bigger than the number of bytes available for back-references");
+        // An offset larger than windowSize can't be honored: the buffer only keeps windowSize bytes of history, so once the buffer is slid mid-copy the source
+        // index writeIndex - offset in tryToCopy would turn negative.
+        if (offset <= 0 || offset > writeIndex || offset > windowSize) {
+            throw new IllegalArgumentException("offset must be bigger than 0 but not bigger than the window size or the number of bytes available for back-references");
         }
         if (length < 0) {
             throw new IllegalArgumentException("length must not be negative");

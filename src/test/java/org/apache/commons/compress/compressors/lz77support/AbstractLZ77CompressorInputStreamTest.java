@@ -78,6 +78,17 @@ class AbstractLZ77CompressorInputStreamTest {
     }
 
     @Test
+    void testBackReferenceOffsetLargerThanWindowIsRejected() throws IOException {
+        // Grow writeIndex past the 1024 window without sliding, so an offset in (windowSize, writeIndex] passes the writeIndex bound but not the window.
+        final byte[] data = new byte[2000];
+        try (TestStream s = new TestStream(new ByteArrayInputStream(data))) {
+            s.literal(data.length);
+            assertEquals(data.length, s.read(new byte[data.length]));
+            assertThrows(IllegalArgumentException.class, () -> s.startBackReference(1500, 4));
+        }
+    }
+
+    @Test
     void testPrefillCanBeUsedForBackReferences() throws IOException {
         final byte[] data = { 1, 2, 3, 4 };
         try (TestStream s = new TestStream(new ByteArrayInputStream(ArrayUtils.EMPTY_BYTE_ARRAY))) {
