@@ -311,9 +311,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
         if (len == 0) {
             return 0;
         }
-        if (currentLocalFileHeader == null) {
-            throw new IllegalStateException("No current arj entry");
-        }
+        ArchiveException.requireNonNull(currentLocalFileHeader, "No current arj entry");
         if (currentLocalFileHeader.method != LocalFileHeader.Methods.STORED) {
             throw new ArchiveException("Unsupported compression method '%s'", currentLocalFileHeader.method);
         }
