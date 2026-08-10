@@ -420,7 +420,7 @@ public final class TarUtils {
         return entry.isGNULongLinkEntry() || entry.isGNULongNameEntry() || entry.isGlobalPaxHeader() || entry.isPaxHeader();
     }
 
-    private static long parseBinaryBigInteger(final byte[] buffer, final int offset, final int length, final boolean negative) {
+    private static long parseBinaryBigInteger(final byte[] buffer, final int offset, final int length, final boolean negative) throws ArchiveException {
         final byte[] remainder = new byte[length - 1];
         System.arraycopy(buffer, offset + 1, remainder, 0, length - 1);
         BigInteger val = new BigInteger(remainder);
@@ -429,14 +429,14 @@ public final class TarUtils {
             val = val.add(NEG_1_BIG_INT).not();
         }
         if (val.bitLength() > 63) {
-            throw new IllegalArgumentException("At offset " + offset + ", " + length + " byte binary number exceeds maximum signed long value");
+            throw new ArchiveException("At offset " + offset + ", " + length + " byte binary number exceeds maximum signed long value");
         }
         return negative ? -val.longValue() : val.longValue();
     }
 
-    private static long parseBinaryLong(final byte[] buffer, final int offset, final int length, final boolean negative) {
+    private static long parseBinaryLong(final byte[] buffer, final int offset, final int length, final boolean negative) throws ArchiveException {
         if (length >= 9) {
-            throw new IllegalArgumentException("At offset " + offset + ", " + length + " byte binary number exceeds maximum signed long value");
+            throw new ArchiveException("At offset " + offset + ", " + length + " byte binary number exceeds maximum signed long value");
         }
         long val = 0;
         for (int i = 1; i < length; i++) {
@@ -548,18 +548,18 @@ public final class TarUtils {
      * @param offset The offset into the buffer from which to parse.
      * @param length The maximum number of bytes to parse - must be at least 2 bytes.
      * @return The long value of the octal string.
-     * @throws IllegalArgumentException if the trailing space/NUL is missing or if an invalid byte is detected.
+     * @throws ArchiveException if the trailing space/NUL is missing or if an invalid byte is detected.
      */
-    public static long parseOctal(final byte[] buffer, final int offset, final int length) {
+    public static long parseOctal(final byte[] buffer, final int offset, final int length) throws ArchiveException {
         return parseOctal(buffer, offset, length, "parseOctal()", false);
     }
 
-    static long parseOctal(final byte[] buffer, final int offset, final int length, final String context, final boolean lenient) {
+    static long parseOctal(final byte[] buffer, final int offset, final int length, final String context, final boolean lenient) throws ArchiveException {
         long result = 0;
         int end = offset + length;
         int start = offset;
         if (length < 2) {
-            throw new IllegalArgumentException(context + ": Length " + length + " must be at least 2");
+            throw new ArchiveException(context + ": Length " + length + " must be at least 2");
         }
         if (buffer[start] == 0) {
             return 0L;
@@ -587,7 +587,7 @@ public final class TarUtils {
                     // When lenient, an early NUL ends the parsing (COMPRESS-707).
                     return result;
                 }
-                throw new IllegalArgumentException(context + ": " + exceptionMessage(buffer, offset, length, start, currentByte));
+                throw new ArchiveException(context + ": " + exceptionMessage(buffer, offset, length, start, currentByte));
             }
             result = (result << 3) + (currentByte - '0'); // convert from ASCII
         }
@@ -602,11 +602,11 @@ public final class TarUtils {
      * @param offset The offset into the buffer from which to parse.
      * @param length The maximum number of bytes to parse.
      * @return The long value of the octal or binary string.
-     * @throws IllegalArgumentException if the trailing space/NUL is missing or an invalid byte is detected in an octal number, or if a binary number would
+     * @throws ArchiveException if the trailing space/NUL is missing or an invalid byte is detected in an octal number, or if a binary number would
      *                                  exceed the size of a signed long 64-bit integer.
      * @since 1.4
      */
-    public static long parseOctalOrBinary(final byte[] buffer, final int offset, final int length) {
+    public static long parseOctalOrBinary(final byte[] buffer, final int offset, final int length) throws ArchiveException {
         if ((buffer[offset] & 0x80) == 0) {
             return parseOctal(buffer, offset, length, "parseOctalOrBinary()", false);
         }
@@ -886,11 +886,12 @@ public final class TarUtils {
      *
      * @param header tar header.
      * @return whether the checksum is reasonably good.
+     * @throws ArchiveException Thrown on invalid input.
      * @see <a href="https://en.wikipedia.org/wiki/Tar_(computing)#File_header">TAR header</a>
      * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-191">COMPRESS-191</a>
      * @since 1.5
      */
-    public static boolean verifyCheckSum(final byte[] header) {
+    public static boolean verifyCheckSum(final byte[] header) throws ArchiveException {
         return verifyCheckSum(header, false);
     }
 
@@ -909,11 +910,12 @@ public final class TarUtils {
      * @param header tar header.
      * @param lenient Whether to allow out-of-spec formatting.
      * @return whether the checksum is reasonably good.
+     * @throws ArchiveException Thrown on invalid input.
      * @see <a href="https://en.wikipedia.org/wiki/Tar_(computing)#File_header">TAR header</a>
      * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-191">COMPRESS-191</a>
      * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-707">COMPRESS-707</a>
      */
-    static boolean verifyCheckSum(final byte[] header, final boolean lenient) {
+    static boolean verifyCheckSum(final byte[] header, final boolean lenient) throws ArchiveException {
         final long storedSum = parseOctal(header, TarConstants.CHKSUM_OFFSET, TarConstants.CHKSUMLEN, "verifyCheckSum()", lenient);
         long unsignedSum = 0;
         long signedSum = 0;

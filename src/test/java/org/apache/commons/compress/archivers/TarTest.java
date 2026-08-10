@@ -19,10 +19,10 @@
 package org.apache.commons.compress.archivers;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -86,9 +86,8 @@ public final class TarTest extends AbstractTest {
         final File input = getFile("COMPRESS-178-fail.tar");
         try (InputStream is = Files.newInputStream(input.toPath());
                 ArchiveInputStream<?> in = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("tar", is)) {
-            final IOException e = assertThrows(ArchiveException.class, in::getNextEntry, "Expected IOException");
-            final Throwable t = e.getCause();
-            assertInstanceOf(IllegalArgumentException.class, t, "Expected cause = IllegalArgumentException");
+            final ArchiveException e = assertThrows(ArchiveException.class, in::getNextEntry, "Expected IOException");
+            assertNull(e.getCause());
         }
     }
 
@@ -303,13 +302,12 @@ public final class TarTest extends AbstractTest {
     @Test
     void testTarFileCOMPRESS178() throws Exception {
         final File input = getFile("COMPRESS-178-fail.tar");
-        final IOException e = assertThrows(ArchiveException.class, () -> {
+        final ArchiveException e = assertThrows(ArchiveException.class, () -> {
             try (TarFile tarFile = TarFile.builder().setFile(input).get()) {
                 // Compared to the TarArchiveInputStream all entries are read when instantiating the tar file
             }
-        }, "Expected IOException");
-        final Throwable t = e.getCause();
-        assertInstanceOf(IllegalArgumentException.class, t, "Expected cause = IllegalArgumentException");
+        });
+        assertNull(e.getCause());
     }
 
     @Test

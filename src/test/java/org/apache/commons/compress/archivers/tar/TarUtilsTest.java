@@ -278,7 +278,7 @@ class TarUtilsTest extends AbstractTest {
     }
 
     @Test
-    void testParseOctal() {
+    void testParseOctal() throws ArchiveException {
         long value;
         byte[] buffer;
         final long MAX_OCTAL = 077777777777L; // Allowed 11 digits
@@ -305,7 +305,7 @@ class TarUtilsTest extends AbstractTest {
     }
 
     @Test
-    void testParseOctalCompress330() {
+    void testParseOctalCompress330() throws ArchiveException {
         final long expected = 0100000;
         final byte[] buffer = { 32, 32, 32, 32, 32, 49, 48, 48, 48, 48, 48, 32 };
         assertEquals(expected, TarUtils.parseOctalOrBinary(buffer, 0, buffer.length));
@@ -314,25 +314,25 @@ class TarUtilsTest extends AbstractTest {
     @Test
     void testParseOctalEmbeddedSpace() {
         final byte[] buffer4 = " 0 07 ".getBytes(UTF_8); // Invalid - embedded space
-        assertThrows(IllegalArgumentException.class, () -> TarUtils.parseOctal(buffer4, 0, buffer4.length),
+        assertThrows(ArchiveException.class, () -> TarUtils.parseOctal(buffer4, 0, buffer4.length),
                 "Expected IllegalArgumentException - embedded space");
     }
 
     @Test
     void testParseOctalInvalid() {
         final byte[] buffer1 = ArrayUtils.EMPTY_BYTE_ARRAY;
-        assertThrows(IllegalArgumentException.class, () -> TarUtils.parseOctal(buffer1, 0, buffer1.length),
-                "Expected IllegalArgumentException - should be at least 2 bytes long");
+        assertThrows(ArchiveException.class, () -> TarUtils.parseOctal(buffer1, 0, buffer1.length),
+                "Expected ArchiveException - should be at least 2 bytes long");
 
         final byte[] buffer2 = { 0 }; // 1-byte array
-        assertThrows(IllegalArgumentException.class, () -> TarUtils.parseOctal(buffer2, 0, buffer2.length),
-                "Expected IllegalArgumentException - should be at least 2 bytes long");
+        assertThrows(ArchiveException.class, () -> TarUtils.parseOctal(buffer2, 0, buffer2.length),
+                "Expected ArchiveException - should be at least 2 bytes long");
 
         final byte[] buffer3 = "abcdef ".getBytes(UTF_8); // Invalid input
-        assertThrows(IllegalArgumentException.class, () -> TarUtils.parseOctal(buffer3, 0, buffer3.length), "Expected IllegalArgumentException");
+        assertThrows(ArchiveException.class, () -> TarUtils.parseOctal(buffer3, 0, buffer3.length), "Expected IllegalArgumentException");
 
         final byte[] buffer5 = " 0\00007 ".getBytes(UTF_8); // Invalid - embedded NUL
-        assertThrows(IllegalArgumentException.class, () -> TarUtils.parseOctal(buffer5, 0, buffer5.length), "Expected IllegalArgumentException - embedded NUL");
+        assertThrows(ArchiveException.class, () -> TarUtils.parseOctal(buffer5, 0, buffer5.length), "Expected IllegalArgumentException - embedded NUL");
     }
 
     @Test
@@ -502,14 +502,14 @@ class TarUtilsTest extends AbstractTest {
     }
 
     @Test
-    void testReadNegativeBinary12Byte() {
+    void testReadNegativeBinary12Byte() throws ArchiveException {
         final byte[] b = { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
                 (byte) 0xf1, (byte) 0xef, };
         assertEquals(-3601L, TarUtils.parseOctalOrBinary(b, 0, 12));
     }
 
     @Test
-    void testReadNegativeBinary8Byte() {
+    void testReadNegativeBinary8Byte() throws ArchiveException {
         final byte[] b = { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xf1, (byte) 0xef, };
         assertEquals(-3601L, TarUtils.parseOctalOrBinary(b, 0, 8));
     }
@@ -707,7 +707,7 @@ class TarUtilsTest extends AbstractTest {
 
     // https://issues.apache.org/jira/browse/COMPRESS-191
     @Test
-    void testVerifyHeaderCheckSum() {
+    void testVerifyHeaderCheckSum() throws ArchiveException {
         final byte[] valid = { // from bla.tar
                 116, 101, 115, 116, 49, 46, 120, 109, 108, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -759,7 +759,7 @@ class TarUtilsTest extends AbstractTest {
     }
 
     @Test
-    void testWriteNegativeBinary8Byte() {
+    void testWriteNegativeBinary8Byte() throws ArchiveException {
         final byte[] b = { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xf1, (byte) 0xef, };
         assertEquals(-3601L, TarUtils.parseOctalOrBinary(b, 0, 8));
     }

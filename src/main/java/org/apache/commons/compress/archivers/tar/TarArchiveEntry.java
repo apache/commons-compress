@@ -298,11 +298,11 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         }
     }
 
-    private static long parseOctalOrBinary(final byte[] header, final int offset, final int length, final boolean lenient) {
+    private static long parseOctalOrBinary(final byte[] header, final int offset, final int length, final boolean lenient) throws ArchiveException {
         if (lenient) {
             try {
                 return TarUtils.parseOctalOrBinary(header, offset, length);
-            } catch (final IllegalArgumentException ex) { // NOSONAR
+            } catch (final ArchiveException ex) { // NOSONAR
                 return UNKNOWN;
             }
         }
