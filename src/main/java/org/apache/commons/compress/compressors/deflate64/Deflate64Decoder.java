@@ -111,7 +111,7 @@ class Deflate64Decoder implements Closeable {
         private byte[] runBuffer = ArrayUtils.EMPTY_BYTE_ARRAY;
         private int runBufferLength;
 
-        HuffmanCodes(final Deflate64State state, final int[] lengths, final int[] distance) {
+        HuffmanCodes(final Deflate64State state, final int[] lengths, final int[] distance) throws CompressorException {
             this.state = state;
             symbolDecoder = new HuffmanDecoder(lengths);
             distanceDecoder = new HuffmanDecoder(distance);
