@@ -155,10 +155,50 @@ class HuffmanDecoderTest {
     }
 
     @Test
+    void testMaxSupportedCodeLengthExceeded() {
+        final int[] codeLengths = new int[] {1, 1};
+        final IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> new HuffmanDecoder(codeLengths, 0, 31),
+                "Expected IllegalArgumentException for max code length exceeding supported limit");
+        assertEquals("maxCodeLength (31) exceeds supported limit (30)", e.getMessage());
+    }
+
+    @Test
+    void testMinCodeLengthBelowSupportedLimit() {
+        final int[] codeLengths = new int[] {1, 1};
+        final IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> new HuffmanDecoder(codeLengths, -1, 30),
+                "Expected IllegalArgumentException for min code length below supported limit");
+        assertEquals("minCodeLength (-1) not within range [0, 30)", e.getMessage());
+    }
+
+    @Test
+    void testMinCodeLengthExceedingMaxCodeLength() {
+        final int[] codeLengths = new int[] {1, 1};
+        final IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> new HuffmanDecoder(codeLengths, 17, 16),
+                "Expected IllegalArgumentException for min code length exceeding max code length");
+        assertEquals("minCodeLength (17) not within range [0, 16)", e.getMessage());
+    }
+
+    @Test
     void testNoCodeLengths() throws Exception {
-        final IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> new HuffmanDecoder(new int[0]),
-                "Expected IllegalArgumentException for empty code length list");
-        assertEquals("codeLengthSize must be > 0; was 0", e.getMessage());
+        final CompressorException e = assertThrows(CompressorException.class, () -> new HuffmanDecoder(new int[0]),
+                "Expected CompressorException for empty code length list");
+        assertEquals("Empty code length list", e.getMessage());
+    }
+
+    @Test
+    void testCodeLengthExceedingMaxCodeLength() throws Exception {
+        final int[] codeLengths = new int[] {4, 2, 3, 0, 5, 5, 1};
+        final CompressorException e = assertThrows(CompressorException.class, () -> new HuffmanDecoder(codeLengths, 0, 4),
+                "Expected CompressorException for code length exceeding max code length");
+        assertEquals("Invalid code length at symbol 4: 5 (expected in [0, 4])", e.getMessage());
+    }
+
+    @Test
+    void testCodeLengthBelowMinCodeLength() throws Exception {
+        final int[] codeLengths = new int[] {4, 2, 3, 0, 5, 5, 1};
+        final CompressorException e = assertThrows(CompressorException.class, () -> new HuffmanDecoder(codeLengths, 1, 5),
+                "Expected CompressorException for code length below min code length");
+        assertEquals("Invalid code length at symbol 3: 0 (expected in [1, 5])", e.getMessage());
     }
 
     @Test
