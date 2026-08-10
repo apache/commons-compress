@@ -51,11 +51,7 @@ class BZip2CompressorInputStreamTest extends AbstractTest {
     private static final int MAX_CODE_LEN = 20;
 
     private void fuzzingTest(final int[] bytes) throws IOException, ArchiveException {
-        final int len = bytes.length;
-        final byte[] input = new byte[len];
-        for (int i = 0; i < len; i++) {
-            input[i] = (byte) bytes[i];
-        }
+        final byte[] input = toByteArray(bytes);
         try (ArchiveInputStream<?> ais = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("zip", new ByteArrayInputStream(input))) {
             ais.getNextEntry();
             IOUtils.toByteArray(ais);

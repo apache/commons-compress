@@ -26,6 +26,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.ByteOrder;
 
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.utils.BitInputStream;
 import org.apache.commons.io.IOUtils;
@@ -37,11 +38,7 @@ import org.junit.jupiter.api.Test;
 class LhStaticHuffmanCompressorInputStreamTest {
 
     private LhStaticHuffmanCompressorInputStream createLh5CompressorInputStream(final int... data) throws IOException {
-        final byte[] bytes = new byte[data.length];
-        for (int i = 0; i < data.length; i++) {
-            bytes[i] = (byte) data[i];
-        }
-        return LhStaticHuffmanCompressorInputStream.lh5CompressorInputStream(new ByteArrayInputStream(bytes));
+        return LhStaticHuffmanCompressorInputStream.lh5CompressorInputStream(new ByteArrayInputStream(AbstractTest.toByteArray(data)));
     }
 
     @Test
