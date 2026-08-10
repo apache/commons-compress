@@ -407,22 +407,15 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
             return 0;
         }
         int totalRead = 0;
-
         if (eof || isClosed || entryOffset >= entrySize) {
             return -1;
         }
-
-        if (active == null) {
-            throw new IllegalStateException("No current dump entry");
-        }
-
+        ArchiveException.requireNonNull(active, "No current dump entry");
         if (len + entryOffset > entrySize) {
             len = (int) (entrySize - entryOffset);
         }
-
         while (len > 0) {
             final int sz = Math.min(len, readBuf.length - recordOffset);
-
             // copy any data we have
             if (recordOffset + sz <= readBuf.length) {
                 System.arraycopy(readBuf, recordOffset, buf, off, sz);
@@ -431,20 +424,16 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
                 len -= sz;
                 off += sz;
             }
-
             // load next block if necessary.
             if (len > 0) {
                 if (readIdx >= 512) {
                     final byte[] headerBytes = raw.readRecord();
-
                     if (!DumpArchiveUtil.verify(headerBytes)) {
                         throw new InvalidFormatException();
                     }
-
                     active = DumpArchiveEntry.parse(headerBytes);
                     readIdx = 0;
                 }
-
                 if (!active.isSparseRecord(readIdx++)) {
                     final int r = raw.read(readBuf, 0, readBuf.length);
                     if (r != readBuf.length) {
@@ -453,13 +442,10 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
                 } else {
                     Arrays.fill(readBuf, (byte) 0);
                 }
-
                 recordOffset = 0;
             }
         }
-
         entryOffset += totalRead;
-
         return totalRead;
     }
 
