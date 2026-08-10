@@ -51,8 +51,6 @@ import org.apache.commons.io.output.ByteArrayOutputStream;
  */
 public final class TarUtils {
 
-    private static final char SP = ' ';
-
     /**
      * Encapsulates the algorithms used up to Commons Compress 1.3 as ZipEncoding.
      */
@@ -81,6 +79,8 @@ public final class TarUtils {
             return ByteBuffer.wrap(ArchiveUtils.toAsciiBytes(name));
         }
     }
+
+    private static final char SP = ' ';
 
     private static final Pattern HEADER_STRINGS_PATTERN = Pattern.compile(",");
 

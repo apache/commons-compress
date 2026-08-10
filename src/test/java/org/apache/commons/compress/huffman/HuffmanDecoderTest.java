@@ -114,6 +114,22 @@ class HuffmanDecoderTest {
     }
 
     @Test
+    void testCodeLengthBelowMinCodeLength() throws Exception {
+        final int[] codeLengths = new int[] {4, 2, 3, 0, 5, 5, 1};
+        final CompressorException e = assertThrows(CompressorException.class, () -> new HuffmanDecoder(codeLengths, 1, 5),
+                "Expected CompressorException for code length below min code length");
+        assertEquals("Invalid code length at symbol 3: 0 (expected in [1, 5])", e.getMessage());
+    }
+
+    @Test
+    void testCodeLengthExceedingMaxCodeLength() throws Exception {
+        final int[] codeLengths = new int[] {4, 2, 3, 0, 5, 5, 1};
+        final CompressorException e = assertThrows(CompressorException.class, () -> new HuffmanDecoder(codeLengths, 0, 4),
+                "Expected CompressorException for code length exceeding max code length");
+        assertEquals("Invalid code length at symbol 4: 5 (expected in [0, 4])", e.getMessage());
+    }
+
+    @Test
     void testCreateHuffmanDecodingTablesWithLargeAlphaSize() {
         // Use a codeLengths array with length equal to MAX_ALPHA_SIZE (258) to test array bounds.
         final int[] codeLengths = new int[258];
@@ -184,22 +200,6 @@ class HuffmanDecoderTest {
         final CompressorException e = assertThrows(CompressorException.class, () -> new HuffmanDecoder(new int[0]),
                 "Expected CompressorException for empty code length list");
         assertEquals("Empty code length list", e.getMessage());
-    }
-
-    @Test
-    void testCodeLengthExceedingMaxCodeLength() throws Exception {
-        final int[] codeLengths = new int[] {4, 2, 3, 0, 5, 5, 1};
-        final CompressorException e = assertThrows(CompressorException.class, () -> new HuffmanDecoder(codeLengths, 0, 4),
-                "Expected CompressorException for code length exceeding max code length");
-        assertEquals("Invalid code length at symbol 4: 5 (expected in [0, 4])", e.getMessage());
-    }
-
-    @Test
-    void testCodeLengthBelowMinCodeLength() throws Exception {
-        final int[] codeLengths = new int[] {4, 2, 3, 0, 5, 5, 1};
-        final CompressorException e = assertThrows(CompressorException.class, () -> new HuffmanDecoder(codeLengths, 1, 5),
-                "Expected CompressorException for code length below min code length");
-        assertEquals("Invalid code length at symbol 3: 0 (expected in [1, 5])", e.getMessage());
     }
 
     @Test
