@@ -668,9 +668,8 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
         if (isAtEOF() || isDirectory()) {
             return -1;
         }
-        if (currEntry == null || currentInputStream == null) {
-            throw new IllegalStateException("No current tar entry");
-        }
+        ArchiveException.requireNonNull(currEntry, "No current tar entry (null currEntry)");
+        ArchiveException.requireNonNull(currentInputStream, "No current tar entry (null currentInputStream)");
         return currentInputStream.read(buf, offset, numToRead);
     }
 
@@ -746,9 +745,8 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
         if (n <= 0 || isDirectory()) {
             return 0;
         }
-        if (currEntry == null || currentInputStream == null) {
-            throw new IllegalStateException("No current tar entry");
-        }
+        ArchiveException.requireNonNull(currEntry, "No current tar entry (null currEntry)");
+        ArchiveException.requireNonNull(currentInputStream, "No current tar entry (null currentInputStream)");
         // Use Apache Commons IO to skip as it handles skipping fully
         return IOUtils.skip(currentInputStream, n);
     }
