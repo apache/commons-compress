@@ -181,7 +181,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Add and use ArchiveException.requireNonNegative(int, Supplier&lt;String&gt;)</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Add and use ArchiveException.requireNonNegative(long, String)</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Add and use ArchiveException.requireNonNegative(long, Supplier&lt;String&gt;)</action>
-<!--       <action type="fix" dev="ggregory" due-to="Gary Gregory">ArchiveStreamFactory now throws ArchiveException instead of IllegalArgumentException.</action> -->
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">ArchiveStreamFactory now throws ArchiveException instead of IllegalArgumentException.</action>
       <!-- ADD -->
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add MemoryLimitException.MemoryLimitException(long, long).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add CompressException.CompressException(String, Object...).</action>
