@@ -108,6 +108,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory">ArArchiveInputStream.read(byte[], int, int) now throws ArchiveException instead of ArithmeticException.</action>
       <action type="fix" dev="pkarwasz" due-to="Tyler Nighswander">Simplify handling of special AR records in ArArchiveInputStream.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Most ArArchiveEntry constructors now throws the IOException subclass ArchiveException.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">ArArchiveInputStream now throws ArchiveException instead of IllegalArgumentException.</action>
       <!-- FIX arj -->
       <action type="fix" dev="pkarwasz" due-to="Piotr P. Karwasz">Correct byte accounting and truncation errors in ARJ input stream.</action>
       <action type="fix" dev="pkarwasz" due-to="Piotr P. Karwasz">Add strict header validation in ARJ input stream and `selfExtracting` option.</action>

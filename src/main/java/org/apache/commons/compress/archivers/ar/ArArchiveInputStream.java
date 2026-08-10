@@ -445,9 +445,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
         if (len == 0) {
             return 0;
         }
-        if (currentEntry == null) {
-            throw new IllegalStateException("No current ar entry");
-        }
+        ArchiveException.requireNonNull(currentEntry, "No current ar entry");
         final long entryEnd = entryOffset + currentEntry.getLength();
         final long offset = getBytesRead();
         if (len < 0 || offset >= entryEnd) {
@@ -456,8 +454,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
         final int toRead = ArchiveException.toIntExact(Math.min(len, entryEnd - offset));
         final int ret = in.read(b, off, toRead);
         if (ret < 0) {
-            throw new EOFException(String.format(
-                    "Premature end of ar archive: Entry '%s' is truncated or incomplete.", currentEntry.getName()));
+            throw new EOFException(String.format("Premature end of ar archive: Entry '%s' is truncated or incomplete.", currentEntry.getName()));
         }
         count(ret);
         return ret;

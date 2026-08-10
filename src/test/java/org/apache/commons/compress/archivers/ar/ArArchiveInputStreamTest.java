@@ -32,6 +32,7 @@ import java.io.InputStream;
 
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
@@ -65,14 +66,14 @@ class ArArchiveInputStreamTest extends AbstractTest {
     void testCantReadAfterClose() throws Exception {
         try (ArArchiveInputStream archive = ArArchiveInputStream.builder().setURI(getURI("bla.ar")).get()) {
             archive.close();
-            assertThrows(IllegalStateException.class, () -> archive.read());
+            assertThrows(ArchiveException.class, () -> archive.read());
         }
     }
 
     @Test
     void testCantReadWithoutOpeningAnEntry() throws Exception {
         try (ArArchiveInputStream archive = ArArchiveInputStream.builder().setURI(getURI("bla.ar")).get()) {
-            assertThrows(IllegalStateException.class, () -> archive.read());
+            assertThrows(ArchiveException.class, () -> archive.read());
         }
     }
 
