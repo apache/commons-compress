@@ -208,7 +208,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add UnsupportedZipFeatureException.Feature.toString().</action>
       <action type="add" dev="ggregory" due-to="Fredrik Kjellberg, Gary Gregory, Piotr P. Karwasz" issue="COMPRESS-706">Add support for reading LHA archive format (#690).</action>
       <action type="add" dev="ggregory" due-to="Piotr P. Karwasz, Gary Gregory">Add BitInputStream.getByteOrder() (#720).</action>
-      <action type="add" dev="ggregory" due-to="Piotr P. Karwasz, Gary Gregory, Fredrik Kjellberg">Add reusable Huffman decoder (#701, #792, #795, #798).</action>
+      <action type="add" dev="ggregory" due-to="Piotr P. Karwasz, Gary Gregory, Fredrik Kjellberg">Add reusable Huffman decoder (#701, #792, #795, #798, #799).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add and use ArchiveException.requireNonNegative(int, String).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add and use ArchiveException.requireNonNegative(long, String).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add and use ArchiveException.requireNonNull(T, String).</action>
