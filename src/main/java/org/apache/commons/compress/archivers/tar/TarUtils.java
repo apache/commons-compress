@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.apache.commons.compress.CompressException;
 import org.apache.commons.compress.MemoryLimitException;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.zip.ZipEncoding;
@@ -49,6 +50,8 @@ import org.apache.commons.io.output.ByteArrayOutputStream;
  * @Immutable
  */
 public final class TarUtils {
+
+    private static final char SP = ' ';
 
     /**
      * Encapsulates the algorithms used up to Commons Compress 1.3 as ZipEncoding.
@@ -100,10 +103,10 @@ public final class TarUtils {
      * @param sparseHeaders       per file sparse headers.
      * @param globalPaxHeaders    global PAX headers.
      * @param globalSparseHeaders global sparse headers.
-     * @throws IOException if an I/O error occurs while reading the entry.
+     * @throws ArchiveException   Thrown if an I/O error occurs while reading the entry.
      */
     static void applyPaxHeadersToEntry(final TarArchiveEntry entry, final Map<String, String> paxHeaders, final List<TarArchiveStructSparse> sparseHeaders,
-            final Map<String, String> globalPaxHeaders, final List<TarArchiveStructSparse> globalSparseHeaders) throws IOException {
+            final Map<String, String> globalPaxHeaders, final List<TarArchiveStructSparse> globalSparseHeaders) throws ArchiveException {
         // Apply PAX headers to the entry
         entry.updateEntryFromPaxHeaders(globalPaxHeaders);
         entry.updateEntryFromPaxHeaders(paxHeaders);
@@ -176,7 +179,7 @@ public final class TarUtils {
         int idx = length - 2; // for NUL and space
         formatUnsignedOctalString(value, buf, offset, idx);
         buf[offset + idx++] = 0; // Trailing null
-        buf[offset + idx] = (byte) ' '; // Trailing space
+        buf[offset + idx] = (byte) SP; // Trailing space
         return offset + length;
     }
 
@@ -213,7 +216,7 @@ public final class TarUtils {
     public static int formatLongOctalBytes(final long value, final byte[] buf, final int offset, final int length) {
         final int idx = length - 1; // For space
         formatUnsignedOctalString(value, buf, offset, idx);
-        buf[offset + idx] = (byte) ' '; // Trailing space
+        buf[offset + idx] = (byte) SP; // Trailing space
         return offset + length;
     }
 
@@ -310,7 +313,7 @@ public final class TarUtils {
     public static int formatOctalBytes(final long value, final byte[] buf, final int offset, final int length) {
         int idx = length - 2; // For space and trailing null
         formatUnsignedOctalString(value, buf, offset, idx);
-        buf[offset + idx++] = (byte) ' '; // Trailing space
+        buf[offset + idx++] = (byte) SP; // Trailing space
         buf[offset + idx] = 0; // Trailing null
         return offset + length;
     }
@@ -463,10 +466,10 @@ public final class TarUtils {
      *
      * @param sparseMap The sparse map string consisting of comma-separated values "offset,size[,offset-1,size-1...]".
      * @return unmodifiable list of sparse headers parsed from sparse map.
-     * @throws IOException Corrupted TAR archive.
+     * @throws CompressException Thrown for a corrupted TAR archive.
      * @since 1.21
      */
-    static List<TarArchiveStructSparse> parseFromPAX01SparseHeaders(final String sparseMap) throws IOException {
+    static List<TarArchiveStructSparse> parseFromPAX01SparseHeaders(final String sparseMap) throws CompressException {
         final List<TarArchiveStructSparse> sparseHeaders = new ArrayList<>();
         final String[] sparseHeaderStrings = HEADER_STRINGS_PATTERN.split(sparseMap);
         if (sparseHeaderStrings.length % 2 == 1) {
@@ -561,7 +564,7 @@ public final class TarUtils {
         }
         // Skip leading spaces
         while (start < end) {
-            if (buffer[start] != ' ') {
+            if (buffer[start] != SP) {
                 break;
             }
             start++;
@@ -571,7 +574,7 @@ public final class TarUtils {
         // space but some implementations use the extra digit for big
         // sizes/uids/gids ...
         byte trailer = buffer[end - 1];
-        while (start < end && (trailer == 0 || trailer == ' ')) {
+        while (start < end && (trailer == 0 || trailer == SP)) {
             end--;
             trailer = buffer[end - 1];
         }
@@ -690,9 +693,10 @@ public final class TarUtils {
                 if (ch == '\n') { // blank line in header
                     break;
                 }
-                if (ch == ' ') { // End of length string
+                if (ch == SP) { // End of length string
                     // Get keyword
-                    final ByteArrayOutputStream coll = new ByteArrayOutputStream();
+                    @SuppressWarnings("resource")
+                    final ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     while ((ch = inputStream.read()) != -1) {
                         read++;
                         totalRead++;
@@ -700,7 +704,7 @@ public final class TarUtils {
                             break;
                         }
                         if (ch == '=') { // end of keyword
-                            final String keyword = coll.toString(StandardCharsets.UTF_8);
+                            final String keyword = baos.toString(StandardCharsets.UTF_8);
                             // Get rest of entry
                             final int restLen = len - read;
                             // Validate entry length
@@ -761,7 +765,7 @@ public final class TarUtils {
                             }
                             break;
                         }
-                        coll.write((byte) ch);
+                        baos.write((byte) ch);
                     }
                     break; // Processed single header
                 }
@@ -914,7 +918,7 @@ public final class TarUtils {
         for (int i = 0; i < header.length; i++) {
             byte b = header[i];
             if (TarConstants.CHKSUM_OFFSET <= i && i < TarConstants.CHKSUM_OFFSET + TarConstants.CHKSUMLEN) {
-                b = ' ';
+                b = SP;
             }
             unsignedSum += 0xff & b;
             signedSum += b;

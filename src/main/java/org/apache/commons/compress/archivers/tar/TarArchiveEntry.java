@@ -694,14 +694,11 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      *
      * @param name  The full name of the header to set.
      * @param value value of header.
+     * @throws ArchiveException Thrown when parsing numbers and validating input.
      * @since 1.15
      */
-    public void addPaxHeader(final String name, final String value) {
-        try {
-            processPaxHeader(name, value);
-        } catch (final IOException ex) {
-            throw new IllegalArgumentException("Invalid input", ex);
-        }
+    public void addPaxHeader(final String name, final String value) throws ArchiveException {
+        processPaxHeader(name, value);
     }
 
     /**
@@ -765,7 +762,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         return fill((byte) value, offset, outbuf, length);
     }
 
-    void fillGNUSparse0xData(final Map<String, String> headers) throws CompressException {
+    private void fillGNUSparse0xData(final Map<String, String> headers) throws CompressException {
         paxGNUSparse = true;
         realSize = ParsingUtils.parseIntValue(headers.get(TarGnuSparseKeys.SIZE));
         if (headers.containsKey(TarGnuSparseKeys.NAME)) {
@@ -774,7 +771,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         }
     }
 
-    void fillGNUSparse1xData(final Map<String, String> headers) throws CompressException {
+    private void fillGNUSparse1xData(final Map<String, String> headers) throws CompressException {
         paxGNUSparse = true;
         paxGNU1XSparse = true;
         if (headers.containsKey(TarGnuSparseKeys.NAME)) {
@@ -1618,9 +1615,10 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      *
      * @param key     The header name.
      * @param val     The header value.
+     * @throws ArchiveException Thrown when parsing numbers and validating input.
      * @since 1.15
      */
-    private void processPaxHeader(final String key, final String val) throws IOException {
+    private void processPaxHeader(final String key, final String val) throws ArchiveException {
         processPaxHeader(key, val, extraPaxHeaders);
     }
 
@@ -1630,73 +1628,74 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * @param key     The header name.
      * @param val     The header value.
      * @param headers map of headers used for dealing with sparse file.
-     * @throws IOException if encountered errors when parsing the numbers.
+     * @throws ArchiveException Thrown when parsing numbers and validating input.
      * @since 1.15
      */
-    private void processPaxHeader(final String key, final String val, final Map<String, String> headers) throws CompressException {
-        /*
-         * The following headers are defined for PAX. charset: cannot use these without changing TarArchiveEntry fields mtime atime ctime
-         * LIBARCHIVE.creationtime comment gid, gname linkpath size uid,uname SCHILY.devminor, SCHILY.devmajor: don't have setters/getters for those
-         *
-         * GNU sparse files use additional members, we use GNU.sparse.size to detect the 0.0 and 0.1 versions and GNU.sparse.realsize for 1.0.
-         *
-         * star files use additional members of which we use SCHILY.filetype in order to detect star sparse files.
-         *
-         * If called from addExtraPaxHeader, these additional headers must be already present.
-         */
-        switch (key) {
-        case PAX_NAME_KEY:
-            setName(val);
-            break;
-        case PAX_LINK_NAME_KEY:
-            setLinkName(val);
-            break;
-        case "gid":
-            setGroupId(ParsingUtils.parseLongValue(val));
-            break;
-        case "gname":
-            setGroupName(val);
-            break;
-        case "uid":
-            setUserId(ParsingUtils.parseLongValue(val));
-            break;
-        case "uname":
-            setUserName(val);
-            break;
-        case "size":
-            setSize(ParsingUtils.parseLongValue(val));
-            break;
-        case "mtime":
-            setLastModifiedTime(FileTime.from(parseInstantFromDecimalSeconds(val)));
-            break;
-        case "atime":
-            setLastAccessTime(FileTime.from(parseInstantFromDecimalSeconds(val)));
-            break;
-        case "ctime":
-            setStatusChangeTime(FileTime.from(parseInstantFromDecimalSeconds(val)));
-            break;
-        case "LIBARCHIVE.creationtime":
-            setCreationTime(FileTime.from(parseInstantFromDecimalSeconds(val)));
-            break;
-        case "SCHILY.devminor":
-            setDevMinor(ParsingUtils.parseIntValue(val));
-            break;
-        case "SCHILY.devmajor":
-            setDevMajor(ParsingUtils.parseIntValue(val));
-            break;
-        case TarGnuSparseKeys.SIZE:
-            fillGNUSparse0xData(headers);
-            break;
-        case TarGnuSparseKeys.REALSIZE:
-            fillGNUSparse1xData(headers);
-            break;
-        case "SCHILY.filetype":
-            if ("sparse".equals(val)) {
-                fillStarSparseData(headers);
+    private void processPaxHeader(final String key, final String val, final Map<String, String> headers) throws ArchiveException {
+        //
+        // The following headers are defined for PAX. charset: cannot use these without changing TarArchiveEntry fields mtime atime ctime
+        // LIBARCHIVE.creationtime comment gid, gname linkpath size uid,uname SCHILY.devminor, SCHILY.devmajor: don't have setters/getters for those GNU sparse
+        // files use additional members, we use GNU.sparse.size to detect the 0.0 and 0.1 versions and GNU.sparse.realsize for 1.0. star files use additional
+        // members of which we use SCHILY.filetype in order to detect star sparse files. If called from addExtraPaxHeader, these additional headers must be
+        // already present.
+        //
+        try {
+            switch (key) {
+            case PAX_NAME_KEY:
+                setName(val);
+                break;
+            case PAX_LINK_NAME_KEY:
+                setLinkName(val);
+                break;
+            case "gid":
+                setGroupId(ParsingUtils.parseLongValue(val));
+                break;
+            case "gname":
+                setGroupName(val);
+                break;
+            case "uid":
+                setUserId(ParsingUtils.parseLongValue(val));
+                break;
+            case "uname":
+                setUserName(val);
+                break;
+            case "size":
+                setSize(ParsingUtils.parseLongValue(val));
+                break;
+            case "mtime":
+                setLastModifiedTime(FileTime.from(parseInstantFromDecimalSeconds(val)));
+                break;
+            case "atime":
+                setLastAccessTime(FileTime.from(parseInstantFromDecimalSeconds(val)));
+                break;
+            case "ctime":
+                setStatusChangeTime(FileTime.from(parseInstantFromDecimalSeconds(val)));
+                break;
+            case "LIBARCHIVE.creationtime":
+                setCreationTime(FileTime.from(parseInstantFromDecimalSeconds(val)));
+                break;
+            case "SCHILY.devminor":
+                setDevMinor(ParsingUtils.parseIntValue(val));
+                break;
+            case "SCHILY.devmajor":
+                setDevMajor(ParsingUtils.parseIntValue(val));
+                break;
+            case TarGnuSparseKeys.SIZE:
+                fillGNUSparse0xData(headers);
+                break;
+            case TarGnuSparseKeys.REALSIZE:
+                fillGNUSparse1xData(headers);
+                break;
+            case "SCHILY.filetype":
+                if ("sparse".equals(val)) {
+                    fillStarSparseData(headers);
+                }
+                break;
+            default:
+                extraPaxHeaders.put(key, val);
             }
-            break;
-        default:
-            extraPaxHeaders.put(key, val);
+        } catch (final CompressException e) {
+            throw new ArchiveException(String.format("%s for key '%s'", e.getClass().getSimpleName(), key), (Throwable) e);
         }
     }
 
@@ -1996,8 +1995,9 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * Update the entry using a map of PAX headers.
      *
      * @param headers PAX headers.
+     * @throws ArchiveException Thrown when parsing numbers and validating input.
      */
-    void updateEntryFromPaxHeaders(final Map<String, String> headers) throws IOException {
+    void updateEntryFromPaxHeaders(final Map<String, String> headers) throws ArchiveException {
         for (final Map.Entry<String, String> ent : headers.entrySet()) {
             processPaxHeader(ent.getKey(), ent.getValue(), headers);
         }
