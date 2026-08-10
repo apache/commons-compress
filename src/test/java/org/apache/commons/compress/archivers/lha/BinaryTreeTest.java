@@ -26,6 +26,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.ByteOrder;
 
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.utils.BitInputStream;
 import org.junit.jupiter.api.Test;
@@ -33,11 +34,7 @@ import org.junit.jupiter.api.Test;
 class BinaryTreeTest {
 
     private BitInputStream createBitInputStream(final int... data) throws IOException {
-        final byte[] bytes = new byte[data.length];
-        for (int i = 0; i < data.length; i++) {
-            bytes[i] = (byte) data[i];
-        }
-        return new BitInputStream(new ByteArrayInputStream(bytes), ByteOrder.BIG_ENDIAN);
+        return new BitInputStream(new ByteArrayInputStream(AbstractTest.toByteArray(data)), ByteOrder.BIG_ENDIAN);
     }
 
     @Test

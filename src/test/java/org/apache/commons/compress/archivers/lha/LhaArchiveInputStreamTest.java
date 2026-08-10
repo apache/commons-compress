@@ -106,14 +106,6 @@ class LhaArchiveInputStreamTest extends AbstractTest {
     };
     // @formatter:on
 
-    private static byte[] toByteArray(final int... data) {
-        final byte[] bytes = new byte[data.length];
-        for (int i = 0; i < data.length; i++) {
-            bytes[i] = (byte) data[i];
-        }
-        return bytes;
-    }
-
     private static ByteBuffer toByteBuffer(final int... data) {
         return ByteBuffer.wrap(toByteArray(data)).order(ByteOrder.LITTLE_ENDIAN);
     }

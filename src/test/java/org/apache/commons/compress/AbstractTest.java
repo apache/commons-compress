@@ -110,6 +110,24 @@ public abstract class AbstractTest extends AbstractTempDirTest {
         return Files.readAllBytes(getPath(path));
     }
 
+    /**
+     * Converts an array of integers to an array of bytes by casting each integer to a byte.
+     *
+     * @param data the array of integers to convert
+     * @return an array of bytes corresponding to the input integers
+     */
+    public static byte[] toByteArray(final int... data) {
+        final byte[] bytes = new byte[data.length];
+        for (int i = 0; i < data.length; i++) {
+            final int value = data[i];
+            if (value < 0 || value > 255) {
+                throw new IllegalArgumentException(String.format("Value %d at index %d is not within range [0, 255]", value, i));
+            }
+            bytes[i] = (byte) value;
+        }
+        return bytes;
+    }
+
     @TempDir
     protected File tempResultDir;
 
