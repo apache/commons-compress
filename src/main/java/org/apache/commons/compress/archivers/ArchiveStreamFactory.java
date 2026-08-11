@@ -509,8 +509,7 @@ public class ArchiveStreamFactory implements ArchiveStreamProvider {
         } catch (final ArchiveException e) {
             throw e;
         } catch (final IOException e) {
-            throw new ArchiveException(
-                    "IOException while creating " + archiverName + " input stream: " + e.getMessage(), e);
+            throw new ArchiveException("IOException while creating " + archiverName + " input stream: " + e.getMessage(), (Throwable) e);
         }
     }
 
