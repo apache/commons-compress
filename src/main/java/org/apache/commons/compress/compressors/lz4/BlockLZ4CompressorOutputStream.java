@@ -292,7 +292,7 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream<Outpu
         }
     }
 
-    private byte[] expand(final int offset, final int length) {
+    private byte[] expand(final int offset, final int length) throws CompressorException {
         final byte[] expanded = new byte[length];
         if (offset == 1) { // surprisingly common special case
             final byte[] block = expandedBlocks.peekFirst();
@@ -306,7 +306,7 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream<Outpu
         return expanded;
     }
 
-    private void expandFromList(final byte[] expanded, final int offset, final int length) {
+    private void expandFromList(final byte[] expanded, final int offset, final int length) throws CompressorException {
         int offsetRemaining = offset;
         int lengthRemaining = length;
         int writeOffset = 0;
@@ -326,7 +326,7 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream<Outpu
                 }
                 if (block == null) {
                     // should not be possible
-                    throw new IllegalStateException("Failed to find a block containing offset " + offset);
+                    throw new CompressorException("Failed to find a block containing offset " + offset);
                 }
                 copyOffset = blockOffset + block.length - offsetRemaining;
                 copyLen = Math.min(lengthRemaining, block.length - copyOffset);
@@ -373,7 +373,7 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream<Outpu
         }
     }
 
-    private void recordBackReference(final LZ77Compressor.BackReference block) {
+    private void recordBackReference(final LZ77Compressor.BackReference block) throws CompressorException {
         expandedBlocks.addFirst(expand(block.getOffset(), block.getLength()));
     }
 
@@ -381,7 +381,7 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream<Outpu
         expandedBlocks.addFirst(b);
     }
 
-    private void rewriteLastPairs() {
+    private void rewriteLastPairs() throws CompressorException {
         final LinkedList<Pair> lastPairs = new LinkedList<>();
         final LinkedList<Integer> pairLength = new LinkedList<>();
         int offset = 0;

@@ -32,6 +32,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.apache.commons.compress.AbstractTest;
+import org.apache.commons.compress.CompressException;
 import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
@@ -70,7 +71,7 @@ class ZCompressorInputStreamTest {
 
         Stream.of(invalid).forEach(ints -> ints.forEach(i -> {
             bytes[2] = (byte) i;
-            assertThrows(IllegalArgumentException.class, () -> new ZCompressorInputStream(new ByteArrayInputStream(bytes), 1024 * 1024), () -> "value=" + i);
+            assertThrows(CompressException.class, () -> new ZCompressorInputStream(new ByteArrayInputStream(bytes), 1024 * 1024), () -> "value=" + i);
         }));
     }
 
