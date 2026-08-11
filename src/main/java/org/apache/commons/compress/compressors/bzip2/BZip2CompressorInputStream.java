@@ -608,30 +608,22 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         switch (currentState) {
         case EOF:
             return -1;
-
         case START_BLOCK_STATE:
             return setupBlock();
-
         case RAND_PART_A_STATE:
-            throw new IllegalStateException();
-
+            throw new CompressorException("Unexpected RAND_PART_A_STATE in read0()");
         case RAND_PART_B_STATE:
             return setupRandPartB();
-
         case RAND_PART_C_STATE:
             return setupRandPartC();
-
         case NO_RAND_PART_A_STATE:
-            throw new IllegalStateException();
-
+            throw new CompressorException("Unexpected NO_RAND_PART_A_STATE in read0()");
         case NO_RAND_PART_B_STATE:
             return setupNoRandPartB();
-
         case NO_RAND_PART_C_STATE:
             return setupNoRandPartC();
-
         default:
-            throw new IllegalStateException();
+            throw new CompressorException("Unexpected %s in read0()", currentState);
         }
     }
 
