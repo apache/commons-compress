@@ -255,7 +255,7 @@ class Deflate64DecoderTest {
                 'H', 'e', 'l', 'l', 'o', ' ', 'W', 'o', 'r', 'l', 'd' };
         try (Deflate64Decoder decoder = new Deflate64Decoder(new ByteArrayInputStream(data))) {
             final byte[] result = new byte[100];
-            final IllegalStateException e = assertThrows(IllegalStateException.class, () -> {
+            final CompressorException e = assertThrows(CompressorException.class, () -> {
                 final int len = decoder.decode(result);
                 fail("Should have failed but returned " + len + " entries: " + Arrays.toString(Arrays.copyOf(result, len)));
             });

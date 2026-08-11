@@ -87,13 +87,13 @@ class Deflate64Decoder implements Closeable {
             return newCounter;
         }
 
-        void recordToBuffer(final int distance, final int length, final byte[] buff) {
+        void recordToBuffer(final int distance, final int length, final byte[] buff) throws CompressorException {
             if (distance > memory.length) {
-                throw new IllegalStateException("Illegal distance parameter: " + distance);
+                throw new CompressorException("Illegal distance parameter: " + distance);
             }
             final int start = wHead - distance & mask;
             if (!wrappedAround && start >= wHead) {
-                throw new IllegalStateException("Attempt to read beyond memory: dist=" + distance);
+                throw new CompressorException("Attempt to read beyond memory: dist=" + distance);
             }
             for (int i = 0, pos = start; i < length; i++, pos = incCounter(pos)) {
                 buff[i] = add(memory[pos]);
@@ -210,11 +210,11 @@ class Deflate64Decoder implements Closeable {
         }
 
         @Override
-        int read(final byte[] b, final int off, final int len) {
+        int read(final byte[] b, final int off, final int len) throws CompressorException {
             if (len == 0) {
                 return 0;
             }
-            throw new IllegalStateException("Cannot read in this state");
+            throw new CompressorException("Cannot read in this state");
         }
 
         @Override
@@ -451,7 +451,7 @@ class Deflate64Decoder implements Closeable {
                     state = new HuffmanCodes(DYNAMIC_CODES, tables[0], tables[1]);
                     break;
                 default:
-                    throw new IllegalStateException("Unsupported compression: " + mode);
+                    throw new CompressorException("Unsupported compression: " + mode);
                 }
             } else {
                 final int r = state.read(b, off, len);
@@ -492,7 +492,7 @@ class Deflate64Decoder implements Closeable {
         final long bNLen = readBits(16);
         if (((bLen ^ 0xFFFF) & 0xFFFF) != bNLen) {
             // noinspection DuplicateStringLiteralInspection
-            throw new IllegalStateException("Illegal LEN / NLEN values");
+            throw new CompressorException("Illegal LEN / NLEN values");
         }
         state = new UncompressedState(bLen);
     }

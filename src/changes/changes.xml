@@ -150,6 +150,7 @@ The <action> type attribute can be add,update,fix,remove.
       <!-- FIX deflate64 -->
       <action type="fix" dev="ggregory" due-to="KALI 834X, Gary Gregory">[Deflate64] Reject invalid literal/length and distance codes in Deflate64 decoder (#785).</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">[Deflate64] Deflate64CompressorInputStream now throws ArchiveException instead of IllegalArgumetException/IllegalStateException.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[Deflate64] Deflate64Decoder now throws ArchiveException instead of IllegalArgumetException/IllegalStateException.</action>
       <!-- FIX lz77 -->
       <action type="fix" dev="ggregory" due-to="KALI 834X, Gary Gregory">[LZ77] Reject back-reference offset larger than the window in lz77 decoder class AbstractLZ77CompressorInputStream (#797).</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">[LZ77] AbstractLZ77CompressorInputStream now throws ArchiveException instead of IllegalArgumetException/IllegalStateException.</action>
