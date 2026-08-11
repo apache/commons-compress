@@ -115,12 +115,12 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
      *
      * @param is         An InputStream to read compressed data from.
      * @param windowSize Size of the window kept for back-references, must be bigger than the biggest offset expected.
-     * @throws IllegalArgumentException if windowSize is not bigger than 0.
+     * @throws CompressorException if windowSize is not positive.
      */
-    public AbstractLZ77CompressorInputStream(final InputStream is, final int windowSize) {
+    public AbstractLZ77CompressorInputStream(final InputStream is, final int windowSize) throws CompressorException {
         this.in = BoundedInputStream.builder().setInputStream(is).asSupplier().get();
         if (windowSize <= 0) {
-            throw new IllegalArgumentException("windowSize must be bigger than 0");
+            throw new CompressorException("windowSize must be positive.");
         }
         this.windowSize = windowSize;
         buf = new byte[3 * windowSize];
@@ -175,11 +175,11 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
      * </p>
      *
      * @param data The data to fill the window with.
-     * @throws IllegalStateException if the stream has already started to read data.
+     * @throws CompressorException if the stream has already started to read data.
      */
-    public void prefill(final byte[] data) {
+    public void prefill(final byte[] data) throws CompressorException {
         if (writeIndex != 0) {
-            throw new IllegalStateException("The stream has already been read from, can't prefill anymore");
+            throw new CompressorException("The stream has already been read from, can't prefill anymore");
         }
         // we don't need more data than the big offset could refer to, so cap it
         final int len = Math.min(windowSize, data.length);
@@ -271,17 +271,17 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
      *
      * @param offset The offset of the back-reference.
      * @param length The length of the back-reference.
-     * @throws IllegalArgumentException if offset not bigger than 0, bigger than the window size or bigger than the number of bytes available for back-references,
+     * @throws CompressorException if offset not bigger than 0, bigger than the window size or bigger than the number of bytes available for back-references,
      *                                  or if length is negative.
      */
-    protected final void startBackReference(final int offset, final long length) {
+    protected final void startBackReference(final int offset, final long length) throws CompressorException {
         // An offset larger than windowSize can't be honored: the buffer only keeps windowSize bytes of history, so once the buffer is slid mid-copy the source
         // index writeIndex - offset in tryToCopy would turn negative.
         if (offset <= 0 || offset > writeIndex || offset > windowSize) {
-            throw new IllegalArgumentException("offset must be bigger than 0 but not bigger than the window size or the number of bytes available for back-references");
+            throw new CompressorException("offset must be bigger than 0 but not bigger than the window size or the number of bytes available for back-references");
         }
         if (length < 0) {
-            throw new IllegalArgumentException("length must not be negative");
+            throw new CompressorException("length must not be negative");
         }
         backReferenceOffset = offset;
         bytesRemaining = length;
@@ -291,11 +291,11 @@ public abstract class AbstractLZ77CompressorInputStream extends CompressorInputS
      * Used by subclasses to signal the next block contains the given amount of literal data.
      *
      * @param length The length of the block.
-     * @throws IllegalArgumentException if length is negative.
+     * @throws CompressorException if length is negative.
      */
-    protected final void startLiteral(final long length) {
+    protected final void startLiteral(final long length) throws CompressorException {
         if (length < 0) {
-            throw new IllegalArgumentException("length must not be negative");
+            throw new CompressorException("length must not be negative");
         }
         bytesRemaining = length;
     }
