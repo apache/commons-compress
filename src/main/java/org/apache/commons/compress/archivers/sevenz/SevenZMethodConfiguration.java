@@ -20,6 +20,8 @@ package org.apache.commons.compress.archivers.sevenz;
 
 import java.util.Objects;
 
+import org.apache.commons.compress.archivers.ArchiveException;
+
 /**
  * Combines a SevenZMethod with configuration options for the method.
  *
@@ -72,8 +74,9 @@ public class SevenZMethodConfiguration {
      * Doesn't configure any additional options.
      *
      * @param method The method to use.
+     * @throws ArchiveException if the method can't be configured.
      */
-    public SevenZMethodConfiguration(final SevenZMethod method) {
+    public SevenZMethodConfiguration(final SevenZMethod method) throws ArchiveException {
         this(method, null);
     }
 
@@ -82,13 +85,13 @@ public class SevenZMethodConfiguration {
      *
      * @param method  The method to use.
      * @param options The options to use.
-     * @throws IllegalArgumentException if the method doesn't understand the options specified.
+     * @throws ArchiveException if the method doesn't understand the options specified.
      */
-    public SevenZMethodConfiguration(final SevenZMethod method, final Object options) {
+    public SevenZMethodConfiguration(final SevenZMethod method, final Object options) throws ArchiveException {
         this.method = method;
         this.options = options;
         if (options != null && !Coders.findByMethod(method).isOptionInstance(options)) {
-            throw new IllegalArgumentException("The " + method + " method doesn't support options of type " + options.getClass());
+            throw new ArchiveException("The " + method + " method doesn't support options of type " + options.getClass());
         }
     }
 

@@ -334,10 +334,9 @@ public class SevenZOutputFile implements Closeable {
         channel.write(bb);
     }
 
-    private Iterable<? extends SevenZMethodConfiguration> getContentMethods(final SevenZArchiveEntry entry) {
+    private Iterable<? extends SevenZMethodConfiguration> getContentMethods(final SevenZArchiveEntry entry) throws ArchiveException {
         final Iterable<? extends SevenZMethodConfiguration> ms = entry.getContentMethods();
         Iterable<? extends SevenZMethodConfiguration> iter = ms == null ? contentMethods : ms;
-
         if (aes256Options != null) {
             // prepend encryption
             iter = Stream
@@ -395,8 +394,9 @@ public class SevenZOutputFile implements Closeable {
      * </p>
      *
      * @param method The default compression method.
+     * @throws ArchiveException if the method can't be configured.
      */
-    public void setContentCompression(final SevenZMethod method) {
+    public void setContentCompression(final SevenZMethod method) throws ArchiveException {
         setContentMethods(Collections.singletonList(new SevenZMethodConfiguration(method)));
     }
 
@@ -420,7 +420,7 @@ public class SevenZOutputFile implements Closeable {
 
     private CountingOutputStream setupFileOutputStream() throws IOException {
         if (files.isEmpty()) {
-            throw new IllegalStateException("No current 7z entry");
+            throw new ArchiveException("No current 7z entry");
         }
 
         // doesn't need to be closed, just wraps the instance field channel

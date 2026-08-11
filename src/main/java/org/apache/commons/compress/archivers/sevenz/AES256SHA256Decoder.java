@@ -115,9 +115,8 @@ final class AES256SHA256Decoder extends AbstractCoder {
                 cipherInputStream = new CipherInputStream(in, cipher);
                 isInitialized = true;
                 return cipherInputStream;
-            } catch (final GeneralSecurityException generalSecurityException) {
-                throw new IllegalStateException("Decryption error (do you have the JCE Unlimited Strength Jurisdiction Policy Files installed?)",
-                        generalSecurityException);
+            } catch (final GeneralSecurityException e) {
+                throw new ArchiveException("Decryption error (Check JCE Unlimited Strength Jurisdiction Policy Files installation).", (Throwable) e);
             }
         }
 
@@ -196,12 +195,12 @@ final class AES256SHA256Decoder extends AbstractCoder {
         }
     }
 
-    static byte[] sha256Password(final byte[] password, final int numCyclesPower, final byte[] salt) {
+    static byte[] sha256Password(final byte[] password, final int numCyclesPower, final byte[] salt) throws ArchiveException {
         final MessageDigest digest;
         try {
             digest = MessageDigest.getInstance("SHA-256");
-        } catch (final NoSuchAlgorithmException noSuchAlgorithmException) {
-            throw new IllegalStateException("SHA-256 is unsupported by your Java implementation", noSuchAlgorithmException);
+        } catch (final NoSuchAlgorithmException e) {
+            throw new ArchiveException("SHA-256 is unsupported by your Java implementation", (Throwable) e);
         }
         final byte[] extra = new byte[8];
         for (long j = 0; j < 1L << numCyclesPower; j++) {
@@ -218,12 +217,12 @@ final class AES256SHA256Decoder extends AbstractCoder {
         return digest.digest();
     }
 
-    static byte[] sha256Password(final char[] password, final int numCyclesPower, final byte[] salt) {
+    static byte[] sha256Password(final char[] password, final int numCyclesPower, final byte[] salt) throws ArchiveException {
         return sha256Password(utf16Decode(password), numCyclesPower, salt);
     }
 
     /**
-     * Convenience method that encodes Unicode characters into bytes in UTF-16 (little-endian byte order) charset
+     * Convenience method that encodes Unicode characters into bytes in UTF-16 (little-endian byte order) charset.
      *
      * @param chars characters to encode.
      * @return encoded characters.

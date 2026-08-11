@@ -62,7 +62,11 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="KALI 834X, Gary Gregory">[7-Zip] Reject short LZMA properties and oversized dictionary in LZMADecoder (#784).</action>
       <action type="fix" dev="ggregory" due-to="KALI 834X, Gary Gregory">[7-Zip] Fix copyOfRange end index in x0017 strong encryption header (#786).</action>
       <action type="fix" dev="ggregory" due-to="KALI 834X, Gary Gregory">[7-Zip] Fix packed stream count check in SevenZFile.sanityCheckUnpackInfo (#791).</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">[7-Zip] SevenZFile.getInputStream(SevenZArchiveEntry) now throws ArchiveException instead of IllehalArgumentException.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[7-Zip] SevenZFile.getInputStream(SevenZArchiveEntry) now throws ArchiveException instead of instead of IllegalArgumetException/IllegalStateException.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[7-Zip] AES256Options now throws ArchiveException instead of instead of IllegalArgumetException/IllegalStateException.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[7-Zip] AES256SHA256Decoder now throws ArchiveException instead of instead of IllegalArgumetException/IllegalStateException.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[7-Zip] SevenZMethodConfiguration now throws ArchiveException instead of instead of IllegalArgumetException/IllegalStateException.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[7-Zip] SevenZOutputFile now throws ArchiveException instead of instead of IllegalArgumetException/IllegalStateException.</action>
       <!-- FIX bzip2 -->
       <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">[BZip2] BZip2CompressorInputStream now throw CompressorException (a subclass of IOException) for invalid or corrupted data, providing more specific error reporting.</action>
       <action type="fix" dev="pkarwasz" due-to="Tyler Nighswander, Piotr P. Karwasz">[BZip2] BZip2 input streams treat Huffman codes longer than 20 bits as corrupted data, matching the behavior of the reference implementation.</action>
@@ -73,12 +77,12 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="pkarwasz" due-to="Piotr P. Karwasz">[Dump] Fix DumpArchiveInputStream to correctly handle file names up to 255 bytes #711.</action>
       <action type="fix" dev="ggregory" due-to="Philip Betzler-Braun, Gary Gregory, Piotr P. Karwasz" issue="COMPRESS-712">[Dump] Unsanitized read causes IndexOutOfBoundsException in #749.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory, KALI 834X">[Dump] DumpArchiveEntry rejects out-of-range directory header count (#781).</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">[Dump] DumpArchiveInputStream now throws ArchiveException instead of IllegalArgumentException.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">[Dump] TapeArchiveInputStream now throws ArchiveException instead of IllegalArgumentException.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[Dump] DumpArchiveInputStream now throws ArchiveException instead of instead of IllegalArgumetException/IllegalStateException.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[Dump] TapeArchiveInputStream now throws ArchiveException instead of instead of IllegalArgumetException/IllegalStateException.</action>
       <!-- FIX zip -->
       <action type="fix" dev="ggregory" due-to="Dominik Stadler, Gary Gregory" issue="COMPRESS-598">[Zip] ZipArchiveInputStream.read(byte[], int, int) now throws an IOException instead of a NullPointerException.</action>
-      <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">[Zip] ZipFile.createBoundedInputStream(long, long) now throws an ArchiveException instead of IllegalArgumentException.</action>
-      <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">[Zip] ZipFile.getContentBeforeFirstLocalFileHeader() now throws an ArchiveException instead of IllegalArgumentException.</action>
+      <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">[Zip] ZipFile.createBoundedInputStream(long, long) now throws an ArchiveException instead of instead of IllegalArgumetException/IllegalStateException.</action>
+      <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">[Zip] ZipFile.getContentBeforeFirstLocalFileHeader() now throws an ArchiveException instead of instead of IllegalArgumetException/IllegalStateException.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">[Zip] ExplodingInputStream now throws ArchiveException instead of ArithmeticException.</action>
       <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">[Zip] ZipArchiveInputStream.read() now throws an IOException instead of java.lang.ArrayIndexOutOfBoundsException.</action>
       <action type="fix" dev="ggregory" due-to="Stanislav Fort, Gary Gregory">[Zip] ZipArchiveInputStream now throws an MemoryLimitException instead of ArchiveException, or OutOfMemoryError when running with low memory settings set on the command line.</action>
@@ -98,26 +102,26 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory, KALI 834X">[TAR] Reject tar sparse blocks larger than the entry size (#780).</action>
       <action type="fix" dev="ggregory" due-to="OldTruckDriver, Gary Gregory" issue="COMPRESS-724">[TAR] Fix TAR PAX 1.x sparse header alignment (#775).</action>
       <action type="fix" dev="ggregory" due-to="subbudvk, Gary Gregory" issue="COMPRESS-723">[TAR] TAR PAX header parsing: enforce memory bound to mitigate resource exhaustion from oversized headers (#770).</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">[TAR] TarArchiveEntry.setDataOffset(long) now throw ArchiveException instead of IllegalArgumentException.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">[TAR] TarArchiveEntry.setDevMajor(int) now throw ArchiveException instead of IllegalArgumentException.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">[TAR] TarArchiveEntry.setDevMinor(int) now throw ArchiveException instead of IllegalArgumentException.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">[TAR] TarArchiveEntry.setSize(long) now throw ArchiveException instead of IllegalArgumentException.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">[TAR] TarArchiveEntry.addPaxHeader(String, String) now throws ArchiveException instead of IllegalArgumentException.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[TAR] TarArchiveEntry.setDataOffset(long) now throw ArchiveException instead of instead of IllegalArgumetException/IllegalStateException.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[TAR] TarArchiveEntry.setDevMajor(int) now throw ArchiveException instead of instead of IllegalArgumetException/IllegalStateException.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[TAR] TarArchiveEntry.setDevMinor(int) now throw ArchiveException instead of instead of IllegalArgumetException/IllegalStateException.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[TAR] TarArchiveEntry.setSize(long) now throw ArchiveException instead of instead of IllegalArgumetException/IllegalStateException.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[TAR] TarArchiveEntry.addPaxHeader(String, String) now throws ArchiveException instead of instead of IllegalArgumetException/IllegalStateException.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">[TAR] TAR ParsingUtils now throws the IOException subclass CompressException.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">[TAR] TarArchiveOutputStream now throws ArchiveException instead of IllegalArgumentException.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">[TAR] TarArchiveInputStream now throws ArchiveException instead of IllegalArgumentException.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">[TAR] TarUtils now throws ArchiveException instead of IllegalArgumentException.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[TAR] TarArchiveOutputStream now throws ArchiveException instead of instead of IllegalArgumetException/IllegalStateException.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[TAR] TarArchiveInputStream now throws ArchiveException instead of instead of IllegalArgumetException/IllegalStateException.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[TAR] TarUtils now throws ArchiveException instead of instead of IllegalArgumetException/IllegalStateException.</action>
       <!-- FIX ar -->
       <action type="fix" dev="ggregory" due-to="Gary Gregory">[AR] ArArchiveInputStream.readGNUStringTable(byte[], int, int) now provides a better exception message, wrapping the underlying exception.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">[AR] ArArchiveInputStream.read(byte[], int, int) now throws ArchiveException instead of ArithmeticException.</action>
       <action type="fix" dev="pkarwasz" due-to="Tyler Nighswander">[AR] Simplify handling of special AR records in ArArchiveInputStream.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">[AR] Most ArArchiveEntry constructors now throws the IOException subclass ArchiveException.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">[AR] ArArchiveInputStream now throws ArchiveException instead of IllegalArgumentException.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[AR] ArArchiveInputStream now throws ArchiveException instead of instead of IllegalArgumetException/IllegalStateException.</action>
       <!-- FIX arj -->
       <action type="fix" dev="pkarwasz" due-to="Piotr P. Karwasz">[ARJ] Correct byte accounting and truncation errors in ARJ input stream.</action>
       <action type="fix" dev="pkarwasz" due-to="Piotr P. Karwasz">[ARJ] Add strict header validation in ARJ input stream and `selfExtracting` option.</action>
       <action type="fix" dev="ggregory" due-to="KALI 834X, Gary Gregory">[ARJ] Reject missing main header in ArjArchiveInputStream.readMainHeader (#793).</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">[ARJ] ArjArchiveInputStream now throws ArchiveException instead of IllegalArgumentException.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[ARJ] ArjArchiveInputStream now throws ArchiveException instead of instead of IllegalArgumetException/IllegalStateException.</action>
       <!-- FIX unpack200 -->
       <action type="fix" dev="ggregory" due-to="Gary Gregory, Stanislav Fort">[Unpack200] org.apache.commons.compress.harmony.unpack200 now throws Pack200Exception, IllegalArgumentException, and IllegalStateException instead of other runtime exceptions and Error.</action>
       <action type="fix" dev="pkarwasz" due-to="Piotr P. Karwasz">[Unpack200] Enforce strict attribute layout parsing in Pack200.</action>
@@ -136,8 +140,8 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" issue="COMPRESS-711" dev="pkarwasz" due-to="Piotr P. Karwasz">[Cpio] Fix checksum calculation in CpioArchiveInputStream when reading with a non-zero offset.</action>
       <action type="fix" issue="COMPRESS-718" dev="ggregory" due-to="Anay Wadhera, Gary Gregory">[Cpio] CpioArchiveEntry does not allow files over 4GB in OLD_ASCII format.</action>
       <action type="fix" dev="ggregory" due-to="Christopher Linke, Gary Gregory">[Cpio] Throw ArchiveException instead of EOFException when CPIO name size less than or equal to 0 #771.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">[Cpio] CpioArchiveEntry now throws ArchiveException instead of IllegalArgumentException.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">[Cpio] CpioArchiveInputStream now throws ArchiveException instead of IllegalArgumentException.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[Cpio] CpioArchiveEntry now throws ArchiveException instead of instead of IllegalArgumetException/IllegalStateException.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[Cpio] CpioArchiveInputStream now throws ArchiveException instead of instead of IllegalArgumetException/IllegalStateException.</action>
       <!-- FIX gzip -->
       <action type="fix" dev="ggregory" due-to="Gary Gregory">[GZip] GzipParameters.setOperatingSystem(int) now throws CompressorException on illegal input.</action>
       <action type="fix" issue="COMPRESS-705" dev="ggregory" due-to="Mario Fredenhagen, Gary Gregory">[GZip] GZip IOException: Extra subfield length exceeds remaining bytes in extra field; use new option GzipCompressorInputStream.Builder.setIgnoreExtraField(boolean).</action>
@@ -147,10 +151,10 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="KALI 834X, Gary Gregory">[Deflate64] Reject invalid literal/length and distance codes in Deflate64 decoder (#785).</action>
       <!-- FIX lz77 -->
       <action type="fix" dev="ggregory" due-to="KALI 834X, Gary Gregory">[LZ77] Reject back-reference offset larger than the window in lz77 decoder class AbstractLZ77CompressorInputStream (#797).</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">[LZ77] AbstractLZ77CompressorInputStream now throws ArchiveException instead of IllegalArgumentException.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">[LZ77] LZ77Compressor.prefill(byte[]) now throws ArchiveException instead of IllegalArgumentException.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[LZ77] AbstractLZ77CompressorInputStream now throws ArchiveException instead of instead of IllegalArgumetException/IllegalStateException.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[LZ77] LZ77Compressor.prefill(byte[]) now throws ArchiveException instead of instead of IllegalArgumetException/IllegalStateException.</action>
       <!-- FIX lz4 -->
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">[LZ4] BlockLZ4CompressorOutputStream.prefill(byte[], int, int) now throws ArchiveException instead of IllegalArgumentException.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[LZ4] BlockLZ4CompressorOutputStream.prefill(byte[], int, int) now throws ArchiveException instead of instead of IllegalArgumetException/IllegalStateException.</action>
       <!-- FIX general -->      
       <action type="fix" dev="ggregory" due-to="Piotr P. Karwasz, Gary Gregory">Add missing Javadoc @since tag to org.apache.commons.compress.compressors.lz77support.LZ77Compressor.AbstractReference.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Classes in org.apache.commons.compress.archivers now throw a subclass of IOException called ArchiveException instead of IOException when a formatting problem is found.</action>
@@ -187,7 +191,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Add and use ArchiveException.requireNonNegative(int, Supplier&lt;String&gt;)</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Add and use ArchiveException.requireNonNegative(long, String)</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Add and use ArchiveException.requireNonNegative(long, Supplier&lt;String&gt;)</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">ArchiveStreamFactory now throws ArchiveException instead of IllegalArgumentException.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">ArchiveStreamFactory now throws ArchiveException instead of instead of IllegalArgumetException/IllegalStateException.</action>
       <!-- ADD -->
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add MemoryLimitException.MemoryLimitException(long, long).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add CompressException.CompressException(String, Object...).</action>
