@@ -161,6 +161,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
      * @param os         The output stream to use.
      * @param blockSize  The block size to use.
      * @param recordSize The record size to use. Must be 512 bytes.
+     * @throws IllegalArgumentException if recordSize is not 512 bytes.
      * @deprecated recordSize must always be 512 bytes. An IllegalArgumentException will be thrown if any other value is used
      */
     @Deprecated
@@ -175,6 +176,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
      * @param blockSize  The block size to use . Must be a multiple of 512 bytes.
      * @param recordSize The record size to use. Must be 512 bytes.
      * @param encoding   name of the encoding to use for file names.
+     * @throws IllegalArgumentException if recordSize is not 512 bytes.
      * @since 1.4
      * @deprecated recordSize must always be 512 bytes. An IllegalArgumentException will be thrown if any other value is used.
      */
@@ -193,6 +195,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
      * @param os        The output stream to use.
      * @param blockSize The block size to use. Must be a multiple of 512 bytes.
      * @param charset  name of the encoding to use for file names.
+     * @throws IllegalArgumentException if blockSize is not a multiple of 512 bytes.
      * @since 1.4
      */
     public TarArchiveOutputStream(final OutputStream os, final int blockSize, final String charset) {
