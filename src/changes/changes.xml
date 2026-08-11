@@ -68,9 +68,10 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory">[7-Zip] SevenZMethodConfiguration now throws ArchiveException instead of IllegalArgumetException/IllegalStateException.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">[7-Zip] SevenZOutputFile now throws ArchiveException instead of IllegalArgumetException/IllegalStateException.</action>
       <!-- FIX bzip2 -->
-      <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">[BZip2] BZip2CompressorInputStream now throw CompressorException (a subclass of IOException) instead of IllegalArgumetException/IllegalStateException.</action>
+      <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">[BZip2] BZip2CompressorInputStream now throws CompressorException instead of IllegalArgumetException/IllegalStateException.</action>
       <action type="fix" dev="pkarwasz" due-to="Tyler Nighswander, Piotr P. Karwasz">[BZip2] BZip2 input streams treat Huffman codes longer than 20 bits as corrupted data, matching the behavior of the reference implementation.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory, Oti">[BZip2] Fix NullPointerException at BZip2CompressorOutputStream.writeRun() #757.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[BZip2] BZip2CompressorOutputStream now throws CompressorException instead of IllegalArgumetException/IllegalStateException.</action>
       <!-- FIX dump -->      
       <action type="fix" dev="pkarwasz" due-to="Tyler Nighswander">[Dump] Align DUMP archive block size with Linux `dump` utility.</action>
       <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">[Dump] DumpArchiveInputStream.getNextEntry() throws an ArchiveException instead of ArrayIndexOutOfBoundsException.</action>

@@ -117,9 +117,9 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream<Outpu
             }
         }
 
-        void setBackReference(final LZ77Compressor.BackReference block) {
+        void setBackReference(final LZ77Compressor.BackReference block) throws CompressorException {
             if (hasBackReference()) {
-                throw new IllegalStateException();
+                throw new CompressorException("back-reference already set");
             }
             brOffset = block.getOffset();
             brLength = block.getLength();

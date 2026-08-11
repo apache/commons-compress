@@ -27,6 +27,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 
+import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.lz77support.LZ77Compressor;
 import org.apache.commons.lang3.ArrayFill;
 import org.junit.jupiter.api.Disabled;
@@ -36,7 +37,7 @@ class BlockLZ4CompressorOutputStreamTest {
 
     @Test
     @Disabled("would pass if the algorithm used for rewriting the final pairs was smarter")
-    public void canWriteBackReferenceFollowedByShortLiteralIfLengthIsBigEnough() {
+    public void canWriteBackReferenceFollowedByShortLiteralIfLengthIsBigEnough() throws CompressorException {
         final BlockLZ4CompressorOutputStream.Pair p = new BlockLZ4CompressorOutputStream.Pair();
         p.setBackReference(new LZ77Compressor.BackReference(1, 10));
         assertTrue(p.canBeWritten(5));
@@ -44,7 +45,7 @@ class BlockLZ4CompressorOutputStreamTest {
 
     @Test
     @Disabled("would pass if the algorithm used for rewriting the final pairs was smarter")
-    public void canWriteBackReferenceFollowedByShortLiteralIfOffsetIsBigEnough() {
+    public void canWriteBackReferenceFollowedByShortLiteralIfOffsetIsBigEnough() throws CompressorException {
         final BlockLZ4CompressorOutputStream.Pair p = new BlockLZ4CompressorOutputStream.Pair();
         p.setBackReference(new LZ77Compressor.BackReference(10, 4));
         assertTrue(p.canBeWritten(5));
@@ -80,21 +81,21 @@ class BlockLZ4CompressorOutputStreamTest {
     }
 
     @Test
-    void testCantWriteBackReferenceFollowedByLiteralThatIsTooShort() {
+    void testCantWriteBackReferenceFollowedByLiteralThatIsTooShort() throws CompressorException {
         final BlockLZ4CompressorOutputStream.Pair p = new BlockLZ4CompressorOutputStream.Pair();
         p.setBackReference(new LZ77Compressor.BackReference(10, 14));
         assertFalse(p.canBeWritten(4));
     }
 
     @Test
-    void testCantWriteBackReferenceIfAccumulatedOffsetIsTooShort() {
+    void testCantWriteBackReferenceIfAccumulatedOffsetIsTooShort() throws CompressorException {
         final BlockLZ4CompressorOutputStream.Pair p = new BlockLZ4CompressorOutputStream.Pair();
         p.setBackReference(new LZ77Compressor.BackReference(1, 4));
         assertFalse(p.canBeWritten(5));
     }
 
     @Test
-    void testCanWriteBackReferenceFollowedByLongLiteral() {
+    void testCanWriteBackReferenceFollowedByLongLiteral() throws CompressorException {
         final BlockLZ4CompressorOutputStream.Pair p = new BlockLZ4CompressorOutputStream.Pair();
         p.setBackReference(new LZ77Compressor.BackReference(1, 4));
         // a length of 11 would be enough according to the spec, but
@@ -123,7 +124,7 @@ class BlockLZ4CompressorOutputStreamTest {
     }
 
     @Test
-    void testPairAccumulatesLengths() {
+    void testPairAccumulatesLengths() throws CompressorException {
         final BlockLZ4CompressorOutputStream.Pair p = new BlockLZ4CompressorOutputStream.Pair();
         p.setBackReference(new LZ77Compressor.BackReference(1, 4));
         final byte[] b = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
@@ -133,7 +134,7 @@ class BlockLZ4CompressorOutputStreamTest {
     }
 
     @Test
-    void testPairSeesBackReferenceWhenSet() {
+    void testPairSeesBackReferenceWhenSet() throws CompressorException {
         final BlockLZ4CompressorOutputStream.Pair p = new BlockLZ4CompressorOutputStream.Pair();
         assertFalse(p.hasBackReference());
         p.setBackReference(new LZ77Compressor.BackReference(1, 4));
