@@ -25,6 +25,7 @@ import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorOutputStream;
 import org.apache.commons.compress.compressors.lz77support.LZ77Compressor;
 import org.apache.commons.compress.compressors.lz77support.Parameters;
@@ -361,10 +362,10 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream<Outpu
      * @param data The data to fill the window with.
      * @param off  offset of real data into the array.
      * @param len  amount of data.
-     * @throws IllegalStateException if the stream has already started to write data.
+     * @throws CompressorException if the stream has already started to write data.
      * @see LZ77Compressor#prefill
      */
-    public void prefill(final byte[] data, final int off, final int len) {
+    public void prefill(final byte[] data, final int off, final int len) throws CompressorException {
         if (len > 0) {
             final byte[] b = Arrays.copyOfRange(data, off, off + len);
             compressor.prefill(b);

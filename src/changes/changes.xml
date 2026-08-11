@@ -148,6 +148,9 @@ The <action> type attribute can be add,update,fix,remove.
       <!-- FIX lz77 -->
       <action type="fix" dev="ggregory" due-to="KALI 834X, Gary Gregory">[LZ77] Reject back-reference offset larger than the window in lz77 decoder class AbstractLZ77CompressorInputStream (#797).</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">[LZ77] AbstractLZ77CompressorInputStream now throws ArchiveException instead of IllegalArgumentException.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[LZ77] LZ77Compressor.prefill(byte[]) now throws ArchiveException instead of IllegalArgumentException.</action>
+      <!-- FIX lz4 -->
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[LZ4] BlockLZ4CompressorOutputStream.prefill(byte[], int, int) now throws ArchiveException instead of IllegalArgumentException.</action>
       <!-- FIX general -->      
       <action type="fix" dev="ggregory" due-to="Piotr P. Karwasz, Gary Gregory">Add missing Javadoc @since tag to org.apache.commons.compress.compressors.lz77support.LZ77Compressor.AbstractReference.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Classes in org.apache.commons.compress.archivers now throw a subclass of IOException called ArchiveException instead of IOException when a formatting problem is found.</action>

@@ -21,6 +21,7 @@ package org.apache.commons.compress.compressors.lz77support;
 import java.io.IOException;
 import java.util.Objects;
 
+import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayFill;
 
@@ -588,11 +589,11 @@ public class LZ77Compressor {
      * </p>
      *
      * @param data The data to fill the window with.
-     * @throws IllegalStateException if the compressor has already started to accept data.
+     * @throws CompressorException if the compressor has already started to accept data.
      */
-    public void prefill(final byte[] data) {
+    public void prefill(final byte[] data) throws CompressorException {
         if (currentPosition != 0 || lookahead != 0) {
-            throw new IllegalStateException("The compressor has already started to accept data, can't prefill anymore");
+            throw new CompressorException("The compressor has already started to accept data, can't prefill anymore");
         }
 
         // don't need more than windowSize for back-references
