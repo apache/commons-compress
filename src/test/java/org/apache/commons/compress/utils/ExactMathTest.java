@@ -20,14 +20,15 @@ package org.apache.commons.compress.utils;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import org.apache.commons.compress.CompressException;
 import org.junit.jupiter.api.Test;
 
 class ExactMathTest {
 
     @Test
     void testOverflow() {
-        assertThrows(IllegalArgumentException.class, () -> ExactMath.add(1, Long.MAX_VALUE / 1000));
-        assertThrows(IllegalArgumentException.class, () -> ExactMath.add(Integer.MAX_VALUE, Integer.MAX_VALUE));
+        assertThrows(CompressException.class, () -> ExactMath.add(1, Long.MAX_VALUE / 1000));
+        assertThrows(CompressException.class, () -> ExactMath.add(Integer.MAX_VALUE, Integer.MAX_VALUE));
     }
 
 }
