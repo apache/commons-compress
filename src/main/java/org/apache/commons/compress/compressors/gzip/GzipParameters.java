@@ -520,6 +520,7 @@ public class GzipParameters {
      * Sets size of the buffer used to retrieve compressed data from {@link Deflater} and write to underlying {@link OutputStream}.
      *
      * @param bufferSize The bufferSize to set. Must be a positive type.
+     * @throws IllegalArgumentException if the bufferSize is not positive.
      * @since 1.21
      */
     public void setBufferSize(final int bufferSize) {
