@@ -458,7 +458,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
             final byte linkType, final String fieldName) throws IOException {
         // Fail-fast with less precision with LONGFILE_ERROR, instead allocating a potentially huge buffers.
         if (longFileMode == LONGFILE_ERROR && name.length() >= TarConstants.NAMELEN) {
-            throw new IllegalArgumentException(
+            throw new ArchiveException(
                     fieldName + " '" + StringUtils.truncate(name, TarConstants.NAMELEN) + "...' is too long ( > " + TarConstants.NAMELEN + " bytes)");
         }
         final ByteBuffer encodedName = zipEncoding.encode(name);
@@ -479,7 +479,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
                 write(0); // NUL terminator
                 closeArchiveEntry();
             } else if (longFileMode != LONGFILE_TRUNCATE) {
-                throw new IllegalArgumentException(
+                throw new ArchiveException(
                         fieldName + " '" + StringUtils.truncate(name, TarConstants.NAMELEN) + "...' is too long ( > " + TarConstants.NAMELEN + " bytes)");
             }
         }
@@ -637,7 +637,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
     public void write(final byte[] wBuf, final int wOffset, final int numToWrite) throws IOException {
         IOUtils.checkFromIndexSize(wBuf, wOffset, numToWrite);
         if (!haveUnclosedEntry) {
-            throw new IllegalStateException("No current tar entry");
+            throw new ArchiveException("No current tar entry");
         }
         if (currBytes + numToWrite > currSize) {
             throw new ArchiveException("Request to write %,d bytes exceeds size in header of %,d bytes for entry '%s'", numToWrite, currSize, currName);

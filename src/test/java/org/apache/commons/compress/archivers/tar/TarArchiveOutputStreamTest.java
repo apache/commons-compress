@@ -452,7 +452,7 @@ class TarArchiveOutputStreamTest extends AbstractTest {
                 + "01234567890123456789012345678901234567890123456789"
                 + "01234567890123456789012345678901234567890123456789/";
         // @formatter:on
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(ArchiveException.class, () -> {
             final TarArchiveEntry t = new TarArchiveEntry(n);
             final ByteArrayOutputStream bos = new ByteArrayOutputStream();
             try (TarArchiveOutputStream tos = new TarArchiveOutputStream(bos, "ASCII")) {
@@ -532,7 +532,7 @@ class TarArchiveOutputStreamTest extends AbstractTest {
                 + "01234567890123456789012345678901234567890123456789";
         final TarArchiveEntry t = new TarArchiveEntry(n);
         final TarArchiveOutputStream tos = new TarArchiveOutputStream(new ByteArrayOutputStream(), "ASCII");
-        assertThrows(IllegalArgumentException.class, () -> tos.putArchiveEntry(t));
+        assertThrows(ArchiveException.class, () -> tos.putArchiveEntry(t));
     }
 
     /**
@@ -571,7 +571,7 @@ class TarArchiveOutputStreamTest extends AbstractTest {
         final TarArchiveEntry entry = new TarArchiveEntry("test", TarConstants.LF_SYMLINK);
         entry.setLinkName(linkName);
 
-        assertThrows(RuntimeException.class, () -> {
+        assertThrows(ArchiveException.class, () -> {
             final ByteArrayOutputStream bos = new ByteArrayOutputStream();
             try (TarArchiveOutputStream tos = new TarArchiveOutputStream(bos, "ASCII")) {
                 tos.setLongFileMode(TarArchiveOutputStream.LONGFILE_ERROR);

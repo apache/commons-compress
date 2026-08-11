@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.ByteArrayOutputStream;
 
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.junit.jupiter.api.Test;
 
 import shaded.org.apache.commons.lang3.StringUtils;
@@ -42,7 +43,7 @@ class TarArchiveOutputStreamLongFileModeTest {
         try (TarArchiveOutputStream taos = new TarArchiveOutputStream(new ByteArrayOutputStream())) {
             final TarArchiveEntry entry = new TarArchiveEntry(longName);
             entry.setSize(0);
-            assertThrows(IllegalArgumentException.class, () -> taos.putArchiveEntry(entry));
+            assertThrows(ArchiveException.class, () -> taos.putArchiveEntry(entry));
         }
     }
 }
