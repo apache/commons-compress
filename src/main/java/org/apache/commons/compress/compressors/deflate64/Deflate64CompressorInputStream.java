@@ -97,7 +97,7 @@ public class Deflate64CompressorInputStream extends CompressorInputStream implem
             case 0:
                 continue;
             default:
-                throw new IllegalStateException("Invalid return value from read: " + r);
+                throw new CompressorException("Invalid return value from read: " + r);
             }
         }
     }
