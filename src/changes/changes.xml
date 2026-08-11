@@ -44,107 +44,107 @@ The <action> type attribute can be add,update,fix,remove.
   <body>
     <release version="1.29.0" date="YYYY-MM-DD" description="This is a feature and maintenance release. Java 8 or later is required. This release updates Apache Commons Lang to 3.18.0 to pick up the fix for CVE-2025-48924 (https://nvd.nist.gov/vuln/detail/CVE-2025-48924), but is not affected by it.">
       <!-- FIX sevenz -->      
-      <action type="fix" issue="COMPRESS-702" dev="ggregory" due-to="Zhang Di, Lastoneee">Performance issue in SevenZFile #681.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">Fix kilobyte to kibibyte conversion in SevenZFile.ArchiveStatistics.assertValidity(int).</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">Fix kilobyte to kibibyte conversion in SevenZFile.ArchiveStatistics.toString().</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">Fix kilobyte to kibibyte conversion in SevenZFile.Builder.setMaxMemoryLimitKb(int).</action>
-      <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">SevenZFile now throws an ArchiveException if a result overflows a long (or an int, depending on the context).</action>
-      <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">SevenZFile.Builder.get() now throws an ArchiveException instead of an IllegalArgumentException.</action>
-      <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">Fix format string in SevenZFile.assertFitsIntoNonNegativeInt(String, long).</action>
-      <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory, Stanislav Fort">SevenZFile now throws a MemoryLimitException (an IOException subclass) instead of an OutOfMemoryError.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">DeltaDecoder.encode(OutputStream, Object) looses the underlying exception when throwing its IOException subclass.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">AES256SHA256Decoder now enforces the CPP source k_NumCyclesPower_Supported_MAX = 24 limit.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">Don't loose precision while reading folders from a SevenZFile.</action>
-      <action type="fix" dev="ggregory" due-to="Roel van Dijk, Gary Gregory">Improve some exception messages in TarUtils and TarArchiveEntry.</action>
-      <action type="fix" dev="pkarwasz" due-to="Piotr P. Karwasz">SevenZFile now enforces the same folder and coder limits as the CPP implementation.</action>
-      <action type="fix" dev="pkarwasz" due-to="Piotr P. Karwasz">Refactor unsigned number parsing and header validation in SevenZFile.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">Fix Apache RAT plugin console warnings.</action>
-      <action type="fix" dev="ggregory" due-to="KALI 834X, Gary Gregory">Reject short LZMA properties and oversized dictionary in LZMADecoder (#784).</action>
-      <action type="fix" dev="ggregory" due-to="KALI 834X, Gary Gregory">Fix copyOfRange end index in x0017 strong encryption header (#786).</action>
-      <action type="fix" dev="ggregory" due-to="KALI 834X, Gary Gregory">Fix packed stream count check in SevenZFile.sanityCheckUnpackInfo (#791).</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">SevenZFile.getInputStream(SevenZArchiveEntry) now throws ArchiveException instead of IllehalArgumentException.</action>
+      <action type="fix" issue="COMPRESS-702" dev="ggregory" due-to="Zhang Di, Lastoneee">[7-Zip] Performance issue in SevenZFile #681.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[7-Zip] Fix kilobyte to kibibyte conversion in SevenZFile.ArchiveStatistics.assertValidity(int).</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[7-Zip] Fix kilobyte to kibibyte conversion in SevenZFile.ArchiveStatistics.toString().</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[7-Zip] Fix kilobyte to kibibyte conversion in SevenZFile.Builder.setMaxMemoryLimitKb(int).</action>
+      <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">[7-Zip] SevenZFile now throws an ArchiveException if a result overflows a long (or an int, depending on the context).</action>
+      <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">[7-Zip] SevenZFile.Builder.get() now throws an ArchiveException instead of an IllegalArgumentException.</action>
+      <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">[7-Zip] Fix format string in SevenZFile.assertFitsIntoNonNegativeInt(String, long).</action>
+      <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory, Stanislav Fort">[7-Zip] SevenZFile now throws a MemoryLimitException (an IOException subclass) instead of an OutOfMemoryError.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[7-Zip] DeltaDecoder.encode(OutputStream, Object) looses the underlying exception when throwing its IOException subclass.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[7-Zip] AES256SHA256Decoder now enforces the CPP source k_NumCyclesPower_Supported_MAX = 24 limit.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[7-Zip] Don't loose precision while reading folders from a SevenZFile.</action>
+      <action type="fix" dev="ggregory" due-to="Roel van Dijk, Gary Gregory">[7-Zip] Improve some exception messages in TarUtils and TarArchiveEntry.</action>
+      <action type="fix" dev="pkarwasz" due-to="Piotr P. Karwasz">[7-Zip] SevenZFile now enforces the same folder and coder limits as the CPP implementation.</action>
+      <action type="fix" dev="pkarwasz" due-to="Piotr P. Karwasz">[7-Zip] Refactor unsigned number parsing and header validation in SevenZFile.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[7-Zip] Fix Apache RAT plugin console warnings.</action>
+      <action type="fix" dev="ggregory" due-to="KALI 834X, Gary Gregory">[7-Zip] Reject short LZMA properties and oversized dictionary in LZMADecoder (#784).</action>
+      <action type="fix" dev="ggregory" due-to="KALI 834X, Gary Gregory">[7-Zip] Fix copyOfRange end index in x0017 strong encryption header (#786).</action>
+      <action type="fix" dev="ggregory" due-to="KALI 834X, Gary Gregory">[7-Zip] Fix packed stream count check in SevenZFile.sanityCheckUnpackInfo (#791).</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[7-Zip] SevenZFile.getInputStream(SevenZArchiveEntry) now throws ArchiveException instead of IllehalArgumentException.</action>
       <!-- FIX bzip2 -->
-      <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">BZip2CompressorInputStream now throw CompressorException (a subclass of IOException) for invalid or corrupted data, providing more specific error reporting.</action>
-      <action type="fix" dev="pkarwasz" due-to="Tyler Nighswander, Piotr P. Karwasz">BZip2 input streams treat Huffman codes longer than 20 bits as corrupted data, matching the behavior of the reference implementation.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory, Oti">Fix NullPointerException at BZip2CompressorOutputStream.writeRun() #757.</action>
+      <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">[BZip2] BZip2CompressorInputStream now throw CompressorException (a subclass of IOException) for invalid or corrupted data, providing more specific error reporting.</action>
+      <action type="fix" dev="pkarwasz" due-to="Tyler Nighswander, Piotr P. Karwasz">[BZip2] BZip2 input streams treat Huffman codes longer than 20 bits as corrupted data, matching the behavior of the reference implementation.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory, Oti">[BZip2] Fix NullPointerException at BZip2CompressorOutputStream.writeRun() #757.</action>
       <!-- FIX dump -->      
-      <action type="fix" dev="pkarwasz" due-to="Tyler Nighswander">Align DUMP archive block size with Linux `dump` utility.</action>
-      <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">DumpArchiveInputStream.getNextEntry() throws an ArchiveException instead of ArrayIndexOutOfBoundsException.</action>
-      <action type="fix" dev="pkarwasz" due-to="Piotr P. Karwasz">Fix DumpArchiveInputStream to correctly handle file names up to 255 bytes #711.</action>
-      <action type="fix" dev="ggregory" due-to="Philip Betzler-Braun, Gary Gregory, Piotr P. Karwasz" issue="COMPRESS-712">Unsanitized read causes IndexOutOfBoundsException in #749.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory, KALI 834X">DumpArchiveEntry rejects out-of-range directory header count (#781).</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">DumpArchiveInputStream now throws ArchiveException instead of IllegalArgumentException.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">TapeArchiveInputStream now throws ArchiveException instead of IllegalArgumentException.</action>
+      <action type="fix" dev="pkarwasz" due-to="Tyler Nighswander">[Dump] Align DUMP archive block size with Linux `dump` utility.</action>
+      <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">[Dump] DumpArchiveInputStream.getNextEntry() throws an ArchiveException instead of ArrayIndexOutOfBoundsException.</action>
+      <action type="fix" dev="pkarwasz" due-to="Piotr P. Karwasz">[Dump] Fix DumpArchiveInputStream to correctly handle file names up to 255 bytes #711.</action>
+      <action type="fix" dev="ggregory" due-to="Philip Betzler-Braun, Gary Gregory, Piotr P. Karwasz" issue="COMPRESS-712">[Dump] Unsanitized read causes IndexOutOfBoundsException in #749.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory, KALI 834X">[Dump] DumpArchiveEntry rejects out-of-range directory header count (#781).</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[Dump] DumpArchiveInputStream now throws ArchiveException instead of IllegalArgumentException.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[Dump] TapeArchiveInputStream now throws ArchiveException instead of IllegalArgumentException.</action>
       <!-- FIX zip -->
-      <action type="fix" dev="ggregory" due-to="Dominik Stadler, Gary Gregory" issue="COMPRESS-598">ZipArchiveInputStream.read(byte[], int, int) now throws an IOException instead of a NullPointerException.</action>
-      <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">ZipFile.createBoundedInputStream(long, long) now throws an ArchiveException instead of IllegalArgumentException.</action>
-      <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">ZipFile.getContentBeforeFirstLocalFileHeader() now throws an ArchiveException instead of IllegalArgumentException.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">ExplodingInputStream now throws ArchiveException instead of ArithmeticException.</action>
-      <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">ZipArchiveInputStream.read() now throws an IOException instead of java.lang.ArrayIndexOutOfBoundsException.</action>
-      <action type="fix" dev="ggregory" due-to="Stanislav Fort, Gary Gregory">ZipArchiveInputStream now throws an MemoryLimitException instead of ArchiveException, or OutOfMemoryError when running with low memory settings set on the command line.</action>
-      <action type="fix" dev="ggregory" due-to="YuWeiBoy, Gary Gregory" issue="COMPRESS-708">ZstdCompressorInputStream closes the InputStream held by ZipArchiveInputStream garbage collection.</action>
-      <action type="fix" dev="pkarwasz" due-to="Gary Gregory, Piotr P. Karwasz" issue="COMPRESS-713">Unchecked pre-decremental notation in for-loop as array index causes ArrayOutOfBounds access #755.</action>
-      <action type="fix" dev="pkarwasz" due-to="Gary Gregory, Piotr P. Karwasz, Soheila Esmaeili" issue="COMPRESS-715">ZipArchiveInputStream fails with "Unexpected record signature: 0x0" #753.</action>
-      <action type="fix" dev="pkarwasz" due-to="Gary Gregory, Piotr P. Karwasz" issue="COMPRESS-714">Internal IllegalArgumentException in ZipFile and TarFile creation is not caught #754.</action>
-      <action type="fix" dev="pkarwasz" due-to="Piotr P. Karwasz">Improve Javadoc of ZipArchiveEntry #769.</action>
-      <action type="fix" dev="pkarwasz" due-to="Zach Warneke, Gary Gregory">Fix NullPointerException when reading XZ entries in ZipArchiveInputStream (#774).</action>
-      <action type="fix" dev="pkarwasz" due-to="KALI 834X, Gary Gregory">Fix Zip rcount field width in x0015 and x0016 certificate id extra fields (#787).</action>
-      <action type="fix" dev="ggregory" due-to="KALI 834X, Gary Gregory">Reject negative ZIP64 offsets in positionAtCentralDirectory64 (#794).</action>
+      <action type="fix" dev="ggregory" due-to="Dominik Stadler, Gary Gregory" issue="COMPRESS-598">[Zip] ZipArchiveInputStream.read(byte[], int, int) now throws an IOException instead of a NullPointerException.</action>
+      <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">[Zip] ZipFile.createBoundedInputStream(long, long) now throws an ArchiveException instead of IllegalArgumentException.</action>
+      <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">[Zip] ZipFile.getContentBeforeFirstLocalFileHeader() now throws an ArchiveException instead of IllegalArgumentException.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[Zip] ExplodingInputStream now throws ArchiveException instead of ArithmeticException.</action>
+      <action type="fix" dev="ggregory" due-to="Tyler Nighswander, Gary Gregory">[Zip] ZipArchiveInputStream.read() now throws an IOException instead of java.lang.ArrayIndexOutOfBoundsException.</action>
+      <action type="fix" dev="ggregory" due-to="Stanislav Fort, Gary Gregory">[Zip] ZipArchiveInputStream now throws an MemoryLimitException instead of ArchiveException, or OutOfMemoryError when running with low memory settings set on the command line.</action>
+      <action type="fix" dev="ggregory" due-to="YuWeiBoy, Gary Gregory" issue="COMPRESS-708">[Zip] ZstdCompressorInputStream closes the InputStream held by ZipArchiveInputStream garbage collection.</action>
+      <action type="fix" dev="pkarwasz" due-to="Gary Gregory, Piotr P. Karwasz" issue="COMPRESS-713">[Zip] Unchecked pre-decremental notation in for-loop as array index causes ArrayOutOfBounds access #755.</action>
+      <action type="fix" dev="pkarwasz" due-to="Gary Gregory, Piotr P. Karwasz, Soheila Esmaeili" issue="COMPRESS-715">[Zip] ZipArchiveInputStream fails with "Unexpected record signature: 0x0" #753.</action>
+      <action type="fix" dev="pkarwasz" due-to="Gary Gregory, Piotr P. Karwasz" issue="COMPRESS-714">[Zip] Internal IllegalArgumentException in ZipFile and TarFile creation is not caught #754.</action>
+      <action type="fix" dev="pkarwasz" due-to="Piotr P. Karwasz">[Zip] Improve Javadoc of ZipArchiveEntry #769.</action>
+      <action type="fix" dev="pkarwasz" due-to="Zach Warneke, Gary Gregory">[Zip] Fix NullPointerException when reading XZ entries in ZipArchiveInputStream (#774).</action>
+      <action type="fix" dev="pkarwasz" due-to="KALI 834X, Gary Gregory">[Zip] Fix Zip rcount field width in x0015 and x0016 certificate id extra fields (#787).</action>
+      <action type="fix" dev="ggregory" due-to="KALI 834X, Gary Gregory">[Zip] Reject negative ZIP64 offsets in positionAtCentralDirectory64 (#794).</action>
       <!-- FIX TAR -->
-      <action type="fix" dev="pkarwasz" due-to="Tyler Nighswander, Piotr P. Karwasz, Gary Gregory">>Uniform handling of special tar records in TarFile and TarArchiveInputStream.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory, Stanislav Fort">TarArchiveOutputStream now throws a ArchiveException instead of an OutOfMemoryError.</action>
-      <action type="fix" dev="ggregory" issue="COMPRESS-707" due-to="Gary Gregory, Roel van Dijk">TarUtils.verifyCheckSum() throws an Exception when checksum could not be parsed.</action>
-      <action type="fix" dev="ggregory" issue="COMPRESS-724" due-to="Ruiqi Dong, Gary Gregory">TarUtils.parsePAX1XSparseHeaders(InputStream, int) skips an extra record when sparse headers are already record-aligned.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory, KALI 834X">Reject tar sparse blocks larger than the entry size (#780).</action>
-      <action type="fix" dev="ggregory" due-to="OldTruckDriver, Gary Gregory" issue="COMPRESS-724">Fix TAR PAX 1.x sparse header alignment (#775).</action>
-      <action type="fix" dev="ggregory" due-to="subbudvk, Gary Gregory" issue="COMPRESS-723">TAR PAX header parsing: enforce memory bound to mitigate resource exhaustion from oversized headers (#770).</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">TarArchiveEntry.setDataOffset(long) now throw ArchiveException instead of IllegalArgumentException.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">TarArchiveEntry.setDevMajor(int) now throw ArchiveException instead of IllegalArgumentException.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">TarArchiveEntry.setDevMinor(int) now throw ArchiveException instead of IllegalArgumentException.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">TarArchiveEntry.setSize(long) now throw ArchiveException instead of IllegalArgumentException.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">TarArchiveEntry.addPaxHeader(String, String) now throws ArchiveException instead of IllegalArgumentException.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">TAR ParsingUtils now throws the IOException subclass CompressException.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">TarArchiveOutputStream now throws ArchiveException instead of IllegalArgumentException.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">TarArchiveInputStream now throws ArchiveException instead of IllegalArgumentException.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">TarUtils now throws ArchiveException instead of IllegalArgumentException.</action>
+      <action type="fix" dev="pkarwasz" due-to="Tyler Nighswander, Piotr P. Karwasz, Gary Gregory">>[TAR] Uniform handling of special tar records in TarFile and TarArchiveInputStream.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory, Stanislav Fort">[TAR] TarArchiveOutputStream now throws a ArchiveException instead of an OutOfMemoryError.</action>
+      <action type="fix" dev="ggregory" issue="COMPRESS-707" due-to="Gary Gregory, Roel van Dijk">[TAR] TarUtils.verifyCheckSum() throws an Exception when checksum could not be parsed.</action>
+      <action type="fix" dev="ggregory" issue="COMPRESS-724" due-to="Ruiqi Dong, Gary Gregory">[TAR] TarUtils.parsePAX1XSparseHeaders(InputStream, int) skips an extra record when sparse headers are already record-aligned.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory, KALI 834X">[TAR] Reject tar sparse blocks larger than the entry size (#780).</action>
+      <action type="fix" dev="ggregory" due-to="OldTruckDriver, Gary Gregory" issue="COMPRESS-724">[TAR] Fix TAR PAX 1.x sparse header alignment (#775).</action>
+      <action type="fix" dev="ggregory" due-to="subbudvk, Gary Gregory" issue="COMPRESS-723">[TAR] TAR PAX header parsing: enforce memory bound to mitigate resource exhaustion from oversized headers (#770).</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[TAR] TarArchiveEntry.setDataOffset(long) now throw ArchiveException instead of IllegalArgumentException.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[TAR] TarArchiveEntry.setDevMajor(int) now throw ArchiveException instead of IllegalArgumentException.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[TAR] TarArchiveEntry.setDevMinor(int) now throw ArchiveException instead of IllegalArgumentException.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[TAR] TarArchiveEntry.setSize(long) now throw ArchiveException instead of IllegalArgumentException.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[TAR] TarArchiveEntry.addPaxHeader(String, String) now throws ArchiveException instead of IllegalArgumentException.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[TAR] TAR ParsingUtils now throws the IOException subclass CompressException.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[TAR] TarArchiveOutputStream now throws ArchiveException instead of IllegalArgumentException.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[TAR] TarArchiveInputStream now throws ArchiveException instead of IllegalArgumentException.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[TAR] TarUtils now throws ArchiveException instead of IllegalArgumentException.</action>
       <!-- FIX ar -->
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">ArArchiveInputStream.readGNUStringTable(byte[], int, int) now provides a better exception message, wrapping the underlying exception.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">ArArchiveInputStream.read(byte[], int, int) now throws ArchiveException instead of ArithmeticException.</action>
-      <action type="fix" dev="pkarwasz" due-to="Tyler Nighswander">Simplify handling of special AR records in ArArchiveInputStream.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">Most ArArchiveEntry constructors now throws the IOException subclass ArchiveException.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">ArArchiveInputStream now throws ArchiveException instead of IllegalArgumentException.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[AR] ArArchiveInputStream.readGNUStringTable(byte[], int, int) now provides a better exception message, wrapping the underlying exception.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[AR] ArArchiveInputStream.read(byte[], int, int) now throws ArchiveException instead of ArithmeticException.</action>
+      <action type="fix" dev="pkarwasz" due-to="Tyler Nighswander">[AR] Simplify handling of special AR records in ArArchiveInputStream.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[AR] Most ArArchiveEntry constructors now throws the IOException subclass ArchiveException.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[AR] ArArchiveInputStream now throws ArchiveException instead of IllegalArgumentException.</action>
       <!-- FIX arj -->
-      <action type="fix" dev="pkarwasz" due-to="Piotr P. Karwasz">Correct byte accounting and truncation errors in ARJ input stream.</action>
-      <action type="fix" dev="pkarwasz" due-to="Piotr P. Karwasz">Add strict header validation in ARJ input stream and `selfExtracting` option.</action>
-      <action type="fix" dev="ggregory" due-to="KALI 834X, Gary Gregory">Reject missing main header in ArjArchiveInputStream.readMainHeader (#793).</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">ArjArchiveInputStream now throws ArchiveException instead of IllegalArgumentException.</action>
+      <action type="fix" dev="pkarwasz" due-to="Piotr P. Karwasz">[ARJ] Correct byte accounting and truncation errors in ARJ input stream.</action>
+      <action type="fix" dev="pkarwasz" due-to="Piotr P. Karwasz">[ARJ] Add strict header validation in ARJ input stream and `selfExtracting` option.</action>
+      <action type="fix" dev="ggregory" due-to="KALI 834X, Gary Gregory">[ARJ] Reject missing main header in ArjArchiveInputStream.readMainHeader (#793).</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[ARJ] ArjArchiveInputStream now throws ArchiveException instead of IllegalArgumentException.</action>
       <!-- FIX unpack200 -->
-      <action type="fix" dev="ggregory" due-to="Gary Gregory, Stanislav Fort">org.apache.commons.compress.harmony.unpack200 now throws Pack200Exception, IllegalArgumentException, and IllegalStateException instead of other runtime exceptions and Error.</action>
-      <action type="fix" dev="pkarwasz" due-to="Piotr P. Karwasz">Enforce strict attribute layout parsing in Pack200.</action>
-      <action type="fix" dev="ggregory" due-to="KALI 834X, Gary Gregory">Reject negative element counts in BandSet band decoding (#782).</action>
-      <action type="fix" dev="ggregory" due-to="KALI 834X, Gary Gregory">Reject out-of-range indices in pack200 BandSet.getReferences (#788).</action>
-      <action type="fix" dev="ggregory" due-to="KALI 834X, Gary Gregory">Reject negative counts in pack200 parseCPUTF8/SignatureReferences (#789).</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory, Stanislav Fort">[Unpack200] org.apache.commons.compress.harmony.unpack200 now throws Pack200Exception, IllegalArgumentException, and IllegalStateException instead of other runtime exceptions and Error.</action>
+      <action type="fix" dev="pkarwasz" due-to="Piotr P. Karwasz">[Unpack200] Enforce strict attribute layout parsing in Pack200.</action>
+      <action type="fix" dev="ggregory" due-to="KALI 834X, Gary Gregory">[Unpack200] Reject negative element counts in BandSet band decoding (#782).</action>
+      <action type="fix" dev="ggregory" due-to="KALI 834X, Gary Gregory">[Unpack200] Reject out-of-range indices in pack200 BandSet.getReferences (#788).</action>
+      <action type="fix" dev="ggregory" due-to="KALI 834X, Gary Gregory">[Unpack200] Reject negative counts in pack200 parseCPUTF8/SignatureReferences (#789).</action>
       <!-- FIX pack200 -->      
-      <action type="fix" dev="ggregory" due-to="Gary Gregory, Igor Morgenstern">org.apache.commons.compress.harmony.pack200 now throws Pack200Exception, IllegalArgumentException, IllegalStateException, instead of other runtime exceptions and Error.</action>
-      <action type="fix" dev="ppkarwasz" due-to="Raeps">Extract duplicate code in org.apache.commons.compress.harmony.pack200.IntList.</action>
-      <action type="fix" dev="pkarwasz" due-to="Piotr P. Karwasz">Simplify `PackingUtils` by leveraging Commons IO.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory, Igor Morgenstern">[Pack200] org.apache.commons.compress.harmony.pack200 now throws Pack200Exception, IllegalArgumentException, IllegalStateException, instead of other runtime exceptions and Error.</action>
+      <action type="fix" dev="ppkarwasz" due-to="Raeps">[Pack200] Extract duplicate code in org.apache.commons.compress.harmony.pack200.IntList.</action>
+      <action type="fix" dev="pkarwasz" due-to="Piotr P. Karwasz">[Pack200] Simplify `PackingUtils` by leveraging Commons IO.</action>
       <!-- FIX cpio -->
-      <action type="fix" dev="ggregory" due-to="Stan, Gary Gregory">CpioArchiveEntry now throws ArchiveException instead of Arithmetic exception.</action>
-      <action type="fix" dev="ggregory" due-to="Stan, Gary Gregory">CpioArchiveInputStream.getNextEntry() now throws a MemoryLimitException instead of OutOfMemoryError when it can't process input greater than available memory.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">CpioArchiveInputStream.readOldAsciiEntry(boolean) now throws ArchiveException instead of Arithmetic exception.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">CpioArchiveInputStream.readOldBinaryEntry(boolean) now throws ArchiveException instead of Arithmetic exception.</action>
-      <action type="fix" issue="COMPRESS-711" dev="pkarwasz" due-to="Piotr P. Karwasz">Fix checksum calculation in CpioArchiveInputStream when reading with a non-zero offset.</action>
-      <action type="fix" issue="COMPRESS-718" dev="ggregory" due-to="Anay Wadhera, Gary Gregory">CpioArchiveEntry does not allow files over 4GB in OLD_ASCII format.</action>
-      <action type="fix" dev="ggregory" due-to="Christopher Linke, Gary Gregory">Throw ArchiveException instead of EOFException when CPIO name size less than or equal to 0 #771.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">CpioArchiveEntry now throws ArchiveException instead of IllegalArgumentException.</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">CpioArchiveInputStream now throws ArchiveException instead of IllegalArgumentException.</action>
+      <action type="fix" dev="ggregory" due-to="Stan, Gary Gregory">[Cpio] CpioArchiveEntry now throws ArchiveException instead of Arithmetic exception.</action>
+      <action type="fix" dev="ggregory" due-to="Stan, Gary Gregory">[Cpio] CpioArchiveInputStream.getNextEntry() now throws a MemoryLimitException instead of OutOfMemoryError when it can't process input greater than available memory.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[Cpio] CpioArchiveInputStream.readOldAsciiEntry(boolean) now throws ArchiveException instead of Arithmetic exception.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[Cpio] CpioArchiveInputStream.readOldBinaryEntry(boolean) now throws ArchiveException instead of Arithmetic exception.</action>
+      <action type="fix" issue="COMPRESS-711" dev="pkarwasz" due-to="Piotr P. Karwasz">[Cpio] Fix checksum calculation in CpioArchiveInputStream when reading with a non-zero offset.</action>
+      <action type="fix" issue="COMPRESS-718" dev="ggregory" due-to="Anay Wadhera, Gary Gregory">[Cpio] CpioArchiveEntry does not allow files over 4GB in OLD_ASCII format.</action>
+      <action type="fix" dev="ggregory" due-to="Christopher Linke, Gary Gregory">[Cpio] Throw ArchiveException instead of EOFException when CPIO name size less than or equal to 0 #771.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[Cpio] CpioArchiveEntry now throws ArchiveException instead of IllegalArgumentException.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[Cpio] CpioArchiveInputStream now throws ArchiveException instead of IllegalArgumentException.</action>
       <!-- FIX gzip -->
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">GzipParameters.setOperatingSystem(int) now throws CompressorException on illegal input.</action>
-      <action type="fix" issue="COMPRESS-705" dev="ggregory" due-to="Mario Fredenhagen, Gary Gregory">GZip IOException: Extra subfield length exceeds remaining bytes in extra field; use new option GzipCompressorInputStream.Builder.setIgnoreExtraField(boolean).</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory">[GZip] GzipParameters.setOperatingSystem(int) now throws CompressorException on illegal input.</action>
+      <action type="fix" issue="COMPRESS-705" dev="ggregory" due-to="Mario Fredenhagen, Gary Gregory">[GZip] GZip IOException: Extra subfield length exceeds remaining bytes in extra field; use new option GzipCompressorInputStream.Builder.setIgnoreExtraField(boolean).</action>
       <!-- FIX snappy -->
-      <action type="fix" dev="ggregory" due-to="Stanislav Fort, Gary Gregory">Fix for when a valid raw Snappy stream with uncompressed size > 2 GiB used to decompress and then fail at physical EOF with a “Premature end of stream” exception instead of completing cleanly.</action>
+      <action type="fix" dev="ggregory" due-to="Stanislav Fort, Gary Gregory">[Snappy] Fix for when a valid raw Snappy stream with uncompressed size > 2 GiB used to decompress and then fail at physical EOF with a “Premature end of stream” exception instead of completing cleanly.</action>
       <!-- FIX deflate64 -->
-      <action type="fix" dev="ggregory" due-to="KALI 834X, Gary Gregory">Reject invalid literal/length and distance codes in Deflate64 decoder (#785).</action>
+      <action type="fix" dev="ggregory" due-to="KALI 834X, Gary Gregory">[Deflate64] Reject invalid literal/length and distance codes in Deflate64 decoder (#785).</action>
       <!-- FIX lz77 -->
       <action type="fix" dev="ggregory" due-to="KALI 834X, Gary Gregory">[LZ77] Reject back-reference offset larger than the window in lz77 decoder class AbstractLZ77CompressorInputStream (#797).</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">[LZ77] AbstractLZ77CompressorInputStream now throws ArchiveException instead of IllegalArgumentException.</action>
