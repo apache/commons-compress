@@ -411,11 +411,19 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
         }
         // Original file name
         if ((flg & FLG.FNAME) != 0) {
-            parameters.setFileName(new String(readToNull(inData), parameters.getFileNameCharset()));
+            try {
+                parameters.setFileName(new String(readToNull(inData), parameters.getFileNameCharset()));
+            } catch (final IllegalArgumentException e) {
+                throw new CompressorException("Corrupt .gz FNAME field.", e);
+            }
         }
         // Comment
         if ((flg & FLG.FCOMMENT) != 0) {
-            parameters.setComment(new String(readToNull(inData), parameters.getFileNameCharset()));
+            try {
+                parameters.setComment(new String(readToNull(inData), parameters.getFileNameCharset()));
+            } catch (final IllegalArgumentException e) {
+                throw new CompressorException("Corrupt .gz FCOMMENT field.", e);
+            }
         }
         // Header "CRC16" which is actually a truncated CRC32 (which isn't
         // as good as real CRC16). I don't know if any encoder implementation
