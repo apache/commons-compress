@@ -21,10 +21,14 @@ package org.apache.commons.compress.compressors.gzip;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -35,9 +39,13 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.zip.CRC32;
+import java.util.zip.Deflater;
+import java.util.zip.DeflaterOutputStream;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.file.PathUtils;
 import org.apache.commons.io.function.IOStream;
@@ -353,4 +361,54 @@ class GzipCompressorInputStreamTest {
         }
     }
 
+    private static byte[] gzipMemberWithFileName(final byte[] fileNameField) throws IOException {
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        bos.write(0x1f);
+        bos.write(0x8b); // magic
+        bos.write(0x08); // deflate
+        bos.write(0x08); // FLG: FNAME present
+        bos.write(new byte[] { 0, 0, 0, 0 }); // MTIME
+        bos.write(0x00); // XFL
+        bos.write(0xff); // OS unknown
+        bos.write(fileNameField);
+        bos.write(0x00); // NUL terminator for FNAME
+        final ByteArrayOutputStream deflated = new ByteArrayOutputStream();
+        try (DeflaterOutputStream dos = new DeflaterOutputStream(deflated, new Deflater(Deflater.DEFAULT_COMPRESSION, true))) {
+            // empty payload
+        }
+        bos.write(deflated.toByteArray());
+        final long crc = new CRC32().getValue();
+        bos.write((int) (crc & 0xff));
+        bos.write((int) (crc >> 8 & 0xff));
+        bos.write((int) (crc >> 16 & 0xff));
+        bos.write((int) (crc >> 24 & 0xff));
+        bos.write(new byte[] { 0, 0, 0, 0 }); // ISIZE
+        return bos.toByteArray();
+    }
+
+    /**
+     * A member whose FNAME field cannot be round-tripped through the configured charset must fail with a CompressorException rather than a raw
+     * IllegalArgumentException escaping the IOException contract of read().
+     */
+    @Test
+    void testUnencodableFileNameThrowsCompressorException() throws IOException {
+        // Under UTF-32BE a single stray byte decodes to U+FFFD, which re-encodes to bytes containing a NUL.
+        final byte[] gz = gzipMemberWithFileName(new byte[] { 0x41 });
+        assertThrows(CompressorException.class, () -> {
+            try (GzipCompressorInputStream gis = GzipCompressorInputStream.builder()
+                    .setInputStream(new ByteArrayInputStream(gz))
+                    .setFileNameCharset(Charset.forName("UTF-32BE"))
+                    .get()) {
+                IOUtils.toString(gis, StandardCharsets.ISO_8859_1);
+            }
+        });
+        // A member that round-trips cleanly still parses.
+        final byte[] ok = gzipMemberWithFileName("name.txt".getBytes(StandardCharsets.ISO_8859_1));
+        try (GzipCompressorInputStream gis = GzipCompressorInputStream.builder()
+                .setInputStream(new ByteArrayInputStream(ok))
+                .get()) {
+            assertEquals("", IOUtils.toString(gis, StandardCharsets.ISO_8859_1));
+            assertEquals("name.txt", gis.getMetaData().getFileName());
+        }
+    }
 }

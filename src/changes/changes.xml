@@ -149,7 +149,7 @@ The <action> type attribute can be add,update,fix,remove.
       <!-- FIX gzip -->
       <action type="fix" dev="ggregory" due-to="Gary Gregory">[GZip] GzipParameters.setOperatingSystem(int) now throws CompressorException on illegal input.</action>
       <action type="fix" issue="COMPRESS-705" dev="ggregory" due-to="Mario Fredenhagen, Gary Gregory">[GZip] GZip IOException: Extra subfield length exceeds remaining bytes in extra field; use new option GzipCompressorInputStream.Builder.setIgnoreExtraField(boolean).</action>
-      <action type="fix" dev="ggregory" due-to="Gary Gregory">[GZip] GzipCompressorInputStream now throws CompressorException instead of IllegalArgumetException/IllegalStateException.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory, KALI 834X">[GZip] GzipCompressorInputStream now throws CompressorException instead of IllegalArgumetException/IllegalStateException.</action>
       <!-- FIX snappy -->
       <action type="fix" dev="ggregory" due-to="Stanislav Fort, Gary Gregory">[Snappy] Fix for when a valid raw Snappy stream with uncompressed size > 2 GiB used to decompress and then fail at physical EOF with a “Premature end of stream” exception instead of completing cleanly.</action>
       <!-- FIX deflate64 -->

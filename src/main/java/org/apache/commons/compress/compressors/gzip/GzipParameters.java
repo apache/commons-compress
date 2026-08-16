@@ -26,6 +26,7 @@ import java.util.Objects;
 import java.util.zip.Deflater;
 
 import org.apache.commons.compress.CompressException;
+import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -509,9 +510,9 @@ public class GzipParameters {
                 operatingSystem, trailerCrc, trailerISize);
     }
 
-    private String requireNonNulByte(final String text) {
+    private String requireNonNulByte(final String text) throws CompressorException {
         if (StringUtils.isNotEmpty(text) && ArrayUtils.contains(text.getBytes(fileNameCharset), (byte) 0)) {
-            throw new IllegalArgumentException("String encoded in Charset '" + fileNameCharset + "' contains the nul byte 0 which is not supported in gzip.");
+            throw new CompressorException("String encoded in Charset '" + fileNameCharset + "' contains the nul byte 0 which is not supported in gzip.");
         }
         return text;
     }
@@ -534,9 +535,9 @@ public class GzipParameters {
      * Sets an arbitrary user-defined comment.
      *
      * @param comment A user-defined comment.
-     * @throws IllegalArgumentException if the encoded bytes would contain a nul byte '\0' reserved for gzip field termination.
+     * @throws CompressorException if the encoded bytes would contain a nul byte '\0' reserved for gzip field termination.
      */
-    public void setComment(final String comment) {
+    public void setComment(final String comment) throws CompressorException {
         this.comment = requireNonNulByte(comment);
     }
 
@@ -586,11 +587,11 @@ public class GzipParameters {
      * Sets the name of the compressed file.
      *
      * @param fileName The name of the file without the directory path.
-     * @throws IllegalArgumentException if the encoded bytes would contain a nul byte '\0' reserved for gzip field termination.
+     * @throws CompressorException if the encoded bytes would contain a nul byte '\0' reserved for gzip field termination.
      * @deprecated Use {@link #setFileName(String)}.
      */
     @Deprecated
-    public void setFilename(final String fileName) {
+    public void setFilename(final String fileName) throws CompressorException {
         setFileName(fileName);
     }
 
@@ -598,9 +599,9 @@ public class GzipParameters {
      * Sets the name of the compressed file.
      *
      * @param fileName The name of the file without the directory path.
-     * @throws IllegalArgumentException if the encoded bytes would contain a nul byte '\0' reserved for gzip field termination.
+     * @throws CompressorException if the encoded bytes would contain a nul byte '\0' reserved for gzip field termination.
      */
-    public void setFileName(final String fileName) {
+    public void setFileName(final String fileName) throws CompressorException {
         this.fileName = requireNonNulByte(fileName);
     }
 
