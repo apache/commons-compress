@@ -19,6 +19,7 @@
 package org.apache.commons.compress.compressors.lz4;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -27,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -549,6 +551,25 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTest {
             final byte[] actual = IOUtils.toByteArray(a);
             assertArrayEquals(new byte[] { 'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!', '!' }, actual);
         }
+    }
+
+    @Test
+    void testManyEmptyConcatenatedFramesDoNotOverflowStack() throws IOException {
+        final byte[] singleEmptyFrame;
+        try (ByteArrayOutputStream frame = new ByteArrayOutputStream()) {
+            new FramedLZ4CompressorOutputStream(frame).close();
+            singleEmptyFrame = frame.toByteArray();
+        }
+        final ByteArrayOutputStream concatenated = new ByteArrayOutputStream();
+        for (int i = 0; i < 200_000; i++) {
+            concatenated.write(singleEmptyFrame);
+        }
+        final byte[] input = concatenated.toByteArray();
+        assertDoesNotThrow(() -> {
+            try (FramedLZ4CompressorInputStream in = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(input), true)) {
+                assertEquals(-1, in.read());
+            }
+        });
     }
 
     @Test

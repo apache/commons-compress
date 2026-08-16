@@ -193,39 +193,46 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream implem
     }
 
     private void nextBlock() throws IOException {
-        maybeFinishCurrentBlock();
-        final long len = ByteUtils.fromLittleEndian(supplier, 4);
-        final boolean uncompressed = (len & UNCOMPRESSED_FLAG_MASK) != 0;
-        final int realLen = (int) (len & ~UNCOMPRESSED_FLAG_MASK);
-        if (realLen == 0) {
+        while (true) {
+            maybeFinishCurrentBlock();
+            final long len = ByteUtils.fromLittleEndian(supplier, 4);
+            final boolean uncompressed = (len & UNCOMPRESSED_FLAG_MASK) != 0;
+            final int realLen = (int) (len & ~UNCOMPRESSED_FLAG_MASK);
+            if (realLen != 0) {
+                // @formatter:off
+                InputStream capped = BoundedInputStream.builder()
+                        .setInputStream(inputStream)
+                        .setMaxCount(realLen)
+                        .setPropagateClose(false)
+                        .get();
+                // @formatter:on
+                if (expectBlockChecksum) {
+                    capped = new CheckedInputStream(capped, blockHash);
+                }
+                if (uncompressed) {
+                    inUncompressed = true;
+                    currentBlock = capped;
+                } else {
+                    inUncompressed = false;
+                    final BlockLZ4CompressorInputStream s = new BlockLZ4CompressorInputStream(capped);
+                    if (expectBlockDependency) {
+                        s.prefill(blockDependencyBuffer);
+                    }
+                    currentBlock = s;
+                }
+                return;
+            }
             verifyContentChecksum();
             if (!decompressConcatenated) {
                 endReached = true;
-            } else {
-                init(false);
+                return;
             }
-            return;
-        }
-        // @formatter:off
-        InputStream capped = BoundedInputStream.builder()
-                .setInputStream(inputStream)
-                .setMaxCount(realLen)
-                .setPropagateClose(false)
-                .get();
-        // @formatter:on
-        if (expectBlockChecksum) {
-            capped = new CheckedInputStream(capped, blockHash);
-        }
-        if (uncompressed) {
-            inUncompressed = true;
-            currentBlock = capped;
-        } else {
-            inUncompressed = false;
-            final BlockLZ4CompressorInputStream s = new BlockLZ4CompressorInputStream(capped);
-            if (expectBlockDependency) {
-                s.prefill(blockDependencyBuffer);
+            // Start of the next concatenated frame. Loop instead of recursing into init so a run of empty
+            // frames advances without growing the call stack.
+            if (!readSignature(false)) {
+                return;
             }
-            currentBlock = s;
+            readFrameDescriptor();
         }
     }
 
