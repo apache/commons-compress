@@ -769,7 +769,7 @@ public class DumpArchiveEntry implements ArchiveEntry {
     }
 
     /**
-     * Tests whether whether this is a fifo/pipe.
+     * Tests whether this is a fifo/pipe.
      *
      * @return whether this is a fifo/pipe.
      */

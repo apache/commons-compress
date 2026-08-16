@@ -328,7 +328,7 @@ public final class ExtraField implements Iterable<SubField> {
     }
 
     /**
-     * Gets the count of subfields currently in in this extra field.
+     * Gets the count of subfields currently in this extra field.
      *
      * @return The count of subfields contained in this instance.
      */
