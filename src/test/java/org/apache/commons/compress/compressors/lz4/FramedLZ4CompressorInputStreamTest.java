@@ -92,6 +92,25 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTest {
     }
 
     @Test
+    void testManyEmptyConcatenatedFramesDoNotOverflowStack() throws IOException {
+        final byte[] singleEmptyFrame;
+        try (ByteArrayOutputStream frame = new ByteArrayOutputStream()) {
+            new FramedLZ4CompressorOutputStream(frame).close();
+            singleEmptyFrame = frame.toByteArray();
+        }
+        final ByteArrayOutputStream concatenated = new ByteArrayOutputStream();
+        for (int i = 0; i < 200_000; i++) {
+            concatenated.write(singleEmptyFrame);
+        }
+        final byte[] input = concatenated.toByteArray();
+        assertDoesNotThrow(() -> {
+            try (FramedLZ4CompressorInputStream in = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(input), true)) {
+                assertEquals(-1, in.read());
+            }
+        });
+    }
+
+    @Test
     void testMatches() throws IOException {
         assertFalse(FramedLZ4CompressorInputStream.matches(new byte[10], 4));
         final byte[] expected = readAllBytes("bla.tar.lz4");
@@ -551,25 +570,6 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTest {
             final byte[] actual = IOUtils.toByteArray(a);
             assertArrayEquals(new byte[] { 'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!', '!' }, actual);
         }
-    }
-
-    @Test
-    void testManyEmptyConcatenatedFramesDoNotOverflowStack() throws IOException {
-        final byte[] singleEmptyFrame;
-        try (ByteArrayOutputStream frame = new ByteArrayOutputStream()) {
-            new FramedLZ4CompressorOutputStream(frame).close();
-            singleEmptyFrame = frame.toByteArray();
-        }
-        final ByteArrayOutputStream concatenated = new ByteArrayOutputStream();
-        for (int i = 0; i < 200_000; i++) {
-            concatenated.write(singleEmptyFrame);
-        }
-        final byte[] input = concatenated.toByteArray();
-        assertDoesNotThrow(() -> {
-            try (FramedLZ4CompressorInputStream in = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(input), true)) {
-                assertEquals(-1, in.read());
-            }
-        });
     }
 
     @Test

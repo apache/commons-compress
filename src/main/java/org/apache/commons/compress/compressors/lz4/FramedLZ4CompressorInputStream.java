@@ -194,6 +194,7 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream implem
 
     private void nextBlock() throws IOException {
         while (true) {
+            // loop terminates when a real block is found or EOF is reached.
             maybeFinishCurrentBlock();
             final long len = ByteUtils.fromLittleEndian(supplier, 4);
             final boolean uncompressed = (len & UNCOMPRESSED_FLAG_MASK) != 0;

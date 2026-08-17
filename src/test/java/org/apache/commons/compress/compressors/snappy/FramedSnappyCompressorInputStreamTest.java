@@ -110,6 +110,23 @@ public final class FramedSnappyCompressorInputStreamTest extends AbstractTest {
     }
 
     @Test
+    void testManyPaddingChunksDoNotOverflowStack() {
+        final byte[] streamIdentifier = { (byte) 0xff, 6, 0, 0, 's', 'N', 'a', 'P', 'p', 'Y' };
+        final byte[] emptyPaddingChunk = { (byte) 0xfe, 0, 0, 0 };
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
+        out.write(streamIdentifier, 0, streamIdentifier.length);
+        for (int i = 0; i < 200_000; i++) {
+            out.write(emptyPaddingChunk, 0, emptyPaddingChunk.length);
+        }
+        final byte[] input = out.toByteArray();
+        assertDoesNotThrow(() -> {
+            try (FramedSnappyCompressorInputStream in = new FramedSnappyCompressorInputStream(new ByteArrayInputStream(input))) {
+                assertEquals(-1, in.read());
+            }
+        });
+    }
+
+    @Test
     void testMatches() throws IOException {
         assertFalse(FramedSnappyCompressorInputStream.matches(new byte[10], 10));
         final byte[] expected = readAllBytes("bla.tar.sz");
@@ -236,23 +253,6 @@ public final class FramedSnappyCompressorInputStreamTest extends AbstractTest {
             decompressed = decompressedOutputStream.toByteArray();
         }
         assertArrayEquals(data, decompressed);
-    }
-
-    @Test
-    void testManyPaddingChunksDoNotOverflowStack() {
-        final byte[] streamIdentifier = { (byte) 0xff, 6, 0, 0, 's', 'N', 'a', 'P', 'p', 'Y' };
-        final byte[] emptyPaddingChunk = { (byte) 0xfe, 0, 0, 0 };
-        final ByteArrayOutputStream out = new ByteArrayOutputStream();
-        out.write(streamIdentifier, 0, streamIdentifier.length);
-        for (int i = 0; i < 200_000; i++) {
-            out.write(emptyPaddingChunk, 0, emptyPaddingChunk.length);
-        }
-        final byte[] input = out.toByteArray();
-        assertDoesNotThrow(() -> {
-            try (FramedSnappyCompressorInputStream in = new FramedSnappyCompressorInputStream(new ByteArrayInputStream(input))) {
-                assertEquals(-1, in.read());
-            }
-        });
     }
 
 }

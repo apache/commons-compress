@@ -227,6 +227,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream imp
 
     private void readNextBlock() throws IOException {
         while (true) {
+            // loop terminates when a real block is found or EOF is reached.
             verifyLastChecksumAndReset();
             inUncompressedChunk = false;
             final int type = readOneByte();
