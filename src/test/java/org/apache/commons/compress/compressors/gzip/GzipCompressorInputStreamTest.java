@@ -59,6 +59,31 @@ import org.junit.jupiter.api.io.TempDir;
  */
 class GzipCompressorInputStreamTest {
 
+    private static byte[] gzipMemberWithFileName(final byte[] fileNameField) throws IOException {
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        bos.write(0x1f);
+        bos.write(0x8b); // magic
+        bos.write(0x08); // deflate
+        bos.write(0x08); // FLG: FNAME present
+        bos.write(new byte[] { 0, 0, 0, 0 }); // MTIME
+        bos.write(0x00); // XFL
+        bos.write(0xff); // OS unknown
+        bos.write(fileNameField);
+        bos.write(0x00); // NUL terminator for FNAME
+        final ByteArrayOutputStream deflated = new ByteArrayOutputStream();
+        try (DeflaterOutputStream dos = new DeflaterOutputStream(deflated, new Deflater(Deflater.DEFAULT_COMPRESSION, true))) {
+            // empty payload
+        }
+        bos.write(deflated.toByteArray());
+        final long crc = new CRC32().getValue();
+        bos.write((int) (crc & 0xff));
+        bos.write((int) (crc >> 8 & 0xff));
+        bos.write((int) (crc >> 16 & 0xff));
+        bos.write((int) (crc >> 24 & 0xff));
+        bos.write(new byte[] { 0, 0, 0, 0 }); // ISIZE
+        return bos.toByteArray();
+    }
+
     @TempDir
     Path tempDir;
 
@@ -359,31 +384,6 @@ class GzipCompressorInputStreamTest {
             assertEquals("Hello1\nHello2\n", IOUtils.toString(gis, StandardCharsets.ISO_8859_1));
             assertEquals("hello2.txt", gis.getMetaData().getFileName());
         }
-    }
-
-    private static byte[] gzipMemberWithFileName(final byte[] fileNameField) throws IOException {
-        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        bos.write(0x1f);
-        bos.write(0x8b); // magic
-        bos.write(0x08); // deflate
-        bos.write(0x08); // FLG: FNAME present
-        bos.write(new byte[] { 0, 0, 0, 0 }); // MTIME
-        bos.write(0x00); // XFL
-        bos.write(0xff); // OS unknown
-        bos.write(fileNameField);
-        bos.write(0x00); // NUL terminator for FNAME
-        final ByteArrayOutputStream deflated = new ByteArrayOutputStream();
-        try (DeflaterOutputStream dos = new DeflaterOutputStream(deflated, new Deflater(Deflater.DEFAULT_COMPRESSION, true))) {
-            // empty payload
-        }
-        bos.write(deflated.toByteArray());
-        final long crc = new CRC32().getValue();
-        bos.write((int) (crc & 0xff));
-        bos.write((int) (crc >> 8 & 0xff));
-        bos.write((int) (crc >> 16 & 0xff));
-        bos.write((int) (crc >> 24 & 0xff));
-        bos.write(new byte[] { 0, 0, 0, 0 }); // ISIZE
-        return bos.toByteArray();
     }
 
     /**
