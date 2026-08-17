@@ -226,53 +226,58 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream imp
     }
 
     private void readNextBlock() throws IOException {
-        verifyLastChecksumAndReset();
-        inUncompressedChunk = false;
-        final int type = readOneByte();
-        if (type == -1) {
-            endReached = true;
-        } else if (type == STREAM_IDENTIFIER_TYPE) {
-            inputStream.unread(type);
-            unreadBytes++;
-            pushedBackBytes(1);
-            readStreamIdentifier();
-            readNextBlock();
-        } else if (type == PADDING_CHUNK_TYPE || type > MAX_UNSKIPPABLE_TYPE && type <= MAX_SKIPPABLE_TYPE) {
-            skipBlock();
-            readNextBlock();
-        } else if (type >= MIN_UNSKIPPABLE_TYPE && type <= MAX_UNSKIPPABLE_TYPE) {
-            throw new CompressorException("Unskippable chunk with type %s (hex %s) detected.", type, Integer.toHexString(type));
-        } else if (type == UNCOMPRESSED_CHUNK_TYPE) {
-            inUncompressedChunk = true;
-            uncompressedBytesRemaining = readSize() - 4 /* CRC */;
-            if (uncompressedBytesRemaining < 0) {
-                throw new CompressorException("Found illegal chunk with negative size");
-            }
-            expectedChecksum = unmask(readCrc());
-        } else if (type == COMPRESSED_CHUNK_TYPE) {
-            final boolean expectChecksum = dialect.usesChecksumWithCompressedChunks();
-            final long size = readSize() - (expectChecksum ? 4L : 0L);
-            if (size < 0) {
-                throw new CompressorException("Found illegal chunk with negative size");
-            }
-            if (expectChecksum) {
-                expectedChecksum = unmask(readCrc());
+        while (true) {
+            verifyLastChecksumAndReset();
+            inUncompressedChunk = false;
+            final int type = readOneByte();
+            // Stream identifiers and padding/skippable chunks produce no output. Loop instead of recursing
+            // so a run of them advances without growing the call stack.
+            if (type == STREAM_IDENTIFIER_TYPE) {
+                inputStream.unread(type);
+                unreadBytes++;
+                pushedBackBytes(1);
+                readStreamIdentifier();
+            } else if (type == PADDING_CHUNK_TYPE || type > MAX_UNSKIPPABLE_TYPE && type <= MAX_SKIPPABLE_TYPE) {
+                skipBlock();
             } else {
-                expectedChecksum = -1;
+                if (type == -1) {
+                    endReached = true;
+                } else if (type >= MIN_UNSKIPPABLE_TYPE && type <= MAX_UNSKIPPABLE_TYPE) {
+                    throw new CompressorException("Unskippable chunk with type %s (hex %s) detected.", type, Integer.toHexString(type));
+                } else if (type == UNCOMPRESSED_CHUNK_TYPE) {
+                    inUncompressedChunk = true;
+                    uncompressedBytesRemaining = readSize() - 4 /* CRC */;
+                    if (uncompressedBytesRemaining < 0) {
+                        throw new CompressorException("Found illegal chunk with negative size");
+                    }
+                    expectedChecksum = unmask(readCrc());
+                } else if (type == COMPRESSED_CHUNK_TYPE) {
+                    final boolean expectChecksum = dialect.usesChecksumWithCompressedChunks();
+                    final long size = readSize() - (expectChecksum ? 4L : 0L);
+                    if (size < 0) {
+                        throw new CompressorException("Found illegal chunk with negative size");
+                    }
+                    if (expectChecksum) {
+                        expectedChecksum = unmask(readCrc());
+                    } else {
+                        expectedChecksum = -1;
+                    }
+                    // @formatter:off
+                    currentCompressedChunk = new SnappyCompressorInputStream(BoundedInputStream.builder()
+                            .setInputStream(inputStream)
+                            .setMaxCount(size)
+                            .setPropagateClose(false)
+                            .get(),
+                            blockSize);
+                    // @formatter:on
+                    // constructor reads uncompressed size
+                    count(currentCompressedChunk.getBytesRead());
+                } else {
+                    // impossible as all potential byte values have been covered
+                    throw new CompressorException("Unknown chunk type %s detected.", type);
+                }
+                return;
             }
-            // @formatter:off
-            currentCompressedChunk = new SnappyCompressorInputStream(BoundedInputStream.builder()
-                    .setInputStream(inputStream)
-                    .setMaxCount(size)
-                    .setPropagateClose(false)
-                    .get(),
-                    blockSize);
-            // @formatter:on
-            // constructor reads uncompressed size
-            count(currentCompressedChunk.getBytesRead());
-        } else {
-            // impossible as all potential byte values have been covered
-            throw new CompressorException("Unknown chunk type %s detected.", type);
         }
     }
 
