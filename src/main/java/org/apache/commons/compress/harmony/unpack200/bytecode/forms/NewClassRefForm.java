@@ -61,13 +61,9 @@ public class NewClassRefForm extends ClassRefForm {
             byteCode.setNestedPositions(new int[][] { { 0, 2 } });
         } else {
             // Look up the class in the classpool
-            try {
-                // Parent takes care of subtracting one from offset
-                // to adjust for 1-based global pool
-                setNestedEntries(byteCode, operandManager, offset);
-            } catch (final Pack200Exception ex) {
-                throw new Error("Got a pack200 exception. What to do?");
-            }
+            // Parent takes care of subtracting one from offset
+            // to adjust for 1-based global pool
+            setNestedEntries(byteCode, operandManager, offset);
         }
         operandManager.setNewClass(((CPClass) byteCode.getNestedClassFileEntries()[0]).getName());
     }
