@@ -19,6 +19,7 @@
 package org.apache.commons.compress.harmony.unpack200;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -140,6 +141,33 @@ class CodeAttributeTest {
             -49, // return 4
     };
 
+    private OperandManager newOperandManager(final int[] bcClassRef, final int[] bcIMethodRef) {
+        final OperandManager operandManager = new OperandManager(new int[] {}, // bcCaseCount
+                new int[] {}, // bcCaseValues
+                new int[] {}, // bcByte
+                new int[] {}, // bcShort
+                new int[] {}, // bcLocal
+                new int[] {}, // bcLabel
+                new int[] {}, // bcIntRef
+                new int[] {}, // bcFloatRef
+                new int[] {}, // bcLongRef
+                new int[] {}, // bcDoubleRef
+                new int[] {}, // bcStringRef
+                bcClassRef, // bcClassRef
+                new int[] {}, // bcFieldRef
+                new int[] {}, // bcMethodRef
+                bcIMethodRef, // bcIMethodRef
+                new int[] {}, // bcThisField
+                new int[] {}, // bcSuperField
+                new int[] {}, // bcThisMethod
+                new int[] {}, // bcSuperMethod
+                new int[] {} // bcInitRef
+                , null);
+        operandManager.setSegment(segment);
+        operandManager.setCurrentClass("java/lang/Foo");
+        return operandManager;
+    }
+
     @Test
     void testLength() throws Pack200Exception {
         final OperandManager operandManager = new MockOperandManager();
@@ -178,6 +206,16 @@ class CodeAttributeTest {
         for (int index = 0; index < expectedLabels.length; index++) {
             assertEquals(expectedLabels[index], attribute.byteCodeOffsets.get(index).intValue());
         }
+    }
+
+    @Test
+    void testNegativeReferenceIndex() {
+        // invokeinterface with a negative bc_imethodref operand
+        assertThrows(Pack200Exception.class, () -> new CodeAttribute(1, 1, new byte[] { (byte) 185 }, segment, newOperandManager(new int[] {}, new int[] { -2 }),
+                new ArrayList<>()));
+        // new with a negative bc_classref operand
+        assertThrows(Pack200Exception.class, () -> new CodeAttribute(1, 1, new byte[] { (byte) 187 }, segment, newOperandManager(new int[] { -2 }, new int[] {}),
+                new ArrayList<>()));
     }
 
     @Test
