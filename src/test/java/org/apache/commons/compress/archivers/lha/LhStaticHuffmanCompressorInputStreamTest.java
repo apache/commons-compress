@@ -20,11 +20,14 @@
 package org.apache.commons.compress.archivers.lha;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.compressors.CompressorException;
@@ -39,6 +42,34 @@ class LhStaticHuffmanCompressorInputStreamTest {
 
     private LhStaticHuffmanCompressorInputStream createLh5CompressorInputStream(final int... data) throws IOException {
         return LhStaticHuffmanCompressorInputStream.lh5CompressorInputStream(new ByteArrayInputStream(AbstractTest.toByteArray(data)));
+    }
+
+    @Test
+    void testDecompressFailureForTreeWithTooManyLeafNodes() {
+        // This compressed data contains an invalid Huffman tree with too many leaf nodes,
+        // which should throw an exception when trying to decompress it.
+        final int[] compressedData = new int[] {
+            0x00, 0x04, 0x28, 0x25, 0x30, 0x70, 0xB7, 0x95, 0xD0, 0x21, 0xB0
+        };
+
+        final CompressorException e = assertThrows(CompressorException.class, () -> IOUtils.toByteArray(createLh5CompressorInputStream(compressedData)),
+                "Expected CompressorException due to too many leaf nodes in the Huffman tree");
+        assertEquals("Tree contains too many leaf nodes for depth 1", e.getMessage());
+    }
+
+    @Test
+    void testDecompressSingleCodeLengthHuffmanTree() throws IOException {
+        // This compressed data contains a single code length in one of the Huffman trees, which is handled
+        // differently in LHx compressors compared to other Huffman based compressors.
+        final int[] compressedData = new int[] {
+            0x00, 0x09, 0x38, 0x0a, 0x2a, 0x1d, 0x0b, 0x70, 0x12, 0xc3, 0x03, 0xe0, 0x53, 0x97, 0x7e
+        };
+
+        try (InputStream is = createLh5CompressorInputStream(compressedData)) {
+            final byte[] data = IOUtils.toByteArray(is);
+            assertEquals(24, data.length);
+            assertEquals("ABCDEFGHABCDEFGHABCDEFGH", new String(data, StandardCharsets.US_ASCII));
+        }
     }
 
     @Test
