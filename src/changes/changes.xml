@@ -147,6 +147,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory">[Cpio] CpioArchiveEntry now throws ArchiveException instead of IllegalArgumetException/IllegalStateException.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">[Cpio] CpioArchiveInputStream now throws ArchiveException instead of IllegalArgumetException/IllegalStateException.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">[Cpio] CpioArchiveOutputStream now throws ArchiveException instead of IllegalArgumetException/IllegalStateException.</action>
+      <action type="fix" dev="ggregory" due-to="Gary Gregory, KALI 834X">[Cpio] Reject unknown file type in CPIO entry mode (#790); add tests.</action>
       <!-- FIX gzip -->
       <action type="fix" dev="ggregory" due-to="Gary Gregory">[GZip] GzipParameters.setOperatingSystem(int) now throws CompressorException on illegal input.</action>
       <action type="fix" issue="COMPRESS-705" dev="ggregory" due-to="Mario Fredenhagen, Gary Gregory">[GZip] GZip IOException: Extra subfield length exceeds remaining bytes in extra field; use new option GzipCompressorInputStream.Builder.setIgnoreExtraField(boolean).</action>

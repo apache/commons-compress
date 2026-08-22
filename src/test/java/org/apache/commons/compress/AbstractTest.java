@@ -18,6 +18,7 @@
  */
 package org.apache.commons.compress;
 
+import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -51,6 +52,15 @@ public abstract class AbstractTest extends AbstractTempDirTest {
 
     protected interface StreamWrapper<I extends InputStream> {
         I wrap(InputStream inputStream) throws Exception;
+    }
+
+    /**
+     * Asserts that the cause of the given Throwable is null.
+     *
+     * @param e the Throwable to check.
+     */
+    public static void assertNullCause(final Throwable e) {
+        assertNull(e.getCause());
     }
 
     /**
