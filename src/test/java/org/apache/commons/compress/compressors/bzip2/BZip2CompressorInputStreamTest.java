@@ -65,10 +65,14 @@ class BZip2CompressorInputStreamTest extends AbstractTest {
      *     <li>Number of groups: 2 (minimum).</li>
      *     <li>Number of selectors: 3.</li>
      *     <li>Selectors: all three encode j=1 (unary "10").</li>
-     *     <li>Huffman code lengths for 2 groups over alphabet size 3 (RUNA, RUNB, EOB) are all equal to {@code codeLength}.</li>
+     *     <li>Huffman code lengths for 2 groups over alphabet size 3 (RUNA, RUNB, EOB): {@code codeLength} is used for every
+     *     symbol, except when it equals {@link #MIN_CODE_LEN}, in which case lengths {@code {1, 2, 2}} are used instead
+     *     because three symbols sharing length 1 would violate Kraft's inequality; the minimum length is still
+     *     {@code codeLength} in that case.</li>
      * </ul>
      * <p>
-     *     <strong>Note:</strong> The values are chosen to keep everything byte-aligned.
+     *     Each Huffman group is encoded as a 5-bit start length followed, for each symbol, by a delta encoding: pairs of a
+     *     '1' bit and a direction bit ('0' increments the current length, '1' decrements it), terminated by a '0' bit.
      * </p>
      * @param codeLength The code length to use for each symbol in each group; must be in [0, 31]
      */
@@ -91,10 +95,18 @@ class BZip2CompressorInputStreamTest extends AbstractTest {
         stream.write(0b00000000); // middle 8 bits of nSelectors
         stream.write(0b11_10_10_10); // low 2 bits of nSelectors + selectors (3 x 2 bits)
 
-        // Huffman tables: two groups, three symbols each
-        // startLen (5 bits) followed by 3x '0' (done) => one byte: codeLength << 3
-        stream.write(codeLength << 3);
-        stream.write(codeLength << 3);
+        // Huffman tables: two groups, three symbols each.
+        if (codeLength == MIN_CODE_LEN) {
+            // Lengths {1, 2, 2}, encoded per group as: 00001 (startLen 1) 0 (keep) 10 0 (increment, then keep) 0 (keep).
+            // Two groups of those 10 bits are "0000101000 0000101000", which re-split into bytes and zero-padded gives:
+            stream.write(0b0000_1010);
+            stream.write(0b0000_0010);
+            stream.write(0b1000_0000);
+        } else {
+            // All three symbols share codeLength: 5-bit startLen followed by three '0' bits, exactly one byte per group.
+            stream.write(codeLength << 3);
+            stream.write(codeLength << 3);
+        }
 
         return new BitInputStream(new ByteArrayInputStream(stream.toByteArray()), ByteOrder.BIG_ENDIAN);
     }

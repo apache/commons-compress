@@ -30,17 +30,20 @@ import org.apache.commons.compress.utils.BitInputStream;
 /**
  * Canonical Huffman decoder.
  * <p>
- * This class builds decoding tables from an array of code lengths (one entry per symbol) and then decodes symbols from a {@link BitInputStream}. The code set
- * is expected to be a <em>complete prefix code</em>; i.e., the code lengths must satisfy Kraft's equality.
+ * This class builds decoding tables from an array of code lengths (one entry per symbol) and then decodes symbols from a {@link BitInputStream}.
+ * </p>
+ * <p>
+ * The constructors verify that the code lengths satisfy <em>Kraft's inequality</em>, i.e. that no code length has more leaf nodes assigned to it than a binary
+ * tree of that depth can hold, and reject over-subscribed code sets with a {@link CompressorException}. Code sets that leave leaf nodes unused, i.e. incomplete
+ * codes, are accepted, as several formats produce them. Decoding a code word that no symbol claims fails at {@link #decodeSymbol(BitInputStream)} time.
  * </p>
  *
  * <h2>Usage</h2>
  *
  * <pre>{@code
  * int[] codeLengths = ...; // length per symbol (0 => unused)
- * int symbolCount = codeLengths.length;
  * int maxLen = 15; // maximum non-zero code length in codeLengths
- * HuffmanDecoder dec = new HuffmanDecoder(codeLengths, symbolCount, maxLen);
+ * HuffmanDecoder dec = new HuffmanDecoder(codeLengths, 0, maxLen);
  * int sym = dec.decodeSymbol(bitIn);
  * }</pre>
  *
@@ -57,9 +60,11 @@ public final class HuffmanDecoder {
 
     /**
      * Builds canonical decode tables.
+     *
+     * @throws CompressorException if the code lengths violate Kraft's inequality.
      */
     private static void fillCodeTable(final int[] codeLengths, final int minLen, final int maxLen, final int[] bias,
-            final int[] limit, final int[] sorted) {
+            final int[] limit, final int[] sorted) throws CompressorException {
         // 1) Histogram of code lengths
         final int[] count = new int[maxLen + 1];
         for (int symbol = 0; symbol < codeLengths.length; symbol++) {
@@ -69,14 +74,24 @@ public final class HuffmanDecoder {
             }
             count[codeLengths[symbol]]++;
         }
-        // 2) Generate starting offsets into sorted symbol table
+        // 2) Verify Kraft's inequality is not violated, i.e. the tree has no more leaf nodes at any depth than fit in a binary tree of that depth.
+        int availableNodes = 1;
+        for (int len = 1; len <= maxLen; len++) {
+            availableNodes <<= 1;
+            if (count[len] > availableNodes) {
+                throw new CompressorException("Tree contains too many leaf nodes for code length %d: %d leaf nodes, but only %d nodes available", len,
+                        count[len], availableNodes);
+            }
+            availableNodes -= count[len];
+        }
+        // 3) Generate starting offsets into sorted symbol table
         // The offsets are biased by -1 to simplify code in the next step
         final int[] offset = new int[maxLen + 1];
         offset[0] = -1;
         for (int len = 1; len <= maxLen; len++) {
             offset[len] = offset[len - 1] + count[len - 1];
         }
-        // 3) Build table of symbols sorted by length, then by symbol
+        // 4) Build table of symbols sorted by length, then by symbol
         // Adjust offsets to point to the last element of each length
         for (int symbol = 0; symbol < codeLengths.length; symbol++) {
             final int len = codeLengths[symbol];
@@ -85,14 +100,14 @@ public final class HuffmanDecoder {
             }
             sorted[++offset[len]] = symbol;
         }
-        // 4) Compute the largest left-justified code for each length
+        // 5) Compute the largest left-justified code for each length
         int firstCode = 0;
         for (int len = minLen; len <= maxLen; len++) {
             firstCode += count[len];
             limit[len] = firstCode - 1;
             firstCode <<= 1; // prepare for next length
         }
-        // 5) Compute the bias for each length
+        // 6) Compute the bias for each length
         for (int len = minLen; len <= maxLen; len++) {
             bias[len] = limit[len] - offset[len];
         }
@@ -145,7 +160,8 @@ public final class HuffmanDecoder {
      *
      * @param codeLengths code length per symbol; {@code 0} means the symbol is not used; not {@code null}.
      * @throws NullPointerException     if {@code codeLengths} is {@code null}.
-     * @throws CompressorException      if {@code codeLengths} size is out of range or if any code length is out of range
+     * @throws CompressorException      if {@code codeLengths} size is out of range or if any code length is out of range or if the code lengths violate
+     *                                  Kraft's inequality.
      */
     public HuffmanDecoder(final int[] codeLengths) throws CompressorException {
         this(codeLengths, 0, MAX_SUPPORTED_CODE_LENGTH);
@@ -164,7 +180,8 @@ public final class HuffmanDecoder {
      * @throws NullPointerException     if {@code codeLengths} is {@code null}.
      * @throws IllegalArgumentException if {@code maxCodeLength} exceeds the implementation limit (30) or if {@code minCodeLength}
      *                                  is not in the range 0-{@code maxCodeLength}].
-     * @throws CompressorException      if {@code codeLengths} size is out of range or if any code length is out of range
+     * @throws CompressorException      if {@code codeLengths} size is out of range or if any code length is out of range or if the code lengths violate
+     *                                  Kraft's inequality.
      */
     public HuffmanDecoder(final int[] codeLengths, final int minCodeLength, final int maxCodeLength) throws CompressorException {
         Objects.requireNonNull(codeLengths, "codeLengths");
