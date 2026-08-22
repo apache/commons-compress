@@ -167,6 +167,8 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="KALI 834X, Gary Gregory">[LZ4] Avoid unbounded recursion on empty frames in framed lz4 decoders (#803).</action>
       <!-- FIX lzw -->
       <action type="fix" dev="ggregory" due-to="Gary Gregory">[LZW] LZWInputStream now throws CompressorException instead of IllegalArgumetException/IllegalStateException.</action>
+      <!-- FIX lha -->
+      <action type="fix" dev="ggregory" due-to="Fredrik Kjellberg, Gary Gregory">[LHA] Add tests for lh5 decompression (#807).</action>
       <!-- FIX general -->      
       <action type="fix" dev="ggregory" due-to="Piotr P. Karwasz, Gary Gregory">Add missing Javadoc @since tag to org.apache.commons.compress.compressors.lz77support.LZ77Compressor.AbstractReference.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Classes in org.apache.commons.compress.archivers now throw a subclass of IOException called ArchiveException instead of IOException when a formatting problem is found.</action>
