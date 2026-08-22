@@ -307,27 +307,31 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
             IOUtils.consume(this);
         }
         readFully(buffer2, 0, buffer2.length);
-        if (CpioUtil.byteArray2long(buffer2, false) == MAGIC_OLD_BINARY) {
-            entry = readOldBinaryEntry(false);
-        } else if (CpioUtil.byteArray2long(buffer2, true) == MAGIC_OLD_BINARY) {
-            entry = readOldBinaryEntry(true);
-        } else {
-            System.arraycopy(buffer2, 0, buffer6, 0, buffer2.length);
-            readFully(buffer6, buffer2.length, buffer4.length);
-            final String magicString = ArchiveUtils.toAsciiString(buffer6);
-            switch (magicString) {
-            case MAGIC_NEW:
-                entry = readNewEntry(false);
-                break;
-            case MAGIC_NEW_CRC:
-                entry = readNewEntry(true);
-                break;
-            case MAGIC_OLD_ASCII:
-                entry = readOldAsciiEntry();
-                break;
-            default:
-                throw new ArchiveException("Unknown magic '%s' at byte: %,d", magicString, getBytesRead());
+        try {
+            if (CpioUtil.byteArray2long(buffer2, false) == MAGIC_OLD_BINARY) {
+                entry = readOldBinaryEntry(false);
+            } else if (CpioUtil.byteArray2long(buffer2, true) == MAGIC_OLD_BINARY) {
+                entry = readOldBinaryEntry(true);
+            } else {
+                System.arraycopy(buffer2, 0, buffer6, 0, buffer2.length);
+                readFully(buffer6, buffer2.length, buffer4.length);
+                final String magicString = ArchiveUtils.toAsciiString(buffer6);
+                switch (magicString) {
+                case MAGIC_NEW:
+                    entry = readNewEntry(false);
+                    break;
+                case MAGIC_NEW_CRC:
+                    entry = readNewEntry(true);
+                    break;
+                case MAGIC_OLD_ASCII:
+                    entry = readOldAsciiEntry();
+                    break;
+                default:
+                    throw new ArchiveException("Unknown magic '%s' at byte: %,d", magicString, getBytesRead());
+                }
             }
+        } catch (final IllegalArgumentException e) {
+            throw new ArchiveException("Corrupted CPIO archive at byte: " + getBytesRead(), (Throwable) e);
         }
         entryBytesRead = 0;
         entryEOF = false;
