@@ -114,6 +114,13 @@ class HuffmanDecoderTest {
     }
 
     @Test
+    void testAllCodeLengthsAreZero() {
+        final CompressorException e = assertThrows(CompressorException.class, () -> new HuffmanDecoder(new int[] {0, 0, 0, 0, 0}),
+                "Expected CompressorException when all code lengths are zero");
+        assertEquals("All code lengths are zero", e.getMessage());
+    }
+
+    @Test
     void testCodeLengthBelowMinCodeLength() throws Exception {
         final int[] codeLengths = new int[] {4, 2, 3, 0, 5, 5, 1};
         final CompressorException e = assertThrows(CompressorException.class, () -> new HuffmanDecoder(codeLengths, 1, 5),
@@ -200,14 +207,6 @@ class HuffmanDecoderTest {
         final CompressorException e = assertThrows(CompressorException.class, () -> new HuffmanDecoder(new int[0]),
                 "Expected CompressorException for empty code length list");
         assertEquals("Empty code length list", e.getMessage());
-    }
-
-    @Test
-    void testNoLeafNodes() throws Exception {
-        final HuffmanDecoder decoder = new HuffmanDecoder(new int[] { 0, 0, 0, 0, 0 });
-        final CompressorException e = assertThrows(CompressorException.class, () -> decodeSymbol(decoder, 0, 0, 0, 0),
-                "Expected CompressorException when decoding symbols for tree with no leaf nodes");
-        assertEquals("Invalid Huffman code: 0", e.getMessage());
     }
 
     @Test

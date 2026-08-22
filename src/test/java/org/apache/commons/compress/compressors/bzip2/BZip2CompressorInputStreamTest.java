@@ -268,4 +268,11 @@ class BZip2CompressorInputStreamTest extends AbstractTest {
         }
     }
 
+    @Test
+    void testEmpty() throws IOException {
+        try (BZip2CompressorInputStream in = new BZip2CompressorInputStream(newInputStream("empty.txt.bz2"))) {
+            final byte[] data = IOUtils.toByteArray(in);
+            assertEquals(0, data.length);
+        }
+    }
 }
