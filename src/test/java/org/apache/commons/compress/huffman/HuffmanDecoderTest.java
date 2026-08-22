@@ -209,6 +209,18 @@ class HuffmanDecoderTest {
         assertEquals("Invalid Huffman code: 62", e.getMessage());
     }
 
+    @ParameterizedTest(name = "appending code length {1} to {0} overflows at code length {2}")
+    @MethodSource
+    void testKraftsInequality(final int[] codeLengths, final int extraCodeLength, final int expectedCodeLength, final int expectedLeafNodes,
+            final int expectedAvailableNodes) {
+        assertDoesNotThrow(() -> new HuffmanDecoder(codeLengths), "Code lengths are expected to satisfy Kraft's inequality");
+        final int[] tooManyCodeLengths = ArrayUtils.add(codeLengths, extraCodeLength);
+        final CompressorException e = assertThrows(CompressorException.class, () -> new HuffmanDecoder(tooManyCodeLengths),
+                "Expected CompressorException for too many leaf nodes");
+        assertEquals(String.format("Tree contains too many leaf nodes for code length %d: %d leaf nodes, but only %d nodes available", expectedCodeLength,
+                expectedLeafNodes, expectedAvailableNodes), e.getMessage());
+    }
+
     @Test
     void testMaxSupportedCodeLengthExceeded() {
         final int[] codeLengths = new int[] {1, 1};
@@ -271,17 +283,5 @@ class HuffmanDecoderTest {
         final CompressorException e = assertThrows(CompressorException.class, () -> decodeSymbol(decoder, 0x80),
                 "Expected CompressorException for invalid bitstream");
         assertEquals("Invalid Huffman code: 2", e.getMessage());
-    }
-
-    @ParameterizedTest(name = "appending code length {1} to {0} overflows at code length {2}")
-    @MethodSource
-    void testKraftsInequality(final int[] codeLengths, final int extraCodeLength, final int expectedCodeLength, final int expectedLeafNodes,
-            final int expectedAvailableNodes) {
-        assertDoesNotThrow(() -> new HuffmanDecoder(codeLengths), "Code lengths are expected to satisfy Kraft's inequality");
-        final int[] tooManyCodeLengths = ArrayUtils.add(codeLengths, extraCodeLength);
-        final CompressorException e = assertThrows(CompressorException.class, () -> new HuffmanDecoder(tooManyCodeLengths),
-                "Expected CompressorException for too many leaf nodes");
-        assertEquals(String.format("Tree contains too many leaf nodes for code length %d: %d leaf nodes, but only %d nodes available", expectedCodeLength,
-                expectedLeafNodes, expectedAvailableNodes), e.getMessage());
     }
 }
