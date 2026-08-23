@@ -152,8 +152,15 @@ class HuffmanDecoderTest {
 
     @Test
     void testAllCodeLengthsAreZero() {
-        final CompressorException e = assertThrows(CompressorException.class, () -> new HuffmanDecoder(new int[] {0, 0, 0, 0, 0}),
+        final CompressorException e = assertThrows(CompressorException.class, () -> new HuffmanDecoder(new int[] { 0, 0, 0, 0, 0 }),
                 "Expected CompressorException when all code lengths are zero");
+        assertEquals("All code lengths are zero", e.getMessage());
+    }
+
+    @Test
+    void testAllCodeLengthsAreZeroWithMinMax() {
+        final CompressorException e = assertThrows(CompressorException.class, () -> new HuffmanDecoder(new int[] { 0, 0, 0 }, 0, 30),
+                "Expected CompressorException when all code lengths are zero with min/max");
         assertEquals("All code lengths are zero", e.getMessage());
     }
 
