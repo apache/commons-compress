@@ -160,8 +160,8 @@ public final class HuffmanDecoder {
      *
      * @param codeLengths code length per symbol; {@code 0} means the symbol is not used; not {@code null}.
      * @throws NullPointerException     if {@code codeLengths} is {@code null}.
-     * @throws CompressorException      if {@code codeLengths} size is out of range or if any code length is out of range or if the code lengths violate
-     *                                  Kraft's inequality.
+     * @throws CompressorException      if {@code codeLengths} size is out of range, if any code length is out of range, if all code lengths are zero,
+     *                                  or if the code lengths violate Kraft's inequality.
      */
     public HuffmanDecoder(final int[] codeLengths) throws CompressorException {
         this(codeLengths, 0, MAX_SUPPORTED_CODE_LENGTH);
@@ -180,8 +180,8 @@ public final class HuffmanDecoder {
      * @throws NullPointerException     if {@code codeLengths} is {@code null}.
      * @throws IllegalArgumentException if {@code maxCodeLength} exceeds the implementation limit (30) or if {@code minCodeLength}
      *                                  is not in the range 0-{@code maxCodeLength}].
-     * @throws CompressorException      if {@code codeLengths} size is out of range or if any code length is out of range or if the code lengths violate
-     *                                  Kraft's inequality.
+     * @throws CompressorException      if {@code codeLengths} size is out of range, if any code length is out of range, if all code lengths are zero,
+     *                                  or if the code lengths violate Kraft's inequality.
      */
     public HuffmanDecoder(final int[] codeLengths, final int minCodeLength, final int maxCodeLength) throws CompressorException {
         Objects.requireNonNull(codeLengths, "codeLengths");
@@ -192,11 +192,11 @@ public final class HuffmanDecoder {
             throw new IllegalArgumentException(String.format("minCodeLength (%d) not within range [0, %d)", minCodeLength, maxCodeLength));
         }
         if (codeLengths.length == 0) {
-            throw new CompressorException(String.format("Empty code length list"));
+            throw new CompressorException("Empty code length list");
         }
         // Validate and find min/max lengths
         int min = maxCodeLength;
-        int max = minCodeLength;
+        int max = 0;
         for (int i = 0; i < codeLengths.length; i++) {
             final int len = codeLengths[i];
             if (len < minCodeLength || len > maxCodeLength) {
@@ -212,6 +212,9 @@ public final class HuffmanDecoder {
             if (len > max) {
                 max = len;
             }
+        }
+        if (max == 0) {
+            throw new CompressorException("All code lengths are zero");
         }
         this.minLength = min;
         this.maxLength = max;
