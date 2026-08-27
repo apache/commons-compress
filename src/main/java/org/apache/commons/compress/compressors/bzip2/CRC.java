@@ -73,6 +73,18 @@ final class CRC {
         crc = compute(crc, inCh);
     }
 
+    /**
+     * Updates the CRC with a range of bytes.
+     */
+    void update(final byte[] buf, final int off, final int len) {
+        final int[] table = CRC32_TABLE;
+        int c = this.crc;
+        for (int i = off, end = off + len; i < end; i++) {
+            c = c << 8 ^ table[(c >>> 24 ^ buf[i]) & 0xff];
+        }
+        this.crc = c;
+    }
+
     void update(final int inCh, int repeat) {
         int globalCrcShadow = this.crc;
         while (repeat-- > 0) {

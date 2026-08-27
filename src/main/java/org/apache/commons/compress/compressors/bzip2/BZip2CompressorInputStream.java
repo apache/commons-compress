@@ -86,37 +86,20 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         // ---------------
         // 60798 byte
 
-        int[] tt; // 3600000 byte
-        final byte[] ll8; // 900000 byte
+        /**
+         * The block: while decoding the MTF/RLE2 stage the low 8 bits of {@code tt[i]} hold byte {@code i} of the BWT-transformed block, after the
+         * inverse BWT setup the upper 24 bits of {@code tt[i]} hold the index of the byte following byte {@code i} in the original data (block
+         * sizes are at most 900,000 &lt; 2^24). The inverse transform then needs one load per output byte.
+         */
+        final int[] tt; // 3600000 byte
 
         // ---------------
-        // 4560782 byte
+        // 3660782 byte
         // ===============
 
         Data(final int blockSize100k) {
-            this.ll8 = new byte[blockSize100k * BASEBLOCKSIZE];
+            this.tt = new int[blockSize100k * BASEBLOCKSIZE];
         }
-
-        /**
-         * Initializes the {@link #tt} array.
-         *
-         * This method is called when the required length of the array is known. I don't initialize it at construction time to avoid unnecessary memory
-         * allocation when compressing small files.
-         */
-        int[] initTT(final int length) {
-            int[] ttShadow = this.tt;
-
-            // tt.length should always be >= length, but theoretically
-            // it can happen, if the compressor mixed small and large
-            // blocks. Normally only the last block will be smaller
-            // than others.
-            if (ttShadow == null || ttShadow.length < length) {
-                this.tt = ttShadow = new int[length];
-            }
-
-            return ttShadow;
-        }
-
     }
 
     /**
@@ -482,7 +465,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         this.origPtr = bin.readBits(24);
         final Data dataShadow = this.data;
         recvDecodingTables(bin, dataShadow);
-        final byte[] ll8 = dataShadow.ll8;
+        final int[] tt = dataShadow.tt;
         final int[] unzftab = dataShadow.unzftab;
         final byte[] selector = dataShadow.selector;
         final byte[] seqToUnseq = dataShadow.seqToUnseq;
@@ -561,15 +544,15 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
                 }
                 if (inRun) {
                     inRun = false;
-                    checkBounds(runLength, ll8.length, "s");
+                    checkBounds(runLength, tt.length, "s");
                     final int yy0 = yy[0];
                     checkBounds(yy0, seqToUnseq.length, "yy");
-                    final byte ch = seqToUnseq[yy0];
-                    unzftab[ch & 0xff] += runLength + 1;
+                    final int ch = seqToUnseq[yy0] & 0xff;
+                    unzftab[ch] += runLength + 1;
                     final int from = ++lastShadow;
                     lastShadow += runLength;
-                    checkBounds(lastShadow, ll8.length, "lastShadow");
-                    Arrays.fill(ll8, from, lastShadow + 1, ch);
+                    checkBounds(lastShadow, tt.length, "lastShadow");
+                    Arrays.fill(tt, from, lastShadow + 1, ch);
                     if (lastShadow >= limitLast) {
                         throw new CompressorException("Block overrun while expanding RLE in MTF, %,d exceeds %,d", lastShadow, limitLast);
                     }
@@ -583,8 +566,9 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
                 checkBounds(nextSym - 1, yy.length, "nextSym");
                 final int tmp = yy[nextSym - 1];
                 checkBounds(tmp, seqToUnseq.length, "yy");
-                unzftab[seqToUnseq[tmp] & 0xff]++;
-                ll8[lastShadow] = seqToUnseq[tmp];
+                final int ch = seqToUnseq[tmp] & 0xff;
+                unzftab[ch]++;
+                tt[lastShadow] = ch;
                 /*
                  * This loop is hammered during decompression, hence avoid native method call overhead of System.arraycopy for very small ranges to copy.
                  */
@@ -714,16 +698,101 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         if (this.bin == null) {
             throw new CompressorException("Stream closed");
         }
-
-        final int hi = offs + len;
-        int destOffs = offs;
-        int b;
-        while (destOffs < hi && (b = read0()) >= 0) {
-            dest[destOffs++] = (byte) b;
-            count(1);
+        int n = 0;
+        try {
+            while (n < len) {
+                final int state = this.currentState;
+                if (state == NO_RAND_PART_B_STATE || state == NO_RAND_PART_C_STATE) {
+                    // Steady state of a non-randomised block: bulk path.
+                    n = readNoRand(dest, offs, len, n);
+                    if (this.currentState == NO_RAND_PART_A_STATE) {
+                        // Block exhausted while more output was wanted (same sequence as setupNoRandPartA()).
+                        endBlock();
+                        initBlock();
+                    }
+                } else {
+                    // Block boundaries, randomised blocks, EOF and error states go through the byte-at-a-time state machine.
+                    final int b = read0();
+                    if (b < 0) {
+                        break;
+                    }
+                    dest[offs + n++] = (byte) b;
+                }
+            }
+        } finally {
+            count(n);
         }
+        return n == 0 ? -1 : n;
+    }
 
-        return destOffs == offs ? -1 : destOffs - offs;
+    /**
+     * Inverse BWT traversal and RLE1 expansion of a non-randomised block into {@code dest}: the {@link #setupNoRandPartA()}/{@link #setupNoRandPartB()}/
+     * {@link #setupNoRandPartC()} state machine with its state in locals, one {@code tt} load per output byte and the CRC computed over the output slice.
+     *
+     * @return the new count of bytes written into {@code dest}. Leaves {@link #currentState} at {@link #NO_RAND_PART_A_STATE} if the block was exhausted
+     *         before {@code len} bytes were produced.
+     */
+    private int readNoRand(final byte[] dest, final int offs, final int len, final int n) {
+        final int[] tt = this.data.tt;
+        final int lastShadow = this.last;
+        int tPos = this.su_tPos;
+        int i2 = this.su_i2;
+        int count = this.su_count;
+        int ch2 = this.su_ch2;
+        int chPrev = this.su_chPrev;
+        int z = this.su_z;
+        int j2 = this.su_j2;
+        int state = this.currentState;
+        final int start = offs + n;
+        final int end = offs + len;
+        int o = start;
+        while (o < end) {
+            if (state == NO_RAND_PART_C_STATE) {
+                if (j2 < z) {
+                    final int k = Math.min(z - j2, end - o);
+                    final byte b = (byte) ch2;
+                    for (int i = 0; i < k; i++) {
+                        dest[o + i] = b;
+                    }
+                    o += k;
+                    j2 += k;
+                    continue;
+                }
+                i2++;
+                count = 0;
+            } else if (ch2 != chPrev) {
+                count = 1;
+            } else if (++count >= 4) {
+                final int v = tt[tPos];
+                z = v & 0xff;
+                tPos = v >>> 8;
+                j2 = 0;
+                state = NO_RAND_PART_C_STATE;
+                continue;
+            }
+            // setupNoRandPartA()
+            if (i2 > lastShadow) {
+                state = NO_RAND_PART_A_STATE;
+                break;
+            }
+            chPrev = ch2;
+            final int v = tt[tPos];
+            ch2 = v & 0xff;
+            tPos = v >>> 8;
+            i2++;
+            dest[o++] = (byte) ch2;
+            state = NO_RAND_PART_B_STATE;
+        }
+        this.su_tPos = tPos;
+        this.su_i2 = i2;
+        this.su_count = count;
+        this.su_ch2 = ch2;
+        this.su_chPrev = chPrev;
+        this.su_z = (char) z;
+        this.su_j2 = j2;
+        this.currentState = state;
+        this.crc.update(dest, start, o - start);
+        return o - offs;
     }
 
     private int read0() throws IOException {
@@ -755,10 +824,12 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         }
 
         final int[] cftab = this.data.cftab;
-        final int ttLen = this.last + 1;
-        // tt has size at least ttLen
-        final int[] tt = this.data.initTT(ttLen);
-        final byte[] ll8 = this.data.ll8;
+        final int[] tt = this.data.tt;
+        final int lastShadow = this.last;
+        // Checked before the in-place transform below, which must run exactly once per block.
+        if (this.origPtr < 0 || this.origPtr > lastShadow) {
+            throw new CompressorException("Stream corrupted");
+        }
         cftab[0] = 0;
         System.arraycopy(this.data.unzftab, 0, cftab, 1, 256);
 
@@ -767,17 +838,14 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
             cftab[i] = c;
         }
 
-        for (int i = 0, lastShadow = this.last; i <= lastShadow; i++) {
-            final int tmp = cftab[ll8[i] & 0xff]++;
-            checkBounds(tmp, ttLen, "tt index");
-            tt[tmp] = i;
+        // tt[i] holds byte i of the transformed block in its low 8 bits; link every byte to its successor in the original data.
+        for (int i = 0; i <= lastShadow; i++) {
+            final int tmp = cftab[tt[i] & 0xff]++;
+            checkBounds(tmp, lastShadow + 1, "tt index");
+            tt[tmp] |= i << 8;
         }
 
-        if (this.origPtr < 0 || this.origPtr >= tt.length) {
-            throw new CompressorException("Stream corrupted");
-        }
-
-        this.su_tPos = tt[this.origPtr];
+        this.su_tPos = tt[this.origPtr] >>> 8;
         this.su_count = 0;
         this.su_i2 = 0;
         this.su_ch2 = 256; /* not a char and not EOF */
@@ -793,10 +861,10 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     private int setupNoRandPartA() throws IOException {
         if (this.su_i2 <= this.last) {
             this.su_chPrev = this.su_ch2;
-            final int su_ch2Shadow = this.data.ll8[this.su_tPos] & 0xff;
+            final int v = this.data.tt[this.su_tPos];
+            final int su_ch2Shadow = v & 0xff;
             this.su_ch2 = su_ch2Shadow;
-            checkBounds(this.su_tPos, this.data.tt.length, "su_tPos");
-            this.su_tPos = this.data.tt[this.su_tPos];
+            this.su_tPos = v >>> 8;
             this.su_i2++;
             this.currentState = NO_RAND_PART_B_STATE;
             this.crc.update(su_ch2Shadow);
@@ -814,9 +882,9 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
             return setupNoRandPartA();
         }
         if (++this.su_count >= 4) {
-            checkBounds(this.su_tPos, this.data.ll8.length, "su_tPos");
-            this.su_z = (char) (this.data.ll8[this.su_tPos] & 0xff);
-            this.su_tPos = this.data.tt[this.su_tPos];
+            final int v = this.data.tt[this.su_tPos];
+            this.su_z = (char) (v & 0xff);
+            this.su_tPos = v >>> 8;
             this.su_j2 = 0;
             return setupNoRandPartC();
         }
@@ -839,9 +907,9 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     private int setupRandPartA() throws IOException {
         if (this.su_i2 <= this.last) {
             this.su_chPrev = this.su_ch2;
-            int su_ch2Shadow = this.data.ll8[this.su_tPos] & 0xff;
-            checkBounds(this.su_tPos, this.data.tt.length, "su_tPos");
-            this.su_tPos = this.data.tt[this.su_tPos];
+            final int v = this.data.tt[this.su_tPos];
+            int su_ch2Shadow = v & 0xff;
+            this.su_tPos = v >>> 8;
             if (this.su_rNToGo == 0) {
                 this.su_rNToGo = Rand.rNums(this.su_rTPos) - 1;
                 if (++this.su_rTPos == 512) {
@@ -871,9 +939,9 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
             this.currentState = RAND_PART_A_STATE;
             return setupRandPartA();
         }
-        this.su_z = (char) (this.data.ll8[this.su_tPos] & 0xff);
-        checkBounds(this.su_tPos, this.data.tt.length, "su_tPos");
-        this.su_tPos = this.data.tt[this.su_tPos];
+        final int v = this.data.tt[this.su_tPos];
+        this.su_z = (char) (v & 0xff);
+        this.su_tPos = v >>> 8;
         if (this.su_rNToGo == 0) {
             this.su_rNToGo = Rand.rNums(this.su_rTPos) - 1;
             if (++this.su_rTPos == 512) {

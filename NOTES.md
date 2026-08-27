@@ -71,6 +71,7 @@ java -cp target/test-classes:target/classes:$(cat target/cp.txt) org.apache.comm
 |----------------------------------------|----------:|----------:|----------:|------------------------:|
 | baseline (legacy, commit f8106cd28)    |      39.9 |      39.3 |      28.7 |                    38.8 |
 | step 1: bit reader + Huffman tables    |      50.8 |      56.2 |      41.8 |                         |
+| step 2: packed tt + fused bulk read    |      53.4 |      57.2 |      42.3 |                   (tbd) |
 | native `bzip2 -dc`                     |         - |         - |         - |                    45.5 |
 
 Baseline JMH raw numbers (ms per 64 MiB decode): 1681 ± 131, 1706 ± 97, 2342 ± 114 (`jmh-step0-baseline.json`
@@ -88,6 +89,10 @@ roughly half.
 - After an exception caused by *corrupt* (not truncated) data inside a block, the underlying input stream
   may have been read up to 8 bytes further than before (bit-buffer lookahead). Unobservable on valid or
   truncated streams; `getCompressedCount()` is unchanged in all cases.
+- A corrupt `origPtr` (outside the block, `origPtr > last`) now fails immediately with "Stream corrupted".
+  The previous decoder only rejected `origPtr >= tt.length`, where `tt.length` was the largest block seen so
+  far in the stream, and otherwise returned garbage bytes before failing with "BZip2 CRC error". This
+  matches libbzip2 (`origPtr >= nblock`).
 
 ## Log
 
@@ -103,3 +108,12 @@ roughly half.
   2179 ± 50 (1.36x) (`jmh-step1.json`). Harness findings while getting here: the compressed-byte count after a
   failed read must report every byte pulled (the old `BoundedInputStream` counter did), and after a data
   error inside a block the underlying stream may now be up to 8 bytes further ahead (see deviations).
+- Step 2 (plan steps 2a+2b merged so the hot loop is written once; -1 vs -9 separate the effects): `ll8` is
+  folded into `tt` (byte in the low 8 bits, successor index in the upper 24), `read(byte[])` runs the
+  `setupNoRandPartA/B/C` state machine in a local loop writing straight into the caller's buffer, CRC is
+  computed over the written slice, `origPtr` is validated against the block length before the in-place
+  transform. JMH: enwiki -9 1256 ± 111 vs 1642 ± 128 (1.31x), enwiki -1 1173 ± 46 vs 1638 ± 136 (1.40x),
+  binary -9 1587 ± 69 vs 2158 ± 79 (1.36x) (`jmh-step2.json`). Smaller step than hoped: the profile shows the
+  `tt[tPos]` chase is now 42% of the time and latency bound (one dependent load per byte); `Arrays.fill`
+  for RUNA/RUNB runs 14%, the CRC loop 13%, the inverse-BWT setup pass 10%, the MTF loop ~16%, slow-path
+  Huffman 2%.

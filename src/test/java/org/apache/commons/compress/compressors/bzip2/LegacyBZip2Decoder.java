@@ -330,7 +330,7 @@ final class LegacyBZip2Decoder extends CompressorInputStream implements BZip2Con
      * @throws IOException          if the stream content is malformed or an I/O error occurs.
      * @throws NullPointerException if {@code in == null}.
      */
-    public LegacyBZip2Decoder(final InputStream in) throws IOException {
+    LegacyBZip2Decoder(final InputStream in) throws IOException {
         this(in, false);
     }
 
@@ -343,7 +343,7 @@ final class LegacyBZip2Decoder extends CompressorInputStream implements BZip2Con
      *
      * @throws IOException if {@code in == null}, the stream content is malformed, or an I/O error occurs.
      */
-    public LegacyBZip2Decoder(final InputStream in, final boolean decompressConcatenated) throws IOException {
+    LegacyBZip2Decoder(final InputStream in, final boolean decompressConcatenated) throws IOException {
         this.bin = new BitInputStream(in == System.in ? CloseShieldInputStream.wrap(in) : in, ByteOrder.BIG_ENDIAN);
         this.decompressConcatenated = decompressConcatenated;
         init(true);
