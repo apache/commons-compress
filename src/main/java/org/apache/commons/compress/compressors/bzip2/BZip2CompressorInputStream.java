@@ -93,12 +93,23 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
          */
         final int[] tt; // 3600000 byte
 
+        /**
+         * The block in original order, {@code raw[0..last]}, produced by {@link #inverseBwt} for non-randomised blocks; {@code raw[last + 1]} holds the byte
+         * the cycle continues with (read as an RLE1 repeat count if a corrupt block ends inside a run).
+         */
+        final byte[] raw; // 900001 byte
+
+        final BZip2InverseBwt inverseBwt; // 1424384 byte
+
         // ---------------
-        // 3660782 byte
+        // 5985167 byte
         // ===============
 
         Data(final int blockSize100k) {
-            this.tt = new int[blockSize100k * BASEBLOCKSIZE];
+            final int n = blockSize100k * BASEBLOCKSIZE;
+            this.tt = new int[n];
+            this.raw = new byte[n + 1];
+            this.inverseBwt = new BZip2InverseBwt(n);
         }
     }
 
@@ -532,27 +543,34 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
                     bitBuffer = bin.bitBuffer;
                     bitCount = bin.bitCount;
                 }
-                if (nextSym == RUNA || nextSym == RUNB) {
+                if (nextSym <= RUNB) {
+                    // RUNA (0) adds the weight, RUNB (1) twice the weight.
                     if (!inRun) {
                         inRun = true;
                         runLength = -1;
                         runWeight = 1;
                     }
-                    runLength += nextSym == RUNA ? runWeight : runWeight << 1;
+                    runLength += runWeight << nextSym;
                     runWeight <<= 1;
                     continue;
                 }
                 if (inRun) {
                     inRun = false;
                     checkBounds(runLength, tt.length, "s");
-                    final int yy0 = yy[0];
-                    checkBounds(yy0, seqToUnseq.length, "yy");
-                    final int ch = seqToUnseq[yy0] & 0xff;
+                    // yy is a permutation of 0..inUseCount-1 at positions below inUseCount, so yy[0] always indexes seqToUnseq.
+                    final int ch = seqToUnseq[yy[0]] & 0xff;
                     unzftab[ch] += runLength + 1;
                     final int from = ++lastShadow;
                     lastShadow += runLength;
                     checkBounds(lastShadow, tt.length, "lastShadow");
-                    Arrays.fill(tt, from, lastShadow + 1, ch);
+                    if (runLength < 32) {
+                        // Most runs are short; avoid the call overhead of Arrays.fill.
+                        for (int i = from; i <= lastShadow; i++) {
+                            tt[i] = ch;
+                        }
+                    } else {
+                        Arrays.fill(tt, from, lastShadow + 1, ch);
+                    }
                     if (lastShadow >= limitLast) {
                         throw new CompressorException("Block overrun while expanding RLE in MTF, %,d exceeds %,d", lastShadow, limitLast);
                     }
@@ -563,9 +581,8 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
                 if (++lastShadow >= limitLast) {
                     throw new CompressorException("Block overrun in MTF, %,d exceeds %,d", lastShadow, limitLast);
                 }
-                checkBounds(nextSym - 1, yy.length, "nextSym");
+                // nextSym < alphaSize == inUseCount + 2 and nextSym != eob, so nextSym - 1 < inUseCount <= 256 and yy[nextSym - 1] < inUseCount.
                 final int tmp = yy[nextSym - 1];
-                checkBounds(tmp, seqToUnseq.length, "yy");
                 final int ch = seqToUnseq[tmp] & 0xff;
                 unzftab[ch]++;
                 tt[lastShadow] = ch;
@@ -727,15 +744,14 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
 
     /**
      * Inverse BWT traversal and RLE1 expansion of a non-randomised block into {@code dest}: the {@link #setupNoRandPartA()}/{@link #setupNoRandPartB()}/
-     * {@link #setupNoRandPartC()} state machine with its state in locals, one {@code tt} load per output byte and the CRC computed over the output slice.
+     * {@link #setupNoRandPartC()} state machine with its state in locals, reading the block from {@code data.raw} and computing the CRC over the output slice.
      *
      * @return the new count of bytes written into {@code dest}. Leaves {@link #currentState} at {@link #NO_RAND_PART_A_STATE} if the block was exhausted
      *         before {@code len} bytes were produced.
      */
     private int readNoRand(final byte[] dest, final int offs, final int len, final int n) {
-        final int[] tt = this.data.tt;
+        final byte[] raw = this.data.raw;
         final int lastShadow = this.last;
-        int tPos = this.su_tPos;
         int i2 = this.su_i2;
         int count = this.su_count;
         int ch2 = this.su_ch2;
@@ -763,9 +779,8 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
             } else if (ch2 != chPrev) {
                 count = 1;
             } else if (++count >= 4) {
-                final int v = tt[tPos];
-                z = v & 0xff;
-                tPos = v >>> 8;
+                // Repeat count; i2 may be last + 1 here, raw[last + 1] holds the byte the cycle continues with.
+                z = raw[i2] & 0xff;
                 j2 = 0;
                 state = NO_RAND_PART_C_STATE;
                 continue;
@@ -776,14 +791,10 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
                 break;
             }
             chPrev = ch2;
-            final int v = tt[tPos];
-            ch2 = v & 0xff;
-            tPos = v >>> 8;
-            i2++;
+            ch2 = raw[i2++] & 0xff;
             dest[o++] = (byte) ch2;
             state = NO_RAND_PART_B_STATE;
         }
-        this.su_tPos = tPos;
         this.su_i2 = i2;
         this.su_count = count;
         this.su_ch2 = ch2;
@@ -839,32 +850,30 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         }
 
         // tt[i] holds byte i of the transformed block in its low 8 bits; link every byte to its successor in the original data.
+        // unzftab counted exactly the bytes written, so cftab[256] == lastShadow + 1 and every index below is written exactly once.
         for (int i = 0; i <= lastShadow; i++) {
-            final int tmp = cftab[tt[i] & 0xff]++;
-            checkBounds(tmp, lastShadow + 1, "tt index");
-            tt[tmp] |= i << 8;
+            tt[cftab[tt[i] & 0xff]++] |= i << 8;
         }
 
-        this.su_tPos = tt[this.origPtr] >>> 8;
         this.su_count = 0;
         this.su_i2 = 0;
         this.su_ch2 = 256; /* not a char and not EOF */
 
         if (this.blockRandomised) {
+            this.su_tPos = tt[this.origPtr] >>> 8;
             this.su_rNToGo = 0;
             this.su_rTPos = 0;
             return setupRandPartA();
         }
+        this.data.inverseBwt.unwind(tt, this.origPtr, lastShadow + 1, this.data.raw);
         return setupNoRandPartA();
     }
 
     private int setupNoRandPartA() throws IOException {
         if (this.su_i2 <= this.last) {
             this.su_chPrev = this.su_ch2;
-            final int v = this.data.tt[this.su_tPos];
-            final int su_ch2Shadow = v & 0xff;
+            final int su_ch2Shadow = this.data.raw[this.su_i2] & 0xff;
             this.su_ch2 = su_ch2Shadow;
-            this.su_tPos = v >>> 8;
             this.su_i2++;
             this.currentState = NO_RAND_PART_B_STATE;
             this.crc.update(su_ch2Shadow);
@@ -882,9 +891,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
             return setupNoRandPartA();
         }
         if (++this.su_count >= 4) {
-            final int v = this.data.tt[this.su_tPos];
-            this.su_z = (char) (v & 0xff);
-            this.su_tPos = v >>> 8;
+            this.su_z = (char) (this.data.raw[this.su_i2] & 0xff);
             this.su_j2 = 0;
             return setupNoRandPartC();
         }

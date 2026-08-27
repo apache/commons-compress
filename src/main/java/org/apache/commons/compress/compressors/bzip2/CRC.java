@@ -50,6 +50,25 @@ final class CRC {
             0xf464a0aa, 0xf9278673, 0xfde69bc4, 0x89b8fd09, 0x8d79e0be, 0x803ac667, 0x84fbdbd0, 0x9abc8bd5, 0x9e7d9662, 0x933eb0bb, 0x97ffad0c, 0xafb010b1,
             0xab710d06, 0xa6322bdf, 0xa2f33668, 0xbcb4666d, 0xb8757bda, 0xb5365d03, 0xb1f740b4 };
 
+    /**
+     * Slicing-by-8 tables: {@code SLICE[k][i]} is the CRC contribution of byte {@code i} followed by {@code k} zero bytes; {@code SLICE[0]} is
+     * {@link #CRC32_TABLE}.
+     */
+    private static final int[][] SLICE = new int[8][];
+
+    static {
+        SLICE[0] = CRC32_TABLE;
+        for (int k = 1; k < SLICE.length; k++) {
+            final int[] prev = SLICE[k - 1];
+            final int[] next = new int[256];
+            for (int i = 0; i < 256; i++) {
+                final int c = prev[i];
+                next[i] = c << 8 ^ CRC32_TABLE[c >>> 24];
+            }
+            SLICE[k] = next;
+        }
+    }
+
     private int crc;
 
     CRC() {
@@ -77,10 +96,24 @@ final class CRC {
      * Updates the CRC with a range of bytes.
      */
     void update(final byte[] buf, final int off, final int len) {
-        final int[] table = CRC32_TABLE;
+        final int[] t0 = SLICE[0];
+        final int[] t1 = SLICE[1];
+        final int[] t2 = SLICE[2];
+        final int[] t3 = SLICE[3];
+        final int[] t4 = SLICE[4];
+        final int[] t5 = SLICE[5];
+        final int[] t6 = SLICE[6];
+        final int[] t7 = SLICE[7];
         int c = this.crc;
-        for (int i = off, end = off + len; i < end; i++) {
-            c = c << 8 ^ table[(c >>> 24 ^ buf[i]) & 0xff];
+        final int end = off + len;
+        int i = off;
+        for (; i + 8 <= end; i += 8) {
+            final int w = c ^ (buf[i] << 24 | (buf[i + 1] & 0xff) << 16 | (buf[i + 2] & 0xff) << 8 | buf[i + 3] & 0xff);
+            c = t7[w >>> 24] ^ t6[w >>> 16 & 0xff] ^ t5[w >>> 8 & 0xff] ^ t4[w & 0xff] ^ t3[buf[i + 4] & 0xff] ^ t2[buf[i + 5] & 0xff]
+                    ^ t1[buf[i + 6] & 0xff] ^ t0[buf[i + 7] & 0xff];
+        }
+        for (; i < end; i++) {
+            c = c << 8 ^ t0[(c >>> 24 ^ buf[i]) & 0xff];
         }
         this.crc = c;
     }

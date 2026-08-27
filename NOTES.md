@@ -71,7 +71,10 @@ java -cp target/test-classes:target/classes:$(cat target/cp.txt) org.apache.comm
 |----------------------------------------|----------:|----------:|----------:|------------------------:|
 | baseline (legacy, commit f8106cd28)    |      39.9 |      39.3 |      28.7 |                    38.8 |
 | step 1: bit reader + Huffman tables    |      50.8 |      56.2 |      41.8 |                         |
-| step 2: packed tt + fused bulk read    |      53.4 |      57.2 |      42.3 |                   (tbd) |
+| step 2: packed tt + fused bulk read    |      53.4 |      57.2 |      42.3 |                    54.2 |
+| step 3a: fills, CRC slicing, dead checks |    58.7 |      62.2 |      44.7 |                         |
+| step 3b: multi-chain inverse BWT (paired, pinned) | 74.0 |  64.1 |      51.6 |                    69.9 |
+| legacy in the same pinned run          |      42.1 |      37.3 |      30.6 |                         |
 | native `bzip2 -dc`                     |         - |         - |         - |                    45.5 |
 
 Baseline JMH raw numbers (ms per 64 MiB decode): 1681 ± 131, 1706 ± 97, 2342 ± 114 (`jmh-step0-baseline.json`
@@ -116,4 +119,32 @@ roughly half.
   binary -9 1587 ± 69 vs 2158 ± 79 (1.36x) (`jmh-step2.json`). Smaller step than hoped: the profile shows the
   `tt[tPos]` chase is now 42% of the time and latency bound (one dependent load per byte); `Arrays.fill`
   for RUNA/RUNB runs 14%, the CRC loop 13%, the inverse-BWT setup pass 10%, the MTF loop ~16%, slow-path
-  Huffman 2%.
+  Huffman 2%. Full file: 62.09 s, CRC-32 matches.
+- Step 3a: manual fill for RUNA/RUNB runs shorter than 32 (was `Arrays.fill`, 14% of samples), CRC slicing-by-8
+  over the output slice (`CRCTest` checks it against the byte-wise update and the CRC-32/BZIP2 check value),
+  branchless RUNA/RUNB accumulation (`runLength += runWeight << nextSym`), removal of the provably unreachable
+  `'yy'`, `'nextSym'` and `'tt index'` bounds checks (comments explain why). JMH (current only): enwiki -9
+  1143 ± 116, enwiki -1 1079 ± 92, binary -9 1502 ± 60 (`jmh-step3a.json`), i.e. -9%, -8%, -5%.
+- Step 3b: multi-chain inverse BWT (`BZip2InverseBwt`). The `tt[tPos]` chase is a single dependency chain
+  with ~10 ns of L3 latency per byte for 900k blocks (3.6 MB `tt`, L2 is 512 KB on this Zen 2 box). The
+  block is now unwound by 8 chains walked in lockstep: each chain starts at a flagged row and stops when it
+  reaches another chain's start row, then restarts at a row nobody has visited (two spare bits of the `tt`
+  entries serve as flags), and the segments are stitched in cycle order into `data.raw`. The RLE1 state
+  machine then streams over `raw` instead of chasing pointers. Output is identical by construction, including
+  the corrupt-input case where the permutation has several cycles (the old traversal repeats the first cycle;
+  `raw[n]` reproduces the repeat-count byte it would read after the last byte). Isolated micro-benchmark on a
+  random 900k permutation: chase 10.9 ns/byte, first version (chain state in arrays) 5.7, final version
+  (chain state in locals, 8 unrolled chains) 3.2; 4 chains 4.0, 16 chains worse (JIT). 100k rows: no change
+  (L2 resident). JMH (current only): enwiki -9 944 ± 135, enwiki -1 1072 ± 65, binary -9 1316 ± 82
+  (`jmh-step3b2.json`), i.e. -17%, 0%, -12% vs step 3a. Memory per decoder at -9 grows from 4.5 MB (old
+  `tt` + `ll8`) to about 6 MB (`tt`, `raw`, chain pool). A bug found by the existing `BZip2NSelectorsOverflowTest`
+  (a 5-byte block hung the walk: fewer rows than chains) is covered by `BZip2InverseBwtTest` now.
+  Final paired run for step 3, both decoders in one JMH invocation pinned to one core (`taskset -c 6`, which
+  shrinks the error bars from ~10% to <1%): enwiki -9 907 ± 4 vs 1595 ± 3 ms (1.76x), enwiki -1 1047 ± 8 vs
+  1799 ± 35 (1.72x), binary -9 1301 ± 6 vs 2194 ± 286 (1.69x) (`jmh-step3.json`). Full file: 48.12 s =
+  69.9 MB/s (1.80x the previous decoder, 1.54x native `bzip2 -dc`), CRC-32 matches.
+- Quality gates at the end of step 3: full `mvn test` green, `checkstyle:check`, `pmd:check`, `apache-rat:check`
+  clean, SpotBugs findings identical to master (none in the bzip2 package).
+- Not pursued: `FAST_BITS` 11/12 (the slow Huffman path is 2% of samples at 10, below the benchmark noise),
+  a two-level MTF list (the MTF shift loop is ~9%, mostly for small moves where it is already a few
+  instructions).
