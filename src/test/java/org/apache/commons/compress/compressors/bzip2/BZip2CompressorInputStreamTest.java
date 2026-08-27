@@ -28,7 +28,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -39,7 +38,6 @@ import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream.Data;
-import org.apache.commons.compress.utils.BitInputStream;
 import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -76,7 +74,7 @@ class BZip2CompressorInputStreamTest extends AbstractTest {
      * </p>
      * @param codeLength The code length to use for each symbol in each group; must be in [0, 31]
      */
-    private BitInputStream prepareDecodingTables(final int codeLength) {
+    private BZip2BitReader prepareDecodingTables(final int codeLength) {
         assertTrue(0 <= codeLength && codeLength <= 31, "codeLength must be between 0 and 31");
 
         final ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -108,7 +106,7 @@ class BZip2CompressorInputStreamTest extends AbstractTest {
             stream.write(codeLength << 3);
         }
 
-        return new BitInputStream(new ByteArrayInputStream(stream.toByteArray()), ByteOrder.BIG_ENDIAN);
+        return new BZip2BitReader(new ByteArrayInputStream(stream.toByteArray()));
     }
 
     @Test
@@ -198,7 +196,7 @@ class BZip2CompressorInputStreamTest extends AbstractTest {
     @ParameterizedTest(name = "code length {0} -> must be rejected")
     @ValueSource(ints = {MIN_CODE_LEN - 1, MAX_CODE_LEN + 1})
     void testRecvDecodingTablesWithOutOfRangeCodeLength(final int codeLength) throws IOException {
-        try (BitInputStream tables = prepareDecodingTables(codeLength)) {
+        try (BZip2BitReader tables = prepareDecodingTables(codeLength)) {
             final Data data = new Data(1);
 
             final CompressorException ex = assertThrows(
@@ -221,14 +219,14 @@ class BZip2CompressorInputStreamTest extends AbstractTest {
     @ParameterizedTest(name = "code length {0} -> accepted and stored")
     @ValueSource(ints = {MIN_CODE_LEN, MAX_CODE_LEN})
     void testRecvDecodingTablesWithValidCodeLength(final int codeLength) throws IOException {
-        try (BitInputStream tables = prepareDecodingTables(codeLength)) {
+        try (BZip2BitReader tables = prepareDecodingTables(codeLength)) {
             final Data data = new Data(1);
             assertDoesNotThrow(() -> BZip2CompressorInputStream.recvDecodingTables(tables, data),
                     "Should accept code length " + codeLength + " within [" + MIN_CODE_LEN + ", " + MAX_CODE_LEN + "]");
             // We encoded 2 Huffman groups; both minLens should equal the encoded codeLength
-            assertEquals(2, data.huffmanDecodersCount, "Expected 2 Huffman groups");
-            assertEquals(codeLength, data.huffmanDecoders[0].getMinLength(), "Group 0 min code length mismatch");
-            assertEquals(codeLength, data.huffmanDecoders[1].getMinLength(), "Group 1 min code length mismatch");
+            assertEquals(2, data.nGroups, "Expected 2 Huffman groups");
+            assertEquals(codeLength, data.minLens[0], "Group 0 min code length mismatch");
+            assertEquals(codeLength, data.minLens[1], "Group 1 min code length mismatch");
         }
     }
 

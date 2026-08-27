@@ -26,13 +26,10 @@ package org.apache.commons.compress.compressors.bzip2;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteOrder;
 import java.util.Arrays;
 
 import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
-import org.apache.commons.compress.huffman.HuffmanDecoder;
-import org.apache.commons.compress.utils.BitInputStream;
 import org.apache.commons.compress.utils.InputStreamStatistics;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.CloseShieldInputStream;
@@ -62,16 +59,28 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         final int[] unzftab = new int[256]; // 1024 byte
 
         /**
-         * Huffman decoding tables.
+         * Huffman decoding tables, one group per {@link BZip2Constants#N_GROUPS}: a lookup table indexed by the next {@link #FAST_BITS} bits of input
+         * (entry = symbol {@code << 8 | code length}, 0 = no code of at most {@link #FAST_BITS} bits matches), and the canonical-code tables for longer codes.
          */
-        final HuffmanDecoder[] huffmanDecoders = new HuffmanDecoder[N_GROUPS];
+        final int[] fastTable = new int[N_GROUPS << FAST_BITS];
+        final int[][] limit = new int[N_GROUPS][MAX_CODE_LEN + 2];
+        final int[][] bias = new int[N_GROUPS][MAX_CODE_LEN + 2];
+        final int[][] perm = new int[N_GROUPS][MAX_ALPHA_SIZE];
+        final int[] minLens = new int[N_GROUPS];
+        final int[] maxLens = new int[N_GROUPS];
         /**
-         * Number of non-null {@link #huffmanDecoders}.
+         * Number of Huffman groups in the current block.
          */
-        int huffmanDecodersCount;
+        int nGroups;
+        /**
+         * Scratch space for building the Huffman tables.
+         */
+        final int[] codeLengths = new int[MAX_ALPHA_SIZE];
+        final int[] lengthCount = new int[MAX_CODE_LEN + 2];
+        final int[] lengthOffset = new int[MAX_CODE_LEN + 2];
 
         final int[] cftab = new int[257]; // 1028 byte
-        final char[] getAndMoveToFrontDecode_yy = new char[256]; // 512 byte
+        final int[] getAndMoveToFrontDecode_yy = new int[256]; // 1024 byte
         // byte
         final byte[] recvDecodingTables_pos = new byte[N_GROUPS]; // 6 byte
         // ---------------
@@ -110,6 +119,18 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
 
     }
 
+    /**
+     * Number of input bits used to index the Huffman lookup tables. Codes of at most this length (the vast majority; encoders emit at most 17 bits and
+     * typical text needs 3-12) are decoded with one table lookup, longer ones fall back to the canonical bit-by-bit decoder.
+     */
+    static final int FAST_BITS = 10;
+
+    /**
+     * The Huffman decoding loop refills its bit buffer when fewer than this many bits are buffered; must be greater than {@link #MAX_CODE_LEN} + 1 so
+     * that a slow-path decode never needs to refill while it has bits left.
+     */
+    private static final int REFILL_THRESHOLD = 25;
+
     private static final int EOF = 0;
 
     private static final int START_BLOCK_STATE = 1;
@@ -125,31 +146,83 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
 
     private static final int NO_RAND_PART_C_STATE = 7;
 
-    private static boolean bsGetBit(final BitInputStream bin) throws IOException {
-        return bsR(bin, 1) != 0;
-    }
-
-    private static int bsGetInt(final BitInputStream bin) throws IOException {
-        return bsR(bin, 32);
-    }
-
-    private static char bsGetUByte(final BitInputStream bin) throws IOException {
-        return (char) bsR(bin, 8);
-    }
-
     /**
-     * read bits from the input stream
-     *
-     * @param n The number of bits to read, must not exceed 32?.
-     * @return The requested bits combined into an int.
-     * @throws IOException if an I/O error occurs.
+     * Builds the decoding tables of one Huffman group from {@code data.codeLengths[0..alphaSize)}, with the same validation (and messages) as
+     * {@code org.apache.commons.compress.huffman.HuffmanDecoder}: code lengths must be in {@code [1, MAX_CODE_LEN]} and must not over-subscribe the code
+     * space (Kraft's inequality). Incomplete codes are accepted.
      */
-    private static int bsR(final BitInputStream bin, final int n) throws IOException {
-        final long value = bin.readBits(n);
-        if (value < 0) {
-            throw new CompressorException("Unexpected end of stream");
+    static void buildHuffmanTables(final Data data, final int group, final int alphaSize) throws IOException {
+        final int[] codeLengths = data.codeLengths;
+        // 1) Validate and find min/max lengths, in symbol order.
+        int min = MAX_CODE_LEN;
+        int max = 0;
+        for (int i = 0; i < alphaSize; i++) {
+            final int len = codeLengths[i];
+            if (len < 1 || len > MAX_CODE_LEN) {
+                throw new CompressorException(String.format("Invalid code length at symbol %d: %d (expected in [%d, %d])", i, len, 1, MAX_CODE_LEN));
+            }
+            if (len < min) {
+                min = len;
+            }
+            if (len > max) {
+                max = len;
+            }
         }
-        return (int) value;
+        if (max == 0) {
+            throw new CompressorException("All code lengths are zero");
+        }
+        // 2) Histogram of code lengths and Kraft's inequality.
+        final int[] count = data.lengthCount;
+        Arrays.fill(count, 0);
+        for (int i = 0; i < alphaSize; i++) {
+            count[codeLengths[i]]++;
+        }
+        int availableNodes = 1;
+        for (int len = 1; len <= max; len++) {
+            availableNodes <<= 1;
+            if (count[len] > availableNodes) {
+                throw new CompressorException("Tree contains too many leaf nodes for code length %d: %d leaf nodes, but only %d nodes available", len,
+                        count[len], availableNodes);
+            }
+            availableNodes -= count[len];
+        }
+        // 3) Symbols sorted by (length, symbol); offset[len] ends up pointing at the last symbol of each length.
+        final int[] offset = data.lengthOffset;
+        offset[0] = -1;
+        for (int len = 1; len <= max; len++) {
+            offset[len] = offset[len - 1] + count[len - 1];
+        }
+        final int[] perm = data.perm[group];
+        for (int i = 0; i < alphaSize; i++) {
+            perm[++offset[codeLengths[i]]] = i;
+        }
+        // 4) Largest code of each length and the bias between codes and indices into perm.
+        final int[] limit = data.limit[group];
+        final int[] bias = data.bias[group];
+        int firstCode = 0;
+        for (int len = min; len <= max; len++) {
+            firstCode += count[len];
+            limit[len] = firstCode - 1;
+            bias[len] = limit[len] - offset[len];
+            firstCode <<= 1;
+        }
+        data.minLens[group] = min;
+        data.maxLens[group] = max;
+        // 5) Lookup table for codes of at most FAST_BITS bits: canonical codes are consecutive within a length, in symbol order.
+        final int[] fast = data.fastTable;
+        final int base = group << FAST_BITS;
+        Arrays.fill(fast, base, base + (1 << FAST_BITS), 0);
+        int code = 0;
+        int symbolIndex = 0;
+        for (int len = 1; len <= max && len <= FAST_BITS; len++) {
+            final int n = count[len];
+            for (int k = 0; k < n; k++, code++) {
+                final int entry = perm[symbolIndex++] << 8 | len;
+                final int from = base + (code << FAST_BITS - len);
+                Arrays.fill(fast, from, from + (1 << FAST_BITS - len), entry);
+            }
+            code <<= 1;
+        }
     }
 
     private static void checkBounds(final int checkVal, final int limitExclusive, final String name) throws IOException {
@@ -159,11 +232,6 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         if (checkVal >= limitExclusive) {
             throw new CompressorException("Corrupted input, '%s' value too big", name);
         }
-    }
-
-    private static HuffmanDecoder getHuffmanDecoder(final Data dataShadow, final int zt) throws IOException {
-        checkBounds(zt, dataShadow.huffmanDecodersCount, "zt");
-        return dataShadow.huffmanDecoders[zt];
     }
 
     private static void makeMaps(final Data data) throws IOException {
@@ -194,7 +262,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
 
     // Variables used by setup* methods exclusively
 
-    static void recvDecodingTables(final BitInputStream bin, final Data dataShadow) throws IOException {
+    static void recvDecodingTables(final BZip2BitReader bin, final Data dataShadow) throws IOException {
         final boolean[] inUse = dataShadow.inUse;
         final byte[] pos = dataShadow.recvDecodingTables_pos;
         final byte[] selector = dataShadow.selector;
@@ -204,7 +272,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
 
         /* Receive the mapping table */
         for (int i = 0; i < 16; i++) {
-            if (bsGetBit(bin)) {
+            if (bin.readBits(1) != 0) {
                 inUse16 |= 1 << i;
             }
         }
@@ -214,7 +282,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
             if ((inUse16 & 1 << i) != 0) {
                 final int i16 = i << 4;
                 for (int j = 0; j < 16; j++) {
-                    if (bsGetBit(bin)) {
+                    if (bin.readBits(1) != 0) {
                         inUse[i16 + j] = true;
                     }
                 }
@@ -224,8 +292,8 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         makeMaps(dataShadow);
         final int alphaSize = dataShadow.inUseCount + 2;
         /* Now the selectors */
-        final int nGroups = bsR(bin, 3);
-        final int selectors = bsR(bin, 15);
+        final int nGroups = bin.readBits(3);
+        final int selectors = bin.readBits(15);
         if (selectors < 0) {
             throw new CompressorException("Corrupted input, nSelectors value negative");
         }
@@ -238,7 +306,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
 
         for (int i = 0; i < selectors; i++) {
             int j = 0;
-            while (bsGetBit(bin)) {
+            while (bin.readBits(1) != 0) {
                 j++;
             }
             if (i < MAX_SELECTORS) {
@@ -266,19 +334,19 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         }
 
         /* Now the Huffman coding tables */
+        final int[] codeLengths = dataShadow.codeLengths;
         for (int t = 0; t < nGroups; t++) {
-            final int[] codeLengths = new int[alphaSize];
-            int curr = bsR(bin, 5);
+            int curr = bin.readBits(5);
             for (int i = 0; i < alphaSize; i++) {
-                while (bsGetBit(bin)) {
-                    curr += bsGetBit(bin) ? -1 : 1;
+                while (bin.readBits(1) != 0) {
+                    curr += bin.readBits(1) != 0 ? -1 : 1;
                 }
                 codeLengths[i] = curr;
             }
             // Same limits as in the reference C implementation of bzip2
-            dataShadow.huffmanDecoders[t] = new HuffmanDecoder(codeLengths, 1, MAX_CODE_LEN);
+            buildHuffmanTables(dataShadow, t, alphaSize);
         }
-        dataShadow.huffmanDecodersCount = nGroups;
+        dataShadow.nGroups = nGroups;
     }
 
     /**
@@ -296,7 +364,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     private int blockSize100k;
     private boolean blockRandomised;
     private final CRC crc = new CRC();
-    private BitInputStream bin;
+    private BZip2BitReader bin;
     private final boolean decompressConcatenated;
     private int currentState = START_BLOCK_STATE;
     private int storedBlockCRC;
@@ -343,7 +411,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
      * @throws IOException if {@code in == null}, the stream content is malformed, or an I/O error occurs.
      */
     public BZip2CompressorInputStream(final InputStream in, final boolean decompressConcatenated) throws IOException {
-        this.bin = new BitInputStream(in == System.in ? CloseShieldInputStream.wrap(in) : in, ByteOrder.BIG_ENDIAN);
+        this.bin = new BZip2BitReader(in == System.in ? CloseShieldInputStream.wrap(in) : in);
         this.decompressConcatenated = decompressConcatenated;
         init(true);
         initBlock();
@@ -351,7 +419,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
 
     @Override
     public void close() throws IOException {
-        final BitInputStream inShadow = this.bin;
+        final BZip2BitReader inShadow = this.bin;
         if (inShadow != null) {
             try {
                 inShadow.close();
@@ -363,7 +431,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     }
 
     private boolean complete() throws IOException {
-        this.storedCombinedCRC = bsGetInt(bin);
+        this.storedCombinedCRC = bin.readBits(32);
         this.currentState = EOF;
         this.data = null;
         if (this.storedCombinedCRC != this.computedCombinedCRC) {
@@ -372,6 +440,27 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         // Look for the next .bz2 stream if decompressing
         // concatenated files.
         return !decompressConcatenated || !init(false);
+    }
+
+    /**
+     * Decodes one symbol bit by bit (canonical Huffman decoding): used for codes longer than {@link #FAST_BITS} bits, for prefixes no code claims (the
+     * stream is then corrupt) and near the end of the input. The bit buffer state must have been written back to {@code bin} by the caller.
+     */
+    private int decodeSymbolSlow(final int group) throws IOException {
+        final BZip2BitReader bin = this.bin;
+        final Data dataShadow = this.data;
+        final int[] limit = dataShadow.limit[group];
+        final int maxLen = dataShadow.maxLens[group];
+        int len = dataShadow.minLens[group];
+        int code = bin.readHuffmanBits(len);
+        while (len <= maxLen && code > limit[len]) {
+            code = code << 1 | bin.readHuffmanBits(1);
+            len++;
+        }
+        if (len > maxLen) {
+            throw new CompressorException("Invalid Huffman code: " + code);
+        }
+        return dataShadow.perm[group][code - dataShadow.bias[group][len]];
     }
 
     private void endBlock() throws IOException {
@@ -389,71 +478,110 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     }
 
     private void getAndMoveToFrontDecode() throws IOException {
-        final BitInputStream bin = this.bin;
-        this.origPtr = bsR(bin, 24);
+        final BZip2BitReader bin = this.bin;
+        this.origPtr = bin.readBits(24);
         final Data dataShadow = this.data;
         recvDecodingTables(bin, dataShadow);
         final byte[] ll8 = dataShadow.ll8;
         final int[] unzftab = dataShadow.unzftab;
         final byte[] selector = dataShadow.selector;
         final byte[] seqToUnseq = dataShadow.seqToUnseq;
-        final char[] yy = dataShadow.getAndMoveToFrontDecode_yy;
+        final int[] yy = dataShadow.getAndMoveToFrontDecode_yy;
+        final int[] fast = dataShadow.fastTable;
+        final int nGroups = dataShadow.nGroups;
         final int limitLast = this.blockSize100k * 100000;
         /*
          * Setting up the unzftab entries here is not strictly necessary, but it does save having to do it later in a separate pass, and so saves a block's
          * worth of cache misses.
          */
         for (int i = 256; --i >= 0;) {
-            yy[i] = (char) i;
+            yy[i] = i;
             unzftab[i] = 0;
         }
         int groupPos = G_SIZE - 1;
         final int eob = dataShadow.inUseCount + 1;
         int lastShadow = -1;
-        // Initialize group, selector and huffmanDecoder
+        // Initialize group and selector
         int groupNo = 0;
         int zt = selector[groupNo] & 0xff;
-        HuffmanDecoder currentDecoder = getHuffmanDecoder(dataShadow, zt);
-        int nextSym = currentDecoder.decodeSymbol(bin);
-        while (nextSym != eob) {
-            if (nextSym == RUNA || nextSym == RUNB) {
-                int s = -1;
-                for (int n = 1; true; n <<= 1) {
-                    if (nextSym == RUNA) {
-                        s += n;
-                    } else if (nextSym == RUNB) {
-                        s += n << 1;
-                    } else {
-                        break;
-                    }
-                    if (groupPos == 0) {
-                        groupPos = G_SIZE - 1;
-                        checkBounds(++groupNo, selector.length, "groupNo");
-                        zt = selector[groupNo] & 0xff;
-                        currentDecoder = getHuffmanDecoder(dataShadow, zt);
-                    } else {
-                        groupPos--;
-                    }
-                    nextSym = currentDecoder.decodeSymbol(bin);
+        checkBounds(zt, nGroups, "zt");
+        int fastBase = zt << FAST_BITS;
+        // RUNA/RUNB accumulation state
+        boolean inRun = false;
+        int runLength = -1;
+        int runWeight = 1;
+        boolean first = true;
+        long bitBuffer = bin.bitBuffer;
+        int bitCount = bin.bitCount;
+        try {
+            while (true) {
+                // Every symbol but the first is preceded by the group bookkeeping.
+                if (first) {
+                    first = false;
+                } else if (groupPos == 0) {
+                    groupPos = G_SIZE - 1;
+                    checkBounds(++groupNo, selector.length, "groupNo");
+                    zt = selector[groupNo] & 0xff;
+                    checkBounds(zt, nGroups, "zt");
+                    fastBase = zt << FAST_BITS;
+                } else {
+                    groupPos--;
                 }
-                checkBounds(s, this.data.ll8.length, "s");
-                final int yy0 = yy[0];
-                checkBounds(yy0, seqToUnseq.length, "yy");
-                final byte ch = seqToUnseq[yy0];
-                unzftab[ch & 0xff] += s + 1;
-                final int from = ++lastShadow;
-                lastShadow += s;
-                checkBounds(lastShadow, this.data.ll8.length, "lastShadow");
-                Arrays.fill(ll8, from, lastShadow + 1, ch);
-                if (lastShadow >= limitLast) {
-                    throw new CompressorException("Block overrun while expanding RLE in MTF, %,d exceeds %,d", lastShadow, limitLast);
+                // Decode one symbol.
+                if (bitCount < REFILL_THRESHOLD) {
+                    bin.bitBuffer = bitBuffer;
+                    bin.bitCount = bitCount;
+                    bin.fill();
+                    bitBuffer = bin.bitBuffer;
+                    bitCount = bin.bitCount;
                 }
-            } else {
+                final int nextSym;
+                final int entry = fast[fastBase + (int) (bitBuffer >>> 64 - FAST_BITS)];
+                final int codeLen = entry & 0xff;
+                if (entry != 0 && codeLen <= bitCount) {
+                    nextSym = entry >>> 8;
+                    bitBuffer <<= codeLen;
+                    bitCount -= codeLen;
+                } else {
+                    bin.bitBuffer = bitBuffer;
+                    bin.bitCount = bitCount;
+                    nextSym = decodeSymbolSlow(zt);
+                    bitBuffer = bin.bitBuffer;
+                    bitCount = bin.bitCount;
+                }
+                if (nextSym == RUNA || nextSym == RUNB) {
+                    if (!inRun) {
+                        inRun = true;
+                        runLength = -1;
+                        runWeight = 1;
+                    }
+                    runLength += nextSym == RUNA ? runWeight : runWeight << 1;
+                    runWeight <<= 1;
+                    continue;
+                }
+                if (inRun) {
+                    inRun = false;
+                    checkBounds(runLength, ll8.length, "s");
+                    final int yy0 = yy[0];
+                    checkBounds(yy0, seqToUnseq.length, "yy");
+                    final byte ch = seqToUnseq[yy0];
+                    unzftab[ch & 0xff] += runLength + 1;
+                    final int from = ++lastShadow;
+                    lastShadow += runLength;
+                    checkBounds(lastShadow, ll8.length, "lastShadow");
+                    Arrays.fill(ll8, from, lastShadow + 1, ch);
+                    if (lastShadow >= limitLast) {
+                        throw new CompressorException("Block overrun while expanding RLE in MTF, %,d exceeds %,d", lastShadow, limitLast);
+                    }
+                }
+                if (nextSym == eob) {
+                    break;
+                }
                 if (++lastShadow >= limitLast) {
                     throw new CompressorException("Block overrun in MTF, %,d exceeds %,d", lastShadow, limitLast);
                 }
                 checkBounds(nextSym - 1, yy.length, "nextSym");
-                final char tmp = yy[nextSym - 1];
+                final int tmp = yy[nextSym - 1];
                 checkBounds(tmp, seqToUnseq.length, "yy");
                 unzftab[seqToUnseq[tmp] & 0xff]++;
                 ll8[lastShadow] = seqToUnseq[tmp];
@@ -468,16 +596,10 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
                     System.arraycopy(yy, 0, yy, 1, nextSym - 1);
                 }
                 yy[0] = tmp;
-                if (groupPos == 0) {
-                    groupPos = G_SIZE - 1;
-                    checkBounds(++groupNo, selector.length, "groupNo");
-                    zt = selector[groupNo] & 0xff;
-                    currentDecoder = getHuffmanDecoder(dataShadow, zt);
-                } else {
-                    groupPos--;
-                }
-                nextSym = currentDecoder.decodeSymbol(bin);
             }
+        } finally {
+            bin.bitBuffer = bitBuffer;
+            bin.bitCount = bitCount;
         }
         this.last = lastShadow;
     }
@@ -495,18 +617,18 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
             throw new CompressorException("No InputStream");
         }
         if (!isFirstStream) {
-            bin.clearBitCache();
+            bin.clear();
         }
-        final int magic0 = readNextByte(this.bin);
+        final int magic0 = bin.readByteOrEof();
         if (magic0 == -1 && !isFirstStream) {
             return false;
         }
-        final int magic1 = readNextByte(this.bin);
-        final int magic2 = readNextByte(this.bin);
+        final int magic1 = bin.readByteOrEof();
+        final int magic2 = bin.readByteOrEof();
         if (magic0 != 'B' || magic1 != 'Z' || magic2 != 'h') {
             throw new CompressorException(isFirstStream ? "Stream is not in the BZip2 format" : "Unexpected data after a valid BZip2 stream");
         }
-        final int blockSize = readNextByte(this.bin);
+        final int blockSize = bin.readByteOrEof();
         if (blockSize < '1' || blockSize > '9') {
             throw new CompressorException("BZip2 block size is invalid");
         }
@@ -516,22 +638,22 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     }
 
     private void initBlock() throws IOException {
-        final BitInputStream bin = this.bin;
-        char magic0;
-        char magic1;
-        char magic2;
-        char magic3;
-        char magic4;
-        char magic5;
+        final BZip2BitReader bin = this.bin;
+        int magic0;
+        int magic1;
+        int magic2;
+        int magic3;
+        int magic4;
+        int magic5;
 
         while (true) {
             // Get the block magic bytes.
-            magic0 = bsGetUByte(bin);
-            magic1 = bsGetUByte(bin);
-            magic2 = bsGetUByte(bin);
-            magic3 = bsGetUByte(bin);
-            magic4 = bsGetUByte(bin);
-            magic5 = bsGetUByte(bin);
+            magic0 = bin.readBits(8);
+            magic1 = bin.readBits(8);
+            magic2 = bin.readBits(8);
+            magic3 = bin.readBits(8);
+            magic4 = bin.readBits(8);
+            magic5 = bin.readBits(8);
 
             // If isn't end of stream magic, break out of the loop.
             if (magic0 != 0x17 || magic1 != 0x72 || magic2 != 0x45 || magic3 != 0x38 || magic4 != 0x50 || magic5 != 0x90) {
@@ -556,8 +678,8 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
             this.currentState = EOF;
             throw new CompressorException("Bad block header");
         }
-        this.storedBlockCRC = bsGetInt(bin);
-        this.blockRandomised = bsR(bin, 1) == 1;
+        this.storedBlockCRC = bin.readBits(32);
+        this.blockRandomised = bin.readBits(1) == 1;
 
         /*
          * Allocate data here instead in constructor, so we do not allocate it if the input file is empty.
@@ -625,11 +747,6 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         default:
             throw new CompressorException("Unexpected %s in read0()", currentState);
         }
-    }
-
-    private int readNextByte(final BitInputStream in) throws IOException {
-        final long b = in.readBits(8);
-        return (int) b;
     }
 
     private int setupBlock() throws IOException {
