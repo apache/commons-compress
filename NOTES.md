@@ -74,6 +74,7 @@ java -cp target/test-classes:target/classes:$(cat target/cp.txt) org.apache.comm
 | step 2: packed tt + fused bulk read    |      53.4 |      57.2 |      42.3 |                    54.2 |
 | step 3a: fills, CRC slicing, dead checks |    58.7 |      62.2 |      44.7 |                         |
 | step 3b: multi-chain inverse BWT (paired, pinned) | 74.0 |  64.1 |      51.6 |                    69.9 |
+| step 3d: refill/table-section reads (final)  |  74.6 |      65.5 |      52.1 |                    73.0 |
 | legacy in the same pinned run          |      42.1 |      37.3 |      30.6 |                         |
 | native `bzip2 -dc`                     |         - |         - |         - |                    45.5 |
 
@@ -86,6 +87,17 @@ JFR profile of the baseline on enwiki-64M -9 (top frames): `CRC.compute` 41%, `g
 3%. The CRC share is mostly attribution skid from the dependent `ll8[tPos]`/`tt[tPos]` cache misses whose
 result feeds the CRC table lookup, i.e. the inverse-BWT output path and the Huffman/MTF path each cost
 roughly half.
+
+## Future work (not done)
+
+- Bulk input buffering for sources that support `mark`/`reset` (`BufferedInputStream`, byte arrays): read
+  e.g. 64 KB at a time and reposition the source at the end of the stream with `reset`+`skip`; removes the
+  per-refill `InputStream.read(byte[], int, int)` call (~7% today) but adds a second reader path that the
+  differential harness would have to cover with a mark-supporting input wrapper.
+- The randomised-block path is still byte-at-a-time (it was never fast and no encoder produced such blocks
+  since bzip2 0.9.5).
+- Transparent huge pages (`-XX:+UseTransparentHugePages`) should help the random accesses over the 3.6 MB
+  `tt` at block size 9; a JVM flag, not a code change, so not measured here.
 
 ## Deviations from the previous decoder
 
@@ -145,6 +157,36 @@ roughly half.
   69.9 MB/s (1.80x the previous decoder, 1.54x native `bzip2 -dc`), CRC-32 matches.
 - Quality gates at the end of step 3: full `mvn test` green, `checkstyle:check`, `pmd:check`, `apache-rat:check`
   clean, SpotBugs findings identical to master (none in the bzip2 package).
+- Step 3d (kept, at the threshold): refill the bit buffer when fewer than `FAST_BITS + 1` bits remain (6
+  bytes per refill instead of 4-5), and read the whole table section of a block (bitmap, selectors, code
+  lengths) with the greedy in-block refill plus a leading-ones unary decoder for the selector MTF codes
+  (`BZip2BitReader.readBitsInBlock`, `readUnaryInBlock`; the section precedes the block's Huffman data, so
+  the 80-bit trailer argument covers it). Pinned JMH: 900 ± 6 / 1024 ± 6 / 1289 ± 11 ms vs 907 / 1047 /
+  1301 (-0.8%, -2.2%, -0.9%) (`jmh-step3d.json`). Final full-file run (pinned, machine otherwise idle):
+  46.07 s = 73.0 MB/s, 1.88x the previous decoder and 1.61x native `bzip2 -dc`; CRC-32 `e4469d34` matches.
+  Final gates: full `mvn test`, `checkstyle:check`, `pmd:check`, `apache-rat:check`, `japicmp:cmp` all pass;
+  SpotBugs unchanged versus master.
+- Step 4a (Java 25 check): the identical sources compiled with `--release 25` (scratch build, same JDK 25
+  runtime) give 910 ± 5 / 1038 ± 14 / 1304 ± 16 ms vs 907 / 1047 / 1301 for the `--release 8` build: no
+  difference. The hot loops are plain int/array code, so the bytecode level cannot matter; only new APIs
+  could (see step 4b).
+- Step 3c (tried, reverted): keep the MTF output in a `byte[]` again and let the pointer pass store complete
+  entries (`tt[cftab[b]++] = i << 8 | b`, i.e. each entry carries its successor's byte and the walk starts at
+  `origPtr`), to cut the 4-byte-per-symbol write/read traffic of the packed layout. Pinned JMH: 897 ± 14 /
+  1020 ± 38 / 1297 ± 13 ms vs 907 / 1047 / 1301, i.e. -1%, -2.6%, 0% for 900 KB more memory per decoder.
+  Not worth it (`jmh-step3c.json`).
+- Step 4b (Java 25 APIs, decision): after step 3 the profile is: MTF/Huffman loop ~37%, multi-chain walk
+  19%, inverse-BWT pointer pass 15%, RLE1 output loop 8%, bit-buffer refill 7%, header/table bit reads 4%,
+  CRC 3%. The only parts a newer API could touch are the refill (a `VarHandle` long view instead of the
+  byte-assembly loop; needs an input buffer with 8 bytes of lookahead, i.e. `mark`/`reset` on the source
+  stream to keep the end-of-stream positioning guarantee, plus a fallback path), the CRC (`java.util.zip.CRC32`
+  is intrinsified but computes the reflected CRC; bzip2's is the non-reflected one, so every byte would have
+  to be bit-reversed first, which costs about as much as the sliced CRC itself) and, marginally, the header
+  reads. Their combined share is ~14%, and realistic savings are a third of that. The hot loops themselves
+  (MTF, walk, pointer pass) are scalar int/array code with no Java 9+ counterpart, and the Vector API is an
+  incubator module a library cannot depend on. That is well below the 10-15% bar set for a multi-release
+  jar, so no `src/main/java25` variant is added; the `mark`/`reset` bulk-input idea is Java 8 compatible
+  anyway and listed under future work.
 - Not pursued: `FAST_BITS` 11/12 (the slow Huffman path is 2% of samples at 10, below the benchmark noise),
   a two-level MTF list (the MTF shift loop is ~9%, mostly for small moves where it is already a few
   instructions).

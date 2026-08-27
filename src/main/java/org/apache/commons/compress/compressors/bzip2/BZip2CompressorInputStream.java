@@ -120,10 +120,10 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     static final int FAST_BITS = 10;
 
     /**
-     * The Huffman decoding loop refills its bit buffer when fewer than this many bits are buffered; must be greater than {@link #MAX_CODE_LEN} + 1 so
-     * that a slow-path decode never needs to refill while it has bits left.
+     * The Huffman decoding loop refills its bit buffer when fewer than this many bits are buffered: at least {@link #FAST_BITS} + 1 so that a lookup
+     * table hit never lacks bits (longer codes take the slow path, which refills on its own); the smaller the threshold, the more bytes each refill reads.
      */
-    private static final int REFILL_THRESHOLD = 25;
+    private static final int REFILL_THRESHOLD = FAST_BITS + 1;
 
     private static final int EOF = 0;
 
@@ -266,7 +266,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
 
         /* Receive the mapping table */
         for (int i = 0; i < 16; i++) {
-            if (bin.readBits(1) != 0) {
+            if (bin.readBitsInBlock(1) != 0) {
                 inUse16 |= 1 << i;
             }
         }
@@ -276,7 +276,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
             if ((inUse16 & 1 << i) != 0) {
                 final int i16 = i << 4;
                 for (int j = 0; j < 16; j++) {
-                    if (bin.readBits(1) != 0) {
+                    if (bin.readBitsInBlock(1) != 0) {
                         inUse[i16 + j] = true;
                     }
                 }
@@ -286,8 +286,8 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         makeMaps(dataShadow);
         final int alphaSize = dataShadow.inUseCount + 2;
         /* Now the selectors */
-        final int nGroups = bin.readBits(3);
-        final int selectors = bin.readBits(15);
+        final int nGroups = bin.readBitsInBlock(3);
+        final int selectors = bin.readBitsInBlock(15);
         if (selectors < 0) {
             throw new CompressorException("Corrupted input, nSelectors value negative");
         }
@@ -299,10 +299,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         // and https://sourceware.org/ml/bzip2-devel/2019-q3/msg00007.html
 
         for (int i = 0; i < selectors; i++) {
-            int j = 0;
-            while (bin.readBits(1) != 0) {
-                j++;
-            }
+            final int j = bin.readUnaryInBlock();
             if (i < MAX_SELECTORS) {
                 selectorMtf[i] = (byte) j;
             }
@@ -330,10 +327,10 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         /* Now the Huffman coding tables */
         final int[] codeLengths = dataShadow.codeLengths;
         for (int t = 0; t < nGroups; t++) {
-            int curr = bin.readBits(5);
+            int curr = bin.readBitsInBlock(5);
             for (int i = 0; i < alphaSize; i++) {
-                while (bin.readBits(1) != 0) {
-                    curr += bin.readBits(1) != 0 ? -1 : 1;
+                while (bin.readBitsInBlock(1) != 0) {
+                    curr += bin.readBitsInBlock(1) != 0 ? -1 : 1;
                 }
                 codeLengths[i] = curr;
             }

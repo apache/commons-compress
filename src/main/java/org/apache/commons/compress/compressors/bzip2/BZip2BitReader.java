@@ -181,6 +181,59 @@ final class BZip2BitReader implements Closeable {
     }
 
     /**
+     * Reads {@code n} bits (1..32) inside a block body, refilling greedily.
+     *
+     * @param n number of bits, 1..32.
+     * @return the bits as an unsigned value.
+     * @throws CompressorException if the stream ends before {@code n} bits are available.
+     * @throws IOException         if the underlying stream fails.
+     */
+    int readBitsInBlock(final int n) throws IOException {
+        if (bitCount < n) {
+            fill();
+            if (bitCount < n) {
+                exhausted = true;
+                throw new CompressorException("Unexpected end of stream");
+            }
+        }
+        final int value = (int) (bitBuffer >>> 64 - n);
+        bitBuffer <<= n;
+        bitCount -= n;
+        return value;
+    }
+
+    /**
+     * Reads a unary code inside a block body: the number of 1 bits before the next 0 bit (which is consumed as well).
+     *
+     * @return the number of leading 1 bits.
+     * @throws CompressorException if the stream ends before a 0 bit is found.
+     * @throws IOException         if the underlying stream fails.
+     */
+    int readUnaryInBlock() throws IOException {
+        int ones = 0;
+        while (true) {
+            if (bitCount < 8) {
+                fill();
+                if (bitCount == 0) {
+                    exhausted = true;
+                    throw new CompressorException("Unexpected end of stream");
+                }
+            }
+            final int leading = Long.numberOfLeadingZeros(~bitBuffer);
+            if (leading < bitCount) {
+                // The 0 bit is within the valid bits: consume the ones and the terminating zero.
+                bitBuffer <<= leading + 1;
+                bitCount -= leading + 1;
+                return ones + leading;
+            }
+            // Every valid bit is a 1: consume them all and continue with the next refill.
+            ones += bitCount;
+            bitBuffer = 0;
+            bitCount = 0;
+        }
+    }
+
+    /**
      * Reads one byte (8 bits at the current bit position).
      *
      * @return the byte, or -1 if the stream ends before 8 bits are available.
