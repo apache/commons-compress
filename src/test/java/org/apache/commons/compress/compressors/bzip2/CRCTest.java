@@ -52,6 +52,67 @@ class CRCTest {
     }
 
     @Test
+    void testMixedUpdatesMatchByteUpdate() {
+        final Random rnd = new Random(2);
+        final byte[] data = new byte[100_000];
+        rnd.nextBytes(data);
+        for (int i = 0; i < 20; i++) {
+            final CRC mixed = new CRC();
+            final CRC single = new CRC();
+            final java.io.ByteArrayOutputStream fed = new java.io.ByteArrayOutputStream();
+            int pos = 0;
+            while (pos < data.length) {
+                final int kind = rnd.nextInt(3);
+                if (kind == 0) {
+                    mixed.update(data[pos] & 0xff);
+                    single.update(data[pos] & 0xff);
+                    fed.write(data[pos]);
+                    pos++;
+                } else if (kind == 1) {
+                    final int n = Math.min(data.length - pos, rnd.nextInt(20_000));
+                    mixed.update(data, pos, n);
+                    for (int j = 0; j < n; j++) {
+                        single.update(data[pos + j] & 0xff);
+                    }
+                    fed.write(data, pos, n);
+                    pos += n;
+                } else {
+                    final int n = Math.min(data.length - pos, rnd.nextInt(300));
+                    mixed.update(data[pos] & 0xff, n);
+                    for (int j = 0; j < n; j++) {
+                        single.update(data[pos] & 0xff);
+                        fed.write(data[pos]);
+                    }
+                    pos += n;
+                }
+                if (rnd.nextInt(50) == 0) {
+                    // reading the value in the middle must not disturb the computation
+                    assertEquals(single.getValue(), mixed.getValue());
+                }
+            }
+            assertEquals(single.getValue(), mixed.getValue(), "round " + i);
+            // and the reference: the classic table-driven definition
+            int c = 0xffffffff;
+            for (final byte b : fed.toByteArray()) {
+                c = c << 8 ^ TABLE[(c >>> 24 ^ b) & 0xff];
+            }
+            assertEquals(~c, mixed.getValue(), "round " + i + " vs table");
+        }
+    }
+
+    /** The classic bzip2 CRC table (polynomial 0x04C11DB7, MSB first), the reference for the tests. */
+    private static final int[] TABLE = new int[256];
+    static {
+        for (int i = 0; i < 256; i++) {
+            int c = i << 24;
+            for (int k = 0; k < 8; k++) {
+                c = (c & 0x80000000) != 0 ? c << 1 ^ 0x04C11DB7 : c << 1;
+            }
+            TABLE[i] = c;
+        }
+    }
+
+    @Test
     void testKnownValue() {
         // CRC-32/BZIP2 check value for "123456789".
         final CRC crc = new CRC();
