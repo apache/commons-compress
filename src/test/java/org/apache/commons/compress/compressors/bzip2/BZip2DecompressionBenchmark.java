@@ -49,7 +49,7 @@ import org.openjdk.jmh.annotations.Warmup;
  * <pre>
  * mvn -q test-compile dependency:build-classpath -Dmdep.outputFile=target/cp.txt
  * java -cp target/test-classes:target/classes:$(cat target/cp.txt) org.openjdk.jmh.Main BZip2DecompressionBenchmark \
- *     -jvmArgs -Dbzip2.bench.dir=/path/to/corpora [-p corpus=enwiki-64M.9.bz2] [-p impl=current]
+ *     -jvmArgs -Dbzip2.bench.dir=/path/to/corpora [-p corpus=enwiki-64M.9.bz2] [-p impl=current] [-p concatenated=false]
  * </pre>
  * <p>
  * Reported time is per full decode of the corpus; MB/s of decompressed output = corpus size / time.
@@ -69,6 +69,12 @@ public class BZip2DecompressionBenchmark {
     @Param({ "current", "legacy" })
     private String impl;
 
+    /**
+     * Whether to decompress concatenated streams (the decoder then reads its input in bulk).
+     */
+    @Param({ "false", "true" })
+    private boolean concatenated;
+
     private byte[] compressed;
     private final byte[] buffer = new byte[65536];
 
@@ -86,7 +92,7 @@ public class BZip2DecompressionBenchmark {
 
     private InputStream open() throws IOException {
         final InputStream in = UnsynchronizedByteArrayInputStream.builder().setByteArray(compressed).get();
-        return "legacy".equals(impl) ? new LegacyBZip2Decoder(in) : new BZip2CompressorInputStream(in);
+        return "legacy".equals(impl) ? new LegacyBZip2Decoder(in, concatenated) : new BZip2CompressorInputStream(in, concatenated);
     }
 
     @Setup(Level.Trial)

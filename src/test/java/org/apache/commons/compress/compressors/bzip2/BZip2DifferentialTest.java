@@ -82,18 +82,50 @@ class BZip2DifferentialTest extends AbstractTest {
     }
 
     /**
-     * Hands out bytes from an array and counts them; does not support mark/reset so decoders cannot peek.
+     * Hands out bytes from an array and counts them; mark/reset support is optional (without it decoders cannot read ahead).
      */
     static final class CountingInput extends InputStream {
         private final byte[] data;
+        private final boolean markable;
         private int pos;
+        private int mark = -1;
+        private int markLimit;
 
         CountingInput(final byte[] data) {
+            this(data, false);
+        }
+
+        CountingInput(final byte[] data, final boolean markable) {
             this.data = data;
+            this.markable = markable;
+        }
+
+        @Override
+        public void mark(final int readlimit) {
+            if (markable) {
+                mark = pos;
+                markLimit = readlimit;
+            }
+        }
+
+        @Override
+        public boolean markSupported() {
+            return markable;
         }
 
         int position() {
             return pos;
+        }
+
+        @Override
+        public void reset() throws IOException {
+            if (!markable || mark < 0) {
+                throw new IOException("mark not set");
+            }
+            if (pos - mark > markLimit) {
+                throw new IOException("mark invalidated: read " + (pos - mark) + " bytes, limit " + markLimit);
+            }
+            pos = mark;
         }
 
         @Override
@@ -144,6 +176,10 @@ class BZip2DifferentialTest extends AbstractTest {
     }
 
     static void compare(final Outcome legacy, final Outcome current, final String context) {
+        compare(legacy, current, false, false, context);
+    }
+
+    static void compare(final Outcome legacy, final Outcome current, final boolean concat, final boolean markable, final String context) {
         assertEquals(legacy.error, current.error, context + ": exception");
         assertArrayEquals(legacy.output, current.output, context + ": output");
         assertEquals(legacy.operations, current.operations, context + ": number of operations");
@@ -155,8 +191,10 @@ class BZip2DifferentialTest extends AbstractTest {
         if (legacy.error == null) {
             assertEquals(legacy.consumedInput, current.consumedInput, context + ": bytes consumed from the underlying stream");
         } else {
-            // After a data error inside a block the rewrite may have pulled up to 8 bytes of lookahead more than the previous decoder.
-            assertTrue(current.consumedInput >= legacy.consumedInput && current.consumedInput <= legacy.consumedInput + 8,
+            // After a data error inside a block the rewrite may have pulled up to 8 bytes of lookahead more than the previous decoder; when decompressing
+            // concatenated streams it reads the source in bulk and may be up to a buffer ahead. A source with mark/reset is repositioned exactly.
+            final int slack = concat ? BZip2BitReader.BUFFER_SIZE : markable ? 0 : 8;
+            assertTrue(current.consumedInput >= legacy.consumedInput && current.consumedInput <= legacy.consumedInput + slack,
                     context + ": bytes consumed from the underlying stream after an error: legacy=" + legacy.consumedInput + " current=" + current.consumedInput);
         }
     }
@@ -164,9 +202,9 @@ class BZip2DifferentialTest extends AbstractTest {
     /**
      * Comparison for corrupted input, where the rewrite is allowed to detect corruption earlier (stricter origPtr validation) than the legacy decoder.
      */
-    static void compareRelaxed(final Outcome legacy, final Outcome current, final String context) {
+    static void compareRelaxed(final Outcome legacy, final Outcome current, final boolean concat, final boolean markable, final String context) {
         if (Objects.equals(legacy.error, current.error)) {
-            compare(legacy, current, context);
+            compare(legacy, current, concat, markable, context);
             return;
         }
         assertNotNull(legacy.error, context + ": legacy did not fail but current did: " + current.error);
@@ -211,7 +249,10 @@ class BZip2DifferentialTest extends AbstractTest {
     }
 
     static void differential(final byte[] compressed, final boolean concat, final ReadPattern pattern, final String context) {
-        compare(run(LEGACY, compressed, concat, pattern), run(CURRENT, compressed, concat, pattern), context + " pattern=" + pattern + " concat=" + concat);
+        for (final boolean markable : new boolean[] { false, true }) {
+            compare(run(LEGACY, compressed, concat, pattern, markable), run(CURRENT, compressed, concat, pattern, markable), concat, markable,
+                    context + " pattern=" + pattern + " concat=" + concat + " markable=" + markable);
+        }
     }
 
     static Stream<Arguments> fixtureCases() {
@@ -325,8 +366,12 @@ class BZip2DifferentialTest extends AbstractTest {
      * Runs one decoder over {@code compressed} with the given read pattern and records everything observable.
      */
     static Outcome run(final DecoderFactory factory, final byte[] compressed, final boolean concat, final ReadPattern pattern) {
+        return run(factory, compressed, concat, pattern, false);
+    }
+
+    static Outcome run(final DecoderFactory factory, final byte[] compressed, final boolean concat, final ReadPattern pattern, final boolean markable) {
         final Outcome o = new Outcome();
-        final CountingInput in = new CountingInput(compressed);
+        final CountingInput in = new CountingInput(compressed, markable);
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         CompressorInputStream dec = null;
         try {
@@ -457,6 +502,7 @@ class BZip2DifferentialTest extends AbstractTest {
             assertArrayEquals(INPUTS.get(name), legacy.output, name);
         }
         compare(legacy, run(CURRENT, compressed, false, pattern), name + " blockSize=" + blockSize + " pattern=" + pattern);
+        compare(legacy, run(CURRENT, compressed, false, pattern, true), false, true, name + " blockSize=" + blockSize + " pattern=" + pattern + " markable");
     }
 
     @Test
@@ -481,11 +527,14 @@ class BZip2DifferentialTest extends AbstractTest {
         for (final byte[] g : garbage) {
             final byte[] stream = concat(base, g);
             for (final ReadPattern pattern : MAIN_PATTERNS) {
-                final Outcome legacy = run(LEGACY, stream, false, pattern);
-                // The documented guarantee: with decompressConcatenated == false the underlying stream is left right after the bzip2 stream.
-                assertNull(legacy.error);
-                assertEquals(base.length, legacy.consumedInput, "legacy over-read with garbage " + Arrays.toString(g));
-                compare(legacy, run(CURRENT, stream, false, pattern), "garbage=" + Arrays.toString(g) + " pattern=" + pattern);
+                for (final boolean markable : new boolean[] { false, true }) {
+                    final Outcome legacy = run(LEGACY, stream, false, pattern, markable);
+                    // The documented guarantee: with decompressConcatenated == false the underlying stream is left right after the bzip2 stream.
+                    assertNull(legacy.error);
+                    assertEquals(base.length, legacy.consumedInput, "legacy over-read with garbage " + Arrays.toString(g));
+                    compare(legacy, run(CURRENT, stream, false, pattern, markable), false, markable,
+                            "garbage=" + Arrays.toString(g) + " pattern=" + pattern + " markable=" + markable);
+                }
                 differential(stream, true, pattern, "garbage=" + Arrays.toString(g));
             }
         }
@@ -530,8 +579,12 @@ class BZip2DifferentialTest extends AbstractTest {
             final int index = rnd.nextInt(base.length);
             corrupted[index] ^= (byte) (1 << rnd.nextInt(8));
             final String context = "flip#" + i + " byte " + index + " of " + base.length;
-            compareRelaxed(run(LEGACY, corrupted, false, ReadPattern.BUF_64K), run(CURRENT, corrupted, false, ReadPattern.BUF_64K), context);
-            compareRelaxed(run(LEGACY, corrupted, true, ReadPattern.MIXED), run(CURRENT, corrupted, true, ReadPattern.MIXED), context);
+            for (final boolean markable : new boolean[] { false, true }) {
+                compareRelaxed(run(LEGACY, corrupted, false, ReadPattern.BUF_64K, markable), run(CURRENT, corrupted, false, ReadPattern.BUF_64K, markable),
+                        false, markable, context + " markable=" + markable);
+                compareRelaxed(run(LEGACY, corrupted, true, ReadPattern.MIXED, markable), run(CURRENT, corrupted, true, ReadPattern.MIXED, markable), true,
+                        markable, context + " markable=" + markable);
+            }
         }
     }
 

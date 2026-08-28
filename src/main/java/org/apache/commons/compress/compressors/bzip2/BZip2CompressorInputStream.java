@@ -397,15 +397,33 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
      *
      * @param in                     The InputStream from which this object should be created.
      * @param decompressConcatenated if true, decompress until the end of the input; if false, stop after the first .bz2 stream and leave the input position to
-     *                               point to the next byte after the .bz2 stream
+     *                               point to the next byte after the .bz2 stream. The input is read in blocks of up to 64 KiB when it supports
+     *                               {@link InputStream#mark(int)} (for example a {@link java.io.BufferedInputStream}) or when decompressing concatenated
+     *                               streams, and a few bytes at a time otherwise, so wrap unbuffered sources in a {@link java.io.BufferedInputStream}.
      *
      * @throws IOException if {@code in == null}, the stream content is malformed, or an I/O error occurs.
      */
     public BZip2CompressorInputStream(final InputStream in, final boolean decompressConcatenated) throws IOException {
-        this.bin = new BZip2BitReader(in == System.in ? CloseShieldInputStream.wrap(in) : in);
+        this.bin = new BZip2BitReader(in == System.in ? CloseShieldInputStream.wrap(in) : in, decompressConcatenated);
         this.decompressConcatenated = decompressConcatenated;
-        init(true);
-        initBlock();
+        try {
+            init(true);
+            initBlock();
+        } catch (final IOException | RuntimeException e) {
+            repositionSourceAfter(e);
+            throw e;
+        }
+    }
+
+    /**
+     * After an error, puts a source with mark/reset back at the first byte not consumed (a no-op for other sources).
+     */
+    private void repositionSourceAfter(final Exception cause) {
+        try {
+            bin.repositionSource();
+        } catch (final IOException | RuntimeException e) {
+            cause.addSuppressed(e);
+        }
     }
 
     @Override
@@ -423,6 +441,10 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
 
     private boolean complete() throws IOException {
         this.storedCombinedCRC = bin.readBits(32);
+        if (!decompressConcatenated) {
+            // End of the only stream we read: leave the source right behind it.
+            bin.repositionSource();
+        }
         this.currentState = EOF;
         this.data = null;
         if (this.storedCombinedCRC != this.computedCombinedCRC) {
@@ -504,6 +526,9 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         boolean first = true;
         long bitBuffer = bin.bitBuffer;
         int bitCount = bin.bitCount;
+        // The locals hold the reader state except while the reader itself is working (refill, slow path); on an exception thrown by the reader the
+        // locals are stale and must not be written back, so that the reader state stays exact (source repositioning, compressed count).
+        boolean localsAhead = true;
         try {
             while (true) {
                 // Every symbol but the first is preceded by the group bookkeeping.
@@ -522,9 +547,11 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
                 if (bitCount < REFILL_THRESHOLD) {
                     bin.bitBuffer = bitBuffer;
                     bin.bitCount = bitCount;
+                    localsAhead = false;
                     bin.fill();
                     bitBuffer = bin.bitBuffer;
                     bitCount = bin.bitCount;
+                    localsAhead = true;
                 }
                 final int nextSym;
                 final int entry = fast[fastBase + (int) (bitBuffer >>> 64 - FAST_BITS)];
@@ -536,9 +563,11 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
                 } else {
                     bin.bitBuffer = bitBuffer;
                     bin.bitCount = bitCount;
+                    localsAhead = false;
                     nextSym = decodeSymbolSlow(zt);
                     bitBuffer = bin.bitBuffer;
                     bitCount = bin.bitCount;
+                    localsAhead = true;
                 }
                 if (nextSym <= RUNB) {
                     // RUNA (0) adds the weight, RUNB (1) twice the weight.
@@ -596,8 +625,10 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
                 yy[0] = tmp;
             }
         } finally {
-            bin.bitBuffer = bitBuffer;
-            bin.bitCount = bitCount;
+            if (localsAhead) {
+                bin.bitBuffer = bitBuffer;
+                bin.bitCount = bitCount;
+            }
         }
         this.last = lastShadow;
     }
@@ -696,7 +727,13 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     @Override
     public int read() throws IOException {
         if (this.bin != null) {
-            final int r = read0();
+            final int r;
+            try {
+                r = read0();
+            } catch (final IOException | RuntimeException e) {
+                repositionSourceAfter(e);
+                throw e;
+            }
             count(r < 0 ? -1 : 1);
             return r;
         }
@@ -733,6 +770,9 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
                     dest[offs + n++] = (byte) b;
                 }
             }
+        } catch (final IOException | RuntimeException e) {
+            repositionSourceAfter(e);
+            throw e;
         } finally {
             count(n);
         }

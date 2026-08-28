@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.compress.compressors.CompressorException;
+import org.apache.commons.io.IOUtils;
 
 /**
  * MSB-first bit reader for the bzip2 decoder.
@@ -38,6 +39,12 @@ import org.apache.commons.compress.compressors.CompressorException;
  * symbol of a block the stream always continues with at least 80 bits (end-of-stream magic and combined CRC), so a lookahead of at most 64 bits never crosses
  * the end of the stream.</li>
  * </ul>
+ * <p>
+ * In <em>bulk</em> mode the source is read in chunks of {@value #BUFFER_SIZE} bytes into an internal buffer and the bit buffer is refilled eight bytes at a
+ * time. The source is then read ahead of the decoder, so bulk mode is used when that cannot matter (the decoder consumes the input to its end, i.e.
+ * decompresses concatenated streams) or when the source supports {@link InputStream#mark(int)}: it is then repositioned to the first byte not consumed at
+ * every chunk boundary, at the end of the bzip2 stream and after an error, so that it ends up exactly where the exact mode leaves it.
+ * </p>
  * <p>
  * Hot loops in the decoder copy {@link #bitBuffer} and {@link #bitCount} into locals and write them back before calling {@link #fill()} or any method that
  * may throw.
@@ -60,7 +67,7 @@ final class BZip2BitReader implements Closeable {
     int bitCount;
 
     /**
-     * Bytes pulled from the underlying stream, including buffered ones.
+     * Bytes pulled from the underlying stream, including buffered ones (in both buffers).
      */
     private long bytesRead;
 
@@ -72,8 +79,48 @@ final class BZip2BitReader implements Closeable {
 
     private final byte[] scratch = new byte[8];
 
+    /**
+     * Size of the input buffer in bulk mode.
+     */
+    static final int BUFFER_SIZE = 1 << 16;
+
+    /**
+     * Bulk mode: read the source in chunks (may read ahead of the bzip2 stream).
+     */
+    private final boolean bulk;
+
+    /**
+     * Bulk mode over a source with mark/reset: the source is repositioned to the consumed byte at chunk boundaries, at the end and after errors.
+     */
+    private final boolean repositionable;
+
+    /**
+     * Input buffer (bulk mode only); {@code buf[pos..limit)} is unread. Eight spare bytes so that a refill can always read a whole word.
+     */
+    private final byte[] buf;
+    private int pos;
+    private int limit;
+    private boolean sourceEof;
+    private boolean repositioned;
+
+    /**
+     * Creates a reader that pulls exactly the bytes it needs from the source.
+     */
     BZip2BitReader(final InputStream in) {
+        this(in, false);
+    }
+
+    /**
+     * Creates a reader.
+     *
+     * @param in           the source.
+     * @param consumeToEnd whether the decoder consumes the source to its end (concatenated streams), which allows reading ahead freely.
+     */
+    BZip2BitReader(final InputStream in, final boolean consumeToEnd) {
         this.in = in;
+        this.repositionable = !consumeToEnd && in.markSupported();
+        this.bulk = consumeToEnd || repositionable;
+        this.buf = bulk ? new byte[BUFFER_SIZE + 8] : null;
     }
 
     /**
@@ -95,6 +142,10 @@ final class BZip2BitReader implements Closeable {
      * @throws IOException if the underlying stream fails.
      */
     void fill() throws IOException {
+        if (bulk) {
+            fillBulk();
+            return;
+        }
         int count = bitCount;
         long buffer = bitBuffer;
         while (count <= 56) {
@@ -113,9 +164,51 @@ final class BZip2BitReader implements Closeable {
     }
 
     /**
+     * Greedy refill in bulk mode: ORs a whole 8-byte word into the bit buffer but only consumes as many bytes as fit. The bits of the partially
+     * consumed byte land below the valid region; that is harmless, because nothing reads below {@link #bitCount} and every later refill ORs the very
+     * same bits in again from the same, still unread, bytes.
+     */
+    private void fillBulk() throws IOException {
+        final byte[] buf = this.buf;
+        while (bitCount <= 56) {
+            final int pos = this.pos;
+            final int available = limit - pos;
+            if (available >= 8) {
+                final long w = (long) buf[pos] << 56 | (long) (buf[pos + 1] & 0xff) << 48 | (long) (buf[pos + 2] & 0xff) << 40
+                        | (long) (buf[pos + 3] & 0xff) << 32 | (long) (buf[pos + 4] & 0xff) << 24 | (buf[pos + 5] & 0xff) << 16
+                        | (buf[pos + 6] & 0xff) << 8 | buf[pos + 7] & 0xff;
+                final int k = 64 - bitCount >>> 3;
+                bitBuffer |= w >>> bitCount;
+                this.pos = pos + k;
+                bitCount += k << 3;
+                return;
+            }
+            if (available > 0) {
+                // Tail of a chunk: byte by byte, so that a chunk is only ever replaced once it is empty.
+                while (bitCount <= 56 && this.pos < limit) {
+                    bitBuffer |= (long) (buf[this.pos++] & 0xff) << 56 - bitCount;
+                    bitCount += 8;
+                }
+            } else if (!refillBuffer()) {
+                return;
+            }
+        }
+    }
+
+    /**
      * Lazily reads exactly the bytes needed to have {@code n} bits buffered, stopping silently at end of input.
      */
     private void fillLazy(final int n) throws IOException {
+        if (bulk) {
+            while (bitCount < n) {
+                if (pos >= limit && !refillBuffer()) {
+                    return;
+                }
+                bitBuffer |= (long) (buf[pos++] & 0xff) << 56 - bitCount;
+                bitCount += 8;
+            }
+            return;
+        }
         while (bitCount < n) {
             final int b = in.read();
             if (b < 0) {
@@ -128,12 +221,78 @@ final class BZip2BitReader implements Closeable {
     }
 
     /**
+     * Bulk mode: reads the next chunk of the source into the (empty) buffer.
+     *
+     * @return false if the source is exhausted.
+     */
+    private boolean refillBuffer() throws IOException {
+        if (sourceEof) {
+            return false;
+        }
+        // Bytes the new chunk must exceed to make progress (the lookahead bytes read again below).
+        int reread = 0;
+        if (repositionable) {
+            // Put the source at the first byte not consumed yet (the whole bytes of lookahead in the bit buffer are dropped and read again), then mark
+            // it so that it can be brought back there when the bzip2 stream ends.
+            reread = bitCount >>> 3;
+            if (limit > 0) {
+                in.reset();
+                IOUtils.skipFully(in, limit - reread);
+            }
+            dropLookaheadBytes();
+            in.mark(BUFFER_SIZE);
+        }
+        pos = 0;
+        limit = 0;
+        while (limit <= reread) {
+            final int n = in.read(buf, limit, BUFFER_SIZE - limit);
+            if (n <= 0) {
+                sourceEof = true;
+                break;
+            }
+            bytesRead += n;
+            limit += n;
+        }
+        return limit > 0;
+    }
+
+    /**
+     * Drops the whole bytes of lookahead from the bit buffer, keeping only the bits of the partially consumed byte; adjusts {@link #bytesRead}
+     * accordingly.
+     */
+    private void dropLookaheadBytes() {
+        final int lookaheadBytes = bitCount >>> 3;
+        bytesRead -= lookaheadBytes;
+        bitCount -= lookaheadBytes << 3;
+        bitBuffer = bitCount == 0 ? 0 : bitBuffer & -1L << 64 - bitCount;
+    }
+
+    /**
+     * Repositions a source with mark/reset to the first byte not consumed (see the class comment). Called at the end of a bzip2 stream and after an
+     * error; a no-op for other sources, after a failed read (the source is then at its end, as before) and when called again.
+     *
+     * @throws IOException if the source fails to reposition.
+     */
+    void repositionSource() throws IOException {
+        if (!repositionable || exhausted || repositioned || limit == 0) {
+            return;
+        }
+        repositioned = true;
+        in.reset();
+        IOUtils.skipFully(in, pos - (bitCount >>> 3));
+        bytesRead -= limit - pos;
+        limit = 0;
+        pos = 0;
+        dropLookaheadBytes();
+    }
+
+    /**
      * Gets the number of bytes of the underlying stream consumed so far, {@code ceil(bits consumed / 8)}, independent of how many bytes are buffered.
      *
      * @return bytes consumed.
      */
     long getBytesRead() {
-        return exhausted ? bytesRead : bytesRead - (bitCount >>> 3);
+        return exhausted ? bytesRead : bytesRead - (limit - pos) - (bitCount >>> 3);
     }
 
     /**

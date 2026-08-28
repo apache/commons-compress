@@ -74,7 +74,8 @@ java -cp target/test-classes:target/classes:$(cat target/cp.txt) org.apache.comm
 | step 2: packed tt + fused bulk read    |      53.4 |      57.2 |      42.3 |                    54.2 |
 | step 3a: fills, CRC slicing, dead checks |    58.7 |      62.2 |      44.7 |                         |
 | step 3b: multi-chain inverse BWT (paired, pinned) | 74.0 |  64.1 |      51.6 |                    69.9 |
-| step 3d: refill/table-section reads (final)  |  74.6 |      65.5 |      52.1 |                    73.0 |
+| step 3d: refill/table-section reads          |  74.6 |      65.5 |      52.1 |                    73.0 |
+| step 5: bulk input for markable/concatenated sources | 74.7 |  66.2 |      54.0 |                         |
 | legacy in the same pinned run          |      42.1 |      37.3 |      30.6 |                         |
 | native `bzip2 -dc`                     |         - |         - |         - |                    45.5 |
 
@@ -90,10 +91,9 @@ roughly half.
 
 ## Future work (not done)
 
-- Bulk input buffering for sources that support `mark`/`reset` (`BufferedInputStream`, byte arrays): read
-  e.g. 64 KB at a time and reposition the source at the end of the stream with `reset`+`skip`; removes the
-  per-refill `InputStream.read(byte[], int, int)` call (~7% today) but adds a second reader path that the
-  differential harness would have to cover with a mark-supporting input wrapper.
+- Bulk input buffering for sources that neither support `mark`/`reset` nor are consumed to the end (a bare
+  `FileInputStream` with `decompressConcatenated=false`): not possible without over-reading; wrap such
+  sources in a `BufferedInputStream` (which is markable and therefore gets the bulk path).
 - The randomised-block path is still byte-at-a-time (it was never fast and no encoder produced such blocks
   since bzip2 0.9.5).
 - Transparent huge pages (`-XX:+UseTransparentHugePages`) should help the random accesses over the 3.6 MB
@@ -187,6 +187,34 @@ roughly half.
   incubator module a library cannot depend on. That is well below the 10-15% bar set for a multi-release
   jar, so no `src/main/java25` variant is added; the `mark`/`reset` bulk-input idea is Java 8 compatible
   anyway and listed under future work.
+- Step 4c (measured, scratch only, not committed): two variants of `BZip2BitReader` with a 64 KB internal
+  input buffer, refilled 8 bytes at a time: A assembles the long from bytes by hand (Java 8), B uses
+  `MethodHandles.byteArrayViewVarHandle(long[].class, BIG_ENDIAN)` (`--release 9`). Both over-read the source,
+  so they are valid only where positioning does not matter (`decompressConcatenated=true`, or with
+  `mark`/`reset`). Pinned JMH vs the tree's 900 / 1024 / 1289 ms: A 880 ± 12 / 980 ± 8 / 1248 ± 18 (-2 to -4%),
+  B 874 ± 6 / 997 ± 6 / 1223 ± 5 (-3 to -5%); A vs B is within ±2% with mixed sign, so the VarHandle itself
+  buys nothing measurable and the whole gain is the bulk input read. Where it does matter is an unbuffered
+  source: on `Files.newInputStream` (warm, 64 MiB -9) the tree does 33.9 MB/s vs 71.1 when the caller wraps
+  it in a `BufferedInputStream`; A/B do 75 MB/s either way (the old decoder: 7.5 vs 37.0). Conclusion: a
+  Java 8 internal buffer for the cases where over-reading is allowed is worth doing as a follow-up; a Java 9+
+  variant is not (`jmh-step4-variantA.json`, `jmh-step4-variantB.json`).
+- Step 5 (bulk input, Java 8): `BZip2BitReader` gains a bulk mode with a 64 KB input buffer and 8-byte refills
+  (the variant A code from step 4c). It is used when reading ahead of the bzip2 stream cannot matter, i.e.
+  `decompressConcatenated=true` (the input is consumed to its end), and when the source supports
+  `mark`/`reset` (`BufferedInputStream`, byte-array streams): the source is then re-synchronised to the
+  first unconsumed byte at every chunk boundary (`reset`, `skip`, drop the whole lookahead bytes from the bit
+  buffer, `mark`, read the next chunk), at the end of the bzip2 stream and after an exception, so it ends up
+  exactly where the exact reader leaves it, including after data errors (the exact reader may be up to 8
+  bytes ahead there). Other sources keep the exact reader. The differential harness runs every case with a
+  markable and a non-markable input; for markable inputs it demands the exact source position even after
+  errors, which caught a stale write-back of the MTF loop's local bit-buffer copy after an exception from
+  the slow Huffman path (the reader then under-counted the consumed bits; now the write-back is skipped
+  while the reader owns the state). Also found on the way: re-syncing at a chunk boundary must keep reading
+  until the chunk holds more than the re-read lookahead bytes, or a source with only those bytes left is
+  re-read forever. Pinned JMH, byte-array source (markable), `concatenated=false`: 899 ± 9 / 1013 ± 6 /
+  1243 ± 8 ms vs 900 / 1024 / 1289 (`jmh-step5.json`); a `BufferedInputStream` over the 64 MiB file: 73.4 MB/s
+  (71.1 with the exact reader); an unbuffered `Files.newInputStream` is unchanged at 33.5 MB/s (not markable).
+  `concatenated=true` (bulk without re-syncing): 905 ± 7 / 1022 ± 6 / 1246 ± 9 ms (`jmh-step5-concat.json`).
 - Not pursued: `FAST_BITS` 11/12 (the slow Huffman path is 2% of samples at 10, below the benchmark noise),
   a two-level MTF list (the MTF shift loop is ~9%, mostly for small moves where it is already a few
   instructions).

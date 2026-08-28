@@ -30,8 +30,9 @@ import org.apache.commons.io.input.UnsynchronizedByteArrayInputStream;
 /**
  * Decodes one {@code .bz2} file held in memory, reports wall time, throughput and a CRC-32 of the output.
  * <p>
- * Usage: {@code BZip2DecodeMain <file.bz2> [current|legacy] [repeats]}. Compare the CRC with {@code bzip2 -dc file | python3 -c "import sys,zlib;
- * print('%08x' % (zlib.crc32(sys.stdin.buffer.read()) & 0xffffffff))"} (or any CRC-32 tool).
+ * Usage: {@code BZip2DecodeMain <file.bz2> [current|legacy|current-concat|legacy-concat] [repeats]} ({@code -concat}: decompress concatenated
+ * streams). Compare the CRC with {@code bzip2 -dc file | python3 -c "import sys,zlib; print('%08x' % (zlib.crc32(sys.stdin.buffer.read()) & 0xffffffff))"}
+ * (or any CRC-32 tool).
  * </p>
  */
 public final class BZip2DecodeMain {
@@ -60,7 +61,8 @@ public final class BZip2DecodeMain {
 
     private static InputStream open(final byte[] compressed, final String impl) throws IOException {
         final InputStream in = UnsynchronizedByteArrayInputStream.builder().setByteArray(compressed).get();
-        return "legacy".equals(impl) ? new LegacyBZip2Decoder(in) : new BZip2CompressorInputStream(in);
+        final boolean concat = impl.endsWith("-concat");
+        return impl.startsWith("legacy") ? new LegacyBZip2Decoder(in, concat) : new BZip2CompressorInputStream(in, concat);
     }
 
     private BZip2DecodeMain() {
