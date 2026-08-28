@@ -384,7 +384,8 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
      * Constructs a new BZip2CompressorInputStream which decompresses bytes read from the specified stream. This doesn't support decompressing concatenated .bz2
      * files.
      *
-     * @param in The InputStream from which this object should be created.
+     * @param in The InputStream from which this object should be created. If it supports {@link InputStream#mark(int)} its mark is used internally (see
+     *           {@link #BZip2CompressorInputStream(InputStream, boolean)}).
      * @throws IOException          if the stream content is malformed or an I/O error occurs.
      * @throws NullPointerException if {@code in == null}.
      */
@@ -400,6 +401,8 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
      *                               point to the next byte after the .bz2 stream. The input is read in blocks of up to 64 KiB when it supports
      *                               {@link InputStream#mark(int)} (for example a {@link java.io.BufferedInputStream}) or when decompressing concatenated
      *                               streams, and a few bytes at a time otherwise, so wrap unbuffered sources in a {@link java.io.BufferedInputStream}.
+     *                               Note that the input's mark is used internally in the former case: a mark set by the caller before constructing this
+     *                               stream is not preserved.
      *
      * @throws IOException if {@code in == null}, the stream content is malformed, or an I/O error occurs.
      */

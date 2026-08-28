@@ -43,7 +43,10 @@ import org.apache.commons.io.IOUtils;
  * In <em>bulk</em> mode the source is read in chunks of {@value #BUFFER_SIZE} bytes into an internal buffer and the bit buffer is refilled eight bytes at a
  * time. The source is then read ahead of the decoder, so bulk mode is used when that cannot matter (the decoder consumes the input to its end, i.e.
  * decompresses concatenated streams) or when the source supports {@link InputStream#mark(int)}: it is then repositioned to the first byte not consumed at
- * every chunk boundary, at the end of the bzip2 stream and after an error, so that it ends up exactly where the exact mode leaves it.
+ * every chunk boundary, at the end of the bzip2 stream and after an error, so that it ends up exactly where the exact mode leaves it. Each chunk is
+ * bracketed by its own {@code mark(BUFFER_SIZE)}, and never more than {@value #BUFFER_SIZE} bytes are read before the mark is reset to or replaced, so
+ * the mark limit is honoured; a source that invalidates its mark anyway makes {@code reset()} throw an {@link IOException} (no data is decoded wrongly, only
+ * the source position is lost). Because the source's single mark is used, a mark set by the caller beforehand is not preserved.
  * </p>
  * <p>
  * Hot loops in the decoder copy {@link #bitBuffer} and {@link #bitCount} into locals and write them back before calling {@link #fill()} or any method that
