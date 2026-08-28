@@ -99,6 +99,20 @@ roughly half.
 - Transparent huge pages (`-XX:+UseTransparentHugePages`) should help the random accesses over the 3.6 MB
   `tt` at block size 9; a JVM flag, not a code change, so not measured here.
 
+## Port to libbzip2 (C), uncommitted in `~/mounts/ocean/work/others/bzip2`
+
+The same three ideas were applied to bzip2 1.0.8 (`decompress.c`, `bzlib.c`, `crctable.c`, `huffman.c`,
+`bzlib_private.h`; left uncommitted there): per-group 10-bit Huffman lookup tables with a fall-back to the
+original resumable bit-by-bit loop (`GET_MTF_VAL`), the 8-chain inverse BWT into a materialised block buffer
+with the RLE1 loop streaming from it (randomised blocks and "small" mode keep the old paths), the block CRC
+by slicing-by-8 over each output slice, and the bit buffer / input pointer of `BZ2_decompress` kept in
+locals with a single write-back. Verified against the original binary on 109 inputs (stdout hash, exit code,
+stderr) and, through the library API with 1-byte input/output slices, against the original library on all
+generated valid, truncated and corrupt inputs (0 differences), plus `make test`. Pinned timings of
+`bzip2 -dc > /dev/null` (s): enwiki -9 1.44 -> 1.15 (tables) -> 0.94 (unwind + CRC) -> 0.91 (locals);
+enwiki -1 1.38 -> 1.01 -> 1.02 -> 0.99; binary -9 1.86 -> 1.45 -> 1.23 -> 1.20; full 3.4 GB file 74 -> 44.8 s.
+The Java decoder and the patched C library end up within a few percent of each other.
+
 ## Deviations from the previous decoder
 
 - After an exception caused by *corrupt* (not truncated) data inside a block, the underlying input stream
