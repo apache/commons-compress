@@ -438,7 +438,6 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
             } finally {
                 this.data = null;
                 this.bin = null;
-                this.crc.release();
             }
         }
     }
@@ -451,7 +450,6 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         }
         this.currentState = EOF;
         this.data = null;
-        this.crc.release();
         if (this.storedCombinedCRC != this.computedCombinedCRC) {
             throw new CompressorException("BZip2 CRC error");
         }

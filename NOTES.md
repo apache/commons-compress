@@ -76,8 +76,6 @@ java -cp target/test-classes:target/classes:$(cat target/cp.txt) org.apache.comm
 | step 3b: multi-chain inverse BWT (paired, pinned) | 74.0 |  64.1 |      51.6 |                    69.9 |
 | step 3d: refill/table-section reads          |  74.6 |      65.5 |      52.1 |                    73.0 |
 | step 5: bulk input for markable/concatenated sources | 74.7 |  66.2 |      54.0 |                         |
-| step 6: CRC via the CRC32 intrinsic (final)  |  79.2 |      68.6 |      54.7 |                    76.5 |
-| legacy, full file, same pinned session       |       |           |           |                    39.5 |
 | legacy in the same pinned run          |      42.1 |      37.3 |      30.6 |                         |
 | native `bzip2 -dc`                     |         - |         - |         - |                    45.5 |
 
@@ -231,26 +229,6 @@ The Java decoder and the patched C library end up within a few percent of each o
   1243 ± 8 ms vs 900 / 1024 / 1289 (`jmh-step5.json`); a `BufferedInputStream` over the 64 MiB file: 73.4 MB/s
   (71.1 with the exact reader); an unbuffered `Files.newInputStream` is unchanged at 33.5 MB/s (not markable).
   `concatenated=true` (bulk without re-syncing): 905 ± 7 / 1022 ± 6 / 1246 ± 9 ms (`jmh-step5-concat.json`).
-- Step 6 (CRC via the JDK intrinsic, user's suggestion): `java.util.zip.CRC32` is a HotSpot intrinsic
-  (carry-less multiplication), but it computes the reflected CRC-32 while bzip2's is the non-reflected one
-  with the same polynomial, related by `bzip2(M) = reverse32(crc32(reverse8(M)))`. `CRC` now owns a `CRC32`
-  and feeds it bit-reversed bytes: bulk slices are reversed eight at a time with three mask/shift steps
-  through `ByteBuffer` views into an 8 KB buffer, single-byte and run updates append to that buffer and
-  are flushed in bulk, so no path pays an intrinsic call per byte; the 256-entry table literal is gone.
-  Micro-benchmark per MiB: slicing-by-8 589 us, table reflect + CRC32 437, SWAR reflect + CRC32 362 (the
-  intrinsic alone: 63; CRC32C: 35); a byte-wise SWAR loop is not auto-vectorised (1311). In the decoder the
-  details mattered a lot: a `ByteBuffer.wrap` per call costs more than the whole CRC (1203 / 961 ms at
-  -1 / -9), the default big-endian order adds a byte swap per word (1060 / 848), a hand-assembled long is
-  not merged into one load by C2 (1087 / 906), and the plain table reflection gives 1034 / 848. The kept
-  version caches the view of the caller's array in native byte order: pinned JMH, same session, old vs new
-  CRC: enwiki -1 1009 -> 991 ms (-1.8%), enwiki -9 881 -> 842 (-4.4%). The compressor, which shares `CRC`,
-  is unchanged (6.7 s for 64 MiB at -9 either way). One more lesson: releasing the cached reference in
-  `reset()` (once per block) cost 14% at -9 (967 ms) and nothing at -1, and doing it in `getValue()`
-  instead cost 1.5%: an inlining cliff in the `read` -> `initBlock` -> `reset` chain, not real work. The
-  reference is therefore released only at the end of the stream and on `close()` (`CRC.release()`).
-  Final pinned numbers: enwiki -9 848 ms (79.2 MB/s), enwiki -1 978 (68.6), binary -9 1228 (54.7)
-  (`jmh-step6.json`); full file 43.98 s = 76.5 MB/s, against 85.25 s = 39.5 MB/s for the previous decoder
-  in the same pinned session (1.94x), CRC-32 matches.
 - Not pursued: `FAST_BITS` 11/12 (the slow Huffman path is 2% of samples at 10, below the benchmark noise),
   a two-level MTF list (the MTF shift loop is ~9%, mostly for small moves where it is already a few
   instructions).
