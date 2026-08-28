@@ -20,12 +20,15 @@ package org.apache.commons.compress.archivers.zip;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.channels.NonWritableChannelException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.StandardOpenOption;
 import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
 
@@ -76,5 +79,21 @@ class ZipArchiveOutputStreamTest extends AbstractTempDirTest {
             outputStream.setEncoding(null);
             assertEquals(Charset.defaultCharset().name(), outputStream.getEncoding());
         }
+    }
+
+    @Test
+    void testOpenFileWithOptions() throws IOException {
+        ZipArchiveOutputStream out = ZipArchiveOutputStream.builder()
+                .setFile(createTempFile())
+                .setOpenOptions(StandardOpenOption.READ, StandardOpenOption.DELETE_ON_CLOSE)
+                .get();
+        ZipArchiveEntry entry = new ZipArchiveEntry("test.txt");
+        assertThrows(NonWritableChannelException.class, () -> out.putArchiveEntry(entry));
+    }
+
+    @Test
+    void testReportMissingOutputStreamUsingBuilder() {
+        IOException exception = assertThrows(IOException.class, () -> ZipArchiveOutputStream.builder().get());
+        assertEquals("No output stream available", exception.getMessage());
     }
 }
