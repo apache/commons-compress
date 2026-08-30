@@ -99,6 +99,36 @@ roughly half.
 - Transparent huge pages (`-XX:+UseTransparentHugePages`) should help the random accesses over the 3.6 MB
   `tt` at block size 9; a JVM flag, not a code change, so not measured here.
 
+## Compression (step 7): micro-level changes to the encoder, output byte-identical
+
+Native `bzip2 -9` compresses the 64 MiB text in 4.27 s (15.7 MB/s); the Java encoder took 6.85 s. JFR at -9:
+`BlockSort.mainSimpleSort` 41% (the inlined `mainGtU` rotation compare), `mainQSort3` 21%, `mainSort` 10%,
+`generateMTFValues` 5%, the Huffman cost fitting (`sendMTFValues1`) 5%, `CRC.update(int, repeat)` 4%, the
+per-byte RLE1 entry (`write0`) 2%. All sort methods are C2-compiled (no huge-method cliff). Harness:
+`LegacyBZip2Encoder` + `LegacyBlockSort` (verbatim copies) and `BZip2CompressionDifferentialTest` (110 cases:
+generated inputs and fixtures at block sizes 1 and 9, four write patterns; compressed bytes must be identical
+and must round-trip), `BZip2CompressionBenchmark` (JMH single shot, 64 MiB text and binary, -9 and -1).
+Single-shot runs of ~6 s vary by 3-5% between sessions even pinned, so only consistent moves across all four
+combinations count.
+
+- Change 1: `mainSimpleSort` compares the first six bytes of two rotations as one word (`ByteBuffer.getLong`
+  on the block, top 48 bits, unsigned compare = lexicographic order) and then four bytes plus the four
+  quadrant values per step as an `int` and a packed `long`, deciding by the first differing element in the
+  original interleaved order (byte k before quadrant k, via leading-zero counts). `NUM_OVERSHOOT_BYTES`
+  20 -> 32 for the 8-byte loads (layout only). Assembling the words from byte loads instead of the
+  `ByteBuffer` was both slower (7.05 vs 6.25 s) and, in its first version, wrong for bytes >= 0x80 (an int
+  sub-expression sign-extended into the long) - caught by the differential test. `Buffer.checkIndex` still
+  costs ~13% of samples; there is no Java 8 way around it.
+- Change 2: the six code lengths of a symbol packed into one `long` with 10-bit lanes (a group is at most
+  50 symbols of at most 20 bits, so lanes cannot overflow), so the cost of a group is one load and one add
+  per symbol instead of six; `write(byte[], int, int)` runs the RLE1 state machine with the run in locals.
+- Timings (ms, single shot, pinned; baseline / change 1 / change 2): enwiki -9 6458 / 6253 / 5999;
+  binary -9 6840 / 6348 / 5973; enwiki -1 5648 / 5322 / 5089; binary -1 6045 / 5645 / 5739. Paired run of
+  the final state, legacy vs current in one session: 6522 vs 6116, 6593 vs 6218, 5696 vs 5134, 6114 vs 5865
+  (-6%, -6%, -10%, -4%; `jmh-compress-final.json`). The remaining time is the sort's branch mispredictions
+  and dependent loads, which need a different sorting algorithm (or parallel blocks) rather than
+  micro-optimisation; the Java encoder is still ~1.4x slower than native bzip2.
+
 ## Port to libbzip2 (C), uncommitted in `~/mounts/ocean/work/others/bzip2`
 
 The same three ideas were applied to bzip2 1.0.8 (`decompress.c`, `bzlib.c`, `crctable.c`, `huffman.c`,
