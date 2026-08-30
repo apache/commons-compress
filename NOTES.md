@@ -129,6 +129,28 @@ combinations count.
   and dependent loads, which need a different sorting algorithm (or parallel blocks) rather than
   micro-optimisation; the Java encoder is still ~1.4x slower than native bzip2.
 
+## Compression (step 8, experiment): suffix-array rotation sort
+
+`SuffixArraySort` (SA-IS, Nong/Zhang/Chan induced sorting, linear time, textbook version with explicit type
+and bucket arrays) on the doubled block plus a sentinel: the suffixes of `B·B` that start in the first half,
+truncated to `n`, are the rotations of `B`, so filtering the suffix array gives bzip2's cyclic order without a
+cyclic comparison variant. Selected per stream by the system property
+`org.apache.commons.compress.bzip2.suffixArraySort`. Correct: identical compressed bytes to the original
+sort on every aperiodic input (27 cases against the original encoder and a naive rotation sort); for
+periodic blocks (equal rotations) only the origin pointer differs and the stream round-trips. One
+integration trap: the encoder reads `block[0]` (the wrap-around byte) which the original `mainSort` sets as
+a side effect. The code was dropped after the measurement (this entry is the record; it lived briefly as
+`SuffixArraySort` behind a system property).
+
+Result: about 2x slower than the block sort. Single shot, 64 MiB, ms: enwiki -9 11589 vs 6088, binary -9
+11584 vs 6023, enwiki -1 9675 vs 5129, binary -1 9617 vs 5784 (`jmh-compress-sais.json`). Sorting takes
+~130 ms per 900 KB block with SA-IS versus ~60 ms with libbzip2's radix + quicksort + shell sort. The
+doubling accounts for roughly half of that; the rest is the induced-sorting passes over 2n+1 ints of text
+and suffix array (~14 MB at -9) plus the LMS naming pass, all random access. A textbook SA-IS in Java does
+not beat a tuned block sort at this block size; only a libsais-class implementation (weeks of work) or
+avoiding the doubling might reach or exceed parity, and neither promises the 2-3x that the C literature
+suggests, because the block sort already exploits the 900 KB block size well. Not adopted.
+
 ## Port to libbzip2 (C), uncommitted in `~/mounts/ocean/work/others/bzip2`
 
 The same three ideas were applied to bzip2 1.0.8 (`decompress.c`, `bzlib.c`, `crctable.c`, `huffman.c`,
