@@ -27,6 +27,7 @@ package org.apache.commons.compress.compressors.bzip2;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.concurrent.ExecutorService;
 
 import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
@@ -381,6 +382,16 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     private BZip2CompressorInputStream.Data data;
 
     /**
+     * Concurrent block decoder; non-null only for streams created with the {@link ExecutorService} constructor, which then delegates to it.
+     */
+    private ParallelBZip2Decoder parallel;
+
+    /**
+     * Reusable buffer of the single-byte {@link #read()} in the concurrent mode.
+     */
+    private byte[] oneByte;
+
+    /**
      * Constructs a new BZip2CompressorInputStream which decompresses bytes read from the specified stream. This doesn't support decompressing concatenated .bz2
      * files.
      *
@@ -407,6 +418,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
      * @throws IOException if {@code in == null}, the stream content is malformed, or an I/O error occurs.
      */
     public BZip2CompressorInputStream(final InputStream in, final boolean decompressConcatenated) throws IOException {
+        this.parallel = null;
         this.bin = new BZip2BitReader(in == System.in ? CloseShieldInputStream.wrap(in) : in, decompressConcatenated);
         this.decompressConcatenated = decompressConcatenated;
         try {
@@ -416,6 +428,34 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
             repositionSourceAfter(e);
             throw e;
         }
+    }
+
+    /**
+     * Constructs a new BZip2CompressorInputStream that decompresses the blocks of the stream concurrently on the given {@link ExecutorService}.
+     * <p>
+     * Block boundaries are found by scanning the compressed data for the block magic numbers, the blocks are decompressed in parallel and delivered in
+     * order, and all CRCs are verified as usual, so valid streams produce exactly the bytes the single-threaded constructors produce. Corrupt or
+     * truncated input still fails with an {@link IOException}, though not necessarily with the same message or at the same output position as the
+     * single-threaded decoder. The input is read ahead of the decompressed position, so this mode does not leave the input positioned right after the
+     * bzip2 stream; use a single-threaded constructor when that matters. Each concurrently decompressed block needs memory for its compressed and
+     * decompressed form (typically a few MiB, more for highly repetitive data).
+     * </p>
+     *
+     * @param in                     The InputStream from which this object should be created.
+     * @param decompressConcatenated if true, decompress until the end of the input; if false, stop after the first .bz2 stream.
+     * @param executor               runs the block decompressions; not shut down or otherwise owned by this stream.
+     * @param maxConcurrentInFlight  the maximum number of blocks read ahead and decompressed concurrently; the executor supplies the threads, this argument
+     *                               bounds the concurrency and the memory held by this stream (each in-flight block needs its compressed form plus up to
+     *                               900 KiB of decompressed output).
+     * @throws IOException              if {@code in == null}, the stream content is malformed, or an I/O error occurs.
+     * @throws IllegalArgumentException if {@code maxConcurrentInFlight < 1}.
+     * @since 1.29.0
+     */
+    public BZip2CompressorInputStream(final InputStream in, final boolean decompressConcatenated, final ExecutorService executor,
+            final int maxConcurrentInFlight)
+            throws IOException {
+        this.parallel = new ParallelBZip2Decoder(in == System.in ? CloseShieldInputStream.wrap(in) : in, decompressConcatenated, executor, maxConcurrentInFlight);
+        this.decompressConcatenated = decompressConcatenated;
     }
 
     /**
@@ -431,6 +471,12 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
 
     @Override
     public void close() throws IOException {
+        if (parallel != null) {
+            final ParallelBZip2Decoder parallelShadow = parallel;
+            parallel = null;
+            parallelShadow.close();
+            return;
+        }
         final BZip2BitReader inShadow = this.bin;
         if (inShadow != null) {
             try {
@@ -641,7 +687,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
      */
     @Override
     public long getCompressedCount() {
-        return bin.getBytesRead();
+        return parallel != null ? parallel.getBytesRead() : bin.getBytesRead();
     }
 
     private boolean init(final boolean isFirstStream) throws IOException {
@@ -729,6 +775,12 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
 
     @Override
     public int read() throws IOException {
+        if (this.parallel != null) {
+            if (oneByte == null) {
+                oneByte = new byte[1];
+            }
+            return read(oneByte, 0, 1) < 0 ? -1 : oneByte[0] & 0xff;
+        }
         if (this.bin != null) {
             final int r;
             try {
@@ -748,6 +800,11 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         IOUtils.checkFromIndexSize(dest, offs, len);
         if (len == 0) {
             return 0;
+        }
+        if (this.parallel != null) {
+            final int n = parallel.read(dest, offs, len);
+            count(n < 0 ? -1 : n);
+            return n;
         }
         if (this.bin == null) {
             throw new CompressorException("Stream closed");

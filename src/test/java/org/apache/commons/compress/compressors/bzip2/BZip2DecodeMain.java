@@ -37,6 +37,7 @@ import org.apache.commons.io.input.UnsynchronizedByteArrayInputStream;
  */
 public final class BZip2DecodeMain {
 
+    @SuppressWarnings("resource")
     public static void main(final String[] args) throws IOException {
         final byte[] compressed = Files.readAllBytes(Paths.get(args[0]));
         final String impl = args.length > 1 ? args[1] : "current";
@@ -57,13 +58,25 @@ public final class BZip2DecodeMain {
             System.out.printf("%s: %,d bytes in %.2f s = %.1f MB/s (output), %.1f MB/s (input), crc32=%08x%n", impl, total, seconds, total / seconds / 1e6,
                     compressed.length / seconds / 1e6, crc.getValue());
         }
+        if (executor != null) {
+            executor.shutdownNow();
+        }
     }
 
     private static InputStream open(final byte[] compressed, final String impl) throws IOException {
         final InputStream in = UnsynchronizedByteArrayInputStream.builder().setByteArray(compressed).get();
+        if (impl.startsWith("parallel")) {
+            final int threads = Integer.parseInt(impl.substring("parallel".length()));
+            if (executor == null) {
+                executor = java.util.concurrent.Executors.newFixedThreadPool(threads);
+            }
+            return new BZip2CompressorInputStream(in, true, executor, 2 * threads);
+        }
         final boolean concat = impl.endsWith("-concat");
         return impl.startsWith("legacy") ? new LegacyBZip2Decoder(in, concat) : new BZip2CompressorInputStream(in, concat);
     }
+
+    private static java.util.concurrent.ExecutorService executor;
 
     private BZip2DecodeMain() {
     }

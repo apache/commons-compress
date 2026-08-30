@@ -151,6 +151,37 @@ not beat a tuned block sort at this block size; only a libsais-class implementat
 avoiding the doubling might reach or exceed parity, and neither promises the 2-3x that the C literature
 suggests, because the block sort already exploits the 900 KB block size well. Not adopted.
 
+## Parallel decompression (step 9): block-parallel decoding on an `ExecutorService`
+
+A new constructor `BZip2CompressorInputStream(InputStream, boolean decompressConcatenated, ExecutorService,
+int maxConcurrentInFlight)` decodes blocks concurrently (`ParallelBZip2Decoder`). bzip2 blocks are
+independent apart from the bit-level packing and the combined CRC, so the coordinator scans the compressed
+stream for the 48-bit block/EOS magics at all 8 bit shifts (sliding 64-bit window over a rolling 512 KB
+buffer), slices the stream into per-block bit segments, and hands each segment to the executor as a
+synthesized single-block bzip2 stream (`BZh<n>` + the segment's bits shifted to offset 32 + EOS + the
+block's stored CRC as the combined CRC). Each worker runs the regular single-threaded decoder on its
+synthesized stream, so the whole step reuses the sequential code path, checks and messages; results are
+delivered in order via `Future`s. The stored per-block CRCs are folded on the coordinator
+(`combined = rotl1(combined) ^ blockCRC`) and checked against the stream's combined CRC at EOS, so
+corruption detection is equivalent to the sequential decoder's. A 48-bit magic can appear by chance inside
+a block (or a block can be corrupt): a failed worker triggers a rescan that ignores the false delimiter and
+re-splits from the failed block's start; parse errors found while reading ahead are deferred until every
+block before them has decoded, since a false-positive delimiter makes the parser read garbage. The number
+of blocks read ahead (and hence the memory bound: compressed bits plus up to 900 KB of output per in-flight
+block) is the explicit `maxConcurrentInFlight` argument - the executor supplies the threads, the caller
+controls the concurrency. The parallel stream reads ahead of the logical end of the bzip2 stream, so it
+does not keep the sequential constructor's positioning guarantee (documented in the javadoc).
+
+Results (full 484 MB corpus, `BZip2DecodeMain`, machine otherwise idle): sequential 46.9 s = 71.7 MB/s;
+16 threads 16.6 s = 203 MB/s (2.8x); 32 threads 15.7 s = 214 MB/s (3.0x); output CRC-32 identical. The
+scaling flattens because the single consumer thread (segment scan + bit-shift copies + delivery + the
+benchmark's own CRC over 3.3 GB) becomes the bottleneck. The sequential path only gained a null field
+check per read call: pinned JMH 869 +- 10 / 1028 +- 4 / 1249 +- 12 ms vs 899 / 1013 / 1243 before, i.e.
+within the +-2-3% session-to-session spread of these runs, with the -9 corpora inside the error bars.
+Tests: `ParallelBZip2DecompressionTest` (generated inputs x block sizes x pool shapes, byte-at-a-time
+reads, counters, concatenated streams, 25 seeded bit flips + truncations + a CRC flip, all fixtures, a
+randomised block, and an injected-spurious-magic rescan via a test hook).
+
 ## Port to libbzip2 (C), uncommitted in `~/mounts/ocean/work/others/bzip2`
 
 The same three ideas were applied to bzip2 1.0.8 (`decompress.c`, `bzlib.c`, `crctable.c`, `huffman.c`,
