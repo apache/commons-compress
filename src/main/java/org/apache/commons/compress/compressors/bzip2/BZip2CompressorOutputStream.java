@@ -21,6 +21,7 @@ package org.apache.commons.compress.compressors.bzip2;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
+import java.util.concurrent.ExecutorService;
 
 import org.apache.commons.compress.compressors.CompressorOutputStream;
 import org.apache.commons.io.IOUtils;
@@ -402,6 +403,17 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream<OutputSt
     private BlockSort blockSorter;
 
     /**
+     * Compresses blocks concurrently when the {@link #BZip2CompressorOutputStream(OutputStream, int, ExecutorService, int)} constructor was used, else null.
+     */
+    private ParallelBZip2Encoder parallel;
+
+    /**
+     * The number of zero bits {@link #bsFinishedWithStream()} appended to complete the last byte; {@link ParallelBZip2Encoder} reads it to find the exact
+     * bit length of a finished stream.
+     */
+    int trailingPadBits;
+
+    /**
      * Constructs a new {@code BZip2CompressorOutputStream} with a blocksize of 900k.
      *
      * @param out The destination stream.
@@ -437,11 +449,46 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream<OutputSt
         init();
     }
 
+    /**
+     * Constructs a {@code BZip2CompressorOutputStream} that compresses blocks concurrently on the given executor.
+     * <p>
+     * The output is byte-identical to the single-threaded encoder's for the same input and block size. Blocks are handed to the executor as they fill and
+     * their compressed bits are written to {@code out} in order; up to {@code maxConcurrentInFlight} blocks are compressed concurrently, so the stream
+     * holds up to that many blocks' raw input and compressed form in memory.
+     * </p>
+     *
+     * @param out                   the destination stream.
+     * @param blockSize             the blockSize as 100k units.
+     * @param executor              runs the block compressions; not shut down or otherwise owned by this stream.
+     * @param maxConcurrentInFlight the maximum number of blocks compressed concurrently; the executor supplies the threads, this argument bounds the
+     *                              concurrency and the memory held by this stream.
+     * @throws IOException              if an I/O error occurs in the specified stream.
+     * @throws IllegalArgumentException if {@code blockSize < 1}, {@code blockSize > 9}, or {@code maxConcurrentInFlight < 1}.
+     * @throws NullPointerException     if {@code out == null}.
+     * @see #MIN_BLOCKSIZE
+     * @see #MAX_BLOCKSIZE
+     * @since 1.29.0
+     */
+    public BZip2CompressorOutputStream(final OutputStream out, final int blockSize, final ExecutorService executor, final int maxConcurrentInFlight)
+            throws IOException {
+        super(out);
+        if (blockSize < 1) {
+            throw new IllegalArgumentException("blockSize(" + blockSize + ") < 1");
+        }
+        if (blockSize > 9) {
+            throw new IllegalArgumentException("blockSize(" + blockSize + ") > 9");
+        }
+        this.blockSize100k = blockSize;
+        this.allowableBlockSize = this.blockSize100k * BASEBLOCKSIZE - 20;
+        this.parallel = new ParallelBZip2Encoder(out, blockSize, executor, maxConcurrentInFlight);
+    }
+
     private void blockSort() {
         blockSorter.blockSort(data, last);
     }
 
     private void bsFinishedWithStream() throws IOException {
+        this.trailingPadBits = -this.bsLive & 7;
         while (this.bsLive > 0) {
             final int ch = this.bsBuff >> 24;
             this.out.write(ch); // write 8-bit
@@ -543,12 +590,16 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream<OutputSt
     public void finish() throws IOException {
         if (!isClosed() && !isFinished()) {
             try {
-                if (this.runLength > 0) {
-                    writeRun();
+                if (this.parallel != null) {
+                    this.parallel.finish();
+                } else {
+                    if (this.runLength > 0) {
+                        writeRun();
+                    }
+                    this.currentChar = -1;
+                    endBlock();
+                    endCompression();
                 }
-                this.currentChar = -1;
-                endBlock();
-                endCompression();
             } finally {
                 this.blockSorter = null;
                 this.data = null;
@@ -1127,6 +1178,10 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream<OutputSt
     public void write(final byte[] buf, int offs, final int len) throws IOException {
         IOUtils.checkFromIndexSize(buf, offs, len);
         checkOpen();
+        if (this.parallel != null) {
+            this.parallel.write(buf, offs, len);
+            return;
+        }
         // The run-length encoding of write0(), with the current run in locals; the fields are written back before every writeRun() and at the end.
         int cur = this.currentChar;
         int run = this.runLength;
@@ -1158,6 +1213,10 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream<OutputSt
     @Override
     public void write(final int b) throws IOException {
         checkOpen();
+        if (this.parallel != null) {
+            this.parallel.write(b);
+            return;
+        }
         write0(b);
     }
 

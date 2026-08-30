@@ -182,6 +182,37 @@ Tests: `ParallelBZip2DecompressionTest` (generated inputs x block sizes x pool s
 reads, counters, concatenated streams, 25 seeded bit flips + truncations + a CRC flip, all fixtures, a
 randomised block, and an injected-spurious-magic rescan via a test hook).
 
+## Parallel compression (step 10): block-parallel encoding on an `ExecutorService`
+
+The mirror of step 9: a new constructor `BZip2CompressorOutputStream(OutputStream, int blockSize,
+ExecutorService, int maxConcurrentInFlight)` compresses blocks concurrently (`ParallelBZip2Encoder`), with
+output byte-identical to the single-threaded encoder. The caller thread runs only the RLE1 stage's
+block-boundary bookkeeping: it replicates `writeRun()`'s accounting (a run costs its length for lengths
+1-3, else 5 bytes; a block ends when the simulated `last` is at or above `allowableBlockSize` before a run
+is added; runs never span blocks, and a run of 255 forces a flush), so it can slice the raw input at
+exactly the block boundaries the sequential encoder would use. Each slice is compressed on the executor as
+a standalone single-block bzip2 stream by the regular encoder (so BWT, MTF and Huffman all reuse the
+sequential code); a new package-private field `trailingPadBits` (set once per stream in
+`bsFinishedWithStream`) gives the exact bit length of the worker's stream, and the caller thread appends
+the bits between the 32-bit header and the 80-bit trailer to the output in order, folding the block CRCs
+(read from the byte-aligned bytes 10-13 of the worker stream) into the combined CRC. Backpressure: `write`
+blocks on the oldest in-flight block once `maxConcurrentInFlight` blocks are outstanding, which also bounds
+the memory (per in-flight block: the raw slice - usually under 900 KB, more when RLE1 packs long runs -
+plus the worker's ~10 MB `Data`+`BlockSort` at -9 and its compressed output).
+
+Results (256 MiB = enwiki-64M x 4, level 9, `BZip2EncodeMain`, machine otherwise idle): sequential 25.90 s
+= 10.4 MB/s; 16 threads 3.22 s = 83.4 MB/s (8.0x); 32 threads 3.03 s = 88.6 MB/s (8.5x); compressed bytes
+and CRC-32 identical in all three runs. Compression parallelises better than decompression because the
+per-block work (~90 ms) dwarfs the coordinator's share (RLE1 bookkeeping plus bit-stitching ~40 MB of
+compressed output). The sequential path only gained a null field check per `write`/`finish` call: pinned
+JMH 6194 +- 266 / 6115 +- 44 (blockSize 9), 5137 +- 38 / 5779 +- 55 (blockSize 1) ms vs 6116 / 6218 /
+5134 / 5865 in the step-7 paired run - within the noise, mixed signs (`jmh-compress-parallel-guard.json`).
+Tests: `ParallelBZip2CompressionTest` asserts byte-identity against the sequential encoder for all
+generated inputs x block sizes {1, 9} x write patterns (whole buffer, 7-byte writes, single bytes) x pool
+shapes (8 threads, single thread, `maxConcurrentInFlight` 1), a 6 MB long-run input whose blocks pack more
+raw bytes than the accumulation buffer's initial size, an empty stream, and a decode round-trip; the
+110-case sequential compression differential suite guards the untouched path.
+
 ## Port to libbzip2 (C), uncommitted in `~/mounts/ocean/work/others/bzip2`
 
 The same three ideas were applied to bzip2 1.0.8 (`decompress.c`, `bzlib.c`, `crctable.c`, `huffman.c`,
