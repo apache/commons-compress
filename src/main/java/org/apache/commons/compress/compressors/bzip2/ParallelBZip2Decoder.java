@@ -69,7 +69,39 @@ final class ParallelBZip2Decoder implements Closeable {
 
     private static final long BLOCK_MAGIC = 0x314159265359L;
     private static final long EOS_MAGIC = 0x177245385090L;
-    private static final long MAGIC_MASK = 0xFFFFFFFFFFFFL;
+
+    /**
+     * Byte-parallel shift-and (Baeza-Yates–Gonnet) table for the two 48-bit magics, superimposed. Scanner state bit {@code j} means the last
+     * {@code j + 1} scanned bits match the first {@code j + 1} bits of a magic; one step per input byte advances all eight bit offsets at once:
+     * {@code state = (state << 8 | 0xFF) & DELIMITER_TABLE[byte]}. Bits 48..54 are don't-care in the per-bit masks so a match completed mid-byte
+     * survives the remaining shifts, leaving the match-end flags in {@link #DELIMITER_MATCH_MASK}.
+     */
+    private static final long[] DELIMITER_TABLE = buildDelimiterTable();
+
+    /**
+     * State bits 47..54: bit {@code m} marks a magic ending at bit offset {@code 54 - m} of the byte just scanned.
+     */
+    private static final long DELIMITER_MATCH_MASK = 0xFFL << 47;
+
+    private static long[] buildDelimiterTable() {
+        // masks[b] bit j: bit j of either magic equals b; bits 48..54 always pass.
+        final long[] masks = { 0x7FL << 48, 0x7FL << 48 };
+        for (int j = 0; j < 48; j++) {
+            masks[(int) (BLOCK_MAGIC >>> 47 - j) & 1] |= 1L << j;
+            masks[(int) (EOS_MAGIC >>> 47 - j) & 1] |= 1L << j;
+        }
+        // Fold the eight per-bit steps state = (state << 1 | 1) & masks[bit] into one per-byte mask; the low filler bits stand in for the
+        // injected 1s of the later steps.
+        final long[] table = new long[256];
+        for (int c = 0; c < 256; c++) {
+            long t = -1L;
+            for (int k = 0; k < 8; k++) {
+                t &= masks[c >>> 7 - k & 1] << 7 - k | (1L << 7 - k) - 1;
+            }
+            table[c] = t;
+        }
+        return table;
+    }
 
     /**
      * The input is read and buffered in chunks of this size.
@@ -308,12 +340,15 @@ final class ParallelBZip2Decoder implements Closeable {
                 spurious = s;
             }
         }
-        // The window holds the last eight buffered bytes, i.e. the 64 bits ending after buffer index i; the 48-bit values starting at the eight bit
-        // offsets of byte i - 7 are window >>> 16 - sh for sh in 0..7.
+        // Shift-and scan over whole bytes (see DELIMITER_TABLE); the superimposition of the two magics makes a false candidate about once per
+        // 2^28 bit offsets, so candidates are verified exactly before being reported.
         long windowByte = from / 8;
-        long window = 0;
-        int have = 0;
+        long state = 0;
         while (true) {
+            // A match ending at or after byte windowByte starts at bit windowByte * 8 - 47 or later; earlier ones were all checked.
+            if (spurious < windowByte * 8 - 47) {
+                return spurious;
+            }
             if (windowByte - from / 8 > MAX_DELIMITER_SCAN_BYTES) {
                 throw new CompressorException("Stream corrupted: no block delimiter within " + MAX_DELIMITER_SCAN_BYTES + " bytes");
             }
@@ -324,21 +359,19 @@ final class ParallelBZip2Decoder implements Closeable {
             final byte[] buf = buffer;
             final long base = bufferStart;
             while (windowByte < limitByte) {
-                window = window << 8 | buf[(int) (windowByte - base)] & 0xffL;
+                state = (state << 8 | 0xFF) & DELIMITER_TABLE[buf[(int) (windowByte - base)] & 0xff];
                 windowByte++;
-                if (++have >= 8) {
-                    final long firstBit = (windowByte - 8) * 8;
-                    for (int sh = 0; sh < 8; sh++) {
-                        final long value = window >>> 16 - sh & MAGIC_MASK;
-                        if (value == BLOCK_MAGIC || value == EOS_MAGIC) {
-                            final long bit = firstBit + sh;
+                if ((state & DELIMITER_MATCH_MASK) != 0) {
+                    for (int m = 54; m >= 47; m--) {
+                        if ((state >>> m & 1) != 0) {
+                            final long bit = windowByte * 8 - 1 - m;
                             if (bit >= from && !ignoredDelimiters.contains(bit)) {
-                                return Math.min(bit, spurious);
+                                final long value = peekBitsAt(bit, 48);
+                                if (value == BLOCK_MAGIC || value == EOS_MAGIC) {
+                                    return Math.min(bit, spurious);
+                                }
                             }
                         }
-                    }
-                    if (spurious < firstBit) {
-                        return spurious;
                     }
                 }
             }
