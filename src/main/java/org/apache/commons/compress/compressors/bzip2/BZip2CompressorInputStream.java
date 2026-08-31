@@ -445,8 +445,8 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
      * @param decompressConcatenated if true, decompress until the end of the input; if false, stop after the first .bz2 stream.
      * @param executor               runs the block decompressions; not shut down or otherwise owned by this stream.
      * @param maxConcurrentInFlight  the maximum number of blocks read ahead and decompressed concurrently; the executor supplies the threads, this argument
-     *                               bounds the concurrency and the memory held by this stream (each in-flight block needs its compressed form plus up to
-     *                               900 KiB of decompressed output).
+     *                               bounds the concurrency and the memory held by this stream (each in-flight block needs its compressed form plus its
+     *                               decompressed output, typically under 1 MiB but up to tens of MiB for highly repetitive data).
      * @throws IOException              if {@code in == null}, the stream content is malformed, or an I/O error occurs.
      * @throws IllegalArgumentException if {@code maxConcurrentInFlight < 1}.
      * @since 1.29.0
