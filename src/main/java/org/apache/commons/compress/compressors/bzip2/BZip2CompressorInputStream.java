@@ -115,14 +115,14 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     }
 
     /**
-     * Number of input bits used to index the Huffman lookup tables. Codes of at most this length (the vast majority; encoders emit at most 17 bits and
-     * typical text needs 3-12) are decoded with one table lookup, longer ones fall back to the canonical bit-by-bit decoder.
+     * Number of input bits used to index the Huffman lookup tables. Codes of at most this length are decoded with one table lookup, longer ones fall
+     * back to the canonical bit-by-bit decoder.
      */
     static final int FAST_BITS = 10;
 
     /**
      * The Huffman decoding loop refills its bit buffer when fewer than this many bits are buffered: at least {@link #FAST_BITS} + 1 so that a lookup
-     * table hit never lacks bits (longer codes take the slow path, which refills on its own); the smaller the threshold, the more bytes each refill reads.
+     * table hit never lacks bits (longer codes take the slow path, which refills on its own).
      */
     private static final int REFILL_THRESHOLD = FAST_BITS + 1;
 

@@ -241,7 +241,8 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add and use CompressException.requireNonNull(Class, T, String).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add and use CpioArchiveEntry.setTimeMillis(long).</action>
       <!-- UPDATE -->
-      <action type="update" dev="dweiss" due-to="Dawid Weiss">[BZip2] Faster single-threaded decompression in BZip2CompressorInputStream (64-bit bit reader, table-driven Huffman decoding, packed inverse-BWT array unwound by several concurrent chains, bulk output path; the input is read in 64 KiB blocks when it supports mark/reset or when decompressing concatenated streams); the output is byte-for-byte identical, a corrupt block origin pointer is now rejected up front instead of producing garbage before the CRC error.</action>
+      <action type="update" dev="dweiss" due-to="Dawid Weiss, Claude">[BZip2] Faster single-threaded decompression in BZip2CompressorInputStream (64-bit bit reader, table-driven Huffman decoding, packed inverse-BWT array unwound by several concurrent chains, bulk output path.</action>
+      <action type="add" dev="dweiss" due-to="Dawid Weiss, Claude">[BZip2] Optional concurrent block decompression and compression: new constructors BZip2CompressorInputStream(InputStream, boolean, ExecutorService, int) and BZip2CompressorOutputStream(OutputStream, int, ExecutorService, int); the parallel compressor's output is byte-identical to the single-threaded encoder's.</action>
       <action type="update" dev="ggregory" due-to="Gary Gregory">Bump org.apache.commons:commons-parent from 85 to 104 #707, #752.</action>
       <action type="update" dev="ggregory" due-to="Gary Gregory">Bump org.apache.commons:commons-lang3 from 3.18.0 to 3.20.0.</action>
       <action type="update" dev="ggregory" due-to="Gary Gregory, Dependabot">Bump com.github.luben:zstd-jni from 1.5.7-4 to 1.5.7-6 #717, #740.</action>

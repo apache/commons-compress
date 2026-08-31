@@ -75,8 +75,8 @@ final class BZip2BitReader implements Closeable {
     private long bytesRead;
 
     /**
-     * Set once a request for bits could not be satisfied: from then on {@link #getBytesRead()} reports every byte pulled, as the previous implementation
-     * did (it read the underlying stream to its end while trying to satisfy the request).
+     * Set once a request for bits could not be satisfied: from then on {@link #getBytesRead()} reports every byte pulled, matching the historical
+     * behaviour of this stream.
      */
     private boolean exhausted;
 

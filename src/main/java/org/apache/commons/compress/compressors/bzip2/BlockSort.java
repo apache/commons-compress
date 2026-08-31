@@ -740,8 +740,7 @@ final class BlockSort {
                         int i2 = vd;
 
                         // Compare the first six bytes as one word: unsigned comparison of big-endian words is the lexicographic comparison of the
-                        // bytes (the block carries enough overshoot bytes for the 8-byte loads; a ByteBuffer view measured faster than assembling
-                        // the word from byte loads, bounds checks included).
+                        // bytes; the block carries enough overshoot bytes for the 8-byte loads.
                         final long w1 = blockView.getLong(i1 + 1) >>> 16;
                         final long w2 = blockView.getLong(i2 + 1) >>> 16;
                         if (w1 != w2) {
