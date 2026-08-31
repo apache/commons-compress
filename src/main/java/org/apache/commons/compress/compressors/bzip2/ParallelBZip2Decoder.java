@@ -77,6 +77,14 @@ final class ParallelBZip2Decoder implements Closeable {
     private static final int CHUNK_SIZE = 512 * 1024;
 
     /**
+     * The scan for a block's end delimiter gives up after this many bytes and reports corruption. A valid compressed block cannot come close: even a
+     * format-valid adversarial encoder spends at most 20 bits per symbol on at most 900,001 MTF/RLE2 symbols plus table sections, under 2.3 MiB, so the
+     * cap can only be hit by corrupt input, on which the sequential decoder would have failed long before. The cap keeps the rolling buffer bounded
+     * where garbage after a block magic would otherwise buffer the rest of the input while searching for a delimiter that never comes.
+     */
+    private static final long MAX_DELIMITER_SCAN_BYTES = 4 * 1024 * 1024;
+
+    /**
      * Decodes one synthesized single-block stream; runs on the executor.
      */
     private static byte[] decodeSegment(final byte[] synthesized) throws IOException {
@@ -307,6 +315,9 @@ final class ParallelBZip2Decoder implements Closeable {
         long window = 0;
         int have = 0;
         while (true) {
+            if (windowByte - from / 8 > MAX_DELIMITER_SCAN_BYTES) {
+                throw new CompressorException("Stream corrupted: no block delimiter within " + MAX_DELIMITER_SCAN_BYTES + " bytes");
+            }
             if (!ensureBits(windowByte * 8, 8)) {
                 return spurious != Long.MAX_VALUE ? spurious : -1;
             }

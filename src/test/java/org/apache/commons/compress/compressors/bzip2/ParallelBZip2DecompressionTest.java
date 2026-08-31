@@ -173,6 +173,23 @@ class ParallelBZip2DecompressionTest extends AbstractTest {
     }
 
     @Test
+    void testMissingDelimiterScanCap() {
+        // A block magic followed by megabytes of garbage holding no delimiter: the scan must give up at its cap instead of buffering all remaining input.
+        final byte[] garbage = new byte[5 * 1024 * 1024];
+        final ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        stream.write('B');
+        stream.write('Z');
+        stream.write('h');
+        stream.write('9');
+        for (final int b : new int[] { 0x31, 0x41, 0x59, 0x26, 0x53, 0x59, 0, 0, 0, 0 }) {
+            stream.write(b);
+        }
+        stream.write(garbage, 0, garbage.length);
+        final IOException e = assertThrows(IOException.class, () -> parallel(stream.toByteArray(), false, pool));
+        assertTrue(e.getMessage().contains("no block delimiter"), e.getMessage());
+    }
+
+    @Test
     void testRandomisedBlock() throws IOException {
         final byte[] original = BZip2DifferentialTest.sparseRuns(new Random(31), 60_000);
         byte[] stream = null;

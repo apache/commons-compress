@@ -169,7 +169,11 @@ re-splits from the failed block's start; parse errors found while reading ahead 
 block before them has decoded, since a false-positive delimiter makes the parser read garbage. The number
 of blocks read ahead (and hence the memory bound: compressed bits plus up to 900 KB of output per in-flight
 block) is the explicit `maxConcurrentInFlight` argument - the executor supplies the threads, the caller
-controls the concurrency. The parallel stream reads ahead of the logical end of the bzip2 stream, so it
+controls the concurrency. The delimiter scan gives up after 4 MiB and reports corruption: a format-valid
+block cannot exceed ~2.3 MiB compressed (20 bits per symbol for at most 900,001 symbols plus tables), so
+the cap can only fire on corrupt input, and it keeps the rolling input buffer bounded where garbage after
+a block magic would otherwise buffer the whole remaining input while searching for a delimiter that never
+comes. The parallel stream reads ahead of the logical end of the bzip2 stream, so it
 does not keep the sequential constructor's positioning guarantee (documented in the javadoc).
 
 Results (full 484 MB corpus, `BZip2DecodeMain`, machine otherwise idle): sequential 46.9 s = 71.7 MB/s;
