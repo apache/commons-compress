@@ -389,7 +389,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     /**
      * Reusable buffer of the single-byte {@link #read()} in the concurrent mode.
      */
-    private byte[] oneByte;
+    private final byte[] oneByte = new byte[1];
 
     /**
      * Constructs a new BZip2CompressorInputStream which decompresses bytes read from the specified stream. This doesn't support decompressing concatenated .bz2
@@ -776,9 +776,6 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     @Override
     public int read() throws IOException {
         if (this.parallel != null) {
-            if (oneByte == null) {
-                oneByte = new byte[1];
-            }
             return read(oneByte, 0, 1) < 0 ? -1 : oneByte[0] & 0xff;
         }
         if (this.bin != null) {
