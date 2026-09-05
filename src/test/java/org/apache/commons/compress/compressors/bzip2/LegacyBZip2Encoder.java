@@ -21,17 +21,17 @@ package org.apache.commons.compress.compressors.bzip2;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
-import java.util.concurrent.ExecutorService;
 
 import org.apache.commons.compress.compressors.CompressorOutputStream;
 import org.apache.commons.io.IOUtils;
 
 /**
- * An output stream that compresses into the BZip2 format into another stream.
+ * Verbatim copy of {@code BZip2CompressorOutputStream} (with {@code LegacyBlockSort}) as of commit 200d350, before the compression speed-up; the
+ * differential oracle of {@code BZip2CompressionDifferentialTest}. Do not modify.
  *
  * <p>
  * The compression requires large amounts of memory. Thus you should call the {@link #close() close()} method as soon as possible, to force
- * {@code BZip2CompressorOutputStream} to release the allocated memory.
+ * {@code LegacyBZip2Encoder} to release the allocated memory.
  * </p>
  *
  * <p>
@@ -128,7 +128,7 @@ import org.apache.commons.io.IOUtils;
  *
  * @NotThreadSafe
  */
-public class BZip2CompressorOutputStream extends CompressorOutputStream<OutputStream> implements BZip2Constants {
+public class LegacyBZip2Encoder extends CompressorOutputStream<OutputStream> implements BZip2Constants {
 
     static final class Data {
 
@@ -142,7 +142,6 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream<OutputSt
 
         final byte[] generateMTFValues_yy = new byte[256]; // 256 byte
         final byte[][] sendMTFValues_len = new byte[N_GROUPS][MAX_ALPHA_SIZE]; // 1548
-        final long[] sendMTFValues_packedLen = new long[MAX_ALPHA_SIZE]; // 2064
         // byte
         final int[][] sendMTFValues_rfreq = new int[N_GROUPS][MAX_ALPHA_SIZE]; // 6192
         // byte
@@ -210,7 +209,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream<OutputSt
      * @return The blocksize, between {@link #MIN_BLOCKSIZE} and {@link #MAX_BLOCKSIZE} both inclusive. For a negative {@code inputLength} this method returns
      *         {@code MAX_BLOCKSIZE} always.
      *
-     * @param inputLength The length of the data which will be compressed by {@code BZip2CompressorOutputStream}.
+     * @param inputLength The length of the data which will be compressed by {@code LegacyBZip2Encoder}.
      */
     public static int chooseBlockSize(final long inputLength) {
         return inputLength > 0 ? (int) Math.min(inputLength / 132000 + 1, 9) : MAX_BLOCKSIZE;
@@ -400,32 +399,21 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream<OutputSt
      */
     private Data data;
 
-    private BlockSort blockSorter;
+    private LegacyBlockSort blockSorter;
 
     /**
-     * Compresses blocks concurrently when the {@link #BZip2CompressorOutputStream(OutputStream, int, ExecutorService, int)} constructor was used, else null.
-     */
-    private ParallelBZip2Encoder parallel;
-
-    /**
-     * The number of zero bits {@link #bsFinishedWithStream()} appended to complete the last byte; {@link ParallelBZip2Encoder} reads it to find the exact
-     * bit length of a finished stream.
-     */
-    int trailingPadBits;
-
-    /**
-     * Constructs a new {@code BZip2CompressorOutputStream} with a blocksize of 900k.
+     * Constructs a new {@code LegacyBZip2Encoder} with a blocksize of 900k.
      *
      * @param out The destination stream.
      * @throws IOException          if an I/O error occurs in the specified stream.
      * @throws NullPointerException if {@code out == null}.
      */
-    public BZip2CompressorOutputStream(final OutputStream out) throws IOException {
+    public LegacyBZip2Encoder(final OutputStream out) throws IOException {
         this(out, MAX_BLOCKSIZE);
     }
 
     /**
-     * Constructs a new {@code BZip2CompressorOutputStream} with specified blocksize.
+     * Constructs a new {@code LegacyBZip2Encoder} with specified blocksize.
      *
      * @param out       The destination stream.
      * @param blockSize The blockSize as 100k units.
@@ -435,7 +423,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream<OutputSt
      * @see #MIN_BLOCKSIZE
      * @see #MAX_BLOCKSIZE
      */
-    public BZip2CompressorOutputStream(final OutputStream out, final int blockSize) throws IOException {
+    public LegacyBZip2Encoder(final OutputStream out, final int blockSize) throws IOException {
         super(out);
         if (blockSize < 1) {
             throw new IllegalArgumentException("blockSize(" + blockSize + ") < 1");
@@ -449,46 +437,11 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream<OutputSt
         init();
     }
 
-    /**
-     * Constructs a {@code BZip2CompressorOutputStream} that compresses blocks concurrently on the given executor.
-     * <p>
-     * The output is byte-identical to the single-threaded encoder's for the same input and block size. Blocks are handed to the executor as they fill and
-     * their compressed bits are written to {@code out} in order; up to {@code maxConcurrentInFlight} blocks are compressed concurrently, so the stream
-     * holds up to that many blocks' raw input and compressed form in memory.
-     * </p>
-     *
-     * @param out                   the destination stream.
-     * @param blockSize             the blockSize as 100k units.
-     * @param executor              runs the block compressions; not shut down or otherwise owned by this stream.
-     * @param maxConcurrentInFlight the maximum number of blocks compressed concurrently; the executor supplies the threads, this argument bounds the
-     *                              concurrency and the memory held by this stream.
-     * @throws IOException              if an I/O error occurs in the specified stream.
-     * @throws IllegalArgumentException if {@code blockSize < 1}, {@code blockSize > 9}, or {@code maxConcurrentInFlight < 1}.
-     * @throws NullPointerException     if {@code out == null}.
-     * @see #MIN_BLOCKSIZE
-     * @see #MAX_BLOCKSIZE
-     * @since 1.29.0
-     */
-    public BZip2CompressorOutputStream(final OutputStream out, final int blockSize, final ExecutorService executor, final int maxConcurrentInFlight)
-            throws IOException {
-        super(out);
-        if (blockSize < 1) {
-            throw new IllegalArgumentException("blockSize(" + blockSize + ") < 1");
-        }
-        if (blockSize > 9) {
-            throw new IllegalArgumentException("blockSize(" + blockSize + ") > 9");
-        }
-        this.blockSize100k = blockSize;
-        this.allowableBlockSize = this.blockSize100k * BASEBLOCKSIZE - 20;
-        this.parallel = new ParallelBZip2Encoder(out, blockSize, executor, maxConcurrentInFlight);
-    }
-
     private void blockSort() {
         blockSorter.blockSort(data, last);
     }
 
     private void bsFinishedWithStream() throws IOException {
-        this.trailingPadBits = -this.bsLive & 7;
         while (this.bsLive > 0) {
             final int ch = this.bsBuff >> 24;
             this.out.write(ch); // write 8-bit
@@ -590,16 +543,12 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream<OutputSt
     public void finish() throws IOException {
         if (!isClosed() && !isFinished()) {
             try {
-                if (this.parallel != null) {
-                    this.parallel.finish();
-                } else {
-                    if (this.runLength > 0) {
-                        writeRun();
-                    }
-                    this.currentChar = -1;
-                    endBlock();
-                    endCompression();
+                if (this.runLength > 0) {
+                    writeRun();
                 }
+                this.currentChar = -1;
+                endBlock();
+                endCompression();
             } finally {
                 this.blockSorter = null;
                 this.data = null;
@@ -739,7 +688,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream<OutputSt
         bsPutUByte('Z');
 
         this.data = new Data(this.blockSize100k);
-        this.blockSorter = new BlockSort(this.data);
+        this.blockSorter = new LegacyBlockSort(this.data);
 
         // huffmanized magic bytes
         bsPutUByte('h');
@@ -852,7 +801,12 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream<OutputSt
         final char[] sfmap = dataShadow.sfmap;
         final byte[] selector = dataShadow.selector;
         final byte[][] len = dataShadow.sendMTFValues_len;
-        final long[] packedLen = dataShadow.sendMTFValues_packedLen;
+        final byte[] len_0 = len[0];
+        final byte[] len_1 = len[1];
+        final byte[] len_2 = len[2];
+        final byte[] len_3 = len[3];
+        final byte[] len_4 = len[4];
+        final byte[] len_5 = len[5];
         final int nMTFShadow = this.nMTF;
 
         int nSelectors = 0;
@@ -866,16 +820,6 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream<OutputSt
                 }
             }
 
-            // The code lengths of a symbol in all tables packed into one word, ten bits per table: a group has at most G_SIZE symbols of at most
-            // 20 bits each, so the per-table sums (at most 1000) never overflow their lanes, and the cost of a group costs one load and one add
-            // per symbol.
-            for (int i = 0; i < alphaSize; i++) {
-                long packed = 0;
-                for (int t = nGroups; --t >= 0;) {
-                    packed = packed << 10 | len[t][i] & 0xff;
-                }
-                packedLen[i] = packed;
-            }
             nSelectors = 0;
 
             for (int gs = 0; gs < this.nMTF;) {
@@ -886,13 +830,47 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream<OutputSt
 
                 final int ge = Math.min(gs + G_SIZE - 1, nMTFShadow - 1);
 
-                long costs = 0;
-                for (int i = gs; i <= ge; i++) {
-                    costs += packedLen[sfmap[i]];
+                final byte mask = (byte) 0xff;
+                if (nGroups == N_GROUPS) {
+                    // unrolled version of the else-block
+
+                    short cost0 = 0;
+                    short cost1 = 0;
+                    short cost2 = 0;
+                    short cost3 = 0;
+                    short cost4 = 0;
+                    short cost5 = 0;
+
+                    for (int i = gs; i <= ge; i++) {
+                        final int icv = sfmap[i];
+                        cost0 += (short) (len_0[icv] & mask);
+                        cost1 += (short) (len_1[icv] & mask);
+                        cost2 += (short) (len_2[icv] & mask);
+                        cost3 += (short) (len_3[icv] & mask);
+                        cost4 += (short) (len_4[icv] & mask);
+                        cost5 += (short) (len_5[icv] & mask);
+                    }
+
+                    cost[0] = cost0;
+                    cost[1] = cost1;
+                    cost[2] = cost2;
+                    cost[3] = cost3;
+                    cost[4] = cost4;
+                    cost[5] = cost5;
+
+                } else {
+                    for (int t = nGroups; --t >= 0;) {
+                        cost[t] = 0;
+                    }
+
+                    for (int i = gs; i <= ge; i++) {
+                        final int icv = sfmap[i];
+                        for (int t = nGroups; --t >= 0;) {
+                            cost[t] += (short) (len[t][icv] & mask);
+                        }
+                    }
                 }
-                for (int t = 0; t < nGroups; t++) {
-                    cost[t] = (short) (costs >>> 10 * t & 0x3ff);
-                }
+
                 /*
                  * Find the coding table which is best for this group, and record its identity in the selector table.
                  */
@@ -1178,45 +1156,14 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream<OutputSt
     public void write(final byte[] buf, int offs, final int len) throws IOException {
         IOUtils.checkFromIndexSize(buf, offs, len);
         checkOpen();
-        if (this.parallel != null) {
-            this.parallel.write(buf, offs, len);
-            return;
-        }
-        // The run-length encoding of write0(), with the current run in locals; the fields are written back before every writeRun() and at the end.
-        int cur = this.currentChar;
-        int run = this.runLength;
         for (final int hi = offs + len; offs < hi;) {
-            final int b = buf[offs++] & 0xff;
-            if (cur == b) {
-                if (++run > 254) {
-                    this.currentChar = cur;
-                    this.runLength = run;
-                    writeRun();
-                    cur = -1;
-                    run = 0;
-                }
-            } else if (cur == -1) {
-                cur = b;
-                run = 1;
-            } else {
-                this.currentChar = cur;
-                this.runLength = run;
-                writeRun();
-                cur = b;
-                run = 1;
-            }
+            write0(buf[offs++]);
         }
-        this.currentChar = cur;
-        this.runLength = run;
     }
 
     @Override
     public void write(final int b) throws IOException {
         checkOpen();
-        if (this.parallel != null) {
-            this.parallel.write(b);
-            return;
-        }
         write0(b);
     }
 

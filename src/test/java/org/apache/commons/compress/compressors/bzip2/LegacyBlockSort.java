@@ -18,12 +18,11 @@
  */
 package org.apache.commons.compress.compressors.bzip2;
 
-import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.BitSet;
 
 /**
- * Encapsulates the Burrows-Wheeler sorting algorithm needed by {@link BZip2CompressorOutputStream}.
+ * Encapsulates the Burrows-Wheeler sorting algorithm needed by {@link LegacyBZip2Encoder}.
  *
  * <p>
  * This class is based on a Java port of Julian Seward's blocksort.c in his libbzip2
@@ -72,7 +71,7 @@ import java.util.BitSet;
  *
  * @NotThreadSafe
  */
-final class BlockSort {
+final class LegacyBlockSort {
 
     /*
      * Some of the constructs used in the C code cannot be ported literally to Java - for example macros, unsigned types. Some code has been hand-tuned to
@@ -200,21 +199,15 @@ final class BlockSort {
      */
     private final char[] quadrant;
 
-    /**
-     * Big-endian view of the block, for word-at-a-time comparisons in {@link #mainSimpleSort}.
-     */
-    private final ByteBuffer blockView;
-
     private int[] eclass;
 
     /*---------------------------------------------*/
 
-    BlockSort(final BZip2CompressorOutputStream.Data data) {
+    LegacyBlockSort(final LegacyBZip2Encoder.Data data) {
         this.quadrant = data.sfmap;
-        this.blockView = ByteBuffer.wrap(data.block);
     }
 
-    void blockSort(final BZip2CompressorOutputStream.Data data, final int last) {
+    void blockSort(final LegacyBZip2Encoder.Data data, final int last) {
         this.workLimit = WORK_FACTOR * last;
         this.workDone = 0;
         this.firstAttempt = true;
@@ -399,7 +392,7 @@ final class BlockSort {
      * Adapt fallbackSort to the expected interface of the rest of the code, in particular deal with the fact that block starts at offset 1 (in libbzip2 1.0.6
      * it starts at 0).
      */
-    void fallbackSort(final BZip2CompressorOutputStream.Data data, final int last) {
+    void fallbackSort(final LegacyBZip2Encoder.Data data, final int last) {
         data.block[0] = data.block[last + 1];
         fallbackSort(data.fmap, data.block, last + 1);
         for (int i = 0; i < last + 1; i++) {
@@ -576,7 +569,7 @@ final class BlockSort {
     /**
      * Method "mainQSort3", file "blocksort.c", BZip2 1.0.2
      */
-    private void mainQSort3(final BZip2CompressorOutputStream.Data dataShadow, final int loSt, final int hiSt, final int dSt, final int last) {
+    private void mainQSort3(final LegacyBZip2Encoder.Data dataShadow, final int loSt, final int hiSt, final int dSt, final int last) {
         final int[] stack_ll = this.stack_ll;
         final int[] stack_hh = this.stack_hh;
         final int[] stack_dd = this.stack_dd;
@@ -680,7 +673,7 @@ final class BlockSort {
      * JRE 1.4.2 (Linux i586 / HotSpot Client). Of course it depends on the JIT compiler of the vm.
      * </p>
      */
-    private boolean mainSimpleSort(final BZip2CompressorOutputStream.Data dataShadow, final int lo, final int hi, final int d, final int lastShadow) {
+    private boolean mainSimpleSort(final LegacyBZip2Encoder.Data dataShadow, final int lo, final int hi, final int d, final int lastShadow) {
         final int bigN = hi - lo + 1;
         if (bigN < 2) {
             return this.firstAttempt && this.workDone > this.workLimit;
@@ -693,6 +686,7 @@ final class BlockSort {
 
         final int[] fmap = dataShadow.fmap;
         final char[] quadrant = this.quadrant;
+        final byte[] block = dataShadow.block;
         final int lastPlus1 = lastShadow + 1;
         final boolean firstAttemptShadow = this.firstAttempt;
         final int workLimitShadow = this.workLimit;
@@ -739,46 +733,107 @@ final class BlockSort {
                         int i1 = a + d;
                         int i2 = vd;
 
-                        // Compare the first six bytes as one word: unsigned comparison of big-endian words is the lexicographic comparison of the
-                        // bytes; the block carries enough overshoot bytes for the 8-byte loads.
-                        final long w1 = blockView.getLong(i1 + 1) >>> 16;
-                        final long w2 = blockView.getLong(i2 + 1) >>> 16;
-                        if (w1 != w2) {
-                            if (w1 > w2) {
+                        // following could be done in a loop, but
+                        // unrolled it for performance:
+                        if (block[i1 + 1] == block[i2 + 1]) {
+                            if (block[i1 + 2] == block[i2 + 2]) {
+                                if (block[i1 + 3] == block[i2 + 3]) {
+                                    if (block[i1 + 4] == block[i2 + 4]) {
+                                        if (block[i1 + 5] == block[i2 + 5]) {
+                                            if (block[i1 += 6] == block[i2 += 6]) { // NOSONAR
+                                                int x = lastShadow;
+                                                X: while (x > 0) {
+                                                    x -= 4;
+                                                    if (block[i1 + 1] == block[i2 + 1]) {
+                                                        if (quadrant[i1] == quadrant[i2]) {
+                                                            if (block[i1 + 2] == block[i2 + 2]) {
+                                                                if (quadrant[i1 + 1] == quadrant[i2 + 1]) {
+                                                                    if (block[i1 + 3] == block[i2 + 3]) {
+                                                                        if (quadrant[i1 + 2] == quadrant[i2 + 2]) {
+                                                                            if (block[i1 + 4] == block[i2 + 4]) {
+                                                                                if (quadrant[i1 + 3] == quadrant[i2 + 3]) {
+                                                                                    if ((i1 += 4) >= lastPlus1) { // NOSONAR
+                                                                                        i1 -= lastPlus1;
+                                                                                    }
+                                                                                    if ((i2 += 4) >= lastPlus1) { // NOSONAR
+                                                                                        i2 -= lastPlus1;
+                                                                                    }
+                                                                                    workDoneShadow++;
+                                                                                    continue X;
+                                                                                }
+                                                                                if (quadrant[i1 + 3] > quadrant[i2 + 3]) {
+                                                                                    continue HAMMER;
+                                                                                }
+                                                                                break HAMMER;
+                                                                            }
+                                                                            if ((block[i1 + 4] & 0xff) > (block[i2 + 4] & 0xff)) {
+                                                                                continue HAMMER;
+                                                                            }
+                                                                            break HAMMER;
+                                                                        }
+                                                                        if (quadrant[i1 + 2] > quadrant[i2 + 2]) {
+                                                                            continue HAMMER;
+                                                                        }
+                                                                        break HAMMER;
+                                                                    }
+                                                                    if ((block[i1 + 3] & 0xff) > (block[i2 + 3] & 0xff)) {
+                                                                        continue HAMMER;
+                                                                    }
+                                                                    break HAMMER;
+                                                                }
+                                                                if (quadrant[i1 + 1] > quadrant[i2 + 1]) {
+                                                                    continue HAMMER;
+                                                                }
+                                                                break HAMMER;
+                                                            }
+                                                            if ((block[i1 + 2] & 0xff) > (block[i2 + 2] & 0xff)) {
+                                                                continue HAMMER;
+                                                            }
+                                                            break HAMMER;
+                                                        }
+                                                        if (quadrant[i1] > quadrant[i2]) {
+                                                            continue HAMMER;
+                                                        }
+                                                        break HAMMER;
+                                                    }
+                                                    if ((block[i1 + 1] & 0xff) > (block[i2 + 1] & 0xff)) {
+                                                        continue HAMMER;
+                                                    }
+                                                    break HAMMER;
+
+                                                }
+                                                break HAMMER;
+                                            } // while x > 0
+                                            if ((block[i1] & 0xff) > (block[i2] & 0xff)) {
+                                                continue HAMMER;
+                                            }
+                                            break HAMMER;
+                                        }
+                                        if ((block[i1 + 5] & 0xff) > (block[i2 + 5] & 0xff)) {
+                                            continue HAMMER;
+                                        }
+                                        break HAMMER;
+                                    }
+                                    if ((block[i1 + 4] & 0xff) > (block[i2 + 4] & 0xff)) {
+                                        continue HAMMER;
+                                    }
+                                    break HAMMER;
+                                }
+                                if ((block[i1 + 3] & 0xff) > (block[i2 + 3] & 0xff)) {
+                                    continue HAMMER;
+                                }
+                                break HAMMER;
+                            }
+                            if ((block[i1 + 2] & 0xff) > (block[i2 + 2] & 0xff)) {
                                 continue HAMMER;
                             }
                             break HAMMER;
                         }
-                        i1 += 6;
-                        i2 += 6;
-                        // Then four bytes and the four quadrant values per step, which rank in the interleaved order
-                        // block[i + 1], quadrant[i], block[i + 2], quadrant[i + 1], ...: byte k is element 2k, quadrant k is element 2k + 1.
-                        int x = lastShadow;
-                        while (x > 0) {
-                            x -= 4;
-                            final int b1 = blockView.getInt(i1 + 1);
-                            final int b2 = blockView.getInt(i2 + 1);
-                            final long q1 = (long) quadrant[i1] << 48 | (long) quadrant[i1 + 1] << 32 | (long) quadrant[i1 + 2] << 16 | quadrant[i1 + 3];
-                            final long q2 = (long) quadrant[i2] << 48 | (long) quadrant[i2 + 1] << 32 | (long) quadrant[i2 + 2] << 16 | quadrant[i2 + 3];
-                            if (b1 == b2 && q1 == q2) {
-                                if ((i1 += 4) >= lastPlus1) { // NOSONAR
-                                    i1 -= lastPlus1;
-                                }
-                                if ((i2 += 4) >= lastPlus1) { // NOSONAR
-                                    i2 -= lastPlus1;
-                                }
-                                workDoneShadow++;
-                                continue;
-                            }
-                            final int firstByte = Integer.numberOfLeadingZeros(b1 ^ b2) >>> 3;
-                            final int firstQuadrant = Long.numberOfLeadingZeros(q1 ^ q2) >>> 4;
-                            final boolean greater = firstByte <= firstQuadrant ? Integer.compareUnsigned(b1, b2) > 0 : Long.compareUnsigned(q1, q2) > 0;
-                            if (greater) {
-                                continue HAMMER;
-                            }
-                            break HAMMER;
+                        if ((block[i1 + 1] & 0xff) > (block[i2 + 1] & 0xff)) {
+                            continue HAMMER;
                         }
                         break HAMMER;
+
                     } // HAMMER
                       // end inline mainGTU
 
@@ -795,7 +850,7 @@ final class BlockSort {
         return firstAttemptShadow && workDoneShadow > workLimitShadow;
     }
 
-    void mainSort(final BZip2CompressorOutputStream.Data dataShadow, final int lastShadow) {
+    void mainSort(final LegacyBZip2Encoder.Data dataShadow, final int lastShadow) {
         final int[] runningOrder = this.mainSort_runningOrder;
         final int[] copy = this.mainSort_copy;
         final boolean[] bigDone = this.mainSort_bigDone;

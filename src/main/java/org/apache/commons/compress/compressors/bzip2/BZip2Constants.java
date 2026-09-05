@@ -80,8 +80,9 @@ interface BZip2Constants {
     int MAX_SELECTORS = 2 + 900_000 / G_SIZE;
 
     /**
-     * Constant {@value}.
+     * Constant {@value}: number of bytes replicated after the block so that rotations can be compared without wrapping around. The sort compares
+     * rotations eight bytes at a time, so the largest comparison offset plus a word must fit into the overshoot area.
      */
-    int NUM_OVERSHOOT_BYTES = 20;
+    int NUM_OVERSHOOT_BYTES = 32;
 
 }
