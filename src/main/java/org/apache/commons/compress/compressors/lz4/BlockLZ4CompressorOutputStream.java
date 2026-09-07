@@ -382,6 +382,11 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream<Outpu
     }
 
     private void rewriteLastPairs() throws CompressorException {
+        if (pairs.isEmpty()) {
+            // nothing was written, so the block is the single zero token an empty Pair writes
+            pairs.add(new Pair());
+            return;
+        }
         final LinkedList<Pair> lastPairs = new LinkedList<>();
         final LinkedList<Integer> pairLength = new LinkedList<>();
         int offset = 0;
