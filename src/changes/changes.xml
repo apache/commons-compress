@@ -252,6 +252,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="update" dev="ggregory" due-to="Gary Gregory">Bump org.tukaani:xz from 1.11 to 1.12, #767, https://github.com/tukaani-project/xz-java/compare/v1.11...v1.12</action>
       <action type="update" dev="ggregory" due-to="Gary Gregory">Bump Bump io.airlift:aircompressor from 2.0.2 to 2.0.3 #760.</action>
       <action type="update" dev="ggregory" due-to="Gary Gregory">Bump commons-io:commons-io from 2.21.0 to 2.22.0.</action>
+      <action type="update" dev="ggregory" due-to="Dependabot">Bump org.slf4j:slf4j-* from 2.0.16 to 2.0.19, use the BOM POM org.slf4j:slf4j-bom.</action>
       <!-- REMOVE -->
       <action type="remove" dev="pkarwasz" due-to="Piotr P. Karwasz">Deprecate IOUtils.readFully and IOUtils.skip.</action>
       <action type="remove" dev="ggregory" due-to="Piotr P. Karwasz">Deprecate FlushShieldFilterOutputStream.</action>
