@@ -22,6 +22,7 @@ package org.apache.commons.compress.archivers.arj;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.commons.compress.archivers.lha.CircularBuffer;
 import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.utils.InputStreamStatistics;
@@ -82,7 +83,7 @@ class ArjMethod4InputStream extends CompressorInputStream implements InputStream
      * @param in           The InputStream from which to read compressed data.
      * @param originalSize The size in bytes of the decompressed data.
      */
-    ArjMethod4InputStream(final InputStream in, final long originalSize){
+    ArjMethod4InputStream(final InputStream in, final long originalSize) {
         this.in = in;
         this.buffer = new CircularBuffer(WINDOW_SIZE);
         this.remaining = originalSize;
