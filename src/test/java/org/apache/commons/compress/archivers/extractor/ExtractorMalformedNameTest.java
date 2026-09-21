@@ -33,7 +33,11 @@ import java.util.stream.Stream;
 
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 /**
  * A malformed entry name that cannot be turned into a {@link Path} on this platform (a zip name field preserves a NUL byte,
@@ -73,5 +77,21 @@ class ExtractorMalformedNameTest {
         // The malformed-name guard must not regress legitimate extraction.
         Fixtures.extractZip(Extractor.newExtractor(target), Fixtures.zip(file("ok.txt", "fine")));
         assertArrayEquals("fine".getBytes(StandardCharsets.UTF_8), Files.readAllBytes(target.resolve("ok.txt")));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = { "evil.txt:ads", "evil*.txt", "evil?.txt", "<evil>.txt", "evil|.txt", "evil\".txt", "\\\\localhost" })
+    @EnabledOnOs(OS.WINDOWS)
+    void illegalWindowsNameFailsClosedAsArchiveException(final String name) throws Exception {
+        // Windows rejects these spellings with an InvalidPathException (a reserved character, or a UNC name without a share);
+        // the same chokepoint turns it into the fail-closed ArchiveException the NUL case gets, with nothing left behind.
+        final byte[] data = Fixtures.zip(file(name, "x"));
+        final Extractor extractor = Extractor.newExtractor(target);
+        final IOException ex = assertThrows(IOException.class, () -> Fixtures.extractZip(extractor, data));
+        assertInstanceOf(ArchiveException.class, ex);
+        assertInstanceOf(InvalidPathException.class, ex.getCause());
+        try (Stream<Path> entries = Files.list(target)) {
+            assertEquals(0L, entries.count(), "a rejected malformed entry must not leave anything behind");
+        }
     }
 }

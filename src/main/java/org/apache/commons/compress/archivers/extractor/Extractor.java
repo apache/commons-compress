@@ -219,6 +219,7 @@ public class Extractor {
     /**
      * Tests whether {@code path} is contained within the canonical extraction root, comparing component by component so a
      * sibling that merely shares a name prefix (for example {@code root-old} beside {@code root}) is not treated as contained.
+     * This is a string comparison; it never touches the file system.
      */
     private boolean isWithinRoot(final Path path) {
         return path.startsWith(rootDirectory);
@@ -226,6 +227,12 @@ public class Extractor {
 
     /**
      * Resolves {@code name} against the extraction root and applies the lexical zip-slip guard.
+     * <p>
+     * The guard is lexical by design and must stay free of file system access: {@code name} is untrusted until
+     * {@link #isWithinRoot(Path)} has accepted it, and on Windows a UNC name such as {@code \\host\share} would open a
+     * connection to {@code host} the moment a {@code Files} method or {@link Path#toRealPath(LinkOption...)} probed it.
+     * {@code resolve}, {@code normalize}, {@code equals} and {@code startsWith} inspect the path string only.
+     * </p>
      *
      * @return the resolved path within the root, or {@code null} if {@code name} resolves to the root itself (for example
      *         {@code a/..}), which carries nothing to materialize; the caller skips such entries rather than writing at or
