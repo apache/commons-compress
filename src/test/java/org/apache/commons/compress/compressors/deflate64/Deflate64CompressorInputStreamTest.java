@@ -30,9 +30,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream;
+import org.apache.commons.compress.archivers.zip.ZipMethod;
 import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorStreamFactory;
 import org.apache.commons.io.IOUtils;
@@ -44,17 +49,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class Deflate64CompressorInputStreamTest {
-    private final HuffmanDecoder nullDecoder = null;
+    private final Deflate64Decoder nullDecoder = null;
 
     @Mock
-    private HuffmanDecoder decoder;
+    private Deflate64Decoder decoder;
 
     private void fuzzingTest(final int[] bytes) throws IOException, ArchiveException {
-        final int len = bytes.length;
-        final byte[] input = new byte[len];
-        for (int i = 0; i < len; i++) {
-            input[i] = (byte) bytes[i];
-        }
+        final byte[] input = AbstractTest.toByteArray(bytes);
         try (ArchiveInputStream<?> ais = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("zip", new ByteArrayInputStream(input))) {
             ais.getNextEntry();
             IOUtils.toByteArray(ais);
@@ -79,6 +80,19 @@ class Deflate64CompressorInputStreamTest {
         }
 
         Mockito.verify(decoder, times(1)).close();
+    }
+
+    @Test
+    void testDecompress() throws Exception {
+        try (ZipArchiveInputStream archive = new ZipArchiveInputStream(AbstractTest.newInputStream("lorem-ipsum-deflate64.zip"))) {
+            final ZipArchiveEntry entry = archive.getNextEntry();
+            assertEquals("lorem-ipsum.txt", entry.getName());
+            assertEquals(ZipMethod.ENHANCED_DEFLATED, ZipMethod.getMethodByCode(entry.getMethod()));
+
+            final byte[] data = IOUtils.toByteArray(archive);
+            assertEquals(144060, data.length);
+            assertEquals("a00c4f3f36515c96b2faef71c054e7f3e86a4f0f4ed4824cb7c5293bb455d28a", DigestUtils.sha256Hex(data));
+        }
     }
 
     @Test
@@ -169,6 +183,10 @@ class Deflate64CompressorInputStreamTest {
     }
 
     /**
+     * The fuzzed data below encodes a Huffman table that violates Kraft's inequality (too many leaf nodes for its
+     * depth), which {@link org.apache.commons.compress.huffman.HuffmanDecoder} rejects with a
+     * {@link CompressorException} before the stream would otherwise run out of data.
+     *
      * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-527">COMPRESS-527</a>
      */
     @Test

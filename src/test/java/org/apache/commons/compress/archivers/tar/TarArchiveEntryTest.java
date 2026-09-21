@@ -43,6 +43,7 @@ import java.util.List;
 import java.util.Random;
 
 import org.apache.commons.compress.AbstractTest;
+import org.apache.commons.compress.CompressException;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.zip.ZipEncodingHelper;
 import org.apache.commons.lang3.StringUtils;
@@ -63,7 +64,7 @@ class TarArchiveEntryTest implements TarConstants {
         assertEquals(MAGIC_POSIX + VERSION_POSIX, readMagic(t));
     }
 
-    private TarArchiveEntry createEntryForTimeTests() {
+    private TarArchiveEntry createEntryForTimeTests() throws CompressException {
         final TarArchiveEntry entry = new TarArchiveEntry("./times.txt");
         entry.addPaxHeader("size", "1");
         entry.addPaxHeader("mtime", "1647221103.5998539");
@@ -73,9 +74,9 @@ class TarArchiveEntryTest implements TarConstants {
         return entry;
     }
 
-    private String readMagic(final TarArchiveEntry t) {
+    private String readMagic(final TarArchiveEntry entry) {
         final byte[] buf = new byte[512];
-        t.writeEntryHeader(buf);
+        entry.writeEntryHeader(buf);
         return new String(buf, MAGIC_OFFSET, MAGICLEN + VERSIONLEN);
     }
 
@@ -214,11 +215,11 @@ class TarArchiveEntryTest implements TarConstants {
     }
 
     @Test
-    void testMaxFileSize() {
+    void testMaxFileSize() throws ArchiveException {
         final TarArchiveEntry t = new TarArchiveEntry("");
         t.setSize(0);
         t.setSize(1);
-        assertThrows(IllegalArgumentException.class, () -> t.setSize(-1));
+        assertThrows(ArchiveException.class, () -> t.setSize(-1));
         t.setSize(077777777777L);
         t.setSize(0100000000000L);
     }
@@ -248,13 +249,13 @@ class TarArchiveEntryTest implements TarConstants {
             + "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000"
             + "\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000").getBytes(UTF_8);
         // @formatter:on
-        assertThrows(IllegalArgumentException.class,
+        assertThrows(ArchiveException.class,
                 () -> new TarArchiveEntry(entryContent, ZipEncodingHelper.getZipEncoding(StandardCharsets.ISO_8859_1.name()), false, -1));
     }
 
     @Test
     void testNegativeOffsetInSetterNotAllowed() {
-        assertThrows(IllegalArgumentException.class, () -> new TarArchiveEntry("test").setDataOffset(-1));
+        assertThrows(ArchiveException.class, () -> new TarArchiveEntry("test").setDataOffset(-1));
     }
 
     @Test
@@ -277,7 +278,7 @@ class TarArchiveEntryTest implements TarConstants {
         final TarArchiveEntry entry = new TarArchiveEntry("test.txt");
         for (final String name : headerNames) {
             for (final String value : testValues) {
-                final Exception exp = assertThrows(IllegalArgumentException.class, () -> entry.addPaxHeader(name, value));
+                final ArchiveException exp = assertThrows(ArchiveException.class, () -> entry.addPaxHeader(name, value));
                 assertTrue(exp.getCause().getMessage().startsWith("Corrupted PAX header. Time field value is invalid"));
             }
         }
@@ -325,7 +326,7 @@ class TarArchiveEntryTest implements TarConstants {
     }
 
     @Test
-    void testShouldParseTimePaxHeadersAndNotCountAsExtraPaxHeaders() {
+    void testShouldParseTimePaxHeadersAndNotCountAsExtraPaxHeaders() throws CompressException {
         final TarArchiveEntry entry = createEntryForTimeTests();
         assertEquals(0, entry.getExtraPaxHeaders().size(), "extra header count");
         assertNull(entry.getExtraPaxHeader("size"), "size");

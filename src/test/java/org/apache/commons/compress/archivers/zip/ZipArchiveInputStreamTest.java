@@ -164,11 +164,7 @@ class ZipArchiveInputStreamTest extends AbstractTest {
     }
 
     private void fuzzingTest(final int[] bytes) throws Exception {
-        final int len = bytes.length;
-        final byte[] input = new byte[len];
-        for (int i = 0; i < len; i++) {
-            input[i] = (byte) bytes[i];
-        }
+        final byte[] input = toByteArray(bytes);
         try (ArchiveInputStream<?> ais = ArchiveStreamFactory.DEFAULT.createArchiveInputStream("zip", new ByteArrayInputStream(input))) {
             ais.getNextEntry();
             IOUtils.toByteArray(ais);

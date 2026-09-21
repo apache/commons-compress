@@ -703,12 +703,19 @@ public class CpBands extends BandSet {
         bigSuffixCount = 0;
         for (int i = 1; i < cpUTF8Count; i++) {
             final String lastString = cpUTF8[i - 1];
+            // prefix is decoded with the signed DELTA5 codec, so a corrupt archive can make it negative or
+            // larger than the previous string. Reject it here instead of letting String.substring throw an
+            // unchecked StringIndexOutOfBoundsException out of the declared Pack200Exception contract.
+            final int prefixLength = i > 1 ? prefix[i - 2] : 0;
+            if (prefixLength < 0 || prefixLength > lastString.length()) {
+                throw new Pack200Exception("cpUTF8Prefix value out of range: " + prefixLength);
+            }
             if (suffix[i - 1] == 0) {
                 // The big suffix stuff hasn't been tested, and I'll be
                 // surprised if it works first time w/o errors ...
-                cpUTF8[i] = lastString.substring(0, i > 1 ? prefix[i - 2] : 0) + new String(bigSuffixData[bigSuffixCount++]);
+                cpUTF8[i] = lastString.substring(0, prefixLength) + new String(bigSuffixData[bigSuffixCount++]);
             } else {
-                cpUTF8[i] = lastString.substring(0, i > 1 ? prefix[i - 2] : 0) + new String(data, charCount, suffix[i - 1]);
+                cpUTF8[i] = lastString.substring(0, prefixLength) + new String(data, charCount, suffix[i - 1]);
                 charCount += suffix[i - 1];
             }
             mapUTF8.put(cpUTF8[i], Integer.valueOf(i));

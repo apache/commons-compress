@@ -187,7 +187,7 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
      * @since 1.27.0
      */
     public void forEach(final IOConsumer<? super E> action) throws IOException {
-        iterator().forEachRemaining(Objects.requireNonNull(action));
+        iterator().forEachRemaining(Objects.requireNonNull(action, "action"));
     }
 
     /**

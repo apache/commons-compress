@@ -27,6 +27,7 @@ import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
 import java.util.Date;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
@@ -210,8 +211,9 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      *
      * @param inputFile The file to gather information from.
      * @param entryName The name of this entry.
+     * @throws ArchiveException Thrown if the file type cannot be determined.
      */
-    public CpioArchiveEntry(final File inputFile, final String entryName) {
+    public CpioArchiveEntry(final File inputFile, final String entryName) throws ArchiveException {
         this(FORMAT_NEW, inputFile, entryName);
     }
 
@@ -234,15 +236,16 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @param format The cpio format for this entry.
      *               <p>
      *               Possible format values are:
-     *
+     *               </p>
      *               <pre>
      * CpioConstants.FORMAT_NEW
      * CpioConstants.FORMAT_NEW_CRC
      * CpioConstants.FORMAT_OLD_BINARY
      * CpioConstants.FORMAT_OLD_ASCII
      *               </pre>
+     * @throws ArchiveException Thrown if the format is not recognized.
      */
-    public CpioArchiveEntry(final short format) {
+    public CpioArchiveEntry(final short format) throws ArchiveException {
         switch (format) {
         case FORMAT_NEW:
             this.headerSize = 110;
@@ -261,7 +264,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
             this.alignmentBoundary = 2;
             break;
         default:
-            throw new IllegalArgumentException("Unknown header type " + format);
+            throw new ArchiveException("Unknown header type " + format);
         }
         this.fileFormat = format;
     }
@@ -274,27 +277,27 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @param entryName The name of this entry.
      *                  <p>
      *                  Possible format values are:
-     *
+     *                  </p>
      *                  <pre>
      * CpioConstants.FORMAT_NEW
      * CpioConstants.FORMAT_NEW_CRC
      * CpioConstants.FORMAT_OLD_BINARY
      * CpioConstants.FORMAT_OLD_ASCII
      *                  </pre>
-     *
+     * @throws ArchiveException Thrown if the file type cannot be determined.
      * @since 1.1
      */
-    public CpioArchiveEntry(final short format, final File inputFile, final String entryName) {
+    public CpioArchiveEntry(final short format, final File inputFile, final String entryName) throws ArchiveException {
         this(format, entryName, inputFile.isFile() ? inputFile.length() : 0);
         if (inputFile.isDirectory()) {
             setMode(C_ISDIR);
         } else if (inputFile.isFile()) {
             setMode(C_ISREG);
         } else {
-            throw new IllegalArgumentException("Cannot determine type of file " + inputFile.getName());
+            throw new ArchiveException("Cannot determine type of file " + inputFile.getName());
         }
         // TODO set other fields as needed
-        setTime(inputFile.lastModified() / 1000);
+        setTimeMillis(inputFile.lastModified());
     }
 
     /**
@@ -305,16 +308,16 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @param entryName The name of this entry.
      *                  <p>
      *                  Possible format values are:
-     *
+     *                  </p>
      *                  <pre>
      * CpioConstants.FORMAT_NEW
      * CpioConstants.FORMAT_NEW_CRC
      * CpioConstants.FORMAT_OLD_BINARY
      * CpioConstants.FORMAT_OLD_ASCII
      *                  </pre>
-     *
      * @param options   options indicating how symbolic links are handled.
      * @throws IOException if an I/O error occurs.
+     * @throws ArchiveException Thrown if the file type cannot be determined.
      * @since 1.21
      */
     public CpioArchiveEntry(final short format, final Path inputPath, final String entryName, final LinkOption... options) throws IOException {
@@ -324,7 +327,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
         } else if (Files.isRegularFile(inputPath, options)) {
             setMode(C_ISREG);
         } else {
-            throw new IllegalArgumentException("Cannot determine type of file " + inputPath);
+            throw new ArchiveException("Cannot determine type of file " + inputPath);
         }
         // TODO set other fields as needed
         setTime(Files.getLastModifiedTime(inputPath, options));
@@ -337,17 +340,17 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @param name   The name of this entry.
      *               <p>
      *               Possible format values are:
-     *
+     *               </p>
      *               <pre>
      * CpioConstants.FORMAT_NEW
      * CpioConstants.FORMAT_NEW_CRC
      * CpioConstants.FORMAT_OLD_BINARY
      * CpioConstants.FORMAT_OLD_ASCII
      *               </pre>
-     *
+     * @throws ArchiveException Thrown if the format is not recognized.
      * @since 1.1
      */
-    public CpioArchiveEntry(final short format, final String name) {
+    public CpioArchiveEntry(final short format, final String name) throws ArchiveException {
         this(format);
         this.name = name;
     }
@@ -360,7 +363,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * @param size   The size of this entry
      *               <p>
      *               Possible format values are:
-     *
+     *               </p>
      *               <pre>
      * CpioConstants.FORMAT_NEW
      * CpioConstants.FORMAT_NEW_CRC
@@ -368,9 +371,10 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * CpioConstants.FORMAT_OLD_ASCII
      *               </pre>
      *
+     * @throws ArchiveException Thrown if the size is negative, exceeds the maximum size for the format, or the format is not recognized..
      * @since 1.1
      */
-    public CpioArchiveEntry(final short format, final String name, final long size) {
+    public CpioArchiveEntry(final short format, final String name, final long size) throws ArchiveException {
         this(format, name);
         setSize(size);
     }
@@ -379,8 +383,9 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * Creates a CpioArchiveEntry with a specified name. The format of this entry will be the new format.
      *
      * @param name The name of this entry.
+     * @throws ArchiveException Thrown if the {@link CpioConstants#FORMAT_NEW} is not recognized.
      */
-    public CpioArchiveEntry(final String name) {
+    public CpioArchiveEntry(final String name) throws ArchiveException {
         this(FORMAT_NEW, name);
     }
 
@@ -389,8 +394,9 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      *
      * @param name The name of this entry.
      * @param size The size of this entry.
+     * @throws ArchiveException Thrown if the size is negative or exceeds the maximum size for the format.
      */
-    public CpioArchiveEntry(final String name, final long size) {
+    public CpioArchiveEntry(final String name, final long size) throws ArchiveException {
         this(name);
         setSize(size);
     }
@@ -835,8 +841,9 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * Sets the mode of this entry (for example directory, regular file).
      *
      * @param mode The mode to set.
+     * @throws ArchiveException Thrown if the mode is not recognized.
      */
-    public void setMode(final long mode) {
+    public void setMode(final long mode) throws ArchiveException {
         final long maskedMode = mode & S_IFMT;
         switch ((int) maskedMode) {
         case C_ISDIR:
@@ -849,7 +856,7 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
         case C_ISNWK:
             break;
         default:
-            throw new IllegalArgumentException("Unknown mode. Full: " + Long.toHexString(mode) + " Masked: " + Long.toHexString(maskedMode));
+            throw new ArchiveException("Unknown mode. Full: " + Long.toHexString(mode) + " Masked: " + Long.toHexString(maskedMode));
         }
         this.mode = mode;
     }
@@ -909,12 +916,13 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
      * Sets the file size.
      *
      * @param size The file size to set.
+     * @throws ArchiveException Thrown if the size is negative or exceeds the maximum size for the format.
      */
-    public void setSize(final long size) {
+    public void setSize(final long size) throws ArchiveException {
         // When using the OLD_ASCII format, files can be up to 8GiB in size.
         final long maxSize = this.fileFormat == FORMAT_OLD_ASCII ? 0x1FFFFFFFFL : 0xFFFFFFFFL;
         if (size < 0 || size > maxSize) {
-            throw new IllegalArgumentException("Invalid entry size <" + size + ">");
+            throw new ArchiveException("Invalid entry size <" + size + ">");
         }
         this.fileSize = size;
     }
@@ -931,10 +939,20 @@ public class CpioArchiveEntry implements CpioConstants, ArchiveEntry {
     /**
      * Sets the time in seconds.
      *
-     * @param time The time to set.
+     * @param time The time to set in seconds.
      */
     public void setTime(final long time) {
         this.mtime = time;
+    }
+
+    /**
+     * Sets the time in milliseconds.
+     *
+     * @param time The time to set in milliseconds.
+     * @since 1.29.0
+     */
+    public void setTimeMillis(final long time) {
+        this.mtime = TimeUnit.MILLISECONDS.toSeconds(time);
     }
 
     /**

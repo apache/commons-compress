@@ -177,6 +177,8 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
 
     private final int maxEntryNameLength;
 
+    private final long maxPaxHeaderSize;
+
     private TarFile(final Builder builder) throws IOException {
         this.archive = builder.getChannel(SeekableByteChannel.class);
         try {
@@ -186,6 +188,7 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
             this.blockSize = builder.getBlockSize();
             this.lenient = builder.isLenient();
             this.maxEntryNameLength = builder.getMaxEntryNameLength();
+            this.maxPaxHeaderSize = builder.getMaxPaxHeaderSize();
             // Populate `entries` explicitly here instead of using `forEach`/`stream`,
             // because both rely on `entries` internally.
             // Using them would cause a self-referential loop and leave `entries` empty.
@@ -361,11 +364,8 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
         // physical bytes backing this entry
         long dataBytes = 0;
         for (final TarArchiveStructSparse sparseHeader : sparseHeaders) {
-            final long zeroBlockSize = sparseHeader.getOffset() - offset;
-            if (zeroBlockSize < 0) {
-                // sparse header says to move backwards inside the extracted entry
-                throw new ArchiveException("Corrupted struct sparse detected");
-            }
+            final long zeroBlockSize = ArchiveException.requireNonNegative(sparseHeader.getOffset() - offset, "Corrupted struct sparse detected");
+            // sparse header says to move backwards inside the extracted entry
             // only store the zero block if it is not empty
             if (zeroBlockSize > 0) {
                 streams.add(BoundedInputStream.builder().setInputStream(zeroInputStream).setMaxCount(zeroBlockSize).get());
@@ -481,8 +481,8 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
             lastWasSpecial = TarUtils.isSpecialTarRecord(currEntry);
             if (lastWasSpecial) {
                 // Handle PAX, GNU long name, or other special records
-                TarUtils.handleSpecialTarRecord(currentStream, zipEncoding, maxEntryNameLength, currEntry, paxHeaders, sparseHeaders, globalPaxHeaders,
-                        globalSparseHeaders);
+                TarUtils.handleSpecialTarRecord(currentStream, zipEncoding, maxEntryNameLength, maxPaxHeaderSize, currEntry, paxHeaders, sparseHeaders,
+                        globalPaxHeaders, globalSparseHeaders);
             }
         } while (lastWasSpecial);
         // Apply global and local PAX headers
@@ -566,10 +566,8 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
         if (currEntry.isExtended()) {
             TarArchiveSparseEntry entry;
             do {
-                final ByteBuffer headerBuf = getRecord();
-                if (headerBuf == null) {
-                    throw new ArchiveException("Premature end of tar archive. Didn't find extended_header after header with extended flag.");
-                }
+                final ByteBuffer headerBuf = ArchiveException.requireNonNull(getRecord(),
+                        "Premature end of tar archive. Didn't find extended_header after header with extended flag.");
                 entry = new TarArchiveSparseEntry(headerBuf.array());
                 currEntry.getSparseHeaders().addAll(entry.getSparseHeaders());
             } while (entry.isExtended());
@@ -619,7 +617,7 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
      */
     private void skipRecordPadding() throws IOException {
         if (!isDirectory() && currEntry.getSize() > 0 && currEntry.getSize() % recordSize != 0) {
-            final long padding = recordSize - (currEntry.getSize() % recordSize);
+            final long padding = recordSize - currEntry.getSize() % recordSize;
             repositionForwardBy(padding);
             throwExceptionIfPositionIsNotInArchive();
         }

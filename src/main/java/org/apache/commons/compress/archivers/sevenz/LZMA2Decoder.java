@@ -55,9 +55,7 @@ final class LZMA2Decoder extends AbstractCoder {
     }
 
     private int getDictionarySize(final Coder coder) throws IOException {
-        if (coder.properties == null) {
-            throw new ArchiveException("Missing LZMA2 properties");
-        }
+        ArchiveException.requireNonNull(coder.properties, "Missing LZMA2 properties");
         if (coder.properties.length < 1) {
             throw new ArchiveException("LZMA2 properties too short");
         }

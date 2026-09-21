@@ -21,7 +21,7 @@ package org.apache.commons.compress.archivers.sevenz;
 
 import java.util.BitSet;
 
-import org.apache.commons.compress.CompressException;
+import org.apache.commons.compress.archivers.ArchiveException;
 
 /**
  * Properties for non-empty files.
@@ -43,7 +43,7 @@ final class SubStreamsInfo {
      */
     final long[] crcs;
 
-    SubStreamsInfo(final int totalUnpackStreams, final int maxMemoryLimitKiB) throws CompressException {
+    SubStreamsInfo(final int totalUnpackStreams, final int maxMemoryLimitKiB) throws ArchiveException {
         long alloc;
         try {
             // 2 long arrays, just count the longs
@@ -52,7 +52,7 @@ final class SubStreamsInfo {
             final int sizeOfBitSet = Math.multiplyExact(Long.BYTES, (totalUnpackStreams - 1 >> 6) + 1);
             alloc = Math.addExact(alloc, Math.multiplyExact(totalUnpackStreams, sizeOfBitSet));
         } catch (final ArithmeticException e) {
-            throw new CompressException("Cannot create allocation request for a SubStreamsInfo of totalUnpackStreams %,d, maxMemoryLimitKiB %,d: %s",
+            throw new ArchiveException("Cannot create allocation request for a SubStreamsInfo of totalUnpackStreams %,d, maxMemoryLimitKiB %,d: %s",
                     totalUnpackStreams, maxMemoryLimitKiB, e);
         }
         // Avoid false positives.

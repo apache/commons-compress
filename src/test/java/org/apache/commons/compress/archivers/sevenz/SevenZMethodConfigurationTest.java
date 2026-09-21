@@ -22,54 +22,56 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 import org.tukaani.xz.LZMA2Options;
 
 class SevenZMethodConfigurationTest {
 
     @Test
-    void testShouldAllowLZMA2OptionsForLZMA() {
+    void testShouldAllowLZMA2OptionsForLZMA() throws ArchiveException {
         assertNotNull(new SevenZMethodConfiguration(SevenZMethod.LZMA, new LZMA2Options()).getOptions());
     }
 
     @Test
-    void testShouldAllowLZMA2OptionsForLZMA2() {
+    void testShouldAllowLZMA2OptionsForLZMA2() throws ArchiveException {
         assertNotNull(new SevenZMethodConfiguration(SevenZMethod.LZMA2, new LZMA2Options()).getOptions());
     }
 
     @Test
-    void testShouldAllowNullOptions() {
+    void testShouldAllowNullOptions() throws ArchiveException {
         assertNull(new SevenZMethodConfiguration(SevenZMethod.LZMA2, null).getOptions());
     }
 
     @Test
-    void testShouldAllowNumberForBzip2() {
+    void testShouldAllowNumberForBzip2() throws ArchiveException {
         assertNotNull(new SevenZMethodConfiguration(SevenZMethod.BZIP2, 42).getOptions());
     }
 
     @Test
-    void testShouldAllowNumberForDeflate() {
+    void testShouldAllowNumberForDeflate() throws ArchiveException {
         assertNotNull(new SevenZMethodConfiguration(SevenZMethod.DEFLATE, 42).getOptions());
     }
 
     @Test
-    void testShouldAllowNumberForLZMA() {
+    void testShouldAllowNumberForLZMA() throws ArchiveException {
         assertNotNull(new SevenZMethodConfiguration(SevenZMethod.LZMA, 42).getOptions());
     }
 
     @Test
-    void testShouldAllowNumberForLZMA2() {
+    void testShouldAllowNumberForLZMA2() throws ArchiveException {
         assertNotNull(new SevenZMethodConfiguration(SevenZMethod.LZMA2, 42).getOptions());
     }
 
     @Test
     void testShouldNotAllowStringOptionsForLZMA() {
-        assertThrows(IllegalArgumentException.class, () -> new SevenZMethodConfiguration(SevenZMethod.LZMA, ""));
+        assertThrows(ArchiveException.class, () -> new SevenZMethodConfiguration(SevenZMethod.LZMA, StringUtils.EMPTY));
     }
 
     @Test
     void testShouldNotAllowStringOptionsForLZMA2() {
-        assertThrows(IllegalArgumentException.class, () -> new SevenZMethodConfiguration(SevenZMethod.LZMA2, ""));
+        assertThrows(ArchiveException.class, () -> new SevenZMethodConfiguration(SevenZMethod.LZMA2, StringUtils.EMPTY));
     }
 
 }

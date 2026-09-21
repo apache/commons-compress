@@ -143,29 +143,14 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         }
         // Check Ascii (String) values
         // 3037 3037 30nn
-        if (signature[0] != 0x30) {
-            return false;
-        }
-        if (signature[1] != 0x37) {
-            return false;
-        }
-        if (signature[2] != 0x30) {
-            return false;
-        }
-        if (signature[3] != 0x37) {
+        if (signature[0] != 0x30 || signature[1] != 0x37 || signature[2] != 0x30 || signature[3] != 0x37) {
             return false;
         }
         if (signature[4] != 0x30) {
             return false;
         }
         // Check last byte
-        if (signature[5] == 0x31) {
-            return true;
-        }
-        if (signature[5] == 0x32) {
-            return true;
-        }
-        if (signature[5] == 0x37) {
+        if (signature[5] == 0x31 || signature[5] == 0x32 || signature[5] == 0x37) {
             return true;
         }
         return false;
@@ -201,7 +186,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
     private CpioArchiveInputStream(final Builder builder) throws IOException {
         super(builder);
         if (builder.blockSize <= 0) {
-            throw new IllegalArgumentException("blockSize must be bigger than 0");
+            throw new ArchiveException("blockSize must be bigger than 0");
         }
         this.blockSize = builder.blockSize;
         this.zipEncoding = ZipEncodingHelper.getZipEncoding(builder.getCharset());
@@ -242,7 +227,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
      *
      * @param in        The cpio stream.
      * @param blockSize The block size of the archive.
-     * @param encoding  The encoding of file names to expect - use null for the platform's default.
+     * @param encoding  The encoding of file names to expect, use null for the platform's default.
      * @throws IllegalArgumentException if {@code blockSize} is not bigger than 0.
      * @throws IOException if an I/O error has occurred.
      * @since 1.6
@@ -259,7 +244,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
      * <p>Since 1.29.0: throws {@link IOException}.</p>
      *
      * @param in       The cpio stream.
-     * @param encoding The encoding of file names to expect - use null for the platform's default.
+     * @param encoding The encoding of file names to expect, use null for the platform's default.
      * @throws IOException if an I/O error has occurred.
      * @since 1.6
      * @deprecated Since 1.29.0, use {@link #builder()}.
@@ -419,7 +404,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         return CpioUtil.byteArray2long(tmp, swapHalfWord);
     }
 
-    private String readEntryName(int lengthWithNull) throws IOException {
+    private String readEntryName(final int lengthWithNull) throws IOException {
         final int length = ArchiveUtils.checkEntryNameLength(lengthWithNull - 1, getMaxEntryNameLength(), "CPIO");
         // don't include trailing NUL in file name to decode
         final byte[] tmpBuffer = readRange(length);
@@ -455,9 +440,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
         newEntry.setNumberOfLinks(readAsciiLong(8, 16));
         newEntry.setTime(readAsciiLong(8, 16));
         newEntry.setSize(readAsciiLong(8, 16));
-        if (newEntry.getSize() < 0) {
-            throw new ArchiveException("Found illegal entry with negative length");
-        }
+        ArchiveException.requireNonNegative(newEntry.getSize(), "Found illegal entry with negative length");
         newEntry.setDeviceMaj(readAsciiLong(8, 16));
         newEntry.setDeviceMin(readAsciiLong(8, 16));
         newEntry.setRemoteDeviceMaj(readAsciiLong(8, 16));
@@ -498,9 +481,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
             throw new ArchiveException("Found illegal entry with negative name length");
         }
         ret.setSize(readAsciiLong(11, 8));
-        if (ret.getSize() < 0) {
-            throw new ArchiveException("Found illegal entry with negative length");
-        }
+        ArchiveException.requireNonNegative(ret.getSize(), "Found illegal entry with negative length");
         final String name = readEntryName(ArchiveException.toIntExact(nameSize));
         ret.setName(name);
         if (CpioUtil.fileType(mode) == 0 && !name.equals(CPIO_TRAILER)) {
@@ -528,9 +509,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
             throw new ArchiveException("Found illegal entry with negative name length");
         }
         oldEntry.setSize(readBinaryLong(4, swapHalfWord));
-        if (oldEntry.getSize() < 0) {
-            throw new ArchiveException("Found illegal entry with negative length");
-        }
+        ArchiveException.requireNonNegative(oldEntry.getSize(), "Found illegal entry with negative length");
         final String name = readEntryName(ArchiveException.toIntExact(nameSize));
         oldEntry.setName(name);
         if (CpioUtil.fileType(mode) == 0 && !name.equals(CPIO_TRAILER)) {
@@ -563,14 +542,12 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
      *
      * @param n The number of bytes to skip.
      * @return The actual number of bytes skipped.
-     * @throws IOException              if an I/O error has occurred.
-     * @throws IllegalArgumentException if n &lt; 0.
+     * @throws IOException      Thrown if an I/O error has occurred.
+     * @throws ArchiveException Thrown if n &lt; 0.
      */
     @Override
     public long skip(final long n) throws IOException {
-        if (n < 0) {
-            throw new IllegalArgumentException("Negative skip length");
-        }
+        ArchiveException.requireNonNegative(n, "Negative skip length");
         checkOpen();
         final int max = (int) Math.min(n, Integer.MAX_VALUE);
         int total = 0;

@@ -139,6 +139,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
      * @param format    The format of the stream.
      * @param blockSize The block size of the archive.
      * @param encoding  The encoding of file names to write - use null for the platform's default.
+     * @throws IllegalArgumentException if the format is unknown.
      * @since 1.6
      */
     public CpioArchiveOutputStream(final OutputStream out, final short format, final int blockSize, final String encoding) {
@@ -195,10 +196,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
     public void closeArchiveEntry() throws IOException {
         checkFinished();
         checkOpen();
-        if (entry == null) {
-            throw new ArchiveException("Trying to close non-existent entry");
-        }
-
+        ArchiveException.requireNonNull(entry, "Trying to close non-existent entry");
         if (this.entry.getSize() != this.written) {
             throw new ArchiveException("Invalid entry size (expected " + this.entry.getSize() + " but got " + this.written + " bytes)");
         }
@@ -294,7 +292,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
             closeArchiveEntry(); // close previous entry
         }
         if (entry.getTime() == -1) {
-            entry.setTime(System.currentTimeMillis() / 1000);
+            entry.setTimeMillis(System.currentTimeMillis());
         }
         final short format = entry.getFormat();
         if (format != this.entryFormat) {
@@ -325,9 +323,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
             return;
         }
         checkOpen();
-        if (this.entry == null) {
-            throw new ArchiveException("No current CPIO entry");
-        }
+        ArchiveException.requireNonNull(entry, "No current CPIO entry");
         if (this.written + len > this.entry.getSize()) {
             throw new ArchiveException("Attempt to write past end of STORED entry");
         }

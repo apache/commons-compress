@@ -80,9 +80,9 @@ public class X0015_CertificateIdForFile extends PKWareExtraHeader {
 
     @Override
     public void parseFromCentralDirectoryData(final byte[] data, final int offset, final int length) throws ZipException {
-        assertMinimalLength(4, length);
+        assertMinimalLength(6, length);
         super.parseFromCentralDirectoryData(data, offset, length);
-        this.rcount = ZipShort.getValue(data, offset);
-        this.hashAlg = HashAlgorithm.getAlgorithmByCode(ZipShort.getValue(data, offset + 2));
+        this.rcount = (int) ZipLong.getValue(data, offset);
+        this.hashAlg = HashAlgorithm.getAlgorithmByCode(ZipShort.getValue(data, offset + 4));
     }
 }

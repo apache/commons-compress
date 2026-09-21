@@ -30,6 +30,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.zip.Deflater;
 
 import org.apache.commons.compress.CompressException;
+import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.gzip.GzipParameters.OS;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -91,11 +92,11 @@ class GzipParametersTest {
         final GzipParameters gzipParameters = new GzipParameters();
         // null resets to default value
         gzipParameters.setFileNameCharset(charset);
-        assertThrows(IllegalArgumentException.class, () -> gzipParameters.setComment(text));
+        assertThrows(CompressorException.class, () -> gzipParameters.setComment(text));
         assertNull(gzipParameters.getComment());
-        assertThrows(IllegalArgumentException.class, () -> gzipParameters.setFilename(text));
+        assertThrows(CompressorException.class, () -> gzipParameters.setFilename(text));
         assertNull(gzipParameters.getFileName());
-        assertThrows(IllegalArgumentException.class, () -> gzipParameters.setFileName(text));
+        assertThrows(CompressorException.class, () -> gzipParameters.setFileName(text));
         assertNull(gzipParameters.getFileName());
         assertEquals(gzipParameters, gzipParameters);
     }
@@ -111,7 +112,7 @@ class GzipParametersTest {
         "UTF-8     , helloéworld"
     })
     // @formatter:on
-    void testLegalCommentOrFileName(final Charset charset, final String text) {
+    void testLegalCommentOrFileName(final Charset charset, final String text) throws CompressorException {
         final GzipParameters gzipParameters = new GzipParameters();
         // null resets to default value
         gzipParameters.setFileNameCharset(charset);

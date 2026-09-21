@@ -41,9 +41,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveEntry;
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveOutputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
 import org.apache.commons.io.IOUtils;
@@ -91,7 +93,7 @@ class TarArchiveOutputStreamTest extends AbstractTest {
         t.setSize(0100000000000L);
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try (TarArchiveOutputStream tos = new TarArchiveOutputStream(bos)) {
-            assertThrows(IllegalArgumentException.class, () -> tos.putArchiveEntry(t));
+            assertThrows(ArchiveException.class, () -> tos.putArchiveEntry(t));
         }
     }
 
@@ -212,7 +214,8 @@ class TarArchiveOutputStreamTest extends AbstractTest {
             final ArchiveEntry nextEntry = tarIn.getNextEntry();
             assertEquals(longFileName, nextEntry.getName());
             // tar archive stores modification time to second granularity only (floored)
-            assertEquals(modificationDate.getTime() / 1000, nextEntry.getLastModifiedDate().getTime() / 1000);
+            assertEquals(TimeUnit.MILLISECONDS.toSeconds(modificationDate.getTime()),
+                    TimeUnit.MILLISECONDS.toSeconds(nextEntry.getLastModifiedDate().getTime()));
         }
     }
 
@@ -224,7 +227,7 @@ class TarArchiveOutputStreamTest extends AbstractTest {
         tos1.putArchiveEntry(t);
         t.setSize(0100000000000L);
         final TarArchiveOutputStream tos2 = new TarArchiveOutputStream(new ByteArrayOutputStream());
-        assertThrows(RuntimeException.class, () -> tos2.putArchiveEntry(t), "Should have generated RuntimeException");
+        assertThrows(ArchiveException.class, () -> tos2.putArchiveEntry(t));
     }
 
     @Test
@@ -233,7 +236,7 @@ class TarArchiveOutputStreamTest extends AbstractTest {
         t.setSize(Integer.MAX_VALUE);
         t.setModTime(-1000);
         try (TarArchiveOutputStream tos = new TarArchiveOutputStream(new ByteArrayOutputStream())) {
-            assertThrows(RuntimeException.class, () -> tos.putArchiveEntry(t));
+            assertThrows(ArchiveException.class, () -> tos.putArchiveEntry(t));
         }
     }
 
@@ -449,7 +452,7 @@ class TarArchiveOutputStreamTest extends AbstractTest {
                 + "01234567890123456789012345678901234567890123456789"
                 + "01234567890123456789012345678901234567890123456789/";
         // @formatter:on
-        assertThrows(IllegalArgumentException.class, () -> {
+        assertThrows(ArchiveException.class, () -> {
             final TarArchiveEntry t = new TarArchiveEntry(n);
             final ByteArrayOutputStream bos = new ByteArrayOutputStream();
             try (TarArchiveOutputStream tos = new TarArchiveOutputStream(bos, "ASCII")) {
@@ -529,7 +532,7 @@ class TarArchiveOutputStreamTest extends AbstractTest {
                 + "01234567890123456789012345678901234567890123456789";
         final TarArchiveEntry t = new TarArchiveEntry(n);
         final TarArchiveOutputStream tos = new TarArchiveOutputStream(new ByteArrayOutputStream(), "ASCII");
-        assertThrows(IllegalArgumentException.class, () -> tos.putArchiveEntry(t));
+        assertThrows(ArchiveException.class, () -> tos.putArchiveEntry(t));
     }
 
     /**
@@ -568,7 +571,7 @@ class TarArchiveOutputStreamTest extends AbstractTest {
         final TarArchiveEntry entry = new TarArchiveEntry("test", TarConstants.LF_SYMLINK);
         entry.setLinkName(linkName);
 
-        assertThrows(RuntimeException.class, () -> {
+        assertThrows(ArchiveException.class, () -> {
             final ByteArrayOutputStream bos = new ByteArrayOutputStream();
             try (TarArchiveOutputStream tos = new TarArchiveOutputStream(bos, "ASCII")) {
                 tos.setLongFileMode(TarArchiveOutputStream.LONGFILE_ERROR);

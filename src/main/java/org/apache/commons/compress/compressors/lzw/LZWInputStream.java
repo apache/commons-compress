@@ -223,14 +223,14 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
      * Initializes the arrays based on the maximum code size.
      *
      * @param maxCodeSize maximum code size.
-     * @throws IllegalArgumentException if {@code maxCodeSize} is out of bounds for {@code prefixes} and {@code characters}.
+     * @throws CompressorException if {@code maxCodeSize} is out of bounds for {@code prefixes} and {@code characters}.
      */
-    protected void initializeTables(final int maxCodeSize) {
+    protected void initializeTables(final int maxCodeSize) throws CompressorException {
         // maxCodeSize shifted cannot be less than 256, otherwise the loop in initializeTables() will throw an ArrayIndexOutOfBoundsException
         // maxCodeSize cannot be smaller than getCodeSize(), otherwise addEntry() will throw an ArrayIndexOutOfBoundsException
         if (1 << maxCodeSize < 256 || getCodeSize() > maxCodeSize) {
             // TODO test against prefixes.length and characters.length?
-            throw new IllegalArgumentException("maxCodeSize " + maxCodeSize + " is out of bounds.");
+            throw new CompressorException("maxCodeSize " + maxCodeSize + " is out of bounds.");
         }
         final int maxTableSize = 1 << maxCodeSize;
         prefixes = new int[maxTableSize];
@@ -247,14 +247,14 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
     /**
      * Initializes the arrays based on the maximum code size. First checks that the estimated memory usage is below memoryLimitInKb
      *
-     * @param maxCodeSize     maximum code size.
+     * @param maxCodeSize   maximum code size.
      * @param memoryLimiKiB maximum allowed estimated memory usage in kibibytes (KiB).
-     * @throws MemoryLimitException     if estimated memory usage is greater than memoryLimitKiB.
-     * @throws IllegalArgumentException if {@code maxCodeSize} is not bigger than 0.
+     * @throws MemoryLimitException Thrown if estimated memory usage is greater than memoryLimitKiB.
+     * @throws CompressorException  Thrown if {@code maxCodeSize} is not bigger than 0.
      */
-    protected void initializeTables(final int maxCodeSize, final int memoryLimiKiB) throws MemoryLimitException {
+    protected void initializeTables(final int maxCodeSize, final int memoryLimiKiB) throws MemoryLimitException, CompressorException {
         if (maxCodeSize <= 0) {
-            throw new IllegalArgumentException("maxCodeSize is " + maxCodeSize + ", must be bigger than 0");
+            throw new CompressorException("maxCodeSize is " + maxCodeSize + ", must be bigger than 0");
         }
         if (memoryLimiKiB > -1) {
             final int maxTableSize = 1 << maxCodeSize;
@@ -316,7 +316,7 @@ public abstract class LZWInputStream extends CompressorInputStream implements In
      */
     protected int readNextCode() throws IOException {
         if (codeSize > MAX_CODE_SIZE) {
-            throw new IllegalArgumentException("Code size must not be bigger than 31");
+            throw new CompressorException("Code size must not be bigger than 31");
         }
         return (int) in.readBits(codeSize);
     }

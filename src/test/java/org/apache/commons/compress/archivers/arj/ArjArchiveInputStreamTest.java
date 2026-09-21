@@ -180,6 +180,18 @@ class ArjArchiveInputStreamTest extends AbstractTest {
         assertEquals(expected.toString(), result.toString());
     }
 
+    /**
+     * A basic header size of zero is the end-of-archive marker, so an archive starting with one carries no main header.
+     *
+     * @param selfExtracting whether to scan for the main header.
+     */
+    @ParameterizedTest
+    @ValueSource(booleans = { false, true })
+    void testMissingMainHeader(final boolean selfExtracting) {
+        final byte[] bytes = { 0x60, (byte) 0xEA, 0x00, 0x00 };
+        assertThrows(ArchiveException.class, () -> ArjArchiveInputStream.builder().setByteArray(bytes).setSelfExtracting(selfExtracting).get());
+    }
+
     @Test
     void testMultiByteReadConsistentlyReturnsMinusOneAtEof() throws Exception {
         final byte[] buf = new byte[2];

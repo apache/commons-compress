@@ -19,6 +19,8 @@
 
 package org.apache.commons.compress.utils;
 
+import org.apache.commons.compress.CompressException;
+
 /**
  * PRIVATE.
  *
@@ -32,13 +34,13 @@ public class ExactMath {
      * @param x The first value, an int.
      * @param y The second value, a long,.
      * @return The addition of both values.
-     * @throws IllegalArgumentException when y or the result overflows an int.
+     * @throws CompressException when y or the result overflows an int.
      */
-    public static int add(final int x, final long y) {
+    public static int add(final int x, final long y) throws CompressException {
         try {
             return Math.addExact(x, Math.toIntExact(y));
         } catch (final ArithmeticException exp) {
-            throw new IllegalArgumentException("Argument too large or result overflows", exp);
+            throw new CompressException("Argument too large or result overflows", exp);
         }
     }
 

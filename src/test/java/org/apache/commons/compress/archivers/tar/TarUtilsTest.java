@@ -104,12 +104,12 @@ class TarUtilsTest extends AbstractTest {
     private static byte[] paddedUtf8Bytes(final String s) {
         final int blockSize = 1024;
         final byte[] bytes = s.getBytes(UTF_8);
-        return Arrays.copyOf(bytes, ((bytes.length + blockSize - 1) / blockSize) * blockSize);
+        return Arrays.copyOf(bytes, (bytes.length + blockSize - 1) / blockSize * blockSize);
     }
 
     private static Map<String, String> parsePaxHeaders(final byte[] data, final List<TarArchiveStructSparse> sparseHeaders,
             final Map<String, String> globalPaxHeaders) throws IOException {
-        return TarUtils.parsePaxHeaders(new ByteArrayInputStream(data), globalPaxHeaders, data.length, Short.MAX_VALUE, sparseHeaders);
+        return TarUtils.parsePaxHeaders(new ByteArrayInputStream(data), globalPaxHeaders, data.length, Long.MAX_VALUE, Short.MAX_VALUE, sparseHeaders);
     }
 
     /**
@@ -184,18 +184,18 @@ class TarUtilsTest extends AbstractTest {
         assertEquals(string, TarUtils.parseName(buff, 0, len));
     }
 
-    private void checkRoundTripOctal(final long value) {
+    private void checkRoundTripOctal(final long value) throws ArchiveException {
         checkRoundTripOctal(value, TarConstants.SIZELEN);
     }
 
-    private void checkRoundTripOctal(final long value, final int bufsize) {
+    private void checkRoundTripOctal(final long value, final int bufsize) throws ArchiveException {
         final byte[] buffer = new byte[bufsize];
         TarUtils.formatLongOctalBytes(value, buffer, 0, buffer.length);
         final long parseValue = TarUtils.parseOctal(buffer, 0, buffer.length);
         assertEquals(value, parseValue);
     }
 
-    private void checkRoundTripOctalOrBinary(final long value, final int bufsize) {
+    private void checkRoundTripOctalOrBinary(final long value, final int bufsize) throws ArchiveException {
         final byte[] buffer = new byte[bufsize];
         TarUtils.formatLongOctalOrBinaryBytes(value, buffer, 0, buffer.length);
         final long parseValue = TarUtils.parseOctalOrBinary(buffer, 0, buffer.length);
@@ -223,18 +223,18 @@ class TarUtilsTest extends AbstractTest {
     }
 
     @Test
-    void testNegative() {
+    void testNegative() throws ArchiveException {
         final byte[] buffer = new byte[22];
         TarUtils.formatUnsignedOctalString(-1, buffer, 0, buffer.length);
         assertEquals("1777777777777777777777", new String(buffer, UTF_8));
     }
 
     @Test
-    void testOverflow() {
+    void testOverflow() throws ArchiveException {
         final byte[] buffer = new byte[8 - 1]; // a lot of the numbers have 8-byte buffers (nul term)
         TarUtils.formatUnsignedOctalString(07777777L, buffer, 0, buffer.length);
         assertEquals("7777777", new String(buffer, UTF_8));
-        assertThrows(IllegalArgumentException.class, () -> TarUtils.formatUnsignedOctalString(017777777L, buffer, 0, buffer.length),
+        assertThrows(ArchiveException.class, () -> TarUtils.formatUnsignedOctalString(017777777L, buffer, 0, buffer.length),
                 "Should have cause IllegalArgumentException");
     }
 
@@ -278,7 +278,7 @@ class TarUtilsTest extends AbstractTest {
     }
 
     @Test
-    void testParseOctal() {
+    void testParseOctal() throws ArchiveException {
         long value;
         byte[] buffer;
         final long MAX_OCTAL = 077777777777L; // Allowed 11 digits
@@ -305,7 +305,7 @@ class TarUtilsTest extends AbstractTest {
     }
 
     @Test
-    void testParseOctalCompress330() {
+    void testParseOctalCompress330() throws ArchiveException {
         final long expected = 0100000;
         final byte[] buffer = { 32, 32, 32, 32, 32, 49, 48, 48, 48, 48, 48, 32 };
         assertEquals(expected, TarUtils.parseOctalOrBinary(buffer, 0, buffer.length));
@@ -314,25 +314,25 @@ class TarUtilsTest extends AbstractTest {
     @Test
     void testParseOctalEmbeddedSpace() {
         final byte[] buffer4 = " 0 07 ".getBytes(UTF_8); // Invalid - embedded space
-        assertThrows(IllegalArgumentException.class, () -> TarUtils.parseOctal(buffer4, 0, buffer4.length),
+        assertThrows(ArchiveException.class, () -> TarUtils.parseOctal(buffer4, 0, buffer4.length),
                 "Expected IllegalArgumentException - embedded space");
     }
 
     @Test
     void testParseOctalInvalid() {
         final byte[] buffer1 = ArrayUtils.EMPTY_BYTE_ARRAY;
-        assertThrows(IllegalArgumentException.class, () -> TarUtils.parseOctal(buffer1, 0, buffer1.length),
-                "Expected IllegalArgumentException - should be at least 2 bytes long");
+        assertThrows(ArchiveException.class, () -> TarUtils.parseOctal(buffer1, 0, buffer1.length),
+                "Expected ArchiveException - should be at least 2 bytes long");
 
         final byte[] buffer2 = { 0 }; // 1-byte array
-        assertThrows(IllegalArgumentException.class, () -> TarUtils.parseOctal(buffer2, 0, buffer2.length),
-                "Expected IllegalArgumentException - should be at least 2 bytes long");
+        assertThrows(ArchiveException.class, () -> TarUtils.parseOctal(buffer2, 0, buffer2.length),
+                "Expected ArchiveException - should be at least 2 bytes long");
 
         final byte[] buffer3 = "abcdef ".getBytes(UTF_8); // Invalid input
-        assertThrows(IllegalArgumentException.class, () -> TarUtils.parseOctal(buffer3, 0, buffer3.length), "Expected IllegalArgumentException");
+        assertThrows(ArchiveException.class, () -> TarUtils.parseOctal(buffer3, 0, buffer3.length), "Expected IllegalArgumentException");
 
         final byte[] buffer5 = " 0\00007 ".getBytes(UTF_8); // Invalid - embedded NUL
-        assertThrows(IllegalArgumentException.class, () -> TarUtils.parseOctal(buffer5, 0, buffer5.length), "Expected IllegalArgumentException - embedded NUL");
+        assertThrows(ArchiveException.class, () -> TarUtils.parseOctal(buffer5, 0, buffer5.length), "Expected IllegalArgumentException - embedded NUL");
     }
 
     @Test
@@ -440,7 +440,7 @@ class TarUtilsTest extends AbstractTest {
     }
 
     @Test
-    void testParseSparse() {
+    void testParseSparse() throws ArchiveException {
         final long expectedOffset = 0100000;
         final long expectedNumbytes = 0111000;
         final byte[] buffer = { ' ', ' ', ' ', ' ', ' ', '0', '1', '0', '0', '0', '0', '0', // sparseOffset
@@ -502,14 +502,14 @@ class TarUtilsTest extends AbstractTest {
     }
 
     @Test
-    void testReadNegativeBinary12Byte() {
+    void testReadNegativeBinary12Byte() throws ArchiveException {
         final byte[] b = { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff,
                 (byte) 0xf1, (byte) 0xef, };
         assertEquals(-3601L, TarUtils.parseOctalOrBinary(b, 0, 12));
     }
 
     @Test
-    void testReadNegativeBinary8Byte() {
+    void testReadNegativeBinary8Byte() throws ArchiveException {
         final byte[] b = { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xf1, (byte) 0xef, };
         assertEquals(-3601L, TarUtils.parseOctalOrBinary(b, 0, 8));
     }
@@ -640,7 +640,7 @@ class TarUtilsTest extends AbstractTest {
     }
 
     @Test
-    void testRoundTripOctal() {
+    void testRoundTripOctal() throws ArchiveException {
         checkRoundTripOctal(0);
         checkRoundTripOctal(1);
 //        checkRoundTripOctal(-1); // TODO What should this do?
@@ -652,7 +652,7 @@ class TarUtilsTest extends AbstractTest {
         checkRoundTripOctal(TarConstants.MAXID, 8);
     }
 
-    private void testRoundTripOctalOrBinary(final int length) {
+    private void testRoundTripOctalOrBinary(final int length) throws ArchiveException {
         checkRoundTripOctalOrBinary(0, length);
         checkRoundTripOctalOrBinary(1, length);
         checkRoundTripOctalOrBinary(TarConstants.MAXSIZE, length); // will need binary format
@@ -662,20 +662,20 @@ class TarUtilsTest extends AbstractTest {
     }
 
     @Test
-    void testRoundTripOctalOrBinary12() {
+    void testRoundTripOctalOrBinary12() throws ArchiveException {
         testRoundTripOctalOrBinary(12);
         checkRoundTripOctalOrBinary(Long.MAX_VALUE, 12);
         checkRoundTripOctalOrBinary(Long.MIN_VALUE + 1, 12);
     }
 
     @Test
-    void testRoundTripOctalOrBinary8() {
+    void testRoundTripOctalOrBinary8() throws ArchiveException {
         testRoundTripOctalOrBinary(8);
     }
 
     @Test
     void testRoundTripOctalOrBinary8_ValueTooBigForBinary() {
-        final IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> checkRoundTripOctalOrBinary(Long.MAX_VALUE, 8),
+        final ArchiveException e = assertThrows(ArchiveException.class, () -> checkRoundTripOctalOrBinary(Long.MAX_VALUE, 8),
                 "Should throw exception - value is too long to fit buffer of this len");
         assertEquals("Value 9223372036854775807 is too large for 8 byte field.", e.getMessage());
     }
@@ -690,7 +690,7 @@ class TarUtilsTest extends AbstractTest {
 
     // Check correct trailing bytes are generated
     @Test
-    void testTrailers() {
+    void testTrailers() throws ArchiveException {
         final byte[] buffer = new byte[12];
         TarUtils.formatLongOctalBytes(123, buffer, 0, buffer.length);
         assertEquals(' ', buffer[buffer.length - 1]);
@@ -707,7 +707,7 @@ class TarUtilsTest extends AbstractTest {
 
     // https://issues.apache.org/jira/browse/COMPRESS-191
     @Test
-    void testVerifyHeaderCheckSum() {
+    void testVerifyHeaderCheckSum() throws ArchiveException {
         final byte[] valid = { // from bla.tar
                 116, 101, 115, 116, 49, 46, 120, 109, 108, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -759,7 +759,7 @@ class TarUtilsTest extends AbstractTest {
     }
 
     @Test
-    void testWriteNegativeBinary8Byte() {
+    void testWriteNegativeBinary8Byte() throws ArchiveException {
         final byte[] b = { (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xf1, (byte) 0xef, };
         assertEquals(-3601L, TarUtils.parseOctalOrBinary(b, 0, 8));
     }

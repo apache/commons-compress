@@ -36,7 +36,7 @@ import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorOutputStream;
 import org.apache.commons.compress.compressors.deflate64.Deflate64CompressorInputStream;
-import org.apache.commons.compress.utils.FlushShieldFilterOutputStream;
+import org.apache.commons.io.output.FlushShieldOutputStream;
 import org.tukaani.xz.ARMOptions;
 import org.tukaani.xz.ARMThumbOptions;
 import org.tukaani.xz.FilterOptions;
@@ -66,10 +66,9 @@ final class Coders {
             }
         }
 
-        @SuppressWarnings("resource")
         @Override
         OutputStream encode(final OutputStream out, final Object options) {
-            return new FlushShieldFilterOutputStream(opts.getOutputStream(new FinishableWrapperOutputStream(out)));
+            return new FlushShieldOutputStream(opts.getOutputStream(new FinishableWrapperOutputStream(out)));
         }
     }
 

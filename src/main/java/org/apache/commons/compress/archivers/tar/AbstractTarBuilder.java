@@ -31,6 +31,7 @@ import org.apache.commons.compress.archivers.AbstractArchiveBuilder;
 public abstract class AbstractTarBuilder<T, B extends AbstractTarBuilder<T, B>> extends AbstractArchiveBuilder<T, B> {
 
     private int blockSize = TarConstants.DEFAULT_BLKSIZE;
+    private long maxPaxHeaderSize = TarConstants.DEFAULT_MAX_PAX_HEADER_SIZE;
     private int recordSize = TarConstants.DEFAULT_RCDSIZE;
     private boolean lenient;
 
@@ -43,6 +44,10 @@ public abstract class AbstractTarBuilder<T, B extends AbstractTarBuilder<T, B>> 
 
     int getBlockSize() {
         return blockSize;
+    }
+
+    long getMaxPaxHeaderSize() {
+        return maxPaxHeaderSize;
     }
 
     int getRecordSize() {
@@ -73,6 +78,27 @@ public abstract class AbstractTarBuilder<T, B extends AbstractTarBuilder<T, B>> 
      */
     public B setLenient(final boolean lenient) {
         this.lenient = lenient;
+        return asThis();
+    }
+
+    /**
+     * Sets the maximum size in bytes of a PAX extended header block that will
+     * be parsed. PAX headers larger than this limit cause a
+     * {@link org.apache.commons.compress.MemoryLimitException}.
+     *
+     * <p>The default is {@value TarConstants#DEFAULT_MAX_PAX_HEADER_SIZE}
+     * (10 MB), which is generous for legitimate archives. Set to
+     * {@link Long#MAX_VALUE} to restore the previous unlimited behavior.</p>
+     *
+     * @param maxPaxHeaderSize the maximum PAX header size in bytes; must be positive.
+     * @return {@code this} instance.
+     * @throws IllegalArgumentException if {@code maxPaxHeaderSize} is not positive.
+     */
+    public B setMaxPaxHeaderSize(final long maxPaxHeaderSize) {
+        if (maxPaxHeaderSize <= 0) {
+            throw new IllegalArgumentException("maxPaxHeaderSize must be positive");
+        }
+        this.maxPaxHeaderSize = maxPaxHeaderSize;
         return asThis();
     }
 

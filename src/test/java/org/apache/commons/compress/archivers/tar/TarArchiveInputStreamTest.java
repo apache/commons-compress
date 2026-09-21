@@ -285,7 +285,7 @@ class TarArchiveInputStreamTest extends AbstractTest {
             assertEquals(entry, is.getCurrentEntry());
             assertNotSame(entry, is.getCurrentEntry());
             assertSame(weaselEntry, is.getCurrentEntry());
-            assertThrows(IllegalStateException.class, () -> {
+            assertThrows(ArchiveException.class, () -> {
                 is.setCurrentEntry(null);
                 is.read();
             }, "should abort because current entry is nulled");

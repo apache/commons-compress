@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -30,7 +31,7 @@ import org.junit.jupiter.api.Test;
 class SevenZArchiveEntryTest {
 
     @Test
-    void testMethodConfigurationMattersInEquals() {
+    void testMethodConfigurationMattersInEquals() throws ArchiveException {
         final SevenZArchiveEntry z1 = new SevenZArchiveEntry();
         final SevenZArchiveEntry z2 = new SevenZArchiveEntry();
         final SevenZArchiveEntry z3 = new SevenZArchiveEntry();
@@ -44,7 +45,7 @@ class SevenZArchiveEntryTest {
     }
 
     @Test
-    void testMethodOrderMattersInEquals() {
+    void testMethodOrderMattersInEquals() throws ArchiveException {
         final SevenZArchiveEntry z1 = new SevenZArchiveEntry();
         final SevenZArchiveEntry z2 = new SevenZArchiveEntry();
         z1.setContentMethods(new SevenZMethodConfiguration(SevenZMethod.LZMA2), new SevenZMethodConfiguration(SevenZMethod.DELTA_FILTER));
@@ -54,7 +55,7 @@ class SevenZArchiveEntryTest {
     }
 
     @Test
-    void testNoMethodsIsDifferentFromSomeMethods() {
+    void testNoMethodsIsDifferentFromSomeMethods() throws ArchiveException {
         final SevenZArchiveEntry z1 = new SevenZArchiveEntry();
         final SevenZArchiveEntry z2 = new SevenZArchiveEntry();
         z2.setContentMethods(new SevenZMethodConfiguration(SevenZMethod.COPY));
@@ -63,7 +64,7 @@ class SevenZArchiveEntryTest {
     }
 
     @Test
-    void testOneMethodsIsDifferentFromTwoMethods() {
+    void testOneMethodsIsDifferentFromTwoMethods() throws ArchiveException {
         final SevenZArchiveEntry z1 = new SevenZArchiveEntry();
         final SevenZArchiveEntry z2 = new SevenZArchiveEntry();
         z1.setContentMethods(new SevenZMethodConfiguration(SevenZMethod.COPY));
@@ -73,7 +74,7 @@ class SevenZArchiveEntryTest {
     }
 
     @Test
-    void testSameMethodsYieldEqualEntries() {
+    void testSameMethodsYieldEqualEntries() throws ArchiveException {
         final SevenZArchiveEntry z1 = new SevenZArchiveEntry();
         final SevenZArchiveEntry z2 = new SevenZArchiveEntry();
         z1.setContentMethods(new SevenZMethodConfiguration(SevenZMethod.DELTA_FILTER), new SevenZMethodConfiguration(SevenZMethod.LZMA2));

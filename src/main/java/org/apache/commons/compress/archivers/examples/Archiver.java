@@ -69,8 +69,8 @@ public class Archiver {
         }
 
         protected FileVisitResult visit(final Path path, final BasicFileAttributes attrs, final boolean isFile) throws IOException {
-            Objects.requireNonNull(path);
-            Objects.requireNonNull(attrs);
+            Objects.requireNonNull(path, "path");
+            Objects.requireNonNull(attrs, "attrs");
             final String name = directory.relativize(path).toString().replace('\\', '/');
             if (!name.isEmpty()) {
                 final E archiveEntry = outputStream.createArchiveEntry(path, isFile || name.endsWith("/") ? name : name + "/", linkOptions);
@@ -166,8 +166,8 @@ public class Archiver {
 
             @Override
             protected FileVisitResult visit(final Path path, final BasicFileAttributes attrs, final boolean isFile) throws IOException {
-                Objects.requireNonNull(path);
-                Objects.requireNonNull(attrs);
+                Objects.requireNonNull(path, "path");
+                Objects.requireNonNull(attrs, "attrs");
                 final String name = directory.relativize(path).toString().replace('\\', '/');
                 if (!name.isEmpty()) {
                     final SevenZArchiveEntry archiveEntry = target.createArchiveEntry(path, isFile || name.endsWith("/") ? name : name + "/");

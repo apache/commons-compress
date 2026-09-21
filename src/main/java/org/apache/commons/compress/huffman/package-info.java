@@ -16,8 +16,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.apache.commons.compress.compressors.deflate64;
 
-enum HuffmanState {
-    INITIAL, STORED, DYNAMIC_CODES, FIXED_CODES
-}
+/**
+ * Huffman decoder package.
+ *
+ * @since 1.29.0
+ */
+package org.apache.commons.compress.huffman;

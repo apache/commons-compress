@@ -25,12 +25,16 @@ import java.io.OutputStream;
 import org.apache.commons.compress.MemoryLimitException;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.utils.ByteUtils;
-import org.apache.commons.compress.utils.FlushShieldFilterOutputStream;
+import org.apache.commons.io.output.FlushShieldOutputStream;
 import org.tukaani.xz.LZMA2Options;
 import org.tukaani.xz.LZMAInputStream;
 import org.tukaani.xz.LZMAOutputStream;
 
 final class LZMADecoder extends AbstractCoder {
+
+    private static final int LZMA_DICT_IDX = 1;
+    private static final int LZMA_DICT_LEN = 4;
+    private static final int LZMA_PROP_LEN = LZMA_DICT_IDX + LZMA_DICT_LEN;
 
     LZMADecoder() {
         super(LZMA2Options.class, Number.class);
@@ -39,17 +43,12 @@ final class LZMADecoder extends AbstractCoder {
     @Override
     InputStream decode(final String archiveName, final InputStream in, final long uncompressedLength, final Coder coder, final byte[] password,
             final int maxMemoryLimitKiB) throws IOException {
-        if (coder.properties == null) {
-            throw new ArchiveException("Missing LZMA properties");
-        }
+        ArchiveException.requireNonNull(coder.properties, "Missing LZMA properties");
         if (coder.properties.length < 1) {
             throw new ArchiveException("LZMA properties too short");
         }
         final byte propsByte = coder.properties[0];
         final int dictSize = getDictionarySize(coder);
-        if (dictSize > LZMAInputStream.DICT_SIZE_MAX) {
-            throw new ArchiveException("Dictionary larger than 4 GiB maximum size used in '%s'", archiveName);
-        }
         final int memoryUsageKiB = LZMAInputStream.getMemoryUsage(dictSize, propsByte);
         MemoryLimitException.checkKiB(memoryUsageKiB, maxMemoryLimitKiB);
         final LZMAInputStream lzmaIn = new LZMAInputStream(in, uncompressedLength, propsByte, dictSize);
@@ -60,11 +59,18 @@ final class LZMADecoder extends AbstractCoder {
     @Override
     OutputStream encode(final OutputStream out, final Object opts) throws IOException {
         // NOOP as LZMAOutputStream throws an exception in flush
-        return new FlushShieldFilterOutputStream(new LZMAOutputStream(out, getOptions(opts), false));
+        return new FlushShieldOutputStream(new LZMAOutputStream(out, getOptions(opts), false));
     }
 
-    private int getDictionarySize(final Coder coder) throws IllegalArgumentException {
-        return (int) ByteUtils.fromLittleEndian(coder.properties, 1, 4);
+    private int getDictionarySize(final Coder coder) throws ArchiveException {
+        if (coder.properties.length < LZMA_DICT_LEN + LZMA_DICT_IDX) {
+            throw new ArchiveException("LZMA properties too short (expected " + LZMA_PROP_LEN + " bytes)");
+        }
+        final long dictionarySize = ByteUtils.fromLittleEndian(coder.properties, LZMA_DICT_IDX, LZMA_DICT_LEN);
+        if (dictionarySize > LZMAInputStream.DICT_SIZE_MAX) {
+            throw new ArchiveException("Dictionary larger than 4 GiB maximum size");
+        }
+        return (int) dictionarySize;
     }
 
     private LZMA2Options getOptions(final Object opts) throws IOException {
@@ -89,9 +95,7 @@ final class LZMADecoder extends AbstractCoder {
 
     @Override
     Object getOptionsFromCoder(final Coder coder, final InputStream in) throws IOException {
-        if (coder.properties == null) {
-            throw new ArchiveException("Missing LZMA properties");
-        }
+        ArchiveException.requireNonNull(coder.properties, "Missing LZMA properties");
         if (coder.properties.length < 1) {
             throw new ArchiveException("LZMA properties too short");
         }

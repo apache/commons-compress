@@ -26,20 +26,24 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.Test;
 
+/**
+ * Tests {@link AbstractLZ77CompressorInputStream}.
+ */
 class AbstractLZ77CompressorInputStreamTest {
 
     private static final class TestStream extends AbstractLZ77CompressorInputStream {
 
         private boolean literal;
 
-        TestStream(final InputStream in) {
+        TestStream(final InputStream in) throws CompressorException {
             super(in, 1024);
         }
 
-        void literal(final int len) {
+        void literal(final int len) throws CompressorException {
             startLiteral(len);
             literal = true;
         }
@@ -54,12 +58,23 @@ class AbstractLZ77CompressorInputStreamTest {
     }
 
     @Test
+    void testBackReferenceOffsetLargerThanWindowIsRejected() throws IOException {
+        // Grow writeIndex past the 1024 window without sliding, so an offset in (windowSize, writeIndex] passes the writeIndex bound but not the window.
+        final byte[] data = new byte[2000];
+        try (TestStream s = new TestStream(new ByteArrayInputStream(data))) {
+            s.literal(data.length);
+            assertEquals(data.length, s.read(new byte[data.length]));
+            assertThrows(CompressorException.class, () -> s.startBackReference(1500, 4));
+        }
+    }
+
+    @Test
     void testCantPrefillAfterDataHasBeenRead() throws IOException {
         final byte[] data = { 1, 2, 3, 4 };
         try (TestStream s = new TestStream(new ByteArrayInputStream(data))) {
             s.literal(3);
             assertEquals(1, s.read());
-            assertThrows(IllegalStateException.class, () -> s.prefill(new byte[] { 1, 2, 3 }));
+            assertThrows(CompressorException.class, () -> s.prefill(new byte[] { 1, 2, 3 }));
         }
     }
 

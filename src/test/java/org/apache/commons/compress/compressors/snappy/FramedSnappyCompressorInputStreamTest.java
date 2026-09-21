@@ -19,6 +19,7 @@
 package org.apache.commons.compress.compressors.snappy;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -106,6 +107,23 @@ public final class FramedSnappyCompressorInputStreamTest extends AbstractTest {
         }
 
         assertArrayEquals(Files.readAllBytes(outputSz), Files.readAllBytes(outputGz));
+    }
+
+    @Test
+    void testManyPaddingChunksDoNotOverflowStack() {
+        final byte[] streamIdentifier = { (byte) 0xff, 6, 0, 0, 's', 'N', 'a', 'P', 'p', 'Y' };
+        final byte[] emptyPaddingChunk = { (byte) 0xfe, 0, 0, 0 };
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
+        out.write(streamIdentifier, 0, streamIdentifier.length);
+        for (int i = 0; i < 200_000; i++) {
+            out.write(emptyPaddingChunk, 0, emptyPaddingChunk.length);
+        }
+        final byte[] input = out.toByteArray();
+        assertDoesNotThrow(() -> {
+            try (FramedSnappyCompressorInputStream in = new FramedSnappyCompressorInputStream(new ByteArrayInputStream(input))) {
+                assertEquals(-1, in.read());
+            }
+        });
     }
 
     @Test

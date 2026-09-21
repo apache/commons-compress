@@ -69,11 +69,7 @@ public abstract class ReferenceForm extends ByteCodeForm {
     @Override
     public void setByteCodeOperands(final ByteCode byteCode, final OperandManager operandManager, final int codeLength) throws Pack200Exception {
         final int offset = getOffset(operandManager);
-        try {
-            setNestedEntries(byteCode, operandManager, offset);
-        } catch (final Pack200Exception ex) {
-            throw new Error("Got a pack200 exception. What to do?");
-        }
+        setNestedEntries(byteCode, operandManager, offset);
     }
 
     /**

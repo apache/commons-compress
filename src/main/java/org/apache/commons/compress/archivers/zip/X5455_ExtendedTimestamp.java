@@ -23,6 +23,7 @@ import java.nio.file.attribute.FileTime;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipException;
 
 import org.apache.commons.io.file.attribute.FileTimes;
@@ -103,14 +104,14 @@ public class X5455_ExtendedTimestamp implements ZipExtraField, Cloneable, Serial
      * <p/>
      * Also makes sure the converted ZipLong is not too big to fit in 32 unsigned bits.
      *
-     * @param d java.util.Date to convert to ZipLong.
+     * @param date java.util.Date to convert to ZipLong.
      * @return ZipLong.
      */
-    private static ZipLong dateToZipLong(final Date d) {
-        if (d == null) {
+    private static ZipLong dateToZipLong(final Date date) {
+        if (date == null) {
             return null;
         }
-        return unixTimeToZipLong(d.getTime() / 1000);
+        return unixTimeToZipLong(TimeUnit.MILLISECONDS.toSeconds(date.getTime()));
     }
 
     /**

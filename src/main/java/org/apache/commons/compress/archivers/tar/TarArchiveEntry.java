@@ -42,9 +42,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.apache.commons.compress.CompressException;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.EntryStreamOffsets;
@@ -185,6 +187,8 @@ import org.apache.commons.lang3.SystemUtils;
  */
 public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamOffsets {
 
+    private static final String SCHILY_REALSIZE = "SCHILY.realsize";
+
     private static final TarArchiveEntry[] EMPTY_TAR_ARCHIVE_ENTRY_ARRAY = {};
 
     /**
@@ -213,7 +217,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     public static final int MILLIS_PER_SECOND = 1000;
 
     /**
-     * Regular expression pattern for validating values in pax extended header file time fields. These fields contain two numeric values (seconds and sub-second
+     * Regular expression pattern for validating values in PAX extended header file time fields. These fields contain two numeric values (seconds and sub-second
      * values) as per this definition: https://pubs.opengroup.org/onlinepubs/9699919799/utilities/pax.html#tag_20_92_13_05
      * <p>
      * Since they are parsed into long values, maximum length of each is the same as Long.MAX_VALUE which is 19 digits.
@@ -277,7 +281,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         return fileName;
     }
 
-    private static Instant parseInstantFromDecimalSeconds(final String value) throws IOException {
+    private static Instant parseInstantFromDecimalSeconds(final String value) throws ArchiveException {
         // Validate field values to prevent denial of service attacks with BigDecimal values (see JDK-6560193)
         if (!PAX_EXTENDED_HEADER_FILE_TIMES_PATTERN.matcher(value).matches()) {
             throw new ArchiveException("Corrupted PAX header. Time field value is invalid '%s'", value);
@@ -292,6 +296,22 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
             // ArithmeticException: Thrown if numeric overflow occurs.
             throw new ArchiveException("Corrupted PAX header. Time field value is invalid '" + value + "'", (Throwable) e);
         }
+    }
+
+    private static long parseOctalOrBinary(final byte[] header, final int offset, final int length, final boolean lenient) throws ArchiveException {
+        if (lenient) {
+            try {
+                return TarUtils.parseOctalOrBinary(header, offset, length);
+            } catch (final ArchiveException ex) { // NOSONAR
+                return UNKNOWN;
+            }
+        }
+        return TarUtils.parseOctalOrBinary(header, offset, length);
+    }
+
+    private static int parseOctalOrBinaryAsInt(final byte[] header, final int offset, final int length, final boolean lenient) throws ArchiveException {
+        //return ArchiveException.toIntExact(parseOctalOrBinary(header, offset, length, lenient));
+        return (int) parseOctalOrBinary(header, offset, length, lenient);
     }
 
     /** The entry's name. */
@@ -391,7 +411,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /** The entry's file linkOptions. */
     private final LinkOption[] linkOptions;
 
-    /** Extra, user supplied pax headers. */
+    /** Extra, user supplied PAX headers. */
     private final Map<String, String> extraPaxHeaders = new HashMap<>();
 
     private long dataOffset = OFFSET_UNKNOWN;
@@ -670,18 +690,15 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
 
     /**
      * Adds a PAX header to this entry. If the header corresponds to an existing field in the entry, that field will be set; otherwise the header will be added
-     * to the extraPaxHeaders Map
+     * to the extraPaxHeaders Map.
      *
      * @param name  The full name of the header to set.
      * @param value value of header.
+     * @throws ArchiveException Thrown when parsing numbers and validating input.
      * @since 1.15
      */
-    public void addPaxHeader(final String name, final String value) {
-        try {
-            processPaxHeader(name, value);
-        } catch (final IOException ex) {
-            throw new IllegalArgumentException("Invalid input", ex);
-        }
+    public void addPaxHeader(final String name, final String value) throws ArchiveException {
+        processPaxHeader(name, value);
     }
 
     /**
@@ -745,7 +762,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         return fill((byte) value, offset, outbuf, length);
     }
 
-    void fillGNUSparse0xData(final Map<String, String> headers) throws IOException {
+    private void fillGNUSparse0xData(final Map<String, String> headers) throws CompressException {
         paxGNUSparse = true;
         realSize = ParsingUtils.parseIntValue(headers.get(TarGnuSparseKeys.SIZE));
         if (headers.containsKey(TarGnuSparseKeys.NAME)) {
@@ -754,7 +771,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         }
     }
 
-    void fillGNUSparse1xData(final Map<String, String> headers) throws IOException {
+    private void fillGNUSparse1xData(final Map<String, String> headers) throws CompressException {
         paxGNUSparse = true;
         paxGNU1XSparse = true;
         if (headers.containsKey(TarGnuSparseKeys.NAME)) {
@@ -765,10 +782,10 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         }
     }
 
-    void fillStarSparseData(final Map<String, String> headers) throws IOException {
+    void fillStarSparseData(final Map<String, String> headers) throws CompressException {
         starSparse = true;
-        if (headers.containsKey("SCHILY.realsize")) {
-            realSize = ParsingUtils.parseLongValue(headers.get("SCHILY.realsize"));
+        if (headers.containsKey(SCHILY_REALSIZE)) {
+            realSize = ParsingUtils.parseLongValue(headers.get(SCHILY_REALSIZE));
         }
     }
 
@@ -839,7 +856,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Gets named extra PAX header
      *
-     * @param name The full name of an extended PAX header to retrieve.
+     * @param name The full name of an extendedheader to retrieve.
      * @return The value of the header, if any.
      * @since 1.15
      */
@@ -1426,17 +1443,6 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         return true;
     }
 
-    private long parseOctalOrBinary(final byte[] header, final int offset, final int length, final boolean lenient) {
-        if (lenient) {
-            try {
-                return TarUtils.parseOctalOrBinary(header, offset, length);
-            } catch (final IllegalArgumentException ex) { // NOSONAR
-                return UNKNOWN;
-            }
-        }
-        return TarUtils.parseOctalOrBinary(header, offset, length);
-    }
-
     /**
      * Parses an entry's header information from a header buffer.
      *
@@ -1498,16 +1504,14 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         int offset = 0;
         name = oldStyle ? TarUtils.parseName(header, offset, NAMELEN) : TarUtils.parseName(header, offset, NAMELEN, encoding);
         offset += NAMELEN;
-        mode = (int) parseOctalOrBinary(header, offset, MODELEN, lenient);
+        mode = parseOctalOrBinaryAsInt(header, offset, MODELEN, lenient);
         offset += MODELEN;
-        userId = (int) parseOctalOrBinary(header, offset, UIDLEN, lenient);
+        userId = parseOctalOrBinaryAsInt(header, offset, UIDLEN, lenient);
         offset += UIDLEN;
-        groupId = (int) parseOctalOrBinary(header, offset, GIDLEN, lenient);
+        groupId = parseOctalOrBinaryAsInt(header, offset, GIDLEN, lenient);
         offset += GIDLEN;
-        size = TarUtils.parseOctalOrBinary(header, offset, SIZELEN);
-        if (size < 0) {
-            throw new ArchiveException("Broken archive, entry with negative size");
-        }
+        setSize(TarUtils.parseOctalOrBinary(header, offset, SIZELEN));
+        ArchiveException.requireNonNegative(size, "Broken archive, entry with negative size");
         offset += SIZELEN;
         mTime = FileTimes.fromUnixTime(parseOctalOrBinary(header, offset, MODTIMELEN, lenient));
         offset += MODTIMELEN;
@@ -1527,7 +1531,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * <ul>
      *     <li>POSIX.1-1988</li>
      *     <li>Old GNU tar format (pre-PAX)</li>
-     *     <li>POSIX.1-2001 pax interchange format</li>
+     *     <li>POSIX.1-2001 PAX interchange format</li>
      *     <li>STAR format (Schily tar)</li>
      * </ul>
      *
@@ -1553,159 +1557,145 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         groupName = oldStyle ? TarUtils.parseName(header, offset, GNAMELEN) : TarUtils.parseName(header, offset, GNAMELEN, encoding);
         offset += GNAMELEN;
         if (linkFlag == LF_CHR || linkFlag == LF_BLK) {
-            devMajor = (int) parseOctalOrBinary(header, offset, DEVLEN, lenient);
+            setDevMajor(parseOctalOrBinaryAsInt(header, offset, DEVLEN, lenient));
             offset += DEVLEN;
-            devMinor = (int) parseOctalOrBinary(header, offset, DEVLEN, lenient);
+            setDevMinor(parseOctalOrBinaryAsInt(header, offset, DEVLEN, lenient));
             offset += DEVLEN;
         } else {
             offset += 2 * DEVLEN;
         }
         final int type = evaluateType(globalPaxHeaders, header);
         switch (type) {
-            // GNU format as before 1.12
-            case FORMAT_OLDGNU: {
-                aTime = fileTimeFromOptionalSeconds(parseOctalOrBinary(header, offset, ATIMELEN_GNU, lenient));
-                offset += ATIMELEN_GNU;
-                cTime = fileTimeFromOptionalSeconds(parseOctalOrBinary(header, offset, CTIMELEN_GNU, lenient));
-                offset += CTIMELEN_GNU;
-                offset += OFFSETLEN_GNU;
-                offset += LONGNAMESLEN_GNU;
-                offset += PAD2LEN_GNU;
-                sparseHeaders =
-                        new ArrayList<>(TarUtils.readSparseStructs(header, offset, SPARSE_HEADERS_IN_OLDGNU_HEADER));
-                offset += SPARSELEN_GNU;
-                isExtended = TarUtils.parseBoolean(header, offset);
-                offset += ISEXTENDEDLEN_GNU;
-                realSize = TarUtils.parseOctal(header, offset, REALSIZELEN_GNU, "parseUstarHeaderBlock()", false);
-                break;
+        // GNU format as before 1.12
+        case FORMAT_OLDGNU: {
+            aTime = fileTimeFromOptionalSeconds(parseOctalOrBinary(header, offset, ATIMELEN_GNU, lenient));
+            offset += ATIMELEN_GNU;
+            cTime = fileTimeFromOptionalSeconds(parseOctalOrBinary(header, offset, CTIMELEN_GNU, lenient));
+            offset += CTIMELEN_GNU;
+            offset += OFFSETLEN_GNU;
+            offset += LONGNAMESLEN_GNU;
+            offset += PAD2LEN_GNU;
+            sparseHeaders = new ArrayList<>(TarUtils.readSparseStructs(header, offset, SPARSE_HEADERS_IN_OLDGNU_HEADER));
+            offset += SPARSELEN_GNU;
+            isExtended = TarUtils.parseBoolean(header, offset);
+            offset += ISEXTENDEDLEN_GNU;
+            realSize = TarUtils.parseOctal(header, offset, REALSIZELEN_GNU, "parseUstarHeaderBlock()", false);
+            break;
+        }
+        // Star format (Schily tar)
+        case FORMAT_XSTAR: {
+            final String xstarPrefix = oldStyle ? TarUtils.parseName(header, offset, PREFIXLEN_XSTAR)
+                    : TarUtils.parseName(header, offset, PREFIXLEN_XSTAR, encoding);
+            offset += PREFIXLEN_XSTAR;
+            if (!xstarPrefix.isEmpty()) {
+                name = xstarPrefix + "/" + name;
             }
-            // Star format (Schily tar)
-            case FORMAT_XSTAR: {
-                final String xstarPrefix = oldStyle
-                        ? TarUtils.parseName(header, offset, PREFIXLEN_XSTAR)
-                        : TarUtils.parseName(header, offset, PREFIXLEN_XSTAR, encoding);
-                offset += PREFIXLEN_XSTAR;
-                if (!xstarPrefix.isEmpty()) {
-                    name = xstarPrefix + "/" + name;
-                }
-                aTime = fileTimeFromOptionalSeconds(parseOctalOrBinary(header, offset, ATIMELEN_XSTAR, lenient));
-                offset += ATIMELEN_XSTAR;
-                cTime = fileTimeFromOptionalSeconds(parseOctalOrBinary(header, offset, CTIMELEN_XSTAR, lenient));
-                break;
+            aTime = fileTimeFromOptionalSeconds(parseOctalOrBinary(header, offset, ATIMELEN_XSTAR, lenient));
+            offset += ATIMELEN_XSTAR;
+            cTime = fileTimeFromOptionalSeconds(parseOctalOrBinary(header, offset, CTIMELEN_XSTAR, lenient));
+            break;
+        }
+        // Pure POSIX.1-1988 UStar format
+        case FORMAT_POSIX:
+        default: {
+            final String prefix = oldStyle ? TarUtils.parseName(header, offset, PREFIXLEN) : TarUtils.parseName(header, offset, PREFIXLEN, encoding);
+            // SunOS tar -E does not add / to directory names, so fix up to be consistent
+            if (isDirectory() && !name.endsWith("/")) {
+                name += "/";
             }
-            // Pure POSIX.1-1988 UStar format
-            case FORMAT_POSIX:
-            default: {
-                final String prefix = oldStyle
-                        ? TarUtils.parseName(header, offset, PREFIXLEN)
-                        : TarUtils.parseName(header, offset, PREFIXLEN, encoding);
-                // SunOS tar -E does not add / to directory names, so fix up to be consistent
-                if (isDirectory() && !name.endsWith("/")) {
-                    name += "/";
-                }
-                if (!prefix.isEmpty()) {
-                    name = prefix + "/" + name;
-                }
+            if (!prefix.isEmpty()) {
+                name = prefix + "/" + name;
             }
+        }
         }
     }
 
     /**
-     * Processes one pax header, using the entries extraPaxHeaders map as source for extra headers used when handling entries for sparse files.
+     * Processes one PAX header, using the entries extraPaxHeaders map as source for extra headers used when handling entries for sparse files.
      *
      * @param key     The header name.
      * @param val     The header value.
+     * @throws ArchiveException Thrown when parsing numbers and validating input.
      * @since 1.15
      */
-    private void processPaxHeader(final String key, final String val) throws IOException {
+    private void processPaxHeader(final String key, final String val) throws ArchiveException {
         processPaxHeader(key, val, extraPaxHeaders);
     }
 
     /**
-     * Processes one pax header, using the supplied map as source for extra headers to be used when handling entries for sparse files
+     * Processes one PAX header, using the supplied map as source for extra headers to be used when handling entries for sparse files
      *
      * @param key     The header name.
      * @param val     The header value.
      * @param headers map of headers used for dealing with sparse file.
-     * @throws NumberFormatException if encountered errors when parsing the numbers.
+     * @throws ArchiveException Thrown when parsing numbers and validating input.
      * @since 1.15
      */
-    private void processPaxHeader(final String key, final String val, final Map<String, String> headers) throws IOException {
-        /*
-         * The following headers are defined for PAX. charset: cannot use these without changing TarArchiveEntry fields mtime atime ctime
-         * LIBARCHIVE.creationtime comment gid, gname linkpath size uid,uname SCHILY.devminor, SCHILY.devmajor: don't have setters/getters for those
-         *
-         * GNU sparse files use additional members, we use GNU.sparse.size to detect the 0.0 and 0.1 versions and GNU.sparse.realsize for 1.0.
-         *
-         * star files use additional members of which we use SCHILY.filetype in order to detect star sparse files.
-         *
-         * If called from addExtraPaxHeader, these additional headers must be already present.
-         */
-        switch (key) {
-        case PAX_NAME_KEY:
-            setName(val);
-            break;
-        case PAX_LINK_NAME_KEY:
-            setLinkName(val);
-            break;
-        case "gid":
-            setGroupId(ParsingUtils.parseLongValue(val));
-            break;
-        case "gname":
-            setGroupName(val);
-            break;
-        case "uid":
-            setUserId(ParsingUtils.parseLongValue(val));
-            break;
-        case "uname":
-            setUserName(val);
-            break;
-        case "size":
-            final long size = ParsingUtils.parseLongValue(val);
-            if (size < 0) {
-                throw new ArchiveException("Corrupted TAR archive. Entry size is negative");
+    private void processPaxHeader(final String key, final String val, final Map<String, String> headers) throws ArchiveException {
+        //
+        // The following headers are defined for PAX. charset: cannot use these without changing TarArchiveEntry fields mtime atime ctime
+        // LIBARCHIVE.creationtime comment gid, gname linkpath size uid,uname SCHILY.devminor, SCHILY.devmajor: don't have setters/getters for those GNU sparse
+        // files use additional members, we use GNU.sparse.size to detect the 0.0 and 0.1 versions and GNU.sparse.realsize for 1.0. star files use additional
+        // members of which we use SCHILY.filetype in order to detect star sparse files. If called from addExtraPaxHeader, these additional headers must be
+        // already present.
+        //
+        try {
+            switch (key) {
+            case PAX_NAME_KEY:
+                setName(val);
+                break;
+            case PAX_LINK_NAME_KEY:
+                setLinkName(val);
+                break;
+            case "gid":
+                setGroupId(ParsingUtils.parseLongValue(val));
+                break;
+            case "gname":
+                setGroupName(val);
+                break;
+            case "uid":
+                setUserId(ParsingUtils.parseLongValue(val));
+                break;
+            case "uname":
+                setUserName(val);
+                break;
+            case "size":
+                setSize(ParsingUtils.parseLongValue(val));
+                break;
+            case "mtime":
+                setLastModifiedTime(FileTime.from(parseInstantFromDecimalSeconds(val)));
+                break;
+            case "atime":
+                setLastAccessTime(FileTime.from(parseInstantFromDecimalSeconds(val)));
+                break;
+            case "ctime":
+                setStatusChangeTime(FileTime.from(parseInstantFromDecimalSeconds(val)));
+                break;
+            case "LIBARCHIVE.creationtime":
+                setCreationTime(FileTime.from(parseInstantFromDecimalSeconds(val)));
+                break;
+            case "SCHILY.devminor":
+                setDevMinor(ParsingUtils.parseIntValue(val));
+                break;
+            case "SCHILY.devmajor":
+                setDevMajor(ParsingUtils.parseIntValue(val));
+                break;
+            case TarGnuSparseKeys.SIZE:
+                fillGNUSparse0xData(headers);
+                break;
+            case TarGnuSparseKeys.REALSIZE:
+                fillGNUSparse1xData(headers);
+                break;
+            case "SCHILY.filetype":
+                if ("sparse".equals(val)) {
+                    fillStarSparseData(headers);
+                }
+                break;
+            default:
+                extraPaxHeaders.put(key, val);
             }
-            setSize(size);
-            break;
-        case "mtime":
-            setLastModifiedTime(FileTime.from(parseInstantFromDecimalSeconds(val)));
-            break;
-        case "atime":
-            setLastAccessTime(FileTime.from(parseInstantFromDecimalSeconds(val)));
-            break;
-        case "ctime":
-            setStatusChangeTime(FileTime.from(parseInstantFromDecimalSeconds(val)));
-            break;
-        case "LIBARCHIVE.creationtime":
-            setCreationTime(FileTime.from(parseInstantFromDecimalSeconds(val)));
-            break;
-        case "SCHILY.devminor":
-            final int devMinor = ParsingUtils.parseIntValue(val);
-            if (devMinor < 0) {
-                throw new ArchiveException("Corrupted TAR archive. Dev-Minor is negative");
-            }
-            setDevMinor(devMinor);
-            break;
-        case "SCHILY.devmajor":
-            final int devMajor = ParsingUtils.parseIntValue(val);
-            if (devMajor < 0) {
-                throw new ArchiveException("Corrupted TAR archive. Dev-Major is negative");
-            }
-            setDevMajor(devMajor);
-            break;
-        case TarGnuSparseKeys.SIZE:
-            fillGNUSparse0xData(headers);
-            break;
-        case TarGnuSparseKeys.REALSIZE:
-            fillGNUSparse1xData(headers);
-            break;
-        case "SCHILY.filetype":
-            if ("sparse".equals(val)) {
-                fillStarSparseData(headers);
-            }
-            break;
-        default:
-            extraPaxHeaders.put(key, val);
+        } catch (final CompressException e) {
+            throw new ArchiveException(String.format("%s for key '%s'", e.getClass().getSimpleName(), key), (Throwable) e);
         }
     }
 
@@ -1775,41 +1765,33 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * Sets the offset of the data for the tar entry.
      *
      * @param dataOffset The position of the data in the tar.
+     * @throws ArchiveException if the dataOffset is &lt; 0.
      * @since 1.21
      */
-    public void setDataOffset(final long dataOffset) {
-        if (dataOffset < 0) {
-            throw new IllegalArgumentException("The offset cannot be smaller than 0");
-        }
-        this.dataOffset = dataOffset;
+    public void setDataOffset(final long dataOffset) throws ArchiveException {
+        this.dataOffset = ArchiveException.requireNonNegative(dataOffset, (Supplier<String>) () -> "The offset cannot be smaller than 0");
     }
 
     /**
      * Sets this entry's major device number.
      *
      * @param devNo This entry's major device number.
-     * @throws IllegalArgumentException if the devNo is &lt; 0.
+     * @throws ArchiveException if the devNo is &lt; 0.
      * @since 1.4
      */
-    public void setDevMajor(final int devNo) {
-        if (devNo < 0) {
-            throw new IllegalArgumentException("Major device number is out of range: " + devNo);
-        }
-        this.devMajor = devNo;
+    public void setDevMajor(final int devNo) throws ArchiveException {
+        this.devMajor = ArchiveException.requireNonNegative(devNo, (Supplier<String>) () -> "Major device number is out of range: " + devNo);
     }
 
     /**
      * Sets this entry's minor device number.
      *
      * @param devNo This entry's minor device number.
-     * @throws IllegalArgumentException if the devNo is &lt; 0.
+     * @throws ArchiveException if the devNo is &lt; 0.
      * @since 1.4
      */
-    public void setDevMinor(final int devNo) {
-        if (devNo < 0) {
-            throw new IllegalArgumentException("Minor device number is out of range: " + devNo);
-        }
-        this.devMinor = devNo;
+    public void setDevMinor(final int devNo) throws ArchiveException {
+        this.devMinor = ArchiveException.requireNonNegative(devNo, (Supplier<String>) () -> "Minor device number is out of range: " + devNo);
     }
 
     /**
@@ -1945,13 +1927,10 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
      * Sets this entry's file size.
      *
      * @param size This entry's new file size.
-     * @throws IllegalArgumentException if the size is &lt; 0.
+     * @throws ArchiveException if the size is &lt; 0.
      */
-    public void setSize(final long size) {
-        if (size < 0) {
-            throw new IllegalArgumentException("Size is out of range: " + size);
-        }
-        this.size = size;
+    public void setSize(final long size) throws ArchiveException {
+        this.size = ArchiveException.requireNonNegative(size, (Supplier<String>) () -> "Size is out of range: " + size);
     }
 
     /**
@@ -1967,11 +1946,11 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     /**
      * Sets this entry's status change time.
      *
-     * @param time This entry's new status change time.
+     * @param cTime This entry's new status change time.
      * @since 1.22
      */
-    public void setStatusChangeTime(final FileTime time) {
-        cTime = time;
+    public void setStatusChangeTime(final FileTime cTime) {
+        this.cTime = cTime;
     }
 
     /**
@@ -2013,11 +1992,12 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
     }
 
     /**
-     * Update the entry using a map of pax headers.
+     * Update the entry using a map of PAX headers.
      *
      * @param headers PAX headers.
+     * @throws ArchiveException Thrown when parsing numbers and validating input.
      */
-    void updateEntryFromPaxHeaders(final Map<String, String> headers) throws IOException {
+    void updateEntryFromPaxHeaders(final Map<String, String> headers) throws ArchiveException {
         for (final Map.Entry<String, String> ent : headers.entrySet()) {
             processPaxHeader(ent.getKey(), ent.getValue(), headers);
         }
@@ -2089,7 +2069,8 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         TarUtils.formatCheckSumOctalBytes(chk, outbuf, csOffset, CHKSUMLEN);
     }
 
-    private int writeEntryHeaderField(final long value, final byte[] outbuf, final int offset, final int length, final boolean starMode) {
+    private int writeEntryHeaderField(final long value, final byte[] outbuf, final int offset, final int length, final boolean starMode)
+            throws ArchiveException {
         if (!starMode && (value < 0 || value >= 1L << 3 * (length - 1))) {
             // value doesn't fit into field when written as octal
             // number, will be written to PAX header or causes an
@@ -2099,7 +2080,7 @@ public class TarArchiveEntry implements ArchiveEntry, TarConstants, EntryStreamO
         return TarUtils.formatLongOctalOrBinaryBytes(value, outbuf, offset, length);
     }
 
-    private int writeEntryHeaderOptionalTimeField(final FileTime time, int offset, final byte[] outbuf, final int fieldLength) {
+    private int writeEntryHeaderOptionalTimeField(final FileTime time, int offset, final byte[] outbuf, final int fieldLength) throws ArchiveException {
         if (time != null) {
             offset = writeEntryHeaderField(FileTimes.toUnixTime(time), outbuf, offset, fieldLength, true);
         } else {

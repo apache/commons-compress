@@ -47,15 +47,15 @@ import org.apache.commons.lang3.ArrayUtils;
  */
 public abstract class BandSet {
 
-    private static final String[][] EMPTY_STRINGS = new String[][] { {} };
+    private static final String[][] EMPTY_STRINGS = { {} };
 
-    static int sumPositive(final int[] counts) throws Pack200Exception {
+    static int sumNonNegative(final int[] counts) throws Pack200Exception {
         int totalCount = 0;
         for (final int count : counts) {
             if (count < 0) {
                 throw new Pack200Exception("count < 0");
             }
-            totalCount += count;
+            totalCount = Pack200Exception.addExact(count, totalCount);
         }
         return totalCount;
     }
@@ -78,6 +78,13 @@ public abstract class BandSet {
     public BandSet(final Segment segment) {
         this.segment = segment;
         this.header = segment.getSegmentHeader();
+    }
+
+    private int checkArrayIndex(final String[] reference, final int index) throws Pack200Exception {
+        if (index < 0 || index >= reference.length) {
+            throw new Pack200Exception("Invalid array index = %,d, array length = %,d", index, reference.length);
+        }
+        return index;
     }
 
     /**
@@ -162,7 +169,7 @@ public abstract class BandSet {
     public int[][] decodeBandInt(final String name, final InputStream in, final BHSDCodec defaultCodec, final int[] counts)
             throws IOException, Pack200Exception {
         final int[][] result = new int[counts.length][];
-        final int totalCount = sumPositive(counts);
+        final int totalCount = sumNonNegative(counts);
         final int[] twoDResult = decodeBandInt(name, in, defaultCodec, totalCount);
         int index = 0;
         for (int i = 0; i < result.length; i++) {
@@ -184,9 +191,14 @@ public abstract class BandSet {
      * @param ints The indices into the {@code reference} array.
      * @param reference The source array.
      * @return A new array.
+     * @throws Pack200Exception if an index falls outside the range [0..reference.length-1].
      */
-    protected String[] getReferences(final int[] ints, final String[] reference) {
-        return ArrayUtils.setAll(new String[ints.length], i -> reference[ints[i]]);
+    protected String[] getReferences(final int[] ints, final String[] reference) throws Pack200Exception {
+        final String[] result = new String[ints.length];
+        for (int i = 0; i < ints.length; i++) {
+            result[i] = reference[checkArrayIndex(reference, ints[i])];
+        }
+        return result;
     }
 
     /**
@@ -195,13 +207,14 @@ public abstract class BandSet {
      * @param ints The indices into the {@code reference} array.
      * @param reference The source array.
      * @return A new array.
+     * @throws Pack200Exception if an index falls outside the range [0..reference.length-1].
      */
-    protected String[][] getReferences(final int[][] ints, final String[] reference) {
+    protected String[][] getReferences(final int[][] ints, final String[] reference) throws Pack200Exception {
         final String[][] result = new String[ints.length][];
         for (int i = 0; i < result.length; i++) {
             result[i] = new String[ints[i].length];
             for (int j = 0; j < result[i].length; j++) {
-                result[i][j] = reference[ints[i][j]];
+                result[i][j] = reference[checkArrayIndex(reference, ints[i][j])];
             }
         }
         return result;
@@ -418,10 +431,7 @@ public abstract class BandSet {
      */
     protected CPUTF8[][] parseCPSignatureReferences(final String name, final InputStream in, final BHSDCodec codec, final int[] counts)
             throws IOException, Pack200Exception {
-        int sum = 0;
-        for (final int count : counts) {
-            sum += count;
-        }
+        final int sum = sumNonNegative(counts);
         final int[] indices = decodeBandInt(name, in, codec, sum);
         final CpBands cpBands = segment.getCpBands();
         final CPUTF8[] result1 = ArrayUtils.setAll(new CPUTF8[sum], i -> cpBands.cpSignatureValue(indices[i]));
@@ -485,12 +495,8 @@ public abstract class BandSet {
      */
     public CPUTF8[][] parseCPUTF8References(final String name, final InputStream in, final BHSDCodec codec, final int[] counts)
             throws IOException, Pack200Exception {
+        final int sum = sumNonNegative(counts);
         final CPUTF8[][] result = new CPUTF8[counts.length][];
-        int sum = 0;
-        for (int i = 0; i < counts.length; i++) {
-            result[i] = new CPUTF8[counts[i]];
-            sum += counts[i];
-        }
         final int[] indices = decodeBandInt(name, in, codec, sum);
         final CpBands cpBands = segment.getCpBands();
         final CPUTF8[] result1 = ArrayUtils.setAll(new CPUTF8[sum], i -> cpBands.cpUTF8Value(indices[i]));
@@ -556,7 +562,7 @@ public abstract class BandSet {
         if (count == 0) {
             return new long[][] { {} };
         }
-        final int sum = sumPositive(counts);
+        final int sum = sumNonNegative(counts);
         int[] hi = null;
         final int[] lo;
         if (hiCodec != null) {
@@ -634,7 +640,7 @@ public abstract class BandSet {
         if (count == 0) {
             return EMPTY_STRINGS;
         }
-        final int sum = sumPositive(counts);
+        final int sum = sumNonNegative(counts);
         // TODO Merge the decode and parsing of a multiple structure into one
         final int[] indices = decodeBandInt(name, in, codec, sum);
         final String[] result1 = new String[sum];

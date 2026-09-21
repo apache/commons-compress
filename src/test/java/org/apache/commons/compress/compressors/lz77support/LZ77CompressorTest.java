@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.compress.compressors.CompressorException;
 import org.junit.jupiter.api.Test;
 
 class LZ77CompressorTest {
@@ -238,15 +239,15 @@ class LZ77CompressorTest {
         final LZ77Compressor c = new LZ77Compressor(newParameters(128), block -> {
         });
         c.compress(Arrays.copyOfRange(BLA, 0, 2));
-        assertThrows(IllegalStateException.class, () -> c.prefill(Arrays.copyOfRange(BLA, 2, 4)));
+        assertThrows(CompressorException.class, () -> c.prefill(Arrays.copyOfRange(BLA, 2, 4)));
     }
 
     @Test
-    void testCantPrefillTwice() {
+    void testCantPrefillTwice() throws CompressorException {
         final LZ77Compressor c = new LZ77Compressor(newParameters(128), block -> {
         });
         c.prefill(Arrays.copyOfRange(BLA, 0, 2));
-        assertThrows(IllegalStateException.class, () -> c.prefill(Arrays.copyOfRange(BLA, 2, 4)));
+        assertThrows(CompressorException.class, () -> c.prefill(Arrays.copyOfRange(BLA, 2, 4)));
     }
 
     @Test

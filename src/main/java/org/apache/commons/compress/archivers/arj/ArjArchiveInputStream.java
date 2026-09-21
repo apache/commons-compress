@@ -199,7 +199,6 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
      * @throws EOFException If the end of the stream is reached before reading the checksum.
      * @throws IOException If an I/O error occurs.
      */
-    @SuppressWarnings("Since15")
     private boolean checkCRC32(final byte[] data) throws IOException {
         final CRC32 crc32 = new CRC32();
         crc32.update(data);
@@ -312,9 +311,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
         if (len == 0) {
             return 0;
         }
-        if (currentLocalFileHeader == null) {
-            throw new IllegalStateException("No current arj entry");
-        }
+        ArchiveException.requireNonNull(currentLocalFileHeader, "No current arj entry");
         if (currentLocalFileHeader.method != LocalFileHeader.Methods.STORED) {
             throw new ArchiveException("Unsupported compression method '%s'", currentLocalFileHeader.method);
         }
@@ -415,7 +412,8 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
     }
 
     private MainHeader readMainHeader(final boolean selfExtracting) throws IOException {
-        final byte[] basicHeaderBytes = selfExtracting ? findMainHeader() : readHeader();
+        final byte[] basicHeaderBytes = ArchiveException.requireNonNull(selfExtracting ? findMainHeader() : readHeader(),
+                "Corrupted ARJ archive: Missing main header");
         final MainHeader header = new MainHeader();
         try (InputStream basicHeader = new ByteArrayInputStream(basicHeaderBytes)) {
             final int firstHeaderSize = readUnsignedByte(basicHeader);

@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.compress.harmony.pack200.Archive.PackingFile;
 import org.apache.commons.compress.harmony.pack200.Archive.SegmentUnit;
@@ -101,7 +102,7 @@ public class FileBands extends BandSet {
             file_size[i] = bytes.length;
             totalSize = Pack200Exception.addExact(totalSize, file_size[i]);
             // update modification time
-            modtime = (packingFile.getModtime() + TimeZone.getDefault().getRawOffset()) / 1000L;
+            modtime = TimeUnit.MILLISECONDS.toSeconds(packingFile.getModtime() + TimeZone.getDefault().getRawOffset());
             file_modtime[i] = (int) (modtime - archiveModtime);
             if (isLatest && latestModtime < file_modtime[i]) {
                 latestModtime = file_modtime[i];

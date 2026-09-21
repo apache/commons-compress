@@ -59,6 +59,7 @@ public class DeflateParameters {
      * @see Deflater#BEST_SPEED
      * @see Deflater#DEFAULT_COMPRESSION
      * @see Deflater#BEST_COMPRESSION
+     * @throws IllegalArgumentException if the compression level is not between 0 and 9.
      */
     public void setCompressionLevel(final int compressionLevel) {
         if (compressionLevel < MIN_LEVEL || compressionLevel > MAX_LEVEL) {

@@ -417,7 +417,7 @@ public class BZip2CompressorOutputStream extends CompressorOutputStream<OutputSt
      * @param out       The destination stream.
      * @param blockSize The blockSize as 100k units.
      * @throws IOException              if an I/O error occurs in the specified stream.
-     * @throws IllegalArgumentException if {@code (blockSize &lt; 1) || (blockSize &gt; 9)}.
+     * @throws IllegalArgumentException if {@code (blockSize &lt; 1) or (blockSize &gt; 9)}.
      * @throws NullPointerException     if {@code out == null}.
      * @see #MIN_BLOCKSIZE
      * @see #MAX_BLOCKSIZE

@@ -39,6 +39,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.zip.CRC32;
 
+import org.apache.commons.compress.CompressException;
 import org.apache.commons.compress.MemoryLimitException;
 import org.apache.commons.compress.archivers.AbstractArchiveBuilder;
 import org.apache.commons.compress.archivers.ArchiveException;
@@ -93,7 +94,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
          * @param maxMemoryLimitKiB kibibytes (KiB) to test.
          * @throws IOException Thrown on basic assertion failure.
          */
-        void assertValidity(final int maxMemoryLimitKiB) throws IOException {
+        void assertValidity(final int maxMemoryLimitKiB) throws CompressException {
             if (numberOfEntriesWithStream > 0 && numberOfFolders == 0) {
                 throw new ArchiveException("7z archive with entries but no folders");
             }
@@ -953,9 +954,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
      * @throws IOException if there are exceptions when reading the file.
      */
     private void buildDecodingStream(final int entryIndex, final boolean isRandomAccess) throws IOException {
-        if (archive.streamMap == null) {
-            throw new ArchiveException("Archive doesn't contain stream information to read entries");
-        }
+        ArchiveException.requireNonNull(archive.streamMap, "Archive doesn't contain stream information to read entries");
         final int folderIndex = archive.streamMap.fileFolderIndex[entryIndex];
         if (folderIndex < 0) {
             deferredBlockStreams.clear();
@@ -1021,7 +1020,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         deferredBlockStreams.add(fileStream);
     }
 
-    private void calculateStreamMap(final Archive archive) throws IOException {
+    private void calculateStreamMap(final Archive archive) throws CompressException {
         int nextFolderPackStreamIndex = 0;
         final int numFolders = archive.folders.length;
         final int[] folderFirstPackStreamIndex = intArray(numFolders);
@@ -1098,7 +1097,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
             return new ByteArrayInputStream(ArrayUtils.EMPTY_BYTE_ARRAY);
         }
         if (deferredBlockStreams.isEmpty()) {
-            throw new IllegalStateException("No current 7z entry (call getNextEntry() first).");
+            throw new ArchiveException("No current 7z entry (call getNextEntry() first).");
         }
         while (deferredBlockStreams.size() > 1) {
             // In solid compression mode we need to decompress all leading folder'
@@ -1175,7 +1174,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
             }
         }
         if (entryIndex < 0) {
-            throw new IllegalArgumentException("Can not find " + entry.getName() + " in " + fileName);
+            throw new ArchiveException("Can not find " + entry.getName() + " in " + fileName);
         }
         buildDecodingStream(entryIndex, true);
         currentEntryIndex = entryIndex;
@@ -1357,7 +1356,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         return current;
     }
 
-    private BitSet readAllOrBits(final ByteBuffer header, final int size) throws IOException {
+    private BitSet readAllOrBits(final ByteBuffer header, final int size) throws ArchiveException {
         final int areAllDefined = getUnsignedByte(header);
         final BitSet bits;
         if (areAllDefined != 0) {
@@ -1371,7 +1370,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         return bits;
     }
 
-    private void readArchiveProperties(final ByteBuffer header) throws IOException {
+    private void readArchiveProperties(final ByteBuffer header) throws ArchiveException {
         // FIXME: the reference implementation just throws them away?
         long nid = readUint64(header);
         while (nid != NID.kEnd) {
@@ -1382,7 +1381,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         }
     }
 
-    private BitSet readBits(final ByteBuffer header, final int size) throws IOException {
+    private BitSet readBits(final ByteBuffer header, final int size) throws ArchiveException {
         ensureRemaining(header, (size + 7) / 8);
         final BitSet bits = new BitSet(size);
         int mask = 0;
@@ -1573,9 +1572,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
             }
             entryAtIndex.setHasStream(isEmptyStream == null || !isEmptyStream.get(i));
             if (entryAtIndex.hasStream()) {
-                if (archive.subStreamsInfo == null) {
-                    throw new ArchiveException("7z archive: Archive contains file with streams but no subStreamsInfo.");
-                }
+                ArchiveException.requireNonNull(archive.subStreamsInfo, "7z archive: Archive contains file with streams but no subStreamsInfo.");
                 entryAtIndex.setDirectory(false);
                 entryAtIndex.setAntiItem(false);
                 entryAtIndex.setHasCrc(archive.subStreamsInfo.hasCrc.get(nonEmptyFileCounter));
@@ -1594,7 +1591,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         calculateStreamMap(archive);
     }
 
-    Folder readFolder(final ByteBuffer header) throws IOException {
+    Folder readFolder(final ByteBuffer header) throws CompressException {
         final Folder folder = new Folder();
         final long numCoders = readUint64(header);
         if (numCoders == 0 || numCoders > MAX_CODERS_PER_FOLDER) {
@@ -1741,7 +1738,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
                 + "the archive could be a multi volume archive that has been closed prematurely.");
     }
 
-    private void readPackInfo(final ByteBuffer header, final Archive archive) throws IOException {
+    private void readPackInfo(final ByteBuffer header, final Archive archive) throws CompressException {
         archive.packPos = readUint64(header);
         final int numPackStreamsInt = readUint64ToIntExact(header, "numPackStreams");
         int nid = getUnsignedByte(header);
@@ -1782,7 +1779,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         return new StartHeader(nextHeaderOffset, nextHeaderSize, nextHeaderCrc);
     }
 
-    private void readStreamsInfo(final ByteBuffer header, final Archive archive) throws IOException {
+    private void readStreamsInfo(final ByteBuffer header, final Archive archive) throws CompressException {
         int nid = getUnsignedByte(header);
         if (nid == NID.kPackInfo) {
             readPackInfo(header, archive);
@@ -1801,7 +1798,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         }
     }
 
-    private void readSubStreamsInfo(final ByteBuffer header, final Archive archive) throws IOException {
+    private void readSubStreamsInfo(final ByteBuffer header, final Archive archive) throws CompressException {
         for (final Folder folder : archive.folders) {
             folder.numUnpackSubStreams = 1;
         }
@@ -1874,7 +1871,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         archive.subStreamsInfo = subStreamsInfo;
     }
 
-    private void readUnpackInfo(final ByteBuffer header, final Archive archive) throws IOException {
+    private void readUnpackInfo(final ByteBuffer header, final Archive archive) throws CompressException {
         int nid = getUnsignedByte(header);
         final int numFoldersInt = readUint64ToIntExact(header, "numFolders");
         /* final int external = */ getUnsignedByte(header);
@@ -1957,7 +1954,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         return stats;
     }
 
-    private void sanityCheckArchiveProperties(final ByteBuffer header) throws IOException {
+    private void sanityCheckArchiveProperties(final ByteBuffer header) throws ArchiveException {
         long nid = readUint64(header);
         while (nid != NID.kEnd) {
             // We validate the size but ignore the value
@@ -1967,7 +1964,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         }
     }
 
-    private void sanityCheckFilesInfo(final ByteBuffer header, final ArchiveStatistics stats) throws IOException {
+    private void sanityCheckFilesInfo(final ByteBuffer header, final ArchiveStatistics stats) throws ArchiveException {
         stats.numberOfEntries = readUint64ToIntExact(header, "numFiles");
         int emptyStreams = -1;
         final int originalLimit = header.limit();
@@ -2236,8 +2233,9 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         }
         final long totalNumberOfBindPairs = stats.numberOfOutStreams - stats.numberOfFolders;
         final long packedStreamsRequiredByFolders = stats.numberOfInStreams - totalNumberOfBindPairs;
-        if (packedStreamsRequiredByFolders < stats.numberOfPackedStreams) {
-            throw new ArchiveException("7z archive: Archive doesn't contain enough packed streams");
+        if (packedStreamsRequiredByFolders != stats.numberOfPackedStreams) {
+            throw new ArchiveException("7z archive: Folders require %,d packed streams but the archive contains %,d", packedStreamsRequiredByFolders,
+                    stats.numberOfPackedStreams);
         }
         nid = getUnsignedByte(header);
         if (nid != NID.kCodersUnpackSize) {
@@ -2349,7 +2347,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
      * @return A byte array containing the data from the buffer.
      * @throws IOException if there are insufficient resources to allocate the array or insufficient data in the buffer.
      */
-    private byte[] toByteArray(final ByteBuffer header, final int size) throws IOException {
+    private byte[] toByteArray(final ByteBuffer header, final int size) throws CompressException {
         // Check if we have enough resources to allocate the array
         MemoryLimitException.checkKiB(bytesToKiB(size * Byte.BYTES), maxMemoryLimitKiB);
         final byte[] result = new byte[size];

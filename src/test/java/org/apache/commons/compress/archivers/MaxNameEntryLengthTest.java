@@ -99,6 +99,7 @@ public class MaxNameEntryLengthTest extends AbstractTest {
                         TarArchiveInputStream.builder()
                                 .setMaxEntryNameLength(Integer.MAX_VALUE)
                                 .setURI(getURI("synthetic/long-name/pax-fail.tar"))
+                                .setMaxPaxHeaderSize(Integer.MAX_VALUE)
                                 .get(),
                         // The PAX entry length is the limiting factor: "2147483647 path=...\n"
                         Integer.MAX_VALUE),
@@ -113,7 +114,10 @@ public class MaxNameEntryLengthTest extends AbstractTest {
     static Stream<Arguments> testTruncatedTarFiles() throws IOException {
         return Stream.of(
                 Arguments.of(
-                        TarFile.builder().setMaxEntryNameLength(Integer.MAX_VALUE).setURI(getURI("synthetic/long-name/pax-fail.tar")),
+                        TarFile.builder()
+                            .setMaxEntryNameLength(Integer.MAX_VALUE)
+                            .setMaxPaxHeaderSize(Integer.MAX_VALUE)
+                            .setURI(getURI("synthetic/long-name/pax-fail.tar")),
                         Integer.MAX_VALUE
                 ),
                 Arguments.of(

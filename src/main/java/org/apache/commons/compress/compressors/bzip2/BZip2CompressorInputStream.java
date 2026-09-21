@@ -31,6 +31,7 @@ import java.util.Arrays;
 
 import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
+import org.apache.commons.compress.huffman.HuffmanDecoder;
 import org.apache.commons.compress.utils.BitInputStream;
 import org.apache.commons.compress.utils.InputStreamStatistics;
 import org.apache.commons.io.IOUtils;
@@ -60,16 +61,17 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
          */
         final int[] unzftab = new int[256]; // 1024 byte
 
-        // Needs indexes from 0 to MAX_CODE_LEN inclusive.
-        final int[][] limit = new int[N_GROUPS][MAX_CODE_LEN + 1];
-        // Needs indexes from 0 to MAX_CODE_LEN + 1 inclusive.
-        final int[][] base = new int[N_GROUPS][MAX_CODE_LEN + 2];
-        final int[][] perm = new int[N_GROUPS][MAX_ALPHA_SIZE]; // 6192 byte
-        final int[] minLens = new int[N_GROUPS]; // 24 byte
+        /**
+         * Huffman decoding tables.
+         */
+        final HuffmanDecoder[] huffmanDecoders = new HuffmanDecoder[N_GROUPS];
+        /**
+         * Number of non-null {@link #huffmanDecoders}.
+         */
+        int huffmanDecodersCount;
 
         final int[] cftab = new int[257]; // 1028 byte
         final char[] getAndMoveToFrontDecode_yy = new char[256]; // 512 byte
-        final char[][] temp_charArray2d = new char[N_GROUPS][MAX_ALPHA_SIZE]; // 3096
         // byte
         final byte[] recvDecodingTables_pos = new byte[N_GROUPS]; // 6 byte
         // ---------------
@@ -159,83 +161,9 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         }
     }
 
-    /**
-     * Builds the Huffman decoding tables for use by {@code recvDecodingTables()}.
-     *
-     * @param alphaSize The alphabet size, guaranteed by the caller to be in the range [2, 258]
-     *                  (RUNA, RUNB, 255 byte values, and EOB).
-     * @param nGroups   The number of Huffman coding groups, guaranteed by the caller to be in the range [0, 6].
-     * @param dataShadow The data structure into which the tables are built; requires
-     *                   {@code temp_charArray2d} to be initialized.
-     */
-    static void createHuffmanDecodingTables(final int alphaSize, final int nGroups, final Data dataShadow) {
-        final char[][] len = dataShadow.temp_charArray2d;
-        final int[] minLens = dataShadow.minLens;
-        final int[][] limit = dataShadow.limit;
-        final int[][] base = dataShadow.base;
-        final int[][] perm = dataShadow.perm;
-
-        for (int t = 0; t < nGroups; t++) {
-            final char[] len_t = len[t];
-            int minLen = len_t[0];
-            int maxLen = len_t[0];
-            for (int i = 1; i < alphaSize; i++) {
-                final char lent = len_t[i];
-                if (lent > maxLen) {
-                    maxLen = lent;
-                }
-                if (lent < minLen) {
-                    minLen = lent;
-                }
-            }
-            hbCreateDecodeTables(limit[t], base[t], perm[t], len[t], minLen, maxLen, alphaSize);
-            minLens[t] = minLen;
-        }
-    }
-
-    /**
-     * Called by createHuffmanDecodingTables() exclusively.
-     *
-     * @param minLen minimum code length in the range [1, {@value MAX_CODE_LEN}] guaranteed by the caller.
-     * @param maxLen maximum code length in the range [1, {@value MAX_CODE_LEN}] guaranteed by the caller.
-     */
-    private static void hbCreateDecodeTables(final int[] limit, final int[] base, final int[] perm, final char[] length, final int minLen, final int maxLen,
-            final int alphaSize) {
-        for (int i = minLen, pp = 0; i <= maxLen; i++) {
-            for (int j = 0; j < alphaSize; j++) {
-                if (length[j] == i) {
-                    perm[pp++] = j;
-                }
-            }
-        }
-        // Ensure the arrays were not reused.
-        Arrays.fill(base, 0);
-        Arrays.fill(limit, minLen, maxLen + 1, 0);
-        // Compute histogram of code lengths, shifted by 1.
-        for (int i = 0; i < alphaSize; i++) {
-            final int len = length[i] + 1;
-            base[len]++;
-        }
-        // Compute cumulative counts: base[len] = # of codes with length < len.
-        // In other terms: base[len] = index of the first code in the `perm` table.
-        for (int len = 1; len < base.length; len++) {
-            base[len] += base[len - 1];
-        }
-        // Compute the last code for each length.
-        int vec = 0;
-        for (int len = minLen; len <= maxLen; len++) {
-            // increment by the number of length `len` codes
-            vec += base[len + 1] - base[len];
-            // vec is now the last code of length `len` + 1
-            limit[len] = vec - 1;
-            vec <<= 1;
-        }
-        // Compute the bias between code value and table index.
-        // base[minLen] cannot be computed using this rule, since limit[minLen - 1] does not exist,
-        // but has already the correct value 0.
-        for (int len = minLen + 1; len <= maxLen; len++) {
-            base[len] = (limit[len - 1] + 1 << 1) - base[len];
-        }
+    private static HuffmanDecoder getHuffmanDecoder(final Data dataShadow, final int zt) throws IOException {
+        checkBounds(zt, dataShadow.huffmanDecodersCount, "zt");
+        return dataShadow.huffmanDecoders[zt];
     }
 
     private static void makeMaps(final Data data) throws IOException {
@@ -252,7 +180,6 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
 
         data.inUseCount = nInUseShadow;
     }
-
     /**
      * Checks if the signature matches what is expected for a bzip2 file.
      *
@@ -264,6 +191,9 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     public static boolean matches(final byte[] signature, final int length) {
         return length >= 3 && signature[0] == 'B' && signature[1] == 'Z' && signature[2] == 'h';
     }
+
+    // Variables used by setup* methods exclusively
+
     static void recvDecodingTables(final BitInputStream bin, final Data dataShadow) throws IOException {
         final boolean[] inUse = dataShadow.inUse;
         final byte[] pos = dataShadow.recvDecodingTables_pos;
@@ -335,30 +265,21 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
             selector[i] = tmp;
         }
 
-        final char[][] len = dataShadow.temp_charArray2d;
-
-        /* Now the coding tables */
+        /* Now the Huffman coding tables */
         for (int t = 0; t < nGroups; t++) {
+            final int[] codeLengths = new int[alphaSize];
             int curr = bsR(bin, 5);
-            final char[] len_t = len[t];
             for (int i = 0; i < alphaSize; i++) {
                 while (bsGetBit(bin)) {
                     curr += bsGetBit(bin) ? -1 : 1;
                 }
-                // Same condition as in bzip2
-                if (curr < 1 || curr > MAX_CODE_LEN) {
-                    throw new CompressorException(
-                            "Corrupted input, code length value out of range [%d, %d]: %d", 1, MAX_CODE_LEN, curr);
-                }
-                len_t[i] = (char) curr;
+                codeLengths[i] = curr;
             }
+            // Same limits as in the reference C implementation of bzip2
+            dataShadow.huffmanDecoders[t] = new HuffmanDecoder(codeLengths, 1, MAX_CODE_LEN);
         }
-
-        // finally create the Huffman tables
-        createHuffmanDecodingTables(alphaSize, nGroups, dataShadow);
+        dataShadow.huffmanDecodersCount = nGroups;
     }
-
-    // Variables used by setup* methods exclusively
 
     /**
      * Index of the last char in the block, so the block size == last + 1.
@@ -369,7 +290,6 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
      * Index in zptr[] of original string after sorting.
      */
     private int origPtr;
-
     /**
      * always: in the range 0 .. 9. The current block size is 100000 * this number.
      */
@@ -387,6 +307,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     private int su_chPrev;
     private int su_i2;
     private int su_j2;
+
     private int su_rNToGo;
 
     private int su_rTPos;
@@ -477,10 +398,6 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         final byte[] selector = dataShadow.selector;
         final byte[] seqToUnseq = dataShadow.seqToUnseq;
         final char[] yy = dataShadow.getAndMoveToFrontDecode_yy;
-        final int[] minLens = dataShadow.minLens;
-        final int[][] limit = dataShadow.limit;
-        final int[][] base = dataShadow.base;
-        final int[][] perm = dataShadow.perm;
         final int limitLast = this.blockSize100k * 100000;
         /*
          * Setting up the unzftab entries here is not strictly necessary, but it does save having to do it later in a separate pass, and so saves a block's
@@ -490,18 +407,14 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
             yy[i] = (char) i;
             unzftab[i] = 0;
         }
-        int groupNo = 0;
         int groupPos = G_SIZE - 1;
         final int eob = dataShadow.inUseCount + 1;
-        int nextSym = getAndMoveToFrontDecode0();
         int lastShadow = -1;
+        // Initialize group, selector and huffmanDecoder
+        int groupNo = 0;
         int zt = selector[groupNo] & 0xff;
-        // All arrays have the same length
-        checkBounds(zt, base.length, "zt");
-        int[] base_zt = base[zt];
-        int[] limit_zt = limit[zt];
-        int[] perm_zt = perm[zt];
-        int minLens_zt = minLens[zt];
+        HuffmanDecoder currentDecoder = getHuffmanDecoder(dataShadow, zt);
+        int nextSym = currentDecoder.decodeSymbol(bin);
         while (nextSym != eob) {
             if (nextSym == RUNA || nextSym == RUNB) {
                 int s = -1;
@@ -517,25 +430,11 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
                         groupPos = G_SIZE - 1;
                         checkBounds(++groupNo, selector.length, "groupNo");
                         zt = selector[groupNo] & 0xff;
-                        // All arrays have the same length
-                        checkBounds(zt, base.length, "zt");
-                        base_zt = base[zt];
-                        limit_zt = limit[zt];
-                        perm_zt = perm[zt];
-                        minLens_zt = minLens[zt];
+                        currentDecoder = getHuffmanDecoder(dataShadow, zt);
                     } else {
                         groupPos--;
                     }
-                    int zn = minLens_zt;
-                    checkBounds(zn, limit_zt.length, "zn");
-                    int zvec = bsR(bin, zn);
-                    while (zvec > limit_zt[zn]) {
-                        checkBounds(++zn, limit_zt.length, "zn");
-                        zvec = zvec << 1 | bsR(bin, 1);
-                    }
-                    final int tmp = zvec - base_zt[zn];
-                    checkBounds(tmp, perm_zt.length, "zvec");
-                    nextSym = perm_zt[tmp];
+                    nextSym = currentDecoder.decodeSymbol(bin);
                 }
                 checkBounds(s, this.data.ll8.length, "s");
                 final int yy0 = yy[0];
@@ -573,45 +472,14 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
                     groupPos = G_SIZE - 1;
                     checkBounds(++groupNo, selector.length, "groupNo");
                     zt = selector[groupNo] & 0xff;
-                    // All arrays have the same length
-                    checkBounds(zt, base.length, "zt");
-                    base_zt = base[zt];
-                    limit_zt = limit[zt];
-                    perm_zt = perm[zt];
-                    minLens_zt = minLens[zt];
+                    currentDecoder = getHuffmanDecoder(dataShadow, zt);
                 } else {
                     groupPos--;
                 }
-                int zn = minLens_zt;
-                checkBounds(zn, limit_zt.length, "zn");
-                int zvec = bsR(bin, zn);
-                while (zvec > limit_zt[zn]) {
-                    checkBounds(++zn, limit_zt.length, "zn");
-                    zvec = zvec << 1 | bsR(bin, 1);
-                }
-                final int idx = zvec - base_zt[zn];
-                checkBounds(idx, perm_zt.length, "zvec");
-                nextSym = perm_zt[idx];
+                nextSym = currentDecoder.decodeSymbol(bin);
             }
         }
         this.last = lastShadow;
-    }
-
-    private int getAndMoveToFrontDecode0() throws IOException {
-        final Data dataShadow = this.data;
-        final int zt = dataShadow.selector[0] & 0xff;
-        checkBounds(zt, dataShadow.limit.length, "zt");
-        final int[] limit_zt = dataShadow.limit[zt];
-        int zn = dataShadow.minLens[zt];
-        checkBounds(zn, limit_zt.length, "zn");
-        int zvec = bsR(bin, zn);
-        while (zvec > limit_zt[zn]) {
-            checkBounds(++zn, limit_zt.length, "zn");
-            zvec = zvec << 1 | bsR(bin, 1);
-        }
-        final int tmp = zvec - dataShadow.base[zt][zn];
-        checkBounds(tmp, dataShadow.perm[zt].length, "zvec");
-        return dataShadow.perm[zt][tmp];
     }
 
     /**
@@ -740,30 +608,22 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
         switch (currentState) {
         case EOF:
             return -1;
-
         case START_BLOCK_STATE:
             return setupBlock();
-
         case RAND_PART_A_STATE:
-            throw new IllegalStateException();
-
+            throw new CompressorException("Unexpected RAND_PART_A_STATE in read0()");
         case RAND_PART_B_STATE:
             return setupRandPartB();
-
         case RAND_PART_C_STATE:
             return setupRandPartC();
-
         case NO_RAND_PART_A_STATE:
-            throw new IllegalStateException();
-
+            throw new CompressorException("Unexpected NO_RAND_PART_A_STATE in read0()");
         case NO_RAND_PART_B_STATE:
             return setupNoRandPartB();
-
         case NO_RAND_PART_C_STATE:
             return setupNoRandPartC();
-
         default:
-            throw new IllegalStateException();
+            throw new CompressorException("Unexpected %s in read0()", currentState);
         }
     }
 

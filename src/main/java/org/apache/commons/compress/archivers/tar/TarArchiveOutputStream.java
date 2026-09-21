@@ -161,6 +161,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
      * @param os         The output stream to use.
      * @param blockSize  The block size to use.
      * @param recordSize The record size to use. Must be 512 bytes.
+     * @throws IllegalArgumentException if recordSize is not 512 bytes.
      * @deprecated recordSize must always be 512 bytes. An IllegalArgumentException will be thrown if any other value is used
      */
     @Deprecated
@@ -175,6 +176,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
      * @param blockSize  The block size to use . Must be a multiple of 512 bytes.
      * @param recordSize The record size to use. Must be 512 bytes.
      * @param encoding   name of the encoding to use for file names.
+     * @throws IllegalArgumentException if recordSize is not 512 bytes.
      * @since 1.4
      * @deprecated recordSize must always be 512 bytes. An IllegalArgumentException will be thrown if any other value is used.
      */
@@ -193,6 +195,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
      * @param os        The output stream to use.
      * @param blockSize The block size to use. Must be a multiple of 512 bytes.
      * @param charset  name of the encoding to use for file names.
+     * @throws IllegalArgumentException if blockSize is not a multiple of 512 bytes.
      * @since 1.4
      */
     public TarArchiveOutputStream(final OutputStream os, final int blockSize, final String charset) {
@@ -267,7 +270,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
         }
     }
 
-    private void addPaxHeadersForBigNumbers(final Map<String, String> paxHeaders, final TarArchiveEntry entry) {
+    private void addPaxHeadersForBigNumbers(final Map<String, String> paxHeaders, final TarArchiveEntry entry) throws ArchiveException {
         addPaxHeaderForBigNumber(paxHeaders, "size", entry.getSize(), TarConstants.MAXSIZE);
         addPaxHeaderForBigNumber(paxHeaders, "gid", entry.getLongGroupId(), TarConstants.MAXID);
         addFileTimePaxHeaderForBigNumber(paxHeaders, "mtime", entry.getLastModifiedTime(), TarConstants.MAXSIZE);
@@ -363,18 +366,18 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
         return toUtf8Bytes(w.toString());
     }
 
-    private void failForBigNumber(final String field, final long value, final long maxValue) {
+    private void failForBigNumber(final String field, final long value, final long maxValue) throws ArchiveException {
         failForBigNumber(field, value, maxValue, "");
     }
 
-    private void failForBigNumber(final String field, final long value, final long maxValue, final String additionalMsg) {
+    private void failForBigNumber(final String field, final long value, final long maxValue, final String additionalMsg) throws ArchiveException {
         if (value < 0 || value > maxValue) {
-            throw new IllegalArgumentException(field + " '" + value // NOSONAR
+            throw new ArchiveException(field + " '" + value // NOSONAR
                     + "' is too big ( > " + maxValue + " )." + additionalMsg);
         }
     }
 
-    private void failForBigNumbers(final TarArchiveEntry entry) {
+    private void failForBigNumbers(final TarArchiveEntry entry) throws ArchiveException {
         failForBigNumber("entry size", entry.getSize(), TarConstants.MAXSIZE);
         failForBigNumberWithPosixMessage("group id", entry.getLongGroupId(), TarConstants.MAXID);
         failForBigNumber("last modification time", FileTimes.toUnixTime(entry.getLastModifiedTime()), TarConstants.MAXSIZE);
@@ -384,7 +387,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
         failForBigNumber("minor device number", entry.getDevMinor(), TarConstants.MAXID);
     }
 
-    private void failForBigNumberWithPosixMessage(final String field, final long value, final long maxValue) {
+    private void failForBigNumberWithPosixMessage(final String field, final long value, final long maxValue) throws ArchiveException {
         failForBigNumber(field, value, maxValue, " Use STAR or POSIX extensions to overcome this limit");
     }
 
@@ -458,7 +461,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
             final byte linkType, final String fieldName) throws IOException {
         // Fail-fast with less precision with LONGFILE_ERROR, instead allocating a potentially huge buffers.
         if (longFileMode == LONGFILE_ERROR && name.length() >= TarConstants.NAMELEN) {
-            throw new IllegalArgumentException(
+            throw new ArchiveException(
                     fieldName + " '" + StringUtils.truncate(name, TarConstants.NAMELEN) + "...' is too long ( > " + TarConstants.NAMELEN + " bytes)");
         }
         final ByteBuffer encodedName = zipEncoding.encode(name);
@@ -479,7 +482,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
                 write(0); // NUL terminator
                 closeArchiveEntry();
             } else if (longFileMode != LONGFILE_TRUNCATE) {
-                throw new IllegalArgumentException(
+                throw new ArchiveException(
                         fieldName + " '" + StringUtils.truncate(name, TarConstants.NAMELEN) + "...' is too long ( > " + TarConstants.NAMELEN + " bytes)");
             }
         }
@@ -637,7 +640,7 @@ public class TarArchiveOutputStream extends ArchiveOutputStream<TarArchiveEntry>
     public void write(final byte[] wBuf, final int wOffset, final int numToWrite) throws IOException {
         IOUtils.checkFromIndexSize(wBuf, wOffset, numToWrite);
         if (!haveUnclosedEntry) {
-            throw new IllegalStateException("No current tar entry");
+            throw new ArchiveException("No current tar entry");
         }
         if (currBytes + numToWrite > currSize) {
             throw new ArchiveException("Request to write %,d bytes exceeds size in header of %,d bytes for entry '%s'", numToWrite, currSize, currName);

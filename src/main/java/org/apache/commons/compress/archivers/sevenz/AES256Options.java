@@ -27,8 +27,10 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.apache.commons.compress.archivers.ArchiveException;
+
 /**
- * Options for {@link SevenZMethod#AES256SHA256} encoder
+ * Options for {@link SevenZMethod#AES256SHA256} encoder.
  *
  * @since 1.23
  * @see AES256SHA256Decoder
@@ -45,12 +47,12 @@ final class AES256Options {
         return new SecretKeySpec(bytes, ALGORITHM);
     }
 
-    private static byte[] randomBytes(final int size) {
+    private static byte[] randomBytes(final int size) throws ArchiveException {
         final byte[] bytes = new byte[size];
         try {
             SecureRandom.getInstanceStrong().nextBytes(bytes);
         } catch (final NoSuchAlgorithmException e) {
-            throw new IllegalStateException("No strong secure random available to generate strong AES key", e);
+            throw new ArchiveException("No strong secure random available to generate strong AES key.", (Throwable) e);
         }
         return bytes;
     }
@@ -63,9 +65,12 @@ final class AES256Options {
     private final Cipher cipher;
 
     /**
+     * Creates a new AES256Options with a random salt and IV.
+     *
      * @param password password used for encryption.
+     * @throws ArchiveException No strong secure random available to generate strong AES key.
      */
-    AES256Options(final char[] password) {
+    AES256Options(final char[] password) throws ArchiveException {
         this(password, EMPTY_BYTE_ARRAY, randomBytes(16), 19);
     }
 
@@ -75,22 +80,20 @@ final class AES256Options {
      * @param iv             Initialization Vector (IV) used by cipher algorithm.
      * @param numCyclesPower another password security enforcer parameter that controls the cycles of password hashing. More the this number is high, more
      *                       security you'll have but also high CPU usage.
+     * @throws ArchiveException Encryption error (Check JCE Unlimited Strength Jurisdiction Policy Files installation).
      */
-    AES256Options(final char[] password, final byte[] salt, final byte[] iv, final int numCyclesPower) {
+    AES256Options(final char[] password, final byte[] salt, final byte[] iv, final int numCyclesPower) throws ArchiveException {
         this.salt = salt;
         this.iv = iv;
         this.numCyclesPower = numCyclesPower;
-
         // NOTE: for security purposes, password is wrapped in a Cipher as soon as possible to not stay in memory
         final byte[] aesKeyBytes = AES256SHA256Decoder.sha256Password(password, numCyclesPower, salt);
         final SecretKey aesKey = newSecretKeySpec(aesKeyBytes);
-
         try {
             cipher = Cipher.getInstance(TRANSFORMATION);
             cipher.init(Cipher.ENCRYPT_MODE, aesKey, new IvParameterSpec(iv));
-        } catch (final GeneralSecurityException generalSecurityException) {
-            throw new IllegalStateException("Encryption error (do you have the JCE Unlimited Strength Jurisdiction Policy Files installed?)",
-                    generalSecurityException);
+        } catch (final GeneralSecurityException e) {
+            throw new ArchiveException("Encryption error (Check JCE Unlimited Strength Jurisdiction Policy Files installation).", (Throwable) e);
         }
     }
 

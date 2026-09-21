@@ -25,6 +25,7 @@ import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.CompressorOutputStream;
 import org.apache.commons.compress.compressors.lz77support.LZ77Compressor;
 import org.apache.commons.compress.compressors.lz77support.Parameters;
@@ -116,9 +117,9 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream<Outpu
             }
         }
 
-        void setBackReference(final LZ77Compressor.BackReference block) {
+        void setBackReference(final LZ77Compressor.BackReference block) throws CompressorException {
             if (hasBackReference()) {
-                throw new IllegalStateException();
+                throw new CompressorException("back-reference already set");
             }
             brOffset = block.getOffset();
             brLength = block.getLength();
@@ -291,7 +292,7 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream<Outpu
         }
     }
 
-    private byte[] expand(final int offset, final int length) {
+    private byte[] expand(final int offset, final int length) throws CompressorException {
         final byte[] expanded = new byte[length];
         if (offset == 1) { // surprisingly common special case
             final byte[] block = expandedBlocks.peekFirst();
@@ -305,7 +306,7 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream<Outpu
         return expanded;
     }
 
-    private void expandFromList(final byte[] expanded, final int offset, final int length) {
+    private void expandFromList(final byte[] expanded, final int offset, final int length) throws CompressorException {
         int offsetRemaining = offset;
         int lengthRemaining = length;
         int writeOffset = 0;
@@ -325,7 +326,7 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream<Outpu
                 }
                 if (block == null) {
                     // should not be possible
-                    throw new IllegalStateException("Failed to find a block containing offset " + offset);
+                    throw new CompressorException("Failed to find a block containing offset " + offset);
                 }
                 copyOffset = blockOffset + block.length - offsetRemaining;
                 copyLen = Math.min(lengthRemaining, block.length - copyOffset);
@@ -361,10 +362,10 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream<Outpu
      * @param data The data to fill the window with.
      * @param off  offset of real data into the array.
      * @param len  amount of data.
-     * @throws IllegalStateException if the stream has already started to write data.
+     * @throws CompressorException if the stream has already started to write data.
      * @see LZ77Compressor#prefill
      */
-    public void prefill(final byte[] data, final int off, final int len) {
+    public void prefill(final byte[] data, final int off, final int len) throws CompressorException {
         if (len > 0) {
             final byte[] b = Arrays.copyOfRange(data, off, off + len);
             compressor.prefill(b);
@@ -372,7 +373,7 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream<Outpu
         }
     }
 
-    private void recordBackReference(final LZ77Compressor.BackReference block) {
+    private void recordBackReference(final LZ77Compressor.BackReference block) throws CompressorException {
         expandedBlocks.addFirst(expand(block.getOffset(), block.getLength()));
     }
 
@@ -380,7 +381,7 @@ public class BlockLZ4CompressorOutputStream extends CompressorOutputStream<Outpu
         expandedBlocks.addFirst(b);
     }
 
-    private void rewriteLastPairs() {
+    private void rewriteLastPairs() throws CompressorException {
         final LinkedList<Pair> lastPairs = new LinkedList<>();
         final LinkedList<Integer> pairLength = new LinkedList<>();
         int offset = 0;

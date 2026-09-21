@@ -459,7 +459,7 @@ class SevenZFileTest extends AbstractArchiveFileTest<SevenZArchiveEntry> {
         try (SevenZFile sevenZFile = getSevenZFile("COMPRESS-256.7z");
                 SevenZFile anotherSevenZFile = getSevenZFile("bla.7z")) {
             for (final SevenZArchiveEntry nonExistEntry : anotherSevenZFile.getEntries()) {
-                assertThrows(IllegalArgumentException.class, () -> sevenZFile.getInputStream(nonExistEntry));
+                assertThrows(ArchiveException.class, () -> sevenZFile.getInputStream(nonExistEntry));
             }
         }
     }

@@ -24,6 +24,7 @@ import java.nio.ByteOrder;
 import java.util.Arrays;
 
 import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.compress.compressors.CompressorException;
 import org.apache.commons.compress.compressors.lzw.LZWInputStream;
 
 /**
@@ -41,8 +42,9 @@ final class UnshrinkingInputStream extends LZWInputStream {
      * Constructs a new instance.
      *
      * @param inputStream Input stream.
+     * @throws CompressorException Thrown if the input stream cannot configured.
      */
-    UnshrinkingInputStream(final InputStream inputStream) {
+    UnshrinkingInputStream(final InputStream inputStream) throws CompressorException {
         super(inputStream, ByteOrder.LITTLE_ENDIAN);
         setClearCode(DEFAULT_CODE_SIZE);
         initializeTables(MAX_CODE_SIZE);
@@ -97,10 +99,7 @@ final class UnshrinkingInputStream extends LZWInputStream {
             }
             return expandCodeToOutputStack(effectiveCode, addedUnfinishedEntry);
         }
-        final int subCode = readNextCode();
-        if (subCode < 0) {
-            throw new ArchiveException("Unexpected EOF");
-        }
+        final int subCode = ArchiveException.requireNonNegative(readNextCode(), "Unexpected EOF");
         if (subCode == 1) {
             if (getCodeSize() >= MAX_CODE_SIZE) {
                 throw new ArchiveException("Attempt to increase code size beyond maximum");

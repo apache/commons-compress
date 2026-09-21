@@ -24,7 +24,7 @@ import org.apache.commons.compress.utils.ByteUtils;
 import org.apache.commons.lang3.ArrayUtils;
 
 /**
- * Utility class that represents a two byte integer with conversion rules for the little-endian byte order of ZIP files.
+ * A two byte integer with conversion rules for the little-endian byte order of ZIP files.
  *
  * @Immutable
  */

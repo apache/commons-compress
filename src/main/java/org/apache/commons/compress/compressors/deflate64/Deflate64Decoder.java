@@ -18,10 +18,10 @@
  */
 package org.apache.commons.compress.compressors.deflate64;
 
-import static org.apache.commons.compress.compressors.deflate64.HuffmanState.DYNAMIC_CODES;
-import static org.apache.commons.compress.compressors.deflate64.HuffmanState.FIXED_CODES;
-import static org.apache.commons.compress.compressors.deflate64.HuffmanState.INITIAL;
-import static org.apache.commons.compress.compressors.deflate64.HuffmanState.STORED;
+import static org.apache.commons.compress.compressors.deflate64.Deflate64State.DYNAMIC_CODES;
+import static org.apache.commons.compress.compressors.deflate64.Deflate64State.FIXED_CODES;
+import static org.apache.commons.compress.compressors.deflate64.Deflate64State.INITIAL;
+import static org.apache.commons.compress.compressors.deflate64.Deflate64State.STORED;
 
 import java.io.Closeable;
 import java.io.EOFException;
@@ -30,6 +30,8 @@ import java.io.InputStream;
 import java.nio.ByteOrder;
 import java.util.Arrays;
 
+import org.apache.commons.compress.compressors.CompressorException;
+import org.apache.commons.compress.huffman.HuffmanDecoder;
 import org.apache.commons.compress.utils.BitInputStream;
 import org.apache.commons.compress.utils.ExactMath;
 import org.apache.commons.lang3.ArrayFill;
@@ -38,38 +40,7 @@ import org.apache.commons.lang3.ArrayUtils;
 /**
  * TODO This class can't be final because it is mocked by Mockito.
  */
-class HuffmanDecoder implements Closeable {
-
-    private static final class BinaryTreeNode {
-        private final int bits;
-        int literal = -1;
-        BinaryTreeNode leftNode;
-        BinaryTreeNode rightNode;
-
-        private BinaryTreeNode(final int bits) {
-            this.bits = bits;
-        }
-
-        void leaf(final int symbol) {
-            literal = symbol;
-            leftNode = null;
-            rightNode = null;
-        }
-
-        BinaryTreeNode left() {
-            if (leftNode == null && literal == -1) {
-                leftNode = new BinaryTreeNode(bits + 1);
-            }
-            return leftNode;
-        }
-
-        BinaryTreeNode right() {
-            if (rightNode == null && literal == -1) {
-                rightNode = new BinaryTreeNode(bits + 1);
-            }
-            return rightNode;
-        }
-    }
+class Deflate64Decoder implements Closeable {
 
     private abstract static class DecoderState {
         abstract int available() throws IOException;
@@ -78,7 +49,7 @@ class HuffmanDecoder implements Closeable {
 
         abstract int read(byte[] b, int off, int len) throws IOException;
 
-        abstract HuffmanState state();
+        abstract Deflate64State state();
     }
 
     private static final class DecodingMemory {
@@ -116,13 +87,13 @@ class HuffmanDecoder implements Closeable {
             return newCounter;
         }
 
-        void recordToBuffer(final int distance, final int length, final byte[] buff) {
+        void recordToBuffer(final int distance, final int length, final byte[] buff) throws CompressorException {
             if (distance > memory.length) {
-                throw new IllegalStateException("Illegal distance parameter: " + distance);
+                throw new CompressorException("Illegal distance parameter: " + distance);
             }
             final int start = wHead - distance & mask;
             if (!wrappedAround && start >= wHead) {
-                throw new IllegalStateException("Attempt to read beyond memory: dist=" + distance);
+                throw new CompressorException("Attempt to read beyond memory: dist=" + distance);
             }
             for (int i = 0, pos = start; i < length; i++, pos = incCounter(pos)) {
                 buff[i] = add(memory[pos]);
@@ -132,18 +103,18 @@ class HuffmanDecoder implements Closeable {
 
     private final class HuffmanCodes extends DecoderState {
         private boolean endOfBlock;
-        private final HuffmanState state;
-        private final BinaryTreeNode lengthTree;
-        private final BinaryTreeNode distanceTree;
+        private final Deflate64State state;
+        private final HuffmanDecoder symbolDecoder;
+        private final HuffmanDecoder distanceDecoder;
 
         private int runBufferPos;
         private byte[] runBuffer = ArrayUtils.EMPTY_BYTE_ARRAY;
         private int runBufferLength;
 
-        HuffmanCodes(final HuffmanState state, final int[] lengths, final int[] distance) {
+        HuffmanCodes(final Deflate64State state, final int[] lengths, final int[] distance) throws CompressorException {
             this.state = state;
-            lengthTree = buildTree(lengths);
-            distanceTree = buildTree(distance);
+            symbolDecoder = new HuffmanDecoder(lengths);
+            distanceDecoder = new HuffmanDecoder(distance);
         }
 
         @Override
@@ -169,16 +140,25 @@ class HuffmanDecoder implements Closeable {
             int result = copyFromRunBuffer(b, off, len);
 
             while (result < len) {
-                final int symbol = nextSymbol(reader, lengthTree);
+                final int symbol = symbolDecoder.decodeSymbol(reader);
                 if (symbol < 256) {
+                    if (symbol < 0) {
+                        throw new CompressorException("Invalid Deflate64 literal/length code %,d", symbol);
+                    }
                     b[off + result++] = memory.add((byte) symbol);
                 } else if (symbol > 256) {
+                    if (symbol - 257 >= RUN_LENGTH_TABLE.length) {
+                        throw new CompressorException("Invalid Deflate64 literal/length code %,d", symbol);
+                    }
                     final int runMask = RUN_LENGTH_TABLE[symbol - 257];
                     int run = runMask >>> 5;
                     final int runXtra = runMask & 0x1F;
                     run = ExactMath.add(run, readBits(runXtra));
 
-                    final int distSym = nextSymbol(reader, distanceTree);
+                    final int distSym = distanceDecoder.decodeSymbol(reader);
+                    if (distSym < 0 || distSym >= DISTANCE_TABLE.length) {
+                        throw new CompressorException("Invalid Deflate64 distance code %,d", distSym);
+                    }
 
                     final int distMask = DISTANCE_TABLE[distSym];
                     int dist = distMask >>> 4;
@@ -209,14 +189,11 @@ class HuffmanDecoder implements Closeable {
 
         @Override
         int read(final byte[] b, final int off, final int len) throws IOException {
-            if (len == 0) {
-                return 0;
-            }
-            return decodeNext(b, off, len);
+            return len == 0 ? 0 : decodeNext(b, off, len);
         }
 
         @Override
-        HuffmanState state() {
+        Deflate64State state() {
             return endOfBlock ? INITIAL : state;
         }
     }
@@ -233,15 +210,15 @@ class HuffmanDecoder implements Closeable {
         }
 
         @Override
-        int read(final byte[] b, final int off, final int len) throws IOException {
+        int read(final byte[] b, final int off, final int len) throws CompressorException {
             if (len == 0) {
                 return 0;
             }
-            throw new IllegalStateException("Cannot read in this state");
+            throw new CompressorException("Cannot read in this state");
         }
 
         @Override
-        HuffmanState state() {
+        Deflate64State state() {
             return INITIAL;
         }
     }
@@ -292,7 +269,7 @@ class HuffmanDecoder implements Closeable {
         }
 
         @Override
-        HuffmanState state() {
+        Deflate64State state() {
             return read < blockLength ? STORED : INITIAL;
         }
     }
@@ -370,71 +347,16 @@ class HuffmanDecoder implements Closeable {
         FIXED_DISTANCE = ArrayFill.fill(new int[32], 5);
     }
 
-    private static BinaryTreeNode buildTree(final int[] litTable) {
-        final int[] literalCodes = getCodes(litTable);
-
-        final BinaryTreeNode root = new BinaryTreeNode(0);
-
-        for (int i = 0; i < litTable.length; i++) {
-            final int len = litTable[i];
-            if (len != 0) {
-                BinaryTreeNode node = root;
-                final int lit = literalCodes[len - 1];
-                for (int p = len - 1; p >= 0; p--) {
-                    final int bit = lit & 1 << p;
-                    node = bit == 0 ? node.left() : node.right();
-                    if (node == null) {
-                        throw new IllegalStateException("node doesn't exist in Huffman tree");
-                    }
-                }
-                node.leaf(i);
-                literalCodes[len - 1]++;
-            }
-        }
-        return root;
-    }
-
-    private static int[] getCodes(final int[] litTable) {
-        int max = 0;
-        int[] blCount = new int[65];
-
-        for (final int aLitTable : litTable) {
-            if (aLitTable < 0 || aLitTable > 64) {
-                throw new IllegalArgumentException("Invalid code " + aLitTable + " in literal table");
-            }
-            max = Math.max(max, aLitTable);
-            blCount[aLitTable]++;
-        }
-        blCount = Arrays.copyOf(blCount, max + 1);
-
-        int code = 0;
-        final int[] nextCode = new int[max + 1];
-        for (int i = 0; i <= max; i++) {
-            code = code + blCount[i] << 1;
-            nextCode[i] = code;
-        }
-
-        return nextCode;
-    }
-
-    private static int nextSymbol(final BitInputStream reader, final BinaryTreeNode tree) throws IOException {
-        BinaryTreeNode node = tree;
-        while (node != null && node.literal == -1) {
-            final long bit = readBits(reader, 1);
-            node = bit == 0 ? node.leftNode : node.rightNode;
-        }
-        return node != null ? node.literal : -1;
-    }
-
     private static void populateDynamicTables(final BitInputStream reader, final int[] literals, final int[] distances) throws IOException {
         final int codeLengths = (int) (readBits(reader, 4) + 4);
 
-        final int[] codeLengthValues = new int[19];
+        final int[] codeLengthValues = new int[CODE_LENGTHS_ORDER.length];
         for (int cLen = 0; cLen < codeLengths; cLen++) {
             codeLengthValues[CODE_LENGTHS_ORDER[cLen]] = (int) readBits(reader, 3);
         }
 
-        final BinaryTreeNode codeLengthTree = buildTree(codeLengthValues);
+        // Decoder to decode the code lengths for the literal and distance tables
+        final HuffmanDecoder codeLengthDecoder = new HuffmanDecoder(codeLengthValues);
 
         final int[] auxBuffer = new int[literals.length + distances.length];
 
@@ -446,7 +368,7 @@ class HuffmanDecoder implements Closeable {
                 auxBuffer[off++] = value;
                 length--;
             } else {
-                final int symbol = nextSymbol(reader, codeLengthTree);
+                final int symbol = codeLengthDecoder.decodeSymbol(reader);
                 if (symbol < 16) {
                     value = symbol;
                     auxBuffer[off++] = value;
@@ -492,7 +414,7 @@ class HuffmanDecoder implements Closeable {
 
     private final DecodingMemory memory = new DecodingMemory();
 
-    HuffmanDecoder(final InputStream in) {
+    Deflate64Decoder(final InputStream in) {
         this.reader = new BitInputStream(in, ByteOrder.LITTLE_ENDIAN);
         this.in = in;
         state = new InitialState();
@@ -529,7 +451,7 @@ class HuffmanDecoder implements Closeable {
                     state = new HuffmanCodes(DYNAMIC_CODES, tables[0], tables[1]);
                     break;
                 default:
-                    throw new IllegalStateException("Unsupported compression: " + mode);
+                    throw new CompressorException("Unsupported compression: " + mode);
                 }
             } else {
                 final int r = state.read(b, off, len);
@@ -570,7 +492,7 @@ class HuffmanDecoder implements Closeable {
         final long bNLen = readBits(16);
         if (((bLen ^ 0xFFFF) & 0xFFFF) != bNLen) {
             // noinspection DuplicateStringLiteralInspection
-            throw new IllegalStateException("Illegal LEN / NLEN values");
+            throw new CompressorException("Illegal LEN / NLEN values");
         }
         state = new UncompressedState(bLen);
     }
