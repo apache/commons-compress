@@ -19,6 +19,7 @@
 package org.apache.commons.compress.archivers;
 
 import java.io.IOException;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.Date;
 
@@ -74,7 +75,12 @@ public interface ArchiveEntry {
      */
     default Path resolveIn(final Path parentPath) throws IOException {
         final String name = getName();
-        final Path outputFile = parentPath.resolve(name).normalize();
+        final Path outputFile;
+        try {
+            outputFile = parentPath.resolve(name).normalize();
+        } catch (final InvalidPathException e) {
+            throw new ArchiveException("Invalid entry name '" + name + "'", (Throwable) e);
+        }
         if (!outputFile.startsWith(parentPath)) {
             throw new ArchiveException("Zip slip '%s' + '%s' -> '%s'", parentPath, name, outputFile);
         }
