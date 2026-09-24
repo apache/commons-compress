@@ -35,15 +35,19 @@ import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Deque;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.zip.Inflater;
@@ -134,6 +138,8 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
         private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
         private boolean useUnicodeExtraFields = true;
         private boolean ignoreLocalFileHeader;
+        private boolean allowLegacyUnixHardLinks;
+        private boolean resolveUnixHardLinks;
         private long maxNumberOfDisks = 1;
         private String name;
         private IOFunction<InputStream, InputStream> zstdInputStreamFactory;
@@ -164,6 +170,22 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
         }
 
         /**
+         * Sets whether to recognize the UNIX hard link convention on entries declaring the FAT platform.
+         * <p>
+         * Defaults to false. Compatibility recognition additionally requires UNIX regular-file mode bits, the external hard link
+         * marker, and a PKWARE {@code 0x000d} extra field. This option does not interpret NTFS compressed attributes as hard links.
+         * </p>
+         *
+         * @param allowLegacyUnixHardLinks whether to accept historical FAT-platform UNIX hard links.
+         * @return {@code this} instance.
+         * @since 1.29.0
+         */
+        public Builder setAllowLegacyUnixHardLinks(final boolean allowLegacyUnixHardLinks) {
+            this.allowLegacyUnixHardLinks = allowLegacyUnixHardLinks;
+            return this;
+        }
+
+        /**
          * Sets whether to ignore information stored inside the local file header.
          *
          * @param ignoreLocalFileHeader whether to ignore information stored inside.
@@ -182,6 +204,23 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
          */
         public Builder setMaxNumberOfDisks(final long maxNumberOfDisks) {
             this.maxNumberOfDisks = maxNumberOfDisks;
+            return this;
+        }
+
+        /**
+         * Sets whether {@link ZipFile#getInputStream(ZipArchiveEntry)} follows UNIX hard links.
+         * <p>
+         * Defaults to false. When enabled, streams contain the resolved target's bytes, but entry sizes, CRCs and offsets continue
+         * to describe the stored reference. Use {@link ZipFile#resolveUnixHardLink(ZipArchiveEntry)} to obtain the content metadata.
+         * Raw input streams and raw copying always use the stored entry. Missing, ambiguous or cyclic targets cause read failures.
+         * </p>
+         *
+         * @param resolveUnixHardLinks whether entry streams follow UNIX hard links.
+         * @return {@code this} instance.
+         * @since 1.29.0
+         */
+        public Builder setResolveUnixHardLinks(final boolean resolveUnixHardLinks) {
+            this.resolveUnixHardLinks = resolveUnixHardLinks;
             return this;
         }
 
@@ -235,6 +274,15 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
      * Extends ZipArchiveEntry to store the offset within the archive.
      */
     private static final class Entry extends ZipArchiveEntry {
+
+        private final Object owner;
+
+        /**
+         * Associates the entry with its archive for hard link target resolution.
+         */
+        private Entry(final Object owner) {
+            this.owner = owner;
+        }
 
         @Override
         public boolean equals(final Object other) {
@@ -671,6 +719,10 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
      */
     private final Map<String, LinkedList<ZipArchiveEntry>> nameMap = new HashMap<>(HASH_SIZE);
 
+    private final Object entryOwner = new Object();
+    private final boolean allowLegacyUnixHardLinks;
+    private final boolean resolveUnixHardLinks;
+
     /**
      * The encoding to use for file names and the file comment.
      * <p>
@@ -750,6 +802,8 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
             this.useUnicodeExtraFields = builder.useUnicodeExtraFields;
             this.zstdInputStreamFactory = builder.zstdInputStreamFactory;
             this.maxEntryNameLength = builder.getMaxEntryNameLength();
+            this.allowLegacyUnixHardLinks = builder.allowLegacyUnixHardLinks;
+            this.resolveUnixHardLinks = builder.resolveUnixHardLinks;
             final Map<ZipArchiveEntry, NameAndComment> entriesWithoutUTF8Flag = populateFromCentralDirectory();
             if (!builder.ignoreLocalFileHeader) {
                 resolveLocalFileHeaderData(entriesWithoutUTF8Flag);
@@ -1000,6 +1054,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
      * Tests whether this class is able to read the given entry.
      * <p>
      * May return false if it is set up to use encryption or a compression method that hasn't been implemented yet.
+     * When UNIX hard link resolution is enabled, also checks the resolved target and returns false if resolution fails.
      * </p>
      *
      * @param entry The entry.
@@ -1007,6 +1062,14 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
      * @since 1.1
      */
     public boolean canReadEntryData(final ZipArchiveEntry entry) {
+        // With resolved reads enabled, readability depends on the terminal target.
+        if (resolveUnixHardLinks && UnixHardLink.isMarked(entry, allowLegacyUnixHardLinks)) {
+            try {
+                return ZipUtil.canHandleEntryData(resolveUnixHardLink(entry));
+            } catch (final IOException ex) {
+                return false;
+            }
+        }
         return ZipUtil.canHandleEntryData(entry);
     }
 
@@ -1203,6 +1266,11 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
 
     /**
      * Gets an InputStream for reading the contents of the given entry.
+     * <p>
+     * When {@link Builder#setResolveUnixHardLinks(boolean)} is enabled, reads the terminal regular-file target of a UNIX hard link.
+     * The reference's size, CRC and offsets still describe its stored empty body; obtain the content metadata from
+     * {@link #resolveUnixHardLink(ZipArchiveEntry)}. {@link #getRawInputStream(ZipArchiveEntry)} is unaffected.
+     * </p>
      *
      * @param entry The entry to get the stream for.
      * @return A stream to read the entry from. The returned stream implements {@link InputStreamStatistics}.
@@ -1213,13 +1281,21 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
         if (!(entry instanceof Entry)) {
             return null;
         }
-        // cast validity is checked just above
+        // Resolve only content reads; stored metadata and raw streams remain unchanged.
+        return getStoredInputStream(resolveUnixHardLinks ? resolveUnixHardLink(entry) : entry);
+    }
+
+    /**
+     * Opens the stored entry body with its compression decoder, without resolving hard links.
+     */
+    private InputStream getStoredInputStream(final ZipArchiveEntry entry) throws IOException {
         ZipUtil.checkRequestedFeatures(entry);
 
         // doesn't get closed if the method is not supported - which
         // should never happen because of the checkRequestedFeatures
         // call above
         final InputStream is = new BufferedInputStream(getRawInputStream(entry)); // NOSONAR
+        // Select the decoder using the stored entry's compression method.
         switch (ZipMethod.getMethodByCode(entry.getMethod())) {
         case STORED:
             return new StoredStatisticsStream(is);
@@ -1299,6 +1375,29 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
             return null;
         }
         return createBoundedInputStream(start, entry.getCompressedSize());
+    }
+
+    /**
+     * Gets the immediate target name of a UNIX hard link, or null if the entry is not recognized as a hard link.
+     * <p>
+     * The name is relative to the archive root. The PKWARE {@code 0x000d} payload is decoded using UTF-8 when the entry's language
+     * flag is set, otherwise using this archive's charset. Malformed or unmappable target bytes and conflicting local and central
+     * targets are rejected. This method does not require the named target to exist and does not follow chains. It also honors
+     * {@link Builder#setAllowLegacyUnixHardLinks(boolean)}.
+     * </p>
+     *
+     * @param entry the entry to inspect.
+     * @return the target name, or null for a non-hard-link entry, including null.
+     * @throws IOException if a recognized hard link has invalid or missing target metadata.
+     * @since 1.29.0
+     */
+    public String getUnixHardLink(final ZipArchiveEntry entry) throws IOException {
+        // Only marked references interpret the PKWARE payload as a hard link target.
+        if (!UnixHardLink.isMarked(entry, allowLegacyUnixHardLinks)) {
+            return null;
+        }
+        // The entry's UTF-8 flag takes precedence over the archive's fallback encoding.
+        return UnixHardLink.getTarget(entry, entry.getGeneralPurposeBit().usesUTF8ForNames() ? StandardCharsets.UTF_8 : encoding);
     }
 
     /**
@@ -1470,7 +1569,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
         cfhBbuf.rewind();
         IOUtils.readFully(archive, cfhBbuf);
         int off = 0;
-        final Entry ze = new Entry();
+        final Entry ze = new Entry(entryOwner);
 
         final int versionMadeBy = ZipShort.getValue(cfhBuf, off);
         off += ZipConstants.SHORT;
@@ -1564,6 +1663,88 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
         }
 
         ze.setStreamContiguous(true);
+    }
+
+    /**
+     * Resolves a UNIX hard link to its terminal regular-file entry, or returns the supplied entry if it is not a hard link.
+     * <p>
+     * Target names are matched exactly against archive members, independently of entry order. Duplicate target names, missing targets,
+     * cycles and non-regular targets are rejected. No filesystem paths are accessed. With local file headers ignored, a target stored
+     * only in a local extra field is unavailable. This method works independently of {@link Builder#setResolveUnixHardLinks(boolean)}.
+     * </p>
+     *
+     * @param entry an entry belonging to this archive.
+     * @return the terminal entry, whose metadata describes the resolved contents.
+     * @throws IOException if the entry does not belong to this archive or the hard link cannot be resolved.
+     * @since 1.29.0
+     */
+    public ZipArchiveEntry resolveUnixHardLink(final ZipArchiveEntry entry) throws IOException {
+        return resolveUnixHardLink(entry, new IdentityHashMap<>());
+    }
+
+    /**
+     * Resolves one chain and caches its intermediate references within the current resolution pass.
+     */
+    private ZipArchiveEntry resolveUnixHardLink(final ZipArchiveEntry entry, final Map<ZipArchiveEntry, ZipArchiveEntry> resolved) throws IOException {
+        // A foreign entry must never be resolved against this archive's name index.
+        if (!(entry instanceof Entry) || ((Entry) entry).owner != entryOwner) {
+            throw new ArchiveException("Entry does not belong to this ZIP archive");
+        }
+        final ZipArchiveEntry cached = resolved.get(entry);
+        if (cached != null) {
+            return cached;
+        }
+        // Walk iteratively and track entry identity to detect cycles without recursion.
+        ZipArchiveEntry current = entry;
+        final Set<ZipArchiveEntry> visited = Collections.newSetFromMap(new IdentityHashMap<>());
+        final Deque<ZipArchiveEntry> chain = new ArrayDeque<>();
+        ZipArchiveEntry terminal;
+        String target;
+        while ((terminal = resolved.get(current)) == null && (target = getUnixHardLink(current)) != null) {
+            if (!visited.add(current)) {
+                throw new ArchiveException("Cyclic UNIX hard link '%s'", entry.getName());
+            }
+            chain.push(current);
+            // Exact archive names must select one unambiguous member, regardless of order.
+            final List<ZipArchiveEntry> matches = nameMap.get(target);
+            if (matches == null || matches.size() != 1) {
+                throw new ArchiveException("Missing or ambiguous UNIX hard link target '%s' for '%s'", target, current.getName());
+            }
+            current = matches.get(0);
+            // Both intermediate references and terminal targets must represent regular files.
+            if (current.isDirectory() || !UnixHardLink.isRegularFile(current)
+                    || current.getPlatform() != ZipArchiveEntry.PLATFORM_UNIX
+                        && !(allowLegacyUnixHardLinks && current.getPlatform() == ZipArchiveEntry.PLATFORM_FAT)) {
+                throw new ArchiveException("UNIX hard link target '%s' is not a UNIX regular file", target);
+            }
+        }
+        // Backtrack only after validation succeeds, storing the terminal target for every link.
+        final ZipArchiveEntry result = terminal != null ? terminal : current;
+        while (!chain.isEmpty()) {
+            resolved.put(chain.pop(), result);
+        }
+        return result;
+    }
+
+    /**
+     * Resolves all UNIX hard links, reusing intermediate results within this call.
+     * <p>
+     * Uses the same validation as {@link #resolveUnixHardLink(ZipArchiveEntry)}. The returned map uses entry identity and contains
+     * only hard link references, each mapped to its terminal regular-file entry. It is a snapshot; call again after changing entries.
+     * No results are cached between calls.
+     * </p>
+     *
+     * @return an unmodifiable map of hard link references to terminal entries.
+     * @throws IOException if any hard link cannot be resolved.
+     * @since 1.29.0
+     */
+    public Map<ZipArchiveEntry, ZipArchiveEntry> resolveUnixHardLinks() throws IOException {
+        // Share resolved suffixes across all chains, without retaining stale mutable-entry metadata.
+        final Map<ZipArchiveEntry, ZipArchiveEntry> resolved = new IdentityHashMap<>();
+        for (final ZipArchiveEntry entry : entries) {
+            resolveUnixHardLink(entry, resolved);
+        }
+        return Collections.unmodifiableMap(resolved);
     }
 
     /**
