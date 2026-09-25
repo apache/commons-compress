@@ -188,7 +188,21 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
 
     @Override
     public boolean canReadEntryData(final ArchiveEntry ae) {
-        return ae instanceof ArjArchiveEntry && ((ArjArchiveEntry) ae).getMethod() == LocalFileHeader.Methods.STORED;
+        if (!(ae instanceof ArjArchiveEntry)) {
+            return false;
+        }
+        switch (((ArjArchiveEntry) ae).getMethod()) {
+        case LocalFileHeader.Methods.STORED:
+        case LocalFileHeader.Methods.COMPRESSED_MOST:
+        case LocalFileHeader.Methods.COMPRESSED:
+        case LocalFileHeader.Methods.COMPRESSED_FASTER:
+        case LocalFileHeader.Methods.COMPRESSED_FASTEST:
+        case LocalFileHeader.Methods.NO_DATA_NO_CRC:
+        case LocalFileHeader.Methods.NO_DATA:
+            return true;
+        default:
+            return false;
+        }
     }
 
     /**
@@ -289,7 +303,28 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
                     })
                     .get();
             // @formatter:on
-            if (currentLocalFileHeader.method == LocalFileHeader.Methods.STORED) {
+            switch (currentLocalFileHeader.method) {
+            case LocalFileHeader.Methods.STORED:
+                // Stored entries are passed through unchanged
+                break;
+            case LocalFileHeader.Methods.COMPRESSED_MOST:
+            case LocalFileHeader.Methods.COMPRESSED:
+            case LocalFileHeader.Methods.COMPRESSED_FASTER:
+                currentInputStream = new ArjLzhDecoderInputStream(currentInputStream);
+                break;
+            case LocalFileHeader.Methods.COMPRESSED_FASTEST:
+                currentInputStream = new ArjMethod4InputStream(currentInputStream, currentLocalFileHeader.originalSize);
+                break;
+            case LocalFileHeader.Methods.NO_DATA:
+            case LocalFileHeader.Methods.NO_DATA_NO_CRC:
+                // No data is stored and no CRC is present in the header for these methods
+                currentInputStream = new ByteArrayInputStream(new byte[0]);
+                break;
+            default:
+                throw new ArchiveException("Unsupported compression method '%s' for entry '%s'", currentLocalFileHeader.method, currentLocalFileHeader.name);
+            }
+            if (currentLocalFileHeader.method != LocalFileHeader.Methods.NO_DATA
+                    && currentLocalFileHeader.method != LocalFileHeader.Methods.NO_DATA_NO_CRC) {
                 // @formatter:off
                 currentInputStream = ChecksumInputStream.builder()
                         .setChecksum(new CRC32())
@@ -312,9 +347,6 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
             return 0;
         }
         ArchiveException.requireNonNull(currentLocalFileHeader, "No current arj entry");
-        if (currentLocalFileHeader.method != LocalFileHeader.Methods.STORED) {
-            throw new ArchiveException("Unsupported compression method '%s'", currentLocalFileHeader.method);
-        }
         return currentInputStream.read(b, off, len);
     }
 
