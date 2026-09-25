@@ -59,6 +59,7 @@ import org.apache.commons.compress.compressors.zstandard.ZstdCompressorOutputStr
 import org.apache.commons.compress.compressors.zstandard.ZstdUtils;
 import org.apache.commons.compress.utils.Sets;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.build.AbstractSupplier;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -85,10 +86,104 @@ import org.apache.commons.lang3.StringUtils;
  * in.close();
  * </pre>
  *
+ * Example (Decompressing a file with a limit on the decompressed size):
+ *
+ * <pre>
+ * final InputStream is = Files.newInputStream(input.toPath());
+ * CompressorInputStream in = CompressorStreamFactory.builder().setMaxDecompressedSize(1024L * 1024 * 1024).get()
+ *         .createCompressorInputStream(CompressorStreamFactory.BZIP2, is);
+ * IOUtils.copy(in, Files.newOutputStream(output.toPath()));
+ * in.close();
+ * </pre>
+ *
  * @Immutable provided that the deprecated method setDecompressConcatenated is not used.
  * @ThreadSafe even if the deprecated method setDecompressConcatenated is used
  */
 public class CompressorStreamFactory implements CompressorStreamProvider {
+
+    /**
+     * Builds a new {@link CompressorStreamFactory}.
+     * <p>
+     * For example:
+     * </p>
+     *
+     * <pre>{@code
+     * CompressorStreamFactory factory = CompressorStreamFactory.builder()
+     *     .setMemoryLimitKiB(64 * 1024)
+     *     .setMaxDecompressedSize(1024L * 1024 * 1024)
+     *     .get();
+     * }</pre>
+     *
+     * @since 1.29.0
+     */
+    public static class Builder extends AbstractSupplier<CompressorStreamFactory, Builder> {
+
+        private Boolean decompressUntilEOF;
+
+        private int memoryLimitKiB = -1;
+
+        private long maxDecompressedSize = -1;
+
+        /**
+         * Constructs a new instance.
+         */
+        public Builder() {
+            // empty
+        }
+
+        /**
+         * Builds a new {@link CompressorStreamFactory}.
+         *
+         * @return a new {@link CompressorStreamFactory}.
+         */
+        @Override
+        public CompressorStreamFactory get() {
+            return new CompressorStreamFactory(this);
+        }
+
+        /**
+         * Sets whether to decompress until the end of the input.
+         * <p>
+         * If true, decompress until the end of the input; if false, stop after the first stream and leave the input position to point to the next byte after
+         * the stream. This setting applies to the gzip, bzip2 and XZ formats only. Defaults to false.
+         * </p>
+         *
+         * @param decompressUntilEOF Whether to decompress until the end of the input.
+         * @return {@code this} instance.
+         */
+        public Builder setDecompressUntilEOF(final boolean decompressUntilEOF) {
+            this.decompressUntilEOF = decompressUntilEOF;
+            return this;
+        }
+
+        /**
+         * Sets the maximum number of decompressed bytes a stream created by the factory returns.
+         * <p>
+         * A stream whose decompressed size is at most this many bytes reads to the end of stream normally. A stream whose decompressed size is larger throws
+         * a {@link CompressorException} from {@code read} after exactly this many bytes have been returned. The limit counts the bytes the stream returns, so
+         * sizes declared in the compressed input play no part. A negative value, the default, disables the limit.
+         * </p>
+         *
+         * @param maxDecompressedSize The maximum number of decompressed bytes, or a negative value for no limit.
+         * @return {@code this} instance.
+         */
+        public Builder setMaxDecompressedSize(final long maxDecompressedSize) {
+            this.maxDecompressedSize = maxDecompressedSize;
+            return this;
+        }
+
+        /**
+         * Sets the maximum amount of memory in kibibytes (KiB) that streams may allocate for byte arrays and tables, to prevent OutOfMemoryErrors on corrupt
+         * files. Only formats that offer this check enforce it. Defaults to {@code -1} (no limit).
+         *
+         * @param memoryLimitKiB The maximum allowed memory allocation in KiB, or {@code -1} for no limit.
+         * @return {@code this} instance.
+         */
+        public Builder setMemoryLimitKiB(final int memoryLimitKiB) {
+            this.memoryLimitKiB = memoryLimitKiB;
+            return this;
+        }
+    }
 
     private static final CompressorStreamFactory SINGLETON = new CompressorStreamFactory();
 
@@ -198,6 +293,16 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
 
     private static Iterable<CompressorStreamProvider> archiveStreamProviderIterable() {
         return ServiceLoader.load(CompressorStreamProvider.class, ClassLoader.getSystemClassLoader());
+    }
+
+    /**
+     * Constructs a new {@link Builder}.
+     *
+     * @return a new {@link Builder}.
+     * @since 1.29.0
+     */
+    public static Builder builder() {
+        return new Builder();
     }
 
     /**
@@ -502,12 +607,15 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
 
     private final int memoryLimitInKb;
 
+    private final long maxDecompressedSize;
+
     /**
      * Constructs an instance with the decompress Concatenated option set to false.
      */
     public CompressorStreamFactory() {
         this.decompressUntilEof = null;
         this.memoryLimitInKb = -1;
+        this.maxDecompressedSize = -1;
     }
 
     /**
@@ -537,6 +645,14 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
         // current value
         this.decompressConcatenated = decompressUntilEOF;
         this.memoryLimitInKb = memoryLimitInKb;
+        this.maxDecompressedSize = -1;
+    }
+
+    private CompressorStreamFactory(final Builder builder) {
+        this.decompressUntilEof = builder.decompressUntilEOF;
+        this.decompressConcatenated = builder.decompressUntilEOF != null && builder.decompressUntilEOF;
+        this.memoryLimitInKb = builder.memoryLimitKiB;
+        this.maxDecompressedSize = builder.maxDecompressedSize;
     }
 
     /**
@@ -586,6 +702,11 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
 
     @Override
     public CompressorInputStream createCompressorInputStream(final String name, final InputStream in, final boolean actualDecompressConcatenated)
+            throws CompressorException {
+        return limit(createUnlimitedCompressorInputStream(name, in, actualDecompressConcatenated));
+    }
+
+    private CompressorInputStream createUnlimitedCompressorInputStream(final String name, final InputStream in, final boolean actualDecompressConcatenated)
             throws CompressorException {
         if (name == null || in == null) {
             throw new IllegalArgumentException("Compressor name and stream must not be null.");
@@ -771,6 +892,20 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
     @Override
     public Set<String> getOutputStreamCompressorNames() {
         return Sets.newHashSet(GZIP, BZIP2, XZ, LZMA, PACK200, DEFLATE, SNAPPY_FRAMED, LZ4_BLOCK, LZ4_FRAMED, ZSTANDARD);
+    }
+
+    /**
+     * Applies the decompressed size limit, if one is configured.
+     */
+    private CompressorInputStream limit(final CompressorInputStream in) throws CompressorException {
+        if (maxDecompressedSize < 0) {
+            return in;
+        }
+        try {
+            return new BoundedCompressorInputStream(in, maxDecompressedSize);
+        } catch (final IOException e) {
+            throw new CompressorException("Could not create CompressorInputStream.", e);
+        }
     }
 
     /**

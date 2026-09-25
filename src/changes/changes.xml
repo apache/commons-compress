@@ -240,6 +240,8 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add and use ArchiveException.requireNonNull(T, String).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add and use CompressException.requireNonNull(Class, T, String).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add and use CpioArchiveEntry.setTimeMillis(long).</action>
+      <action type="add" issue="COMPRESS-726" due-to="Tomas Illuminati">Add CompressorStreamFactory.Builder with setMaxDecompressedSize(long) to limit the number of decompressed bytes a stream created by the factory returns (#777).</action>
+      <action type="add" issue="COMPRESS-726" due-to="Tomas Illuminati">CompressorInputStream now implements InputStreamStatistics (#777).</action>
       <!-- UPDATE -->
       <action type="update" dev="ggregory" due-to="Gary Gregory">Bump org.apache.commons:commons-parent from 85 to 105 #707, #752.</action>
       <action type="update" dev="ggregory" due-to="Gary Gregory">Bump org.apache.commons:commons-lang3 from 3.18.0 to 3.20.0.</action>

@@ -18,12 +18,15 @@
  */
 package org.apache.commons.compress.compressors;
 
+import java.io.IOException;
 import java.io.InputStream;
+
+import org.apache.commons.compress.utils.InputStreamStatistics;
 
 /**
  * Abstracts services for all compressor input streams.
  */
-public abstract class CompressorInputStream extends InputStream {
+public abstract class CompressorInputStream extends InputStream implements InputStreamStatistics {
 
     private long bytesRead;
 
@@ -66,6 +69,21 @@ public abstract class CompressorInputStream extends InputStream {
     }
 
     /**
+     * Gets the amount of raw or compressed bytes read by the stream.
+     * <p>
+     * This implementation returns {@code -1}, meaning unknown; subclasses that track the compressed count override it.
+     * </p>
+     *
+     * @return The amount of raw or compressed bytes read by the stream, or {@code -1} if unknown.
+     * @throws IOException if a formatting error occurs.
+     * @since 1.29.0
+     */
+    @Override
+    public long getCompressedCount() throws IOException {
+        return -1;
+    }
+
+    /**
      * Gets the current number of bytes read from this stream.
      *
      * @return The number of read bytes.
@@ -81,10 +99,6 @@ public abstract class CompressorInputStream extends InputStream {
      *
      * <p>
      * This implementation invokes {@link #getBytesRead}.
-     * </p>
-     *
-     * <p>
-     * Provides half of {@link org.apache.commons.compress.utils.InputStreamStatistics} without forcing subclasses to implement the other half.
      * </p>
      *
      * @return The amount of decompressed bytes returned by the stream.
