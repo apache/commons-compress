@@ -209,6 +209,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory">ArchiveStreamFactory now throws ArchiveException instead of IllegalArgumetException/IllegalStateException.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">ExactMath now throws ArchiveException instead of IllegalArgumetException/IllegalStateException.</action>
       <!-- ADD -->
+      <action type="add" issue="COMPRESS-727" due-to="Tomas Illuminati">Add a security-first Extractor (org.apache.commons.compress.archivers.extractor) that safely extracts archives into a directory, including symbolic links, resisting symlink-slip and, on platforms with java.nio.file.SecureDirectoryStream, concurrent symlink races.</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add MemoryLimitException.MemoryLimitException(long, long).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add CompressException.CompressException(String, Object...).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add ArchiveException.ArchiveException(String, Object...).</action>
