@@ -628,8 +628,7 @@ public class BZip2CompressorInputStream extends CompressorInputStream implements
     }
 
     private int readNextByte(final BitInputStream in) throws IOException {
-        final long b = in.readBits(8);
-        return (int) b;
+        return in.readByte();
     }
 
     private int setupBlock() throws IOException {
