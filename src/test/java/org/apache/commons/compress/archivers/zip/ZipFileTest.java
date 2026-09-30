@@ -1058,8 +1058,7 @@ class ZipFileTest extends AbstractArchiveFileTest<ZipArchiveEntry> {
         // Also note: symlinks are always stored as files, even if they link to directories.
         expectedVals.put(entryPrefix + "link5", "../COMPRESS-214_unix_symlinks/././a/b");
         expectedVals.put(entryPrefix + "link6", "../COMPRESS-214_unix_symlinks/././a/b/");
-        // I looked into creating a test with hard links, but ZIP does not appear to
-        // support hard links, so nevermind.
+        // PKWARE UNIX hard links use a different encoding and are covered by ZipHardLinkTest.
         zf = ZipFile.builder().setURI(getURI("COMPRESS-214_unix_symlinks.zip")).get();
         zf.stream().forEach(zae -> {
             final String link = zf.getUnixSymlink(zae);
