@@ -275,6 +275,58 @@ class BitInputStreamTest {
     }
 
     @Test
+    void testReadByteInBigEndian() throws Exception {
+        try (BitInputStream stream = new BitInputStream(new ByteArrayInputStream(new byte[] { (byte) 0xEA, 0x35 }), ByteOrder.BIG_ENDIAN)) {
+            assertEquals(1, stream.readBit(), "bit 0");
+            assertEquals(1, stream.readBit(), "bit 1");
+            assertEquals(1, stream.readBit(), "bit 2");
+            assertEquals(0, stream.readBit(), "bit 3");
+
+            assertEquals(0xA3, stream.readByte(), "next byte");
+            assertEquals(-1, stream.readByte(), "next byte"); // not enough bits left to read a byte
+        }
+    }
+
+    @Test
+    void testReadByteInLittleEndian() throws Exception {
+        try (BitInputStream stream = new BitInputStream(new ByteArrayInputStream(new byte[] { (byte) 0xEA, 0x35 }), ByteOrder.LITTLE_ENDIAN)) {
+            assertEquals(0, stream.readBit(), "bit 0");
+            assertEquals(1, stream.readBit(), "bit 1");
+            assertEquals(0, stream.readBit(), "bit 2");
+            assertEquals(1, stream.readBit(), "bit 3");
+
+            assertEquals(0x5E, stream.readByte(), "next byte");
+            assertEquals(-1, stream.readByte(), "next byte"); // not enough bits left to read a byte
+        }
+    }
+
+    @Test
+    void testReadByteFromEmptyStream() throws Exception {
+        try (BitInputStream stream = new BitInputStream(new ByteArrayInputStream(ArrayUtils.EMPTY_BYTE_ARRAY), ByteOrder.LITTLE_ENDIAN)) {
+            assertEquals(-1, stream.readByte(), "next byte");
+            assertEquals(-1, stream.readByte(), "next byte");
+        }
+    }
+
+    @Test
+    void testReadAlignedBytesInBigEndian() throws Exception {
+        try (BitInputStream stream = new BitInputStream(new ByteArrayInputStream(new byte[] { (byte) 0xEA, 0x35 }), ByteOrder.BIG_ENDIAN)) {
+            assertEquals(0xEA, stream.readByte(), "next byte");
+            assertEquals(0x35, stream.readByte(), "next byte");
+            assertEquals(-1, stream.readByte(), "next byte");
+        }
+    }
+
+    @Test
+    void testReadAlignedBytesInLittleEndian() throws Exception {
+        try (BitInputStream stream = new BitInputStream(new ByteArrayInputStream(new byte[] { (byte) 0xEA, 0x35 }), ByteOrder.LITTLE_ENDIAN)) {
+            assertEquals(0xEA, stream.readByte(), "next byte");
+            assertEquals(0x35, stream.readByte(), "next byte");
+            assertEquals(-1, stream.readByte(), "next byte");
+        }
+    }
+
+    @Test
     void testShouldNotAllowReadingOfANegativeAmountOfBits() throws IOException {
         try (BitInputStream bis = new BitInputStream(getStream(), ByteOrder.LITTLE_ENDIAN)) {
             assertThrows(IOException.class, () -> bis.readBits(-1));

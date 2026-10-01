@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.compress.utils.BitInputStream;
 import org.apache.commons.lang3.ArrayFill;
 
 /**
@@ -175,7 +176,7 @@ final class BinaryTree {
      * @return The value decoded, or -1 if the end of the stream is reached.
      * @throws IOException on error.
      */
-    public int read(final BitStream stream) throws IOException {
+    public int read(final BitInputStream stream) throws IOException {
         int currentIndex = 0;
         while (true) {
             final int bit = stream.readBit();
