@@ -122,12 +122,12 @@ class LhStaticHuffmanCompressorInputStream extends CompressorInputStream impleme
     /**
      * Command is either a literal or a copy command.
      */
-    private BinaryTree commandTree;
+    private LhaHuffmanDecoder commandDecoder;
 
     /**
      * Distance is the offset to copy from the sliding dictionary.
      */
-    private BinaryTree distanceTree;
+    private LhaHuffmanDecoder distanceDecoder;
 
     private final int dictionaryBits;
 
@@ -185,15 +185,12 @@ class LhStaticHuffmanCompressorInputStream extends CompressorInputStream impleme
                 // End of stream
                 return;
             }
-            final BinaryTree commandDecodingTree = readCommandDecodingTree();
-            this.commandTree = readCommandTree(commandDecodingTree);
-            this.distanceTree = readDistanceTree();
+            final LhaHuffmanDecoder commandCodeLengthDecoder = readCommandCodeLengthTree();
+            this.commandDecoder = readCommandTree(commandCodeLengthDecoder);
+            this.distanceDecoder = readDistanceTree();
         }
         this.blockSize--;
-        final int command = commandTree.read(bin);
-        if (command == -1) {
-            throw new CompressorException("Unexpected end of stream");
-        }
+        final int command = commandDecoder.decodeSymbol(bin);
         if (command < NUMBER_OF_LITERAL_CODES) {
             // Literal command, just write the byte to the buffer
             buffer.put(command);
@@ -332,13 +329,13 @@ class LhStaticHuffmanCompressorInputStream extends CompressorInputStream impleme
     }
 
     /**
-     * Reads the command decoding tree. The command decoding tree is used when reading the command tree which is then actually used to decode the commands
-     * (literals or copy commands).
+     * Reads the command code length tree. The command code length tree is used when reading the command tree which is then actually
+     * used to decode the commands (literals or copy commands).
      *
-     * @return the command decoding tree.
+     * @return the command code length decoder.
      * @throws IOException if an I/O error occurs.
      */
-    BinaryTree readCommandDecodingTree() throws IOException {
+    LhaHuffmanDecoder readCommandCodeLengthTree() throws IOException {
         // Number of code lengths to read
         final int numCodeLengths = readBits(COMMAND_DECODING_LENGTH_BITS);
         if (numCodeLengths > MAX_NUMBER_OF_COMMAND_DECODING_CODE_LENGTHS) {
@@ -346,7 +343,7 @@ class LhStaticHuffmanCompressorInputStream extends CompressorInputStream impleme
         }
         if (numCodeLengths == 0) {
             // If numCodeLengths is zero, we read a single code length of COMMAND_DECODING_LENGTH_BITS bits and use as root of the tree
-            return new BinaryTree(readBits(COMMAND_DECODING_LENGTH_BITS));
+            return new LhaHuffmanDecoder(readBits(COMMAND_DECODING_LENGTH_BITS));
         }
         // Read all code lengths
         final int[] codeLengths = new int[numCodeLengths];
@@ -357,32 +354,30 @@ class LhStaticHuffmanCompressorInputStream extends CompressorInputStream impleme
                 index += readBits(2);
             }
         }
-        return new BinaryTree(codeLengths);
+        return new LhaHuffmanDecoder(codeLengths);
     }
 
     /**
      * Reads the command tree which is used to decode the commands (literals or copy commands).
      *
-     * @param commandDecodingTree the Huffman tree used to decode the command lengths.
-     * @return the command tree.
+     * @param commandCodeLengthDecoder the Huffman decoder used to decode the command code lengths.
+     * @return the command decoder.
      * @throws IOException if an I/O error occurs.
      */
-    BinaryTree readCommandTree(final BinaryTree commandDecodingTree) throws IOException {
+    LhaHuffmanDecoder readCommandTree(final LhaHuffmanDecoder commandCodeLengthDecoder) throws IOException {
         final int numCodeLengths = readBits(COMMAND_TREE_LENGTH_BITS);
         if (numCodeLengths > getMaxNumberOfCommands()) {
             throw new CompressorException("Code length table has invalid size (%d > %d)", numCodeLengths, getMaxNumberOfCommands());
         }
         if (numCodeLengths == 0) {
             // If numCodeLengths is zero, we read a single code length of COMMAND_TREE_LENGTH_BITS bits and use as root of the tree
-            return new BinaryTree(readBits(COMMAND_TREE_LENGTH_BITS));
+            return new LhaHuffmanDecoder(readBits(COMMAND_TREE_LENGTH_BITS));
         }
         // Read all code lengths
         final int[] codeLengths = new int[numCodeLengths];
         for (int index = 0; index < numCodeLengths;) {
-            final int codeOrSkipRange = commandDecodingTree.read(bin);
+            final int codeOrSkipRange = commandCodeLengthDecoder.decodeSymbol(bin);
             switch (codeOrSkipRange) {
-            case -1:
-                throw new CompressorException("Unexpected end of stream");
             case 0:
                 // Skip one code length
                 index++;
@@ -401,7 +396,7 @@ class LhStaticHuffmanCompressorInputStream extends CompressorInputStream impleme
                 break;
             }
         }
-        return new BinaryTree(codeLengths);
+        return new LhaHuffmanDecoder(codeLengths);
     }
 
     /**
@@ -413,10 +408,7 @@ class LhStaticHuffmanCompressorInputStream extends CompressorInputStream impleme
      */
     private int readDistance() throws IOException {
         // Determine the number of bits to read for the distance by reading an entry from the distance tree
-        final int bits = distanceTree.read(bin);
-        if (bits == -1) {
-            throw new CompressorException("Unexpected end of stream");
-        }
+        final int bits = distanceDecoder.decodeSymbol(bin);
         if (bits == 0 || bits == 1) {
             // This is effectively run length encoding
             return bits;
@@ -431,10 +423,10 @@ class LhStaticHuffmanCompressorInputStream extends CompressorInputStream impleme
     /**
      * Reads the distance tree which is used to decode the distance of the copy command.
      *
-     * @return the distance tree.
+     * @return the distance decoder.
      * @throws IOException if an I/O error occurs.
      */
-    private BinaryTree readDistanceTree() throws IOException {
+    private LhaHuffmanDecoder readDistanceTree() throws IOException {
         // Number of code lengths to read
         final int numCodeLengths = readBits(getDistanceBits());
         if (numCodeLengths > getMaxNumberOfDistanceCodes()) {
@@ -442,13 +434,13 @@ class LhStaticHuffmanCompressorInputStream extends CompressorInputStream impleme
         }
         if (numCodeLengths == 0) {
             // If numCodeLengths is zero, we read a single code length of getDistanceBits() bits and use as root of the tree
-            return new BinaryTree(readBits(getDistanceBits()));
+            return new LhaHuffmanDecoder(readBits(getDistanceBits()));
         }
         // Read all code lengths
         final int[] codeLengths = new int[numCodeLengths];
         for (int index = 0; index < numCodeLengths; index++) {
             codeLengths[index] = readCodeLength();
         }
-        return new BinaryTree(codeLengths);
+        return new LhaHuffmanDecoder(codeLengths);
     }
 }
