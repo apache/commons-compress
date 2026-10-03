@@ -22,7 +22,7 @@ package org.apache.commons.compress.archivers.lha;
 /**
  * Circular byte buffer. Copied from org.apache.commons.compress.archivers.zip.CircularBuffer and modified for LHA.
  */
-final class CircularBuffer {
+public final class CircularBuffer {
 
     /** Size of the buffer. */
     private final int size;
@@ -43,7 +43,7 @@ final class CircularBuffer {
      *
      * @param size the size of the buffer.
      */
-    CircularBuffer(final int size) {
+    public CircularBuffer(final int size) {
         this.size = size;
         buffer = new byte[size];
         bytesAvailable = 0;
