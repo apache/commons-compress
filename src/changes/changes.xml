@@ -210,6 +210,8 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory">ExactMath now throws ArchiveException instead of IllegalArgumetException/IllegalStateException.</action>
       <!-- ADD -->
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add MemoryLimitException.MemoryLimitException(long, long).</action>
+      <action type="add" dev="ggregory" due-to="Arturo Bernal">Add ZstdCompressorInputStream.Builder.setDict(byte[]) to decompress Zstandard input with a dictionary.</action>
+      <action type="add" dev="ggregory" due-to="Arturo Bernal">Add BrotliCompressorInputStream.Builder.setDict(byte[]) to decompress Brotli input with a raw dictionary.</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add CompressException.CompressException(String, Object...).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add ArchiveException.ArchiveException(String, Object...).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add CompressorException.CompressorException(String, Object...).</action>
