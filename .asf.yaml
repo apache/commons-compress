@@ -16,6 +16,8 @@
 github:
   description: "Apache Commons Compress"
   homepage: https://commons.apache.org/compress/
+  autolink_jira:
+    - COMPRESS
   
   pull_requests:
     # allow auto-merge
