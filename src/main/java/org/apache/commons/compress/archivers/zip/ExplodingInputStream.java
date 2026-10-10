@@ -21,8 +21,10 @@ package org.apache.commons.compress.archivers.zip;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteOrder;
 
 import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.compress.utils.BitInputStream;
 import org.apache.commons.compress.utils.InputStreamStatistics;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.io.input.CloseShieldInputStream;
@@ -41,7 +43,7 @@ final class ExplodingInputStream extends InputStream implements InputStreamStati
     private final InputStream in;
 
     /** The stream of bits read from the input stream */
-    private BitStream bits;
+    private BitInputStream bits;
 
     /** The size of the sliding dictionary (4K or 8K) */
     private final int dictionarySize;
@@ -114,7 +116,7 @@ final class ExplodingInputStream extends InputStream implements InputStreamStati
             if (literalTree != null) {
                 literal = literalTree.read(bits);
             } else {
-                literal = bits.nextByte();
+                literal = bits.readByte();
             }
 
             if (literal == -1) {
@@ -127,7 +129,7 @@ final class ExplodingInputStream extends InputStream implements InputStreamStati
         } else {
             // back reference
             final int distanceLowSize = dictionarySize == 4096 ? 6 : 7;
-            final int distanceLow = (int) bits.nextBits(distanceLowSize);
+            final int distanceLow = (int) bits.readBits(distanceLowSize);
             final int distanceHigh = distanceTree.read(bits);
             if (distanceHigh == -1 && distanceLow <= 0) {
                 // end of stream reached, nothing left to decode
@@ -137,7 +139,7 @@ final class ExplodingInputStream extends InputStream implements InputStreamStati
 
             int length = lengthTree.read(bits);
             if (length == 63) {
-                final long nextByte = bits.nextBits(8);
+                final int nextByte = bits.readByte();
                 if (nextByte == -1) {
                     // EOF
                     return;
@@ -184,7 +186,7 @@ final class ExplodingInputStream extends InputStream implements InputStreamStati
                 treeSizes += cis.getCount();
             }
 
-            bits = new BitStream(in);
+            bits = new BitInputStream(in, ByteOrder.LITTLE_ENDIAN);
         }
     }
 

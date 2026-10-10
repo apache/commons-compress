@@ -239,6 +239,18 @@ public class BitInputStream implements Closeable {
         return readCachedBits(count);
     }
 
+    /**
+     * Reads and returns the next byte read from the underlying stream. The byte is returned as an int in the range 0 to 255.
+     * If the end of the stream has been reached, -1 is returned.
+     *
+     * @return The next byte (0-255) or -1 if the end of the stream has been reached.
+     * @throws IOException if an I/O error occurs.
+     * @since 1.29.0
+     */
+    public int readByte() throws IOException {
+        return (int) readBits(Byte.SIZE);
+    }
+
     private long readCachedBits(final int count) {
         final long bitsOut;
         if (byteOrder == ByteOrder.LITTLE_ENDIAN) {
