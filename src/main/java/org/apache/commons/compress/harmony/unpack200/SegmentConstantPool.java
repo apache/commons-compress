@@ -216,36 +216,43 @@ public class SegmentConstantPool {
             return null;
         }
         final int actualIndex = toIndex(index);
-        switch (type) {
-        case UTF_8:
-            return bands.cpUTF8Value(actualIndex);
-        case CP_INT:
-            return bands.cpIntegerValue(actualIndex);
-        case CP_FLOAT:
-            return bands.cpFloatValue(actualIndex);
-        case CP_LONG:
-            return bands.cpLongValue(actualIndex);
-        case CP_DOUBLE:
-            return bands.cpDoubleValue(actualIndex);
-        case CP_STRING:
-            return bands.cpStringValue(actualIndex);
-        case CP_CLASS:
-            return bands.cpClassValue(actualIndex);
-        case SIGNATURE:
-            throw new Pack200Exception("Type SIGNATURE is not supported yet: %s", SIGNATURE);
-        // return null /* new CPSignature(bands.getCpSignature()[index]) */;
-        case CP_DESCR:
-            throw new Pack200Exception("Type CP_DESCR is not supported yet: %s", CP_DESCR);
-        // return null /* new CPDescriptor(bands.getCpDescriptor()[index])
-        // */;
-        case CP_FIELD:
-            return bands.cpFieldValue(actualIndex);
-        case CP_METHOD:
-            return bands.cpMethodValue(actualIndex);
-        case CP_IMETHOD:
-            return bands.cpIMethodValue(actualIndex);
-        default:
-            break;
+        // The index comes from a bytecode operand and is not bounded against the referenced pool, so a
+        // crafted archive can point past its end. Convert the resulting array access into a Pack200Exception
+        // instead of letting an ArrayIndexOutOfBoundsException escape the declared contract.
+        try {
+            switch (type) {
+            case UTF_8:
+                return bands.cpUTF8Value(actualIndex);
+            case CP_INT:
+                return bands.cpIntegerValue(actualIndex);
+            case CP_FLOAT:
+                return bands.cpFloatValue(actualIndex);
+            case CP_LONG:
+                return bands.cpLongValue(actualIndex);
+            case CP_DOUBLE:
+                return bands.cpDoubleValue(actualIndex);
+            case CP_STRING:
+                return bands.cpStringValue(actualIndex);
+            case CP_CLASS:
+                return bands.cpClassValue(actualIndex);
+            case SIGNATURE:
+                throw new Pack200Exception("Type SIGNATURE is not supported yet: %s", SIGNATURE);
+            // return null /* new CPSignature(bands.getCpSignature()[index]) */;
+            case CP_DESCR:
+                throw new Pack200Exception("Type CP_DESCR is not supported yet: %s", CP_DESCR);
+            // return null /* new CPDescriptor(bands.getCpDescriptor()[index])
+            // */;
+            case CP_FIELD:
+                return bands.cpFieldValue(actualIndex);
+            case CP_METHOD:
+                return bands.cpMethodValue(actualIndex);
+            case CP_IMETHOD:
+                return bands.cpIMethodValue(actualIndex);
+            default:
+                break;
+            }
+        } catch (final ArrayIndexOutOfBoundsException e) {
+            throw new Pack200Exception("Constant pool index out of range: " + actualIndex);
         }
         // etc
         throw new Pack200Exception("Type is not supported yet: %s", type);
@@ -285,27 +292,34 @@ public class SegmentConstantPool {
         if (index < 0) {
             throw new Pack200Exception("Cannot have a negative range");
         }
-        switch (cp) {
-        case UTF_8:
-            return bands.cpUTF8Value(index);
-        case CP_INT:
-            return bands.cpIntegerValue(index);
-        case CP_FLOAT:
-            return bands.cpFloatValue(index);
-        case CP_LONG:
-            return bands.cpLongValue(index);
-        case CP_DOUBLE:
-            return bands.cpDoubleValue(index);
-        case CP_STRING:
-            return bands.cpStringValue(index);
-        case CP_CLASS:
-            return bands.cpClassValue(index);
-        case SIGNATURE:
-            return bands.cpSignatureValue(index);
-        case CP_DESCR:
-            return bands.cpNameAndTypeValue(index);
-        default:
-            break;
+        // The index comes from a bytecode operand and is not bounded against the referenced pool, so a
+        // crafted archive can point past its end. Convert the resulting array access into a Pack200Exception
+        // instead of letting an ArrayIndexOutOfBoundsException escape the declared contract.
+        try {
+            switch (cp) {
+            case UTF_8:
+                return bands.cpUTF8Value(index);
+            case CP_INT:
+                return bands.cpIntegerValue(index);
+            case CP_FLOAT:
+                return bands.cpFloatValue(index);
+            case CP_LONG:
+                return bands.cpLongValue(index);
+            case CP_DOUBLE:
+                return bands.cpDoubleValue(index);
+            case CP_STRING:
+                return bands.cpStringValue(index);
+            case CP_CLASS:
+                return bands.cpClassValue(index);
+            case SIGNATURE:
+                return bands.cpSignatureValue(index);
+            case CP_DESCR:
+                return bands.cpNameAndTypeValue(index);
+            default:
+                break;
+            }
+        } catch (final ArrayIndexOutOfBoundsException e) {
+            throw new Pack200Exception("Constant pool index out of range: " + index);
         }
         throw new Pack200Exception("Tried to get a value I don't know about: " + cp);
     }
