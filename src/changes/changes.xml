@@ -208,7 +208,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Add and use ArchiveException.requireNonNegative(long, Supplier&lt;String&gt;)</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">ArchiveStreamFactory now throws ArchiveException instead of IllegalArgumetException/IllegalStateException.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">ExactMath now throws ArchiveException instead of IllegalArgumetException/IllegalStateException.</action>
-      <action type="fix" dev="ggregory" due-to="Andrew Gawron, Sharang Gupta" issue="COMPRESS-639">[Zip] ZipArchiveOutputStream no longer throws a NullPointerException or writes wrong local header offsets to the central directory for equal entries (same name, time, size and CRC), such as those added by ParallelScatterZipCreator.</action>
+      <action type="fix" dev="ggregory" due-to="Andrew Gawron, Sharang Gupta" issue="COMPRESS-639">[Zip] ZipArchiveOutputStream no longer throws a NullPointerException or writes wrong local header offsets to the central directory for equal entries (same name, time, size and CRC), such as those added by ParallelScatterZipCreator #826.</action>
       <!-- ADD -->
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add MemoryLimitException.MemoryLimitException(long, long).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add CompressException.CompressException(String, Object...).</action>
