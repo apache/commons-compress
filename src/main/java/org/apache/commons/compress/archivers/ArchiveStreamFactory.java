@@ -74,7 +74,7 @@ import org.apache.commons.lang3.StringUtils;
  * final InputStream is = Files.newInputStream(input.toPath());
  * ArchiveInputStream in = new ArchiveStreamFactory().createArchiveInputStream(ArchiveStreamFactory.ZIP, is);
  * ZipArchiveEntry entry = (ZipArchiveEntry) in.getNextEntry();
- * OutputStream out = Files.newOutputStream(dir.toPath().resolve(entry.getName()));
+ * OutputStream out = Files.newOutputStream(entry.resolveIn(dir.toPath()));
  * IOUtils.copy(in, out);
  * out.close();
  * in.close();
