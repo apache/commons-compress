@@ -23,9 +23,13 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.zip.CRC32;
 import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
 
@@ -36,6 +40,39 @@ import org.junit.jupiter.api.Test;
  * Tests {@link ZipArchiveOutputStream}.
  */
 class ZipArchiveOutputStreamTest extends AbstractTempDirTest {
+
+    /**
+     * Tests that equal entries, here with the same name and the same known size and CRC, each point to their own local file header.
+     *
+     * @see <a href="https://issues.apache.org/jira/browse/COMPRESS-639">COMPRESS-639</a>
+     */
+    @Test
+    void testEqualEntriesKeepTheirOwnLocalHeaders() throws IOException {
+        final byte[] content = { 'A' };
+        final CRC32 crc = new CRC32();
+        crc.update(content);
+        final File file = createTempFile();
+        try (ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(file)) {
+            for (int i = 0; i < 2; i++) {
+                final ZipArchiveEntry entry = new ZipArchiveEntry("same.txt");
+                entry.setMethod(ZipEntry.STORED);
+                entry.setTime(0);
+                entry.setSize(content.length);
+                entry.setCompressedSize(content.length);
+                entry.setCrc(crc.getValue());
+                outputStream.putArchiveEntry(entry);
+                outputStream.write(content);
+                outputStream.closeArchiveEntry();
+            }
+        }
+        try (ZipFile zipFile = ZipFile.builder().setFile(file).get()) {
+            final List<ZipArchiveEntry> entries = new ArrayList<>();
+            zipFile.getEntries("same.txt").forEach(entries::add);
+            assertEquals(2, entries.size());
+            assertEquals(0, entries.get(0).getLocalHeaderOffset());
+            assertEquals(entries.get(0).getDataOffset() + content.length, entries.get(1).getLocalHeaderOffset());
+        }
+    }
 
     @Test
     void testFileBasics() throws IOException {

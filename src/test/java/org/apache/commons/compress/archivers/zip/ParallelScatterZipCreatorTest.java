@@ -35,8 +35,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -51,8 +53,8 @@ import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.parallel.FileBasedScatterGatherBackingStore;
 import org.apache.commons.compress.parallel.InputStreamSupplier;
 import org.apache.commons.compress.parallel.ScatterGatherBackingStoreSupplier;
+import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.apache.commons.io.IOUtils;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class ParallelScatterZipCreatorTest extends AbstractTempDirTest {
@@ -149,7 +151,6 @@ class ParallelScatterZipCreatorTest extends AbstractTempDirTest {
     }
 
     @Test
-    @Disabled("[COMPRESS-639]")
     public void sameZipArchiveEntryNullPointerException() throws IOException, ExecutionException, InterruptedException {
         final ByteArrayOutputStream testOutputStream = new ByteArrayOutputStream();
 
@@ -171,7 +172,12 @@ class ParallelScatterZipCreatorTest extends AbstractTempDirTest {
             }
 
             zipCreator.writeTo(zipArchiveOutputStream);
-        } // Throws NullPointerException on close()
+        }
+        try (ZipFile zipFile = ZipFile.builder().setChannel(new SeekableInMemoryByteChannel(testOutputStream.toByteArray())).get()) {
+            final Set<Long> localHeaderOffsets = new HashSet<>();
+            zipFile.getEntries("./dir/myfile.txt").forEach(entry -> localHeaderOffsets.add(entry.getLocalHeaderOffset()));
+            assertEquals(NUM_OF_FILES, localHeaderOffsets.size());
+        }
     }
 
     @Test
