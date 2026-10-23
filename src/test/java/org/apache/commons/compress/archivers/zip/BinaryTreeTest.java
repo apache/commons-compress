@@ -26,8 +26,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteOrder;
 
 import org.apache.commons.compress.archivers.ArchiveException;
+import org.apache.commons.compress.utils.BitInputStream;
 import org.junit.jupiter.api.Test;
 
 class BinaryTreeTest {
@@ -40,7 +42,7 @@ class BinaryTreeTest {
 
         assertNotNull(tree);
 
-        try (BitStream stream = new BitStream(new ByteArrayInputStream(new byte[] { (byte) 0x8D, (byte) 0xC5, (byte) 0x11, 0x00 }))) {
+        try (BitInputStream stream = new BitInputStream(new ByteArrayInputStream(new byte[] { (byte) 0x8D, (byte) 0xC5, (byte) 0x11, 0x00 }), ByteOrder.LITTLE_ENDIAN)) {
             assertEquals(0, tree.read(stream));
             assertEquals(1, tree.read(stream));
             assertEquals(2, tree.read(stream));
@@ -60,6 +62,6 @@ class BinaryTreeTest {
 
         final InputStream is = new ByteArrayInputStream(new byte[] {});
         assertThrows(ArchiveException.class, () -> BinaryTree.decode(is, 0));
-        assertThrows(ArchiveException.class, () -> new BinaryTree(4).read(new BitStream(new ByteArrayInputStream(new byte[] { 0 }))));
+        assertThrows(ArchiveException.class, () -> new BinaryTree(4).read(new BitInputStream(new ByteArrayInputStream(new byte[] { 0 }), ByteOrder.LITTLE_ENDIAN)));
     }
 }
