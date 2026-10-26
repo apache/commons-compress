@@ -171,6 +171,7 @@ The <action> type attribute can be add,update,fix,remove.
       <!-- FIX lha -->
       <action type="fix" dev="ggregory" due-to="Fredrik Kjellberg, Gary Gregory">[LHA] Add tests for lh5 decompression (#807).</action>
       <!-- FIX general -->      
+      <action type="fix" issue="COMPRESS-728" due-to="Aryan Ganjoo">FileNameUtil uses original-name offsets when root lowercasing expands a character in a file name.</action>
       <action type="fix" dev="ggregory" due-to="Piotr P. Karwasz, Gary Gregory">Add missing Javadoc @since tag to org.apache.commons.compress.compressors.lz77support.LZ77Compressor.AbstractReference.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Classes in org.apache.commons.compress.archivers now throw a subclass of IOException called ArchiveException instead of IOException when a formatting problem is found.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">Classes in org.apache.commons.compress.compressors now throw a subclass of IOException called CompressorException instead of IOException when a formatting problem is found.</action>
