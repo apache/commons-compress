@@ -184,6 +184,21 @@ class NewAttributeBandsTest extends AbstractBandsTest {
     }
 
     @ParameterizedTest
+    @ValueSource(strings = {
+            // forward call with no following callable
+            "[(1)]",
+            // forward call index larger than the number of following callables
+            "[(2)]", "[KIH][(3)]",
+            // forward call nested in a replication that never resolves
+            "[NH[(2)]]",
+            // backward call with no preceding callable
+            "[(-1)]" })
+    void testUnresolvedCallFails(final String layout) {
+        final Pack200Exception ex = assertThrows(Pack200Exception.class, () -> createNewAttributeBands(layout));
+        assertTrue(ex.getMessage().contains("does not resolve to a callable"), "Unexpected exception message: " + ex.getMessage());
+    }
+
+    @ParameterizedTest
     @ValueSource(strings = {"NH[", "TH()["})
     void testRecursiveReplicationLayout(final String prefix) {
         final String layout = createRecursiveLayout(8192, prefix);
