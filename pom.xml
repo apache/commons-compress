@@ -441,7 +441,7 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
           <dependency>
             <groupId>org.apache.groovy</groupId>
             <artifactId>groovy</artifactId>
-            <version>4.0.28</version>
+            <version>4.0.33</version>
           </dependency>
           <dependency>
             <!-- Newer than the version used by cyclonedx-maven-plugin: needed for CycloneDX 1.7 -->
