@@ -417,6 +417,40 @@ Brotli, Zstandard and ar, cpio, jar, tar, zip, dump, 7z, arj.
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
       </plugin>
+      <plugin>
+        <!-- Upgrades the CycloneDX SBOM to 1.7 and adds non-Maven components embedded in our dependencies. -->
+        <!-- Must be declared after cyclonedx-maven-plugin, which is bound to the same phase. -->
+        <groupId>org.codehaus.gmavenplus</groupId>
+        <artifactId>gmavenplus-plugin</artifactId>
+        <version>4.3.1</version>
+        <executions>
+          <execution>
+            <id>sbom-add-embedded-components</id>
+            <phase>package</phase>
+            <goals>
+              <goal>execute</goal>
+            </goals>
+            <configuration>
+              <scripts>
+                <script>${project.basedir}/src/conf/cyclonedx/add-embedded-components.groovy</script>
+              </scripts>
+            </configuration>
+          </execution>
+        </executions>
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.groovy</groupId>
+            <artifactId>groovy</artifactId>
+            <version>4.0.28</version>
+          </dependency>
+          <dependency>
+            <!-- Newer than the version used by cyclonedx-maven-plugin: needed for CycloneDX 1.7 -->
+            <groupId>org.cyclonedx</groupId>
+            <artifactId>cyclonedx-core-java</artifactId>
+            <version>13.4.0</version>
+          </dependency>
+        </dependencies>
+      </plugin>
     </plugins>
   </build>
   <reporting>
