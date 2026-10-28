@@ -240,6 +240,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add and use ArchiveException.requireNonNull(T, String).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add and use CompressException.requireNonNull(Class, T, String).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add and use CpioArchiveEntry.setTimeMillis(long).</action>
+      <action type="add" dev="pkarwasz" due-to="Piotr P. Karwasz, Gary Gregory">Upgrade the CycloneDX SBOM to version 1.7 and add the native Zstandard library embedded in zstd-jni.</action>
       <!-- UPDATE -->
       <action type="update" dev="ggregory" due-to="Gary Gregory">Bump org.apache.commons:commons-parent from 85 to 106 #707, #752.</action>
       <action type="update" dev="ggregory" due-to="Gary Gregory">Bump org.apache.commons:commons-lang3 from 3.18.0 to 3.21.0.</action>
