@@ -107,21 +107,7 @@ public class PopulationCodec extends Codec {
         lastBandLength += k;
         // if tokenCodec needs to be derived from the T, L and K values
         if (tokenCodec == null) {
-            if (k < 256) {
-                tokenCodec = BYTE1;
-            } else {
-                // if k >= 256, b >= 2
-                int b = 1;
-                BHSDCodec codec;
-                while (++b < 5) {
-                    codec = new BHSDCodec(b, 256 - l, 0);
-                    if (codec.encodes(k)) {
-                        tokenCodec = codec;
-                        break;
-                    }
-                }
-                Pack200Exception.requireNonNull(tokenCodec, "Cannot calculate token codec from %s and %s", k, l);
-            }
+            tokenCodec = deriveTokenCodec(k, l);
         }
         // read favorites
         lastBandLength += n;
@@ -138,6 +124,20 @@ public class PopulationCodec extends Codec {
             }
         }
         return result;
+    }
+    private static BHSDCodec deriveTokenCodec(final int k, final int l) throws Pack200Exception {
+        if (k < 256) {
+        return BYTE1;
+        }
+
+        for (int b = 2; b < 5; b++) {
+        final BHSDCodec codec = new BHSDCodec(b, 256 - l, 0);
+        if (codec.encodes(k)) {
+            return codec;
+            }
+        }
+
+        throw new Pack200Exception("Cannot calculate token codec from %s and %s", k, l);
     }
 
     @Override

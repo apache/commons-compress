@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * The SegmentConstantPool spends a lot of time searching through large arrays of Strings looking for matches. This can be sped up by caching the arrays in
@@ -172,9 +173,10 @@ public class SegmentConstantPoolArrayCache {
         // efficient because we are usually looking for
         // several secondary elements with the same primary
         // key.
-        if (lastArray == array && lastKey == key) {
+        final boolean sameLookupAsLast = lastArray == array && Objects.equals(lastKey, key);
+        if (sameLookupAsLast) {
             return lastIndexes;
-        }
+                }
 
         // Remember the last thing we found.
         lastArray = array;

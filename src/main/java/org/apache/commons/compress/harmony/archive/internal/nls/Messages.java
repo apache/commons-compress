@@ -32,7 +32,8 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.Objects;
 import java.util.ResourceBundle;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
 //import org.apache.commons.compress.harmony.kernel.vm.VM;
 
 /**
@@ -45,15 +46,25 @@ import java.util.ResourceBundle;
  */
 public class Messages {
 
+
     // ResourceBundle holding the system messages.
     private static ResourceBundle bundle;
 
+    private static final String BUNDLE_NAME =
+            "org.apache.commons.compress.harmony.archive.internal.nls.messages"; //$NON-NLS-1$
+
     static {
+        bundle = loadBundle();
+    }
+
+    private static ResourceBundle loadBundle() {
         // Attempt to load the messages.
         try {
-            bundle = setLocale(Locale.getDefault(), "org.apache.commons.compress.harmony.archive.internal.nls.messages"); //$NON-NLS-1$
+            return setLocale(Locale.getDefault(), BUNDLE_NAME);
         } catch (final Throwable e) {
-            e.printStackTrace();
+            Logger.getLogger(Messages.class.getName())
+                    .log(Level.WARNING, "Cannot load resource bundle", e);
+            return null;
         }
     }
 

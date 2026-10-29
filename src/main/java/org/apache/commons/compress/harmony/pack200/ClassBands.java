@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+
 import org.apache.commons.compress.harmony.pack200.AttributeDefinitionBands.AttributeDefinition;
 import org.apache.commons.compress.harmony.pack200.IcBands.IcTuple;
 import org.apache.commons.compress.harmony.pack200.Segment.SegmentMethodVisitor;
@@ -964,7 +965,8 @@ public class ClassBands extends BandSet {
         }
 
         // Sort non-predefined attribute bands
-        final Comparator<NewAttributeBands> comparator = (arg0, arg1) -> arg0.getFlagIndex() - arg1.getFlagIndex();
+        //Refactorizacion
+        final Comparator<NewAttributeBands> comparator = Comparator.comparingInt(NewAttributeBands::getFlagIndex);
         classAttributeBands.sort(comparator);
         methodAttributeBands.sort(comparator);
         fieldAttributeBands.sort(comparator);
