@@ -25,6 +25,7 @@ import java.io.InputStream;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.utils.InputStreamStatistics;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.build.AbstractStreamBuilder;
 import org.apache.commons.io.input.BoundedInputStream;
 
 import com.github.luben.zstd.BufferPool;
@@ -44,8 +45,79 @@ import com.github.luben.zstd.ZstdInputStream;
  */
 public class ZstdCompressorInputStream extends CompressorInputStream implements InputStreamStatistics {
 
+    // @formatter:off
+    /**
+     * Builds a new {@link ZstdCompressorInputStream}.
+     *
+     * <p>
+     * For example:
+     * </p>
+     * <pre>{@code
+     * ZstdCompressorInputStream s = ZstdCompressorInputStream.builder()
+     *   .setPath(path)
+     *   .setDict(dictionary)
+     *   .get();
+     * }
+     * </pre>
+     *
+     * @see #get()
+     * @since 1.29.0
+     */
+    // @formatter:on
+    public static final class Builder extends AbstractStreamBuilder<ZstdCompressorInputStream, Builder> {
+
+        private byte[] dict;
+
+        /**
+         * Constructs a new builder of {@link ZstdCompressorInputStream}.
+         */
+        public Builder() {
+            // empty
+        }
+
+        @Override
+        public ZstdCompressorInputStream get() throws IOException {
+            return new ZstdCompressorInputStream(this);
+        }
+
+        /**
+         * Sets the dictionary used to decompress the input.
+         * <p>
+         * The input must have been compressed with the same dictionary, for example with {@link ZstdCompressorOutputStream.Builder#setDict(byte[])}. The
+         * dictionary may be a trained Zstandard dictionary or raw content. The value {@code null} means no dictionary.
+         * </p>
+         *
+         * @param dict The dictionary buffer.
+         * @return {@code this} instance.
+         * @see <a href="https://facebook.github.io/zstd/zstd_manual.html#Chapter14">Zstd manual Chapter14</a>
+         */
+        public Builder setDict(final byte[] dict) {
+            this.dict = dict;
+            return this;
+        }
+    }
+
+    /**
+     * Constructs a new builder of {@link ZstdCompressorInputStream}.
+     *
+     * @return a new builder of {@link ZstdCompressorInputStream}.
+     * @since 1.29.0
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
+
     private final BoundedInputStream countingStream;
     private final ZstdInputStream decIS;
+
+    @SuppressWarnings("resource") // Caller closes
+    private ZstdCompressorInputStream(final Builder builder) throws IOException {
+        this.decIS = new ZstdInputStream(
+                countingStream = BoundedInputStream.builder().setInputStream(builder.getInputStream()).setPropagateClose(false).get());
+        if (builder.dict != null) {
+            decIS.setDict(builder.dict);
+        }
+    }
 
     /**
      * Constructs a new input stream that decompresses zstd-compressed data from the specific input stream.

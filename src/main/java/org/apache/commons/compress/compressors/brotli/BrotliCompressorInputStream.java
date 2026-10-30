@@ -25,6 +25,7 @@ import java.io.InputStream;
 import org.apache.commons.compress.compressors.CompressorInputStream;
 import org.apache.commons.compress.utils.InputStreamStatistics;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.build.AbstractStreamBuilder;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.brotli.dec.BrotliInputStream;
 
@@ -35,8 +36,75 @@ import org.brotli.dec.BrotliInputStream;
  */
 public class BrotliCompressorInputStream extends CompressorInputStream implements InputStreamStatistics {
 
+    // @formatter:off
+    /**
+     * Builds a new {@link BrotliCompressorInputStream}.
+     *
+     * <p>
+     * For example:
+     * </p>
+     * <pre>{@code
+     * BrotliCompressorInputStream s = BrotliCompressorInputStream.builder()
+     *   .setPath(path)
+     *   .setDict(dictionary)
+     *   .get();
+     * }
+     * </pre>
+     *
+     * @see #get()
+     * @since 1.29.0
+     */
+    // @formatter:on
+    public static final class Builder extends AbstractStreamBuilder<BrotliCompressorInputStream, Builder> {
+
+        private byte[] dict;
+
+        /**
+         * Constructs a new builder of {@link BrotliCompressorInputStream}.
+         */
+        public Builder() {
+            // empty
+        }
+
+        @Override
+        public BrotliCompressorInputStream get() throws IOException {
+            return new BrotliCompressorInputStream(this);
+        }
+
+        /**
+         * Sets the raw (LZ77) dictionary used to decompress the input.
+         * <p>
+         * The input must have been compressed with the same raw dictionary, which acts as data preceding the stream. The value {@code null} means no
+         * dictionary.
+         * </p>
+         *
+         * @param dict The dictionary buffer.
+         * @return {@code this} instance.
+         */
+        public Builder setDict(final byte[] dict) {
+            this.dict = dict;
+            return this;
+        }
+    }
+
+    /**
+     * Constructs a new builder of {@link BrotliCompressorInputStream}.
+     *
+     * @return a new builder of {@link BrotliCompressorInputStream}.
+     * @since 1.29.0
+     */
+    public static Builder builder() {
+        return new Builder();
+    }
+
     private final BoundedInputStream countingInputStream;
     private final BrotliInputStream brotliInputStream;
+
+    @SuppressWarnings("resource") // Caller closes
+    private BrotliCompressorInputStream(final Builder builder) throws IOException {
+        brotliInputStream = new BrotliInputStream(countingInputStream = BoundedInputStream.builder().setInputStream(builder.getInputStream()).get(),
+                BrotliInputStream.DEFAULT_INTERNAL_BUFFER_SIZE, builder.dict);
+    }
 
     /**
      * Construct a new instance.
