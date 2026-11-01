@@ -229,7 +229,7 @@ public class MetadataBandGroup {
     /**
      * Gets a new Annotation.
      *
-     * @param numPairs      Number of pairs, matches the lengths of {@code elementNames} and {@code elementValues} in the new Annotation.
+     * @param pairCount     Number of pairs, matches the lengths of {@code elementNames} and {@code elementValues} in the new Annotation.
      * @param type          Type.
      * @param namesIterator Iterates names to create pairs.
      * @throws Pack200Exception Thrown on a format error.

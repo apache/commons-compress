@@ -153,7 +153,7 @@ public abstract class ArchiveOutputStream<E extends ArchiveEntry> extends Compre
      * </p>
      *
      * <pre>
-     * return createArchiveEntry(inputFile.toFile(), entryName);
+     * return createArchiveEntry(inputPath.toFile(), entryName);
      * </pre>
      * <p>
      * Subclasses should override this method.
