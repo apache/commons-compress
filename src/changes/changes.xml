@@ -209,6 +209,7 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="ggregory" due-to="Gary Gregory">ArchiveStreamFactory now throws ArchiveException instead of IllegalArgumetException/IllegalStateException.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">ExactMath now throws ArchiveException instead of IllegalArgumetException/IllegalStateException.</action>
       <!-- ADD -->
+      <action type="add" dev="wilx" due-to="Václav Haisman">[Zip] Resolve PKWARE UNIX regular-file hard links with opt-in ZipFile content reads and restore them through seekable Expander extraction.</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add MemoryLimitException.MemoryLimitException(long, long).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add CompressException.CompressException(String, Object...).</action>
       <action type="add" dev="ggregory" due-to="Gary Gregory">Add ArchiveException.ArchiveException(String, Object...).</action>
