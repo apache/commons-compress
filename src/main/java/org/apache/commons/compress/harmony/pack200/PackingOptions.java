@@ -339,7 +339,9 @@ public class PackingOptions {
                     // files under "org/apache/harmony/pack200/")
                     pass += "/";
                 }
-                return passFileName.startsWith(pass);
+                if (passFileName.startsWith(pass)) {
+                    return true;
+                }
             }
         }
         return false;
