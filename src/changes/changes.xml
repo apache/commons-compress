@@ -96,7 +96,6 @@ The <action> type attribute can be add,update,fix,remove.
       <action type="fix" dev="pkarwasz" due-to="KALI 834X, Gary Gregory">[Zip] Fix Zip rcount field width in x0015 and x0016 certificate id extra fields (#787).</action>
       <action type="fix" dev="ggregory" due-to="KALI 834X, Gary Gregory">[Zip] Reject negative ZIP64 offsets in positionAtCentralDirectory64 (#794).</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory">[Zip] UnshrinkingInputStreamnow now throws CompressorException instead of IllegalArgumetException/IllegalStateException.</action>
-      <action type="fix" issue="COMPRESS-643" due-to="hutiefang76">[Zip] Reset ZipArchiveInputStream's uncompressed byte count after draining the previous entry.</action>
       <!-- FIX TAR -->
       <action type="fix" dev="pkarwasz" due-to="Tyler Nighswander, Piotr P. Karwasz, Gary Gregory">>[TAR] Uniform handling of special tar records in TarFile and TarArchiveInputStream.</action>
       <action type="fix" dev="ggregory" due-to="Gary Gregory, Stanislav Fort">[TAR] TarArchiveOutputStream now throws a ArchiveException instead of an OutOfMemoryError.</action>
