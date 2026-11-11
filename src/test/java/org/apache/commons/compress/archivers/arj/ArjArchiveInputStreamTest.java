@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.EOFException;
@@ -35,6 +36,8 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TimeZone;
 import java.util.stream.Stream;
 import java.util.zip.CRC32;
@@ -441,6 +444,64 @@ class ArjArchiveInputStreamTest extends AbstractTest {
                 .setMaxCount(maxCount)
                 .get()) {
             assertThrows(EOFException.class, () -> ArjArchiveInputStream.builder().setInputStream(input).get());
+        }
+    }
+
+    static Stream<String> testCompressedEntries() {
+        return Stream.of("method1.arj", "method2.arj", "method3.arj", "method4.arj");
+    }
+
+    /**
+     * Reads generated archives compressed with the methods 1-4 and verifies that every entry decompresses to exactly the size recorded in the header. The
+     * per-entry CRC-32 is validated while reading, so a failed decompression fails this test.
+     *
+     * @param resource generated fixture, e.g. {@code method1.arj}.
+     */
+    @ParameterizedTest
+    @MethodSource
+    void testCompressedEntries(final String resource) throws Exception {
+        final int method = Character.digit(resource.charAt(6), 10);
+        final Map<String, Integer> expectedSizes = new HashMap<>();
+        expectedSizes.put("small.txt", 11_520);
+        expectedSizes.put("zeros.bin", 196_656);
+        expectedSizes.put("medium.bin", 49_152);
+        long total = 0;
+        try (ArjArchiveInputStream archive = ArjArchiveInputStream.builder().setURI(getURI(resource)).get()) {
+            ArjArchiveEntry entry;
+            while ((entry = archive.getNextEntry()) != null) {
+                assertTrue(archive.canReadEntryData(entry));
+                assertEquals(expectedSizes.get(entry.getName()).longValue(), entry.getSize());
+                assertEquals("medium.bin".equals(entry.getName()) ? LocalFileHeader.Methods.STORED : method, entry.getMethod());
+                total += IOUtils.toByteArray(archive).length;
+            }
+            assertEquals(expectedSizes.values().stream().mapToLong(Integer::longValue).sum(), total);
+            assertEquals(Files.size(getPath(resource)), archive.getBytesRead());
+        }
+    }
+
+    static Stream<Integer> testMethodNoData() {
+        return Stream.of(8, 9);
+    }
+
+    /**
+     * Reads generated archives whose entries use the methods 8 and 9, which store no data and therefore carry an empty stream.
+     *
+     * @param method the compression method (8 or 9).
+     */
+    @ParameterizedTest
+    @MethodSource
+    void testMethodNoData(final int method) throws Exception {
+        final String resource = "method" + method + ".arj";
+        try (ArjArchiveInputStream archive = ArjArchiveInputStream.builder().setURI(getURI(resource)).get()) {
+            final ArjArchiveEntry entry = archive.getNextEntry();
+            assertNotNull(entry);
+            assertEquals("nodata" + method + ".txt", entry.getName());
+            assertEquals(method, entry.getMethod());
+            assertEquals(0, entry.getSize());
+            assertTrue(archive.canReadEntryData(entry));
+            assertEquals(0, IOUtils.toByteArray(archive).length);
+            assertNull(archive.getNextEntry());
+            assertEquals(Files.size(getPath(resource)), archive.getBytesRead());
         }
     }
 }
