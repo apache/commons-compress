@@ -232,9 +232,10 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTest {
                 'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!', // content
                 0, 0, 0, 0, // empty block marker
         };
-        try (InputStream a = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(input))) {
+        try (FramedLZ4CompressorInputStream a = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(input))) {
             final byte[] actual = IOUtils.toByteArray(a);
             assertArrayEquals(new byte[] { 'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!' }, actual);
+            assertEquals(actual.length, a.getUncompressedCount());
         }
     }
 
@@ -248,9 +249,10 @@ public final class FramedLZ4CompressorInputStreamTest extends AbstractTest {
                 'H', 'e', 'l', 'l', 'o', ',', ' ', 'w', 'o', 'r', 'l', 'd', '!', // content
                 0, 0, 0, 0, // empty block marker
         };
-        try (InputStream a = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(input))) {
+        try (FramedLZ4CompressorInputStream a = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(input))) {
             final int h = a.read();
             assertEquals('H', h);
+            assertEquals(1, a.getUncompressedCount());
         }
     }
 

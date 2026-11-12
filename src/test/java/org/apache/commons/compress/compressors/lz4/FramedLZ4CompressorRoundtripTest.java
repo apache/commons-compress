@@ -19,6 +19,7 @@
 package org.apache.commons.compress.compressors.lz4;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayInputStream;
@@ -90,6 +91,7 @@ public final class FramedLZ4CompressorRoundtripTest extends AbstractTest {
         try (FramedLZ4CompressorInputStream sis = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(bos.toByteArray()))) {
             final byte[] actual = IOUtils.toByteArray(sis);
             assertArrayEquals(expected, actual);
+            assertEquals(expected.length, sis.getUncompressedCount());
         }
     }
 
@@ -104,6 +106,7 @@ public final class FramedLZ4CompressorRoundtripTest extends AbstractTest {
         }
         try (FramedLZ4CompressorInputStream sis = new FramedLZ4CompressorInputStream(new ByteArrayInputStream(buffer.toByteArray()))) {
             assertArrayEquals(expected, IOUtils.toByteArray(sis));
+            assertEquals(expected.length, sis.getUncompressedCount());
         }
     }
 }
