@@ -919,7 +919,7 @@ public class NewAttributeBands extends BandSet {
     /**
      * Resolve calls in the attribute layout and returns the number of backwards calls
      */
-    private void resolveCalls() {
+    private void resolveCalls() throws Pack200Exception {
         int backwardsCalls = 0;
         for (int i = 0; i < attributeLayoutElements.size(); i++) {
             final AttributeLayoutElement element = attributeLayoutElements.get(i);
@@ -938,7 +938,7 @@ public class NewAttributeBands extends BandSet {
         backwardsCallCount = backwardsCalls;
     }
 
-    private int resolveCallsForElement(final int i, final Callable currentCallable, final LayoutElement layoutElement) {
+    private int resolveCallsForElement(final int i, final Callable currentCallable, final LayoutElement layoutElement) throws Pack200Exception {
         int backwardsCalls = 0;
         if (layoutElement instanceof Call) {
             final Call call = (Call) layoutElement;
@@ -969,6 +969,9 @@ public class NewAttributeBands extends BandSet {
                         }
                     }
                 }
+            }
+            if (call.getCallable() == null) {
+                throw new Pack200Exception("Corrupted Pack200 archive: attribute layout call index " + call.getCallableIndex() + " does not resolve to a callable");
             }
         } else if (layoutElement instanceof Replication) {
             final List<LayoutElement> children = ((Replication) layoutElement).layoutElements;
