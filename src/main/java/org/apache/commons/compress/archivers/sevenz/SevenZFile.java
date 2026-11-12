@@ -1762,6 +1762,9 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
             // read one more
             getUnsignedByte(header);
         }
+        if (archive.packSizes.length != numPackStreamsInt) {
+            throw new ArchiveException("7z archive: kPackInfo declares %,d packed streams but the kSize property is missing", numPackStreamsInt);
+        }
     }
 
     private StartHeader readStartHeader(final ByteBuffer startHeader) throws IOException {
