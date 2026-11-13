@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
@@ -52,6 +53,7 @@ import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
+import java.util.zip.CRC32;
 
 import javax.crypto.Cipher;
 
@@ -452,6 +454,94 @@ class SevenZFileTest extends AbstractArchiveFileTest<SevenZArchiveEntry> {
         assertTrue(msg.startsWith("Cannot read encrypted content from "), "Should start with whining about being unable to decrypt");
         assertTrue(msg.endsWith(" without a password."), "Should finish the sentence properly");
         assertTrue(msg.contains("bla.encrypted.7z"), "Should contain archive's name");
+    }
+
+    /**
+     * Content carrying the 7z signature but a bogus start header: reading the headers fails with an {@link ArchiveException}.
+     */
+    private static byte[] brokenHeaderContent() {
+        final byte[] data = new byte[64];
+        System.arraycopy(SevenZFile.SIGNATURE, 0, data, 0, SevenZFile.SIGNATURE.length);
+        // An unsupported archive version makes readHeaders fail with an ArchiveException right after the signature check.
+        data[6] = 0x01;
+        return data;
+    }
+
+    /**
+     * Asserts that no file below {@code dir} is held open by this process: on Windows, moving a directory fails with {@link AccessDeniedException} while
+     * any file inside it is still open, so this detects a channel that was never closed. Transient handles of other processes (such as antivirus scanners)
+     * are tolerated by retrying.
+     *
+     * <p>
+     * Note that this probe must only be used for failures that happen before the next header is read: reading the next header memory-maps the file
+     * (see {@code mapNextHeader}), and a live mapping keeps the file locked on Windows even after the channel is closed, until the mapping is garbage
+     * collected.
+     * </p>
+     */
+    private static void assertDirCanBeMoved(final Path dir) throws IOException, InterruptedException {
+        final Path moved = dir.resolveSibling(dir.getFileName().toString() + "-moved");
+        AccessDeniedException last = null;
+        for (int attempt = 0; attempt < 10; attempt++) {
+            try {
+                Files.move(dir, moved);
+                return;
+            } catch (final AccessDeniedException e) {
+                last = e;
+                Thread.sleep(50);
+            }
+        }
+        throw last;
+    }
+
+    /**
+     * Tests COMPRESS-730: when {@link SevenZFile.Builder#get()} fails while reading the headers, the channel the builder opened for a file must be closed
+     * again. On Windows, moving the file's directory fails while the channel is still open, so a leaked channel makes this test fail.
+     */
+    @Test
+    void testBuilderGetClosesChannelWhenStartHeaderIsCorrupt() throws Exception {
+        final Path dir = newTempPath("COMPRESS-730-corrupt-header");
+        Files.createDirectory(dir);
+        final Path broken = dir.resolve("broken.7z");
+        Files.write(broken, brokenHeaderContent());
+        assertThrows(ArchiveException.class, () -> SevenZFile.builder().setFile(broken.toFile()).get());
+        assertDirCanBeMoved(dir);
+    }
+
+    /**
+     * Tests COMPRESS-730 with a truncated archive: a valid start header CRC followed by a next header offset that exceeds the file size makes
+     * {@link SevenZFile.Builder#get()} fail with an {@link ArchiveException}, and the channel the builder opened must be closed again.
+     */
+    @Test
+    void testBuilderGetClosesChannelWhenStartHeaderIsTruncated() throws Exception {
+        final Path dir = newTempPath("COMPRESS-730-truncated-header");
+        Files.createDirectory(dir);
+        final Path truncated = dir.resolve("truncated.7z");
+        final byte[] data = new byte[64];
+        System.arraycopy(SevenZFile.SIGNATURE, 0, data, 0, SevenZFile.SIGNATURE.length);
+        // Start header: next header offset 100, which exceeds the 64-byte file; next header size and CRC stay zeroed.
+        data[16] = 100;
+        final CRC32 crc32 = new CRC32();
+        crc32.update(data, 12, 20);
+        final int crc = (int) crc32.getValue();
+        data[8] = (byte) crc;
+        data[9] = (byte) (crc >>> 8);
+        data[10] = (byte) (crc >>> 16);
+        data[11] = (byte) (crc >>> 24);
+        Files.write(truncated, data);
+        assertThrows(ArchiveException.class, () -> SevenZFile.builder().setFile(truncated.toFile()).get());
+        assertDirCanBeMoved(dir);
+    }
+
+    /**
+     * Tests the channel ownership policy: a channel handed over through {@link SevenZFile.Builder#setChannel(java.nio.channels.Channel)} is not closed when
+     * {@link SevenZFile.Builder#get()} fails while reading the headers - its owner stays responsible for closing it.
+     */
+    @Test
+    void testBuilderGetDoesNotCloseCallerSuppliedChannel() throws Exception {
+        try (SeekableInMemoryByteChannel channel = new SeekableInMemoryByteChannel(brokenHeaderContent())) {
+            assertThrows(ArchiveException.class, () -> SevenZFile.builder().setChannel(channel).get());
+            assertTrue(channel.isOpen(), "a channel supplied by the caller is not closed on failure, its owner closes it");
+        }
     }
 
     @Test
