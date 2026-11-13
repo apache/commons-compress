@@ -61,8 +61,8 @@ import org.apache.commons.io.input.BoundedInputStream;
  * <p>
  * If you use the {@code Builder.setDecompressConcatenated(true)} or {@code GzipCompressorInputStream(in, true)} then {@link #read} will return -1 only after
  * the entire input stream has been exhausted; any bytes that follow an encoded GZIP member must constitute a new encoded GZIP member, otherwise an
- * {@link IOException} is thrown. The data read from a stream constructed this way will consist of the concatenated data of all of the encoded GZIP members in
- * order.
+ * {@link IOException} is thrown. Trailing zero padding after the last encoded GZIP member is ignored, like GNU gzip does. The data read from a stream
+ * constructed this way will consist of the concatenated data of all of the encoded GZIP members in order.
  * </p>
  * <p>
  * To build an instance, use {@link Builder}.
@@ -358,6 +358,23 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
         return parameters;
     }
 
+    /**
+     * Consumes the remaining input and tests whether it consists solely of zero bytes.
+     * <p>
+     * Trailing zero padding after the last member commonly appears when .gz files are stored on or copied from media that pads them to a block boundary; GNU
+     * gzip silently accepts such input.
+     * </p>
+     *
+     * @return true if the input ended while only zero bytes were read, false if a non-zero byte was found.
+     */
+    private boolean isTrailingZeroPadding() throws IOException {
+        int b;
+        do {
+            b = in.read();
+        } while (b == 0);
+        return b == -1;
+    }
+
     private boolean init(final boolean isFirstMember) throws IOException {
         if (!isFirstMember && !decompressConcatenated) { // at least one must be true
             throw new CompressorException("Unexpected: isFirstMember and decompressConcatenated are both false.");
@@ -370,6 +387,10 @@ public class GzipCompressorInputStream extends CompressorInputStream implements 
             return false;
         }
         if (magic0 != GzipUtils.ID1 || in.read() != GzipUtils.ID2) {
+            // Like GNU gzip, trailing zero padding after the last member is not an error; anything else is.
+            if (!isFirstMember && magic0 == 0 && isTrailingZeroPadding()) {
+                return false;
+            }
             throw new CompressorException(isFirstMember ? "Input is not in the .gz format." : "Unexpected data after a valid .gz stream.");
         }
         parameters = new GzipParameters();
