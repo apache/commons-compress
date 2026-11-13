@@ -137,10 +137,10 @@ public class FileNameUtil {
      * @since 1.25.0
      */
     public String getCompressedFileName(final String fileName) {
-        final String lower = StringUtils.toRootLowerCase(fileName);
-        final int n = lower.length();
+        // Use the length of the original name: lower-casing may change the length (for example U+0130).
+        final int n = fileName.length();
         for (int i = shortestUncompressedSuffix; i <= longestUncompressedSuffix && i < n; i++) {
-            final String suffix = compressSuffix.get(lower.substring(n - i));
+            final String suffix = compressSuffix.get(StringUtils.toRootLowerCase(fileName.substring(n - i)));
             if (suffix != null) {
                 return fileName.substring(0, n - i) + suffix;
             }
@@ -175,10 +175,10 @@ public class FileNameUtil {
      * @since 1.25.0
      */
     public String getUncompressedFileName(final String fileName) {
-        final String lower = StringUtils.toRootLowerCase(fileName);
-        final int n = lower.length();
+        // Use the length of the original name: lower-casing may change the length (for example U+0130).
+        final int n = fileName.length();
         for (int i = shortestCompressedSuffix; i <= longestCompressedSuffix && i < n; i++) {
-            final String suffix = uncompressSuffix.get(lower.substring(n - i));
+            final String suffix = uncompressSuffix.get(StringUtils.toRootLowerCase(fileName.substring(n - i)));
             if (suffix != null) {
                 return fileName.substring(0, n - i) + suffix;
             }
@@ -206,10 +206,10 @@ public class FileNameUtil {
      * @since 1.25.0
      */
     public boolean isCompressedFileName(final String fileName) {
-        final String lower = StringUtils.toRootLowerCase(fileName);
-        final int n = lower.length();
+        // Use the length of the original name: lower-casing may change the length (for example U+0130).
+        final int n = fileName.length();
         for (int i = shortestCompressedSuffix; i <= longestCompressedSuffix && i < n; i++) {
-            if (uncompressSuffix.containsKey(lower.substring(n - i))) {
+            if (uncompressSuffix.containsKey(StringUtils.toRootLowerCase(fileName.substring(n - i)))) {
                 return true;
             }
         }
