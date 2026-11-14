@@ -195,6 +195,7 @@ public class TarFile implements ArchiveFile<TarArchiveEntry> {
             TarArchiveEntry entry;
             while ((entry = getNextTarEntry()) != null) {
                 entries.add(entry);
+                ArchiveUtils.checkEntryCount(entries.size(), builder.getMaxEntries());
             }
         } catch (final IOException e) {
             throw IOUtils.closeQuietlySuppress(archive, e);

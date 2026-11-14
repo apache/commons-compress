@@ -299,7 +299,7 @@ public class ArjArchiveInputStream extends ArchiveInputStream<ArjArchiveEntry> {
                         .get();
                 // @formatter:on
             }
-            return new ArjArchiveEntry(currentLocalFileHeader);
+            return countEntry(new ArjArchiveEntry(currentLocalFileHeader));
         }
         currentInputStream = null;
         return null;

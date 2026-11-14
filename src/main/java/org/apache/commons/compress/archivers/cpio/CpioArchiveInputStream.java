@@ -337,7 +337,7 @@ public class CpioArchiveInputStream extends ArchiveInputStream<CpioArchiveEntry>
             skipRemainderOfLastBlock();
             return null;
         }
-        return entry;
+        return countEntry(entry);
     }
 
     @Override

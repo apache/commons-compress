@@ -948,7 +948,7 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
             current.inputStream = new Deflate64CompressorInputStream(in);
         }
         entriesRead++;
-        return current.entry;
+        return countEntry(current.entry);
     }
 
     /**

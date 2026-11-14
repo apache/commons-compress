@@ -350,7 +350,7 @@ public class LhaArchiveInputStream extends ArchiveInputStream<LhaArchiveEntry> {
             this.currentCompressedStream = null;
             this.currentDecompressedStream = null;
         }
-        this.currentEntry = readHeader();
+        this.currentEntry = countEntry(readHeader());
         return this.currentEntry;
     }
 
