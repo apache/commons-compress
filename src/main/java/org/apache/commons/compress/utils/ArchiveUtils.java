@@ -36,6 +36,20 @@ public class ArchiveUtils {
     private static final int SOFT_MAX_ARRAY_LENGTH = Integer.MAX_VALUE - 8;
 
     /**
+     * Checks that the number of entries read from an archive does not exceed the given maximum.
+     *
+     * @param count The number of entries read so far.
+     * @param maxEntries The maximum number of entries.
+     * @throws ArchiveException If {@code count} exceeds {@code maxEntries}.
+     * @since 1.29.0
+     */
+    public static void checkEntryCount(final long count, final int maxEntries) throws ArchiveException {
+        if (count > maxEntries) {
+            throw new ArchiveException("Archive holds more than %,d entries. Consider increasing the `maxEntries` limit.", maxEntries);
+        }
+    }
+
+    /**
      * Checks that the given entry name length is valid.
      *
      * @param length The length of the entry name.

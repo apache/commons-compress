@@ -376,7 +376,7 @@ public class ArArchiveInputStream extends ArchiveInputStream<ArArchiveEntry> {
 
         currentEntry = new ArArchiveEntry(name, len, currentEntry.getUserId(), currentEntry.getGroupId(),
                 currentEntry.getMode(), currentEntry.getLastModified());
-        return currentEntry;
+        return countEntry(currentEntry);
     }
 
     /**

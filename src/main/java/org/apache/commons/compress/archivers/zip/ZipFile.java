@@ -732,6 +732,8 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
 
     private long firstLocalFileHeaderOffset;
 
+    private final int maxEntries;
+
     private final int maxEntryNameLength;
 
     private ZipFile(final Builder builder) throws IOException {
@@ -749,6 +751,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
             this.zipEncoding = ZipEncodingHelper.getZipEncoding(encoding);
             this.useUnicodeExtraFields = builder.useUnicodeExtraFields;
             this.zstdInputStreamFactory = builder.zstdInputStreamFactory;
+            this.maxEntries = builder.getMaxEntries();
             this.maxEntryNameLength = builder.getMaxEntryNameLength();
             final Map<ZipArchiveEntry, NameAndComment> entriesWithoutUTF8Flag = populateFromCentralDirectory();
             if (!builder.ignoreLocalFileHeader) {
@@ -1539,6 +1542,7 @@ public class ZipFile implements ArchiveFile<ZipArchiveEntry> {
         ze.setLocalHeaderOffset(ZipLong.getValue(cfhBuf, off) + firstLocalFileHeaderOffset);
         // data offset will be filled later
         entries.add(ze);
+        ArchiveUtils.checkEntryCount(entries.size(), maxEntries);
 
         final byte[] cdExtraData = org.apache.commons.compress.utils.IOUtils.readRange(archive, extraLen);
         if (cdExtraData.length < extraLen) {

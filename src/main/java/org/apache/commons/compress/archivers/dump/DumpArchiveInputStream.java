@@ -213,7 +213,7 @@ public class DumpArchiveInputStream extends ArchiveInputStream<DumpArchiveEntry>
 
     private DumpArchiveEntry checkEntry(final DumpArchiveEntry entry) throws ArchiveException, MemoryLimitException {
         ArchiveUtils.checkEntryNameLength(entry.getName().length(), getMaxEntryNameLength(), "DUMP");
-        return entry;
+        return countEntry(entry);
     }
 
     /**
