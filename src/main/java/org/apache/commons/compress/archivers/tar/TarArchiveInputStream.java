@@ -700,6 +700,9 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
         final int readCount = IOUtils.read(in, recordBuffer);
         count(readCount);
         if (readCount != getRecordSize()) {
+            if (readCount > 0 && !isAtEOF()) {
+                throw new EOFException(String.format("Truncated TAR archive: Expected %,d bytes in a record, actual %,d", getRecordSize(), readCount));
+            }
             return null;
         }
         return recordBuffer;

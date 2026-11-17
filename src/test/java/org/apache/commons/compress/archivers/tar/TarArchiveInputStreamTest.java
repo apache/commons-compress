@@ -445,6 +445,58 @@ class TarArchiveInputStreamTest extends AbstractTest {
         }
     }
 
+    @ParameterizedTest
+    @ValueSource(ints = { 1, 511 })
+    void testRejectsIncompleteRecord(final int size) throws IOException {
+        final byte[] data = new byte[size];
+        Arrays.fill(data, (byte) 'x');
+        try (TarArchiveInputStream archive = TarArchiveInputStream.builder().setByteArray(data).get()) {
+            assertThrows(EOFException.class, archive::getNextEntry);
+        }
+    }
+
+    @Test
+    void testRejectsIncompleteRecordAfterEntry() throws IOException {
+        final ByteArrayOutputStream output = new ByteArrayOutputStream();
+        try (TarArchiveOutputStream archive = new TarArchiveOutputStream(output)) {
+            archive.putArchiveEntry(new TarArchiveEntry("empty"));
+            archive.closeArchiveEntry();
+        }
+        final byte[] data = Arrays.copyOf(output.toByteArray(), TarConstants.DEFAULT_RCDSIZE + 1);
+        data[TarConstants.DEFAULT_RCDSIZE] = 'x';
+        try (TarArchiveInputStream archive = TarArchiveInputStream.builder().setByteArray(data).get()) {
+            assertEquals("empty", archive.getNextEntry().getName());
+            assertThrows(EOFException.class, archive::getNextEntry);
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = { 0, 512, 513, 1023, 1024 })
+    void testEmptyArchiveAndPartialPadding(final int size) throws IOException {
+        try (TarArchiveInputStream archive = TarArchiveInputStream.builder().setByteArray(new byte[size]).get()) {
+            assertNull(archive.getNextEntry());
+        }
+    }
+
+    @Test
+    void testArchiveWithoutEofMarker() throws IOException {
+        final byte[] data = new byte[TarConstants.DEFAULT_RCDSIZE];
+        new TarArchiveEntry("empty").writeEntryHeader(data);
+        try (TarArchiveInputStream archive = TarArchiveInputStream.builder().setByteArray(data).get()) {
+            assertEquals("empty", archive.getNextEntry().getName());
+            assertNull(archive.getNextEntry());
+        }
+    }
+
+    @Test
+    void testPartialGarbageAfterEofMarker() throws IOException {
+        final byte[] data = new byte[TarConstants.DEFAULT_RCDSIZE + 1];
+        data[TarConstants.DEFAULT_RCDSIZE] = 'x';
+        try (TarArchiveInputStream archive = TarArchiveInputStream.builder().setByteArray(data).get()) {
+            assertNull(archive.getNextEntry());
+        }
+    }
+
     /**
      * This test ensures the implementation is reading the padded last block if a tool has added one to an archive
      */
