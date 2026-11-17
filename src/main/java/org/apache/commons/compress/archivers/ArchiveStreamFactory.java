@@ -74,11 +74,18 @@ import org.apache.commons.lang3.StringUtils;
  * final InputStream is = Files.newInputStream(input.toPath());
  * ArchiveInputStream in = new ArchiveStreamFactory().createArchiveInputStream(ArchiveStreamFactory.ZIP, is);
  * ZipArchiveEntry entry = (ZipArchiveEntry) in.getNextEntry();
- * OutputStream out = Files.newOutputStream(dir.toPath().resolve(entry.getName()));
+ * // ArchiveEntry.resolveIn(Path) normalizes the entry name and throws ArchiveException
+ * // if the result would escape the target directory (Zip Slip, CWE-22).
+ * OutputStream out = Files.newOutputStream(entry.resolveIn(dir.toPath()));
  * IOUtils.copy(in, out);
  * out.close();
  * in.close();
  * </pre>
+ *
+ * <p>Always resolve entry names through {@link ArchiveEntry#resolveIn(java.nio.file.Path)} rather than
+ * {@link java.nio.file.Path#resolve(java.nio.file.Path)}: entry names are attacker-controlled in untrusted archives and may
+ * contain {@code ..} segments that escape the target directory (Zip Slip, CWE-22). See also
+ * {@link org.apache.commons.compress.archivers.examples.Expander} for a ready-made safe extraction API.</p>
  *
  * @Immutable provided that the deprecated method setEntryEncoding is not used.
  * @ThreadSafe even if the deprecated method setEntryEncoding is used
