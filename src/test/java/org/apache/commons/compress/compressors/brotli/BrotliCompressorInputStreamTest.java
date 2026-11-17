@@ -21,6 +21,7 @@ package org.apache.commons.compress.compressors.brotli;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
@@ -36,6 +37,33 @@ import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 
 class BrotliCompressorInputStreamTest extends AbstractTest {
+
+    @Test
+    void testBuilderWithoutDictionary() throws IOException {
+        final byte[] expected = readAllBytes("brotli.testdata.uncompressed");
+        try (BrotliCompressorInputStream in = BrotliCompressorInputStream.builder().setPath(getPath("brotli.testdata.compressed")).get()) {
+            assertArrayEquals(expected, IOUtils.toByteArray(in));
+        }
+    }
+
+    @Test
+    void testDictionary() throws IOException {
+        final byte[] expected = readAllBytes("brotli.dictionary.uncompressed");
+        try (BrotliCompressorInputStream in = BrotliCompressorInputStream.builder()
+                .setPath(getPath("brotli.dictionary.compressed"))
+                .setDict(readAllBytes("brotli.dictionary.dict"))
+                .get()) {
+            assertArrayEquals(expected, IOUtils.toByteArray(in));
+            assertEquals(Files.size(getPath("brotli.dictionary.compressed")), in.getCompressedCount());
+        }
+    }
+
+    @Test
+    void testDictionaryRequired() throws IOException {
+        try (BrotliCompressorInputStream in = BrotliCompressorInputStream.builder().setPath(getPath("brotli.dictionary.compressed")).get()) {
+            assertThrows(IOException.class, () -> IOUtils.toByteArray(in));
+        }
+    }
 
     @Test
     void testAvailableShouldReturnZero() throws IOException {
