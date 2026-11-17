@@ -108,6 +108,7 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream implem
 
     private boolean endReached;
     private boolean inUncompressed;
+    private long uncompressedBytesRead;
 
     /** Used for frame header checksum and content checksum, if present. */
     private final org.apache.commons.codec.digest.XXHash32 contentHash = new org.apache.commons.codec.digest.XXHash32();
@@ -172,6 +173,12 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream implem
     @Override
     public long getCompressedCount() {
         return inputStream.getCount();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public long getUncompressedCount() {
+        return uncompressedBytesRead;
     }
 
     private void init(final boolean firstFrame) throws IOException {
@@ -266,6 +273,9 @@ public class FramedLZ4CompressorInputStream extends CompressorInputStream implem
             if (expectContentChecksum) {
                 contentHash.update(b, off, r);
             }
+        }
+        if (r > 0) {
+            uncompressedBytesRead += r;
         }
         return r;
     }
