@@ -29,6 +29,8 @@ import java.util.jar.JarInputStream;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
 
+import org.objectweb.asm.Opcodes;
+
 /**
  * Main entry point to pack200 and represents a packed archive. An archive is constructed with either a {@link JarInputStream} and an output stream or a
  * {@link JarFile} as input and an OutputStream. Options can be set, then {@link #pack()} is called, to pack the Jar file into a pack200 archive.
@@ -211,9 +213,14 @@ public class Archive {
         final String name = packingFile.getName();
         if (name.endsWith(".class") && !options.isPassFile(name)) {
             final Pack200ClassReader classParser = new Pack200ClassReader(packingFile.contents);
-            classParser.setFileName(name);
-            javaClasses.add(classParser);
-            packingFile.contents = EMPTY_BYTE_ARRAY;
+            if ((classParser.getAccess() & Opcodes.ACC_MODULE) != 0) {
+                // Pack200 has no representation for module attributes; preserve the descriptor verbatim.
+                options.addPassFile(name);
+            } else {
+                classParser.setFileName(name);
+                javaClasses.add(classParser);
+                packingFile.contents = EMPTY_BYTE_ARRAY;
+            }
         }
         files.add(packingFile);
         return true;

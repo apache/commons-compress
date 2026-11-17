@@ -18,10 +18,13 @@
  */
 package org.apache.commons.compress.harmony.pack200;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -41,10 +44,15 @@ import java.util.stream.Stream;
 
 import org.apache.commons.compress.AbstractTempDirTest;
 import org.apache.commons.compress.harmony.unpack200.Segment;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.ModuleVisitor;
+import org.objectweb.asm.Opcodes;
 
 class ArchiveTest extends AbstractTempDirTest {
 
@@ -195,6 +203,70 @@ class ArchiveTest extends AbstractTempDirTest {
                     }
                 }
             }
+        }
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "module-info.class, false, -1, false",
+        "module-info.class, true, 0, false",
+        "META-INF/versions/9/module-info.class, false, 0, false",
+        "META-INF/versions/9/module-info.class, true, -1, false",
+        "module-info.class, false, -1, true",
+        "module-info.class, true, 0, true",
+        "META-INF/versions/9/module-info.class, false, 0, true",
+        "META-INF/versions/9/module-info.class, true, -1, true"
+    })
+    void testModuleInfo(final String entryName, final boolean streaming, final long segmentLimit, final boolean passDirectory)
+            throws IOException, Pack200Exception {
+        final ClassWriter moduleWriter = new ClassWriter(0);
+        moduleWriter.visit(Opcodes.V9, Opcodes.ACC_MODULE, "module-info", null, null, null);
+        final ModuleVisitor module = moduleWriter.visitModule("example.module", 0, "1.0");
+        module.visitRequire("java.base", Opcodes.ACC_MANDATED, null);
+        module.visitExport("example", 0);
+        module.visitOpen("example", 0, "java.base");
+        module.visitUse("java/lang/Runnable");
+        module.visitProvide("java/lang/Runnable", "example/Main");
+        module.visitPackage("example");
+        module.visitMainClass("example/Main");
+        module.visitEnd();
+        moduleWriter.visitEnd();
+        final byte[] moduleInfo = moduleWriter.toByteArray();
+        final ClassWriter classWriter = new ClassWriter(0);
+        classWriter.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC, "example/Main", null, "java/lang/Object", null);
+        classWriter.visitEnd();
+        final File jar = createTempFile("module", ".jar");
+        try (JarOutputStream out = new JarOutputStream(new FileOutputStream(jar))) {
+            out.putNextEntry(new JarEntry(entryName));
+            out.write(moduleInfo);
+            out.closeEntry();
+            out.putNextEntry(new JarEntry("example/Main.class"));
+            out.write(classWriter.toByteArray());
+            out.closeEntry();
+        }
+        final PackingOptions options = new PackingOptions();
+        options.setSegmentLimit(segmentLimit);
+        if (passDirectory) {
+            options.addPassFile("assets");
+        }
+        final ByteArrayOutputStream packed = new ByteArrayOutputStream();
+        if (streaming) {
+            try (JarInputStream in = new JarInputStream(new FileInputStream(jar))) {
+                new Archive(in, packed, options).pack();
+            }
+        } else {
+            try (JarFile in = new JarFile(jar)) {
+                new Archive(in, packed, options).pack();
+            }
+        }
+        final File unpacked = createTempFile("module-unpacked", ".jar");
+        try (JarOutputStream out = new JarOutputStream(new FileOutputStream(unpacked))) {
+            new org.apache.commons.compress.harmony.unpack200.Archive(new ByteArrayInputStream(packed.toByteArray()), out).unpack();
+        }
+        try (JarFile in = new JarFile(unpacked);
+                InputStream descriptor = in.getInputStream(in.getJarEntry(entryName))) {
+            assertArrayEquals(moduleInfo, IOUtils.toByteArray(descriptor));
+            assertNotNull(in.getJarEntry("example/Main.class"));
         }
     }
 
