@@ -411,4 +411,63 @@ class GzipCompressorInputStreamTest {
             assertEquals("name.txt", gis.getMetaData().getFileName());
         }
     }
+
+    /**
+     * Tests COMPRESS-709: trailing zero padding after a valid member is ignored, like GNU gzip does, instead of failing with
+     * {@code "Unexpected data after a valid .gz stream."}.
+     *
+     * @throws IOException on test failure.
+     */
+    @Test
+    void testCompress709TrailingZeroPaddingIsIgnored() throws IOException {
+        final byte[] payload = "Hello1\n".getBytes(StandardCharsets.ISO_8859_1);
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try (GzipCompressorOutputStream gos = new GzipCompressorOutputStream(bos)) {
+            gos.write(payload);
+        }
+        final byte[] member = bos.toByteArray();
+        // Padding spanning more than one internal read buffer.
+        final byte[] zeroPadding = new byte[16384];
+        final ByteArrayOutputStream padded = new ByteArrayOutputStream();
+        padded.write(member);
+        padded.write(zeroPadding);
+        final byte[] gz = padded.toByteArray();
+        // Concatenated mode: the padding terminates the stream cleanly.
+        try (GzipCompressorInputStream gis = GzipCompressorInputStream.builder()
+                .setInputStream(new ByteArrayInputStream(gz))
+                .setDecompressConcatenated(true)
+                .get()) {
+            assertArrayEquals(payload, IOUtils.toByteArray(gis));
+        }
+        // Non-concatenated mode never looked at the tail.
+        try (GzipCompressorInputStream gis = GzipCompressorInputStream.builder()
+                .setInputStream(new ByteArrayInputStream(gz))
+                .setDecompressConcatenated(false)
+                .get()) {
+            assertArrayEquals(payload, IOUtils.toByteArray(gis));
+        }
+    }
+
+    /**
+     * Tests COMPRESS-709: trailing input that is not zero padding is still rejected in concatenated mode.
+     *
+     * @throws IOException on test failure.
+     */
+    @Test
+    void testCompress709TrailingGarbageIsStillRejected() throws IOException {
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try (GzipCompressorOutputStream gos = new GzipCompressorOutputStream(bos)) {
+            gos.write("Hello1\n".getBytes(StandardCharsets.ISO_8859_1));
+        }
+        final ByteArrayOutputStream withGarbage = new ByteArrayOutputStream();
+        withGarbage.write(bos.toByteArray());
+        withGarbage.write("garbage".getBytes(StandardCharsets.ISO_8859_1));
+        try (GzipCompressorInputStream gis = GzipCompressorInputStream.builder()
+                .setInputStream(new ByteArrayInputStream(withGarbage.toByteArray()))
+                .setDecompressConcatenated(true)
+                .get()) {
+            final CompressorException e = assertThrows(CompressorException.class, () -> IOUtils.toByteArray(gis));
+            assertEquals("Unexpected data after a valid .gz stream.", e.getMessage());
+        }
+    }
 }
