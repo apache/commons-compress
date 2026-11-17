@@ -20,22 +20,75 @@ package org.apache.commons.compress.archivers.zip;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
 
 import org.apache.commons.compress.AbstractTempDirTest;
+import org.apache.commons.compress.archivers.ArchiveException;
 import org.junit.jupiter.api.Test;
 
 /**
  * Tests {@link ZipArchiveOutputStream}.
  */
 class ZipArchiveOutputStreamTest extends AbstractTempDirTest {
+
+    /**
+     * Tests COMPRESS-729: close() must end the Deflater even when finish() fails.
+     */
+    @Test
+    void testCloseEndsDeflaterWhenFinishFails() throws IOException {
+        final FailingOutputStream target = new FailingOutputStream();
+        final ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(target);
+        outputStream.putArchiveEntry(new ZipArchiveEntry("test.txt"));
+        outputStream.write("Hello, World!".getBytes(StandardCharsets.UTF_8));
+        outputStream.closeArchiveEntry();
+        // For example, the client aborted the download.
+        target.fail = true;
+        assertThrows(IOException.class, outputStream::close);
+        assertDeflaterEnded(outputStream.def);
+    }
+
+    /**
+     * Tests COMPRESS-729: close() must end the Deflater even when the archive still has an unclosed entry.
+     */
+    @Test
+    void testCloseEndsDeflaterWithUnclosedEntry() throws IOException {
+        final ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(new ByteArrayOutputStream());
+        outputStream.putArchiveEntry(new ZipArchiveEntry("test.txt"));
+        outputStream.write("Hello, World!".getBytes(StandardCharsets.UTF_8));
+        assertThrows(ArchiveException.class, outputStream::close);
+        assertDeflaterEnded(outputStream.def);
+    }
+
+    private static void assertDeflaterEnded(final Deflater deflater) {
+        // Deflater methods throw NullPointerException("Deflater has been closed") once end() was called.
+        assertThrows(NullPointerException.class, deflater::getBytesRead);
+    }
+
+    private static final class FailingOutputStream extends OutputStream {
+
+        private boolean fail;
+
+        @Override
+        public void write(final byte[] b, final int off, final int len) throws IOException {
+            if (fail) {
+                throw new IOException("Broken pipe");
+            }
+        }
+
+        @Override
+        public void write(final int b) throws IOException {
+            write(new byte[] { (byte) b }, 0, 1);
+        }
+    }
 
     @Test
     void testFileBasics() throws IOException {
