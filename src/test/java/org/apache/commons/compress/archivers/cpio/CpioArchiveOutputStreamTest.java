@@ -18,17 +18,48 @@
  */
 package org.apache.commons.compress.archivers.cpio;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.nio.file.Files;
 
 import org.apache.commons.compress.AbstractTest;
+import org.apache.commons.compress.utils.IOUtils;
 import org.junit.jupiter.api.Test;
 
 class CpioArchiveOutputStreamTest extends AbstractTest {
+
+    /**
+     * The checksum of a new-crc entry covers the bytes written to the entry, not the bytes that precede the written slice in the caller's array.
+     */
+    @Test
+    void testWriteFromBufferOffsetChecksumsTheWrittenSlice() throws Exception {
+        final byte[] payload = { 1, 2, 3, 4, 5 };
+        // The checksum of the payload is 15, the checksum of the first five bytes of the array is 45.
+        final byte[] buffer = { 9, 9, 9, 9, 1, 2, 3, 4, 5, 9, 9 };
+        try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+            try (CpioArchiveOutputStream outputStream = new CpioArchiveOutputStream(bos, CpioConstants.FORMAT_NEW_CRC)) {
+                final CpioArchiveEntry entry = new CpioArchiveEntry(CpioConstants.FORMAT_NEW_CRC, "test.txt", payload.length);
+                entry.setChksum(15);
+                outputStream.putArchiveEntry(entry);
+                outputStream.write(buffer, 4, payload.length);
+                assertDoesNotThrow(outputStream::closeArchiveEntry, "writing from a buffer offset must not produce a checksum error");
+            }
+            try (CpioArchiveInputStream in = CpioArchiveInputStream.builder().setByteArray(bos.toByteArray()).get()) {
+                final CpioArchiveEntry entry = in.getNextEntry();
+                assertNotNull(entry);
+                assertEquals("test.txt", entry.getName());
+                assertEquals(15, entry.getChksum());
+                assertArrayEquals(payload, IOUtils.toByteArray(in));
+            }
+        }
+    }
 
     @Test
     void testWriteOldBinary() throws Exception {

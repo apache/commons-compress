@@ -330,7 +330,7 @@ public class CpioArchiveOutputStream extends ArchiveOutputStream<CpioArchiveEntr
         out.write(b, off, len);
         this.written += len;
         if (this.entry.getFormat() == FORMAT_NEW_CRC) {
-            for (int pos = 0; pos < len; pos++) {
+            for (int pos = off; pos < off + len; pos++) {
                 this.crc += b[pos] & 0xFF;
                 this.crc &= 0xFFFFFFFFL;
             }
