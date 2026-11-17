@@ -31,6 +31,7 @@ import java.nio.file.LinkOption;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -322,8 +323,12 @@ public class ZipArchiveOutputStream extends ArchiveOutputStream<ZipArchiveEntry>
 
     /**
      * Holds some book-keeping data for each entry.
+     * <p>
+     * Uses identity, since an archive may contain equal entries, and {@link ZipArchiveEntry#equals(Object)} depends on fields that change while an entry is
+     * written.
+     * </p>
      */
-    private final Map<ZipArchiveEntry, EntryMetaData> metaData = new HashMap<>();
+    private final Map<ZipArchiveEntry, EntryMetaData> metaData = new IdentityHashMap<>();
 
     /**
      * The encoding to use for file names and the file comment.
