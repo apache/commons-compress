@@ -504,6 +504,11 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
 
     /**
      * Constructs an instance with the decompress Concatenated option set to false.
+     * <p>
+     * No memory limit is imposed: the LZMA and XZ decompressors will allocate as much memory as the stream requires - up to about 2 GiB.
+     * </p>
+     *
+     * @see #CompressorStreamFactory(boolean, int)
      */
     public CompressorStreamFactory() {
         this.decompressUntilEof = null;
@@ -512,9 +517,13 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
 
     /**
      * Constructs an instance with the provided decompress Concatenated option.
+     * <p>
+     * No memory limit is imposed: the LZMA and XZ decompressors will allocate as much memory as the stream requires - up to about 2 GiB.
+     * </p>
      *
      * @param decompressUntilEOF if true, decompress until the end of the input; if false, stop after the first stream and leave the input position to point to
      *                           the next byte after the stream. This setting applies to the gzip, bzip2 and XZ formats only.
+     * @see #CompressorStreamFactory(boolean, int)
      * @since 1.10
      */
     public CompressorStreamFactory(final boolean decompressUntilEOF) {
@@ -527,7 +536,8 @@ public class CompressorStreamFactory implements CompressorStreamProvider {
      * @param decompressUntilEOF if true, decompress until the end of the input; if false, stop after the first stream and leave the input position to point to
      *                           the next byte after the stream. This setting applies to the gzip, bzip2 and XZ formats only.
      * @param memoryLimitInKb    Some streams require allocation of potentially significant byte arrays/tables, and they can offer checks to prevent OOMs on
-     *                           corrupt files. Set the maximum allowed memory allocation in KBs.
+     *                           corrupt files. Set the maximum allowed memory allocation in KBs, or {@code -1} to impose no memory limit - the behavior of
+     *                           the {@link #CompressorStreamFactory()} and {@link #CompressorStreamFactory(boolean)} constructors.
      *
      * @since 1.14
      */

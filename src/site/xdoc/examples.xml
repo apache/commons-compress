@@ -84,9 +84,10 @@ CompressorInputStream input = new CompressorStreamFactory()
     .createCompressorInputStream(originalInput);
 ]]></source>
 
-        <p>Note that there is no way to detect the LZMA or Brotli formats so only
-        the two-arg version of
-        <code>createCompressorInputStream</code> can be used.  Prior
+        <p>Note that the Brotli format cannot be detected so only the two-arg
+        version of
+        <code>createCompressorInputStream</code> can be used for it. LZMA
+        has been auto-detected since Compress 1.10. Prior
         to Compress 1.9 the .Z format hasn't been auto-detected
         either.</p>
 
@@ -98,7 +99,21 @@ CompressorInputStream input = new CompressorStreamFactory()
         constructor argument that can be used to set an upper limit of
         memory that may be used while decompressing or compressing a
         stream. As of 1.14 this setting only affects decompressing Z,
-        XZ and LZMA compressed streams.</p>
+        XZ and LZMA compressed streams. By default no limit is set,
+        which means the LZMA and XZ decompressors may allocate up to
+        about 2 GiB of memory for the dictionary declared inside the
+        stream. When decompressing untrusted input you should set a
+        limit that fits the memory available to your application:</p>
+        <source><![CDATA[
+CompressorInputStream input = new CompressorStreamFactory(true, 64 * 1024)
+    .createCompressorInputStream(originalInput);
+]]></source>
+        <p>If decompressing requires more memory than the limit allows,
+        a <code>MemoryLimitException</code> is thrown before the memory
+        is allocated. The builders of
+        <code>LZMACompressorInputStream</code> and
+        <code>XZCompressorInputStream</code> offer the same limit via
+        their <code>setMemoryLimitKiB</code> method.</p>
         <p>Since Compress 1.19 <code>SevenZFile</code> also has an
         optional constructor to pass an upper memory limit which is supported
         in LZMA compressed streams. Since Compress 1.21 this setting
