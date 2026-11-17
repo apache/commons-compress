@@ -244,7 +244,11 @@ public class SnappyCompressorInputStream extends AbstractLZ77CompressorInputStre
             length = (int) ByteUtils.fromLittleEndian(supplier, 3);
             break;
         case 63:
-            length = (int) ByteUtils.fromLittleEndian(supplier, 4);
+            final long fourByteLength = ByteUtils.fromLittleEndian(supplier, 4);
+            if (fourByteLength + 1 > Integer.MAX_VALUE) {
+                throw new CompressorException("Illegal literal length %,d in Snappy stream", fourByteLength + 1);
+            }
+            length = (int) fourByteLength;
             break;
         default:
             length = b >> 2;
