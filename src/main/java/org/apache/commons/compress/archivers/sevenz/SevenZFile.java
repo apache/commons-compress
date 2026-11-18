@@ -2202,9 +2202,10 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         } else {
             int folderIdx = 0;
             for (final int numUnpackSubStreams : numUnpackSubStreamsPerFolder) {
-                if (numUnpackSubStreams != 1 || stats.folderHasCrc == null || !stats.folderHasCrc.get(folderIdx++)) {
+                if (numUnpackSubStreams != 1 || stats.folderHasCrc == null || !stats.folderHasCrc.get(folderIdx)) {
                     numDigests = accumulate(numDigests, numUnpackSubStreams, "numDigests");
                 }
+                folderIdx++;
             }
         }
         if (nid == NID.kCRC) {
