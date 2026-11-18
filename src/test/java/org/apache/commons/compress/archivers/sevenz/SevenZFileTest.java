@@ -1260,4 +1260,22 @@ class SevenZFileTest extends AbstractArchiveFileTest<SevenZArchiveEntry> {
         final byte[] data3 = { '7', 'z', (byte) 0xBC, (byte) 0xAF, 0x27, 0x1D };
         assertFalse(SevenZFile.matches(data3, data3.length));
     }
+
+    /**
+     * Tests an archive whose folders are, in this order, one entry with a folder CRC, two entries without, and one entry with a folder CRC.
+     */
+    @Test
+    void testMixedFolderCrcs() throws Exception {
+        try (SevenZFile sevenZFile = getSevenZFile("COMPRESS-737.7z")) {
+            final List<String> names = new ArrayList<>();
+            final List<String> contents = new ArrayList<>();
+            SevenZArchiveEntry entry;
+            while ((entry = sevenZFile.getNextEntry()) != null) {
+                names.add(entry.getName());
+                contents.add(new String(IOUtils.toByteArray(sevenZFile.getInputStream(entry)), UTF_8));
+            }
+            assertEquals(Arrays.asList("aaa", "ccc", "ddd", "bbb"), names);
+            assertEquals(names, contents);
+        }
+    }
 }
