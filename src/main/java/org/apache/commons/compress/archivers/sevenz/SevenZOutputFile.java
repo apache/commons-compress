@@ -90,11 +90,11 @@ public class SevenZOutputFile implements Closeable {
         public void write(final byte[] b, final int off, final int len) throws IOException {
             IOUtils.checkFromIndexSize(b, off, len);
             if (len > BUF_SIZE) {
-                channel.write(ByteBuffer.wrap(b, off, len));
+                writeFully(ByteBuffer.wrap(b, off, len));
             } else {
                 buffer.clear();
                 buffer.put(b, off, len).flip();
-                channel.write(buffer);
+                writeFully(buffer);
             }
             compressedCrc32.update(b, off, len);
             fileBytesWritten += len;
@@ -104,7 +104,7 @@ public class SevenZOutputFile implements Closeable {
         public void write(final int b) throws IOException {
             buffer.clear();
             buffer.put((byte) b).flip();
-            channel.write(buffer);
+            writeFully(buffer);
             compressedCrc32.update(b);
             fileBytesWritten++;
         }
@@ -116,6 +116,27 @@ public class SevenZOutputFile implements Closeable {
             l.addFirst(t);
         }
         return l;
+    }
+
+    /**
+     * Writes all remaining bytes of a buffer to the channel, which may write fewer bytes than requested in one call.
+     *
+     * @param buf the bytes to write.
+     * @throws IOException if an I/O error occurs or the channel reports a negative byte count.
+     */
+    private void writeFully(final ByteBuffer buf) throws IOException {
+        while (buf.hasRemaining()) {
+            final int remaining = buf.remaining();
+            final int written = channel.write(buf);
+            if (written == 0) {
+                // A non-blocking channel
+                Thread.yield();
+                continue;
+            }
+            if (written < 0) {
+                throw new ArchiveException("Failed to write all bytes in the buffer for channel = %s, length = %,d, written = %,d", channel, remaining, written);
+            }
+        }
     }
 
     private final SeekableByteChannel channel;
@@ -306,7 +327,7 @@ public class SevenZOutputFile implements Closeable {
         writeHeader(header);
         header.flush();
         final byte[] headerBytes = headerBaos.toByteArray();
-        channel.write(ByteBuffer.wrap(headerBytes));
+        writeFully(ByteBuffer.wrap(headerBytes));
 
         final CRC32 crc32 = new CRC32();
         crc32.update(headerBytes);
@@ -331,7 +352,7 @@ public class SevenZOutputFile implements Closeable {
         crc32.update(bb.array(), SevenZFile.SIGNATURE.length + 6, 20);
         bb.putInt(SevenZFile.SIGNATURE.length + 2, (int) crc32.getValue());
         bb.flip();
-        channel.write(bb);
+        writeFully(bb);
     }
 
     private Iterable<? extends SevenZMethodConfiguration> getContentMethods(final SevenZArchiveEntry entry) throws ArchiveException {
