@@ -541,4 +541,20 @@ class PackingOptionsTest extends AbstractTempDirTest {
         }
     }
 
+
+    /**
+     * Tests that a directory pass rule that does not match the file does not hide later rules.
+     */
+    @Test
+    void testIsPassFileChecksAllRules() {
+        final PackingOptions options = new PackingOptions();
+        options.addPassFile("org/apache/other");
+        options.addPassFile("org/apache/Foo.class");
+        options.addPassFile("org/apache/pass");
+        assertTrue(options.isPassFile("org/apache/Foo.class"));
+        assertTrue(options.isPassFile("org/apache/pass/Bar.class"));
+        assertTrue(options.isPassFile("org/apache/other/Baz.class"));
+        assertFalse(options.isPassFile("org/apache/Qux.class"));
+        assertFalse(options.isPassFile("org/apache/passing/Bar.class"));
+    }
 }
