@@ -1260,4 +1260,27 @@ class SevenZFileTest extends AbstractArchiveFileTest<SevenZArchiveEntry> {
         final byte[] data3 = { '7', 'z', (byte) 0xBC, (byte) 0xAF, 0x27, 0x1D };
         assertFalse(SevenZFile.matches(data3, data3.length));
     }
+
+    /**
+     * Tests that reading before the first call to getNextEntry() reports the missing entry instead of an ArrayIndexOutOfBoundsException.
+     */
+    @Test
+    void testReadBeforeGetNextEntry() throws Exception {
+        try (SevenZFile sevenZFile = getSevenZFile("bla.7z")) {
+            final ArchiveException e = assertThrows(ArchiveException.class, sevenZFile::read);
+            assertTrue(e.getMessage().contains("getNextEntry()"));
+            assertThrows(ArchiveException.class, () -> sevenZFile.read(new byte[1]));
+        }
+        try (SevenZFile sevenZFile = SevenZFile.builder().setByteArray(createEmptyArchive()).get()) {
+            assertThrows(ArchiveException.class, sevenZFile::read);
+        }
+    }
+
+    private static byte[] createEmptyArchive() throws IOException {
+        final ByteArraySeekableByteChannel channel = new ByteArraySeekableByteChannel();
+        try (SevenZOutputFile outArchive = new SevenZOutputFile(channel)) {
+            outArchive.finish();
+        }
+        return channel.toByteArray();
+    }
 }
