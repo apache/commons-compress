@@ -47,6 +47,7 @@ import org.apache.commons.compress.archivers.ArchiveFile;
 import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.compress.utils.InputStreamStatistics;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.build.AbstractOrigin;
 import org.apache.commons.io.function.IOStream;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.io.input.ChecksumInputStream;
@@ -192,12 +193,25 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
         /**
          * Builds a new {@link SevenZFile}.
          *
+         * <p>
+         * If building fails, a channel that this builder opened itself is closed again. A channel supplied through {@code setChannel(Channel)} is left open:
+         * its owner stays responsible for closing it.
+         * </p>
+         *
          * @throws IOException Thrown if an I/O error occurs.
          */
         @SuppressWarnings("resource") // Caller closes
         @Override
         public SevenZFile get() throws IOException {
             return new SevenZFile(this);
+        }
+
+        /**
+         * Whether the origin is a channel the caller supplied through {@code setChannel(Channel)}: such a channel is not owned by {@link SevenZFile}, which
+         * must not close it. Every other origin (file, path, ...) makes the builder open a new channel.
+         */
+        boolean isCallerSuppliedChannel() {
+            return getOrigin() instanceof AbstractOrigin.ChannelOrigin;
         }
 
         String getName() {
@@ -627,6 +641,10 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
 
     private SevenZFile(final Builder builder) throws IOException {
         this.channel = builder.getChannel(SeekableByteChannel.class);
+        // Whether the channel is owned by this constructor: the builder opens a channel itself for file-like origins (file, path, ...), while a channel
+        // handed over through setChannel() is still owned by its caller, who stays responsible for closing it (COMPRESS-730).
+        final boolean closeChannelOnError = !builder.isCallerSuppliedChannel();
+        boolean succeeded = false;
         try {
             this.fileName = builder.getName();
             this.maxEntryNameLength = builder.getMaxEntryNameLength();
@@ -636,8 +654,13 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
             final byte[] password = builder.password;
             archive = readHeaders(password);
             this.password = password != null ? Arrays.copyOf(password, password.length) : null;
+            succeeded = true;
         } catch (final ArithmeticException | IllegalArgumentException e) {
-            throw IOUtils.closeQuietlySuppress(channel, new ArchiveException(e));
+            throw new ArchiveException(e);
+        } finally {
+            if (!succeeded && closeChannelOnError) {
+                IOUtils.closeQuietly(channel);
+            }
         }
     }
 
