@@ -23,8 +23,6 @@ import java.io.InputStream;
 
 import org.apache.commons.compress.MemoryLimitException;
 import org.apache.commons.compress.compressors.CompressorInputStream;
-import org.apache.commons.compress.compressors.lzma.LZMACompressorInputStream;
-import org.apache.commons.compress.compressors.lzma.LZMACompressorOutputStream;
 import org.apache.commons.compress.utils.InputStreamStatistics;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.build.AbstractStreamBuilder;
@@ -44,7 +42,7 @@ import org.tukaani.xz.XZInputStream;
  * XZCompressorInputStream s = XZCompressorInputStream.builder()
  *   .setPath(path)
  *   .setDecompressConcatenated(false)
- *   .setMemoryLimitKiB(-1)
+ *   .setMemoryLimitKiB(-1) // The default: no memory usage limit
  *   .get();
  * }
  * </pre>
@@ -56,7 +54,7 @@ public class XZCompressorInputStream extends CompressorInputStream implements In
 
     // @formatter:off
     /**
-     * Builds a new {@link LZMACompressorInputStream}.
+     * Builds a new {@link XZCompressorInputStream}.
      *
      * <p>
      * For example:
@@ -65,7 +63,7 @@ public class XZCompressorInputStream extends CompressorInputStream implements In
      * XZCompressorInputStream s = XZCompressorInputStream.builder()
      *   .setPath(path)
      *   .setDecompressConcatenated(false)
-     *   .setMemoryLimitKiB(-1)
+     *   .setMemoryLimitKiB(-1) // The default: no memory usage limit
      *   .get();
      * }
      * </pre>
@@ -107,8 +105,9 @@ public class XZCompressorInputStream extends CompressorInputStream implements In
         /**
          * Sets a working memory threshold in kibibytes (KiB).
          *
-         * @param memoryLimitKiB The memory limit used when reading blocks. The memory usage limit is expressed in kibibytes (KiB) or {@code -1} to impose no
-         *                       memory usage limit. If the estimated memory limit is exceeded on {@link #read()}, a {@link MemoryLimitException} is thrown.
+         * @param memoryLimitKiB The memory limit used when reading blocks. The memory usage limit is expressed in kibibytes (KiB); any negative value (the
+         *                       default is {@code -1}) imposes no memory usage limit. If the estimated memory limit is exceeded on {@link #read()}, a
+         *                       {@link MemoryLimitException} is thrown.
          * @return {@code this} instance.
          */
         public Builder setMemoryLimitKiB(final int memoryLimitKiB) {
@@ -118,9 +117,9 @@ public class XZCompressorInputStream extends CompressorInputStream implements In
     }
 
     /**
-     * Constructs a new builder of {@link LZMACompressorOutputStream}.
+     * Constructs a new builder of {@link XZCompressorInputStream}.
      *
-     * @return A new builder of {@link LZMACompressorOutputStream}.
+     * @return A new builder of {@link XZCompressorInputStream}.
      * @since 1.28.0
      */
     public static Builder builder() {

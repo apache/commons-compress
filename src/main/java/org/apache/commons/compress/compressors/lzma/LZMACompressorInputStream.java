@@ -45,7 +45,7 @@ public class LZMACompressorInputStream extends CompressorInputStream implements 
      * For example:
      * </p>
      * <pre>{@code
-     * LZMACompressorOutputStream s = LZMACompressorInputStream.builder()
+     * LZMACompressorInputStream s = LZMACompressorInputStream.builder()
      *   .setPath(path)
      *   .get();
      * }
@@ -74,9 +74,13 @@ public class LZMACompressorInputStream extends CompressorInputStream implements 
 
         /**
          * Sets a working memory threshold in kibibytes (KiB).
+         * <p>
+         * The default is {@code -1}: no memory limit is imposed and the stream may allocate as much memory as the LZMA dictionary size requires - up to about
+         * 2 GiB. Any negative value other than {@code -1} makes the underlying LZMA decoder reject every stream with a {@link MemoryLimitException}.
+         * </p>
          *
-         * @param memoryLimitKiB Sets a working memory threshold in kibibytes (KiB). Processing throws MemoryLimitException if memory use is above this.
-         *                       threshold.
+         * @param memoryLimitKiB Sets a working memory threshold in kibibytes (KiB), or {@code -1} to impose no memory limit. Processing throws
+         *                       MemoryLimitException if memory use is above this threshold.
          * @return {@code this} instance.
          */
         public Builder setMemoryLimitKiB(final int memoryLimitKiB) {
@@ -86,9 +90,9 @@ public class LZMACompressorInputStream extends CompressorInputStream implements 
     }
 
     /**
-     * Constructs a new builder of {@link LZMACompressorOutputStream}.
+     * Constructs a new builder of {@link LZMACompressorInputStream}.
      *
-     * @return A new builder of {@link LZMACompressorOutputStream}.
+     * @return A new builder of {@link LZMACompressorInputStream}.
      * @since 1.28.0
      */
     public static Builder builder() {
@@ -136,7 +140,8 @@ public class LZMACompressorInputStream extends CompressorInputStream implements 
      * Creates a new input stream that decompresses LZMA-compressed data from the specified input stream.
      *
      * @param inputStream     where to read the compressed data.
-     * @param memoryLimitKiB Sets a working memory threshold in kibibytes (KiB). Processing throws MemoryLimitException if memory use is above this threshold.
+     * @param memoryLimitKiB Sets a working memory threshold in kibibytes (KiB), or {@code -1} to impose no memory limit. Processing throws MemoryLimitException
+     *                       if memory use is above this threshold.
      * @throws IOException if the input is not in the .lzma format, the input is corrupt or truncated, the .lzma headers specify sizes that are not supported by
      *                     this implementation, or the underlying {@code inputStream} throws an exception.
      *
