@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
@@ -121,6 +122,16 @@ class BlockLZ4CompressorOutputStreamTest {
         final ByteArrayOutputStream bos = new ByteArrayOutputStream();
         p.writeTo(bos);
         assertArrayEquals(new byte[] { 0, 1, 0 }, bos.toByteArray());
+    }
+
+    @Test
+    void testEmptyInput() throws IOException {
+        // an empty block is a single token with no literals and no back-reference
+        final byte[] compressed = compress(0);
+        assertArrayEquals(new byte[] { 0 }, compressed);
+        try (BlockLZ4CompressorInputStream in = new BlockLZ4CompressorInputStream(new ByteArrayInputStream(compressed))) {
+            assertEquals(-1, in.read());
+        }
     }
 
     @Test
