@@ -30,6 +30,17 @@ import org.junit.jupiter.api.Test;
  */
 class GzipUtilsTest {
 
+    /**
+     * U+0130 (LATIN CAPITAL LETTER I WITH DOT ABOVE) lower-cases to two chars in {@code Locale.ROOT}, so the lower-cased name is longer than the original.
+     */
+    @Test
+    void testFileNameWhoseLowerCaseIsLonger() {
+        assertEquals("\u0130STANBUL.tar", GzipUtils.getUncompressedFileName("\u0130STANBUL.tgz"));
+        assertEquals("\u0130STANBUL.tgz", GzipUtils.getCompressedFileName("\u0130STANBUL.tar"));
+        assertEquals("\u0130\u0130\u0130\u0130", GzipUtils.getUncompressedFileName("\u0130\u0130\u0130\u0130.gz"));
+        assertTrue(GzipUtils.isCompressedFileName("\u0130.gz"));
+    }
+
     @SuppressWarnings("deprecation")
     @Test
     void testGetCompressedFileName() {
