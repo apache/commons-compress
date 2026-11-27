@@ -1093,6 +1093,9 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
     }
 
     private InputStream getCurrentStream() throws IOException {
+        if (currentEntryIndex < 0) {
+            throw new ArchiveException("No current 7z entry (call getNextEntry() first).");
+        }
         if (archive.files[currentEntryIndex].getSize() == 0) {
             return new ByteArrayInputStream(ArrayUtils.EMPTY_BYTE_ARRAY);
         }
