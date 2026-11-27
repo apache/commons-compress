@@ -166,7 +166,8 @@ public final class FramedSnappyCompressorInputStreamTest extends AbstractTest {
         final File o = newTempFile("COMPRESS-358.raw");
         try (InputStream is = newInputStream("COMPRESS-358.iwa");
                 FramedSnappyCompressorInputStream in = new FramedSnappyCompressorInputStream(is, 1 << 16, FramedSnappyDialect.IWORK_ARCHIVE);) {
-            Files.copy(in, o.toPath());
+            final long copied = Files.copy(in, o.toPath());
+            assertEquals(copied, in.getUncompressedCount());
         }
         try (InputStream a = Files.newInputStream(o.toPath());
                 InputStream e = newInputStream("COMPRESS-358.uncompressed")) {
@@ -184,6 +185,7 @@ public final class FramedSnappyCompressorInputStreamTest extends AbstractTest {
             IOUtils.copy(in, out);
             assertArrayEquals(new byte[] { '1', '2', '3', '4', '5', '6', '7', '8', '9', '5', '6', '7', '8', '9', '5', '6', '7', '8', '9', '5', '6', '7', '8',
                     '9', '5', '6', '7', '8', '9', 10, '1', '2', '3', '4', '1', '2', '3', '4', }, out.toByteArray());
+            assertEquals(out.size(), in.getUncompressedCount());
         }
     }
 

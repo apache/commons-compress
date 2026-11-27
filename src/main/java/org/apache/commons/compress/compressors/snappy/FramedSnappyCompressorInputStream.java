@@ -92,6 +92,7 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream imp
     }
 
     private long unreadBytes;
+    private long uncompressedBytesRead;
 
     private final BoundedInputStream countingStream;
 
@@ -194,6 +195,12 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream imp
 
     /** {@inheritDoc} */
     @Override
+    public long getUncompressedCount() {
+        return uncompressedBytesRead;
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public int read() throws IOException {
         return read(oneByte, 0, 1) == -1 ? -1 : oneByte[0] & 0xFF;
     }
@@ -211,6 +218,9 @@ public class FramedSnappyCompressorInputStream extends CompressorInputStream imp
                 return -1;
             }
             read = readOnce(b, off, len);
+        }
+        if (read > 0) {
+            uncompressedBytesRead += read;
         }
         return read;
     }
