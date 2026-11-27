@@ -110,7 +110,7 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream<ZstdOutpu
          * @return {@code this} instance.
          * @see ZstdConstants#ZSTD_CHAINLOG_MIN
          * @see ZstdConstants#ZSTD_CHAINLOG_MAX
-         * @see <a href="https://facebook.github.io/zstd/zstd_manual.html#Chapter5">Zstd manual Chapter5</a>
+         * @see <a href="https://meta.github.io/zstd/zstd_manual.html#Chapter5">Zstd manual Chapter5</a>
          * @see <a href="https://github.com/facebook/zstd/blob/dev/lib/zstd.h">zstd.h</a>
          */
         public Builder setChainLog(final int chainLog) {
@@ -126,7 +126,7 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream<ZstdOutpu
          *
          * @param checksum Whether a 32-bits checksum of content is written at end of frame.
          * @return {@code this} instance.
-         * @see <a href="https://facebook.github.io/zstd/zstd_manual.html#Chapter5">Zstd manual Chapter5</a>
+         * @see <a href="https://meta.github.io/zstd/zstd_manual.html#Chapter5">Zstd manual Chapter5</a>
          * @see <a href="https://github.com/facebook/zstd/blob/dev/lib/zstd.h">zstd.h</a>
          */
         public Builder setChecksum(final boolean checksum) {
@@ -146,7 +146,7 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream<ZstdOutpu
          *
          * @param closeFrameOnFlush whether to close the frame on flush.
          * @return {@code this} instance.
-         * @see <a href="https://facebook.github.io/zstd/zstd_manual.html#Chapter5">Zstd manual Chapter5</a>
+         * @see <a href="https://meta.github.io/zstd/zstd_manual.html#Chapter5">Zstd manual Chapter5</a>
          * @see <a href="https://github.com/facebook/zstd/blob/dev/lib/zstd.h">zstd.h</a>
          */
         public Builder setCloseFrameOnFlush(final boolean closeFrameOnFlush) {
@@ -170,7 +170,7 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream<ZstdOutpu
          *
          * @param dict The dictionary buffer.
          * @return {@code this} instance.
-         * @see <a href="https://facebook.github.io/zstd/zstd_manual.html#Chapter12">Zstd manual Chapter12</a>
+         * @see <a href="https://meta.github.io/zstd/zstd_manual.html#Chapter12">Zstd manual Chapter12</a>
          * @see <a href="https://github.com/facebook/zstd/blob/dev/lib/zstd.h">zstd.h</a>
          */
         public Builder setDict(final byte[] dict) {
@@ -193,7 +193,7 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream<ZstdOutpu
          * @return {@code this} instance.
          * @see ZstdConstants#ZSTD_HASHLOG_MIN
          * @see ZstdConstants#ZSTD_HASHLOG_MAX
-         * @see <a href="https://facebook.github.io/zstd/zstd_manual.html#Chapter5">Zstd manual Chapter5</a>
+         * @see <a href="https://meta.github.io/zstd/zstd_manual.html#Chapter5">Zstd manual Chapter5</a>
          * @see <a href="https://github.com/facebook/zstd/blob/dev/lib/zstd.h">zstd.h</a>
          */
         public Builder setHashLog(final int hashLog) {
@@ -216,7 +216,7 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream<ZstdOutpu
          *
          * @param jobSize Size of a compression job.
          * @return {@code this} instance.
-         * @see <a href="https://facebook.github.io/zstd/zstd_manual.html#Chapter5">Zstd manual Chapter5</a>
+         * @see <a href="https://meta.github.io/zstd/zstd_manual.html#Chapter5">Zstd manual Chapter5</a>
          * @see <a href="https://github.com/facebook/zstd/blob/dev/lib/compress/zstdmt_compress.h">zstdmt_compress.h</a>
          */
         public Builder setJobSize(final int jobSize) {
@@ -242,7 +242,7 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream<ZstdOutpu
          * @see ZstdConstants#ZSTD_CLEVEL_DEFAULT
          * @see ZstdConstants#ZSTD_CLEVEL_MIN
          * @see ZstdConstants#ZSTD_CLEVEL_MAX
-         * @see <a href="https://facebook.github.io/zstd/zstd_manual.html#Chapter5">Zstd manual Chapter5</a>
+         * @see <a href="https://meta.github.io/zstd/zstd_manual.html#Chapter5">Zstd manual Chapter5</a>
          * @see <a href="https://github.com/facebook/zstd/blob/dev/lib/zstd.h">zstd.h</a>
          */
         public Builder setLevel(final int level) {
@@ -264,7 +264,7 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream<ZstdOutpu
          *
          * @param minMatch minimum match size for long distance matcher.
          * @return {@code this} instance.
-         * @see <a href="https://facebook.github.io/zstd/zstd_manual.html#Chapter5">Zstd manual Chapter5</a>
+         * @see <a href="https://meta.github.io/zstd/zstd_manual.html#Chapter5">Zstd manual Chapter5</a>
          * @see <a href="https://github.com/facebook/zstd/blob/dev/lib/zstd.h">zstd.h</a>
          */
         public Builder setMinMatch(final int minMatch) {
@@ -309,7 +309,7 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream<ZstdOutpu
          *
          * @param overlapLog The overlap size, as a fraction of window size.
          * @return {@code this} instance.
-         * @see <a href="https://facebook.github.io/zstd/zstd_manual.html#Chapter5">Zstd manual Chapter5</a>
+         * @see <a href="https://meta.github.io/zstd/zstd_manual.html#Chapter5">Zstd manual Chapter5</a>
          * @see <a href="https://github.com/facebook/zstd/blob/dev/lib/zstd.h">zstd.h</a>
          */
         public Builder setOverlapLog(final int overlapLog) {
@@ -330,7 +330,7 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream<ZstdOutpu
          * @return {@code this} instance.
          * @see ZstdConstants#ZSTD_SEARCHLOG_MIN
          * @see ZstdConstants#ZSTD_SEARCHLOG_MAX
-         * @see <a href="https://facebook.github.io/zstd/zstd_manual.html#Chapter5">Zstd manual Chapter5</a>
+         * @see <a href="https://meta.github.io/zstd/zstd_manual.html#Chapter5">Zstd manual Chapter5</a>
          * @see <a href="https://github.com/facebook/zstd/blob/dev/lib/zstd.h">zstd.h</a>
          */
         public Builder setSearchLog(final int searchLog) {
@@ -360,7 +360,7 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream<ZstdOutpu
          *
          * @param strategy The {@code ZSTD_strategy} from the C enum definition.
          * @return {@code this} instance.
-         * @see <a href="https://facebook.github.io/zstd/zstd_manual.html#Chapter5">Zstd manual Chapter5</a>
+         * @see <a href="https://meta.github.io/zstd/zstd_manual.html#Chapter5">Zstd manual Chapter5</a>
          * @see <a href="https://github.com/facebook/zstd/blob/dev/lib/zstd.h">zstd.h</a>
          */
         public Builder setStrategy(final int strategy) {
@@ -390,7 +390,7 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream<ZstdOutpu
          *
          * @param targetLength A value that depends on the strategy, see {@code ZSTD_c_targetLength}.
          * @return {@code this} instance.
-         * @see <a href="https://facebook.github.io/zstd/zstd_manual.html#Chapter5">Zstd manual Chapter5</a>
+         * @see <a href="https://meta.github.io/zstd/zstd_manual.html#Chapter5">Zstd manual Chapter5</a>
          * @see <a href="https://github.com/facebook/zstd/blob/dev/lib/zstd.h">zstd.h</a>
          */
         public Builder setTargetLength(final int targetLength) {
@@ -416,7 +416,7 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream<ZstdOutpu
          * @return {@code this} instance.
          * @see ZstdConstants#ZSTD_WINDOWLOG_MIN
          * @see ZstdConstants#ZSTD_WINDOWLOG_MAX
-         * @see <a href="https://facebook.github.io/zstd/zstd_manual.html#Chapter5">Zstd manual Chapter5</a>
+         * @see <a href="https://meta.github.io/zstd/zstd_manual.html#Chapter5">Zstd manual Chapter5</a>
          * @see <a href="https://github.com/facebook/zstd/blob/dev/lib/zstd.h">zstd.h</a>
          */
         public Builder setWindowLog(final int windowLog) {
@@ -441,7 +441,7 @@ public class ZstdCompressorOutputStream extends CompressorOutputStream<ZstdOutpu
          *
          * @param workers How many threads will be spawned to compress in parallel.
          * @return {@code this} instance.
-         * @see <a href="https://facebook.github.io/zstd/zstd_manual.html#Chapter5">Zstd manual Chapter5</a>
+         * @see <a href="https://meta.github.io/zstd/zstd_manual.html#Chapter5">Zstd manual Chapter5</a>
          * @see <a href="https://github.com/facebook/zstd/blob/dev/lib/zstd.h">zstd.h</a>
          */
         public Builder setWorkers(final int workers) {
