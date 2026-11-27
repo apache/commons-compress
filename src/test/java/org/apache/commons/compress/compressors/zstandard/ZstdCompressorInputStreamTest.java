@@ -21,8 +21,10 @@ package org.apache.commons.compress.compressors.zstandard;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -39,6 +41,37 @@ import com.github.luben.zstd.NoPool;
 import com.github.luben.zstd.RecyclingBufferPool;
 
 class ZstdCompressorInputStreamTest extends AbstractTest {
+
+    private static byte[] compress(final byte[] data, final byte[] dict) throws IOException {
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
+        try (ZstdCompressorOutputStream zos = ZstdCompressorOutputStream.builder().setOutputStream(out).setDict(dict).get()) {
+            zos.write(data);
+        }
+        return out.toByteArray();
+    }
+
+    @Test
+    void testDictionary() throws IOException {
+        final byte[] dict = readAllBytes("brotli.dictionary.dict");
+        final byte[] data = readAllBytes("brotli.dictionary.uncompressed");
+        final byte[] compressed = compress(data, dict);
+        assertTrue(compressed.length < compress(data, null).length);
+        try (ZstdCompressorInputStream in = ZstdCompressorInputStream.builder()
+                .setInputStream(new ByteArrayInputStream(compressed))
+                .setDict(dict)
+                .get()) {
+            assertArrayEquals(data, IOUtils.toByteArray(in));
+            assertEquals(compressed.length, in.getCompressedCount());
+        }
+    }
+
+    @Test
+    void testDictionaryRequired() throws IOException {
+        final byte[] compressed = compress(readAllBytes("brotli.dictionary.uncompressed"), readAllBytes("brotli.dictionary.dict"));
+        try (ZstdCompressorInputStream in = ZstdCompressorInputStream.builder().setInputStream(new ByteArrayInputStream(compressed)).get()) {
+            assertThrows(IOException.class, () -> IOUtils.toByteArray(in));
+        }
+    }
 
     @Test
     void testCachingIsEnabledByDefaultAndZstdUtilsPresent() {
