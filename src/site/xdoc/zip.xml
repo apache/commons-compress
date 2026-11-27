@@ -600,6 +600,80 @@
 
       </subsection>
 
+      <subsection name="UNIX hard links" id="hardlinks">
+
+        <p>Starting with Compress 1.29.0, <code>ZipFile</code> can resolve
+          regular-file hard links using the PKZIP UNIX convention: UNIX host,
+          regular-file mode, external-file-attribute bit <code>0x00000800</code>,
+          and a target pathname in the PKWARE <code>0x000d</code> extra field.
+          References must be unencrypted, empty entries using the Store method.
+          The attribute bit is an observed compatibility convention, not an explicit
+          assignment in the public APPNOTE. It is separate from the general-purpose
+          UTF-8 flag and from ASi <code>0x756e</code> symbolic links.</p>
+
+        <p><code>ZipArchiveEntry.isUnixHardLink()</code> identifies the UNIX marker.
+          <code>ZipFile.getUnixHardLink(entry)</code> decodes the immediate target;
+          <code>resolveUnixHardLink(entry)</code> returns the terminal regular-file
+          member. <code>resolveUnixHardLinks()</code> resolves all references in one
+          pass, reusing resolved chain suffixes. Its result is a snapshot; call again
+          after changing entries. Targets are archive-root-relative member names, matched exactly.
+          Forward references and chains are supported. Missing or duplicate target
+          names, cycles, malformed metadata and non-regular targets cause an
+          <code>IOException</code>. Target names are decoded strictly: malformed or
+          unmappable bytes are rejected instead of replaced. Conflicting local and central targets are rejected.
+          A central target takes precedence; local data supplies the target when the
+          central field has no pathname.</p>
+
+        <p>By default, <code>getInputStream(entry)</code> reads the stored body, including
+          the empty body of a hard-link reference. Enable resolved content reads with:</p>
+
+        <source><![CDATA[
+try (ZipFile zip = ZipFile.builder().setPath(archivePath)
+        .setResolveUnixHardLinks(true).get()) {
+    ZipArchiveEntry entry = zip.getEntry("link");
+    ZipArchiveEntry contentEntry = zip.resolveUnixHardLink(entry);
+    // entry still has the reference's stored size and CRC.
+    // contentEntry describes the bytes returned by getInputStream(entry).
+    try (InputStream in = zip.getInputStream(entry)) {
+        // consume the target's contents
+    }
+}
+]]></source>
+
+        <p>The entry's size, compressed size, CRC and offsets always describe its
+          stored representation. Raw streams and <code>copyRawEntries</code> preserve
+          that representation regardless of the resolved-content option.
+          With the option enabled, <code>canReadEntryData</code> also considers the
+          target and returns false when resolution fails.</p>
+
+        <p>The included <code>Expander</code> automatically restores actual filesystem
+          hard links when given a <code>ZipFile</code>, file, path or seekable channel.
+          It extracts payload files first, then creates links to those extracted files.
+          Chain resolution reuses terminal targets within each extraction pass.
+          It never resolves a reference against unrelated existing files or silently
+          substitutes copies if link creation fails. Archives containing recognized
+          hard links reject duplicate or conflicting output paths and symlink traversal
+          through existing destination paths. Existing regular output files are replaced
+          without truncating their old inodes. The destination must not be modified
+          concurrently. Symlink and device extraction behavior is unchanged.</p>
+
+        <p>Some historical UNIX archives incorrectly declare the FAT host. To read these,
+          enable <code>ZipFile.Builder.setAllowLegacyUnixHardLinks(true)</code>, which
+          additionally requires UNIX regular-file mode bits, the external marker and
+          a <code>0x000d</code> field. Pass that configured <code>ZipFile</code> to
+          <code>Expander</code> for extraction. This compatibility option defaults to
+          false and does not apply to NTFS entries, where attribute <code>0x800</code>
+          means compressed.</p>
+
+        <p><code>ZipArchiveInputStream</code> cannot reliably recognize this encoding:
+          external attributes and sometimes the target exist only in the central
+          directory. InputStream-based <code>Expander</code> overloads retain their
+          existing behavior. Use seekable input for hard-link extraction. If local
+          headers are ignored, references with local-only target metadata cannot be
+          resolved. Archiving does not automatically detect hardlinked input files.</p>
+
+      </subsection>
+
       <subsection name="Parallel zip creation" id="parallel">
 
         <p>Starting with Compress 1.10 there is now built-in support for

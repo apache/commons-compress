@@ -1075,6 +1075,22 @@ public class ZipArchiveEntry extends ZipEntry implements ArchiveEntry, EntryStre
     }
 
     /**
+     * Tests whether this UNIX regular-file entry carries the PKZIP hard link marker in its external attributes.
+     * <p>
+     * This does not validate or resolve the target in the PKWARE {@code 0x000d} extra field. Use
+     * {@link ZipFile#getUnixHardLink(ZipArchiveEntry)} or {@link ZipFile#resolveUnixHardLink(ZipArchiveEntry)} for that purpose.
+     * External attributes are not available through {@link ZipArchiveInputStream}. Historical archives declaring the FAT platform
+     * require {@link ZipFile.Builder#setAllowLegacyUnixHardLinks(boolean)} and are not recognized by this method.
+     * </p>
+     *
+     * @return whether the UNIX hard link marker is set on a regular-file entry.
+     * @since 1.29.0
+     */
+    public boolean isUnixHardLink() {
+        return UnixHardLink.isMarked(this, false);
+    }
+
+    /**
      * Tests whether this entry represents a Unix symlink, in which case the entry's content contains the target path for the symlink.
      *
      * <p>

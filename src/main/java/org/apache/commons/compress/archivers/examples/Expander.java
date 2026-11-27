@@ -457,12 +457,25 @@ public class Expander {
     /**
      * Expands {@code archive} into {@code targetDirectory}.
      *
+     * <p>
+     * Since 1.29.0, recognized UNIX regular-file hard links are restored with {@link Files#createLink(Path, Path)}. Targets may
+     * precede or follow references. This does not require {@link ZipFile.Builder#setResolveUnixHardLinks(boolean)}; historical
+     * FAT-platform references require {@link ZipFile.Builder#setAllowLegacyUnixHardLinks(boolean)} on the supplied archive.
+     * Archives with recognized hard links reject duplicate or conflicting output paths and existing symbolic links in destination
+     * paths. Existing regular files are replaced without truncating their previous inodes. Missing or invalid targets and failures
+     * to create links cause an IOException; contents are not copied as a fallback. The destination must not be modified concurrently.
+     * </p>
+     *
      * @param archive         The file to expand.
      * @param targetDirectory The target directory, may be null to simulate output to dev/null on Linux and NUL on Windows.
      * @throws IOException if an I/O error occurs.
      * @since 1.22
      */
     public void expand(final ZipFile archive, final Path targetDirectory) throws IOException {
+        // Hard links need a separate payload pass so targets can appear after references.
+        if (ZipHardLinkExpander.expandIfNeeded(archive, targetDirectory)) {
+            return;
+        }
         final Enumeration<ZipArchiveEntry> entries = archive.getEntries();
         expand(() -> {
             ZipArchiveEntry next = entries.hasMoreElements() ? entries.nextElement() : null;
