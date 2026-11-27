@@ -136,6 +136,10 @@ final class ExplodingInputStream extends InputStream implements InputStreamStati
             final int distance = distanceHigh << distanceLowSize | distanceLow;
 
             int length = lengthTree.read(bits);
+            if (length == -1) {
+                // end of stream reached in the length code, nothing left to decode
+                return;
+            }
             if (length == 63) {
                 final long nextByte = bits.nextBits(8);
                 if (nextByte == -1) {
