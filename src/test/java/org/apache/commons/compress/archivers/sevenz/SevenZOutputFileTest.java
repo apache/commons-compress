@@ -46,6 +46,7 @@ import org.apache.commons.compress.PasswordRequiredException;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.apache.commons.compress.utils.TimeUtilsTest;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.channels.ByteArraySeekableByteChannel;
 import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.Test;
@@ -694,5 +695,32 @@ class SevenZOutputFileTest extends AbstractTest {
 
     private Boolean verifyFile(final SevenZFile archive, final int index, final Iterable<SevenZMethodConfiguration> methods) throws Exception {
         return verifyFile(archive, index, 1, methods);
+    }
+
+    /**
+     * Tests that an entry cannot be added or written after the archive is finished, which used to overwrite the data of the first entry.
+     */
+    @Test
+    void testPutArchiveEntryAfterFinish() throws Exception {
+        final ByteArraySeekableByteChannel output = new ByteArraySeekableByteChannel();
+        try (SevenZOutputFile outArchive = new SevenZOutputFile(output)) {
+            outArchive.setContentCompression(SevenZMethod.COPY);
+            final SevenZArchiveEntry entry = new SevenZArchiveEntry();
+            entry.setName("a.txt");
+            outArchive.putArchiveEntry(entry);
+            outArchive.write(new byte[] { 'A', 'A', 'A' });
+            outArchive.closeArchiveEntry();
+            outArchive.finish();
+            final SevenZArchiveEntry late = new SevenZArchiveEntry();
+            late.setName("b.txt");
+            assertThrows(IllegalStateException.class, () -> outArchive.putArchiveEntry(late));
+            assertThrows(ArchiveException.class, () -> outArchive.write(new byte[] { 'B', 'B', 'B' }));
+        }
+        try (SevenZFile archive = SevenZFile.builder().setByteArray(output.toByteArray()).get()) {
+            final SevenZArchiveEntry entry = archive.getNextEntry();
+            assertEquals("a.txt", entry.getName());
+            assertArrayEquals(new byte[] { 'A', 'A', 'A' }, IOUtils.toByteArray(archive.getInputStream(entry)));
+            assertNull(archive.getNextEntry());
+        }
     }
 }

@@ -351,6 +351,9 @@ public class SevenZOutputFile implements Closeable {
      * otherwise.
      */
     private OutputStream getCurrentOutputStream() throws IOException {
+        if (finished) {
+            throw new ArchiveException("This archive has already been finished");
+        }
         if (currentOutputStream == null) {
             currentOutputStream = setupFileOutputStream();
         }
@@ -376,9 +379,13 @@ public class SevenZOutputFile implements Closeable {
      * The caller must then write the content to the archive and call {@link #closeArchiveEntry()} to complete the process.
      *
      * @param archiveEntry describes the entry.
+     * @throws IllegalStateException if this archive has already been finished.
      * @since 1.25.0
      */
     public void putArchiveEntry(final SevenZArchiveEntry archiveEntry) {
+        if (finished) {
+            throw new IllegalStateException("This archive has already been finished");
+        }
         files.add(archiveEntry);
     }
 
