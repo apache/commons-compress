@@ -24,6 +24,7 @@ import java.io.InputStream;
 
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.utils.InputStreamStatistics;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.apache.commons.io.input.CloseShieldInputStream;
 
@@ -176,11 +177,11 @@ final class ExplodingInputStream extends InputStream implements InputStreamStati
             // we do not want to close in
             try (BoundedInputStream cis = BoundedInputStream.builder().setInputStream(CloseShieldInputStream.wrap(in)).get()) {
                 if (numberOfTrees == 3) {
-                    literalTree = BinaryTree.decode(cis, 256);
+                    literalTree = readBinaryTree(cis, 256);
                 }
 
-                lengthTree = BinaryTree.decode(cis, 64);
-                distanceTree = BinaryTree.decode(cis, 64);
+                lengthTree = readBinaryTree(cis, 64);
+                distanceTree = readBinaryTree(cis, 64);
                 treeSizes += cis.getCount();
             }
 
@@ -203,6 +204,70 @@ final class ExplodingInputStream extends InputStream implements InputStreamStati
             uncompressedCount++;
         }
         return ret;
+    }
+
+    /**
+     * Reads the specified number of code lengths from the input stream and constructs a binary tree from them.
+     *
+     * @param inputStream the input stream to read the code lengths from.
+     * @param numberOfCodeLengths the number of code lengths to read.
+     * @return the binary tree.
+     * @throws IOException if an I/O error occurs.
+     */
+    static BinaryTree readBinaryTree(final InputStream inputStream, final int numberOfCodeLengths) throws IOException {
+        return BinaryTree.fromCodeLengths(readCodeLengths(inputStream, numberOfCodeLengths));
+    }
+
+    /**
+     * Reads the code lengths from the specified stream.
+     * <p>
+     * The code lengths are stored in a run length encoded format, where each byte encodes the number of values (upper 4 bits) for a code length (lower 4
+     * bits). The first byte contains the size of the encoded code lengths minus one.
+     * </p>
+     * <p>
+     * Both the number of values and the code length are stored minus one, so each byte encodes 1 to 16 values with a code length between 1 and 16
+     * (inclusive).
+     * </p>
+     *
+     * @param inputStream the stream to read the code lengths from.
+     * @param numberOfCodeLengths the number of code lengths to read.
+     * @return array of code lengths, each value between 1 and 16 (inclusive).
+     * @throws IOException if an I/O error occurs.
+     */
+    static int[] readCodeLengths(final InputStream inputStream, final int numberOfCodeLengths) throws IOException {
+        if (numberOfCodeLengths <= 0) {
+            throw new IllegalArgumentException("numberOfCodeLengths must be bigger than 0, is " + numberOfCodeLengths);
+        }
+
+        // The first byte contains the size of the encoded code lengths minus one
+        final int size = inputStream.read() + 1;
+        if (size == 0) {
+            throw new ArchiveException("Cannot read the size of the encoded tree, unexpected end of stream");
+        }
+
+        // Read the encoded code lengths from the stream
+        final byte[] encodedCodeLengths = IOUtils.toByteArray(inputStream, size);
+
+        // Decode the code lengths
+        final int[] codeLengths = new int[numberOfCodeLengths];
+        int pos = 0;
+        for (final byte b : encodedCodeLengths) {
+            // Each byte encodes the number of values (upper 4 bits) for a code length (lower 4 bits)
+            final int numberOfValues = ((b & 0xF0) >> 4) + 1;
+            if (pos + numberOfValues > numberOfCodeLengths) {
+                throw new ArchiveException("Number of values exceeds given total number of values");
+            }
+            final int codeLength = (b & 0x0F) + 1;
+            for (int j = 0; j < numberOfValues; j++) {
+                codeLengths[pos++] = codeLength;
+            }
+        }
+
+        if (pos != numberOfCodeLengths) {
+            throw new ArchiveException("Number of values does not match given total number of values");
+        }
+
+        return codeLengths;
     }
 
 }

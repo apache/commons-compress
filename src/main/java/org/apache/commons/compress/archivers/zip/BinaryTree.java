@@ -19,9 +19,7 @@
 
 package org.apache.commons.compress.archivers.zip;
 
-import java.io.EOFException;
 import java.io.IOException;
-import java.io.InputStream;
 
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.lang3.ArrayFill;
@@ -40,59 +38,47 @@ final class BinaryTree {
     private static final int NODE = -2;
 
     /**
-     * Decodes the packed binary tree from the specified stream.
+     * Creates a binary tree from the specified array of code lengths.
+     * <p>
+     * Each code length is the number of bits of the code for the symbol at that index, and must be between 1 and 16 (inclusive).
+     * </p>
+     *
+     * @param codeLengths code length per symbol, each value must be between 1 and 16 (inclusive).
+     * @return the binary tree.
+     * @throws ArchiveException if the code lengths array is empty, or if a code length is less than 1 or greater than 16.
      */
-    static BinaryTree decode(final InputStream inputStream, final int totalNumberOfValues) throws IOException {
-        if (totalNumberOfValues < 0) {
-            throw new IllegalArgumentException("totalNumberOfValues must be bigger than 0, is " + totalNumberOfValues);
-        }
-        // the first byte contains the size of the structure minus one
-        final int size = inputStream.read() + 1;
-        if (size == 0) {
-            throw new ArchiveException("Cannot read the size of the encoded tree, unexpected end of stream");
+    static BinaryTree fromCodeLengths(final int[] codeLengths) throws ArchiveException {
+        if (codeLengths.length == 0) {
+            throw new ArchiveException("Empty code length list");
         }
 
-        final byte[] encodedTree = org.apache.commons.compress.utils.IOUtils.readRange(inputStream, size);
-        if (encodedTree.length != size) {
-            throw new EOFException();
-        }
-
-        /* The maximum bit length for a value (16 or lower) */
-        int maxLength = 0;
-
-        final int[] originalBitLengths = new int[totalNumberOfValues];
-        int pos = 0;
-        for (final byte b : encodedTree) {
-            // each byte encodes the number of values (upper 4 bits) for a bit length (lower 4 bits)
-            final int numberOfValues = ((b & 0xF0) >> 4) + 1;
-            if (pos + numberOfValues > totalNumberOfValues) {
-                throw new ArchiveException("Number of values exceeds given total number of values");
-            }
-            final int bitLength = (b & 0x0F) + 1;
-
-            for (int j = 0; j < numberOfValues; j++) {
-                originalBitLengths[pos++] = bitLength;
+        // validate and find max length
+        int maxCodeLength = 0;
+        for (int i = 0; i < codeLengths.length; i++) {
+            final int len = codeLengths[i];
+            if (len < 1 || len > 16) {
+                throw new ArchiveException(
+                        String.format("Invalid code length at symbol %d: %d (expected in [1, 16])", i, len));
             }
 
-            maxLength = Math.max(maxLength, bitLength);
+            maxCodeLength = Math.max(maxCodeLength, len);
         }
 
-        final int oBitLengths = originalBitLengths.length;
-        // sort the array of bit lengths and memorize the permutation used to restore the order of the codes
-        final int[] permutation = new int[oBitLengths];
+        // sort the array of code lengths and memorize the permutation used to restore the order of the codes
+        final int[] permutation = new int[codeLengths.length];
         for (int k = 0; k < permutation.length; k++) {
             permutation[k] = k;
         }
 
         int c = 0;
-        final int[] sortedBitLengths = new int[oBitLengths];
-        for (int k = 0; k < oBitLengths; k++) {
+        final int[] sortedCodeLengths = new int[codeLengths.length];
+        for (int k = 1; k <= maxCodeLength; k++) {
             // iterate over the values
-            for (int l = 0; l < oBitLengths; l++) {
+            for (int l = 0; l < codeLengths.length; l++) {
                 // look for the value in the original array
-                if (originalBitLengths[l] == k) {
+                if (codeLengths[l] == k) {
                     // put the value at the current position in the sorted array...
-                    sortedBitLengths[c] = k;
+                    sortedCodeLengths[c] = k;
 
                     // ...and memorize the permutation
                     permutation[c] = l;
@@ -105,27 +91,25 @@ final class BinaryTree {
         // decode the values of the tree
         int code = 0;
         int codeIncrement = 0;
-        int lastBitLength = 0;
+        int lastCodeLength = 0;
 
-        final int[] codes = new int[totalNumberOfValues];
+        final int[] codes = new int[codeLengths.length];
 
-        for (int i = totalNumberOfValues - 1; i >= 0; i--) {
+        for (int i = codeLengths.length - 1; i >= 0; i--) {
             code += codeIncrement;
-            if (sortedBitLengths[i] != lastBitLength) {
-                lastBitLength = sortedBitLengths[i];
-                codeIncrement = 1 << 16 - lastBitLength;
+            if (sortedCodeLengths[i] != lastCodeLength) {
+                lastCodeLength = sortedCodeLengths[i];
+                codeIncrement = 1 << 16 - lastCodeLength;
             }
             codes[permutation[i]] = code;
         }
 
         // build the tree
-        final BinaryTree tree = new BinaryTree(maxLength);
+        final BinaryTree tree = new BinaryTree(maxCodeLength);
 
         for (int k = 0; k < codes.length; k++) {
-            final int bitLength = originalBitLengths[k];
-            if (bitLength > 0) {
-                tree.addLeaf(0, Integer.reverse(codes[k] << 16), bitLength, k);
-            }
+            final int codeLength = codeLengths[k];
+            tree.addLeaf(0, Integer.reverse(codes[k] << 16), codeLength, k);
         }
 
         return tree;
