@@ -35,7 +35,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.compress.AbstractTest;
@@ -59,7 +61,7 @@ class SparseFilesTest extends AbstractTest {
     @TempDir
     private static Path tempDir;
 
-    private static void appendPadded(final ByteArrayOutputStream out, final byte[] data) {
+    static void appendPadded(final ByteArrayOutputStream out, final byte[] data) {
         out.write(data, 0, data.length);
         final int rem = data.length % TarConstants.DEFAULT_RCDSIZE;
         if (rem != 0) {
@@ -67,7 +69,7 @@ class SparseFilesTest extends AbstractTest {
         }
     }
 
-    private static String paxRecord(final String key, final String value) {
+    static String paxRecord(final String key, final String value) {
         final int size = key.length() + value.length() + 3; // ' ', '=', '\n'
         int len = size + Integer.toString(size).length();
         while (len != size + Integer.toString(len).length()) {
@@ -90,7 +92,7 @@ class SparseFilesTest extends AbstractTest {
         TestArchiveGenerator.createSparseFileTestCases(tempDir);
     }
 
-    private static byte[] ustarHeader(final String name, final long size, final char typeFlag) {
+    static byte[] ustarHeader(final String name, final long size, final char typeFlag) {
         final byte[] header = new byte[TarConstants.DEFAULT_RCDSIZE];
         putField(header, 0, 100, name);
         putOctal(header, 100, 8, 0644);
@@ -624,5 +626,62 @@ class SparseFilesTest extends AbstractTest {
             assertPaxGNUEntry(entries.get(1), "0.1");
             assertPaxGNUEntry(entries.get(2), "1.0");
         }
+    }
+
+    // Builds a PAX GNU 1.0 sparse entry whose sparse map is stored at the start of the entry body. The map claims a single 512 byte
+    // data block; dataRecords is the number of data records that really follow the map inside the entry's stored size.
+    private byte[] pax1xSparseArchive(final int dataRecords) {
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        final String pax = paxRecord("GNU.sparse.major", "1") + paxRecord("GNU.sparse.minor", "0") + paxRecord("GNU.sparse.name", "sparse.bin")
+                + paxRecord("GNU.sparse.realsize", "512");
+        final byte[] paxData = pax.getBytes(StandardCharsets.US_ASCII);
+        appendPadded(bos, ustarHeader("PaxHeaders/sparse.bin", paxData.length, 'x'));
+        appendPadded(bos, paxData);
+        appendPadded(bos, ustarHeader("GNUSparseFile.0/sparse.bin", TarConstants.DEFAULT_RCDSIZE * (1 + dataRecords), '0'));
+        appendPadded(bos, "1\n0\n512\n".getBytes(StandardCharsets.US_ASCII));
+        for (int i = 0; i < dataRecords; i++) {
+            final byte[] data = new byte[TarConstants.DEFAULT_RCDSIZE];
+            Arrays.fill(data, (byte) 'D');
+            appendPadded(bos, data);
+        }
+        final byte[] payload = "the following entry".getBytes(StandardCharsets.US_ASCII);
+        appendPadded(bos, ustarHeader("next.bin", payload.length, '0'));
+        appendPadded(bos, payload);
+        final int eofLength = 2 * TarConstants.DEFAULT_RCDSIZE; // two zero EOF records
+        bos.write(new byte[eofLength], 0, eofLength);
+        return bos.toByteArray();
+    }
+
+    @Test
+    void testPax1xSparseMapCountsAgainstEntrySizeTarArchiveInputStream() throws IOException {
+        final byte[] archive = pax1xSparseArchive(1);
+        try (TarArchiveInputStream tis = new TarArchiveInputStream(new ByteArrayInputStream(archive))) {
+            final TarArchiveEntry entry = tis.getNextEntry();
+            assertEquals("sparse.bin", entry.getName());
+            final byte[] expected = new byte[TarConstants.DEFAULT_RCDSIZE];
+            Arrays.fill(expected, (byte) 'D');
+            assertArrayEquals(expected, IOUtils.toByteArray(tis));
+            assertEquals("next.bin", tis.getNextEntry().getName());
+            assertNull(tis.getNextEntry());
+        }
+    }
+
+    @Test
+    void testRejectsPax1xSparseBlocksLargerThanDataAfterMapTarArchiveInputStream() throws IOException {
+        // The entry body holds only the sparse map, so the 512 byte block would come from the next entry's header.
+        final byte[] archive = pax1xSparseArchive(0);
+        try (TarArchiveInputStream tis = new TarArchiveInputStream(new ByteArrayInputStream(archive))) {
+            assertThrows(ArchiveException.class, tis::getNextEntry);
+        }
+    }
+
+    @Test
+    void testRejectsPax1xSparseBlocksLargerThanDataAfterMapTarFile() throws IOException {
+        final byte[] archive = pax1xSparseArchive(0);
+        assertThrows(ArchiveException.class, () -> {
+            try (TarFile tarFile = TarFile.builder().setByteArray(archive).get()) {
+                tarFile.getEntries();
+            }
+        });
     }
 }

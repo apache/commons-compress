@@ -536,6 +536,17 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
         } while (lastWasSpecial);
         // Apply global and local PAX headers
         TarUtils.applyPaxHeadersToEntry(currEntry, paxHeaders, sparseHeaders, globalPaxHeaders, globalSparseHeaders);
+        // PAX size overrides the ustar size used to bound this entry. Rebuild the bound so the
+        // stream exposes the stored bytes and the next record stays aligned.
+        if (currentInputStream instanceof BoundedInputStream
+                && ((BoundedInputStream) currentInputStream).getMaxCount() != currEntry.getSize()) {
+            currentInputStream = BoundedInputStream.builder()
+                    .setInputStream(in)
+                    .setAfterRead(this::afterRead)
+                    .setMaxCount(currEntry.getSize())
+                    .setPropagateClose(false)
+                    .get();
+        }
         // Handle sparse files
         if (currEntry.isSparse()) {
             if (currEntry.isOldGNUSparse()) {
@@ -544,7 +555,14 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
                 // rely on BoundedInputStream here.
                 readOldGNUSparse();
             } else if (currEntry.isPaxGNU1XSparse()) {
-                currEntry.setSparseHeaders(TarUtils.parsePAX1XSparseHeaders(currentInputStream, getRecordSize()));
+                // The sparse map, including record padding, is stored in the entry body and has
+                // already been consumed. Shrink the stored size before extent checks, as TarFile
+                // does, so those extents cannot read the following entry. entryOffset counted the
+                // map reads against the old size; the data portion starts at zero.
+                final BoundedInputStream entryStream = (BoundedInputStream) currentInputStream;
+                currEntry.setSparseHeaders(TarUtils.parsePAX1XSparseHeaders(entryStream, getRecordSize()));
+                currEntry.setSize(currEntry.getSize() - entryStream.getCount());
+                entryOffset = 0;
             }
             // sparse headers are all done reading, we need to build
             // sparse input streams using these sparse headers
