@@ -30,6 +30,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.SeekableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.attribute.FileTime;
@@ -46,6 +48,7 @@ import org.apache.commons.compress.PasswordRequiredException;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.utils.SeekableInMemoryByteChannel;
 import org.apache.commons.compress.utils.TimeUtilsTest;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.channels.ByteArraySeekableByteChannel;
 import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.Test;
@@ -694,5 +697,82 @@ class SevenZOutputFileTest extends AbstractTest {
 
     private Boolean verifyFile(final SevenZFile archive, final int index, final Iterable<SevenZMethodConfiguration> methods) throws Exception {
         return verifyFile(archive, index, 1, methods);
+    }
+
+    /**
+     * Tests that an archive written to a channel that accepts at most 1 KiB per write call reads back intact.
+     */
+    @Test
+    void testPartialChannelWrites() throws Exception {
+        final ByteArraySeekableByteChannel output = new ByteArraySeekableByteChannel();
+        final SeekableByteChannel partial = new SeekableByteChannel() {
+
+            @Override
+            public void close() throws IOException {
+                output.close();
+            }
+
+            @Override
+            public boolean isOpen() {
+                return output.isOpen();
+            }
+
+            @Override
+            public long position() throws IOException {
+                return output.position();
+            }
+
+            @Override
+            public SeekableByteChannel position(final long newPosition) throws IOException {
+                output.position(newPosition);
+                return this;
+            }
+
+            @Override
+            public int read(final ByteBuffer dst) throws IOException {
+                return output.read(dst);
+            }
+
+            @Override
+            public long size() throws IOException {
+                return output.size();
+            }
+
+            @Override
+            public SeekableByteChannel truncate(final long size) throws IOException {
+                output.truncate(size);
+                return this;
+            }
+
+            @Override
+            public int write(final ByteBuffer src) throws IOException {
+                final ByteBuffer slice = src.duplicate();
+                slice.limit(slice.position() + Math.min(1024, slice.remaining()));
+                final int written = output.write(slice);
+                src.position(src.position() + written);
+                return written;
+            }
+        };
+        final byte[] data = new byte[100_000];
+        for (int i = 0; i < data.length; i++) {
+            data[i] = (byte) (i * 31 + i / 256);
+        }
+        try (SevenZOutputFile outArchive = new SevenZOutputFile(partial)) {
+            outArchive.setContentCompression(SevenZMethod.COPY);
+            final SevenZArchiveEntry entry = new SevenZArchiveEntry();
+            entry.setName("data.bin");
+            outArchive.putArchiveEntry(entry);
+            outArchive.write(data);
+            outArchive.write(data, 0, 100);
+            outArchive.closeArchiveEntry();
+        }
+        try (SevenZFile archive = SevenZFile.builder().setByteArray(output.toByteArray()).get()) {
+            final SevenZArchiveEntry entry = archive.getNextEntry();
+            assertEquals("data.bin", entry.getName());
+            final byte[] read = new byte[data.length + 100];
+            assertEquals(read.length, IOUtils.read(archive.getInputStream(entry), read));
+            assertArrayEquals(data, Arrays.copyOf(read, data.length));
+            assertArrayEquals(Arrays.copyOf(data, 100), Arrays.copyOfRange(read, data.length, read.length));
+        }
     }
 }
