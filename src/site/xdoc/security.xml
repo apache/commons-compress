@@ -31,6 +31,13 @@
         of the Commons project</a>.</p>
       </section>
 
+      <section name="Threat Model">
+        <ul>
+          <li><a href="threat-model-short.html">Threat Model (short)</a></li>
+          <li><a href="threat-model.html">Threat Model</a></li>
+        </ul>
+      </section>
+
       <section name="Apache Commons Compress Security Vulnerabilities">
         <p>This page lists all security vulnerabilities fixed in
         released versions of Apache Commons Compress. Each
