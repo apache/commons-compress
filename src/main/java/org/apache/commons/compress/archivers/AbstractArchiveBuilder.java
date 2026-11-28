@@ -33,6 +33,8 @@ import org.apache.commons.io.build.AbstractStreamBuilder;
 public abstract class AbstractArchiveBuilder<T, B extends AbstractArchiveBuilder<T, B>>
         extends AbstractStreamBuilder<T, B> {
 
+    private int maxEntries = Integer.MAX_VALUE;
+
     private int maxEntryNameLength = Short.MAX_VALUE;
 
     /**
@@ -43,12 +45,43 @@ public abstract class AbstractArchiveBuilder<T, B extends AbstractArchiveBuilder
     }
 
     /**
+     * Gets the maximum number of entries in an archive.
+     *
+     * @return The maximum number of entries in an archive.
+     */
+    public int getMaxEntries() {
+        return maxEntries;
+    }
+
+    /**
      * Gets the maximum length of an archive entry name.
      *
      * @return The maximum length of an archive entry name.
      */
     public int getMaxEntryNameLength() {
         return maxEntryNameLength;
+    }
+
+    /**
+     * Sets the maximum number of entries in an archive.
+     *
+     * <p>Readers that parse the whole archive up front, such as {@code ZipFile},
+     * {@code TarFile} and {@code SevenZFile}, enforce this limit while opening the
+     * archive. Streaming readers enforce it in {@link ArchiveInputStream#getNextEntry()}.
+     * Either way, an {@link ArchiveException} is thrown once the limit is exceeded.</p>
+     *
+     * <p>The default is {@link Integer#MAX_VALUE}.</p>
+     *
+     * @param maxEntries The maximum number of entries; must be positive.
+     * @return {@code this} instance.
+     * @throws IllegalArgumentException If {@code maxEntries} is not positive.
+     */
+    public B setMaxEntries(final int maxEntries) {
+        if (maxEntries <= 0) {
+            throw new IllegalArgumentException("maxEntries must be positive");
+        }
+        this.maxEntries = maxEntries;
+        return asThis();
     }
 
     /**

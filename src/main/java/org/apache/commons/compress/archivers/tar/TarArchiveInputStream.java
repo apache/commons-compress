@@ -554,7 +554,7 @@ public class TarArchiveInputStream extends ArchiveInputStream<TarArchiveEntry> {
         if (currEntry.isDirectory() && !currEntry.getName().endsWith("/")) {
             currEntry.setName(currEntry.getName() + "/");
         }
-        return currEntry;
+        return countEntry(currEntry);
     }
 
     /**

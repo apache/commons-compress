@@ -25,6 +25,7 @@ import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.Objects;
 
+import org.apache.commons.compress.utils.ArchiveUtils;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.function.IOConsumer;
 import org.apache.commons.io.function.IOIterator;
@@ -97,6 +98,10 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
 
     private final Charset charset;
 
+    private long entryCount;
+
+    private final int maxEntries;
+
     private final int maxEntryNameLength;
 
     /**
@@ -120,6 +125,7 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
     protected ArchiveInputStream(final AbstractArchiveBuilder<?, ?> builder) throws IOException {
         super(builder.getInputStream());
         this.charset = builder.getCharset();
+        this.maxEntries = builder.getMaxEntries();
         this.maxEntryNameLength = builder.getMaxEntryNameLength();
     }
 
@@ -135,6 +141,7 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
     protected ArchiveInputStream(final InputStream inputStream, final String charsetName) {
         super(inputStream == null ? new NullInputStream() : inputStream);
         this.charset = Charsets.toCharset(charsetName);
+        this.maxEntries = Integer.MAX_VALUE;
         this.maxEntryNameLength = Short.MAX_VALUE;
     }
 
@@ -171,6 +178,21 @@ public abstract class ArchiveInputStream<E extends ArchiveEntry> extends FilterI
         if (read != -1) {
             bytesRead += read;
         }
+    }
+
+    /**
+     * Counts an entry about to be returned by {@link #getNextEntry()}.
+     *
+     * @param entry The entry, or {@code null} at the end of the archive.
+     * @return The given entry.
+     * @throws ArchiveException If the archive holds more entries than the configured maximum.
+     * @since 1.29.0
+     */
+    protected E countEntry(final E entry) throws ArchiveException {
+        if (entry != null) {
+            ArchiveUtils.checkEntryCount(++entryCount, maxEntries);
+        }
+        return entry;
     }
 
     /**

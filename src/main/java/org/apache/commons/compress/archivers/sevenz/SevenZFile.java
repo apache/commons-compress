@@ -623,12 +623,15 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
 
     private final boolean tryToRecoverBrokenArchives;
 
+    private final int maxEntries;
+
     private final int maxEntryNameLength;
 
     private SevenZFile(final Builder builder) throws IOException {
         this.channel = builder.getChannel(SeekableByteChannel.class);
         try {
             this.fileName = builder.getName();
+            this.maxEntries = builder.getMaxEntries();
             this.maxEntryNameLength = builder.getMaxEntryNameLength();
             this.maxMemoryLimitKiB = builder.maxMemoryLimitKiB;
             this.useDefaultNameForUnnamedEntries = builder.useDefaultNameForUnnamedEntries;
@@ -1444,6 +1447,7 @@ public class SevenZFile implements ArchiveFile<SevenZArchiveEntry> {
 
     private void readFilesInfo(final ByteBuffer header, final Archive archive) throws IOException {
         final int numFilesInt = readUint64ToIntExact(header, "numFiles");
+        ArchiveUtils.checkEntryCount(numFilesInt, maxEntries);
         final Map<Integer, SevenZArchiveEntry> fileMap = new LinkedHashMap<>();
         BitSet isEmptyStream = null;
         BitSet isEmptyFile = null;
