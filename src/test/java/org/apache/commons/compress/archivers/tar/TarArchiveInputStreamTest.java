@@ -394,6 +394,30 @@ class TarArchiveInputStreamTest extends AbstractTest {
     }
 
     @Test
+    void testPaxSizeOverridesHeaderSize() throws IOException {
+        // The ustar header says 0 bytes, the PAX header says 1 byte; the PAX value wins and the next entry must stay readable.
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        final byte[] paxData = SparseFilesTest.paxRecord("size", "1").getBytes(StandardCharsets.US_ASCII);
+        SparseFilesTest.appendPadded(bos, SparseFilesTest.ustarHeader("PaxHeaders/first", paxData.length, 'x'));
+        SparseFilesTest.appendPadded(bos, paxData);
+        SparseFilesTest.appendPadded(bos, SparseFilesTest.ustarHeader("first", 0, '0'));
+        SparseFilesTest.appendPadded(bos, new byte[] { 'A' });
+        SparseFilesTest.appendPadded(bos, SparseFilesTest.ustarHeader("second", 1, '0'));
+        SparseFilesTest.appendPadded(bos, new byte[] { 'B' });
+        bos.write(new byte[2 * TarConstants.DEFAULT_RCDSIZE], 0, 2 * TarConstants.DEFAULT_RCDSIZE);
+        try (TarArchiveInputStream tis = new TarArchiveInputStream(new ByteArrayInputStream(bos.toByteArray()))) {
+            TarArchiveEntry entry = tis.getNextEntry();
+            assertEquals("first", entry.getName());
+            assertEquals(1, entry.getSize());
+            assertArrayEquals(new byte[] { 'A' }, IOUtils.toByteArray(tis));
+            entry = tis.getNextEntry();
+            assertEquals("second", entry.getName());
+            assertArrayEquals(new byte[] { 'B' }, IOUtils.toByteArray(tis));
+            assertNull(tis.getNextEntry());
+        }
+    }
+
+    @Test
     void testParseTarWithNonNumberPaxHeaders() throws IOException {
         try (TarArchiveInputStream archive = getTestStream("COMPRESS-529-fail.tar")) {
             assertThrows(ArchiveException.class, () -> archive.getNextEntry());
