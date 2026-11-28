@@ -824,15 +824,17 @@ public class ZipArchiveInputStream extends ArchiveInputStream<ZipArchiveEntry> i
      */
     @Deprecated
     public ZipArchiveEntry getNextZipEntry() throws IOException {
-        uncompressedCount = 0;
         boolean firstEntry = true;
         if (closed || hitCentralDirectory) {
+            uncompressedCount = 0;
             return null;
         }
         if (current != null) {
             closeEntry();
             firstEntry = false;
         }
+        // Reset the count after draining the previous entry.
+        uncompressedCount = 0;
         final long currentHeaderOffset = getBytesRead();
         try {
             if (firstEntry) {

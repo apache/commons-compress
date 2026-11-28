@@ -45,8 +45,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
+import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.compress.AbstractTest;
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -124,6 +126,44 @@ class ZipArchiveInputStreamTest extends AbstractTest {
             }
             zae = inputStream.getNextZipEntry();
         }
+    }
+
+    private static byte[] createCountArchive(final int method) throws IOException {
+        final byte[] first = new byte[100000];
+        Arrays.fill(first, (byte) 'a');
+        final byte[] second = createCountPayload();
+        final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try (ZipOutputStream zos = new ZipOutputStream(bos)) {
+            final ZipEntry e1 = new ZipEntry("first");
+            e1.setMethod(method);
+            if (method == ZipEntry.STORED) {
+                final CRC32 crc = new CRC32();
+                crc.update(first);
+                e1.setSize(first.length);
+                e1.setCompressedSize(first.length);
+                e1.setCrc(crc.getValue());
+            }
+            zos.putNextEntry(e1);
+            zos.write(first);
+            zos.closeEntry();
+            final ZipEntry e2 = new ZipEntry("second");
+            e2.setMethod(method);
+            if (method == ZipEntry.STORED) {
+                final CRC32 crc = new CRC32();
+                crc.update(second);
+                e2.setSize(second.length);
+                e2.setCompressedSize(second.length);
+                e2.setCrc(crc.getValue());
+            }
+            zos.putNextEntry(e2);
+            zos.write(second);
+            zos.closeEntry();
+        }
+        return bos.toByteArray();
+    }
+
+    private static byte[] createCountPayload() {
+        return "COMPRESS-643 second entry payload: known ASCII text!".getBytes(StandardCharsets.US_ASCII);
     }
 
     /**
@@ -237,6 +277,80 @@ class ZipArchiveInputStreamTest extends AbstractTest {
                 .get()) {
             assertThrows(IOException.class, () -> inputStream.forEach(IOConsumer.noop()));
         }
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = { 0, 1, 100000 })
+    void testUncompressedCountResetAfterDeflatedPartialRead(final int consumed) throws IOException {
+        final byte[] archive = createCountArchive(ZipEntry.DEFLATED);
+        try (ZipArchiveInputStream zin = ZipArchiveInputStream.builder().setByteArray(archive).get()) {
+            final ZipArchiveEntry first = zin.getNextEntry();
+            assertEquals("first", first.getName());
+            assertTrue(first.getGeneralPurposeBit().usesDataDescriptor());
+            final byte[] buf = new byte[consumed];
+            IOUtils.readFully(zin, buf);
+            assertEquals(consumed, zin.getUncompressedCount());
+            final ZipArchiveEntry second = zin.getNextEntry();
+            assertEquals("second", second.getName());
+            assertEquals(0, zin.getUncompressedCount());
+            final byte[] payload = IOUtils.toByteArray(zin);
+            assertArrayEquals(createCountPayload(), payload);
+            assertEquals(payload.length, zin.getUncompressedCount());
+            assertNull(zin.getNextEntry());
+            assertEquals(0, zin.getUncompressedCount());
+        }
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = { 0, 1 })
+    void testUncompressedCountResetAfterStoredPartialRead(final int consumed) throws IOException {
+        final byte[] archive = createCountArchive(ZipEntry.STORED);
+        try (ZipArchiveInputStream zin = ZipArchiveInputStream.builder().setByteArray(archive).get()) {
+            final ZipArchiveEntry first = zin.getNextEntry();
+            assertEquals("first", first.getName());
+            final byte[] buf = new byte[consumed];
+            IOUtils.readFully(zin, buf);
+            assertEquals(consumed, zin.getUncompressedCount());
+            final ZipArchiveEntry second = zin.getNextEntry();
+            assertEquals("second", second.getName());
+            assertEquals(0, zin.getUncompressedCount());
+            final byte[] payload = IOUtils.toByteArray(zin);
+            assertArrayEquals(createCountPayload(), payload);
+            assertEquals(payload.length, zin.getUncompressedCount());
+            assertNull(zin.getNextEntry());
+            assertEquals(0, zin.getUncompressedCount());
+        }
+    }
+
+    @Test
+    void testUncompressedCountPartialLastEntry() throws IOException {
+        final byte[] archive = createCountArchive(ZipEntry.DEFLATED);
+        try (ZipArchiveInputStream zin = ZipArchiveInputStream.builder().setByteArray(archive).get()) {
+            assertEquals("first", zin.getNextEntry().getName());
+            IOUtils.toByteArray(zin);
+            assertEquals("second", zin.getNextEntry().getName());
+            final byte[] buf = new byte[16];
+            IOUtils.readFully(zin, buf);
+            assertEquals(16, zin.getUncompressedCount());
+            assertArrayEquals(Arrays.copyOf(createCountPayload(), 16), buf);
+            assertNull(zin.getNextEntry());
+            assertEquals(0, zin.getUncompressedCount());
+            assertNull(zin.getNextEntry());
+            assertEquals(0, zin.getUncompressedCount());
+        }
+    }
+
+    @Test
+    void testUncompressedCountClosedStream() throws IOException {
+        final byte[] archive = createCountArchive(ZipEntry.DEFLATED);
+        final ZipArchiveInputStream zin = ZipArchiveInputStream.builder().setByteArray(archive).get();
+        assertEquals("first", zin.getNextEntry().getName());
+        final byte[] buf = new byte[5];
+        IOUtils.readFully(zin, buf);
+        assertEquals(5, zin.getUncompressedCount());
+        zin.close();
+        assertNull(zin.getNextEntry());
+        assertEquals(0, zin.getUncompressedCount());
     }
 
     @Test
